@@ -1,0 +1,442 @@
+{
+	"template_id": "eb9517ed-85ed-4702-b8d0-e155f5a5d474",
+	"titre": "Seuil d'une suite arithmétique par le calcul",
+	"sous_titre": "Plus petit n tel que uₙ > A (ou uₙ < A), par une inéquation",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Seuil et algorithmes > Seuil",
+	"mis_a_jour": "2026-10-01T20:22:24.928981+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-237",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..30"
+					},
+					{
+						"name": "r",
+						"expression": "3..9"
+					},
+					{
+						"name": "A",
+						"expression": "100..500"
+					},
+					{
+						"name": "N",
+						"expression": "eval:floor((A-a)/r)+1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nDétermine le plus petit entier $n$ tel que $u_n>{{A}}$.\n\n$n=?$",
+				"reponses_brutes": ["{{N}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 30,
+						"valeurs": [
+							1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+							25, 26, 27, 28, 29, 30
+						]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "A",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 498,
+						"negatif_possible": false,
+						"nb_distinctes": 218
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 9,
+						"max": 161,
+						"negatif_possible": false,
+						"nb_distinctes": 101
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 9,
+						"max": 161,
+						"negatif_possible": false,
+						"nb_distinctes": 101
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 498,
+				"nb_distinctes": 249,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 9,
+				"max": 161,
+				"nb_distinctes": 101,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 498,
+				"nb_distinctes": 314,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (498)",
+					"graine": 160,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 6$ et de raison $r = 9$.\n\nDétermine le plus petit entier $n$ tel que $u_n > 498$.\n\n$n = [?]$",
+					"reponse": ["55"],
+					"variables": {
+						"a": "6",
+						"r": "9",
+						"A": "498",
+						"N": "55"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 1$ et de raison $r = 6$.\n\nDétermine le plus petit entier $n$ tel que $u_n > 493$.\n\n$n = [?]$",
+					"reponse": ["83"],
+					"variables": {
+						"a": "1",
+						"r": "6",
+						"A": "493",
+						"N": "83"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 10$ et de raison $r = 4$.\n\nDétermine le plus petit entier $n$ tel que $u_n > 315$.\n\n$n = [?]$",
+					"reponse": ["77"],
+					"variables": {
+						"a": "10",
+						"r": "4",
+						"A": "315",
+						"N": "77"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 2$ et de raison $r = 6$.\n\nDétermine le plus petit entier $n$ tel que $u_n > 130$.\n\n$n = [?]$",
+					"reponse": ["22"],
+					"variables": {
+						"a": "2",
+						"r": "6",
+						"A": "130",
+						"N": "22"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 10$ et de raison $r = 4$.\n\nDétermine le plus petit entier $n$ tel que $u_n > 132$.\n\n$n = [?]$",
+					"reponse": ["31"],
+					"variables": {
+						"a": "10",
+						"r": "4",
+						"A": "132",
+						"N": "31"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "300..600"
+					},
+					{
+						"name": "s",
+						"expression": "3..9"
+					},
+					{
+						"name": "A",
+						"expression": "10..200"
+					},
+					{
+						"name": "N",
+						"expression": "eval:floor((a-A)/s)+1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{eval:-s}}$.\n\nDétermine le plus petit entier $n$ tel que $u_n<{{A}}$.\n\n$n=?$",
+				"reponses_brutes": ["{{N}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 300,
+						"max": 600,
+						"negatif_possible": false,
+						"nb_distinctes": 194
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "A",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 199,
+						"negatif_possible": false,
+						"nb_distinctes": 153
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 192,
+						"negatif_possible": false,
+						"nb_distinctes": 106
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 192,
+						"negatif_possible": false,
+						"nb_distinctes": 106
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 600,
+				"nb_distinctes": 355,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 15,
+				"max": 192,
+				"nb_distinctes": 106,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 600,
+				"nb_distinctes": 374,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 37,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 600$ et de raison $r = -3$.\n\nDétermine le plus petit entier $n$ tel que $u_n < 151$.\n\n$n = [?]$",
+					"reponse": ["150"],
+					"variables": {
+						"a": "600",
+						"s": "3",
+						"A": "151",
+						"N": "150"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 7,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 318$ et de raison $r = -9$.\n\nDétermine le plus petit entier $n$ tel que $u_n < 143$.\n\n$n = [?]$",
+					"reponse": ["20"],
+					"variables": {
+						"a": "318",
+						"s": "9",
+						"A": "143",
+						"N": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 300$ et de raison $r = -6$.\n\nDétermine le plus petit entier $n$ tel que $u_n < 197$.\n\n$n = [?]$",
+					"reponse": ["18"],
+					"variables": {
+						"a": "300",
+						"s": "6",
+						"A": "197",
+						"N": "18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 397$ et de raison $r = -4$.\n\nDétermine le plus petit entier $n$ tel que $u_n < 112$.\n\n$n = [?]$",
+					"reponse": ["72"],
+					"variables": {
+						"a": "397",
+						"s": "4",
+						"A": "112",
+						"N": "72"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 311$ et de raison $r = -6$.\n\nDétermine le plus petit entier $n$ tel que $u_n < 24$.\n\n$n = [?]$",
+					"reponse": ["48"],
+					"variables": {
+						"a": "311",
+						"s": "6",
+						"A": "24",
+						"N": "48"
+					}
+				}
+			]
+		}
+	]
+}

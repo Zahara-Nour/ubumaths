@@ -1,0 +1,783 @@
+{
+	"template_id": "d520539a-4d14-492d-8d85-a303a6c30798",
+	"titre": "Bilinéarité du produit scalaire",
+	"sous_titre": "Développer un produit scalaire par bilinéarité à partir des normes et du produit scalaire de deux vecteurs",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Propriétés",
+	"mis_a_jour": "2026-10-02T18:13:39.536931+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-312",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "p",
+						"expression": "{{eval:max(-9,1-a*b)}}..{{eval:min(9,a*b-1)}}"
+					},
+					{
+						"name": "bt",
+						"expression": "-3..3"
+					},
+					{
+						"name": "gm",
+						"expression": "2..3"
+					},
+					{
+						"name": "dl",
+						"expression": "-3..3"
+					},
+					{
+						"name": "c1",
+						"expression": "{{eval:dl+bt*gm}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:gm*a^2+(dl+bt*gm)*p+bt*dl*b^2}}"
+					}
+				],
+				"conditions": ["p != 0", "abs(p) < a*b", "abs(bt) >= 2", "abs(dl) >= 2", "dl + bt*gm != 0"],
+				"enonce_brut": "On donne $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $(\\vec{u}{{bt;+}}\\vec{v})\\cdot({{gm}}\\vec{u}{{dl;+}}\\vec{v})$.\n\n$(\\vec{u}{{bt;+}}\\vec{v})\\cdot({{gm}}\\vec{u}{{dl;+}}\\vec{v})=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "bt",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -2, 2, 3]
+					}
+				},
+				{
+					"nom": "gm",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "dl",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -2, 2, 3]
+					}
+				},
+				{
+					"nom": "c1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [-12, -11, -9, -8, -7, -6, -4, -3, -2, -1, 1, 2, 3, 4, 6, 7, 8, 9, 11, 12]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -288,
+						"max": 447,
+						"negatif_possible": true,
+						"nb_distinctes": 223
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -288,
+						"max": 447,
+						"negatif_possible": true,
+						"nb_distinctes": 223
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -288,
+				"max": 447,
+				"nb_distinctes": 223,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -288,
+				"max": 447,
+				"nb_distinctes": 227,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "220/300",
+					"−": "233/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (447)",
+					"graine": 105,
+					"enonce": "On donne $\\|\\vec{u}\\|=3$, $\\|\\vec{v}\\|=6$ et $\\vec{u}\\cdot\\vec{v}=8$.\n\nCalcule $(\\vec{u}+3\\vec{v})\\cdot(3\\vec{u}+3\\vec{v})$.\n\n$(\\vec{u}+3\\vec{v})\\cdot(3\\vec{u}+3\\vec{v})=[?]$",
+					"reponse": ["447"],
+					"variables": {
+						"a": "3",
+						"b": "6",
+						"p": "8",
+						"bt": "3",
+						"gm": "3",
+						"dl": "3",
+						"c1": "12",
+						"R": "447"
+					}
+				},
+				{
+					"role": "plus petite valeur (-288)",
+					"graine": 196,
+					"enonce": "On donne $\\|\\vec{u}\\|=3$, $\\|\\vec{v}\\|=6$ et $\\vec{u}\\cdot\\vec{v}=-6$.\n\nCalcule $(\\vec{u}-3\\vec{v})\\cdot(2\\vec{u}+3\\vec{v})$.\n\n$(\\vec{u}-3\\vec{v})\\cdot(2\\vec{u}+3\\vec{v})=[?]$",
+					"reponse": ["-288"],
+					"variables": {
+						"a": "3",
+						"b": "6",
+						"p": "-6",
+						"bt": "-3",
+						"gm": "2",
+						"dl": "3",
+						"c1": "-3",
+						"R": "-288"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On donne $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et $\\vec{u}\\cdot\\vec{v}=-1$.\n\nCalcule $(\\vec{u}+2\\vec{v})\\cdot(3\\vec{u}-2\\vec{v})$.\n\n$(\\vec{u}+2\\vec{v})\\cdot(3\\vec{u}-2\\vec{v})=[?]$",
+					"reponse": ["-92"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"p": "-1",
+						"bt": "2",
+						"gm": "3",
+						"dl": "-2",
+						"c1": "4",
+						"R": "-92"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On donne $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=6$ et $\\vec{u}\\cdot\\vec{v}=-8$.\n\nCalcule $(\\vec{u}-3\\vec{v})\\cdot(2\\vec{u}-3\\vec{v})$.\n\n$(\\vec{u}-3\\vec{v})\\cdot(2\\vec{u}-3\\vec{v})=[?]$",
+					"reponse": ["404"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"p": "-8",
+						"bt": "-3",
+						"gm": "2",
+						"dl": "-3",
+						"c1": "-9",
+						"R": "404"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On donne $\\|\\vec{u}\\|=3$, $\\|\\vec{v}\\|=5$ et $\\vec{u}\\cdot\\vec{v}=-9$.\n\nCalcule $(\\vec{u}-3\\vec{v})\\cdot(2\\vec{u}+3\\vec{v})$.\n\n$(\\vec{u}-3\\vec{v})\\cdot(2\\vec{u}+3\\vec{v})=[?]$",
+					"reponse": ["-180"],
+					"variables": {
+						"a": "3",
+						"b": "5",
+						"p": "-9",
+						"bt": "-3",
+						"gm": "2",
+						"dl": "3",
+						"c1": "-3",
+						"R": "-180"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "p",
+						"expression": "{{eval:max(-9,1-a*b)}}..{{eval:min(9,a*b-1)}}"
+					},
+					{
+						"name": "al",
+						"expression": "2..4"
+					},
+					{
+						"name": "dl",
+						"expression": "2..4"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:al*a^2+(al*dl-1)*p-dl*b^2}}"
+					}
+				],
+				"conditions": ["p != 0", "abs(p) < a*b"],
+				"enonce_brut": "On donne $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nDéveloppe puis calcule $({{al}}\\vec{u}-\\vec{v})\\cdot(\\vec{u}+{{dl}}\\vec{v})$.\n\n$({{al}}\\vec{u}-\\vec{v})\\cdot(\\vec{u}+{{dl}}\\vec{v})=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 290,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "al",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "dl",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -184,
+						"max": 228,
+						"negatif_possible": true,
+						"nb_distinctes": 176
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -184,
+						"max": 228,
+						"negatif_possible": true,
+						"nb_distinctes": 176
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -184,
+				"max": 228,
+				"nb_distinctes": 176,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -184,
+				"max": 228,
+				"nb_distinctes": 177,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 6,
+					"max": 6
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (228)",
+					"graine": 228,
+					"enonce": "On donne $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=3$ et $\\vec{u}\\cdot\\vec{v}=8$.\n\nDéveloppe puis calcule $(4\\vec{u}-\\vec{v})\\cdot(\\vec{u}+4\\vec{v})$.\n\n$(4\\vec{u}-\\vec{v})\\cdot(\\vec{u}+4\\vec{v})=[?]$",
+					"reponse": ["228"],
+					"variables": {
+						"a": "6",
+						"b": "3",
+						"p": "8",
+						"al": "4",
+						"dl": "4",
+						"R": "228"
+					}
+				},
+				{
+					"role": "plus petite valeur (-184)",
+					"graine": 186,
+					"enonce": "On donne $\\|\\vec{u}\\|=4$, $\\|\\vec{v}\\|=6$ et $\\vec{u}\\cdot\\vec{v}=-8$.\n\nDéveloppe puis calcule $(3\\vec{u}-\\vec{v})\\cdot(\\vec{u}+4\\vec{v})$.\n\n$(3\\vec{u}-\\vec{v})\\cdot(\\vec{u}+4\\vec{v})=[?]$",
+					"reponse": ["-184"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"p": "-8",
+						"al": "3",
+						"dl": "4",
+						"R": "-184"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On donne $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=7$.\n\nDéveloppe puis calcule $(4\\vec{u}-\\vec{v})\\cdot(\\vec{u}+2\\vec{v})$.\n\n$(4\\vec{u}-\\vec{v})\\cdot(\\vec{u}+2\\vec{v})=[?]$",
+					"reponse": ["33"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"p": "7",
+						"al": "4",
+						"dl": "2",
+						"R": "33"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On donne $\\|\\vec{u}\\|=3$, $\\|\\vec{v}\\|=3$ et $\\vec{u}\\cdot\\vec{v}=1$.\n\nDéveloppe puis calcule $(4\\vec{u}-\\vec{v})\\cdot(\\vec{u}+3\\vec{v})$.\n\n$(4\\vec{u}-\\vec{v})\\cdot(\\vec{u}+3\\vec{v})=[?]$",
+					"reponse": ["20"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"p": "1",
+						"al": "4",
+						"dl": "3",
+						"R": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On donne $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=-6$.\n\nDéveloppe puis calcule $(4\\vec{u}-\\vec{v})\\cdot(\\vec{u}+3\\vec{v})$.\n\n$(4\\vec{u}-\\vec{v})\\cdot(\\vec{u}+3\\vec{v})=[?]$",
+					"reponse": ["-98"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"p": "-6",
+						"al": "4",
+						"dl": "3",
+						"R": "-98"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "p",
+						"expression": "{{eval:max(-9,1-a*b)}}..{{eval:min(9,a*b-1)}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:p-a^2}}"
+					}
+				],
+				"conditions": ["p != 0", "abs(p) < a*b"],
+				"enonce_brut": "Dans un triangle $ABC$, on sait que $AB={{a}}$, $AC={{b}}$ et $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}={{p}}$.\n\nEn décomposant $\\overrightarrow{BC}$ à l'aide de la relation de Chasles, calcule $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 215,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -45,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -45,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -45,
+				"max": 5,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -45,
+				"max": 9,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 53,
+					"enonce": "Dans un triangle $ABC$, on sait que $AB = 6$, $AC = 2$ et $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=9$.\n\nEn décomposant $\\overrightarrow{BC}$ à l'aide de la relation de Chasles, calcule $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=[?]$",
+					"reponse": ["-27"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"p": "9",
+						"R": "-27"
+					}
+				},
+				{
+					"role": "plus petite valeur (-45)",
+					"graine": 31,
+					"enonce": "Dans un triangle $ABC$, on sait que $AB = 6$, $AC = 5$ et $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=-9$.\n\nEn décomposant $\\overrightarrow{BC}$ à l'aide de la relation de Chasles, calcule $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=[?]$",
+					"reponse": ["-45"],
+					"variables": {
+						"a": "6",
+						"b": "5",
+						"p": "-9",
+						"R": "-45"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans un triangle $ABC$, on sait que $AB = 2$, $AC = 4$ et $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=7$.\n\nEn décomposant $\\overrightarrow{BC}$ à l'aide de la relation de Chasles, calcule $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=[?]$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"p": "7",
+						"R": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans un triangle $ABC$, on sait que $AB = 3$, $AC = 3$ et $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=1$.\n\nEn décomposant $\\overrightarrow{BC}$ à l'aide de la relation de Chasles, calcule $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=[?]$",
+					"reponse": ["-8"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"p": "1",
+						"R": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans un triangle $ABC$, on sait que $AB = 2$, $AC = 4$ et $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=-6$.\n\nEn décomposant $\\overrightarrow{BC}$ à l'aide de la relation de Chasles, calcule $\\overrightarrow{AB}\\cdot\\overrightarrow{BC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=[?]$",
+					"reponse": ["-10"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"p": "-6",
+						"R": "-10"
+					}
+				}
+			]
+		}
+	]
+}

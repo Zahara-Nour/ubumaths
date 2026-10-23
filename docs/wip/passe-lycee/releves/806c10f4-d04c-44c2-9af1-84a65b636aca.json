@@ -1,0 +1,872 @@
+{
+	"template_id": "806c10f4-d04c-44c2-9af1-84a65b636aca",
+	"titre": "Limite d'une fonction par opérations, sans forme indéterminée",
+	"sous_titre": "Limites en ±∞ ou en 0 de sommes simples de fonctions de référence (1/x, 1/x², √x, x³, eˣ, ln) sans forme indéterminée (pièges : signe du coefficient, eˣ → 0 en −∞, ln 0 « = 0 »)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Limites de fonctions > Opérations sur les limites",
+	"mis_a_jour": "2026-10-04T17:40:55.726248+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-230",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-415",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)={{a}}+\\dfrac{ {{b}} }{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 138,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)=-8+\\dfrac{ 9 }{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=[?]$",
+					"reponse": ["-8"],
+					"variables": {
+						"a": "-8",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)=-9+\\dfrac{ 5 }{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=[?]$",
+					"reponse": ["-9"],
+					"variables": {
+						"a": "-9",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)=-4+\\dfrac{ 3 }{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=[?]$",
+					"reponse": ["-4"],
+					"variables": {
+						"a": "-4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)=-4+\\dfrac{ 2 }{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=[?]$",
+					"reponse": ["-4"],
+					"variables": {
+						"a": "-4",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}^*$ par $f(x)=5+\\dfrac{ 2 }{x^{2}}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "5",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}e^{x}{{b;+}}$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=?$",
+				"reponses_brutes": ["{{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 202,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -8 \\exponentialE^x + 9$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=[?]$",
+					"reponse": ["9"],
+					"variables": {
+						"a": "-8",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -9 \\exponentialE^x + 1$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "-9",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -4 \\exponentialE^x - 4$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=[?]$",
+					"reponse": ["-4"],
+					"variables": {
+						"a": "-4",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -9 \\exponentialE^x - 1$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=[?]$",
+					"reponse": ["-1"],
+					"variables": {
+						"a": "-9",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -4 \\exponentialE^x - 6$.\n\nDétermine la limite de $f$ en $-\\infty$.\n\n$\\displaystyle\\lim_{x\\to-\\infty}f(x)=[?]$",
+					"reponse": ["-6"],
+					"variables": {
+						"a": "-4",
+						"b": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "bb",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)={{a}}x^{3}{{eval:sign(a)*bb;+}}\\sqrt{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=?$",
+				"reponses_brutes": ["{{if:a>0|+\\infty|-\\infty}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 71,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "bb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["+\\infty", "-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "152/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)=-5x^{3}-9\\sqrt{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-5",
+						"bb": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)=-5x^{3}-5\\sqrt{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-5",
+						"bb": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)=-3x^{3}-3\\sqrt{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-3",
+						"bb": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)=-3x^{3}-2\\sqrt{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-3",
+						"bb": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;+\\infty\\right[$ par $f(x)=4x^{3}+2\\sqrt{x}$.\n\nDétermine la limite de $f$ en $+\\infty$.\n\n$\\displaystyle\\lim_{x\\to+\\infty}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "4",
+						"bb": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{a}}{{if:b>0|+|-}}\\dfrac{ {{eval:abs(b)}} }{x}$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+				"reponses_brutes": ["{{if:b>0|+\\infty|-\\infty}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 202,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["+\\infty", "-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=-8+\\dfrac{ 9 }{x}$.\n\nDétermine la limite de $f$ en $0$ (on a $x > 0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-8",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=-9+\\dfrac{ 1 }{x}$.\n\nDétermine la limite de $f$ en $0$ (on a $x > 0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-9",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=-4-\\dfrac{ 4 }{x}$.\n\nDétermine la limite de $f$ en $0$ (on a $x > 0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-4",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=-9-\\dfrac{ 1 }{x}$.\n\nDétermine la limite de $f$ en $0$ (on a $x > 0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-9",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=-4-\\dfrac{ 6 }{x}$.\n\nDétermine la limite de $f$ en $0$ (on a $x > 0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-4",
+						"b": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{b}}{{a;+}}\\ln x$.\n\nDétermine la limite de $f$ en $0$ (on a $x>0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=?$",
+				"reponses_brutes": ["{{if:a>0|-\\infty|+\\infty}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 129,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["+\\infty", "-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"+": "300/300",
+					"−": "152/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=9-5\\ln x$.\n\nDétermine la limite de $f$ en $0$ (on a $x > 0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-5",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 27,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=-9-5\\ln x$.\n\nDétermine la limite de $f$ en $0$ (on a $x > 0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-5",
+						"b": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=1-5\\ln x$.\n\nDétermine la limite de $f$ en $0$ (on a $x > 0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-5",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=-4-3\\ln x$.\n\nDétermine la limite de $f$ en $0$ (on a $x > 0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-3",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=-1-5\\ln x$.\n\nDétermine la limite de $f$ en $0$ (on a $x > 0$).\n\n$\\displaystyle\\lim_{x\\to0}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-5",
+						"b": "-1"
+					}
+				}
+			]
+		}
+	]
+}

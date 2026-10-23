@@ -1,0 +1,670 @@
+{
+	"template_id": "7df468d6-647c-4b59-9a6c-026a2279fd86",
+	"titre": "Période de x ↦ cos(ax + b) et x ↦ sin(ax + b)",
+	"sous_titre": "Plus petite période strictement positive : 2π/a (pièges : 2π recopié, π/a, 2aπ, constante b comptée, période 2 pour sin(πx))",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions trigonométriques > Parité et périodicité",
+	"mis_a_jour": "2026-10-05T09:31:59.799818+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-453",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos({{a}}x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T=?$",
+				"reponses_brutes": [
+					"{{if:a==2|\\pi|{{if:a==4|\\frac{\\pi}{2}|{{if:a==6|\\frac{\\pi}{3}|\\frac{2\\pi}{ {{a}} }}}}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"\\frac{2\\pi}{ 3 }",
+							"\\frac{2\\pi}{ 5 }",
+							"\\frac{\\pi}{2}",
+							"\\frac{\\pi}{3}",
+							"\\pi"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 5,
+							"nb_distinctes": 3,
+							"valeurs": [2, 3, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 3,
+				"valeurs": [2, 3, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 9,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(6x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["\\frac{\\pi}{3}"],
+					"variables": {
+						"a": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(2x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["\\pi"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(3x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["\\frac{2\\pi}{ 3 }"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(5x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["\\frac{2\\pi}{ 5 }"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(4x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["\\frac{\\pi}{2}"],
+					"variables": {
+						"a": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin({{a}}x{{b;+}})$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T=?$",
+				"reponses_brutes": [
+					"{{if:a==2|\\pi|{{if:a==4|\\frac{\\pi}{2}|{{if:a==6|\\frac{\\pi}{3}|\\frac{2\\pi}{ {{a}} }}}}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 50,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"\\frac{2\\pi}{ 3 }",
+							"\\frac{2\\pi}{ 5 }",
+							"\\frac{\\pi}{2}",
+							"\\frac{\\pi}{3}",
+							"\\pi"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 5,
+							"nb_distinctes": 3,
+							"valeurs": [2, 3, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 3,
+				"valeurs": [2, 3, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 9,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin(6x-4)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["\\frac{\\pi}{3}"],
+					"variables": {
+						"a": "6",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin(2x+1)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["\\pi"],
+					"variables": {
+						"a": "2",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin(3x-3)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["\\frac{2\\pi}{ 3 }"],
+					"variables": {
+						"a": "3",
+						"b": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin(2x-1)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["\\pi"],
+					"variables": {
+						"a": "2",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin(5x-3)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["\\frac{2\\pi}{ 5 }"],
+					"variables": {
+						"a": "5",
+						"b": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos\\left(\\dfrac{x}{ {{a}} }\\right)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T=?$",
+				"reponses_brutes": ["{{eval:2*a}}\\pi"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["10\\pi", "4\\pi", "6\\pi", "8\\pi"],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 10,
+							"nb_distinctes": 4,
+							"valeurs": [4, 6, 8, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 10,
+				"nb_distinctes": 4,
+				"valeurs": [4, 6, 8, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 8, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos\\left(\\dfrac{x}{ 5 }\\right)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["10\\pi"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos\\left(\\dfrac{x}{ 2 }\\right)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["4\\pi"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos\\left(\\dfrac{x}{ 3 }\\right)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["6\\pi"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos\\left(\\dfrac{x}{ 4 }\\right)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["8\\pi"],
+					"variables": {
+						"a": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}\\sin(\\pi x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T=?$",
+				"reponses_brutes": ["2"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=5\\sin(\\pi x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\sin(\\pi x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3\\sin(\\pi x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=4\\sin(\\pi x)$.\n\nDonne la plus petite période strictement positive de $f$.\n\n$T = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"k": "4"
+					}
+				}
+			]
+		}
+	]
+}

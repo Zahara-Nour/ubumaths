@@ -1,0 +1,899 @@
+{
+	"template_id": "f40e8a4a-bddc-43aa-8c2c-ccf7cb5d4ae6",
+	"titre": "Reconnaître la courbe d'une fonction exponentielle",
+	"sous_titre": "Associer une courbe à son expression : point d'abscisse 0, sens de variation, asymptote horizontale",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonction exponentielle > Représentation graphique",
+	"mis_a_jour": "2026-10-02T04:20:50.196506+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-296",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f(x)=e^{x}$"
+					},
+					{
+						"content": "$f(x)=e^{-x}$"
+					},
+					{
+						"content": "$f(x)=-e^{x}$"
+					},
+					{
+						"content": "$f(x)=e^{x}+1$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=e^{x}"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=e^{x}+1$\n- B. $f(x)=-e^{x}$\n- C. $f(x)=e^{-x}$\n- D. $f(x)=e^{x}$",
+					"reponse": ["D. $f(x)=e^{x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{x}$\n- B. $f(x)=e^{x}+1$\n- C. $f(x)=e^{x}$\n- D. $f(x)=e^{-x}$",
+					"reponse": ["C. $f(x)=e^{x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{x}$\n- B. $f(x)=e^{x}+1$\n- C. $f(x)=e^{-x}$\n- D. $f(x)=e^{x}$",
+					"reponse": ["D. $f(x)=e^{x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=e^{x}+1$\n- B. $f(x)=-e^{x}$\n- C. $f(x)=e^{x}$\n- D. $f(x)=e^{-x}$",
+					"reponse": ["C. $f(x)=e^{x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{x}$\n- B. $f(x)=e^{-x}$\n- C. $f(x)=e^{x}$\n- D. $f(x)=e^{x}+1$",
+					"reponse": ["C. $f(x)=e^{x}$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(-x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f(x)=e^{-x}$"
+					},
+					{
+						"content": "$f(x)=e^{x}$"
+					},
+					{
+						"content": "$f(x)=-e^{-x}$"
+					},
+					{
+						"content": "$f(x)=e^{-x}+1$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=e^{-x}"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=e^{-x}+1$\n- B. $f(x)=-e^{-x}$\n- C. $f(x)=e^{x}$\n- D. $f(x)=e^{-x}$",
+					"reponse": ["D. $f(x)=e^{-x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{-x}$\n- B. $f(x)=e^{-x}+1$\n- C. $f(x)=e^{-x}$\n- D. $f(x)=e^{x}$",
+					"reponse": ["C. $f(x)=e^{-x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{-x}$\n- B. $f(x)=e^{-x}+1$\n- C. $f(x)=e^{x}$\n- D. $f(x)=e^{-x}$",
+					"reponse": ["D. $f(x)=e^{-x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=e^{-x}+1$\n- B. $f(x)=-e^{-x}$\n- C. $f(x)=e^{-x}$\n- D. $f(x)=e^{x}$",
+					"reponse": ["C. $f(x)=e^{-x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{-x}$\n- B. $f(x)=e^{x}$\n- C. $f(x)=e^{-x}$\n- D. $f(x)=e^{-x}+1$",
+					"reponse": ["C. $f(x)=e^{-x}$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f(x)=e^{2x}$"
+					},
+					{
+						"content": "$f(x)=e^{-2x}$"
+					},
+					{
+						"content": "$f(x)=-e^{2x}$"
+					},
+					{
+						"content": "$f(x)=e^{2x}+1$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=e^{2x}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2,
+							"nb_distinctes": 1,
+							"valeurs": [2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": -2,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [-2, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -2,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [-2, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=e^{2x}+1$\n- B. $f(x)=-e^{2x}$\n- C. $f(x)=e^{-2x}$\n- D. $f(x)=e^{2x}$",
+					"reponse": ["D. $f(x)=e^{2x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{2x}$\n- B. $f(x)=e^{2x}+1$\n- C. $f(x)=e^{2x}$\n- D. $f(x)=e^{-2x}$",
+					"reponse": ["C. $f(x)=e^{2x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{2x}$\n- B. $f(x)=e^{2x}+1$\n- C. $f(x)=e^{-2x}$\n- D. $f(x)=e^{2x}$",
+					"reponse": ["D. $f(x)=e^{2x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=e^{2x}+1$\n- B. $f(x)=-e^{2x}$\n- C. $f(x)=e^{2x}$\n- D. $f(x)=e^{-2x}$",
+					"reponse": ["C. $f(x)=e^{2x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{2x}$\n- B. $f(x)=e^{-2x}$\n- C. $f(x)=e^{2x}$\n- D. $f(x)=e^{2x}+1$",
+					"reponse": ["C. $f(x)=e^{2x}$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = -exp(x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f(x)=-e^{x}$"
+					},
+					{
+						"content": "$f(x)=e^{x}$"
+					},
+					{
+						"content": "$f(x)=-e^{-x}$"
+					},
+					{
+						"content": "$f(x)=e^{-x}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f(x)=-e^{x}"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=e^{-x}$\n- B. $f(x)=-e^{-x}$\n- C. $f(x)=e^{x}$\n- D. $f(x)=-e^{x}$",
+					"reponse": ["D. $f(x)=-e^{x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{-x}$\n- B. $f(x)=e^{-x}$\n- C. $f(x)=-e^{x}$\n- D. $f(x)=e^{x}$",
+					"reponse": ["C. $f(x)=-e^{x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{-x}$\n- B. $f(x)=e^{-x}$\n- C. $f(x)=e^{x}$\n- D. $f(x)=-e^{x}$",
+					"reponse": ["D. $f(x)=-e^{x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=e^{-x}$\n- B. $f(x)=-e^{-x}$\n- C. $f(x)=-e^{x}$\n- D. $f(x)=e^{x}$",
+					"reponse": ["C. $f(x)=-e^{x}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f(x)=-e^{-x}$\n- B. $f(x)=e^{x}$\n- C. $f(x)=-e^{x}$\n- D. $f(x)=e^{-x}$",
+					"reponse": ["C. $f(x)=-e^{x}$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "1..2;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x)+({{b}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f(x)=e^{x}{{eval:b;+}}$"
+					},
+					{
+						"content": "$f(x)=e^{x}{{eval:-b;+}}$"
+					},
+					{
+						"content": "$f(x)=e^{x{{eval:b;+}}}$"
+					},
+					{
+						"content": "$f(x)=-e^{x}{{eval:b;+}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 93,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"f\\left( x \\right) = \\exponentialE^x + 1",
+							"f\\left( x \\right) = \\exponentialE^x + 2",
+							"f\\left( x \\right) = \\exponentialE^x - 1",
+							"f\\left( x \\right) = \\exponentialE^x - 2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f\\left( x \\right) = \\exponentialE^x - 2$\n- B. $f\\left( x \\right) = \\exponentialE^x + 2$\n- C. $f\\left( x \\right) = -\\exponentialE^x - 2$\n- D. $f\\left( x \\right) = \\exponentialE^{x - 2}$",
+					"reponse": ["A. $f\\left( x \\right) = \\exponentialE^x - 2$"],
+					"variables": {
+						"b": "-2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 2,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f\\left( x \\right) = \\exponentialE^x - 1$\n- B. $f\\left( x \\right) = \\exponentialE^{x - 1}$\n- C. $f\\left( x \\right) = -\\exponentialE^x - 1$\n- D. $f\\left( x \\right) = \\exponentialE^x + 1$",
+					"reponse": ["A. $f\\left( x \\right) = \\exponentialE^x - 1$"],
+					"variables": {
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f\\left( x \\right) = \\exponentialE^{x - 2}$\n- B. $f\\left( x \\right) = -\\exponentialE^x - 2$\n- C. $f\\left( x \\right) = \\exponentialE^x - 2$\n- D. $f\\left( x \\right) = \\exponentialE^x + 2$",
+					"reponse": ["C. $f\\left( x \\right) = \\exponentialE^x - 2$"],
+					"variables": {
+						"b": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f\\left( x \\right) = \\exponentialE^x + 1$\n- B. $f\\left( x \\right) = \\exponentialE^{x - 1}$\n- C. $f\\left( x \\right) = -\\exponentialE^x - 1$\n- D. $f\\left( x \\right) = \\exponentialE^x - 1$",
+					"reponse": ["D. $f\\left( x \\right) = \\exponentialE^x - 1$"],
+					"variables": {
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f\\left( x \\right) = \\exponentialE^{x + 2}$\n- B. $f\\left( x \\right) = -\\exponentialE^x + 2$\n- C. $f\\left( x \\right) = \\exponentialE^x - 2$\n- D. $f\\left( x \\right) = \\exponentialE^x + 2$",
+					"reponse": ["D. $f\\left( x \\right) = \\exponentialE^x + 2$"],
+					"variables": {
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 3\ny: -5 ; 6\ngrille: 1 ; 1\nf(x) = exp(x-{{c}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction, tracée dans un repère pour x de −4 à 3.\n```\n\nQuelle est l'expression de $f(x)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f(x)=e^{x-{{c}}}$"
+					},
+					{
+						"content": "$f(x)=e^{x+{{c}}}$"
+					},
+					{
+						"content": "$f(x)=e^{x}-{{c}}$"
+					},
+					{
+						"content": "$f(x)=e^{-x-{{c}}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 48,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": [
+							"f\\left( x \\right) = \\exponentialE^{x - 1}",
+							"f\\left( x \\right) = \\exponentialE^{x - 2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 5,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f\\left( x \\right) = \\exponentialE^x - 2$\n- B. $f\\left( x \\right) = \\exponentialE^{-x - 2}$\n- C. $f\\left( x \\right) = \\exponentialE^{x + 2}$\n- D. $f\\left( x \\right) = \\exponentialE^{x - 2}$",
+					"reponse": ["D. $f\\left( x \\right) = \\exponentialE^{x - 2}$"],
+					"variables": {
+						"c": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f\\left( x \\right) = \\exponentialE^{x - 1}$\n- B. $f\\left( x \\right) = \\exponentialE^{x + 1}$\n- C. $f\\left( x \\right) = \\exponentialE^{-x - 1}$\n- D. $f\\left( x \\right) = \\exponentialE^x - 1$",
+					"reponse": ["A. $f\\left( x \\right) = \\exponentialE^{x - 1}$"],
+					"variables": {
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f\\left( x \\right) = \\exponentialE^{x - 1}$\n- B. $f\\left( x \\right) = \\exponentialE^x - 1$\n- C. $f\\left( x \\right) = \\exponentialE^{-x - 1}$\n- D. $f\\left( x \\right) = \\exponentialE^{x + 1}$",
+					"reponse": ["A. $f\\left( x \\right) = \\exponentialE^{x - 1}$"],
+					"variables": {
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f\\left( x \\right) = \\exponentialE^x - 1$\n- B. $f\\left( x \\right) = \\exponentialE^{-x - 1}$\n- C. $f\\left( x \\right) = \\exponentialE^{x - 1}$\n- D. $f\\left( x \\right) = \\exponentialE^{x + 1}$",
+					"reponse": ["C. $f\\left( x \\right) = \\exponentialE^{x - 1}$"],
+					"variables": {
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nQuelle est l'expression de $f\\left( x \\right)$ ?\n\n- A. $f\\left( x \\right) = \\exponentialE^{x + 1}$\n- B. $f\\left( x \\right) = \\exponentialE^x - 1$\n- C. $f\\left( x \\right) = \\exponentialE^{-x - 1}$\n- D. $f\\left( x \\right) = \\exponentialE^{x - 1}$",
+					"reponse": ["D. $f\\left( x \\right) = \\exponentialE^{x - 1}$"],
+					"variables": {
+						"c": "1"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,625 @@
+{
+	"template_id": "a32e6d38-6472-41fe-8499-cb4a85a9b718",
+	"titre": "Intégrale d'une fonction de signe quelconque : aire algébrique",
+	"sous_titre": "Les aires sous l'axe comptent négativement dans l'intégrale ; l'aire géométrique les compte positivement (piège : confondre les deux)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Intégration > Intégrale et aire > Aire algébrique",
+	"mis_a_jour": "2026-10-04T15:23:39.898327+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-271",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-479",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..3"
+					},
+					{
+						"name": "d",
+						"expression": "1..4"
+					}
+				],
+				"conditions": ["c != d"],
+				"enonce_brut": "La fonction $f:x\\mapsto x-{{c}}$ est représentée ci-dessous sur $\\left[0\\,;{{eval:c+d}}\\right]$ (repère orthonormé).\n\n```courbe\nx: -1 ; {{eval:c+d+1}}\ny: {{eval:-c-1}} ; {{eval:d+1}}\ngrille: 1 ; 1\nf(x) = x-{{c}} sur [0 ; {{eval:c+d}}]   bleu   nom=C_f\naire: f ; 0 ; {{eval:c+d}}\ntaille: moyenne\ndescription: Segment qui coupe l'axe des abscisses : un triangle sous l'axe puis un triangle au-dessus.\n```\n\nCalcule $\\displaystyle\\int_{0}^{{{eval:c+d}}}f(x)\\,\\mathrm{d}x$.\n\n$?$",
+				"reponses_brutes": ["{{eval:(d^2-c^2)/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.2966666666666667,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"-4",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"4",
+							"6",
+							"\\dfrac{15}{2}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{7}{2}"
+						],
+						"nombres_contenus": {
+							"min": -4,
+							"max": 15,
+							"nb_distinctes": 8,
+							"valeurs": [-4, 2, 3, 4, 5, 6, 7, 15],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 7,
+				"nb_distinctes": 8,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -4,
+				"max": 15,
+				"nb_distinctes": 8,
+				"valeurs": [-4, 2, 3, 4, 5, 6, 7, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 15,
+				"nb_distinctes": 10,
+				"valeurs": [-4, 0, 1, 2, 3, 4, 5, 6, 7, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 211,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 3,
+				"numerateur_max": 15,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (15)",
+					"graine": 7,
+					"enonce": "La fonction $f:x\\mapsto x-1$ est représentée ci-dessous sur $\\left[0\\,;5\\right]$ (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{5}f(x)\\,\\mathrm{d}x$.\n\n$[?]$",
+					"reponse": ["\\dfrac{15}{2}"],
+					"variables": {
+						"c": "1",
+						"d": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-4)",
+					"graine": 5,
+					"enonce": "La fonction $f:x\\mapsto x-3$ est représentée ci-dessous sur $\\left[0\\,;4\\right]$ (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{4}f(x)\\,\\mathrm{d}x$.\n\n$[?]$",
+					"reponse": ["-4"],
+					"variables": {
+						"c": "3",
+						"d": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La fonction $f:x\\mapsto x-1$ est représentée ci-dessous sur $\\left[0\\,;4\\right]$ (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{4}f(x)\\,\\mathrm{d}x$.\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"c": "1",
+						"d": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La fonction $f:x\\mapsto x-1$ est représentée ci-dessous sur $\\left[0\\,;3\\right]$ (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{3}f(x)\\,\\mathrm{d}x$.\n\n$[?]$",
+					"reponse": ["\\dfrac{3}{2}"],
+					"variables": {
+						"c": "1",
+						"d": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La fonction $f:x\\mapsto x-2$ est représentée ci-dessous sur $\\left[0\\,;3\\right]$ (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{3}f(x)\\,\\mathrm{d}x$.\n\n$[?]$",
+					"reponse": ["-\\dfrac{3}{2}"],
+					"variables": {
+						"c": "2",
+						"d": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..3"
+					},
+					{
+						"name": "d",
+						"expression": "1..4"
+					}
+				],
+				"conditions": ["c != d"],
+				"enonce_brut": "La fonction $f:x\\mapsto x-{{c}}$ est représentée ci-dessous sur $\\left[0\\,;{{eval:c+d}}\\right]$ (repère orthonormé).\n\n```courbe\nx: -1 ; {{eval:c+d+1}}\ny: {{eval:-c-1}} ; {{eval:d+1}}\ngrille: 1 ; 1\nf(x) = x-{{c}} sur [0 ; {{eval:c+d}}]   bleu   nom=C_f\naire: f ; 0 ; {{eval:c+d}}\ntaille: moyenne\ndescription: Segment qui coupe l'axe des abscisses : un triangle sous l'axe puis un triangle au-dessus.\n```\n\nCalcule l'**aire**, en unités d'aire, du domaine colorié, compris entre $\\mathcal{C}_f$, l'axe des abscisses et les droites d'équations $x=0$ et $x={{eval:c+d}}$.\n\n$?$",
+				"reponses_brutes": ["{{eval:(d^2+c^2)/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.2966666666666667,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"10",
+							"5",
+							"\\dfrac{13}{2}",
+							"\\dfrac{17}{2}",
+							"\\dfrac{25}{2}",
+							"\\dfrac{5}{2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 25,
+							"nb_distinctes": 6,
+							"valeurs": [2, 5, 10, 13, 17, 25],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 7,
+				"nb_distinctes": 8,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 25,
+				"nb_distinctes": 6,
+				"valeurs": [2, 5, 10, 13, 17, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 25,
+				"nb_distinctes": 12,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 10, 13, 17, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 211,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 5,
+				"numerateur_max": 25,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (25)",
+					"graine": 21,
+					"enonce": "La fonction $f:x\\mapsto x-3$ est représentée ci-dessous sur $\\left[0\\,;7\\right]$ (repère orthonormé).\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine colorié, compris entre $\\mathcal{C}_f$, l'axe des abscisses et les droites d'équations $x = 0$ et $x = 7$.\n\n$[?]$",
+					"reponse": ["\\dfrac{25}{2}"],
+					"variables": {
+						"c": "3",
+						"d": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "La fonction $f:x\\mapsto x-1$ est représentée ci-dessous sur $\\left[0\\,;4\\right]$ (repère orthonormé).\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine colorié, compris entre $\\mathcal{C}_f$, l'axe des abscisses et les droites d'équations $x = 0$ et $x = 4$.\n\n$[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"c": "1",
+						"d": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La fonction $f:x\\mapsto x-1$ est représentée ci-dessous sur $\\left[0\\,;3\\right]$ (repère orthonormé).\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine colorié, compris entre $\\mathcal{C}_f$, l'axe des abscisses et les droites d'équations $x = 0$ et $x = 3$.\n\n$[?]$",
+					"reponse": ["\\dfrac{5}{2}"],
+					"variables": {
+						"c": "1",
+						"d": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La fonction $f:x\\mapsto x-2$ est représentée ci-dessous sur $\\left[0\\,;3\\right]$ (repère orthonormé).\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine colorié, compris entre $\\mathcal{C}_f$, l'axe des abscisses et les droites d'équations $x = 0$ et $x = 3$.\n\n$[?]$",
+					"reponse": ["\\dfrac{5}{2}"],
+					"variables": {
+						"c": "2",
+						"d": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La fonction $f:x\\mapsto x-3$ est représentée ci-dessous sur $\\left[0\\,;4\\right]$ (repère orthonormé).\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine colorié, compris entre $\\mathcal{C}_f$, l'axe des abscisses et les droites d'équations $x = 0$ et $x = 4$.\n\n$[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"c": "3",
+						"d": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "h",
+						"expression": "1..5"
+					},
+					{
+						"name": "a",
+						"expression": "-3..1"
+					},
+					{
+						"name": "b",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$f$ est la fonction constante égale à ${{eval:-h}}$ sur $\\left[{{a}}\\,;{{b}}\\right]$.\n\nCalcule $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x$.\n\n$?$",
+				"reponses_brutes": ["{{eval:-h*(b-a)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 94,
+			"variables": [
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-3, -2, -1, 0, 1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -40,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 24,
+						"valeurs": [
+							-40, -35, -32, -30, -28, -25, -24, -21, -20, -18, -16, -15, -14, -12, -10, -9, -8, -7,
+							-6, -5, -4, -3, -2, -1
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -3,
+				"max": 5,
+				"nb_distinctes": 9,
+				"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -40,
+				"max": -1,
+				"nb_distinctes": 24,
+				"valeurs": [
+					-40, -35, -32, -30, -28, -25, -24, -21, -20, -18, -16, -15, -14, -12, -10, -9, -8, -7, -6,
+					-5, -4, -3, -2, -1
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -40,
+				"max": 5,
+				"nb_distinctes": 30,
+				"valeurs": [
+					-40, -35, -32, -30, -28, -25, -24, -21, -20, -18, -16, -15, -14, -12, -10, -9, -8, -7, -6,
+					-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "$f$ est la fonction constante égale à $-1$ sur $\\left[-1\\,;5\\right]$.\n\nCalcule $\\displaystyle\\int_{-1}^{5}f(x)\\,\\mathrm{d}x$.\n\n$[?]$",
+					"reponse": ["-6"],
+					"variables": {
+						"h": "1",
+						"a": "-1",
+						"b": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-40)",
+					"graine": 9,
+					"enonce": "$f$ est la fonction constante égale à $-5$ sur $\\left[-3\\,;5\\right]$.\n\nCalcule $\\displaystyle\\int_{-3}^{5}f(x)\\,\\mathrm{d}x$.\n\n$[?]$",
+					"reponse": ["-40"],
+					"variables": {
+						"h": "5",
+						"a": "-3",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$f$ est la fonction constante égale à $-2$ sur $\\left[-2\\,;4\\right]$.\n\nCalcule $\\displaystyle\\int_{-2}^{4}f(x)\\,\\mathrm{d}x$.\n\n$[?]$",
+					"reponse": ["-12"],
+					"variables": {
+						"h": "2",
+						"a": "-2",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$f$ est la fonction constante égale à $-1$ sur $\\left[-1\\,;2\\right]$.\n\nCalcule $\\displaystyle\\int_{-1}^{2}f(x)\\,\\mathrm{d}x$.\n\n$[?]$",
+					"reponse": ["-3"],
+					"variables": {
+						"h": "1",
+						"a": "-1",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$f$ est la fonction constante égale à $-2$ sur $\\left[-2\\,;2\\right]$.\n\nCalcule $\\displaystyle\\int_{-2}^{2}f(x)\\,\\mathrm{d}x$.\n\n$[?]$",
+					"reponse": ["-8"],
+					"variables": {
+						"h": "2",
+						"a": "-2",
+						"b": "2"
+					}
+				}
+			]
+		}
+	]
+}

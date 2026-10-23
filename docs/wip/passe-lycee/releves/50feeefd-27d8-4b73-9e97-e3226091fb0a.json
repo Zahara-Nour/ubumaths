@@ -1,0 +1,971 @@
+{
+	"template_id": "50feeefd-27d8-4b73-9e97-e3226091fb0a",
+	"titre": "Dérivée de eᵘ, ln u et u²",
+	"sous_titre": "Formules (eᵘ)′ = u′eᵘ, (ln u)′ = u′/u, (u²)′ = 2u′u avec u affine ou du second degré (pièges : (eᵘ)′ = eᵘ, (ln u)′ = 1/u, (u²)′ = 2u)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Fonctions composées",
+	"mis_a_jour": "2026-10-04T17:40:58.338307+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-228",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-413",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{ {{a}}x^{2}{{b;+}} }$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{eval:2*a}}xe^{ {{a}}x^{2}{{b;+}} }"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 145,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 145,
+						"exemples": [
+							"-10xe^{ -5x^{2}+1 }",
+							"-4xe^{ -2x^{2}-4 }",
+							"-10xe^{ -5x^{2}-1 }",
+							"-4xe^{ -2x^{2}-6 }",
+							"6xe^{ 3x^{2}-6 }",
+							"-10xe^{ -5x^{2}+3 }",
+							"-10xe^{ -5x^{2}+9 }",
+							"4xe^{ 2x^{2}-4 }",
+							"8xe^{ 4x^{2}-7 }",
+							"10xe^{ 5x^{2}+4 }",
+							"2xe^{x^2+2}",
+							"-10xe^{ -5x^{2}+2 }"
+						],
+						"nombres_contenus": {
+							"min": -10,
+							"max": 10,
+							"nb_distinctes": 17,
+							"valeurs": [-10, -8, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 13,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -10,
+				"max": 10,
+				"nb_distinctes": 17,
+				"valeurs": [-10, -8, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -10,
+				"max": 10,
+				"nb_distinctes": 17,
+				"valeurs": [-10, -8, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "131/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\exponentialE^{5 x^2 + 4}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["10xe^{ 5x^{2}+4 }"],
+					"variables": {
+						"a": "5",
+						"b": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-10)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\exponentialE^{-5 x^2 + 1}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-10xe^{ -5x^{2}+1 }"],
+					"variables": {
+						"a": "-5",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\exponentialE^{-2 x^2 - 4}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-4xe^{ -2x^{2}-4 }"],
+					"variables": {
+						"a": "-2",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\exponentialE^{-5 x^2 - 1}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-10xe^{ -5x^{2}-1 }"],
+					"variables": {
+						"a": "-5",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\exponentialE^{-2 x^2 - 6}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-4xe^{ -2x^{2}-6 }"],
+					"variables": {
+						"a": "-2",
+						"b": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$ par $f(x)=\\ln\\left({{a}}x{{b;+}}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+				"reponses_brutes": ["\\dfrac{ {{a}} }{ {{a}}x{{b;+}} }"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 87,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 87,
+						"exemples": [
+							"\\dfrac{ 2 }{ 2x+1 }",
+							"\\dfrac{ 3 }{ 3x-4 }",
+							"\\dfrac{ 2 }{ 2x-1 }",
+							"\\dfrac{ 3 }{ 3x-6 }",
+							"\\dfrac{ 5 }{ 5x-6 }",
+							"\\dfrac{ 2 }{ 2x+3 }",
+							"\\dfrac{ 2 }{ 2x+9 }",
+							"\\dfrac{ 5 }{ 5x-4 }",
+							"\\dfrac{ 6 }{ 6x-7 }",
+							"\\dfrac{ 6 }{ 6x+4 }",
+							"\\dfrac{ 4 }{ 4x+2 }",
+							"\\dfrac{ 2 }{ 2x+2 }"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 238,
+				"denominateurs": [2, 3, 4, 5, 6],
+				"denominateur_min": 2,
+				"denominateur_max": 6,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "238/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]-\\dfrac{9}{2}\\,;+\\infty\\right[$ par $f(x)=\\ln\\left(2x+9\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{ 2 }{ 2x+9 }"],
+					"variables": {
+						"a": "2",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]-\\dfrac{1}{2}\\,;+\\infty\\right[$ par $f(x)=\\ln\\left(2x+1\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{ 2 }{ 2x+1 }"],
+					"variables": {
+						"a": "2",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{4}{3}\\,;+\\infty\\right[$ par $f(x)=\\ln\\left(3x-4\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{ 3 }{ 3x-4 }"],
+					"variables": {
+						"a": "3",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{1}{2}\\,;+\\infty\\right[$ par $f(x)=\\ln\\left(2x-1\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{ 2 }{ 2x-1 }"],
+					"variables": {
+						"a": "2",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]2\\,;+\\infty\\right[$ par $f(x)=\\ln\\left(3x-6\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{ 3 }{ 3x-6 }"],
+					"variables": {
+						"a": "3",
+						"b": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\ln\\left(x^{2}+{{c}}\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+				"reponses_brutes": ["\\dfrac{2x}{x^{2}+{{c}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{2x}{x^{2}+1}",
+							"\\dfrac{2x}{x^{2}+2}",
+							"\\dfrac{2x}{x^{2}+3}",
+							"\\dfrac{2x}{x^{2}+4}",
+							"\\dfrac{2x}{x^{2}+5}",
+							"\\dfrac{2x}{x^{2}+6}",
+							"\\dfrac{2x}{x^{2}+7}",
+							"\\dfrac{2x}{x^{2}+8}",
+							"\\dfrac{2x}{x^{2}+9}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\ln\\left(x^{2}+9\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{2x}{x^{2}+9}"],
+					"variables": {
+						"c": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\ln\\left(x^{2}+1\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{2x}{x^{2}+1}"],
+					"variables": {
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\ln\\left(x^{2}+3\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{2x}{x^{2}+3}"],
+					"variables": {
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\ln\\left(x^{2}+7\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{2x}{x^{2}+7}"],
+					"variables": {
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\ln\\left(x^{2}+6\\right)$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{2x}{x^{2}+6}"],
+					"variables": {
+						"c": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left({{a}}x{{b;+}}\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{eval:2*a}}\\left({{a}}x{{b;+}}\\right)"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 145,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 145,
+						"exemples": [
+							"-12\\left(-6x+1\\right)",
+							"-6\\left(-3x-4\\right)",
+							"-12\\left(-6x-1\\right)",
+							"-6\\left(-3x-6\\right)",
+							"8\\left(4x-6\\right)",
+							"-12\\left(-6x+3\\right)",
+							"-12\\left(-6x+9\\right)",
+							"6\\left(3x-4\\right)",
+							"10\\left(5x-7\\right)",
+							"12\\left(6x+4\\right)",
+							"4\\left(2x+2\\right)",
+							"-12\\left(-6x+2\\right)"
+						],
+						"nombres_contenus": {
+							"min": -12,
+							"max": 12,
+							"nb_distinctes": 19,
+							"valeurs": [-12, -10, -8, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 19,
+				"valeurs": [-12, -10, -8, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 19,
+				"valeurs": [-12, -10, -8, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(6x+4\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["12\\left(6x+4\\right)"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-12)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(-6x+1\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-12\\left(-6x+1\\right)"],
+					"variables": {
+						"a": "-6",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(-3x-4\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-6\\left(-3x-4\\right)"],
+					"variables": {
+						"a": "-3",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(-6x-1\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-12\\left(-6x-1\\right)"],
+					"variables": {
+						"a": "-6",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(-3x-6\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-6\\left(-3x-6\\right)"],
+					"variables": {
+						"a": "-3",
+						"b": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}{{b;+}}\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+				"reponses_brutes": ["4x\\left(x^{2}{{b;+}}\\right)"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 18,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 18,
+						"valeurs": [
+							"4x\\left(x^{2}+1\\right)",
+							"4x\\left(x^{2}+2\\right)",
+							"4x\\left(x^{2}+3\\right)",
+							"4x\\left(x^{2}+4\\right)",
+							"4x\\left(x^{2}+5\\right)",
+							"4x\\left(x^{2}+6\\right)",
+							"4x\\left(x^{2}+7\\right)",
+							"4x\\left(x^{2}+8\\right)",
+							"4x\\left(x^{2}+9\\right)",
+							"4x\\left(x^{2}-1\\right)",
+							"4x\\left(x^{2}-2\\right)",
+							"4x\\left(x^{2}-3\\right)",
+							"4x\\left(x^{2}-4\\right)",
+							"4x\\left(x^{2}-5\\right)",
+							"4x\\left(x^{2}-6\\right)",
+							"4x\\left(x^{2}-7\\right)",
+							"4x\\left(x^{2}-8\\right)",
+							"4x\\left(x^{2}-9\\right)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "152/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}-9\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["4x\\left(x^{2}-9\\right)"],
+					"variables": {
+						"b": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}+1\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["4x\\left(x^{2}+1\\right)"],
+					"variables": {
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}-4\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["4x\\left(x^{2}-4\\right)"],
+					"variables": {
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}+5\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["4x\\left(x^{2}+5\\right)"],
+					"variables": {
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\left(x^{2}-8\\right)^{2}$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["4x\\left(x^{2}-8\\right)"],
+					"variables": {
+						"b": "-8"
+					}
+				}
+			]
+		}
+	]
+}

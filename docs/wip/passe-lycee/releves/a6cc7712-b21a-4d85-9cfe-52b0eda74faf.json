@@ -1,0 +1,580 @@
+{
+	"template_id": "a6cc7712-b21a-4d85-9cfe-52b0eda74faf",
+	"titre": "Nuage de points : sens et intensité de la liaison (coefficient de corrélation)",
+	"sous_titre": "Lire un nuage de points (figure) et choisir l'ordre de grandeur du coefficient de corrélation r : proche de 1, de −1 ou de 0 (piège : r > 1 impossible)",
+	"consigne": null,
+	"grades": ["T_COMP"],
+	"type": "multiple_choice",
+	"theme": "Statistiques > Statistique à deux variables > Nuage de points",
+	"mis_a_jour": "2026-10-04T20:32:57.790694+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-322",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3..6"
+					},
+					{
+						"name": "b",
+						"expression": "5..20"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8\ny: {{eval:b+1*a+(1)}} ; {{eval:b+2*a+(-2)}} ; {{eval:b+3*a+(2)}} ; {{eval:b+4*a+(0)}} ; {{eval:b+5*a+(-1)}} ; {{eval:b+6*a+(2)}} ; {{eval:b+7*a+(-2)}} ; {{eval:b+8*a+(1)}}\n```\n\nQue peut-on dire du coefficient de corrélation $r$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Liaison forte et positive : $r$ est proche de $1$"
+					},
+					{
+						"content": "Liaison forte et négative : $r$ est proche de $-1$"
+					},
+					{
+						"content": "Pas de liaison affine : $r$ est proche de $0$"
+					},
+					{
+						"content": "$r$ est supérieur à $1$ : l'ajustement est parfait"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Liaison forte et positive : $r$ est proche de $1"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1,
+							"nb_distinctes": 1,
+							"valeurs": [1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"stat-chart": 300
+				},
+				"mots_hors_maths": {
+					"min": 47,
+					"max": 47
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Liaison forte et négative : $r$ est proche de $-1$\n- B. Liaison forte et positive : $r$ est proche de $1$\n- C. Pas de liaison affine : $r$ est proche de $0$\n- D. $r$ est supérieur à $1$ : l'ajustement est parfait",
+					"reponse": ["B. Liaison forte et positive : $r$ est proche de $1$"],
+					"variables": {
+						"a": "3",
+						"b": "13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Liaison forte et positive : $r$ est proche de $1$\n- B. Liaison forte et négative : $r$ est proche de $-1$\n- C. $r$ est supérieur à $1$ : l'ajustement est parfait\n- D. Pas de liaison affine : $r$ est proche de $0$",
+					"reponse": ["A. Liaison forte et positive : $r$ est proche de $1$"],
+					"variables": {
+						"a": "4",
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Liaison forte et négative : $r$ est proche de $-1$\n- B. $r$ est supérieur à $1$ : l'ajustement est parfait\n- C. Pas de liaison affine : $r$ est proche de $0$\n- D. Liaison forte et positive : $r$ est proche de $1$",
+					"reponse": ["D. Liaison forte et positive : $r$ est proche de $1$"],
+					"variables": {
+						"a": "3",
+						"b": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Pas de liaison affine : $r$ est proche de $0$\n- B. Liaison forte et négative : $r$ est proche de $-1$\n- C. $r$ est supérieur à $1$ : l'ajustement est parfait\n- D. Liaison forte et positive : $r$ est proche de $1$",
+					"reponse": ["D. Liaison forte et positive : $r$ est proche de $1$"],
+					"variables": {
+						"a": "4",
+						"b": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. $r$ est supérieur à $1$ : l'ajustement est parfait\n- B. Liaison forte et négative : $r$ est proche de $-1$\n- C. Liaison forte et positive : $r$ est proche de $1$\n- D. Pas de liaison affine : $r$ est proche de $0$",
+					"reponse": ["C. Liaison forte et positive : $r$ est proche de $1$"],
+					"variables": {
+						"a": "6",
+						"b": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3..6"
+					},
+					{
+						"name": "b",
+						"expression": "50..70"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8\ny: {{eval:b-1*a+(1)}} ; {{eval:b-2*a+(-2)}} ; {{eval:b-3*a+(2)}} ; {{eval:b-4*a+(0)}} ; {{eval:b-5*a+(-1)}} ; {{eval:b-6*a+(2)}} ; {{eval:b-7*a+(-2)}} ; {{eval:b-8*a+(1)}}\n```\n\nQue peut-on dire du coefficient de corrélation $r$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Liaison forte et négative : $r$ est proche de $-1$"
+					},
+					{
+						"content": "Liaison forte et positive : $r$ est proche de $1$"
+					},
+					{
+						"content": "Pas de liaison affine : $r$ est proche de $0$"
+					},
+					{
+						"content": "$r$ est supérieur à $1$ : l'ajustement est parfait"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 50,
+						"max": 70,
+						"negatif_possible": false,
+						"nb_distinctes": 21,
+						"valeurs": [
+							50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Liaison forte et négative : $r$ est proche de $-1"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1,
+							"nb_distinctes": 1,
+							"valeurs": [1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"stat-chart": 300
+				},
+				"mots_hors_maths": {
+					"min": 47,
+					"max": 47
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Liaison forte et positive : $r$ est proche de $1$\n- B. Liaison forte et négative : $r$ est proche de $-1$\n- C. Pas de liaison affine : $r$ est proche de $0$\n- D. $r$ est supérieur à $1$ : l'ajustement est parfait",
+					"reponse": ["B. Liaison forte et négative : $r$ est proche de $-1$"],
+					"variables": {
+						"a": "3",
+						"b": "61"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Liaison forte et négative : $r$ est proche de $-1$\n- B. Liaison forte et positive : $r$ est proche de $1$\n- C. $r$ est supérieur à $1$ : l'ajustement est parfait\n- D. Pas de liaison affine : $r$ est proche de $0$",
+					"reponse": ["A. Liaison forte et négative : $r$ est proche de $-1$"],
+					"variables": {
+						"a": "4",
+						"b": "55"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Liaison forte et positive : $r$ est proche de $1$\n- B. $r$ est supérieur à $1$ : l'ajustement est parfait\n- C. Pas de liaison affine : $r$ est proche de $0$\n- D. Liaison forte et négative : $r$ est proche de $-1$",
+					"reponse": ["D. Liaison forte et négative : $r$ est proche de $-1$"],
+					"variables": {
+						"a": "3",
+						"b": "59"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Pas de liaison affine : $r$ est proche de $0$\n- B. Liaison forte et positive : $r$ est proche de $1$\n- C. $r$ est supérieur à $1$ : l'ajustement est parfait\n- D. Liaison forte et négative : $r$ est proche de $-1$",
+					"reponse": ["D. Liaison forte et négative : $r$ est proche de $-1$"],
+					"variables": {
+						"a": "4",
+						"b": "54"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. $r$ est supérieur à $1$ : l'ajustement est parfait\n- B. Liaison forte et positive : $r$ est proche de $1$\n- C. Liaison forte et négative : $r$ est proche de $-1$\n- D. Pas de liaison affine : $r$ est proche de $0$",
+					"reponse": ["C. Liaison forte et négative : $r$ est proche de $-1$"],
+					"variables": {
+						"a": "6",
+						"b": "54"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "15..30"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n```nuage\nx: 1 ; 2 ; 3 ; 4 ; 5 ; 6 ; 7 ; 8\ny: {{eval:b+(-3)}} ; {{eval:b+(6)}} ; {{eval:b+(-5)}} ; {{eval:b+(2)}} ; {{eval:b+(5)}} ; {{eval:b+(-6)}} ; {{eval:b+(4)}} ; {{eval:b+(-2)}}\n```\n\nQue peut-on dire du coefficient de corrélation $r$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Pas de liaison affine : $r$ est proche de $0$"
+					},
+					{
+						"content": "Liaison forte et positive : $r$ est proche de $1$"
+					},
+					{
+						"content": "Liaison forte et négative : $r$ est proche de $-1$"
+					},
+					{
+						"content": "$r$ est supérieur à $1$ : l'ajustement est parfait"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Pas de liaison affine : $r$ est proche de $0"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 0,
+							"nb_distinctes": 1,
+							"valeurs": [0],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"stat-chart": 300
+				},
+				"mots_hors_maths": {
+					"min": 47,
+					"max": 47
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Pas de liaison affine : $r$ est proche de $0$\n- B. Liaison forte et positive : $r$ est proche de $1$\n- C. $r$ est supérieur à $1$ : l'ajustement est parfait\n- D. Liaison forte et négative : $r$ est proche de $-1$",
+					"reponse": ["A. Pas de liaison affine : $r$ est proche de $0$"],
+					"variables": {
+						"b": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Pas de liaison affine : $r$ est proche de $0$\n- B. Liaison forte et négative : $r$ est proche de $-1$\n- C. $r$ est supérieur à $1$ : l'ajustement est parfait\n- D. Liaison forte et positive : $r$ est proche de $1$",
+					"reponse": ["A. Pas de liaison affine : $r$ est proche de $0$"],
+					"variables": {
+						"b": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Liaison forte et négative : $r$ est proche de $-1$\n- B. $r$ est supérieur à $1$ : l'ajustement est parfait\n- C. Pas de liaison affine : $r$ est proche de $0$\n- D. Liaison forte et positive : $r$ est proche de $1$",
+					"reponse": ["C. Pas de liaison affine : $r$ est proche de $0$"],
+					"variables": {
+						"b": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Liaison forte et positive : $r$ est proche de $1$\n- B. Liaison forte et négative : $r$ est proche de $-1$\n- C. $r$ est supérieur à $1$ : l'ajustement est parfait\n- D. Pas de liaison affine : $r$ est proche de $0$",
+					"reponse": ["D. Pas de liaison affine : $r$ est proche de $0$"],
+					"variables": {
+						"b": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On a représenté le nuage de points d'une série statistique à deux variables.\n\n[stat-chart]\n\nQue peut-on dire du coefficient de corrélation $r$ ?\n\n- A. Liaison forte et négative : $r$ est proche de $-1$\n- B. $r$ est supérieur à $1$ : l'ajustement est parfait\n- C. Liaison forte et positive : $r$ est proche de $1$\n- D. Pas de liaison affine : $r$ est proche de $0$",
+					"reponse": ["D. Pas de liaison affine : $r$ est proche de $0$"],
+					"variables": {
+						"b": "27"
+					}
+				}
+			]
+		}
+	]
+}

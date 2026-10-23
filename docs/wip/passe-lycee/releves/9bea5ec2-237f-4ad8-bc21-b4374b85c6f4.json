@@ -1,0 +1,1198 @@
+{
+	"template_id": "9bea5ec2-237f-4ad8-bc21-b4374b85c6f4",
+	"titre": "Coordonnées du projeté orthogonal d'un point sur une droite",
+	"sous_titre": "Calculer les coordonnées du projeté orthogonal d'un point sur une droite (colinéarité avec un vecteur normal, intersection avec la perpendiculaire, ou produit scalaire nul avec un vecteur directeur)",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Géométrie repérée > Projeté orthogonal",
+	"mis_a_jour": "2026-10-03T08:02:11.563801+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-331",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "xH",
+						"expression": "-3..3"
+					},
+					{
+						"name": "yH",
+						"expression": "-3..3"
+					},
+					{
+						"name": "t",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "xM",
+						"expression": "eval:xH+t*a"
+					},
+					{
+						"name": "yM",
+						"expression": "eval:yH+t*b"
+					},
+					{
+						"name": "c",
+						"expression": "eval:-(a*xH+b*yH)"
+					},
+					{
+						"name": "S",
+						"expression": "eval:a*a+b*b"
+					},
+					{
+						"name": "N",
+						"expression": "eval:a*xM+b*yM+c"
+					},
+					{
+						"name": "mt",
+						"expression": "eval:-t"
+					}
+				],
+				"conditions": ["abs(xM) <= 6", "abs(yM) <= 6"],
+				"enonce_brut": "On considère la droite $d$ d'équation ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$ et le point $M({{eval:xM}}\\,;\\,{{eval:yM}})$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H(?\\,;\\,?)$",
+				"reponses_brutes": ["{{xH}}", "{{yH}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "xH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "yH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "xM",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "yM",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 18,
+						"negatif_possible": true,
+						"nb_distinctes": 28,
+						"valeurs": [
+							-15, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7,
+							8, 9, 10, 11, 12, 18
+						]
+					}
+				},
+				{
+					"nom": "S",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 5, 8, 10, 13, 18]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -36,
+						"max": 36,
+						"negatif_possible": true,
+						"nb_distinctes": 21,
+						"valeurs": [
+							-36, -26, -20, -18, -13, -10, -8, -5, -4, -2, 2, 4, 5, 8, 10, 13, 16, 18, 20, 26, 36
+						]
+					}
+				},
+				{
+					"nom": "mt",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 18,
+				"nb_distinctes": 22,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -3,
+				"max": 3,
+				"nb_distinctes": 7,
+				"valeurs": [-3, -2, -1, 0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 18,
+				"nb_distinctes": 22,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "230/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 146,
+					"enonce": "On considère la droite $d$ d'équation $-3 x - 3 y + 18 = 0$ et le point $M(0\\,;\\,0)$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["3", "3"],
+					"variables": {
+						"a": "-3",
+						"b": "-3",
+						"xH": "3",
+						"yH": "3",
+						"t": "1",
+						"xM": "0",
+						"yM": "0",
+						"c": "18",
+						"S": "18",
+						"N": "18",
+						"mt": "-1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 17,
+					"enonce": "On considère la droite $d$ d'équation $-2 x + y - 1 = 0$ et le point $M(-6\\,;\\,-1)$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["-2", "-3"],
+					"variables": {
+						"a": "-2",
+						"b": "1",
+						"xH": "-2",
+						"yH": "-3",
+						"t": "2",
+						"xM": "-6",
+						"yM": "-1",
+						"c": "-1",
+						"S": "5",
+						"N": "10",
+						"mt": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère la droite $d$ d'équation $-3 x + y + 6 = 0$ et le point $M(6\\,;\\,2)$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["3", "3"],
+					"variables": {
+						"a": "-3",
+						"b": "1",
+						"xH": "3",
+						"yH": "3",
+						"t": "-1",
+						"xM": "6",
+						"yM": "2",
+						"c": "6",
+						"S": "10",
+						"N": "-10",
+						"mt": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la droite $d$ d'équation $-2 x - 2 y + 6 = 0$ et le point $M(-2\\,;\\,1)$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["0", "3"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"xH": "0",
+						"yH": "3",
+						"t": "1",
+						"xM": "-2",
+						"yM": "1",
+						"c": "6",
+						"S": "8",
+						"N": "8",
+						"mt": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la droite $d$ d'équation $-3 x - y - 7 = 0$ et le point $M(0\\,;\\,3)$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["-3", "2"],
+					"variables": {
+						"a": "-3",
+						"b": "-1",
+						"xH": "-3",
+						"yH": "2",
+						"t": "-1",
+						"xM": "0",
+						"yM": "3",
+						"c": "-7",
+						"S": "10",
+						"N": "-10",
+						"mt": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "p",
+						"expression": "-3..3"
+					},
+					{
+						"name": "xH",
+						"expression": "-3..3"
+					},
+					{
+						"name": "t",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "yH",
+						"expression": "eval:m*xH+p"
+					},
+					{
+						"name": "xM",
+						"expression": "eval:xH+t*m"
+					},
+					{
+						"name": "yM",
+						"expression": "eval:yH-t"
+					},
+					{
+						"name": "cp",
+						"expression": "eval:-(xM+m*yM)"
+					},
+					{
+						"name": "S1",
+						"expression": "eval:1+m*m"
+					},
+					{
+						"name": "E2",
+						"expression": "eval:m*p+cp"
+					}
+				],
+				"conditions": ["abs(xM) <= 5", "abs(yM) <= 5", "abs(yH) <= 5"],
+				"enonce_brut": "La droite $d$ d'équation $y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}$ et le point $M({{eval:xM}}\\,;\\,{{eval:yM}})$ sont représentés ci-dessous.\n\n```figure\nfenetre: {{eval:min(min(xM,xH),0)-2}} ; {{eval:max(max(xM,xH),0)+2}} ; {{eval:min(min(yM,yH),0)-2}} ; {{eval:max(max(yM,yH),0)+2}}\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; la droite d et le point M.\n---\nD1 = point({{xH}}, {{yH}}, visible=faux)\nD2 = point({{eval:xH+1}}, {{eval:yH+m}}, visible=faux)\nd = droite(D1, D2)\nM = point({{xM}}, {{yM}}, etiquette=\"{{if:yM>yH|haut|bas}}-{{if:xM>xH|droite|gauche}}\")\n```\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H(?\\,;\\,?)$",
+				"reponses_brutes": ["{{xH}}", "{{yH}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 235,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "xH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "yH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "xM",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "yM",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "cp",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 26,
+						"valeurs": [
+							-13, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "S1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 5]
+					}
+				},
+				{
+					"nom": "E2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-15, -10, -6, -5, -4, -2, 0, 2, 4, 5, 6, 10, 15]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "131/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 6,
+					"enonce": "La droite $d$ d'équation $y = -2 x + 1$ et le point $M(-4\\,;\\,4)$ sont représentés ci-dessous.\n\n[figure]\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["-2", "5"],
+					"variables": {
+						"m": "-2",
+						"p": "1",
+						"xH": "-2",
+						"t": "1",
+						"yH": "5",
+						"xM": "-4",
+						"yM": "4",
+						"cp": "12",
+						"S1": "5",
+						"E2": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 26,
+					"enonce": "La droite $d$ d'équation $y = x$ et le point $M(-1\\,;\\,-5)$ sont représentés ci-dessous.\n\n[figure]\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["-3", "-3"],
+					"variables": {
+						"m": "1",
+						"p": "0",
+						"xH": "-3",
+						"t": "2",
+						"yH": "-3",
+						"xM": "-1",
+						"yM": "-5",
+						"cp": "6",
+						"S1": "2",
+						"E2": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La droite $d$ d'équation $y = -x + 1$ et le point $M(3\\,;\\,0)$ sont représentés ci-dessous.\n\n[figure]\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["2", "-1"],
+					"variables": {
+						"m": "-1",
+						"p": "1",
+						"xH": "2",
+						"t": "-1",
+						"yH": "-1",
+						"xM": "3",
+						"yM": "0",
+						"cp": "-3",
+						"S1": "2",
+						"E2": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La droite $d$ d'équation $y = -x - 2$ et le point $M(-2\\,;\\,-4)$ sont représentés ci-dessous.\n\n[figure]\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["0", "-2"],
+					"variables": {
+						"m": "-1",
+						"p": "-2",
+						"xH": "0",
+						"t": "2",
+						"yH": "-2",
+						"xM": "-2",
+						"yM": "-4",
+						"cp": "-2",
+						"S1": "2",
+						"E2": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La droite $d$ d'équation $y = -x$ et le point $M(-1\\,;\\,3)$ sont représentés ci-dessous.\n\n[figure]\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["-2", "2"],
+					"variables": {
+						"m": "-1",
+						"p": "0",
+						"xH": "-2",
+						"t": "-1",
+						"yH": "2",
+						"xM": "-1",
+						"yM": "3",
+						"cp": "4",
+						"S1": "2",
+						"E2": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "u1",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "u2",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "xA",
+						"expression": "-3..3"
+					},
+					{
+						"name": "yA",
+						"expression": "-3..3"
+					},
+					{
+						"name": "s",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "t",
+						"expression": "1|-1"
+					},
+					{
+						"name": "xH",
+						"expression": "eval:xA+s*u1"
+					},
+					{
+						"name": "yH",
+						"expression": "eval:yA+s*u2"
+					},
+					{
+						"name": "xM",
+						"expression": "eval:xH-t*u2"
+					},
+					{
+						"name": "yM",
+						"expression": "eval:yH+t*u1"
+					},
+					{
+						"name": "AMx",
+						"expression": "eval:xM-xA"
+					},
+					{
+						"name": "AMy",
+						"expression": "eval:yM-yA"
+					},
+					{
+						"name": "UU",
+						"expression": "eval:u1*u1+u2*u2"
+					},
+					{
+						"name": "PS",
+						"expression": "eval:AMx*u1+AMy*u2"
+					}
+				],
+				"conditions": ["abs(xH) <= 6", "abs(yH) <= 6", "abs(xM) <= 6", "abs(yM) <= 6"],
+				"enonce_brut": "La droite $d$ passe par le point $A({{eval:xA}}\\,;\\,{{eval:yA}})$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}{{eval:u1}}\\\\{{eval:u2}}\\end{pmatrix}$. On considère le point $M({{eval:xM}}\\,;\\,{{eval:yM}})$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H(?\\,;\\,?)$",
+				"reponses_brutes": ["{{xH}}", "{{yH}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "xA",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "yA",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "xH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "yH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "xM",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "yM",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "AMx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "AMy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "UU",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 5, 8, 10, 13, 18]
+					}
+				},
+				{
+					"nom": "PS",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -26,
+						"max": 26,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [
+							-26, -20, -18, -16, -13, -10, -8, -5, -4, -2, 2, 4, 5, 8, 10, 13, 16, 18, 20, 26
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "167/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 5,
+					"enonce": "La droite $d$ passe par le point $A(-2\\,;\\,2)$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}-1\\\\3\\end{pmatrix}$. On considère le point $M(0\\,;\\,6)$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["-3", "5"],
+					"variables": {
+						"u1": "-1",
+						"u2": "3",
+						"xA": "-2",
+						"yA": "2",
+						"s": "1",
+						"t": "-1",
+						"xH": "-3",
+						"yH": "5",
+						"xM": "0",
+						"yM": "6",
+						"AMx": "2",
+						"AMy": "4",
+						"UU": "10",
+						"PS": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 4,
+					"enonce": "La droite $d$ passe par le point $A(-3\\,;\\,-2)$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}-2\\\\-2\\end{pmatrix}$. On considère le point $M(-3\\,;\\,-6)$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["-5", "-4"],
+					"variables": {
+						"u1": "-2",
+						"u2": "-2",
+						"xA": "-3",
+						"yA": "-2",
+						"s": "1",
+						"t": "1",
+						"xH": "-5",
+						"yH": "-4",
+						"xM": "-3",
+						"yM": "-6",
+						"AMx": "0",
+						"AMy": "-4",
+						"UU": "8",
+						"PS": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La droite $d$ passe par le point $A(3\\,;\\,0)$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}2\\\\-1\\end{pmatrix}$. On considère le point $M(2\\,;\\,3)$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["1", "1"],
+					"variables": {
+						"u1": "2",
+						"u2": "-1",
+						"xA": "3",
+						"yA": "0",
+						"s": "-1",
+						"t": "1",
+						"xH": "1",
+						"yH": "1",
+						"xM": "2",
+						"yM": "3",
+						"AMx": "-1",
+						"AMy": "3",
+						"UU": "5",
+						"PS": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La droite $d$ passe par le point $A(0\\,;\\,3)$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}-2\\\\-2\\end{pmatrix}$. On considère le point $M(0\\,;\\,-1)$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["-2", "1"],
+					"variables": {
+						"u1": "-2",
+						"u2": "-2",
+						"xA": "0",
+						"yA": "3",
+						"s": "1",
+						"t": "1",
+						"xH": "-2",
+						"yH": "1",
+						"xM": "0",
+						"yM": "-1",
+						"AMx": "0",
+						"AMy": "-4",
+						"UU": "8",
+						"PS": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La droite $d$ passe par le point $A(-3\\,;\\,2)$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}-3\\\\-1\\end{pmatrix}$. On considère le point $M(1\\,;\\,0)$.\n\nDétermine les coordonnées du projeté orthogonal $H$ de $M$ sur $d$.\n\n$H([?]\\,;\\,[?])$",
+					"reponse": ["0", "3"],
+					"variables": {
+						"u1": "-3",
+						"u2": "-1",
+						"xA": "-3",
+						"yA": "2",
+						"s": "-1",
+						"t": "1",
+						"xH": "0",
+						"yH": "3",
+						"xM": "1",
+						"yM": "0",
+						"AMx": "4",
+						"AMy": "-2",
+						"UU": "10",
+						"PS": "-10"
+					}
+				}
+			]
+		}
+	]
+}

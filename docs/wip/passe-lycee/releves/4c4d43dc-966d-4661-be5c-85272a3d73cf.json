@@ -1,0 +1,835 @@
+{
+	"template_id": "4c4d43dc-966d-4661-be5c-85272a3d73cf",
+	"titre": "Parité d'une fonction trigonométrique : calculer f(−x)",
+	"sous_titre": "Fonctions construites avec cos et sin (somme avec un polynôme, produit, quotient par x) : paire, impaire ou ni l'une ni l'autre (pièges : sin(−x) = −sin x, produit impaire × paire, quotient de deux impaires)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonctions trigonométriques > Parité et périodicité",
+	"mis_a_jour": "2026-10-05T09:31:59.130596+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-453",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "k",
+						"expression": "2..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{2}+{{a}}\\cos({{k}}x)$.\n\nLa fonction $f$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "paire"
+					},
+					{
+						"content": "impaire"
+					},
+					{
+						"content": "ni paire ni impaire"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["paire"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{2}+5\\cos(2x)$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["A. paire"],
+					"variables": {
+						"a": "5",
+						"k": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{2}+2\\cos(3x)$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["A. paire"],
+					"variables": {
+						"a": "2",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{2}+3\\cos(2x)$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["A. paire"],
+					"variables": {
+						"a": "3",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{2}+2\\cos(4x)$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["A. paire"],
+					"variables": {
+						"a": "2",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{2}+4\\cos(2x)$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["A. paire"],
+					"variables": {
+						"a": "4",
+						"k": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}\\sin x-x^{3}$.\n\nLa fonction $f$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "paire"
+					},
+					{
+						"content": "impaire"
+					},
+					{
+						"content": "ni paire ni impaire"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["impaire"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 9,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=6\\sin x-x^{3}$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\sin x-x^{3}$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3\\sin x-x^{3}$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=5\\sin x-x^{3}$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=4\\sin x-x^{3}$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "k",
+						"expression": "2..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}\\sin x\\cos({{k}}x)$.\n\nLa fonction $f$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "paire"
+					},
+					{
+						"content": "impaire"
+					},
+					{
+						"content": "ni paire ni impaire"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["impaire"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=5\\sin x\\cos(2x)$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "5",
+						"k": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\sin x\\cos(3x)$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "2",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3\\sin x\\cos(2x)$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "3",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\sin x\\cos(2x)$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "2",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=4\\sin x\\cos(2x)$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "4",
+						"k": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}\\cos x+{{b}}\\sin x$.\n\nLa fonction $f$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "paire"
+					},
+					{
+						"content": "impaire"
+					},
+					{
+						"content": "ni paire ni impaire"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni paire ni impaire"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=5\\cos x+2\\sin x$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["C. ni paire ni impaire"],
+					"variables": {
+						"a": "5",
+						"b": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\cos x+4\\sin x$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["C. ni paire ni impaire"],
+					"variables": {
+						"a": "2",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3\\cos x+3\\sin x$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["C. ni paire ni impaire"],
+					"variables": {
+						"a": "3",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\cos x+3\\sin x$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["C. ni paire ni impaire"],
+					"variables": {
+						"a": "2",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3\\cos x+2\\sin x$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["C. ni paire ni impaire"],
+					"variables": {
+						"a": "3",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}^{*}$ par $f(x)=\\dfrac{ {{a}}\\sin x}{x}$.\n\nLa fonction $f$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "paire"
+					},
+					{
+						"content": "impaire"
+					},
+					{
+						"content": "ni paire ni impaire"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["paire"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}^{*}$ par $f(x)=\\dfrac{ 5\\sin x}{x}$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["A. paire"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}^{*}$ par $f(x)=\\dfrac{ 2\\sin x}{x}$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["A. paire"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}^{*}$ par $f(x)=\\dfrac{ 3\\sin x}{x}$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["A. paire"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}^{*}$ par $f(x)=\\dfrac{ 4\\sin x}{x}$.\n\nLa fonction $f$ est :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["A. paire"],
+					"variables": {
+						"a": "4"
+					}
+				}
+			]
+		}
+	]
+}

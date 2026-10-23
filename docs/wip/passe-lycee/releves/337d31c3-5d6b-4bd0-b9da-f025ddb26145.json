@@ -1,0 +1,187 @@
+{
+	"template_id": "337d31c3-5d6b-4bd0-b9da-f025ddb26145",
+	"titre": "Calculer un terme d'une suite arithmétique",
+	"sous_titre": "Calculer le terme précédent",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Suites arithmétiques > Calculer un terme",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-213",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une suite arithmétique a pour raison ${{a}}$. L'un de ses termes vaut ${{b}}$ : calcule le terme précédent.\n\nLe terme précédent est $?$.",
+				"reponses_brutes": ["{{eval:b-(a)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 186,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -18,
+						"max": 18,
+						"negatif_possible": true,
+						"nb_distinctes": 37
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -18,
+				"max": 18,
+				"nb_distinctes": 37,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -18,
+				"max": 18,
+				"nb_distinctes": 37,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 91,
+					"enonce": "Une suite arithmétique a pour raison $-9$. L'un de ses termes vaut $9$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["18"],
+					"variables": {
+						"a": "-9",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-18)",
+					"graine": 37,
+					"enonce": "Une suite arithmétique a pour raison $9$. L'un de ses termes vaut $-9$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["-18"],
+					"variables": {
+						"a": "9",
+						"b": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une suite arithmétique a pour raison $-9$. L'un de ses termes vaut $2$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["11"],
+					"variables": {
+						"a": "-9",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une suite arithmétique a pour raison $-4$. L'un de ses termes vaut $-5$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["-1"],
+					"variables": {
+						"a": "-4",
+						"b": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une suite arithmétique a pour raison $-9$. L'un de ses termes vaut $-2$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "-9",
+						"b": "-2"
+					}
+				}
+			]
+		}
+	]
+}

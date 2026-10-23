@@ -1,0 +1,1159 @@
+{
+	"template_id": "2bfbf2fc-e7dc-4fd9-ab50-0cb3e7f5d402",
+	"titre": "Vecteurs orthogonaux",
+	"sous_titre": "Utiliser la caractérisation de l'orthogonalité par le produit scalaire en repère orthonormé",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Propriétés",
+	"mis_a_jour": "2026-10-03T14:03:49.517203+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-318",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "b",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "c",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:-a*c/b}}"
+					}
+				],
+				"conditions": ["a != 0", "c != 0", "mod(abs(a*c),abs(b)) == 0"],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m\\\\{{a}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{b}}\\\\{{c}}\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux.\n\n$m=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 265,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 36,
+						"negatif_possible": true,
+						"nb_distinctes": 32
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 36,
+						"negatif_possible": true,
+						"nb_distinctes": 32
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -30,
+				"max": 36,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -30,
+				"max": 36,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "138/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (36)",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m\\\\-6\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-1\\\\-6\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux.\n\n$m = [?]$",
+					"reponse": ["36"],
+					"variables": {
+						"a": "-6",
+						"b": "-1",
+						"c": "-6",
+						"R": "36"
+					}
+				},
+				{
+					"role": "plus petite valeur (-30)",
+					"graine": 68,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m\\\\-5\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-1\\\\6\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux.\n\n$m = [?]$",
+					"reponse": ["-30"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"c": "6",
+						"R": "-30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m\\\\-6\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}6\\\\6\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux.\n\n$m = [?]$",
+					"reponse": ["6"],
+					"variables": {
+						"a": "-6",
+						"b": "6",
+						"c": "6",
+						"R": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m\\\\2\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-2\\\\4\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux.\n\n$m = [?]$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "2",
+						"b": "-2",
+						"c": "4",
+						"R": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m\\\\2\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}2\\\\3\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux.\n\n$m = [?]$",
+					"reponse": ["-3"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "3",
+						"R": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "sm",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "a",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:sm-a}}"
+					},
+					{
+						"name": "k",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:-k*b/sm}}"
+					}
+				],
+				"conditions": ["b != 0", "abs(b) <= 6"],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m{{k;+}}\\\\{{a}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{b}}\\\\m\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux. Donne la valeur exacte.\n\n$m=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 245,
+			"variables": [
+				{
+					"nom": "sm",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.5,
+						"nb_distinctes": 84,
+						"exemples": [
+							"-\\dfrac{8}{3}",
+							"-6",
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{5}{2}",
+							"-\\dfrac{12}{5}",
+							"30",
+							"2",
+							"-4",
+							"1",
+							"-\\dfrac{9}{5}",
+							"\\dfrac{6}{5}",
+							"-\\dfrac{3}{2}"
+						],
+						"nombres_contenus": {
+							"min": -25,
+							"max": 30,
+							"nb_distinctes": 31,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.5,
+						"nb_distinctes": 84,
+						"exemples": [
+							"-\\dfrac{8}{3}",
+							"-6",
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{5}{2}",
+							"-\\dfrac{12}{5}",
+							"30",
+							"2",
+							"-4",
+							"1",
+							"-\\dfrac{9}{5}",
+							"\\dfrac{6}{5}",
+							"-\\dfrac{3}{2}"
+						],
+						"nombres_contenus": {
+							"min": -25,
+							"max": 30,
+							"nb_distinctes": 31,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -25,
+				"max": 30,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -25,
+				"max": 30,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 150,
+				"denominateurs": [2, 3, 4, 5, 6],
+				"denominateur_min": 2,
+				"denominateur_max": 6,
+				"numerateur_min": 1,
+				"numerateur_max": 25,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "157/300",
+					"−": "154/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30)",
+					"graine": 6,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m-5\\\\-5\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}6\\\\m\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux. Donne la valeur exacte.\n\n$m = [?]$",
+					"reponse": ["30"],
+					"variables": {
+						"sm": "1",
+						"a": "-5",
+						"b": "6",
+						"k": "-5",
+						"R": "30"
+					}
+				},
+				{
+					"role": "plus petite valeur (-25)",
+					"graine": 170,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m+5\\\\-4\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}5\\\\m\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux. Donne la valeur exacte.\n\n$m = [?]$",
+					"reponse": ["-25"],
+					"variables": {
+						"sm": "1",
+						"a": "-4",
+						"b": "5",
+						"k": "5",
+						"R": "-25"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m+2\\\\1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-4\\\\m\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux. Donne la valeur exacte.\n\n$m = [?]$",
+					"reponse": ["-\\dfrac{8}{3}"],
+					"variables": {
+						"sm": "-3",
+						"a": "1",
+						"b": "-4",
+						"k": "2",
+						"R": "-\\dfrac{8}{3}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m+3\\\\-2\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}4\\\\m\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux. Donne la valeur exacte.\n\n$m = [?]$",
+					"reponse": ["-6"],
+					"variables": {
+						"sm": "2",
+						"a": "-2",
+						"b": "4",
+						"k": "3",
+						"R": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}m+3\\\\-5\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-1\\\\m\\end{pmatrix}$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que $\\vec{u}$ et $\\vec{v}$ soient orthogonaux. Donne la valeur exacte.\n\n$m = [?]$",
+					"reponse": ["-\\dfrac{1}{2}"],
+					"variables": {
+						"sm": "-6",
+						"a": "-5",
+						"b": "-1",
+						"k": "3",
+						"R": "-\\dfrac{1}{2}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "xa",
+						"expression": "-4..4"
+					},
+					{
+						"name": "ya",
+						"expression": "-4..4"
+					},
+					{
+						"name": "p",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "q",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "yc",
+						"expression": "-5..5"
+					},
+					{
+						"name": "xb",
+						"expression": "{{eval:xa+p}}"
+					},
+					{
+						"name": "yb",
+						"expression": "{{eval:ya+q}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:xa-q*(yc-ya)/p}}"
+					}
+				],
+				"conditions": ["q != 0", "yc != ya", "mod(abs(q*(yc-ya)),abs(p)) == 0"],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$, $B({{xb}}\\,;{{yb}})$ et $C(m\\,;{{yc}})$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que le triangle $ABC$ soit rectangle en $A$.\n\n$m=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "xa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "ya",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "yc",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "xb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "yb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -35,
+						"max": 41,
+						"negatif_possible": true,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -35,
+						"max": 41,
+						"negatif_possible": true,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -35,
+				"max": 41,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -35,
+				"max": 41,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 25,
+					"max": 25
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (41)",
+					"graine": 226,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(1\\,;-3)$, $B(2\\,;-8)$ et $C(m\\,;5)$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que le triangle $ABC$ soit rectangle en $A$.\n\n$m = [?]$",
+					"reponse": ["41"],
+					"variables": {
+						"xa": "1",
+						"ya": "-3",
+						"p": "1",
+						"q": "-5",
+						"yc": "5",
+						"xb": "2",
+						"yb": "-8",
+						"R": "41"
+					}
+				},
+				{
+					"role": "plus petite valeur (-35)",
+					"graine": 114,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(0\\,;-4)$, $B(1\\,;1)$ et $C(m\\,;3)$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que le triangle $ABC$ soit rectangle en $A$.\n\n$m = [?]$",
+					"reponse": ["-35"],
+					"variables": {
+						"xa": "0",
+						"ya": "-4",
+						"p": "1",
+						"q": "5",
+						"yc": "3",
+						"xb": "1",
+						"yb": "1",
+						"R": "-35"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-4\\,;0)$, $B(1\\,;5)$ et $C(m\\,;-2)$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que le triangle $ABC$ soit rectangle en $A$.\n\n$m = [?]$",
+					"reponse": ["-2"],
+					"variables": {
+						"xa": "-4",
+						"ya": "0",
+						"p": "5",
+						"q": "5",
+						"yc": "-2",
+						"xb": "1",
+						"yb": "5",
+						"R": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-1\\,;3)$, $B(0\\,;-1)$ et $C(m\\,;2)$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que le triangle $ABC$ soit rectangle en $A$.\n\n$m = [?]$",
+					"reponse": ["-5"],
+					"variables": {
+						"xa": "-1",
+						"ya": "3",
+						"p": "1",
+						"q": "-4",
+						"yc": "2",
+						"xb": "0",
+						"yb": "-1",
+						"R": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(2\\,;-2)$, $B(4\\,;2)$ et $C(m\\,;0)$, où $m$ est un nombre réel.\n\nDétermine $m$ pour que le triangle $ABC$ soit rectangle en $A$.\n\n$m = [?]$",
+					"reponse": ["-2"],
+					"variables": {
+						"xa": "2",
+						"ya": "-2",
+						"p": "2",
+						"q": "4",
+						"yc": "0",
+						"xb": "4",
+						"yb": "2",
+						"R": "-2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "-6..6"
+					},
+					{
+						"name": "q",
+						"expression": "-6..6"
+					},
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "w",
+						"expression": "0..2"
+					},
+					{
+						"name": "t",
+						"expression": "{{eval:min(w,1)}}"
+					},
+					{
+						"name": "r",
+						"expression": "-2..2"
+					},
+					{
+						"name": "s",
+						"expression": "-2..2"
+					},
+					{
+						"name": "x",
+						"expression": "{{eval:-k*q+t*r}}"
+					},
+					{
+						"name": "y",
+						"expression": "{{eval:k*p+t*s}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:p*x+q*y}}"
+					}
+				],
+				"conditions": [
+					"p != 0",
+					"q != 0",
+					"abs(p) != abs(q)",
+					"x != 0",
+					"y != 0",
+					"t*(abs(r)+abs(s)) != 1",
+					"t == 0 || r != 0 || s != 0"
+				],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$, puis indique si les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["{{N}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -14,
+						"max": 14,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-14, -13, -12, -11, -10, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13, 14
+						]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -14,
+						"max": 14,
+						"negatif_possible": true,
+						"nb_distinctes": 28,
+						"valeurs": [
+							-14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8,
+							9, 10, 11, 12, 13, 14
+						]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -18,
+						"max": 20,
+						"negatif_possible": true,
+						"nb_distinctes": 36
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -18,
+						"max": 20,
+						"negatif_possible": true,
+						"nb_distinctes": 36
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 14,
+				"nb_distinctes": 14,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -18,
+				"max": 20,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -18,
+				"max": 20,
+				"nb_distinctes": 37,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "223/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 183,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}4\\\\-6\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}14\\\\6\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$, puis indique si les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["20"],
+					"variables": {
+						"p": "4",
+						"q": "-6",
+						"k": "2",
+						"w": "2",
+						"t": "1",
+						"r": "2",
+						"s": "-2",
+						"x": "14",
+						"y": "6",
+						"N": "20"
+					}
+				},
+				{
+					"role": "plus petite valeur (-18)",
+					"graine": 111,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}4\\\\-5\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}3\\\\6\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$, puis indique si les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-18"],
+					"variables": {
+						"p": "4",
+						"q": "-5",
+						"k": "1",
+						"w": "2",
+						"t": "1",
+						"r": "-2",
+						"s": "2",
+						"x": "3",
+						"y": "6",
+						"N": "-18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}3\\\\-1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}2\\\\4\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$, puis indique si les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"p": "3",
+						"q": "-1",
+						"k": "2",
+						"w": "1",
+						"t": "1",
+						"r": "0",
+						"s": "-2",
+						"x": "2",
+						"y": "4",
+						"N": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}4\\\\1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-2\\\\6\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$, puis indique si les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-2"],
+					"variables": {
+						"p": "4",
+						"q": "1",
+						"k": "1",
+						"w": "2",
+						"t": "1",
+						"r": "-1",
+						"s": "2",
+						"x": "-2",
+						"y": "6",
+						"N": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-4\\\\-3\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}6\\\\-8\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$, puis indique si les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "-4",
+						"q": "-3",
+						"k": "2",
+						"w": "0",
+						"t": "0",
+						"r": "-2",
+						"s": "1",
+						"x": "6",
+						"y": "-8",
+						"N": "0"
+					}
+				}
+			]
+		}
+	]
+}

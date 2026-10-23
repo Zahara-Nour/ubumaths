@@ -1,0 +1,658 @@
+{
+	"template_id": "9a6087c5-34e9-448e-9805-b05a4484d144",
+	"titre": "Systèmes linéaires et calcul matriciel",
+	"sous_titre": "Écrire un système 2 × 2 sous la forme AX = B et le résoudre avec A⁻¹ (donnée ou à calculer) : X = A⁻¹B (pièges : BA⁻¹ ou AB au lieu de A⁻¹B, x et y échangés)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Graphes et matrices > Matrices > Systèmes linéaires",
+	"mis_a_jour": "2026-10-05T16:06:59.066534+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-340",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..5"
+					},
+					{
+						"name": "a2",
+						"expression": "-4..4"
+					},
+					{
+						"name": "a3",
+						"expression": "-4..4"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:(1+a2*a3)/a1"
+					},
+					{
+						"name": "x",
+						"expression": "-5..6"
+					},
+					{
+						"name": "y",
+						"expression": "-5..6"
+					},
+					{
+						"name": "e1",
+						"expression": "eval:a1*x+a2*y"
+					},
+					{
+						"name": "e2",
+						"expression": "eval:a3*x+a4*y"
+					}
+				],
+				"conditions": [
+					"mod(1+a2*a3,a1) == 0",
+					"a1 >= 2",
+					"abs(a2) >= 2",
+					"abs(a3) >= 2",
+					"abs(a4) >= 2",
+					"x != y"
+				],
+				"enonce_brut": "On considère le système\n\n$$\\begin{cases} {{a1}}x {{a2;+}}y = {{e1}} \\\\ {{a3}}x {{a4;+}}y = {{e2}} \\end{cases}$$\n\nIl s'écrit $AX = B$ avec $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$, $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$, $B = \\begin{pmatrix}{{e1}}\\\\{{e2}}\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}{{a4}}&{{eval:-a2}}\\\\{{eval:-a3}}&{{a1}}\\end{pmatrix}$.\n\n$x=?$\n\n$y=?$",
+				"reponses_brutes": ["{{x}}", "{{y}}"]
+			},
+			"tirages": 300,
+			"reussis": 294,
+			"echecs": 6,
+			"taux_echec": 0.02,
+			"erreurs": {
+				"Failed to generate variables satisfying conditions after 100 retries. Conditions: mod(1+a2*a3,a1) == 0, a1 >= 2, abs(a2) >= 2, abs(a3) >= 2, abs(a4) >= 2, x != y": 6
+			},
+			"enonces_distincts": 270,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-4, -3, -2, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-4, -3, -2, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 5]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "e1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -40,
+						"max": 45,
+						"negatif_possible": true,
+						"nb_distinctes": 71
+					}
+				},
+				{
+					"nom": "e2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -49,
+						"max": 42,
+						"negatif_possible": true,
+						"nb_distinctes": 73
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -49,
+				"max": 49,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -49,
+				"max": 49,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "294/294",
+					"+": "230/294",
+					"−": "222/294",
+					"puissance": "294/294",
+					"case ?": "294/294",
+					"lettre dans les maths": "294/294"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (49)",
+					"graine": 276,
+					"enonce": "On considère le système\n\n$$\\begin{cases} 3x +4y = 38 \\\\ -4x -5y = -49 \\end{cases}$$\n\nIl s'écrit $A X = B$ avec $A = \\begin{pmatrix}3&4\\\\-4&-5\\end{pmatrix}$, $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$, $B = \\begin{pmatrix}38\\\\-49\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}-5&-4\\\\4&3\\end{pmatrix}$.\n\n$x = [?]$\n\n$y = [?]$",
+					"reponse": ["6", "5"],
+					"variables": {
+						"a1": "3",
+						"a2": "4",
+						"a3": "-4",
+						"a4": "-5",
+						"x": "6",
+						"y": "5",
+						"e1": "38",
+						"e2": "-49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère le système\n\n$$\\begin{cases} 2x +3y = -17 \\\\ 3x +5y = -27 \\end{cases}$$\n\nIl s'écrit $A X = B$ avec $A = \\begin{pmatrix}2&3\\\\3&5\\end{pmatrix}$, $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$, $B = \\begin{pmatrix}-17\\\\-27\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}5&-3\\\\-3&2\\end{pmatrix}$.\n\n$x = [?]$\n\n$y = [?]$",
+					"reponse": ["-4", "-3"],
+					"variables": {
+						"a1": "2",
+						"a2": "3",
+						"a3": "3",
+						"a4": "5",
+						"x": "-4",
+						"y": "-3",
+						"e1": "-17",
+						"e2": "-27"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère le système\n\n$$\\begin{cases} 2x +3y = -21 \\\\ -3x -4y = 29 \\end{cases}$$\n\nIl s'écrit $A X = B$ avec $A = \\begin{pmatrix}2&3\\\\-3&-4\\end{pmatrix}$, $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$, $B = \\begin{pmatrix}-21\\\\29\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}-4&-3\\\\3&2\\end{pmatrix}$.\n\n$x = [?]$\n\n$y = [?]$",
+					"reponse": ["-3", "-5"],
+					"variables": {
+						"a1": "2",
+						"a2": "3",
+						"a3": "-3",
+						"a4": "-4",
+						"x": "-3",
+						"y": "-5",
+						"e1": "-21",
+						"e2": "29"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère le système\n\n$$\\begin{cases} 3x +4y = -7 \\\\ -4x -5y = 8 \\end{cases}$$\n\nIl s'écrit $A X = B$ avec $A = \\begin{pmatrix}3&4\\\\-4&-5\\end{pmatrix}$, $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$, $B = \\begin{pmatrix}-7\\\\8\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}-5&-4\\\\4&3\\end{pmatrix}$.\n\n$x = [?]$\n\n$y = [?]$",
+					"reponse": ["3", "-4"],
+					"variables": {
+						"a1": "3",
+						"a2": "4",
+						"a3": "-4",
+						"a4": "-5",
+						"x": "3",
+						"y": "-4",
+						"e1": "-7",
+						"e2": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère le système\n\n$$\\begin{cases} 3x +4y = -1 \\\\ 2x +3y = -1 \\end{cases}$$\n\nIl s'écrit $A X = B$ avec $A = \\begin{pmatrix}3&4\\\\2&3\\end{pmatrix}$, $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$, $B = \\begin{pmatrix}-1\\\\-1\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}3&-4\\\\-2&3\\end{pmatrix}$.\n\n$x = [?]$\n\n$y = [?]$",
+					"reponse": ["1", "-1"],
+					"variables": {
+						"a1": "3",
+						"a2": "4",
+						"a3": "2",
+						"a4": "3",
+						"x": "1",
+						"y": "-1",
+						"e1": "-1",
+						"e2": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..5"
+					},
+					{
+						"name": "a2",
+						"expression": "-4..4"
+					},
+					{
+						"name": "a3",
+						"expression": "-4..4"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:(1+a2*a3)/a1"
+					},
+					{
+						"name": "x",
+						"expression": "-5..6"
+					},
+					{
+						"name": "y",
+						"expression": "-5..6"
+					},
+					{
+						"name": "e1",
+						"expression": "eval:a1*x+a2*y"
+					},
+					{
+						"name": "e2",
+						"expression": "eval:a3*x+a4*y"
+					}
+				],
+				"conditions": [
+					"mod(1+a2*a3,a1) == 0",
+					"a1 >= 2",
+					"abs(a2) >= 2",
+					"abs(a3) >= 2",
+					"abs(a4) >= 2",
+					"x != y"
+				],
+				"enonce_brut": "Résous le système\n\n$$\\begin{cases} {{a1}}x {{a2;+}}y = {{e1}} \\\\ {{a3}}x {{a4;+}}y = {{e2}} \\end{cases}$$\n\n(indication : écris-le $AX = B$ et calcule $A^{-1}$).\n\n$x=?$\n\n$y=?$",
+				"reponses_brutes": ["{{x}}", "{{y}}"]
+			},
+			"tirages": 300,
+			"reussis": 294,
+			"echecs": 6,
+			"taux_echec": 0.02,
+			"erreurs": {
+				"Failed to generate variables satisfying conditions after 100 retries. Conditions: mod(1+a2*a3,a1) == 0, a1 >= 2, abs(a2) >= 2, abs(a3) >= 2, abs(a4) >= 2, x != y": 6
+			},
+			"enonces_distincts": 270,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-4, -3, -2, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-4, -3, -2, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 5]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "e1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -40,
+						"max": 45,
+						"negatif_possible": true,
+						"nb_distinctes": 71
+					}
+				},
+				{
+					"nom": "e2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -49,
+						"max": 42,
+						"negatif_possible": true,
+						"nb_distinctes": 73
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -49,
+				"max": 45,
+				"nb_distinctes": 80,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -49,
+				"max": 45,
+				"nb_distinctes": 80,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "294/294",
+					"+": "230/294",
+					"puissance": "294/294",
+					"parenthèses": "294/294",
+					"case ?": "294/294",
+					"lettre dans les maths": "294/294"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (45)",
+					"graine": 180,
+					"enonce": "Résous le système\n\n$$\\begin{cases} 5x -3y = 45 \\\\ -3x +2y = -28 \\end{cases}$$\n\n(indication : écris-le $A X = B$ et calcule $A^{-1}$).\n\n$x = [?]$\n\n$y = [?]$",
+					"reponse": ["6", "-5"],
+					"variables": {
+						"a1": "5",
+						"a2": "-3",
+						"a3": "-3",
+						"a4": "2",
+						"x": "6",
+						"y": "-5",
+						"e1": "45",
+						"e2": "-28"
+					}
+				},
+				{
+					"role": "plus petite valeur (-49)",
+					"graine": 276,
+					"enonce": "Résous le système\n\n$$\\begin{cases} 3x +4y = 38 \\\\ -4x -5y = -49 \\end{cases}$$\n\n(indication : écris-le $A X = B$ et calcule $A^{-1}$).\n\n$x = [?]$\n\n$y = [?]$",
+					"reponse": ["6", "5"],
+					"variables": {
+						"a1": "3",
+						"a2": "4",
+						"a3": "-4",
+						"a4": "-5",
+						"x": "6",
+						"y": "5",
+						"e1": "38",
+						"e2": "-49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous le système\n\n$$\\begin{cases} 2x +3y = -17 \\\\ 3x +5y = -27 \\end{cases}$$\n\n(indication : écris-le $A X = B$ et calcule $A^{-1}$).\n\n$x = [?]$\n\n$y = [?]$",
+					"reponse": ["-4", "-3"],
+					"variables": {
+						"a1": "2",
+						"a2": "3",
+						"a3": "3",
+						"a4": "5",
+						"x": "-4",
+						"y": "-3",
+						"e1": "-17",
+						"e2": "-27"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous le système\n\n$$\\begin{cases} 2x +3y = -21 \\\\ -3x -4y = 29 \\end{cases}$$\n\n(indication : écris-le $A X = B$ et calcule $A^{-1}$).\n\n$x = [?]$\n\n$y = [?]$",
+					"reponse": ["-3", "-5"],
+					"variables": {
+						"a1": "2",
+						"a2": "3",
+						"a3": "-3",
+						"a4": "-4",
+						"x": "-3",
+						"y": "-5",
+						"e1": "-21",
+						"e2": "29"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous le système\n\n$$\\begin{cases} 3x +4y = -7 \\\\ -4x -5y = 8 \\end{cases}$$\n\n(indication : écris-le $A X = B$ et calcule $A^{-1}$).\n\n$x = [?]$\n\n$y = [?]$",
+					"reponse": ["3", "-4"],
+					"variables": {
+						"a1": "3",
+						"a2": "4",
+						"a3": "-4",
+						"a4": "-5",
+						"x": "3",
+						"y": "-4",
+						"e1": "-7",
+						"e2": "8"
+					}
+				}
+			]
+		}
+	]
+}

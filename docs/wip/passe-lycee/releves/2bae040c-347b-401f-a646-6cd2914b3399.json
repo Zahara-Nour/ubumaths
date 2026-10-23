@@ -1,0 +1,477 @@
+{
+	"template_id": "2bae040c-347b-401f-a646-6cd2914b3399",
+	"titre": "Somme des coefficients binomiaux : 2 puissance n",
+	"sous_titre": "Σ C(n, k) = 2ⁿ (toutes les parties comptées selon leur taille), somme privée des termes extrêmes, parties d'au moins 2 éléments (pièges : 2n, n!, oubli de la partie vide ou des singletons)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > Parties d'un ensemble",
+	"mis_a_jour": "2026-10-05T08:35:45.327613+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-320",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..15"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=0}^{ {{n}} }\\binom{ {{n}} }{ k }=?$",
+				"reponses_brutes": ["{{eval:2^n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 32,
+						"max": 32768,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 15,
+				"nb_distinctes": 12,
+				"valeurs": [0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 32,
+				"max": 32768,
+				"nb_distinctes": 11,
+				"valeurs": [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 32768,
+				"nb_distinctes": 23,
+				"valeurs": [
+					0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192,
+					16384, 32768
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (32768)",
+					"graine": 10,
+					"enonce": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=0}^{ 15 }\\binom{ 15 }{ k }=[?]$",
+					"reponse": ["32768"],
+					"variables": {
+						"n": "15"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=0}^{ 5 }\\binom{ 5 }{ k }=[?]$",
+					"reponse": ["32"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=0}^{ 8 }\\binom{ 8 }{ k }=[?]$",
+					"reponse": ["256"],
+					"variables": {
+						"n": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=0}^{ 13 }\\binom{ 13 }{ k }=[?]$",
+					"reponse": ["8192"],
+					"variables": {
+						"n": "13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=0}^{ 11 }\\binom{ 11 }{ k }=[?]$",
+					"reponse": ["2048"],
+					"variables": {
+						"n": "11"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..12"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=1}^{ {{eval:n-1}} }\\binom{ {{n}} }{ k }=?$",
+				"reponses_brutes": ["{{eval:2^n-2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 4094,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [30, 62, 126, 254, 510, 1022, 2046, 4094]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 10,
+				"valeurs": [1, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 30,
+				"max": 4094,
+				"nb_distinctes": 8,
+				"valeurs": [30, 62, 126, 254, 510, 1022, 2046, 4094],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 4094,
+				"nb_distinctes": 18,
+				"valeurs": [1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 30, 62, 126, 254, 510, 1022, 2046, 4094],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4094)",
+					"graine": 10,
+					"enonce": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=1}^{ 11 }\\binom{ 12 }{ k }=[?]$",
+					"reponse": ["4094"],
+					"variables": {
+						"n": "12"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=1}^{ 4 }\\binom{ 5 }{ k }=[?]$",
+					"reponse": ["30"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=1}^{ 6 }\\binom{ 7 }{ k }=[?]$",
+					"reponse": ["126"],
+					"variables": {
+						"n": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=1}^{ 10 }\\binom{ 11 }{ k }=[?]$",
+					"reponse": ["2046"],
+					"variables": {
+						"n": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule la somme suivante.\n\n$\\displaystyle\\sum_{k=1}^{ 9 }\\binom{ 10 }{ k }=[?]$",
+					"reponse": ["1022"],
+					"variables": {
+						"n": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "4..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un ensemble $E$ contient ${{n}}$ éléments.\n\nCombien de parties de $E$ ont **au moins deux** éléments ?\n\n$?$",
+				"reponses_brutes": ["{{eval:2^n-1-n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 7,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 1013,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [11, 26, 57, 120, 247, 502, 1013]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 10,
+				"nb_distinctes": 7,
+				"valeurs": [4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 11,
+				"max": 1013,
+				"nb_distinctes": 7,
+				"valeurs": [11, 26, 57, 120, 247, 502, 1013],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 4,
+				"max": 1013,
+				"nb_distinctes": 14,
+				"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 26, 57, 120, 247, 502, 1013],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1013)",
+					"graine": 10,
+					"enonce": "Un ensemble $E$ contient $10$ éléments.\n\nCombien de parties de $E$ ont au moins deux éléments ?\n\n$[?]$",
+					"reponse": ["1013"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (4)",
+					"graine": 1,
+					"enonce": "Un ensemble $E$ contient $4$ éléments.\n\nCombien de parties de $E$ ont au moins deux éléments ?\n\n$[?]$",
+					"reponse": ["11"],
+					"variables": {
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un ensemble $E$ contient $6$ éléments.\n\nCombien de parties de $E$ ont au moins deux éléments ?\n\n$[?]$",
+					"reponse": ["57"],
+					"variables": {
+						"n": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un ensemble $E$ contient $9$ éléments.\n\nCombien de parties de $E$ ont au moins deux éléments ?\n\n$[?]$",
+					"reponse": ["502"],
+					"variables": {
+						"n": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Un ensemble $E$ contient $8$ éléments.\n\nCombien de parties de $E$ ont au moins deux éléments ?\n\n$[?]$",
+					"reponse": ["247"],
+					"variables": {
+						"n": "8"
+					}
+				}
+			]
+		}
+	]
+}

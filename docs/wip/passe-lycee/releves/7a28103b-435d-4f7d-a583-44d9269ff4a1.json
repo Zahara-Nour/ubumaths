@@ -1,0 +1,903 @@
+{
+	"template_id": "7a28103b-435d-4f7d-a583-44d9269ff4a1",
+	"titre": "Suites de matrices colonnes Uₙ₊₁ = AUₙ + C",
+	"sous_titre": "Calculer U₁ et U₂ pour une suite de matrices colonnes définie par Uₙ₊₁ = AUₙ ou Uₙ₊₁ = AUₙ + C, en situation de populations (pièges : UₙA au lieu de AUₙ, C oubliée, U₂ = 2U₁)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Graphes et matrices > Matrices > Suites et matrices",
+	"mis_a_jour": "2026-10-05T16:06:59.238198+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-341",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..5"
+					},
+					{
+						"name": "a2",
+						"expression": "2..5"
+					},
+					{
+						"name": "a3",
+						"expression": "2..5"
+					},
+					{
+						"name": "a4",
+						"expression": "2..5"
+					},
+					{
+						"name": "x",
+						"expression": "1..9"
+					},
+					{
+						"name": "y",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["a2 != a3", "x != y"],
+				"enonce_brut": "Deux populations vérifient $\\begin{cases} a_{n+1} = {{a1}}a_n + {{a2}}b_n \\\\ b_{n+1} = {{a3}}a_n + {{a4}}b_n \\end{cases}$, avec $a_0 = {{x}}$ et $b_0 = {{y}}$.\n\nOn pose $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, de sorte que $U_{n+1} = AU_n$ avec $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$.\n\n$a_1=?$\n\n$b_1=?$",
+				"reponses_brutes": ["{{eval:a1*x+a2*y}}", "{{eval:a3*x+a4*y}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 77,
+						"negatif_possible": false,
+						"nb_distinctes": 60
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 77,
+						"negatif_possible": false,
+						"nb_distinctes": 61
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 8,
+				"max": 77,
+				"nb_distinctes": 63,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 77,
+				"nb_distinctes": 71,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (77)",
+					"graine": 65,
+					"enonce": "Deux populations vérifient $\\begin{cases} a_{n+1} = 5a_n + 4b_n \\\\ b_{n+1} = 2a_n + 2b_n \\end{cases}$, avec $a_0 = 9$ et $b_0 = 8$.\n\nOn pose $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, de sorte que $U_{n + 1} = A U_n$ avec $A = \\begin{pmatrix}5&4\\\\2&2\\end{pmatrix}$.\n\n$a_1 = [?]$\n\n$b_1 = [?]$",
+					"reponse": ["77", "34"],
+					"variables": {
+						"a1": "5",
+						"a2": "4",
+						"a3": "2",
+						"a4": "2",
+						"x": "9",
+						"y": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Deux populations vérifient $\\begin{cases} a_{n+1} = 2a_n + 4b_n \\\\ b_{n+1} = 5a_n + 5b_n \\end{cases}$, avec $a_0 = 3$ et $b_0 = 6$.\n\nOn pose $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, de sorte que $U_{n + 1} = A U_n$ avec $A = \\begin{pmatrix}2&4\\\\5&5\\end{pmatrix}$.\n\n$a_1 = [?]$\n\n$b_1 = [?]$",
+					"reponse": ["30", "45"],
+					"variables": {
+						"a1": "2",
+						"a2": "4",
+						"a3": "5",
+						"a4": "5",
+						"x": "3",
+						"y": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Deux populations vérifient $\\begin{cases} a_{n+1} = 3a_n + 3b_n \\\\ b_{n+1} = 4a_n + 5b_n \\end{cases}$, avec $a_0 = 6$ et $b_0 = 5$.\n\nOn pose $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, de sorte que $U_{n + 1} = A U_n$ avec $A = \\begin{pmatrix}3&3\\\\4&5\\end{pmatrix}$.\n\n$a_1 = [?]$\n\n$b_1 = [?]$",
+					"reponse": ["33", "49"],
+					"variables": {
+						"a1": "3",
+						"a2": "3",
+						"a3": "4",
+						"a4": "5",
+						"x": "6",
+						"y": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Deux populations vérifient $\\begin{cases} a_{n+1} = 2a_n + 3b_n \\\\ b_{n+1} = 4a_n + 2b_n \\end{cases}$, avec $a_0 = 1$ et $b_0 = 7$.\n\nOn pose $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, de sorte que $U_{n + 1} = A U_n$ avec $A = \\begin{pmatrix}2&3\\\\4&2\\end{pmatrix}$.\n\n$a_1 = [?]$\n\n$b_1 = [?]$",
+					"reponse": ["23", "18"],
+					"variables": {
+						"a1": "2",
+						"a2": "3",
+						"a3": "4",
+						"a4": "2",
+						"x": "1",
+						"y": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Deux populations vérifient $\\begin{cases} a_{n+1} = 5a_n + 5b_n \\\\ b_{n+1} = 3a_n + 3b_n \\end{cases}$, avec $a_0 = 8$ et $b_0 = 3$.\n\nOn pose $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, de sorte que $U_{n + 1} = A U_n$ avec $A = \\begin{pmatrix}5&5\\\\3&3\\end{pmatrix}$.\n\n$a_1 = [?]$\n\n$b_1 = [?]$",
+					"reponse": ["55", "33"],
+					"variables": {
+						"a1": "5",
+						"a2": "5",
+						"a3": "3",
+						"a4": "3",
+						"x": "8",
+						"y": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "-2..3"
+					},
+					{
+						"name": "a2",
+						"expression": "-2..3"
+					},
+					{
+						"name": "a3",
+						"expression": "-2..3"
+					},
+					{
+						"name": "a4",
+						"expression": "-2..3"
+					},
+					{
+						"name": "x",
+						"expression": "-3..5"
+					},
+					{
+						"name": "y",
+						"expression": "-3..5"
+					},
+					{
+						"name": "c1",
+						"expression": "-5..5"
+					},
+					{
+						"name": "c2",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": ["c1 != 0", "c2 != 0"],
+				"enonce_brut": "$U_{n+1} = AU_n + C$ avec $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$, $C = \\begin{pmatrix}{{c1}}\\\\{{c2}}\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nOn note $U_1 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u=?$\n\n$v=?$",
+				"reponses_brutes": ["{{eval:a1*x+a2*y+c1}}", "{{eval:a3*x+a4*y+c2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -16,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 38
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -19,
+						"max": 23,
+						"negatif_possible": true,
+						"nb_distinctes": 40
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 5,
+				"nb_distinctes": 6,
+				"valeurs": [0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -19,
+				"max": 30,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -19,
+				"max": 30,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "241/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30)",
+					"graine": 117,
+					"enonce": "$U_{n + 1} = A U_n + C$ avec $A = \\begin{pmatrix}2&3\\\\-1&1\\end{pmatrix}$, $C = \\begin{pmatrix}5\\\\2\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}5\\\\5\\end{pmatrix}$.\n\nOn note $U_1 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u = [?]$\n\n$v = [?]$",
+					"reponse": ["30", "2"],
+					"variables": {
+						"a1": "2",
+						"a2": "3",
+						"a3": "-1",
+						"a4": "1",
+						"x": "5",
+						"y": "5",
+						"c1": "5",
+						"c2": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-19)",
+					"graine": 166,
+					"enonce": "$U_{n + 1} = A U_n + C$ avec $A = \\begin{pmatrix}-2&0\\\\-2&2\\end{pmatrix}$, $C = \\begin{pmatrix}2\\\\-5\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}4\\\\-3\\end{pmatrix}$.\n\nOn note $U_1 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u = [?]$\n\n$v = [?]$",
+					"reponse": ["-6", "-19"],
+					"variables": {
+						"a1": "-2",
+						"a2": "0",
+						"a3": "-2",
+						"a4": "2",
+						"x": "4",
+						"y": "-3",
+						"c1": "2",
+						"c2": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$U_{n + 1} = A U_n + C$ avec $A = \\begin{pmatrix}-2&1\\\\3&3\\end{pmatrix}$, $C = \\begin{pmatrix}2\\\\-1\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}-1\\\\2\\end{pmatrix}$.\n\nOn note $U_1 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u = [?]$\n\n$v = [?]$",
+					"reponse": ["6", "2"],
+					"variables": {
+						"a1": "-2",
+						"a2": "1",
+						"a3": "3",
+						"a4": "3",
+						"x": "-1",
+						"y": "2",
+						"c1": "2",
+						"c2": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$U_{n + 1} = A U_n + C$ avec $A = \\begin{pmatrix}-1&-1\\\\1&3\\end{pmatrix}$, $C = \\begin{pmatrix}-2\\\\3\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}2\\\\1\\end{pmatrix}$.\n\nOn note $U_1 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u = [?]$\n\n$v = [?]$",
+					"reponse": ["-5", "8"],
+					"variables": {
+						"a1": "-1",
+						"a2": "-1",
+						"a3": "1",
+						"a4": "3",
+						"x": "2",
+						"y": "1",
+						"c1": "-2",
+						"c2": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$U_{n + 1} = A U_n + C$ avec $A = \\begin{pmatrix}-2&0\\\\-2&2\\end{pmatrix}$, $C = \\begin{pmatrix}-4\\\\-3\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}1\\\\1\\end{pmatrix}$.\n\nOn note $U_1 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u = [?]$\n\n$v = [?]$",
+					"reponse": ["-6", "-3"],
+					"variables": {
+						"a1": "-2",
+						"a2": "0",
+						"a3": "-2",
+						"a4": "2",
+						"x": "1",
+						"y": "1",
+						"c1": "-4",
+						"c2": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "-2..3"
+					},
+					{
+						"name": "a2",
+						"expression": "-2..3"
+					},
+					{
+						"name": "a3",
+						"expression": "-2..3"
+					},
+					{
+						"name": "a4",
+						"expression": "-2..3"
+					},
+					{
+						"name": "x",
+						"expression": "-3..4"
+					},
+					{
+						"name": "y",
+						"expression": "-3..4"
+					},
+					{
+						"name": "p",
+						"expression": "eval:a1*x+a2*y"
+					},
+					{
+						"name": "q",
+						"expression": "eval:a3*x+a4*y"
+					}
+				],
+				"conditions": ["x != 0", "y != 0", "a2 != 0"],
+				"enonce_brut": "$U_{n+1} = AU_n$ avec $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nOn note $U_2 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u=?$\n\n$v=?$",
+				"reponses_brutes": ["{{eval:a1*p+a2*q}}", "{{eval:a3*p+a4*q}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 20,
+						"negatif_possible": true,
+						"nb_distinctes": 32
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 21,
+						"negatif_possible": true,
+						"nb_distinctes": 30,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13, 14, 16, 21
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -57,
+						"max": 74,
+						"negatif_possible": true,
+						"nb_distinctes": 70
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -60,
+						"max": 75,
+						"negatif_possible": true,
+						"nb_distinctes": 73
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 4,
+				"nb_distinctes": 5,
+				"valeurs": [0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -60,
+				"max": 75,
+				"nb_distinctes": 90,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -60,
+				"max": 75,
+				"nb_distinctes": 90,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "175/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (75)",
+					"graine": 201,
+					"enonce": "$U_{n + 1} = A U_n$ avec $A = \\begin{pmatrix}0&1\\\\3&3\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}3\\\\4\\end{pmatrix}$.\n\nOn note $U_2 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u = [?]$\n\n$v = [?]$",
+					"reponse": ["21", "75"],
+					"variables": {
+						"a1": "0",
+						"a2": "1",
+						"a3": "3",
+						"a4": "3",
+						"x": "3",
+						"y": "4",
+						"p": "4",
+						"q": "21"
+					}
+				},
+				{
+					"role": "plus petite valeur (-60)",
+					"graine": 259,
+					"enonce": "$U_{n + 1} = A U_n$ avec $A = \\begin{pmatrix}2&2\\\\3&3\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}-1\\\\-3\\end{pmatrix}$.\n\nOn note $U_2 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u = [?]$\n\n$v = [?]$",
+					"reponse": ["-40", "-60"],
+					"variables": {
+						"a1": "2",
+						"a2": "2",
+						"a3": "3",
+						"a4": "3",
+						"x": "-1",
+						"y": "-3",
+						"p": "-8",
+						"q": "-12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$U_{n + 1} = A U_n$ avec $A = \\begin{pmatrix}-2&1\\\\3&3\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}-1\\\\1\\end{pmatrix}$.\n\nOn note $U_2 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u = [?]$\n\n$v = [?]$",
+					"reponse": ["-6", "9"],
+					"variables": {
+						"a1": "-2",
+						"a2": "1",
+						"a3": "3",
+						"a4": "3",
+						"x": "-1",
+						"y": "1",
+						"p": "3",
+						"q": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$U_{n + 1} = A U_n$ avec $A = \\begin{pmatrix}3&1\\\\-2&2\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}-1\\\\4\\end{pmatrix}$.\n\nOn note $U_2 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u = [?]$\n\n$v = [?]$",
+					"reponse": ["13", "18"],
+					"variables": {
+						"a1": "3",
+						"a2": "1",
+						"a3": "-2",
+						"a4": "2",
+						"x": "-1",
+						"y": "4",
+						"p": "1",
+						"q": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$U_{n + 1} = A U_n$ avec $A = \\begin{pmatrix}-2&-1\\\\1&-1\\end{pmatrix}$ et $U_0 = \\begin{pmatrix}-3\\\\2\\end{pmatrix}$.\n\nOn note $U_2 = \\begin{pmatrix}u\\\\v\\end{pmatrix}$.\n\n$u = [?]$\n\n$v = [?]$",
+					"reponse": ["-3", "9"],
+					"variables": {
+						"a1": "-2",
+						"a2": "-1",
+						"a3": "1",
+						"a4": "-1",
+						"x": "-3",
+						"y": "2",
+						"p": "4",
+						"q": "-5"
+					}
+				}
+			]
+		}
+	]
+}

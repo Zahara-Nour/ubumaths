@@ -1,0 +1,502 @@
+{
+	"template_id": "44b32cad-1803-4ff2-a649-4c502610b43c",
+	"titre": "Somme de termes consécutifs d'une suite arithmétique",
+	"sous_titre": "Nombre de termes × (premier + dernier) / 2",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Sommes > Suites arithmétiques",
+	"mis_a_jour": "2026-10-01T20:22:24.584073+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-226",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..20;±"
+					},
+					{
+						"name": "r",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "n",
+						"expression": "8..20"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+n*r"
+					},
+					{
+						"name": "s",
+						"expression": "eval:(n+1)*(a+l)/2"
+					}
+				],
+				"conditions": ["l != 0", "s != 0", "a+l != 0"],
+				"enonce_brut": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ {{n}} }$.\n\n$S=?$",
+				"reponses_brutes": ["{{s}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -20,
+						"max": 20,
+						"negatif_possible": true,
+						"nb_distinctes": 40
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "l",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -189,
+						"max": 182,
+						"negatif_possible": true,
+						"nb_distinctes": 183
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2070,
+						"max": 1932,
+						"negatif_possible": true,
+						"nb_distinctes": 259
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2070,
+						"max": 1932,
+						"negatif_possible": true,
+						"nb_distinctes": 259
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -20,
+				"max": 20,
+				"nb_distinctes": 41,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -2070,
+				"max": 1932,
+				"nb_distinctes": 259,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -2070,
+				"max": 1932,
+				"nb_distinctes": 293,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1932)",
+					"graine": 214,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 2$ et de raison $r = 9$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 20 }$.\n\n$S = [?]$",
+					"reponse": ["1932"],
+					"variables": {
+						"a": "2",
+						"r": "9",
+						"n": "20",
+						"l": "182",
+						"s": "1932"
+					}
+				},
+				{
+					"role": "plus petite valeur (-2070)",
+					"graine": 278,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -18$ et de raison $r = -9$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 19 }$.\n\n$S = [?]$",
+					"reponse": ["-2070"],
+					"variables": {
+						"a": "-18",
+						"r": "-9",
+						"n": "19",
+						"l": "-189",
+						"s": "-2070"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 19$ et de raison $r = -5$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 15 }$.\n\n$S = [?]$",
+					"reponse": ["-296"],
+					"variables": {
+						"a": "19",
+						"r": "-5",
+						"n": "15",
+						"l": "-56",
+						"s": "-296"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -8$ et de raison $r = -5$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 14 }$.\n\n$S = [?]$",
+					"reponse": ["-645"],
+					"variables": {
+						"a": "-8",
+						"r": "-5",
+						"n": "14",
+						"l": "-78",
+						"s": "-645"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -19$ et de raison $r = -2$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 8 }$.\n\n$S = [?]$",
+					"reponse": ["-243"],
+					"variables": {
+						"a": "-19",
+						"r": "-2",
+						"n": "8",
+						"l": "-35",
+						"s": "-243"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..20;±"
+					},
+					{
+						"name": "r",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "n",
+						"expression": "8..20"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a+r"
+					},
+					{
+						"name": "l",
+						"expression": "eval:a+n*r"
+					},
+					{
+						"name": "s",
+						"expression": "eval:n*(f+l)/2"
+					}
+				],
+				"conditions": ["f != 0", "l != 0", "s != 0", "f+l != 0"],
+				"enonce_brut": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nCalcule $S=u_1+u_2+\\cdots+u_{ {{n}} }$.\n\n$S=?$",
+				"reponses_brutes": ["{{s}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -20,
+						"max": 20,
+						"negatif_possible": true,
+						"nb_distinctes": 40
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -28,
+						"max": 28,
+						"negatif_possible": true,
+						"nb_distinctes": 54
+					}
+				},
+				{
+					"nom": "l",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -189,
+						"max": 182,
+						"negatif_possible": true,
+						"nb_distinctes": 182
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2052,
+						"max": 1930,
+						"negatif_possible": true,
+						"nb_distinctes": 267
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2052,
+						"max": 1930,
+						"negatif_possible": true,
+						"nb_distinctes": 267
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -20,
+				"max": 20,
+				"nb_distinctes": 41,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -2052,
+				"max": 1930,
+				"nb_distinctes": 267,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -2052,
+				"max": 1930,
+				"nb_distinctes": 301,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1930)",
+					"graine": 214,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = 2$ et de raison $r = 9$.\n\nCalcule $S=u_1+u_2+\\cdots+u_{ 20 }$.\n\n$S = [?]$",
+					"reponse": ["1930"],
+					"variables": {
+						"a": "2",
+						"r": "9",
+						"n": "20",
+						"f": "11",
+						"l": "182",
+						"s": "1930"
+					}
+				},
+				{
+					"role": "plus petite valeur (-2052)",
+					"graine": 278,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -18$ et de raison $r = -9$.\n\nCalcule $S=u_1+u_2+\\cdots+u_{ 19 }$.\n\n$S = [?]$",
+					"reponse": ["-2052"],
+					"variables": {
+						"a": "-18",
+						"r": "-9",
+						"n": "19",
+						"f": "-27",
+						"l": "-189",
+						"s": "-2052"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -20$ et de raison $r = 2$.\n\nCalcule $S=u_1+u_2+\\cdots+u_{ 20 }$.\n\n$S = [?]$",
+					"reponse": ["20"],
+					"variables": {
+						"a": "-20",
+						"r": "2",
+						"n": "20",
+						"f": "-18",
+						"l": "20",
+						"s": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -8$ et de raison $r = -5$.\n\nCalcule $S=u_1+u_2+\\cdots+u_{ 14 }$.\n\n$S = [?]$",
+					"reponse": ["-637"],
+					"variables": {
+						"a": "-8",
+						"r": "-5",
+						"n": "14",
+						"f": "-13",
+						"l": "-78",
+						"s": "-637"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -19$ et de raison $r = -2$.\n\nCalcule $S=u_1+u_2+\\cdots+u_{ 8 }$.\n\n$S = [?]$",
+					"reponse": ["-224"],
+					"variables": {
+						"a": "-19",
+						"r": "-2",
+						"n": "8",
+						"f": "-21",
+						"l": "-35",
+						"s": "-224"
+					}
+				}
+			]
+		}
+	]
+}

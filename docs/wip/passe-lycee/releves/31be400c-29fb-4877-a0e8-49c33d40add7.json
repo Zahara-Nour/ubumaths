@@ -1,0 +1,347 @@
+{
+	"template_id": "31be400c-29fb-4877-a0e8-49c33d40add7",
+	"titre": "Graphe : ordre, degrés, nombre d'arêtes",
+	"sous_titre": "Lire sur un graphe (figure ou liste d'arêtes) son ordre, le degré d'un sommet et le nombre d'arêtes (pièges : ordre confondu avec le nombre d'arêtes, arête comptée deux fois, degré compté en sommets voisins non adjacents)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Graphes et matrices > Graphes > Vocabulaire des graphes",
+	"mis_a_jour": "2026-10-05T16:06:57.722276+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-314",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nOrdre du graphe : $?$\n\nDegré du sommet $B$ : $?$\n\nNombre d'arêtes : $?$",
+				"reponses_brutes": ["5", "4", "6"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [5]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [6]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 4,
+				"max": 6,
+				"nb_distinctes": 3,
+				"valeurs": [4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 4,
+				"max": 6,
+				"nb_distinctes": 3,
+				"valeurs": [4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nOrdre du graphe : $[?]$\n\nDegré du sommet $B$ : $[?]$\n\nNombre d'arêtes : $[?]$",
+					"reponse": ["5", "4", "6"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 7.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 6 sommets A à F ; arêtes AB, AC, BC, CD, DE, DF, EF, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(2, 0, etiquette=\"bas\")\nD = point(5, 2, etiquette=\"haut\")\nE = point(7, 4, etiquette=\"haut\")\nF = point(7, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, C)\nsegment(B, C)\nsegment(C, D)\nsegment(D, E)\nsegment(D, F)\nsegment(E, F)\nsegment(B, D)\n```\n\nOrdre du graphe : $?$\n\nDegré du sommet $D$ : $?$\n\nNombre d'arêtes : $?$",
+				"reponses_brutes": ["6", "4", "8"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [6]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [8]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 4,
+				"max": 8,
+				"nb_distinctes": 3,
+				"valeurs": [4, 6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 4,
+				"max": 8,
+				"nb_distinctes": 3,
+				"valeurs": [4, 6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 1,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nOrdre du graphe : $[?]$\n\nDegré du sommet $D$ : $[?]$\n\nNombre d'arêtes : $[?]$",
+					"reponse": ["6", "4", "8"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Un graphe a pour sommets $1$, $2$, $3$, $4$, $5$, $6$ et pour arêtes :\n\n$\\{1, 2\\}$, $\\{1, 3\\}$, $\\{2, 3\\}$, $\\{2, 4\\}$, $\\{3, 5\\}$, $\\{4, 5\\}$, $\\{5, 6\\}$.\n\nDegré du sommet $5$ : $?$\n\nSomme des degrés de tous les sommets : $?$",
+				"reponses_brutes": ["3", "14"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [3]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 14,
+						"max": 14,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [14]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 14,
+				"nb_distinctes": 2,
+				"valeurs": [3, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 14,
+				"nb_distinctes": 7,
+				"valeurs": [1, 2, 3, 4, 5, 6, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (14)",
+					"graine": 1,
+					"enonce": "Un graphe a pour sommets $1$, $2$, $3$, $4$, $5$, $6$ et pour arêtes :\n\n$\\{1, 2\\}$, $\\{1, 3\\}$, $\\{2, 3\\}$, $\\{2, 4\\}$, $\\{3, 5\\}$, $\\{4, 5\\}$, $\\{5, 6\\}$.\n\nDegré du sommet $5$ : $[?]$\n\nSomme des degrés de tous les sommets : $[?]$",
+					"reponse": ["3", "14"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

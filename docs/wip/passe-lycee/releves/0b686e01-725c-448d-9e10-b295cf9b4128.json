@@ -1,0 +1,1077 @@
+{
+	"template_id": "0b686e01-725c-448d-9e10-b295cf9b4128",
+	"titre": "Seuil d'une suite géométrique avec un tableau de valeurs",
+	"sous_titre": "Plus petit n tel que uₙ > A (ou uₙ < A), lu dans un tableau",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Seuil et algorithmes > Seuil",
+	"mis_a_jour": "2026-10-01T20:22:25.039827+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-237",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 7,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite géométrique de premier terme $u_0=1000$ et de raison $q=1.1$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $4$ | $5$ | $6$ | $7$ | $8$ |\n|---|---|---|---|---|---|\n| $u_n$ | $1464$ | $1611$ | $1772$ | $1949$ | $2144$ |\n\nQuel est le plus petit entier $n$ tel que $u_n>1620$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$n={{k}}$"
+					},
+					{
+						"content": "$n={{eval:k+1}}$"
+					},
+					{
+						"content": "$n={{eval:k+2}}$"
+					},
+					{
+						"content": "$n={{eval:k+3}}$"
+					},
+					{
+						"content": "$n={{eval:k+4}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n = 6"],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 6,
+							"nb_distinctes": 1,
+							"valeurs": [6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 2144,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1.1, 4, 5, 6, 7, 8, 1000, 1464, 1611, 1620, 1772, 1949, 2144],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 6,
+				"nb_distinctes": 1,
+				"valeurs": [6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 4,
+				"max": 8,
+				"nb_distinctes": 5,
+				"valeurs": [4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 2144,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1.1, 4, 5, 6, 7, 8, 1000, 1464, 1611, 1620, 1772, 1949, 2144],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2144)",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 1\\,000$ et de raison $q = 1{,}1$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $4$ | $5$ | $6$ | $7$ | $8$ |\n| $u_n$ | $1\\,464$ | $1\\,611$ | $1\\,772$ | $1\\,949$ | $2\\,144$ |\n\nQuel est le plus petit entier $n$ tel que $u_n > 1\\,620$ ?\n\n- A. $n = 4$\n- B. $n = 5$\n- C. $n = 6$\n- D. $n = 7$\n- E. $n = 8$",
+					"reponse": ["C. $n = 6$"],
+					"variables": {
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite géométrique de premier terme $u_0=200$ et de raison $q=1.25$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $5$ | $6$ | $7$ | $8$ | $9$ |\n|---|---|---|---|---|---|\n| $u_n$ | $610$ | $763$ | $954$ | $1192$ | $1490$ |\n\nQuel est le plus petit entier $n$ tel que $u_n>1200$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$n={{k}}$"
+					},
+					{
+						"content": "$n={{eval:k+1}}$"
+					},
+					{
+						"content": "$n={{eval:k+2}}$"
+					},
+					{
+						"content": "$n={{eval:k+3}}$"
+					},
+					{
+						"content": "$n={{eval:k+4}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n = 9"],
+						"nombres_contenus": {
+							"min": 9,
+							"max": 9,
+							"nb_distinctes": 1,
+							"valeurs": [9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1490,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1.25, 5, 6, 7, 8, 9, 200, 610, 763, 954, 1192, 1200, 1490],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 9,
+				"max": 9,
+				"nb_distinctes": 1,
+				"valeurs": [9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 5,
+				"max": 9,
+				"nb_distinctes": 5,
+				"valeurs": [5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 1490,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1.25, 5, 6, 7, 8, 9, 200, 610, 763, 954, 1192, 1200, 1490],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1490)",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 200$ et de raison $q = 1{,}25$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $5$ | $6$ | $7$ | $8$ | $9$ |\n| $u_n$ | $610$ | $763$ | $954$ | $1\\,192$ | $1\\,490$ |\n\nQuel est le plus petit entier $n$ tel que $u_n > 1\\,200$ ?\n\n- A. $n = 5$\n- B. $n = 6$\n- C. $n = 7$\n- D. $n = 8$\n- E. $n = 9$",
+					"reponse": ["E. $n = 9$"],
+					"variables": {
+						"k": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite géométrique de premier terme $u_0=500$ et de raison $q=1.2$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $6$ | $7$ | $8$ | $9$ | $10$ |\n|---|---|---|---|---|---|\n| $u_n$ | $1493$ | $1792$ | $2150$ | $2580$ | $3096$ |\n\nQuel est le plus petit entier $n$ tel que $u_n>1500$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$n={{k}}$"
+					},
+					{
+						"content": "$n={{eval:k+1}}$"
+					},
+					{
+						"content": "$n={{eval:k+2}}$"
+					},
+					{
+						"content": "$n={{eval:k+3}}$"
+					},
+					{
+						"content": "$n={{eval:k+4}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n = 7"],
+						"nombres_contenus": {
+							"min": 7,
+							"max": 7,
+							"nb_distinctes": 1,
+							"valeurs": [7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 3096,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1.2, 6, 7, 8, 9, 10, 500, 1493, 1500, 1792, 2150, 2580, 3096],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 7,
+				"max": 7,
+				"nb_distinctes": 1,
+				"valeurs": [7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 6,
+				"max": 10,
+				"nb_distinctes": 5,
+				"valeurs": [6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 3096,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1.2, 6, 7, 8, 9, 10, 500, 1493, 1500, 1792, 2150, 2580, 3096],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3096)",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 500$ et de raison $q = 1{,}2$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $6$ | $7$ | $8$ | $9$ | $10$ |\n| $u_n$ | $1\\,493$ | $1\\,792$ | $2\\,150$ | $2\\,580$ | $3\\,096$ |\n\nQuel est le plus petit entier $n$ tel que $u_n > 1\\,500$ ?\n\n- A. $n = 6$\n- B. $n = 7$\n- C. $n = 8$\n- D. $n = 9$\n- E. $n = 10$",
+					"reponse": ["B. $n = 7$"],
+					"variables": {
+						"k": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "8"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite géométrique de premier terme $u_0=300$ et de raison $q=1.1$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $8$ | $9$ | $10$ | $11$ | $12$ |\n|---|---|---|---|---|---|\n| $u_n$ | $643$ | $707$ | $778$ | $856$ | $942$ |\n\nQuel est le plus petit entier $n$ tel que $u_n>780$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$n={{k}}$"
+					},
+					{
+						"content": "$n={{eval:k+1}}$"
+					},
+					{
+						"content": "$n={{eval:k+2}}$"
+					},
+					{
+						"content": "$n={{eval:k+3}}$"
+					},
+					{
+						"content": "$n={{eval:k+4}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n = 11"],
+						"nombres_contenus": {
+							"min": 11,
+							"max": 11,
+							"nb_distinctes": 1,
+							"valeurs": [11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 942,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1.1, 8, 9, 10, 11, 12, 300, 643, 707, 778, 780, 856, 942],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 11,
+				"max": 11,
+				"nb_distinctes": 1,
+				"valeurs": [11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 8,
+				"max": 12,
+				"nb_distinctes": 5,
+				"valeurs": [8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 942,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1.1, 8, 9, 10, 11, 12, 300, 643, 707, 778, 780, 856, 942],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (942)",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 300$ et de raison $q = 1{,}1$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $8$ | $9$ | $10$ | $11$ | $12$ |\n| $u_n$ | $643$ | $707$ | $778$ | $856$ | $942$ |\n\nQuel est le plus petit entier $n$ tel que $u_n > 780$ ?\n\n- A. $n = 8$\n- B. $n = 9$\n- C. $n = 10$\n- D. $n = 11$\n- E. $n = 12$",
+					"reponse": ["D. $n = 11$"],
+					"variables": {
+						"k": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite géométrique de premier terme $u_0=5000$ et de raison $q=0.8$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $7$ | $8$ | $9$ | $10$ | $11$ |\n|---|---|---|---|---|---|\n| $u_n$ | $1049$ | $839$ | $671$ | $537$ | $429$ |\n\nQuel est le plus petit entier $n$ tel que $u_n<1040$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$n={{k}}$"
+					},
+					{
+						"content": "$n={{eval:k+1}}$"
+					},
+					{
+						"content": "$n={{eval:k+2}}$"
+					},
+					{
+						"content": "$n={{eval:k+3}}$"
+					},
+					{
+						"content": "$n={{eval:k+4}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n = 8"],
+						"nombres_contenus": {
+							"min": 8,
+							"max": 8,
+							"nb_distinctes": 1,
+							"valeurs": [8],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 5000,
+				"nb_distinctes": 14,
+				"valeurs": [0, 0.8, 7, 8, 9, 10, 11, 429, 537, 671, 839, 1040, 1049, 5000],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 8,
+				"max": 8,
+				"nb_distinctes": 1,
+				"valeurs": [8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 7,
+				"max": 11,
+				"nb_distinctes": 5,
+				"valeurs": [7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 5000,
+				"nb_distinctes": 14,
+				"valeurs": [0, 0.8, 7, 8, 9, 10, 11, 429, 537, 671, 839, 1040, 1049, 5000],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5000)",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 5\\,000$ et de raison $q = 0{,}8$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $7$ | $8$ | $9$ | $10$ | $11$ |\n| $u_n$ | $1\\,049$ | $839$ | $671$ | $537$ | $429$ |\n\nQuel est le plus petit entier $n$ tel que $u_n < 1\\,040$ ?\n\n- A. $n = 7$\n- B. $n = 8$\n- C. $n = 9$\n- D. $n = 10$\n- E. $n = 11$",
+					"reponse": ["B. $n = 8$"],
+					"variables": {
+						"k": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite géométrique de premier terme $u_0=2000$ et de raison $q=0.9$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $7$ | $8$ | $9$ | $10$ | $11$ |\n|---|---|---|---|---|---|\n| $u_n$ | $957$ | $861$ | $775$ | $697$ | $628$ |\n\nQuel est le plus petit entier $n$ tel que $u_n<770$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$n={{k}}$"
+					},
+					{
+						"content": "$n={{eval:k+1}}$"
+					},
+					{
+						"content": "$n={{eval:k+2}}$"
+					},
+					{
+						"content": "$n={{eval:k+3}}$"
+					},
+					{
+						"content": "$n={{eval:k+4}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n = 10"],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 10,
+							"nb_distinctes": 1,
+							"valeurs": [10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 2000,
+				"nb_distinctes": 14,
+				"valeurs": [0, 0.9, 7, 8, 9, 10, 11, 628, 697, 770, 775, 861, 957, 2000],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 10,
+				"nb_distinctes": 1,
+				"valeurs": [10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 7,
+				"max": 11,
+				"nb_distinctes": 5,
+				"valeurs": [7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 2000,
+				"nb_distinctes": 14,
+				"valeurs": [0, 0.9, 7, 8, 9, 10, 11, 628, 697, 770, 775, 861, 957, 2000],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2000)",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 2\\,000$ et de raison $q = 0{,}9$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $7$ | $8$ | $9$ | $10$ | $11$ |\n| $u_n$ | $957$ | $861$ | $775$ | $697$ | $628$ |\n\nQuel est le plus petit entier $n$ tel que $u_n < 770$ ?\n\n- A. $n = 7$\n- B. $n = 8$\n- C. $n = 9$\n- D. $n = 10$\n- E. $n = 11$",
+					"reponse": ["D. $n = 10$"],
+					"variables": {
+						"k": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite géométrique de premier terme $u_0=8000$ et de raison $q=0.75$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $4$ | $5$ | $6$ | $7$ | $8$ |\n|---|---|---|---|---|---|\n| $u_n$ | $2531$ | $1898$ | $1424$ | $1068$ | $801$ |\n\nQuel est le plus petit entier $n$ tel que $u_n<1890$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$n={{k}}$"
+					},
+					{
+						"content": "$n={{eval:k+1}}$"
+					},
+					{
+						"content": "$n={{eval:k+2}}$"
+					},
+					{
+						"content": "$n={{eval:k+3}}$"
+					},
+					{
+						"content": "$n={{eval:k+4}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n = 6"],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 6,
+							"nb_distinctes": 1,
+							"valeurs": [6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 8000,
+				"nb_distinctes": 14,
+				"valeurs": [0, 0.75, 4, 5, 6, 7, 8, 801, 1068, 1424, 1890, 1898, 2531, 8000],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 6,
+				"nb_distinctes": 1,
+				"valeurs": [6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 4,
+				"max": 8,
+				"nb_distinctes": 5,
+				"valeurs": [4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 8000,
+				"nb_distinctes": 14,
+				"valeurs": [0, 0.75, 4, 5, 6, 7, 8, 801, 1068, 1424, 1890, 1898, 2531, 8000],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8000)",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 8\\,000$ et de raison $q = 0{,}75$. Le tableau donne quelques-uns de ses termes, arrondis à l'unité.\n\n| $n$ | $4$ | $5$ | $6$ | $7$ | $8$ |\n| $u_n$ | $2\\,531$ | $1\\,898$ | $1\\,424$ | $1\\,068$ | $801$ |\n\nQuel est le plus petit entier $n$ tel que $u_n < 1\\,890$ ?\n\n- A. $n = 4$\n- B. $n = 5$\n- C. $n = 6$\n- D. $n = 7$\n- E. $n = 8$",
+					"reponse": ["C. $n = 6$"],
+					"variables": {
+						"k": "4"
+					}
+				}
+			]
+		}
+	]
+}

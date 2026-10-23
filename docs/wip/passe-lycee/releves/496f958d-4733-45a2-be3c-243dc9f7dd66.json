@@ -1,0 +1,431 @@
+{
+	"template_id": "496f958d-4733-45a2-be3c-243dc9f7dd66",
+	"titre": "Dériver un produit de fonction affine et d'exponentielle",
+	"sous_titre": "Dérivée d'un produit affine × exponentielle, réponse factorisée par eˣ",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonction exponentielle > Dérivation",
+	"mis_a_jour": "2026-10-03T14:03:47.450083+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-289",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": ["a+b != 0"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{a}}x{{eval:b;+}})e^{x}$.\n\nCalcule $f'(x)$ et donne le résultat sous la forme $(mx+p)e^{x}$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["({{eval:a*x+a+b}})e^{x}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 102,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 102,
+						"exemples": [
+							"(x+7)e^{x}",
+							"(-3x-2)e^{x}",
+							"(-x-7)e^{x}",
+							"(-3x-9)e^{x}",
+							"(-3x-1)e^{x}",
+							"(2x-2)e^{x}",
+							"(5x+8)e^{x}",
+							"(1-2x)e^{x}",
+							"(2x-1)e^{x}",
+							"(2x+6)e^{x}",
+							"(2x+4)e^{x}",
+							"(-5x-11)e^{x}"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 11,
+							"nb_distinctes": 15,
+							"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 6,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 11,
+				"nb_distinctes": 15,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 11,
+				"nb_distinctes": 15,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (11)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( -5 x - 6 \\right) \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$ et donne le résultat sous la forme $\\left( m x + p \\right) \\exponentialE^x$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["(-5x-11)e^{x}"],
+					"variables": {
+						"x": "x",
+						"a": "-5",
+						"b": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( x + 6 \\right) \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$ et donne le résultat sous la forme $\\left( m x + p \\right) \\exponentialE^x$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["(x+7)e^{x}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( -3 x + 1 \\right) \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$ et donne le résultat sous la forme $\\left( m x + p \\right) \\exponentialE^x$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["(-3x-2)e^{x}"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( -x - 6 \\right) \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$ et donne le résultat sous la forme $\\left( m x + p \\right) \\exponentialE^x$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["(-x-7)e^{x}"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( -3 x - 6 \\right) \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$ et donne le résultat sous la forme $\\left( m x + p \\right) \\exponentialE^x$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["(-3x-9)e^{x}"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"b": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=(x{{eval:b;+}})e^{x}$.\n\nCalcule $f'(x)$ et donne le résultat sous la forme $(mx+p)e^{x}$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["(x{{eval:b+1;+}})e^{x}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"(x+10)e^{x}",
+							"(x+3)e^{x}",
+							"(x+4)e^{x}",
+							"(x+5)e^{x}",
+							"(x+6)e^{x}",
+							"(x+7)e^{x}",
+							"(x+8)e^{x}",
+							"(x+9)e^{x}",
+							"(x-1)e^{x}",
+							"(x-2)e^{x}",
+							"(x-3)e^{x}",
+							"(x-4)e^{x}",
+							"(x-5)e^{x}",
+							"(x-6)e^{x}",
+							"(x-7)e^{x}",
+							"(x-8)e^{x}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( x + 9 \\right) \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$ et donne le résultat sous la forme $\\left( m x + p \\right) \\exponentialE^x$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["(x+10)e^{x}"],
+					"variables": {
+						"x": "x",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( x - 2 \\right) \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$ et donne le résultat sous la forme $\\left( m x + p \\right) \\exponentialE^x$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["(x-1)e^{x}"],
+					"variables": {
+						"x": "x",
+						"b": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( x + 2 \\right) \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$ et donne le résultat sous la forme $\\left( m x + p \\right) \\exponentialE^x$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["(x+3)e^{x}"],
+					"variables": {
+						"x": "x",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( x - 5 \\right) \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$ et donne le résultat sous la forme $\\left( m x + p \\right) \\exponentialE^x$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["(x-4)e^{x}"],
+					"variables": {
+						"x": "x",
+						"b": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( x - 6 \\right) \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$ et donne le résultat sous la forme $\\left( m x + p \\right) \\exponentialE^x$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["(x-5)e^{x}"],
+					"variables": {
+						"x": "x",
+						"b": "-6"
+					}
+				}
+			]
+		}
+	]
+}

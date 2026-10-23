@@ -1,0 +1,482 @@
+{
+	"template_id": "a9c71276-30e3-406f-8082-248cce389824",
+	"titre": "Test de dépistage",
+	"sous_titre": "Prévalence, sensibilité et spécificité données en pourcentages : probabilité d'un test positif (probabilités totales, valeur exacte) puis probabilité d'être malade (ou sain) sachant le test positif, arrondie au centième",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Probabilités conditionnelles > Problèmes en contexte",
+	"mis_a_jour": "2026-10-03T06:50:35.761739+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-400",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1|2|3|4|5|8|10|12|15|20"
+					},
+					{
+						"name": "s",
+						"expression": "80..99"
+					},
+					{
+						"name": "t",
+						"expression": "85..99"
+					}
+				],
+				"conditions": [
+					"abs(100*p*s/(p*s+(100-p)*(100-t))-round(100*p*s/(p*s+(100-p)*(100-t)))) < 0.49",
+					"mod(round(100*p*s/(p*s+(100-p)*(100-t))), 10) != 0"
+				],
+				"enonce_brut": "Dans une population, ${{p}}\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez ${{s}}\\,\\%$ des personnes malades et négatif chez ${{t}}\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P(T)=?$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle soit malade ? Arrondis au centième.\n\n$P_T(M)\\approx ?$",
+				"reponses_brutes": [
+					"{{eval:(p*s+(100-p)*(100-t))/10000}}",
+					"{{eval:round(100*p*s/(p*s+(100-p)*(100-t)))/100;d}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 288,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 8, 10, 12, 15, 20]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 80,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [
+							80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+						]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 85,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.0181,
+						"max": 0.304,
+						"negatif_possible": false,
+						"denominateurs": [
+							5, 8, 20, 25, 40, 50, 80, 100, 125, 200, 250, 400, 500, 625, 1000, 1250, 2000, 2500,
+							5000, 10000
+						],
+						"denominateur_min": 5,
+						"denominateur_max": 10000,
+						"nb_distinctes": 250
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.05,
+						"max": 0.96,
+						"negatif_possible": false,
+						"nb_distinctes": 79
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 99,
+				"nb_distinctes": 30,
+				"valeurs": [
+					1, 2, 3, 4, 5, 8, 10, 12, 15, 20, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93,
+					94, 95, 96, 97, 98, 99
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0.05,
+				"max": 10000,
+				"nb_distinctes": 274,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.05,
+				"max": 10000,
+				"nb_distinctes": 285,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [
+					5, 8, 20, 25, 40, 50, 80, 100, 125, 200, 250, 400, 500, 625, 1000, 1250, 2000, 2500, 5000,
+					10000
+				],
+				"denominateur_min": 5,
+				"denominateur_max": 10000,
+				"numerateur_min": 1,
+				"numerateur_max": 1643,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≈": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 75,
+					"max": 75
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10000)",
+					"graine": 1,
+					"enonce": "Dans une population, $1\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez $90\\,\\%$ des personnes malades et négatif chez $99\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P \\left( T \\right) = [?]$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle soit malade ? Arrondis au centième.\n\n$P_T(M)\\approx [?]$",
+					"reponse": ["\\dfrac{189}{10000}", "0.48"],
+					"variables": {
+						"p": "1",
+						"s": "90",
+						"t": "99"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.05)",
+					"graine": 63,
+					"enonce": "Dans une population, $1\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez $85\\,\\%$ des personnes malades et négatif chez $85\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P \\left( T \\right) = [?]$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle soit malade ? Arrondis au centième.\n\n$P_T(M)\\approx [?]$",
+					"reponse": ["\\dfrac{157}{1000}", "0.05"],
+					"variables": {
+						"p": "1",
+						"s": "85",
+						"t": "85"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans une population, $4\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez $85\\,\\%$ des personnes malades et négatif chez $93\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P \\left( T \\right) = [?]$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle soit malade ? Arrondis au centième.\n\n$P_T(M)\\approx [?]$",
+					"reponse": ["\\dfrac{253}{2500}", "0.34"],
+					"variables": {
+						"p": "4",
+						"s": "85",
+						"t": "93"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans une population, $1\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez $89\\,\\%$ des personnes malades et négatif chez $86\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P \\left( T \\right) = [?]$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle soit malade ? Arrondis au centième.\n\n$P_T(M)\\approx [?]$",
+					"reponse": ["\\dfrac{59}{400}", "0.06"],
+					"variables": {
+						"p": "1",
+						"s": "89",
+						"t": "86"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans une population, $3\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez $90\\,\\%$ des personnes malades et négatif chez $86\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P \\left( T \\right) = [?]$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle soit malade ? Arrondis au centième.\n\n$P_T(M)\\approx [?]$",
+					"reponse": ["\\dfrac{407}{2500}", "0.17"],
+					"variables": {
+						"p": "3",
+						"s": "90",
+						"t": "86"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1|2|3|4|5|8|10|12|15|20"
+					},
+					{
+						"name": "s",
+						"expression": "80..99"
+					},
+					{
+						"name": "t",
+						"expression": "85..99"
+					}
+				],
+				"conditions": [
+					"abs(100*(1-p*s/(p*s+(100-p)*(100-t)))-round(100*(1-p*s/(p*s+(100-p)*(100-t))))) < 0.49",
+					"mod(round(100*(1-p*s/(p*s+(100-p)*(100-t)))), 10) != 0"
+				],
+				"enonce_brut": "Dans une population, ${{p}}\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez ${{s}}\\,\\%$ des personnes malades et négatif chez ${{t}}\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P(T)=?$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle ne soit pas malade (« faux positif ») ? Arrondis au centième.\n\n$P_T(\\overline{M})\\approx ?$",
+				"reponses_brutes": [
+					"{{eval:(p*s+(100-p)*(100-t))/10000}}",
+					"{{eval:round(100*(1-p*s/(p*s+(100-p)*(100-t))))/100;d}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 288,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 8, 10, 12, 15, 20]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 80,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [
+							80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+						]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 85,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.0181,
+						"max": 0.304,
+						"negatif_possible": false,
+						"denominateurs": [
+							5, 8, 20, 25, 40, 50, 80, 100, 125, 200, 250, 400, 500, 625, 1000, 1250, 2000, 2500,
+							5000, 10000
+						],
+						"denominateur_min": 5,
+						"denominateur_max": 10000,
+						"nb_distinctes": 250
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.04,
+						"max": 0.95,
+						"negatif_possible": false,
+						"nb_distinctes": 79
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 99,
+				"nb_distinctes": 30,
+				"valeurs": [
+					1, 2, 3, 4, 5, 8, 10, 12, 15, 20, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93,
+					94, 95, 96, 97, 98, 99
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0.04,
+				"max": 10000,
+				"nb_distinctes": 274,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.04,
+				"max": 10000,
+				"nb_distinctes": 285,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [
+					5, 8, 20, 25, 40, 50, 80, 100, 125, 200, 250, 400, 500, 625, 1000, 1250, 2000, 2500, 5000,
+					10000
+				],
+				"denominateur_min": 5,
+				"denominateur_max": 10000,
+				"numerateur_min": 1,
+				"numerateur_max": 1643,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≈": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 79,
+					"max": 79
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10000)",
+					"graine": 1,
+					"enonce": "Dans une population, $1\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez $90\\,\\%$ des personnes malades et négatif chez $99\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P \\left( T \\right) = [?]$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle ne soit pas malade (« faux positif ») ? Arrondis au centième.\n\n$P_T(\\overline{M})\\approx [?]$",
+					"reponse": ["\\dfrac{189}{10000}", "0.52"],
+					"variables": {
+						"p": "1",
+						"s": "90",
+						"t": "99"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.04)",
+					"graine": 228,
+					"enonce": "Dans une population, $20\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez $86\\,\\%$ des personnes malades et négatif chez $99\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P \\left( T \\right) = [?]$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle ne soit pas malade (« faux positif ») ? Arrondis au centième.\n\n$P_T(\\overline{M})\\approx [?]$",
+					"reponse": ["\\dfrac{9}{50}", "0.04"],
+					"variables": {
+						"p": "20",
+						"s": "86",
+						"t": "99"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans une population, $4\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez $85\\,\\%$ des personnes malades et négatif chez $93\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P \\left( T \\right) = [?]$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle ne soit pas malade (« faux positif ») ? Arrondis au centième.\n\n$P_T(\\overline{M})\\approx [?]$",
+					"reponse": ["\\dfrac{253}{2500}", "0.66"],
+					"variables": {
+						"p": "4",
+						"s": "85",
+						"t": "93"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans une population, $1\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez $89\\,\\%$ des personnes malades et négatif chez $86\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P \\left( T \\right) = [?]$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle ne soit pas malade (« faux positif ») ? Arrondis au centième.\n\n$P_T(\\overline{M})\\approx [?]$",
+					"reponse": ["\\dfrac{59}{400}", "0.94"],
+					"variables": {
+						"p": "1",
+						"s": "89",
+						"t": "86"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans une population, $3\\,\\%$ des personnes sont atteintes d'une maladie. Un test de dépistage est positif chez $90\\,\\%$ des personnes malades et négatif chez $86\\,\\%$ des personnes saines.\n\nOn choisit une personne au hasard dans cette population. On note $M$ l'événement « la personne est malade » et $T$ l'événement « le test est positif ».\n\nCalcule la probabilité que le test soit positif. Donne la valeur exacte.\n\n$P \\left( T \\right) = [?]$\n\nLe test d'une personne est positif. Quelle est la probabilité qu'elle ne soit pas malade (« faux positif ») ? Arrondis au centième.\n\n$P_T(\\overline{M})\\approx [?]$",
+					"reponse": ["\\dfrac{407}{2500}", "0.83"],
+					"variables": {
+						"p": "3",
+						"s": "90",
+						"t": "86"
+					}
+				}
+			]
+		}
+	]
+}

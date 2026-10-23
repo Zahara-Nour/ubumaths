@@ -1,0 +1,445 @@
+{
+	"template_id": "9ad36217-5f60-45c7-83ce-a1a870adc5da",
+	"titre": "Courbes de ln et exp : reconnaître, symétrie par rapport à y = x",
+	"sous_titre": "Reconnaître la courbe de ln parmi quatre, symétrie des courbes de exp et ln par rapport à y = x, point symétrique (pièges : courbe de exp, −ln x, ln(x+1), mauvaise symétrie)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonction logarithme > Courbe représentative",
+	"mis_a_jour": "2026-10-04T17:41:01.425724+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-225",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-442",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "z",
+						"expression": "1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Laquelle de ces courbes représente la fonction $\\ln$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "```courbe\nx: -2 ; 5\ny: -3 ; 4\ngrille: 1 ; 1\nf(x) = ln(x)   bleu\ntaille: petite\ndescription: Courbe croissante définie pour x > 0, qui passe par (1 ; 0) et plonge vers le bas près de l'axe des ordonnées.\n```"
+					},
+					{
+						"content": "```courbe\nx: -2 ; 5\ny: -3 ; 4\ngrille: 1 ; 1\nf(x) = exp(x)   bleu\ntaille: petite\ndescription: Courbe croissante définie sur tout l'axe, qui passe par (0 ; 1) et reste au-dessus de l'axe des abscisses.\n```"
+					},
+					{
+						"content": "```courbe\nx: -2 ; 5\ny: -3 ; 4\ngrille: 1 ; 1\nf(x) = -ln(x)   bleu\ntaille: petite\ndescription: Courbe décroissante définie pour x > 0, qui passe par (1 ; 0) et monte près de l'axe des ordonnées.\n```"
+					},
+					{
+						"content": "```courbe\nx: -2 ; 5\ny: -3 ; 4\ngrille: 1 ; 1\nf(x) = ln(x+1)   bleu\ntaille: petite\ndescription: Courbe croissante définie pour x > -1, qui passe par l'origine (0 ; 0).\n```"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "z",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["[courbe]"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Laquelle de ces courbes représente la fonction $\\ln$ ?\n\n- A. [courbe]\n- B. [courbe]\n- C. [courbe]\n- D. [courbe]",
+					"reponse": ["D. [courbe]"],
+					"variables": {
+						"z": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "z",
+						"expression": "1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On a tracé les courbes des fonctions $\\exp$ et $\\ln$ dans un repère orthonormé.\n\n```courbe\nx: -3 ; 5\ny: -3 ; 5\ngrille: 1 ; 1\nf(x) = exp(x)   bleu   nom=C_{exp}\ng(x) = ln(x)   rouge   nom=C_{ln}\nh(x) = x   gris pointillé\ntaille: moyenne\ndescription: Courbe de l'exponentielle (bleue) et du logarithme (rouge), symétriques par rapport à la droite y = x tracée en pointillés.\n```\n\nPar quelle transformation passe-t-on de la courbe de $\\exp$ à celle de $\\ln$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "La symétrie par rapport à la droite d'équation $y=x$."
+					},
+					{
+						"content": "La symétrie par rapport à l'axe des ordonnées."
+					},
+					{
+						"content": "La symétrie par rapport à l'axe des abscisses."
+					},
+					{
+						"content": "La symétrie par rapport à l'origine du repère."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "z",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["La symétrie par rapport à la droite d'équation $y=x$."],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 51,
+					"max": 51
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On a tracé les courbes des fonctions $\\exp$ et $\\ln$ dans un repère orthonormé.\n\n[courbe]\n\nPar quelle transformation passe-t-on de la courbe de $\\exp$ à celle de $\\ln$ ?\n\n- A. La symétrie par rapport à l'origine du repère.\n- B. La symétrie par rapport à l'axe des abscisses.\n- C. La symétrie par rapport à l'axe des ordonnées.\n- D. La symétrie par rapport à la droite d'équation $y=x$.",
+					"reponse": ["D. La symétrie par rapport à la droite d'équation $y=x$."],
+					"variables": {
+						"z": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On a tracé les courbes des fonctions $\\exp$ et $\\ln$ dans un repère orthonormé.\n\n[courbe]\n\nPar quelle transformation passe-t-on de la courbe de $\\exp$ à celle de $\\ln$ ?\n\n- A. La symétrie par rapport à l'axe des abscisses.\n- B. La symétrie par rapport à l'origine du repère.\n- C. La symétrie par rapport à la droite d'équation $y=x$.\n- D. La symétrie par rapport à l'axe des ordonnées.",
+					"reponse": ["C. La symétrie par rapport à la droite d'équation $y=x$."],
+					"variables": {
+						"z": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On a tracé les courbes des fonctions $\\exp$ et $\\ln$ dans un repère orthonormé.\n\n[courbe]\n\nPar quelle transformation passe-t-on de la courbe de $\\exp$ à celle de $\\ln$ ?\n\n- A. La symétrie par rapport à l'axe des abscisses.\n- B. La symétrie par rapport à l'origine du repère.\n- C. La symétrie par rapport à l'axe des ordonnées.\n- D. La symétrie par rapport à la droite d'équation $y=x$.",
+					"reponse": ["D. La symétrie par rapport à la droite d'équation $y=x$."],
+					"variables": {
+						"z": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On a tracé les courbes des fonctions $\\exp$ et $\\ln$ dans un repère orthonormé.\n\n[courbe]\n\nPar quelle transformation passe-t-on de la courbe de $\\exp$ à celle de $\\ln$ ?\n\n- A. La symétrie par rapport à l'origine du repère.\n- B. La symétrie par rapport à l'axe des abscisses.\n- C. La symétrie par rapport à la droite d'équation $y=x$.\n- D. La symétrie par rapport à l'axe des ordonnées.",
+					"reponse": ["C. La symétrie par rapport à la droite d'équation $y=x$."],
+					"variables": {
+						"z": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On a tracé les courbes des fonctions $\\exp$ et $\\ln$ dans un repère orthonormé.\n\n[courbe]\n\nPar quelle transformation passe-t-on de la courbe de $\\exp$ à celle de $\\ln$ ?\n\n- A. La symétrie par rapport à l'axe des abscisses.\n- B. La symétrie par rapport à l'axe des ordonnées.\n- C. La symétrie par rapport à la droite d'équation $y=x$.\n- D. La symétrie par rapport à l'origine du repère.",
+					"reponse": ["C. La symétrie par rapport à la droite d'équation $y=x$."],
+					"variables": {
+						"z": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le point $A\\left({{a}}\\,;e^{ {{a}} }\\right)$ appartient à la courbe de la fonction $\\exp$.\n\nQuel point appartient à la courbe de la fonction $\\ln$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$\\left(e^{ {{a}} }\\,;{{a}}\\right)$"
+					},
+					{
+						"content": "$\\left(-{{a}}\\,;e^{ {{a}} }\\right)$"
+					},
+					{
+						"content": "$\\left({{a}}\\,;-e^{ {{a}} }\\right)$"
+					},
+					{
+						"content": "$\\left(e^{-{{a}}}\\,;{{a}}\\right)$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"\\left(e^{ 2 }\\,;2\\right)",
+							"\\left(e^{ 3 }\\,;3\\right)",
+							"\\left(e^{ 4 }\\,;4\\right)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 4,
+							"nb_distinctes": 3,
+							"valeurs": [2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 4,
+				"nb_distinctes": 3,
+				"valeurs": [2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 4,
+				"nb_distinctes": 3,
+				"valeurs": [2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": -4,
+				"max": 4,
+				"nb_distinctes": 6,
+				"valeurs": [-4, -3, -2, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -4,
+				"max": 4,
+				"nb_distinctes": 6,
+				"valeurs": [-4, -3, -2, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 5,
+					"enonce": "Le point $A\\left(4\\,;e^{ 4 }\\right)$ appartient à la courbe de la fonction $\\exp$.\n\nQuel point appartient à la courbe de la fonction $\\ln$ ?\n\n- A. $\\left(4\\,;-e^{ 4 }\\right)$\n- B. $\\left(e^{-4}\\,;4\\right)$\n- C. $\\left(-4\\,;e^{ 4 }\\right)$\n- D. $\\left(e^{ 4 }\\,;4\\right)$",
+					"reponse": ["D. $\\left(e^{ 4 }\\,;4\\right)$"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le point $A\\left(2\\,;e^{ 2 }\\right)$ appartient à la courbe de la fonction $\\exp$.\n\nQuel point appartient à la courbe de la fonction $\\ln$ ?\n\n- A. $\\left(e^{ 2 }\\,;2\\right)$\n- B. $\\left(-2\\,;e^{ 2 }\\right)$\n- C. $\\left(e^{-2}\\,;2\\right)$\n- D. $\\left(2\\,;-e^{ 2 }\\right)$",
+					"reponse": ["A. $\\left(e^{ 2 }\\,;2\\right)$"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le point $A\\left(2\\,;e^{ 2 }\\right)$ appartient à la courbe de la fonction $\\exp$.\n\nQuel point appartient à la courbe de la fonction $\\ln$ ?\n\n- A. $\\left(e^{ 2 }\\,;2\\right)$\n- B. $\\left(2\\,;-e^{ 2 }\\right)$\n- C. $\\left(e^{-2}\\,;2\\right)$\n- D. $\\left(-2\\,;e^{ 2 }\\right)$",
+					"reponse": ["A. $\\left(e^{ 2 }\\,;2\\right)$"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le point $A\\left(2\\,;e^{ 2 }\\right)$ appartient à la courbe de la fonction $\\exp$.\n\nQuel point appartient à la courbe de la fonction $\\ln$ ?\n\n- A. $\\left(2\\,;-e^{ 2 }\\right)$\n- B. $\\left(e^{-2}\\,;2\\right)$\n- C. $\\left(e^{ 2 }\\,;2\\right)$\n- D. $\\left(-2\\,;e^{ 2 }\\right)$",
+					"reponse": ["C. $\\left(e^{ 2 }\\,;2\\right)$"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le point $A\\left(2\\,;e^{ 2 }\\right)$ appartient à la courbe de la fonction $\\exp$.\n\nQuel point appartient à la courbe de la fonction $\\ln$ ?\n\n- A. $\\left(-2\\,;e^{ 2 }\\right)$\n- B. $\\left(2\\,;-e^{ 2 }\\right)$\n- C. $\\left(e^{-2}\\,;2\\right)$\n- D. $\\left(e^{ 2 }\\,;2\\right)$",
+					"reponse": ["D. $\\left(e^{ 2 }\\,;2\\right)$"],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		}
+	]
+}

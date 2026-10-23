@@ -1,0 +1,583 @@
+{
+	"template_id": "1f88d29a-086b-4fc9-9b28-debca396c697",
+	"titre": "Modéliser par un graphe : sommets, arêtes, situation possible ?",
+	"sous_titre": "Choisir ce que représentent sommets et arêtes, reconnaître le graphe complet d'un tournoi, décider si une situation est réalisable par la somme des degrés (pièges : sommets et arêtes inversés, ordre confondu avec le nombre d'arêtes, croire qu'un degré impair est interdit)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "multiple_choice",
+	"theme": "Graphes et matrices > Graphes > Modélisation par un graphe",
+	"mis_a_jour": "2026-10-05T19:11:53.322321+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-335",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..12"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un réseau de ${{n}}$ ordinateurs est relié par des câbles : chaque câble relie directement deux ordinateurs. On veut modéliser ce réseau par un graphe.\n\nQue doivent représenter les sommets et les arêtes ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Sommets : les ordinateurs ; arêtes : les câbles"
+					},
+					{
+						"content": "Sommets : les câbles ; arêtes : les ordinateurs"
+					},
+					{
+						"content": "Sommets : les ordinateurs ; arêtes : les chemins entre deux ordinateurs"
+					},
+					{
+						"content": "Un seul sommet, de degré ${{n}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 153,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Sommets : les ordinateurs ; arêtes : les câbles"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 12,
+				"nb_distinctes": 8,
+				"valeurs": [5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 5,
+				"max": 12,
+				"nb_distinctes": 8,
+				"valeurs": [5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 5,
+				"max": 12,
+				"nb_distinctes": 8,
+				"valeurs": [5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 57,
+					"max": 57
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 10,
+					"enonce": "Un réseau de $12$ ordinateurs est relié par des câbles : chaque câble relie directement deux ordinateurs. On veut modéliser ce réseau par un graphe.\n\nQue doivent représenter les sommets et les arêtes ?\n\n- A. Sommets : les câbles ; arêtes : les ordinateurs\n- B. Sommets : les ordinateurs ; arêtes : les câbles\n- C. Un seul sommet, de degré $12$\n- D. Sommets : les ordinateurs ; arêtes : les chemins entre deux ordinateurs",
+					"reponse": ["B. Sommets : les ordinateurs ; arêtes : les câbles"],
+					"variables": {
+						"n": "12"
+					}
+				},
+				{
+					"role": "plus petite valeur (5)",
+					"graine": 1,
+					"enonce": "Un réseau de $5$ ordinateurs est relié par des câbles : chaque câble relie directement deux ordinateurs. On veut modéliser ce réseau par un graphe.\n\nQue doivent représenter les sommets et les arêtes ?\n\n- A. Sommets : les ordinateurs ; arêtes : les câbles\n- B. Sommets : les câbles ; arêtes : les ordinateurs\n- C. Un seul sommet, de degré $5$\n- D. Sommets : les ordinateurs ; arêtes : les chemins entre deux ordinateurs",
+					"reponse": ["A. Sommets : les ordinateurs ; arêtes : les câbles"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un réseau de $7$ ordinateurs est relié par des câbles : chaque câble relie directement deux ordinateurs. On veut modéliser ce réseau par un graphe.\n\nQue doivent représenter les sommets et les arêtes ?\n\n- A. Sommets : les ordinateurs ; arêtes : les câbles\n- B. Sommets : les ordinateurs ; arêtes : les chemins entre deux ordinateurs\n- C. Un seul sommet, de degré $7$\n- D. Sommets : les câbles ; arêtes : les ordinateurs",
+					"reponse": ["A. Sommets : les ordinateurs ; arêtes : les câbles"],
+					"variables": {
+						"n": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un réseau de $5$ ordinateurs est relié par des câbles : chaque câble relie directement deux ordinateurs. On veut modéliser ce réseau par un graphe.\n\nQue doivent représenter les sommets et les arêtes ?\n\n- A. Sommets : les ordinateurs ; arêtes : les chemins entre deux ordinateurs\n- B. Un seul sommet, de degré $5$\n- C. Sommets : les ordinateurs ; arêtes : les câbles\n- D. Sommets : les câbles ; arêtes : les ordinateurs",
+					"reponse": ["C. Sommets : les ordinateurs ; arêtes : les câbles"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Un réseau de $7$ ordinateurs est relié par des câbles : chaque câble relie directement deux ordinateurs. On veut modéliser ce réseau par un graphe.\n\nQue doivent représenter les sommets et les arêtes ?\n\n- A. Sommets : les câbles ; arêtes : les ordinateurs\n- B. Sommets : les ordinateurs ; arêtes : les chemins entre deux ordinateurs\n- C. Un seul sommet, de degré $7$\n- D. Sommets : les ordinateurs ; arêtes : les câbles",
+					"reponse": ["D. Sommets : les ordinateurs ; arêtes : les câbles"],
+					"variables": {
+						"n": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5|7|9|11|13"
+					},
+					{
+						"name": "d",
+						"expression": "1|3|5"
+					}
+				],
+				"conditions": ["d < n"],
+				"enonce_brut": "Dans un groupe de ${{n}}$ personnes, chacune affirme avoir exactement ${{d}}$ amis dans le groupe (l'amitié est réciproque).\n\nEst-ce possible ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Non : la somme des degrés, ${{n}} \\times {{d}} = {{eval:n*d}}$, serait impaire"
+					},
+					{
+						"content": "Oui, il suffit de bien choisir les amitiés"
+					},
+					{
+						"content": "Non : un sommet ne peut pas avoir un degré impair"
+					},
+					{
+						"content": "Oui, à condition que le graphe soit complet"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 190,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [5, 7, 9, 11, 13]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 3, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"Non : la somme des degrés, $11 \\times 1 = 11$, serait impaire",
+							"Non : la somme des degrés, $11 \\times 3 = 33$, serait impaire",
+							"Non : la somme des degrés, $11 \\times 5 = 55$, serait impaire",
+							"Non : la somme des degrés, $13 \\times 1 = 13$, serait impaire",
+							"Non : la somme des degrés, $13 \\times 3 = 39$, serait impaire",
+							"Non : la somme des degrés, $13 \\times 5 = 65$, serait impaire",
+							"Non : la somme des degrés, $5 \\times 1 = 5$, serait impaire",
+							"Non : la somme des degrés, $5 \\times 3 = 15$, serait impaire",
+							"Non : la somme des degrés, $7 \\times 1 = 7$, serait impaire",
+							"Non : la somme des degrés, $7 \\times 3 = 21$, serait impaire",
+							"Non : la somme des degrés, $7 \\times 5 = 35$, serait impaire",
+							"Non : la somme des degrés, $9 \\times 1 = 9$, serait impaire",
+							"Non : la somme des degrés, $9 \\times 3 = 27$, serait impaire",
+							"Non : la somme des degrés, $9 \\times 5 = 45$, serait impaire"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 65,
+							"nb_distinctes": 16,
+							"valeurs": [1, 3, 5, 7, 9, 11, 13, 15, 21, 27, 33, 35, 39, 45, 55, 65],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 13,
+				"nb_distinctes": 7,
+				"valeurs": [1, 3, 5, 7, 9, 11, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 65,
+				"nb_distinctes": 16,
+				"valeurs": [1, 3, 5, 7, 9, 11, 13, 15, 21, 27, 33, 35, 39, 45, 55, 65],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 65,
+				"nb_distinctes": 16,
+				"valeurs": [1, 3, 5, 7, 9, 11, 13, 15, 21, 27, 33, 35, 39, 45, 55, 65],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 65,
+				"nb_distinctes": 16,
+				"valeurs": [1, 3, 5, 7, 9, 11, 13, 15, 21, 27, 33, 35, 39, 45, 55, 65],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 51,
+					"max": 51
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (65)",
+					"graine": 10,
+					"enonce": "Dans un groupe de $13$ personnes, chacune affirme avoir exactement $5$ amis dans le groupe (l'amitié est réciproque).\n\nEst-ce possible ?\n\n- A. Non : un sommet ne peut pas avoir un degré impair\n- B. Non : la somme des degrés, $13 \\times 5 = 65$, serait impaire\n- C. Oui, il suffit de bien choisir les amitiés\n- D. Oui, à condition que le graphe soit complet",
+					"reponse": ["B. Non : la somme des degrés, $13 \\times 5 = 65$, serait impaire"],
+					"variables": {
+						"n": "13",
+						"d": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 2,
+					"enonce": "Dans un groupe de $7$ personnes, chacune affirme avoir exactement $1$ amis dans le groupe (l'amitié est réciproque).\n\nEst-ce possible ?\n\n- A. Non : la somme des degrés, $7 \\times 1 = 7$, serait impaire\n- B. Oui, il suffit de bien choisir les amitiés\n- C. Oui, à condition que le graphe soit complet\n- D. Non : un sommet ne peut pas avoir un degré impair",
+					"reponse": ["A. Non : la somme des degrés, $7 \\times 1 = 7$, serait impaire"],
+					"variables": {
+						"n": "7",
+						"d": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans un groupe de $5$ personnes, chacune affirme avoir exactement $3$ amis dans le groupe (l'amitié est réciproque).\n\nEst-ce possible ?\n\n- A. Oui, il suffit de bien choisir les amitiés\n- B. Non : la somme des degrés, $5 \\times 3 = 15$, serait impaire\n- C. Non : un sommet ne peut pas avoir un degré impair\n- D. Oui, à condition que le graphe soit complet",
+					"reponse": ["B. Non : la somme des degrés, $5 \\times 3 = 15$, serait impaire"],
+					"variables": {
+						"n": "5",
+						"d": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans un groupe de $5$ personnes, chacune affirme avoir exactement $3$ amis dans le groupe (l'amitié est réciproque).\n\nEst-ce possible ?\n\n- A. Oui, il suffit de bien choisir les amitiés\n- B. Oui, à condition que le graphe soit complet\n- C. Non : un sommet ne peut pas avoir un degré impair\n- D. Non : la somme des degrés, $5 \\times 3 = 15$, serait impaire",
+					"reponse": ["D. Non : la somme des degrés, $5 \\times 3 = 15$, serait impaire"],
+					"variables": {
+						"n": "5",
+						"d": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans un groupe de $7$ personnes, chacune affirme avoir exactement $1$ amis dans le groupe (l'amitié est réciproque).\n\nEst-ce possible ?\n\n- A. Non : un sommet ne peut pas avoir un degré impair\n- B. Oui, il suffit de bien choisir les amitiés\n- C. Oui, à condition que le graphe soit complet\n- D. Non : la somme des degrés, $7 \\times 1 = 7$, serait impaire",
+					"reponse": ["D. Non : la somme des degrés, $7 \\times 1 = 7$, serait impaire"],
+					"variables": {
+						"n": "7",
+						"d": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "4..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Lors d'un tournoi, chacune des ${{n}}$ équipes rencontre une fois chacune des autres. On modélise par un graphe : sommets = équipes, arêtes = matchs.\n\nQuel est ce graphe ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Le graphe complet d'ordre ${{n}}$"
+					},
+					{
+						"content": "Un graphe d'ordre ${{eval:n*(n-1)/2}}$"
+					},
+					{
+						"content": "Un graphe dont chaque sommet est de degré ${{n}}$"
+					},
+					{
+						"content": "Un graphe à ${{n}}$ arêtes"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 146,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 7,
+						"valeurs": [
+							"Le graphe complet d'ordre $10",
+							"Le graphe complet d'ordre $4",
+							"Le graphe complet d'ordre $5",
+							"Le graphe complet d'ordre $6",
+							"Le graphe complet d'ordre $7",
+							"Le graphe complet d'ordre $8",
+							"Le graphe complet d'ordre $9"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 10,
+							"nb_distinctes": 7,
+							"valeurs": [4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 10,
+				"nb_distinctes": 7,
+				"valeurs": [4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 10,
+				"nb_distinctes": 7,
+				"valeurs": [4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 4,
+				"max": 45,
+				"nb_distinctes": 12,
+				"valeurs": [4, 5, 6, 7, 8, 9, 10, 15, 21, 28, 36, 45],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 4,
+				"max": 45,
+				"nb_distinctes": 12,
+				"valeurs": [4, 5, 6, 7, 8, 9, 10, 15, 21, 28, 36, 45],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 43,
+					"max": 43
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (45)",
+					"graine": 10,
+					"enonce": "Lors d'un tournoi, chacune des $10$ équipes rencontre une fois chacune des autres. On modélise par un graphe : sommets = équipes, arêtes = matchs.\n\nQuel est ce graphe ?\n\n- A. Un graphe d'ordre $45$\n- B. Le graphe complet d'ordre $10$\n- C. Un graphe à $10$ arêtes\n- D. Un graphe dont chaque sommet est de degré $10$",
+					"reponse": ["B. Le graphe complet d'ordre $10$"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (4)",
+					"graine": 1,
+					"enonce": "Lors d'un tournoi, chacune des $4$ équipes rencontre une fois chacune des autres. On modélise par un graphe : sommets = équipes, arêtes = matchs.\n\nQuel est ce graphe ?\n\n- A. Le graphe complet d'ordre $4$\n- B. Un graphe d'ordre $6$\n- C. Un graphe à $4$ arêtes\n- D. Un graphe dont chaque sommet est de degré $4$",
+					"reponse": ["A. Le graphe complet d'ordre $4$"],
+					"variables": {
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Lors d'un tournoi, chacune des $6$ équipes rencontre une fois chacune des autres. On modélise par un graphe : sommets = équipes, arêtes = matchs.\n\nQuel est ce graphe ?\n\n- A. Le graphe complet d'ordre $6$\n- B. Un graphe dont chaque sommet est de degré $6$\n- C. Un graphe à $6$ arêtes\n- D. Un graphe d'ordre $15$",
+					"reponse": ["A. Le graphe complet d'ordre $6$"],
+					"variables": {
+						"n": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Lors d'un tournoi, chacune des $4$ équipes rencontre une fois chacune des autres. On modélise par un graphe : sommets = équipes, arêtes = matchs.\n\nQuel est ce graphe ?\n\n- A. Un graphe dont chaque sommet est de degré $4$\n- B. Un graphe à $4$ arêtes\n- C. Le graphe complet d'ordre $4$\n- D. Un graphe d'ordre $6$",
+					"reponse": ["C. Le graphe complet d'ordre $4$"],
+					"variables": {
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Lors d'un tournoi, chacune des $6$ équipes rencontre une fois chacune des autres. On modélise par un graphe : sommets = équipes, arêtes = matchs.\n\nQuel est ce graphe ?\n\n- A. Un graphe d'ordre $15$\n- B. Un graphe dont chaque sommet est de degré $6$\n- C. Un graphe à $6$ arêtes\n- D. Le graphe complet d'ordre $6$",
+					"reponse": ["D. Le graphe complet d'ordre $6$"],
+					"variables": {
+						"n": "6"
+					}
+				}
+			]
+		}
+	]
+}

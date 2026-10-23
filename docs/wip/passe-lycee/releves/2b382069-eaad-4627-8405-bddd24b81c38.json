@@ -1,0 +1,880 @@
+{
+	"template_id": "2b382069-eaad-4627-8405-bddd24b81c38",
+	"titre": "Intervalles où f est croissante, f′ trinôme du second degré",
+	"sous_titre": "f′(x) = ax² + bx + c à racines entières : signe du trinôme, réponse en intervalle ou réunion, tableau de variations au corrigé",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Variations",
+	"mis_a_jour": "2026-10-02T11:08:51.859184+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-281",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "p",
+						"expression": "-5..3"
+					},
+					{
+						"name": "d",
+						"expression": "1..6"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p+d"
+					},
+					{
+						"name": "B",
+						"expression": "eval:-a*(p+q)"
+					},
+					{
+						"name": "C",
+						"expression": "eval:a*p*q"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'(x)={{eval:a*x^2+B*x+C}}$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S=?$",
+				"reponses_brutes": ["]-\\infty;{{p}}]\\cup[{{q}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 136,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "B",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -36,
+						"max": 21,
+						"negatif_possible": true,
+						"nb_distinctes": 39
+					}
+				},
+				{
+					"nom": "C",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -27,
+						"max": 81,
+						"negatif_possible": true,
+						"nb_distinctes": 42
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 54,
+						"exemples": [
+							"]-\\infty;3]\\cup[9;+\\infty[",
+							"]-\\infty;-1]\\cup[5;+\\infty[",
+							"]-\\infty;-5]\\cup[0;+\\infty[",
+							"]-\\infty;-5]\\cup[-3;+\\infty[",
+							"]-\\infty;0]\\cup[1;+\\infty[",
+							"]-\\infty;-4]\\cup[0;+\\infty[",
+							"]-\\infty;1]\\cup[5;+\\infty[",
+							"]-\\infty;2]\\cup[7;+\\infty[",
+							"]-\\infty;2]\\cup[5;+\\infty[",
+							"]-\\infty;0]\\cup[6;+\\infty[",
+							"]-\\infty;3]\\cup[4;+\\infty[",
+							"]-\\infty;-5]\\cup[-4;+\\infty["
+						],
+						"nombres_contenus": {
+							"min": -4,
+							"max": 9,
+							"nb_distinctes": 14,
+							"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 81,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -4,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "213/300",
+					"−": "180/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 102,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = 3 x^2 - 36 x + 81$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;3]\\cup[9;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"p": "3",
+						"d": "6",
+						"q": "9",
+						"B": "-36",
+						"C": "81"
+					}
+				},
+				{
+					"role": "plus petite valeur (-4)",
+					"graine": 13,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = x^2 + 9 x + 20$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-5]\\cup[-4;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"p": "-5",
+						"d": "1",
+						"q": "-4",
+						"B": "9",
+						"C": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = 2 x^2 - 24 x + 54$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;3]\\cup[9;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"p": "3",
+						"d": "6",
+						"q": "9",
+						"B": "-24",
+						"C": "54"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = x^2 - 4 x - 5$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-1]\\cup[5;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"p": "-1",
+						"d": "6",
+						"q": "5",
+						"B": "-4",
+						"C": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = 2 x^2 + 10 x$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-5]\\cup[0;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"p": "-5",
+						"d": "5",
+						"q": "0",
+						"B": "10",
+						"C": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "-3..-1"
+					},
+					{
+						"name": "p",
+						"expression": "-5..3"
+					},
+					{
+						"name": "d",
+						"expression": "1..6"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p+d"
+					},
+					{
+						"name": "B",
+						"expression": "eval:-a*(p+q)"
+					},
+					{
+						"name": "C",
+						"expression": "eval:a*p*q"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'(x)={{eval:a*x^2+B*x+C}}$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S=?$",
+				"reponses_brutes": ["[{{p}};{{q}}]"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 136,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-3, -2, -1]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "B",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -27,
+						"max": 36,
+						"negatif_possible": true,
+						"nb_distinctes": 40
+					}
+				},
+				{
+					"nom": "C",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -81,
+						"max": 24,
+						"negatif_possible": true,
+						"nb_distinctes": 43
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 54,
+						"exemples": [
+							"[3;9]",
+							"[-1;5]",
+							"[-5;0]",
+							"[-5;-3]",
+							"[0;1]",
+							"[-4;0]",
+							"[1;5]",
+							"[2;7]",
+							"[2;5]",
+							"[0;6]",
+							"[3;4]",
+							"[-5;-4]"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 9,
+							"nb_distinctes": 15,
+							"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -3,
+				"max": 81,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 15,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 81,
+				"nb_distinctes": 37,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "163/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "118/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 146,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = -3 x^2 + 36 x - 81$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["[3;9]"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"p": "3",
+						"d": "6",
+						"q": "9",
+						"B": "36",
+						"C": "-81"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 3,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = -2 x^2 - 10 x$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["[-5;0]"],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"p": "-5",
+						"d": "5",
+						"q": "0",
+						"B": "-10",
+						"C": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = -2 x^2 + 24 x - 54$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["[3;9]"],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"p": "3",
+						"d": "6",
+						"q": "9",
+						"B": "24",
+						"C": "-54"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = -3 x^2 + 12 x + 15$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["[-1;5]"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"p": "-1",
+						"d": "6",
+						"q": "5",
+						"B": "12",
+						"C": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = -3 x^2 - 24 x - 45$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["[-5;-3]"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"p": "-5",
+						"d": "2",
+						"q": "-3",
+						"B": "-24",
+						"C": "-45"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "q",
+						"expression": "1..5"
+					},
+					{
+						"name": "p",
+						"expression": "eval:-q"
+					},
+					{
+						"name": "B",
+						"expression": "eval:-a*(p+q)"
+					},
+					{
+						"name": "C",
+						"expression": "eval:a*p*q"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'(x)={{eval:a*x^2+B*x+C}}$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S=?$",
+				"reponses_brutes": ["]-\\infty;{{p}}]\\cup[{{q}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 15,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-5, -4, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "B",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"nom": "C",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -75,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-75, -50, -48, -32, -27, -25, -18, -16, -12, -9, -8, -4, -3, -2, -1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"]-\\infty;-1]\\cup[1;+\\infty[",
+							"]-\\infty;-2]\\cup[2;+\\infty[",
+							"]-\\infty;-3]\\cup[3;+\\infty[",
+							"]-\\infty;-4]\\cup[4;+\\infty[",
+							"]-\\infty;-5]\\cup[5;+\\infty["
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 5,
+							"nb_distinctes": 5,
+							"valeurs": [1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 75,
+				"nb_distinctes": 16,
+				"valeurs": [0, 1, 2, 3, 4, 8, 9, 12, 16, 18, 25, 27, 32, 48, 50, 75],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 75,
+				"nb_distinctes": 17,
+				"valeurs": [0, 1, 2, 3, 4, 5, 8, 9, 12, 16, 18, 25, 27, 32, 48, 50, 75],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (75)",
+					"graine": 10,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = 3 x^2 - 75$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-5]\\cup[5;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"q": "5",
+						"p": "-5",
+						"B": "0",
+						"C": "-75"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = 2 x^2 - 50$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-5]\\cup[5;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"q": "5",
+						"p": "-5",
+						"B": "0",
+						"C": "-50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = x^2 - 9$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-3]\\cup[3;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"q": "3",
+						"p": "-3",
+						"B": "0",
+						"C": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = 2 x^2 - 2$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-1]\\cup[1;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"q": "1",
+						"p": "-1",
+						"B": "0",
+						"C": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ une fonction dérivable sur $\\mathbb{R}$ dont la dérivée est $f'\\left( x \\right) = x^2 - 1$.\n\nDonne l'ensemble des réels $x$ tels que $f'(x)\\geqslant 0$ (intervalle ou réunion d'intervalles) : ce sont les intervalles sur lesquels $f$ est croissante.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-1]\\cup[1;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"q": "1",
+						"p": "-1",
+						"B": "0",
+						"C": "-1"
+					}
+				}
+			]
+		}
+	]
+}

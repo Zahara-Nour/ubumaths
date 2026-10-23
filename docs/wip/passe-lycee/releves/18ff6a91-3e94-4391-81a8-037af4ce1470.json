@@ -1,0 +1,905 @@
+{
+	"template_id": "18ff6a91-3e94-4391-81a8-037af4ce1470",
+	"titre": "Calculer une puissance avec la formule de Moivre",
+	"sous_titre": "(1+i)ⁿ, (√3+i)ⁿ sous forme algébrique, (1 − i√3)ⁿ sous forme exponentielle, suite z_{n+1} = i z_n (pièges : puissance du module oubliée, argument non multiplié par n ou non ramené)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Nombres complexes > Formes trigonométrique et exponentielle > Formule de Moivre",
+	"mis_a_jour": "2026-10-20T20:27:03.740822+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-241",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "3..12"
+					},
+					{
+						"name": "x",
+						"expression": "eval:round(2^(n/2)*cos(n*\\pi/4))"
+					},
+					{
+						"name": "y",
+						"expression": "eval:round(2^(n/2)*sin(n*\\pi/4))"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule $(1+i)^{ {{n}} }$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$(1+i)^{ {{n}} }=?$",
+				"reponses_brutes": ["{{x}}+({{y}})i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -64,
+						"max": 16,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-64, -32, -4, -2, 0, 8, 16]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 32,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-8, -4, 0, 2, 16, 32]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.2833333333333333,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"-2+2i",
+							"-32+32i",
+							"-4",
+							"-4-4i",
+							"-64",
+							"-8i",
+							"16",
+							"16+16i",
+							"32i",
+							"8-8i"
+						],
+						"nombres_contenus": {
+							"min": -64,
+							"max": 32,
+							"nb_distinctes": 10,
+							"valeurs": [-64, -32, -8, -4, -2, 2, 4, 8, 16, 32],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -64,
+				"max": 32,
+				"nb_distinctes": 10,
+				"valeurs": [-64, -32, -8, -4, -2, 2, 4, 8, 16, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -64,
+				"max": 32,
+				"nb_distinctes": 19,
+				"valeurs": [-64, -32, -8, -4, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (32)",
+					"graine": 5,
+					"enonce": "Calcule $\\left( 1 + \\imaginaryI \\right)^{10}$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$\\left( 1 + \\imaginaryI \\right)^{10} = [?]$",
+					"reponse": ["32i"],
+					"variables": {
+						"n": "10",
+						"x": "0",
+						"y": "32"
+					}
+				},
+				{
+					"role": "plus petite valeur (-64)",
+					"graine": 10,
+					"enonce": "Calcule $\\left( 1 + \\imaginaryI \\right)^{12}$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$\\left( 1 + \\imaginaryI \\right)^{12} = [?]$",
+					"reponse": ["-64"],
+					"variables": {
+						"n": "12",
+						"x": "-64",
+						"y": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule $\\left( 1 + \\imaginaryI \\right)^3$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$\\left( 1 + \\imaginaryI \\right)^3 = [?]$",
+					"reponse": ["-2+2i"],
+					"variables": {
+						"n": "3",
+						"x": "-2",
+						"y": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule $\\left( 1 + \\imaginaryI \\right)^6$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$\\left( 1 + \\imaginaryI \\right)^6 = [?]$",
+					"reponse": ["-8i"],
+					"variables": {
+						"n": "6",
+						"x": "0",
+						"y": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule $\\left( 1 + \\imaginaryI \\right)^9$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$\\left( 1 + \\imaginaryI \\right)^9 = [?]$",
+					"reponse": ["16+16i"],
+					"variables": {
+						"n": "9",
+						"x": "16",
+						"y": "16"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "3|6|9|12"
+					},
+					{
+						"name": "x",
+						"expression": "eval:round(2^n*cos(n*\\pi/6))"
+					},
+					{
+						"name": "y",
+						"expression": "eval:round(2^n*sin(n*\\pi/6))"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule $(\\sqrt{3}+i)^{ {{n}} }$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$(\\sqrt{3}+i)^{ {{n}} }=?$",
+				"reponses_brutes": ["{{x}}+({{y}})i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [3, 6, 9, 12]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -64,
+						"max": 4096,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-64, 0, 4096]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -512,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-512, 0, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.5433333333333333,
+						"nb_distinctes": 4,
+						"valeurs": ["-512i", "-64", "4096", "8i"],
+						"nombres_contenus": {
+							"min": -512,
+							"max": 4096,
+							"nb_distinctes": 4,
+							"valeurs": [-512, -64, 8, 4096],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 12,
+				"nb_distinctes": 4,
+				"valeurs": [3, 6, 9, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -512,
+				"max": 4096,
+				"nb_distinctes": 4,
+				"valeurs": [-512, -64, 8, 4096],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -512,
+				"max": 4096,
+				"nb_distinctes": 8,
+				"valeurs": [-512, -64, 3, 6, 8, 9, 12, 4096],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4096)",
+					"graine": 5,
+					"enonce": "Calcule $\\left( \\sqrt{3} + \\imaginaryI \\right)^{12}$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$\\left( \\sqrt{3} + \\imaginaryI \\right)^{12} = [?]$",
+					"reponse": ["4096"],
+					"variables": {
+						"n": "12",
+						"x": "4096",
+						"y": "0"
+					}
+				},
+				{
+					"role": "plus petite valeur (-512)",
+					"graine": 8,
+					"enonce": "Calcule $\\left( \\sqrt{3} + \\imaginaryI \\right)^9$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$\\left( \\sqrt{3} + \\imaginaryI \\right)^9 = [?]$",
+					"reponse": ["-512i"],
+					"variables": {
+						"n": "9",
+						"x": "0",
+						"y": "-512"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule $\\left( \\sqrt{3} + \\imaginaryI \\right)^3$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$\\left( \\sqrt{3} + \\imaginaryI \\right)^3 = [?]$",
+					"reponse": ["8i"],
+					"variables": {
+						"n": "3",
+						"x": "0",
+						"y": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule $\\left( \\sqrt{3} + \\imaginaryI \\right)^6$ en passant par la forme exponentielle. Donne le résultat sous forme algébrique.\n\n$\\left( \\sqrt{3} + \\imaginaryI \\right)^6 = [?]$",
+					"reponse": ["-64"],
+					"variables": {
+						"n": "6",
+						"x": "-64",
+						"y": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "2..8"
+					},
+					{
+						"name": "k",
+						"expression": "eval:mod(5*n+2,6)-2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris $(1-i\\sqrt{3})^{ {{n}} }$ sous forme exponentielle, avec l'argument principal.\n\n$(1-i\\sqrt{3})^{ {{n}} }=?e^{i?}$",
+				"reponses_brutes": ["{{eval:2^n}}", "{{eval:k*\\pi/3}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 7,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-2, -1, 0, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 256,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [4, 8, 16, 32, 64, 128, 256]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.13666666666666666,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-\\dfrac{2 \\pi}{3}",
+							"-\\dfrac{\\pi}{3}",
+							"0",
+							"\\dfrac{2 \\pi}{3}",
+							"\\dfrac{\\pi}{3}",
+							"\\pi"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [0, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 8,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 256,
+				"nb_distinctes": 10,
+				"valeurs": [0, 2, 3, 4, 8, 16, 32, 64, 128, 256],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 256,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 256],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (256)",
+					"graine": 10,
+					"enonce": "Écris $\\left( 1 - \\imaginaryI \\sqrt{3} \\right)^8$ sous forme exponentielle, avec l'argument principal.\n\n$\\left( 1 - \\imaginaryI \\sqrt{3} \\right)^8 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["256", "-\\dfrac{2 \\pi}{3}"],
+					"variables": {
+						"n": "8",
+						"k": "-2"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 8,
+					"enonce": "Écris $\\left( 1 - \\imaginaryI \\sqrt{3} \\right)^6$ sous forme exponentielle, avec l'argument principal.\n\n$\\left( 1 - \\imaginaryI \\sqrt{3} \\right)^6 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["64", "0"],
+					"variables": {
+						"n": "6",
+						"k": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Écris $\\left( 1 - \\imaginaryI \\sqrt{3} \\right)^2$ sous forme exponentielle, avec l'argument principal.\n\n$\\left( 1 - \\imaginaryI \\sqrt{3} \\right)^2 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["4", "-\\dfrac{2 \\pi}{3}"],
+					"variables": {
+						"n": "2",
+						"k": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris $\\left( 1 - \\imaginaryI \\sqrt{3} \\right)^4$ sous forme exponentielle, avec l'argument principal.\n\n$\\left( 1 - \\imaginaryI \\sqrt{3} \\right)^4 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["16", "\\dfrac{2 \\pi}{3}"],
+					"variables": {
+						"n": "4",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Écris $\\left( 1 - \\imaginaryI \\sqrt{3} \\right)^7$ sous forme exponentielle, avec l'argument principal.\n\n$\\left( 1 - \\imaginaryI \\sqrt{3} \\right)^7 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["128", "-\\dfrac{\\pi}{3}"],
+					"variables": {
+						"n": "7",
+						"k": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "N",
+						"expression": "5..30"
+					},
+					{
+						"name": "x",
+						"expression": "eval:round(a*cos(N*\\pi/2)-b*sin(N*\\pi/2))"
+					},
+					{
+						"name": "y",
+						"expression": "eval:round(a*sin(N*\\pi/2)+b*cos(N*\\pi/2))"
+					},
+					{
+						"name": "r",
+						"expression": "eval:mod(N,4)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(z_n)$ est définie par $z_0={{a}}+({{b}})i$ et, pour tout entier naturel $n$, $z_{n+1}=iz_n$. Calcule $z_{ {{N}} }$ sous forme algébrique.\n\n$z_{ {{N}} }=?$",
+				"reponses_brutes": ["{{x}}+({{y}})i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 280,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 26,
+						"valeurs": [
+							5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+							28, 29, 30
+						]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 93,
+						"exemples": [
+							"5-i",
+							"2+3i",
+							"5+i",
+							"-3+2i",
+							"3+3i",
+							"5-2i",
+							"5+5i",
+							"-2-2i",
+							"-4+4i",
+							"-2+5i",
+							"1+2i",
+							"-1-5i"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 10,
+							"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 30,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 30,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30)",
+					"graine": 1,
+					"enonce": "La suite $\\left( z_n \\right)$ est définie par $z_0 = -5 + \\imaginaryI$ et, pour tout entier naturel $n$, $z_{n + 1} = \\imaginaryI z_n$. Calcule $z_{30}$ sous forme algébrique.\n\n$z_{30} = [?]$",
+					"reponse": ["5-i"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"N": "30",
+						"x": "5",
+						"y": "-1",
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La suite $\\left( z_n \\right)$ est définie par $z_0 = -2 - 3 \\imaginaryI$ et, pour tout entier naturel $n$, $z_{n + 1} = \\imaginaryI z_n$. Calcule $z_{18}$ sous forme algébrique.\n\n$z_{18} = [?]$",
+					"reponse": ["2+3i"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"N": "18",
+						"x": "2",
+						"y": "3",
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La suite $\\left( z_n \\right)$ est définie par $z_0 = -5 - \\imaginaryI$ et, pour tout entier naturel $n$, $z_{n + 1} = \\imaginaryI z_n$. Calcule $z_6$ sous forme algébrique.\n\n$z_6 = [?]$",
+					"reponse": ["5+i"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"N": "6",
+						"x": "5",
+						"y": "1",
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La suite $\\left( z_n \\right)$ est définie par $z_0 = -2 - 3 \\imaginaryI$ et, pour tout entier naturel $n$, $z_{n + 1} = \\imaginaryI z_n$. Calcule $z_7$ sous forme algébrique.\n\n$z_7 = [?]$",
+					"reponse": ["-3+2i"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"N": "7",
+						"x": "-3",
+						"y": "2",
+						"r": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La suite $\\left( z_n \\right)$ est définie par $z_0 = 3 - 3 \\imaginaryI$ et, pour tout entier naturel $n$, $z_{n + 1} = \\imaginaryI z_n$. Calcule $z_{21}$ sous forme algébrique.\n\n$z_{21} = [?]$",
+					"reponse": ["3+3i"],
+					"variables": {
+						"a": "3",
+						"b": "-3",
+						"N": "21",
+						"x": "3",
+						"y": "3",
+						"r": "1"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,1022 @@
+{
+	"template_id": "0a1ff14f-ac73-4b9e-ab4c-a4d465c78e76",
+	"titre": "Cardinal d'une réunion et d'un produit cartésien",
+	"sous_titre": "Card(A ∪ B) = Card A + Card B − Card(A ∩ B) en contexte (activités, langues) et Card(A × B) = Card A × Card B",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Logique > Ensembles > Cardinal et produit cartésien",
+	"mis_a_jour": "2026-10-03T10:09:19.042109+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-207",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "2..8"
+					},
+					{
+						"name": "ga",
+						"expression": "3..12"
+					},
+					{
+						"name": "a",
+						"expression": "{{eval:c+ga}}"
+					},
+					{
+						"name": "gb",
+						"expression": "2..10"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:c+gb}}"
+					},
+					{
+						"name": "z",
+						"expression": "1..6"
+					},
+					{
+						"name": "n",
+						"expression": "{{eval:a+b-c+z}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans une classe de ${{n}}$ élèves, ${{a}}$ font du sport en club, ${{b}}$ font de la musique et ${{c}}$ font les deux.\n\nNombre d'élèves qui pratiquent au moins une des deux activités : $?$\n\nNombre d'élèves qui ne pratiquent aucune des deux activités : $?$",
+				"reponses_brutes": ["{{eval:a+b-c}}", "{{z}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 290,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "ga",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "gb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				},
+				{
+					"nom": "z",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 33,
+						"negatif_possible": false,
+						"nb_distinctes": 23,
+						"valeurs": [
+							10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+							31, 33
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 28,
+						"negatif_possible": false,
+						"nb_distinctes": 21,
+						"valeurs": [
+							8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 33,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 28,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+					26, 27, 28
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 33,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 37,
+					"max": 37
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (33)",
+					"graine": 133,
+					"enonce": "Dans une classe de $33$ élèves, $18$ font du sport en club, $17$ font de la musique et $8$ font les deux.\n\nNombre d'élèves qui pratiquent au moins une des deux activités : $[?]$\n\nNombre d'élèves qui ne pratiquent aucune des deux activités : $[?]$",
+					"reponse": ["27", "6"],
+					"variables": {
+						"c": "8",
+						"ga": "10",
+						"a": "18",
+						"gb": "9",
+						"b": "17",
+						"z": "6",
+						"n": "33"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 5,
+					"enonce": "Dans une classe de $20$ élèves, $12$ font du sport en club, $14$ font de la musique et $7$ font les deux.\n\nNombre d'élèves qui pratiquent au moins une des deux activités : $[?]$\n\nNombre d'élèves qui ne pratiquent aucune des deux activités : $[?]$",
+					"reponse": ["19", "1"],
+					"variables": {
+						"c": "7",
+						"ga": "5",
+						"a": "12",
+						"gb": "7",
+						"b": "14",
+						"z": "1",
+						"n": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans une classe de $26$ élèves, $10$ font du sport en club, $12$ font de la musique et $2$ font les deux.\n\nNombre d'élèves qui pratiquent au moins une des deux activités : $[?]$\n\nNombre d'élèves qui ne pratiquent aucune des deux activités : $[?]$",
+					"reponse": ["20", "6"],
+					"variables": {
+						"c": "2",
+						"ga": "8",
+						"a": "10",
+						"gb": "10",
+						"b": "12",
+						"z": "6",
+						"n": "26"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans une classe de $21$ élèves, $9$ font du sport en club, $10$ font de la musique et $4$ font les deux.\n\nNombre d'élèves qui pratiquent au moins une des deux activités : $[?]$\n\nNombre d'élèves qui ne pratiquent aucune des deux activités : $[?]$",
+					"reponse": ["15", "6"],
+					"variables": {
+						"c": "4",
+						"ga": "5",
+						"a": "9",
+						"gb": "6",
+						"b": "10",
+						"z": "6",
+						"n": "21"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans une classe de $16$ élèves, $9$ font du sport en club, $4$ font de la musique et $2$ font les deux.\n\nNombre d'élèves qui pratiquent au moins une des deux activités : $[?]$\n\nNombre d'élèves qui ne pratiquent aucune des deux activités : $[?]$",
+					"reponse": ["11", "5"],
+					"variables": {
+						"c": "2",
+						"ga": "7",
+						"a": "9",
+						"gb": "2",
+						"b": "4",
+						"z": "5",
+						"n": "16"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "2..8"
+					},
+					{
+						"name": "ga",
+						"expression": "3..12"
+					},
+					{
+						"name": "a",
+						"expression": "{{eval:c+ga}}"
+					},
+					{
+						"name": "gb",
+						"expression": "2..10"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:c+gb}}"
+					},
+					{
+						"name": "z",
+						"expression": "1..6"
+					},
+					{
+						"name": "n",
+						"expression": "{{eval:a+b-c+z}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans un lycée, on interroge ${{n}}$ élèves : ${{a}}$ apprennent l'espagnol, ${{b}}$ apprennent l'allemand, et ${{z}}$ n'apprennent aucune de ces deux langues.\n\nCombien d'élèves interrogés apprennent les deux langues ? $?$",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 290,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "ga",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "gb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				},
+				{
+					"nom": "z",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 33,
+						"negatif_possible": false,
+						"nb_distinctes": 23,
+						"valeurs": [
+							10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+							31, 33
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 33,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 33,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (33)",
+					"graine": 133,
+					"enonce": "Dans un lycée, on interroge $33$ élèves : $18$ apprennent l'espagnol, $17$ apprennent l'allemand, et $6$ n'apprennent aucune de ces deux langues.\n\nCombien d'élèves interrogés apprennent les deux langues ? $[?]$",
+					"reponse": ["8"],
+					"variables": {
+						"c": "8",
+						"ga": "10",
+						"a": "18",
+						"gb": "9",
+						"b": "17",
+						"z": "6",
+						"n": "33"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 5,
+					"enonce": "Dans un lycée, on interroge $20$ élèves : $12$ apprennent l'espagnol, $14$ apprennent l'allemand, et $1$ n'apprennent aucune de ces deux langues.\n\nCombien d'élèves interrogés apprennent les deux langues ? $[?]$",
+					"reponse": ["7"],
+					"variables": {
+						"c": "7",
+						"ga": "5",
+						"a": "12",
+						"gb": "7",
+						"b": "14",
+						"z": "1",
+						"n": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans un lycée, on interroge $26$ élèves : $10$ apprennent l'espagnol, $12$ apprennent l'allemand, et $6$ n'apprennent aucune de ces deux langues.\n\nCombien d'élèves interrogés apprennent les deux langues ? $[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"c": "2",
+						"ga": "8",
+						"a": "10",
+						"gb": "10",
+						"b": "12",
+						"z": "6",
+						"n": "26"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans un lycée, on interroge $21$ élèves : $9$ apprennent l'espagnol, $10$ apprennent l'allemand, et $6$ n'apprennent aucune de ces deux langues.\n\nCombien d'élèves interrogés apprennent les deux langues ? $[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"c": "4",
+						"ga": "5",
+						"a": "9",
+						"gb": "6",
+						"b": "10",
+						"z": "6",
+						"n": "21"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans un lycée, on interroge $16$ élèves : $9$ apprennent l'espagnol, $4$ apprennent l'allemand, et $5$ n'apprennent aucune de ces deux langues.\n\nCombien d'élèves interrogés apprennent les deux langues ? $[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"c": "2",
+						"ga": "7",
+						"a": "9",
+						"gb": "2",
+						"b": "4",
+						"z": "5",
+						"n": "16"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "2..8"
+					},
+					{
+						"name": "ga",
+						"expression": "3..12"
+					},
+					{
+						"name": "a",
+						"expression": "{{eval:c+ga}}"
+					},
+					{
+						"name": "gb",
+						"expression": "2..10"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:c+gb}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$A$ et $B$ sont deux ensembles finis tels que $\\mathrm{Card}(A)={{a}}$, $\\mathrm{Card}(B)={{b}}$ et $\\mathrm{Card}(A\\cup B)={{eval:a+b-c}}$.\n\n$\\mathrm{Card}(A\\cap B)=?$",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 242,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "ga",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "gb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 28,
+				"nb_distinctes": 25,
+				"valeurs": [
+					4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+					28
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 28,
+				"nb_distinctes": 27,
+				"valeurs": [
+					2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+					26, 27, 28
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (28)",
+					"graine": 156,
+					"enonce": "$A$ et $B$ sont deux ensembles finis tels que $\\mathrm{Card}(A)=18$, $\\mathrm{Card}(B)=16$ et $\\mathrm{Card}(A\\cup B)=28$.\n\n$\\mathrm{Card}(A\\cap B)=[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"c": "6",
+						"ga": "12",
+						"a": "18",
+						"gb": "10",
+						"b": "16"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "$A$ et $B$ sont deux ensembles finis tels que $\\mathrm{Card}(A)=10$, $\\mathrm{Card}(B)=12$ et $\\mathrm{Card}(A\\cup B)=20$.\n\n$\\mathrm{Card}(A\\cap B)=[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"c": "2",
+						"ga": "8",
+						"a": "10",
+						"gb": "10",
+						"b": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$A$ et $B$ sont deux ensembles finis tels que $\\mathrm{Card}(A)=9$, $\\mathrm{Card}(B)=10$ et $\\mathrm{Card}(A\\cup B)=15$.\n\n$\\mathrm{Card}(A\\cap B)=[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"c": "4",
+						"ga": "5",
+						"a": "9",
+						"gb": "6",
+						"b": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$A$ et $B$ sont deux ensembles finis tels que $\\mathrm{Card}(A)=9$, $\\mathrm{Card}(B)=4$ et $\\mathrm{Card}(A\\cup B)=11$.\n\n$\\mathrm{Card}(A\\cap B)=[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"c": "2",
+						"ga": "7",
+						"a": "9",
+						"gb": "2",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$A$ et $B$ sont deux ensembles finis tels que $\\mathrm{Card}(A)=9$, $\\mathrm{Card}(B)=6$ et $\\mathrm{Card}(A\\cup B)=11$.\n\n$\\mathrm{Card}(A\\cap B)=[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"c": "4",
+						"ga": "5",
+						"a": "9",
+						"gb": "2",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "3..9"
+					},
+					{
+						"name": "k",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère les ensembles $A=\\{1;2;\\dots;{{m}}\\}$ et $B=\\{0;1;\\dots;{{k}}\\}$.\n\n$\\mathrm{Card}(A\\times B)=?$\n\n$\\mathrm{Card}(B\\times B)=?$",
+				"reponses_brutes": ["{{eval:m*(k+1)}}", "{{eval:(k+1)^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 35,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 9,
+						"max": 63,
+						"negatif_possible": false,
+						"nb_distinctes": 23,
+						"valeurs": [
+							9, 12, 15, 16, 18, 20, 21, 24, 25, 27, 28, 30, 32, 35, 36, 40, 42, 45, 48, 49, 54, 56,
+							63
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 9,
+						"max": 49,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [9, 16, 25, 36, 49]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 9,
+				"max": 63,
+				"nb_distinctes": 23,
+				"valeurs": [
+					9, 12, 15, 16, 18, 20, 21, 24, 25, 27, 28, 30, 32, 35, 36, 40, 42, 45, 48, 49, 54, 56, 63
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 63,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"…": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (63)",
+					"graine": 73,
+					"enonce": "On considère les ensembles $A=\\{1;2;\\dots;9\\}$ et $B=\\{0;1;\\dots;6\\}$.\n\n$\\mathrm{Card}(A\\times B)=[?]$\n\n$\\mathrm{Card}(B\\times B)=[?]$",
+					"reponse": ["63", "49"],
+					"variables": {
+						"m": "9",
+						"k": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On considère les ensembles $A=\\{1;2;\\dots;3\\}$ et $B=\\{0;1;\\dots;4\\}$.\n\n$\\mathrm{Card}(A\\times B)=[?]$\n\n$\\mathrm{Card}(B\\times B)=[?]$",
+					"reponse": ["15", "25"],
+					"variables": {
+						"m": "3",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère les ensembles $A=\\{1;2;\\dots;5\\}$ et $B=\\{0;1;\\dots;3\\}$.\n\n$\\mathrm{Card}(A\\times B)=[?]$\n\n$\\mathrm{Card}(B\\times B)=[?]$",
+					"reponse": ["20", "16"],
+					"variables": {
+						"m": "5",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère les ensembles $A=\\{1;2;\\dots;8\\}$ et $B=\\{0;1;\\dots;3\\}$.\n\n$\\mathrm{Card}(A\\times B)=[?]$\n\n$\\mathrm{Card}(B\\times B)=[?]$",
+					"reponse": ["32", "16"],
+					"variables": {
+						"m": "8",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "On considère les ensembles $A=\\{1;2;\\dots;3\\}$ et $B=\\{0;1;\\dots;5\\}$.\n\n$\\mathrm{Card}(A\\times B)=[?]$\n\n$\\mathrm{Card}(B\\times B)=[?]$",
+					"reponse": ["18", "36"],
+					"variables": {
+						"m": "3",
+						"k": "5"
+					}
+				}
+			]
+		}
+	]
+}

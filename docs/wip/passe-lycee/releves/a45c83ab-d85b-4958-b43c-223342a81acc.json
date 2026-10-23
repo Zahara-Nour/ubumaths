@@ -1,0 +1,1391 @@
+{
+	"template_id": "a45c83ab-d85b-4958-b43c-223342a81acc",
+	"titre": "Opérations sur les matrices : somme, combinaison linéaire",
+	"sous_titre": "Calculer A + B, kA − B, et trouver B tel que A + B = C pour des matrices 2 × 2, coefficient par coefficient (pièges : signe d'un coefficient négatif, k appliqué aux deux matrices)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Graphes et matrices > Matrices > Calcul matriciel",
+	"mis_a_jour": "2026-10-05T17:43:27.07733+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-319",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a2",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a3",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a4",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b1",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b2",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b3",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b4",
+						"expression": "-4..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $B = \\begin{pmatrix}{{b1}}&{{b2}}\\\\{{b3}}&{{b4}}\\end{pmatrix}$.\n\nOn note $A+B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+				"reponses_brutes": ["{{eval:a1+b1}}", "{{eval:a2+b2}}", "{{eval:a3+b3}}", "{{eval:a4+b4}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 22,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 11, 12, 21, 22],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -8,
+				"max": 10,
+				"nb_distinctes": 19,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -8,
+				"max": 22,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 21, 22
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 4,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "182/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (22)",
+					"graine": 1,
+					"enonce": "$A = \\begin{pmatrix}-4&1\\\\5&5\\end{pmatrix}$ et $B = \\begin{pmatrix}-2&2\\\\3&0\\end{pmatrix}$.\n\nOn note $A+B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["-6", "3", "8", "5"],
+					"variables": {
+						"a1": "-4",
+						"a2": "1",
+						"a3": "5",
+						"a4": "5",
+						"b1": "-2",
+						"b2": "2",
+						"b3": "3",
+						"b4": "0"
+					}
+				},
+				{
+					"role": "plus petite valeur (-8)",
+					"graine": 6,
+					"enonce": "$A = \\begin{pmatrix}-4&2\\\\-2&1\\end{pmatrix}$ et $B = \\begin{pmatrix}-4&-4\\\\5&5\\end{pmatrix}$.\n\nOn note $A+B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["-8", "-2", "3", "6"],
+					"variables": {
+						"a1": "-4",
+						"a2": "2",
+						"a3": "-2",
+						"a4": "1",
+						"b1": "-4",
+						"b2": "-4",
+						"b3": "5",
+						"b4": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$A = \\begin{pmatrix}-1&-2\\\\1&4\\end{pmatrix}$ et $B = \\begin{pmatrix}2&0\\\\-1&3\\end{pmatrix}$.\n\nOn note $A+B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["1", "-2", "0", "7"],
+					"variables": {
+						"a1": "-1",
+						"a2": "-2",
+						"a3": "1",
+						"a4": "4",
+						"b1": "2",
+						"b2": "0",
+						"b3": "-1",
+						"b4": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$A = \\begin{pmatrix}-4&0\\\\-4&3\\end{pmatrix}$ et $B = \\begin{pmatrix}0&0\\\\-3&-2\\end{pmatrix}$.\n\nOn note $A+B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["-4", "0", "-7", "1"],
+					"variables": {
+						"a1": "-4",
+						"a2": "0",
+						"a3": "-4",
+						"a4": "3",
+						"b1": "0",
+						"b2": "0",
+						"b3": "-3",
+						"b4": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$A = \\begin{pmatrix}-1&-2\\\\-4&-2\\end{pmatrix}$ et $B = \\begin{pmatrix}1&-4\\\\5&2\\end{pmatrix}$.\n\nOn note $A+B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["0", "-6", "1", "0"],
+					"variables": {
+						"a1": "-1",
+						"a2": "-2",
+						"a3": "-4",
+						"a4": "-2",
+						"b1": "1",
+						"b2": "-4",
+						"b3": "5",
+						"b4": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a2",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a3",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a4",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b1",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b2",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b3",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b4",
+						"expression": "-4..5"
+					},
+					{
+						"name": "k",
+						"expression": "2..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $B = \\begin{pmatrix}{{b1}}&{{b2}}\\\\{{b3}}&{{b4}}\\end{pmatrix}$.\n\nOn note ${{k}}A-B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+				"reponses_brutes": [
+					"{{eval:k*a1-b1}}",
+					"{{eval:k*a2-b2}}",
+					"{{eval:k*a3-b3}}",
+					"{{eval:k*a4-b4}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -16,
+						"max": 19,
+						"negatif_possible": true,
+						"nb_distinctes": 36
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 19,
+						"negatif_possible": true,
+						"nb_distinctes": 34
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -17,
+						"max": 17,
+						"negatif_possible": true,
+						"nb_distinctes": 33
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -17,
+						"max": 19,
+						"negatif_possible": true,
+						"nb_distinctes": 36
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 22,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 11, 12, 21, 22],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -17,
+				"max": 19,
+				"nb_distinctes": 37,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -17,
+				"max": 22,
+				"nb_distinctes": 39,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 4,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "182/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (22)",
+					"graine": 1,
+					"enonce": "$A = \\begin{pmatrix}-4&1\\\\5&5\\end{pmatrix}$ et $B = \\begin{pmatrix}-2&2\\\\3&0\\end{pmatrix}$.\n\nOn note $3A-B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["-10", "1", "12", "15"],
+					"variables": {
+						"a1": "-4",
+						"a2": "1",
+						"a3": "5",
+						"a4": "5",
+						"b1": "-2",
+						"b2": "2",
+						"b3": "3",
+						"b4": "0",
+						"k": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-17)",
+					"graine": 4,
+					"enonce": "$A = \\begin{pmatrix}-1&-2\\\\-4&-2\\end{pmatrix}$ et $B = \\begin{pmatrix}1&-4\\\\5&2\\end{pmatrix}$.\n\nOn note $3A-B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["-4", "-2", "-17", "-8"],
+					"variables": {
+						"a1": "-1",
+						"a2": "-2",
+						"a3": "-4",
+						"a4": "-2",
+						"b1": "1",
+						"b2": "-4",
+						"b3": "5",
+						"b4": "2",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$A = \\begin{pmatrix}-1&-2\\\\1&4\\end{pmatrix}$ et $B = \\begin{pmatrix}2&0\\\\-1&3\\end{pmatrix}$.\n\nOn note $2A-B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["-4", "-4", "3", "5"],
+					"variables": {
+						"a1": "-1",
+						"a2": "-2",
+						"a3": "1",
+						"a4": "4",
+						"b1": "2",
+						"b2": "0",
+						"b3": "-1",
+						"b4": "3",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$A = \\begin{pmatrix}-4&0\\\\-4&3\\end{pmatrix}$ et $B = \\begin{pmatrix}0&0\\\\-3&-2\\end{pmatrix}$.\n\nOn note $3A-B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["-12", "0", "-9", "11"],
+					"variables": {
+						"a1": "-4",
+						"a2": "0",
+						"a3": "-4",
+						"a4": "3",
+						"b1": "0",
+						"b2": "0",
+						"b3": "-3",
+						"b4": "-2",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$A = \\begin{pmatrix}3&-2\\\\2&-4\\end{pmatrix}$ et $B = \\begin{pmatrix}1&3\\\\0&5\\end{pmatrix}$.\n\nOn note $2A-B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["5", "-7", "4", "-13"],
+					"variables": {
+						"a1": "3",
+						"a2": "-2",
+						"a3": "2",
+						"a4": "-4",
+						"b1": "1",
+						"b2": "3",
+						"b3": "0",
+						"b4": "5",
+						"k": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a2",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a3",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a4",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b1",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b2",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b3",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b4",
+						"expression": "-4..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $A + B = \\begin{pmatrix}{{eval:a1+b1}}&{{eval:a2+b2}}\\\\{{eval:a3+b3}}&{{eval:a4+b4}}\\end{pmatrix}$.\n\nDétermine la matrice $B$. On note $B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+				"reponses_brutes": ["{{eval:b1}}", "{{eval:b2}}", "{{eval:b3}}", "{{eval:b4}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 22,
+				"nb_distinctes": 15,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 21, 22],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -4,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 22,
+				"nb_distinctes": 19,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 21, 22],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 4,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "137/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 6,
+					"max": 6
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (22)",
+					"graine": 1,
+					"enonce": "$A = \\begin{pmatrix}-4&1\\\\5&5\\end{pmatrix}$ et $A + B = \\begin{pmatrix}-6&3\\\\8&5\\end{pmatrix}$.\n\nDétermine la matrice $B$. On note $B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["-2", "2", "3", "0"],
+					"variables": {
+						"a1": "-4",
+						"a2": "1",
+						"a3": "5",
+						"a4": "5",
+						"b1": "-2",
+						"b2": "2",
+						"b3": "3",
+						"b4": "0"
+					}
+				},
+				{
+					"role": "plus petite valeur (-4)",
+					"graine": 4,
+					"enonce": "$A = \\begin{pmatrix}-1&-2\\\\-4&-2\\end{pmatrix}$ et $A + B = \\begin{pmatrix}0&-6\\\\1&0\\end{pmatrix}$.\n\nDétermine la matrice $B$. On note $B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["1", "-4", "5", "2"],
+					"variables": {
+						"a1": "-1",
+						"a2": "-2",
+						"a3": "-4",
+						"a4": "-2",
+						"b1": "1",
+						"b2": "-4",
+						"b3": "5",
+						"b4": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$A = \\begin{pmatrix}-1&-2\\\\1&4\\end{pmatrix}$ et $A + B = \\begin{pmatrix}1&-2\\\\0&7\\end{pmatrix}$.\n\nDétermine la matrice $B$. On note $B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["2", "0", "-1", "3"],
+					"variables": {
+						"a1": "-1",
+						"a2": "-2",
+						"a3": "1",
+						"a4": "4",
+						"b1": "2",
+						"b2": "0",
+						"b3": "-1",
+						"b4": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$A = \\begin{pmatrix}-4&0\\\\-4&3\\end{pmatrix}$ et $A + B = \\begin{pmatrix}-4&0\\\\-7&1\\end{pmatrix}$.\n\nDétermine la matrice $B$. On note $B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["0", "0", "-3", "-2"],
+					"variables": {
+						"a1": "-4",
+						"a2": "0",
+						"a3": "-4",
+						"a4": "3",
+						"b1": "0",
+						"b2": "0",
+						"b3": "-3",
+						"b4": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$A = \\begin{pmatrix}3&-2\\\\2&-4\\end{pmatrix}$ et $A + B = \\begin{pmatrix}4&1\\\\2&1\\end{pmatrix}$.\n\nDétermine la matrice $B$. On note $B = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["1", "3", "0", "5"],
+					"variables": {
+						"a1": "3",
+						"a2": "-2",
+						"a3": "2",
+						"a4": "-4",
+						"b1": "1",
+						"b2": "3",
+						"b3": "0",
+						"b4": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a2",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a3",
+						"expression": "-4..5"
+					},
+					{
+						"name": "a4",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b1",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b2",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b3",
+						"expression": "-4..5"
+					},
+					{
+						"name": "b4",
+						"expression": "-4..5"
+					},
+					{
+						"name": "k",
+						"expression": "2..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ et $B = \\begin{pmatrix}{{b1}}&{{b2}}\\\\{{b3}}&{{b4}}\\end{pmatrix}$.\n\nCalcule la matrice ${{k}}A-B$.\n\n${{k}}A-B=?$",
+				"reponses_brutes": [
+					"\\begin{pmatrix}{{eval:k*a1-b1}}&{{eval:k*a2-b2}}\\\\{{eval:k*a3-b3}}&{{eval:k*a4-b4}}\\end{pmatrix}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 300,
+						"exemples": [
+							"\\begin{pmatrix}-10&1\\\\12&15\\end{pmatrix}",
+							"\\begin{pmatrix}-4&-4\\\\3&5\\end{pmatrix}",
+							"\\begin{pmatrix}-12&0\\\\-9&11\\end{pmatrix}",
+							"\\begin{pmatrix}-4&-2\\\\-17&-8\\end{pmatrix}",
+							"\\begin{pmatrix}5&-7\\\\4&-13\\end{pmatrix}",
+							"\\begin{pmatrix}-4&8\\\\-9&-3\\end{pmatrix}",
+							"\\begin{pmatrix}-12&15\\\\8&2\\end{pmatrix}",
+							"\\begin{pmatrix}4&-6\\\\6&1\\end{pmatrix}",
+							"\\begin{pmatrix}10&-7\\\\7&12\\end{pmatrix}",
+							"\\begin{pmatrix}15&8\\\\16&4\\end{pmatrix}",
+							"\\begin{pmatrix}1&8\\\\1&6\\end{pmatrix}",
+							"\\begin{pmatrix}-8&1\\\\13&-10\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 19,
+							"nb_distinctes": 20,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 5,
+				"nb_distinctes": 6,
+				"valeurs": [0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 19,
+				"nb_distinctes": 20,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 19,
+				"nb_distinctes": 20,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "182/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (19)",
+					"graine": 86,
+					"enonce": "$A = \\begin{pmatrix}5&3\\\\4&0\\end{pmatrix}$ et $B = \\begin{pmatrix}-4&0\\\\3&3\\end{pmatrix}$.\n\nCalcule la matrice $3 A - B$.\n\n$3 A - B = [?]$",
+					"reponse": ["\\begin{pmatrix}19&9\\\\9&-3\\end{pmatrix}"],
+					"variables": {
+						"a1": "5",
+						"a2": "3",
+						"a3": "4",
+						"a4": "0",
+						"b1": "-4",
+						"b2": "0",
+						"b3": "3",
+						"b4": "3",
+						"k": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "$A = \\begin{pmatrix}-4&1\\\\5&5\\end{pmatrix}$ et $B = \\begin{pmatrix}-2&2\\\\3&0\\end{pmatrix}$.\n\nCalcule la matrice $3 A - B$.\n\n$3 A - B = [?]$",
+					"reponse": ["\\begin{pmatrix}-10&1\\\\12&15\\end{pmatrix}"],
+					"variables": {
+						"a1": "-4",
+						"a2": "1",
+						"a3": "5",
+						"a4": "5",
+						"b1": "-2",
+						"b2": "2",
+						"b3": "3",
+						"b4": "0",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$A = \\begin{pmatrix}-1&-2\\\\1&4\\end{pmatrix}$ et $B = \\begin{pmatrix}2&0\\\\-1&3\\end{pmatrix}$.\n\nCalcule la matrice $2 A - B$.\n\n$2 A - B = [?]$",
+					"reponse": ["\\begin{pmatrix}-4&-4\\\\3&5\\end{pmatrix}"],
+					"variables": {
+						"a1": "-1",
+						"a2": "-2",
+						"a3": "1",
+						"a4": "4",
+						"b1": "2",
+						"b2": "0",
+						"b3": "-1",
+						"b4": "3",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$A = \\begin{pmatrix}-4&0\\\\-4&3\\end{pmatrix}$ et $B = \\begin{pmatrix}0&0\\\\-3&-2\\end{pmatrix}$.\n\nCalcule la matrice $3 A - B$.\n\n$3 A - B = [?]$",
+					"reponse": ["\\begin{pmatrix}-12&0\\\\-9&11\\end{pmatrix}"],
+					"variables": {
+						"a1": "-4",
+						"a2": "0",
+						"a3": "-4",
+						"a4": "3",
+						"b1": "0",
+						"b2": "0",
+						"b3": "-3",
+						"b4": "-2",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$A = \\begin{pmatrix}-1&-2\\\\-4&-2\\end{pmatrix}$ et $B = \\begin{pmatrix}1&-4\\\\5&2\\end{pmatrix}$.\n\nCalcule la matrice $3 A - B$.\n\n$3 A - B = [?]$",
+					"reponse": ["\\begin{pmatrix}-4&-2\\\\-17&-8\\end{pmatrix}"],
+					"variables": {
+						"a1": "-1",
+						"a2": "-2",
+						"a3": "-4",
+						"a4": "-2",
+						"b1": "1",
+						"b2": "-4",
+						"b3": "5",
+						"b4": "2",
+						"k": "3"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,727 @@
+{
+	"template_id": "3091d426-e98f-4da1-abc1-1777dc2061f3",
+	"titre": "Congruences : compatibilité avec les opérations, tables de restes",
+	"sous_titre": "Reste d'une somme, d'une différence, d'un produit à partir des restes ; tables de restes de x² modulo 5 et de 2ᵏ modulo 7 (pièges : reste négatif laissé tel quel, produit des restes non réduit)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Arithmétique > Congruences > Congruences",
+	"mis_a_jour": "2026-10-05T16:06:49.129236+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-274",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "7..13"
+					},
+					{
+						"name": "r1",
+						"expression": "2..12"
+					},
+					{
+						"name": "r2",
+						"expression": "2..12"
+					}
+				],
+				"conditions": ["r1 < n", "r2 < n", "r1*r2 >= n"],
+				"enonce_brut": "$a \\equiv {{r1}} \\,[{{n}}]$ et $b \\equiv {{r2}} \\,[{{n}}]$.\n\nQuel est le reste de la division euclidienne de $ab$ par ${{n}}$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:mod(r1*r2,n)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 222,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [7, 8, 9, 10, 11, 12, 13]
+					}
+				},
+				{
+					"nom": "r1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "r2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 13,
+				"nb_distinctes": 12,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 12,
+				"nb_distinctes": 13,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 13,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (13)",
+					"graine": 1,
+					"enonce": "$a \\equiv 5 \\,[13]$ et $b \\equiv 8 \\,[13]$.\n\nQuel est le reste de la division euclidienne de $a b$ par $13$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"n": "13",
+						"r1": "5",
+						"r2": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 15,
+					"enonce": "$a \\equiv 6 \\,[9]$ et $b \\equiv 6 \\,[9]$.\n\nQuel est le reste de la division euclidienne de $a b$ par $9$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"n": "9",
+						"r1": "6",
+						"r2": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$a \\equiv 5 \\,[9]$ et $b \\equiv 7 \\,[9]$.\n\nQuel est le reste de la division euclidienne de $a b$ par $9$ ?\n\n$[?]$",
+					"reponse": ["8"],
+					"variables": {
+						"n": "9",
+						"r1": "5",
+						"r2": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$a \\equiv 7 \\,[12]$ et $b \\equiv 7 \\,[12]$.\n\nQuel est le reste de la division euclidienne de $a b$ par $12$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"n": "12",
+						"r1": "7",
+						"r2": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$a \\equiv 7 \\,[8]$ et $b \\equiv 2 \\,[8]$.\n\nQuel est le reste de la division euclidienne de $a b$ par $8$ ?\n\n$[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"n": "8",
+						"r1": "7",
+						"r2": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..11"
+					},
+					{
+						"name": "r1",
+						"expression": "0..10"
+					},
+					{
+						"name": "r2",
+						"expression": "1..10"
+					},
+					{
+						"name": "k",
+						"expression": "2..3"
+					}
+				],
+				"conditions": ["r1 < n", "r2 < n", "r1 - k*r2 < 0"],
+				"enonce_brut": "$a \\equiv {{r1}} \\,[{{n}}]$ et $b \\equiv {{r2}} \\,[{{n}}]$.\n\nQuel est le reste de la division euclidienne de $a-{{k}}b$ par ${{n}}$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:mod(r1-k*r2,n)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 246,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "r1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "r2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 11,
+				"nb_distinctes": 12,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 11,
+				"nb_distinctes": 12,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (11)",
+					"graine": 1,
+					"enonce": "$a \\equiv 5 \\,[11]$ et $b \\equiv 5 \\,[11]$.\n\nQuel est le reste de la division euclidienne de $a - 2 b$ par $11$ ?\n\n$[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"n": "11",
+						"r1": "5",
+						"r2": "5",
+						"k": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 8,
+					"enonce": "$a \\equiv 3 \\,[9]$ et $b \\equiv 7 \\,[9]$.\n\nQuel est le reste de la division euclidienne de $a - 3 b$ par $9$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"n": "9",
+						"r1": "3",
+						"r2": "7",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$a \\equiv 3 \\,[7]$ et $b \\equiv 6 \\,[7]$.\n\nQuel est le reste de la division euclidienne de $a - 3 b$ par $7$ ?\n\n$[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"n": "7",
+						"r1": "3",
+						"r2": "6",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$a \\equiv 2 \\,[8]$ et $b \\equiv 1 \\,[8]$.\n\nQuel est le reste de la division euclidienne de $a - 3 b$ par $8$ ?\n\n$[?]$",
+					"reponse": ["7"],
+					"variables": {
+						"n": "8",
+						"r1": "2",
+						"r2": "1",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$a \\equiv 8 \\,[9]$ et $b \\equiv 4 \\,[9]$.\n\nQuel est le reste de la division euclidienne de $a - 3 b$ par $9$ ?\n\n$[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"n": "9",
+						"r1": "8",
+						"r2": "4",
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Complète la table des restes de $x^2$ modulo $5$.\n\n| $x$ | $0$ | $1$ | $2$ | $3$ | $4$ |\n| --- | --- | --- | --- | --- | --- |\n| reste | $?$ | $?$ | $?$ | $?$ | $?$ |",
+				"reponses_brutes": ["0", "1", "4", "4", "1"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				},
+				{
+					"case": 5,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 5,
+				"nb_distinctes": 6,
+				"valeurs": [0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 4,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 5,
+				"nb_distinctes": 6,
+				"valeurs": [0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 5,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Complète la table des restes de $x^2$ modulo $5$.\n\n| $x$ | $0$ | $1$ | $2$ | $3$ | $4$ |\n| reste | $[?]$ | $[?]$ | $[?]$ | $[?]$ | $[?]$ |",
+					"reponse": ["0", "1", "4", "4", "1"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Complète la table des restes de $2^k$ modulo $7$.\n\n| $k$ | $0$ | $1$ | $2$ | $3$ | $4$ | $5$ |\n| --- | --- | --- | --- | --- | --- | --- |\n| reste | $?$ | $?$ | $?$ | $?$ | $?$ | $?$ |",
+				"reponses_brutes": ["1", "2", "4", "1", "2", "4"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"case": 5,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				},
+				{
+					"case": 6,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 7,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 4, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 4,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 7,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 4, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 6,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 1,
+					"enonce": "Complète la table des restes de $2^k$ modulo $7$.\n\n| $k$ | $0$ | $1$ | $2$ | $3$ | $4$ | $5$ |\n| reste | $[?]$ | $[?]$ | $[?]$ | $[?]$ | $[?]$ | $[?]$ |",
+					"reponse": ["1", "2", "4", "1", "2", "4"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

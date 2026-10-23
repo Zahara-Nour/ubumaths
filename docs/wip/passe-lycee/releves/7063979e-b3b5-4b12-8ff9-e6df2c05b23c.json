@@ -1,0 +1,904 @@
+{
+	"template_id": "7063979e-b3b5-4b12-8ff9-e6df2c05b23c",
+	"titre": "Limite infinie par comparaison : minoration, majoration",
+	"sous_titre": "QCM : minorée par une suite qui tend vers +∞ ⟹ +∞, majorée par une suite qui tend vers −∞ ⟹ −∞ ; majorée par une suite qui tend vers +∞ : on ne peut pas conclure",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Limites de suites > Comparaison et encadrement",
+	"mis_a_jour": "2026-10-04T16:56:22.964053+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-381",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Pour tout entier naturel $n$, la suite $(u_n)$ vérifie $u_n\\geqslant n^{2}-{{a}}$.\n\nQue peut-on en déduire ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ tend vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ tend vers $-\\infty$"
+					},
+					{
+						"content": "$(u_n)$ converge vers $0$"
+					},
+					{
+						"content": "On ne peut pas conclure sur la limite de $(u_n)$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 164,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["(u_n)$ tend vers $+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"−": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\geqslant n^{2}-9$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. $(u_n)$ tend vers $+\\infty$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ converge vers $0$",
+					"reponse": ["B. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\geqslant n^{2}-1$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $+\\infty$\n- B. $(u_n)$ tend vers $-\\infty$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ converge vers $0$",
+					"reponse": ["A. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\geqslant n^{2}-3$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $+\\infty$\n- B. $(u_n)$ converge vers $0$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ tend vers $-\\infty$",
+					"reponse": ["A. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\geqslant n^{2}-1$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ converge vers $0$\n- B. On ne peut pas conclure sur la limite de $(u_n)$\n- C. $(u_n)$ tend vers $+\\infty$\n- D. $(u_n)$ tend vers $-\\infty$",
+					"reponse": ["C. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\geqslant n^{2}-3$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. $(u_n)$ converge vers $0$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["D. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {
+						"a": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Pour tout entier naturel $n$, la suite $(u_n)$ vérifie $u_n\\leqslant{{b}}-{{a}}\\sqrt{n}$.\n\nQue peut-on en déduire ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ tend vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ tend vers $-\\infty$"
+					},
+					{
+						"content": "$(u_n)$ converge vers $0$"
+					},
+					{
+						"content": "On ne peut pas conclure sur la limite de $(u_n)$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 272,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["(u_n)$ tend vers $-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"−": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\leqslant9-2\\sqrt{n}$.\n\nQue peut-on en déduire ?\n\n- A. On ne peut pas conclure sur la limite de $(u_n)$\n- B. $(u_n)$ tend vers $+\\infty$\n- C. $(u_n)$ tend vers $-\\infty$\n- D. $(u_n)$ converge vers $0$",
+					"reponse": ["C. $(u_n)$ tend vers $-\\infty$"],
+					"variables": {
+						"a": "2",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\leqslant5-2\\sqrt{n}$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. $(u_n)$ tend vers $+\\infty$\n- C. $(u_n)$ converge vers $0$\n- D. On ne peut pas conclure sur la limite de $(u_n)$",
+					"reponse": ["A. $(u_n)$ tend vers $-\\infty$"],
+					"variables": {
+						"a": "2",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\leqslant3-4\\sqrt{n}$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $+\\infty$\n- B. $(u_n)$ tend vers $-\\infty$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ converge vers $0$",
+					"reponse": ["B. $(u_n)$ tend vers $-\\infty$"],
+					"variables": {
+						"a": "4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\leqslant5-2\\sqrt{n}$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. On ne peut pas conclure sur la limite de $(u_n)$\n- C. $(u_n)$ converge vers $0$\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["A. $(u_n)$ tend vers $-\\infty$"],
+					"variables": {
+						"a": "2",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\leqslant2-4\\sqrt{n}$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ converge vers $0$\n- B. $(u_n)$ tend vers $-\\infty$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["B. $(u_n)$ tend vers $-\\infty$"],
+					"variables": {
+						"a": "4",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Pour tout entier naturel $n$, la suite $(u_n)$ vérifie $u_n\\leqslant n^{2}+{{a}}$.\n\nQue peut-on en déduire ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ tend vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ tend vers $-\\infty$"
+					},
+					{
+						"content": "$(u_n)$ converge vers $0$"
+					},
+					{
+						"content": "On ne peut pas conclure sur la limite de $(u_n)$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 164,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["On ne peut pas conclure sur la limite de $(u_n)"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\leqslant n^{2}+9$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. $(u_n)$ tend vers $+\\infty$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ converge vers $0$",
+					"reponse": ["C. On ne peut pas conclure sur la limite de $(u_n)$"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\leqslant n^{2}+1$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $+\\infty$\n- B. $(u_n)$ tend vers $-\\infty$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ converge vers $0$",
+					"reponse": ["C. On ne peut pas conclure sur la limite de $(u_n)$"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\leqslant n^{2}+3$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $+\\infty$\n- B. $(u_n)$ converge vers $0$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ tend vers $-\\infty$",
+					"reponse": ["C. On ne peut pas conclure sur la limite de $(u_n)$"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\leqslant n^{2}+1$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ converge vers $0$\n- B. On ne peut pas conclure sur la limite de $(u_n)$\n- C. $(u_n)$ tend vers $+\\infty$\n- D. $(u_n)$ tend vers $-\\infty$",
+					"reponse": ["B. On ne peut pas conclure sur la limite de $(u_n)$"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Pour tout entier naturel $n$, la suite $\\left( u_n \\right)$ vérifie $u_n\\leqslant n^{2}+3$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. $(u_n)$ converge vers $0$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["C. On ne peut pas conclure sur la limite de $(u_n)$"],
+					"variables": {
+						"a": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Pour tout entier naturel $n$, on pose $u_n={{b}}n+{{a}}\\times(-1)^{n}$.\n\nQue peut-on dire de la limite de $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ tend vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ tend vers $-\\infty$"
+					},
+					{
+						"content": "$(u_n)$ converge vers $0$"
+					},
+					{
+						"content": "On ne peut pas conclure sur la limite de $(u_n)$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 231,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["(u_n)$ tend vers $+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [-1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -1,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [-1, 0, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Pour tout entier naturel $n$, on pose $u_n=4n+9\\times(-1)^{n}$.\n\nQue peut-on dire de la limite de $\\left( u_n \\right)$ ?\n\n- A. $(u_n)$ converge vers $0$\n- B. $(u_n)$ tend vers $+\\infty$\n- C. $(u_n)$ tend vers $-\\infty$\n- D. On ne peut pas conclure sur la limite de $(u_n)$",
+					"reponse": ["B. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {
+						"a": "9",
+						"b": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-1)",
+					"graine": 1,
+					"enonce": "Pour tout entier naturel $n$, on pose $u_n=3n+2\\times(-1)^{n}$.\n\nQue peut-on dire de la limite de $\\left( u_n \\right)$ ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. $(u_n)$ tend vers $+\\infty$\n- C. $(u_n)$ converge vers $0$\n- D. On ne peut pas conclure sur la limite de $(u_n)$",
+					"reponse": ["B. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {
+						"a": "2",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Pour tout entier naturel $n$, on pose $u_n=2n+4\\times(-1)^{n}$.\n\nQue peut-on dire de la limite de $\\left( u_n \\right)$ ?\n\n- A. $(u_n)$ tend vers $+\\infty$\n- B. $(u_n)$ tend vers $-\\infty$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ converge vers $0$",
+					"reponse": ["A. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {
+						"a": "4",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Pour tout entier naturel $n$, on pose $u_n=3n+2\\times(-1)^{n}$.\n\nQue peut-on dire de la limite de $\\left( u_n \\right)$ ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. On ne peut pas conclure sur la limite de $(u_n)$\n- C. $(u_n)$ converge vers $0$\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["D. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {
+						"a": "2",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Pour tout entier naturel $n$, on pose $u_n=2n+4\\times(-1)^{n}$.\n\nQue peut-on dire de la limite de $\\left( u_n \\right)$ ?\n\n- A. $(u_n)$ converge vers $0$\n- B. $(u_n)$ tend vers $-\\infty$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["D. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {
+						"a": "4",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Pour tout entier $n\\geqslant1$, la suite $(u_n)$ vérifie $0\\leqslant u_n\\leqslant\\dfrac{ {{a}} }{n}$.\n\nQue peut-on en déduire ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ tend vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ tend vers $-\\infty$"
+					},
+					{
+						"content": "$(u_n)$ converge vers $0$"
+					},
+					{
+						"content": "On ne peut pas conclure sur la limite de $(u_n)$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 164,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["(u_n)$ converge vers $0"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 0,
+							"nb_distinctes": 1,
+							"valeurs": [0],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Pour tout entier $n\\geqslant1$, la suite $\\left( u_n \\right)$ vérifie $0\\leqslant u_n\\leqslant\\dfrac{ 9 }{n}$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. $(u_n)$ tend vers $+\\infty$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ converge vers $0$",
+					"reponse": ["D. $(u_n)$ converge vers $0$"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Pour tout entier $n\\geqslant1$, la suite $\\left( u_n \\right)$ vérifie $0\\leqslant u_n\\leqslant\\dfrac{ 1 }{n}$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $+\\infty$\n- B. $(u_n)$ tend vers $-\\infty$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ converge vers $0$",
+					"reponse": ["D. $(u_n)$ converge vers $0$"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Pour tout entier $n\\geqslant1$, la suite $\\left( u_n \\right)$ vérifie $0\\leqslant u_n\\leqslant\\dfrac{ 3 }{n}$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $+\\infty$\n- B. $(u_n)$ converge vers $0$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ tend vers $-\\infty$",
+					"reponse": ["B. $(u_n)$ converge vers $0$"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Pour tout entier $n\\geqslant1$, la suite $\\left( u_n \\right)$ vérifie $0\\leqslant u_n\\leqslant\\dfrac{ 1 }{n}$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ converge vers $0$\n- B. On ne peut pas conclure sur la limite de $(u_n)$\n- C. $(u_n)$ tend vers $+\\infty$\n- D. $(u_n)$ tend vers $-\\infty$",
+					"reponse": ["A. $(u_n)$ converge vers $0$"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Pour tout entier $n\\geqslant1$, la suite $\\left( u_n \\right)$ vérifie $0\\leqslant u_n\\leqslant\\dfrac{ 3 }{n}$.\n\nQue peut-on en déduire ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. $(u_n)$ converge vers $0$\n- C. On ne peut pas conclure sur la limite de $(u_n)$\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["B. $(u_n)$ converge vers $0$"],
+					"variables": {
+						"a": "3"
+					}
+				}
+			]
+		}
+	]
+}

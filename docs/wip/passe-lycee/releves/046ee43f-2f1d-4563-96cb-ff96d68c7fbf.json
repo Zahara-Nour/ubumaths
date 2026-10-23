@@ -1,0 +1,671 @@
+{
+	"template_id": "046ee43f-2f1d-4563-96cb-ff96d68c7fbf",
+	"titre": "Reste de aⁿ modulo m : cycle des restes",
+	"sous_titre": "Reste de la division de aⁿ par m pour un grand exposant, à l'aide d'une puissance congrue à 1 ou à −1 (pièges : reste négatif −1 au lieu de m − 1, exposant réduit modulo m au lieu de la période)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Arithmétique > Congruences > Congruences",
+	"mis_a_jour": "2026-10-05T16:06:49.316337+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-274",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "20..200"
+					}
+				],
+				"conditions": ["mod(n,3) != 0"],
+				"enonce_brut": "Sachant que $2^3 \\equiv 1 \\,[7]$, quel est le reste de la division euclidienne de $2^{ {{n}} }$ par $7$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:2^(mod(n,3))}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 113,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 113
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 4]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 200,
+				"nb_distinctes": 117,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [2, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 200,
+				"nb_distinctes": 118,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (200)",
+					"graine": 37,
+					"enonce": "Sachant que $2^3 \\equiv 1 \\,[7]$, quel est le reste de la division euclidienne de $2^{200}$ par $7$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"n": "200"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sachant que $2^3 \\equiv 1 \\,[7]$, quel est le reste de la division euclidienne de $2^{20}$ par $7$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"n": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sachant que $2^3 \\equiv 1 \\,[7]$, quel est le reste de la division euclidienne de $2^{71}$ par $7$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"n": "71"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Sachant que $2^3 \\equiv 1 \\,[7]$, quel est le reste de la division euclidienne de $2^{26}$ par $7$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"n": "26"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Sachant que $2^3 \\equiv 1 \\,[7]$, quel est le reste de la division euclidienne de $2^{80}$ par $7$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"n": "80"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "4..12"
+					},
+					{
+						"name": "n",
+						"expression": "15..99"
+					}
+				],
+				"conditions": ["mod(n,2) == 1"],
+				"enonce_brut": "Quel est le reste de la division euclidienne de ${{a}}^{ {{n}} }$ par ${{eval:a+1}}$ ?\n\n$?$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 211,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 43
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 99,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 12,
+				"nb_distinctes": 9,
+				"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 4,
+				"max": 99,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 26,
+					"enonce": "Quel est le reste de la division euclidienne de $8^{99}$ par $9$ ?\n\n$[?]$",
+					"reponse": ["8"],
+					"variables": {
+						"a": "8",
+						"n": "99"
+					}
+				},
+				{
+					"role": "plus petite valeur (4)",
+					"graine": 1,
+					"enonce": "Quel est le reste de la division euclidienne de $4^{59}$ par $5$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"n": "59"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le reste de la division euclidienne de $6^{39}$ par $7$ ?\n\n$[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"a": "6",
+						"n": "39"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le reste de la division euclidienne de $4^{53}$ par $5$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"n": "53"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le reste de la division euclidienne de $6^{33}$ par $7$ ?\n\n$[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"a": "6",
+						"n": "33"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "4..12"
+					},
+					{
+						"name": "n",
+						"expression": "16..98"
+					}
+				],
+				"conditions": ["mod(n,2) == 0"],
+				"enonce_brut": "Quel est le reste de la division euclidienne de ${{a}}^{ {{n}} }$ par ${{eval:a+1}}$ ?\n\n$?$",
+				"reponses_brutes": ["1"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 210,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 16,
+						"max": 98,
+						"negatif_possible": false,
+						"nb_distinctes": 42
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 98,
+				"nb_distinctes": 52,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 98,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (98)",
+					"graine": 73,
+					"enonce": "Quel est le reste de la division euclidienne de $11^{98}$ par $12$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "11",
+						"n": "98"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le reste de la division euclidienne de $12^{96}$ par $13$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "12",
+						"n": "96"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le reste de la division euclidienne de $8^{88}$ par $9$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "8",
+						"n": "88"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le reste de la division euclidienne de $8^{56}$ par $9$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "8",
+						"n": "56"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le reste de la division euclidienne de $6^{34}$ par $7$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "6",
+						"n": "34"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "5|10|16|20|40|80"
+					},
+					{
+						"name": "n",
+						"expression": "20..150"
+					}
+				],
+				"conditions": ["mod(n,4) >= 2"],
+				"enonce_brut": "Sachant que $3^4 \\equiv 1 \\,[{{m}}]$, quel est le reste de la division euclidienne de $3^{ {{n}} }$ par ${{m}}$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:mod(3^(mod(n,4)),m)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 213,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 80,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 10, 16, 20, 40, 80]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 22,
+						"max": 150,
+						"negatif_possible": false,
+						"nb_distinctes": 65
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 27,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 4, 7, 9, 11, 27]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 150,
+				"nb_distinctes": 74,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 27,
+				"nb_distinctes": 6,
+				"valeurs": [2, 4, 7, 9, 11, 27],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 150,
+				"nb_distinctes": 78,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (150)",
+					"graine": 74,
+					"enonce": "Sachant que $3^4 \\equiv 1 \\,[40]$, quel est le reste de la division euclidienne de $3^{150}$ par $40$ ?\n\n$[?]$",
+					"reponse": ["9"],
+					"variables": {
+						"m": "40",
+						"n": "150"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sachant que $3^4 \\equiv 1 \\,[80]$, quel est le reste de la division euclidienne de $3^{146}$ par $80$ ?\n\n$[?]$",
+					"reponse": ["9"],
+					"variables": {
+						"m": "80",
+						"n": "146"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sachant que $3^4 \\equiv 1 \\,[20]$, quel est le reste de la division euclidienne de $3^{134}$ par $20$ ?\n\n$[?]$",
+					"reponse": ["9"],
+					"variables": {
+						"m": "20",
+						"n": "134"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Sachant que $3^4 \\equiv 1 \\,[5]$, quel est le reste de la division euclidienne de $3^{79}$ par $5$ ?\n\n$[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"m": "5",
+						"n": "79"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Sachant que $3^4 \\equiv 1 \\,[5]$, quel est le reste de la division euclidienne de $3^{50}$ par $5$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"m": "5",
+						"n": "50"
+					}
+				}
+			]
+		}
+	]
+}

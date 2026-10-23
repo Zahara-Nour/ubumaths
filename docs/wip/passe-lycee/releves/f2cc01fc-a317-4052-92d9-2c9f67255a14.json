@@ -1,0 +1,1695 @@
+{
+	"template_id": "f2cc01fc-a317-4052-92d9-2c9f67255a14",
+	"titre": "Orthogonaux ou non ?",
+	"sous_titre": "Décider si deux vecteurs sont orthogonaux en calculant leur produit scalaire (coordonnées, normes et angle, points)",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Géométrie > Produit scalaire > Propriétés",
+	"mis_a_jour": "2026-10-02T21:39:30.080922+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-318",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "q",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "w",
+						"expression": "0..5"
+					},
+					{
+						"name": "t",
+						"expression": "{{eval:min(max(w-1,0),1)}}"
+					},
+					{
+						"name": "r",
+						"expression": "-2..2"
+					},
+					{
+						"name": "s",
+						"expression": "-2..2"
+					},
+					{
+						"name": "x",
+						"expression": "{{eval:-k*q+t*r}}"
+					},
+					{
+						"name": "y",
+						"expression": "{{eval:k*p+t*s}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:p*x+q*y}}"
+					}
+				],
+				"conditions": [
+					"abs(p) != abs(q)",
+					"x != 0",
+					"y != 0",
+					"t*(abs(r)+abs(s)) != 1",
+					"t == 0 || r != 0 || s != 0"
+				],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."
+					},
+					{
+						"content": "Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 279,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -14,
+						"max": 14,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-14, -13, -12, -11, -10, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13, 14
+						]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -14,
+						"max": 14,
+						"negatif_possible": true,
+						"nb_distinctes": 28,
+						"valeurs": [
+							-14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8,
+							9, 10, 11, 12, 13, 14
+						]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -18,
+						"max": 20,
+						"negatif_possible": true,
+						"nb_distinctes": 37
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": [
+							"Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+							"Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 14,
+				"nb_distinctes": 14,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 14,
+				"nb_distinctes": 14,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "231/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 39,
+					"max": 39
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (14)",
+					"graine": 26,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}3\\\\-6\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}14\\\\7\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."],
+					"variables": {
+						"p": "3",
+						"q": "-6",
+						"k": "2",
+						"w": "3",
+						"t": "1",
+						"r": "2",
+						"s": "1",
+						"x": "14",
+						"y": "7",
+						"N": "0"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-1\\\\6\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-8\\\\-1\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."],
+					"variables": {
+						"p": "-1",
+						"q": "6",
+						"k": "1",
+						"w": "2",
+						"t": "1",
+						"r": "-2",
+						"s": "0",
+						"x": "-8",
+						"y": "-1",
+						"N": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}4\\\\1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-2\\\\6\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."],
+					"variables": {
+						"p": "4",
+						"q": "1",
+						"k": "1",
+						"w": "4",
+						"t": "1",
+						"r": "-1",
+						"s": "2",
+						"x": "-2",
+						"y": "6",
+						"N": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-4\\\\-3\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}6\\\\-8\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."],
+					"variables": {
+						"p": "-4",
+						"q": "-3",
+						"k": "2",
+						"w": "1",
+						"t": "0",
+						"r": "-2",
+						"s": "1",
+						"x": "6",
+						"y": "-8",
+						"N": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-2\\\\-4\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}4\\\\-2\\end{pmatrix}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."],
+					"variables": {
+						"p": "-2",
+						"q": "-4",
+						"k": "1",
+						"w": "1",
+						"t": "0",
+						"r": "0",
+						"s": "-2",
+						"x": "4",
+						"y": "-2",
+						"N": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "z",
+						"expression": "1..10"
+					},
+					{
+						"name": "o",
+						"expression": "{{eval:min(max(z-5,0),1)}}"
+					},
+					{
+						"name": "k",
+						"expression": "0..1"
+					},
+					{
+						"name": "m",
+						"expression": "1..3"
+					},
+					{
+						"name": "s",
+						"expression": "{{eval:o*(2*k-1)}}"
+					},
+					{
+						"name": "T",
+						"expression": "{{eval:90-s*(15+15*m)}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:s*a*b*sqrt(m)/2}}"
+					}
+				],
+				"conditions": ["a != b"],
+				"enonce_brut": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est ${{T}}^\\circ$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."
+					},
+					{
+						"content": "Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 184,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "z",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "o",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "T",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 150,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [30, 45, 60, 90, 120, 135, 150]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.59,
+						"nb_distinctes": 101,
+						"exemples": [
+							"6",
+							"-10 \\sqrt{3}",
+							"0",
+							"-12 \\sqrt{2}",
+							"9 \\sqrt{2}",
+							"14 \\sqrt{2}",
+							"12 \\sqrt{3}",
+							"-\\dfrac{63 \\sqrt{2}}{2}",
+							"-6 \\sqrt{2}",
+							"-6",
+							"10",
+							"-\\dfrac{35}{2}"
+						],
+						"nombres_contenus": {
+							"min": -36,
+							"max": 63,
+							"nb_distinctes": 43,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": [
+							"Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+							"Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 150,
+				"nb_distinctes": 15,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 30, 45, 60, 90, 120, 135, 150],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 150,
+				"nb_distinctes": 15,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 30, 45, 60, 90, 120, 135, 150],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 40,
+					"max": 40
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (150)",
+					"graine": 2,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=5$, $\\|\\vec{v}\\|=4$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $150^\\circ$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"z": "8",
+						"o": "1",
+						"k": "0",
+						"m": "3",
+						"s": "-1",
+						"T": "150",
+						"N": "-10 \\sqrt{3}"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=6$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $60^\\circ$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"z": "10",
+						"o": "1",
+						"k": "1",
+						"m": "1",
+						"s": "1",
+						"T": "60",
+						"N": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $90^\\circ$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"z": "1",
+						"o": "0",
+						"k": "1",
+						"m": "2",
+						"s": "0",
+						"T": "90",
+						"N": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=4$, $\\|\\vec{v}\\|=3$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $90^\\circ$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"z": "1",
+						"o": "0",
+						"k": "0",
+						"m": "2",
+						"s": "0",
+						"T": "90",
+						"N": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=8$, $\\|\\vec{v}\\|=3$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $135^\\circ$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."],
+					"variables": {
+						"a": "8",
+						"b": "3",
+						"z": "7",
+						"o": "1",
+						"k": "0",
+						"m": "2",
+						"s": "-1",
+						"T": "135",
+						"N": "-12 \\sqrt{2}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "z",
+						"expression": "1..10"
+					},
+					{
+						"name": "o",
+						"expression": "{{eval:min(max(z-5,0),1)}}"
+					},
+					{
+						"name": "k",
+						"expression": "0..1"
+					},
+					{
+						"name": "m",
+						"expression": "1..3"
+					},
+					{
+						"name": "s",
+						"expression": "{{eval:o*(2*k-1)}}"
+					},
+					{
+						"name": "T",
+						"expression": "{{eval:90-s*(15+15*m)}}"
+					},
+					{
+						"name": "tr",
+						"expression": "0..1"
+					},
+					{
+						"name": "sg",
+						"expression": "-1..1!0"
+					},
+					{
+						"name": "A",
+						"expression": "{{eval:T+180*tr}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:gcd(A,180)}}"
+					},
+					{
+						"name": "num",
+						"expression": "{{eval:A/g}}"
+					},
+					{
+						"name": "den",
+						"expression": "{{eval:180/g}}"
+					},
+					{
+						"name": "cv",
+						"expression": "{{eval:(1-2*tr)*s*sqrt(m)/2}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:a*b*cv}}"
+					}
+				],
+				"conditions": ["a != b", "sg == 1 || tr == 0"],
+				"enonce_brut": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure en radians de l'angle orienté $(\\vec{u},\\vec{v})$ est ${{if:sg<0|-|}}{{if:num==1|\\dfrac{\\pi}{ {{den}} }|\\dfrac{ {{num}}\\pi}{ {{den}} }}}$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."
+					},
+					{
+						"content": "Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 243,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "z",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "o",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "T",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 150,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [30, 45, 60, 90, 120, 135, 150]
+					}
+				},
+				{
+					"nom": "tr",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "sg",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "A",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 330,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [30, 45, 60, 90, 120, 135, 150, 210, 225, 240, 270, 300, 315, 330]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [30, 45, 60, 90]
+					}
+				},
+				{
+					"nom": "num",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [1, 2, 3, 4, 5, 7, 11]
+					}
+				},
+				{
+					"nom": "den",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 6]
+					}
+				},
+				{
+					"nom": "cv",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.45666666666666667,
+						"nb_distinctes": 7,
+						"valeurs": [
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{\\sqrt{2}}{2}",
+							"-\\dfrac{\\sqrt{3}}{2}",
+							"0",
+							"\\dfrac{1}{2}",
+							"\\dfrac{\\sqrt{2}}{2}",
+							"\\dfrac{\\sqrt{3}}{2}"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 3,
+							"nb_distinctes": 4,
+							"valeurs": [0, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6,
+						"nb_distinctes": 100,
+						"exemples": [
+							"-6",
+							"-14 \\sqrt{3}",
+							"0",
+							"12 \\sqrt{2}",
+							"9 \\sqrt{2}",
+							"-6 \\sqrt{2}",
+							"12 \\sqrt{3}",
+							"-\\dfrac{63 \\sqrt{2}}{2}",
+							"-\\dfrac{35}{2}",
+							"6",
+							"-10 \\sqrt{2}",
+							"4 \\sqrt{3}"
+						],
+						"nombres_contenus": {
+							"min": -36,
+							"max": 63,
+							"nb_distinctes": 42,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": [
+							"Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+							"Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 11,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 11,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 43,
+					"max": 43
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (11)",
+					"graine": 92,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=9$ et une mesure en radians de l'angle orienté $(\\vec{u},\\vec{v})$ est $\\dfrac{ 11\\pi}{ 6 }$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."],
+					"variables": {
+						"a": "6",
+						"b": "9",
+						"z": "6",
+						"o": "1",
+						"k": "0",
+						"m": "3",
+						"s": "-1",
+						"T": "150",
+						"tr": "1",
+						"sg": "1",
+						"A": "330",
+						"g": "30",
+						"num": "11",
+						"den": "6",
+						"cv": "\\dfrac{\\sqrt{3}}{2}",
+						"N": "27 \\sqrt{3}"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=6$ et une mesure en radians de l'angle orienté $(\\vec{u},\\vec{v})$ est $\\dfrac{ 4\\pi}{ 3 }$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"z": "10",
+						"o": "1",
+						"k": "1",
+						"m": "1",
+						"s": "1",
+						"T": "60",
+						"tr": "1",
+						"sg": "1",
+						"A": "240",
+						"g": "60",
+						"num": "4",
+						"den": "3",
+						"cv": "-\\dfrac{1}{2}",
+						"N": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=7$, $\\|\\vec{v}\\|=4$ et une mesure en radians de l'angle orienté $(\\vec{u},\\vec{v})$ est $-\\dfrac{ 5\\pi}{ 6 }$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux."],
+					"variables": {
+						"a": "7",
+						"b": "4",
+						"z": "10",
+						"o": "1",
+						"k": "0",
+						"m": "3",
+						"s": "-1",
+						"T": "150",
+						"tr": "0",
+						"sg": "-1",
+						"A": "150",
+						"g": "30",
+						"num": "5",
+						"den": "6",
+						"cv": "-\\dfrac{\\sqrt{3}}{2}",
+						"N": "-14 \\sqrt{3}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et une mesure en radians de l'angle orienté $(\\vec{u},\\vec{v})$ est $-\\dfrac{\\pi}{ 2 }$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"z": "1",
+						"o": "0",
+						"k": "1",
+						"m": "2",
+						"s": "0",
+						"T": "90",
+						"tr": "0",
+						"sg": "-1",
+						"A": "90",
+						"g": "90",
+						"num": "1",
+						"den": "2",
+						"cv": "0",
+						"N": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=4$, $\\|\\vec{v}\\|=3$ et une mesure en radians de l'angle orienté $(\\vec{u},\\vec{v})$ est $\\dfrac{\\pi}{ 2 }$.\n\nLes vecteurs $\\vec{u}$ et $\\vec{v}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux.\n- B. Non, les vecteurs $\\vec{u}$ et $\\vec{v}$ ne sont pas orthogonaux.",
+					"reponse": ["A. Oui, les vecteurs $\\vec{u}$ et $\\vec{v}$ sont orthogonaux."],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"z": "1",
+						"o": "0",
+						"k": "0",
+						"m": "2",
+						"s": "0",
+						"T": "90",
+						"tr": "0",
+						"sg": "1",
+						"A": "90",
+						"g": "90",
+						"num": "1",
+						"den": "2",
+						"cv": "0",
+						"N": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "xa",
+						"expression": "-4..4"
+					},
+					{
+						"name": "ya",
+						"expression": "-4..4"
+					},
+					{
+						"name": "p",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "q",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "w",
+						"expression": "0..5"
+					},
+					{
+						"name": "t",
+						"expression": "{{eval:min(max(w-1,0),1)}}"
+					},
+					{
+						"name": "r",
+						"expression": "-2..2"
+					},
+					{
+						"name": "s",
+						"expression": "-2..2"
+					},
+					{
+						"name": "x",
+						"expression": "{{eval:-k*q+t*r}}"
+					},
+					{
+						"name": "y",
+						"expression": "{{eval:k*p+t*s}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:p*x+q*y}}"
+					},
+					{
+						"name": "xb",
+						"expression": "{{eval:xa+p}}"
+					},
+					{
+						"name": "yb",
+						"expression": "{{eval:ya+q}}"
+					},
+					{
+						"name": "xc",
+						"expression": "{{eval:xa+x}}"
+					},
+					{
+						"name": "yc",
+						"expression": "{{eval:ya+y}}"
+					}
+				],
+				"conditions": [
+					"abs(p) != abs(q)",
+					"x != 0",
+					"y != 0",
+					"t*(abs(r)+abs(s)) != 1",
+					"t == 0 || r != 0 || s != 0",
+					"abs(xc) <= 9",
+					"abs(yc) <= 9"
+				],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$, $B({{xb}}\\,;{{yb}})$ et $C({{xc}}\\,;{{yc}})$.\n\nLes vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux."
+					},
+					{
+						"content": "Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "xa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "ya",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -10,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 21,
+						"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 24,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+							12
+						]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -22,
+						"max": 18,
+						"negatif_possible": true,
+						"nb_distinctes": 31
+					}
+				},
+				{
+					"nom": "xb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -10,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "yb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -10,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 21,
+						"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "xc",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "yc",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": [
+							"Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux.",
+							"Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -10,
+				"max": 10,
+				"nb_distinctes": 21,
+				"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -10,
+				"max": 10,
+				"nb_distinctes": 21,
+				"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 39,
+					"max": 39
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 13,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-1\\,;-4)$, $B(-3\\,;-10)$ et $C(5\\,;-6)$.\n\nLes vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux.\n- B. Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux.",
+					"reponse": [
+						"A. Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux."
+					],
+					"variables": {
+						"xa": "-1",
+						"ya": "-4",
+						"p": "-2",
+						"q": "-6",
+						"k": "1",
+						"w": "1",
+						"t": "0",
+						"r": "2",
+						"s": "-1",
+						"x": "6",
+						"y": "-2",
+						"N": "0",
+						"xb": "-3",
+						"yb": "-10",
+						"xc": "5",
+						"yc": "-6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-10)",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-4\\,;0)$, $B(-10\\,;3)$ et $C(-9\\,;-7)$.\n\nLes vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux.\n- B. Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux.",
+					"reponse": [
+						"B. Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux."
+					],
+					"variables": {
+						"xa": "-4",
+						"ya": "0",
+						"p": "-6",
+						"q": "3",
+						"k": "1",
+						"w": "2",
+						"t": "1",
+						"r": "-2",
+						"s": "-1",
+						"x": "-5",
+						"y": "-7",
+						"N": "9",
+						"xb": "-10",
+						"yb": "3",
+						"xc": "-9",
+						"yc": "-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(4\\,;0)$, $B(-1\\,;-1)$ et $C(5\\,;-5)$.\n\nLes vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux.\n- B. Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux.",
+					"reponse": [
+						"A. Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux."
+					],
+					"variables": {
+						"xa": "4",
+						"ya": "0",
+						"p": "-5",
+						"q": "-1",
+						"k": "1",
+						"w": "0",
+						"t": "0",
+						"r": "0",
+						"s": "-2",
+						"x": "1",
+						"y": "-5",
+						"N": "0",
+						"xb": "-1",
+						"yb": "-1",
+						"xc": "5",
+						"yc": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-2)$, $B(3\\,;0)$ et $C(-3\\,;1)$.\n\nLes vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux.\n- B. Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux.",
+					"reponse": [
+						"B. Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux."
+					],
+					"variables": {
+						"xa": "-2",
+						"ya": "-2",
+						"p": "5",
+						"q": "2",
+						"k": "1",
+						"w": "2",
+						"t": "1",
+						"r": "1",
+						"s": "-2",
+						"x": "-1",
+						"y": "3",
+						"N": "1",
+						"xb": "3",
+						"yb": "0",
+						"xc": "-3",
+						"yc": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-4\\,;3)$, $B(-5\\,;1)$ et $C(0\\,;1)$.\n\nLes vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont-ils orthogonaux ? Justifie par un calcul de produit scalaire.\n\n- A. Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux.\n- B. Non, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ ne sont pas orthogonaux.",
+					"reponse": [
+						"A. Oui, les vecteurs $\\overrightarrow{AB}$ et $\\overrightarrow{AC}$ sont orthogonaux."
+					],
+					"variables": {
+						"xa": "-4",
+						"ya": "3",
+						"p": "-1",
+						"q": "-2",
+						"k": "2",
+						"w": "0",
+						"t": "0",
+						"r": "1",
+						"s": "-1",
+						"x": "4",
+						"y": "-2",
+						"N": "0",
+						"xb": "-5",
+						"yb": "1",
+						"xc": "0",
+						"yc": "1"
+					}
+				}
+			]
+		}
+	]
+}

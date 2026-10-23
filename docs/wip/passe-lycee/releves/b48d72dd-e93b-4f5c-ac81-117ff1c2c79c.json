@@ -1,0 +1,1206 @@
+{
+	"template_id": "b48d72dd-e93b-4f5c-ac81-117ff1c2c79c",
+	"titre": "Déterminer le signe d'une expression du second degré",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Polynôme du second degré > Apprivoiser",
+	"mis_a_jour": "2026-10-03T16:00:57.951925+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-251",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "strictement positif pour tout réel $x$"
+					},
+					{
+						"content": "positif, et nul pour une seule valeur de $x$"
+					},
+					{
+						"content": "strictement négatif pour tout réel $x$"
+					},
+					{
+						"content": "négatif, et nul pour une seule valeur de $x$"
+					},
+					{
+						"content": "de signe variable : il dépend de la valeur de $x$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 156,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 156,
+						"exemples": [
+							"2(x+1)^2+5",
+							"3(x-3)^2+3",
+							"2(x-1)^2+1",
+							"3(x-3)^2+1",
+							"5(x-3)^2+4",
+							"2(x+2)^2+2",
+							"2(x+5)^2+4",
+							"4(x-2)^2+4",
+							"5(x-4)^2+5",
+							"5(x+2)^2+5",
+							"4(x+2)^2+3",
+							"3(x-5)^2+1"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 5,
+							"nb_distinctes": 5,
+							"valeurs": [1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["strictement positif pour tout réel $x"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 42,
+					"max": 42
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$2 \\left( x + 1 \\right)^2 + 5$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["A. strictement positif pour tout réel $x$"],
+					"variables": {
+						"a": "2",
+						"b": "1",
+						"c": "5",
+						"expression1": "2(x+1)^2+5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$3 \\left( x - 3 \\right)^2 + 3$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["A. strictement positif pour tout réel $x$"],
+					"variables": {
+						"a": "3",
+						"b": "-3",
+						"c": "3",
+						"expression1": "3(x-3)^2+3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$2 \\left( x - 1 \\right)^2 + 1$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["A. strictement positif pour tout réel $x$"],
+					"variables": {
+						"a": "2",
+						"b": "-1",
+						"c": "1",
+						"expression1": "2(x-1)^2+1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$3 \\left( x - 3 \\right)^2 + 1$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["A. strictement positif pour tout réel $x$"],
+					"variables": {
+						"a": "3",
+						"b": "-3",
+						"c": "1",
+						"expression1": "3(x-3)^2+1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$5 \\left( x - 3 \\right)^2 + 4$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["A. strictement positif pour tout réel $x$"],
+					"variables": {
+						"a": "5",
+						"b": "-3",
+						"c": "4",
+						"expression1": "5(x-3)^2+4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-5..-2"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "-5..-1"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "strictement positif pour tout réel $x$"
+					},
+					{
+						"content": "positif, et nul pour une seule valeur de $x$"
+					},
+					{
+						"content": "strictement négatif pour tout réel $x$"
+					},
+					{
+						"content": "négatif, et nul pour une seule valeur de $x$"
+					},
+					{
+						"content": "de signe variable : il dépend de la valeur de $x$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 156,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-5, -4, -3, -2]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-5, -4, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 156,
+						"exemples": [
+							"-5(x+1)^2-1",
+							"-4(x-3)^2-3",
+							"-5(x-1)^2-5",
+							"-4(x-3)^2-5",
+							"-2(x-3)^2-2",
+							"-5(x+2)^2-4",
+							"-5(x+5)^2-2",
+							"-3(x-2)^2-2",
+							"-2(x-4)^2-1",
+							"-2(x+2)^2-1",
+							"-3(x+2)^2-3",
+							"-4(x-5)^2-5"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 9,
+							"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["strictement négatif pour tout réel $x"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "169/300",
+					"−": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 42,
+					"max": 42
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-5 \\left( x + 1 \\right)^2 - 1$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["C. strictement négatif pour tout réel $x$"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"c": "-1",
+						"expression1": "-5(x+1)^2-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-4 \\left( x - 3 \\right)^2 - 3$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["C. strictement négatif pour tout réel $x$"],
+					"variables": {
+						"a": "-4",
+						"b": "-3",
+						"c": "-3",
+						"expression1": "-4(x-3)^2-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-5 \\left( x - 1 \\right)^2 - 5$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["C. strictement négatif pour tout réel $x$"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"c": "-5",
+						"expression1": "-5(x-1)^2-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-4 \\left( x - 3 \\right)^2 - 5$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["C. strictement négatif pour tout réel $x$"],
+					"variables": {
+						"a": "-4",
+						"b": "-3",
+						"c": "-5",
+						"expression1": "-4(x-3)^2-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-2 \\left( x - 3 \\right)^2 - 2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["C. strictement négatif pour tout réel $x$"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "-2",
+						"expression1": "-2(x-3)^2-2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:-(a)/abs(a)*k}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{a}}(x{{eval:b;+}})^2{{eval:c;+}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "strictement positif pour tout réel $x$"
+					},
+					{
+						"content": "positif, et nul pour une seule valeur de $x$"
+					},
+					{
+						"content": "strictement négatif pour tout réel $x$"
+					},
+					{
+						"content": "négatif, et nul pour une seule valeur de $x$"
+					},
+					{
+						"content": "de signe variable : il dépend de la valeur de $x$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 219,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 219,
+						"exemples": [
+							"-5(x+1)^2+5",
+							"-2(x-3)^2+3",
+							"-5(x-1)^2+1",
+							"-2(x-3)^2+1",
+							"3(x-3)^2-4",
+							"-5(x+2)^2+2",
+							"-5(x+5)^2+4",
+							"2(x-2)^2-4",
+							"4(x-4)^2-5",
+							"5(x+2)^2-5",
+							"1(x+2)^2-3",
+							"-2(x-5)^2+1"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 10,
+							"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["de signe variable : il dépend de la valeur de $x"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "234/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 42,
+					"max": 42
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-5 \\left( x + 1 \\right)^2 + 5$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["E. de signe variable : il dépend de la valeur de $x$"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"k": "5",
+						"c": "5",
+						"expression1": "-5(x+1)^2+5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-2 \\left( x - 3 \\right)^2 + 3$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["E. de signe variable : il dépend de la valeur de $x$"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"k": "3",
+						"c": "3",
+						"expression1": "-2(x-3)^2+3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-5 \\left( x - 1 \\right)^2 + 1$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["E. de signe variable : il dépend de la valeur de $x$"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"k": "1",
+						"c": "1",
+						"expression1": "-5(x-1)^2+1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-2 \\left( x - 3 \\right)^2 + 1$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["E. de signe variable : il dépend de la valeur de $x$"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"k": "1",
+						"c": "1",
+						"expression1": "-2(x-3)^2+1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$3 \\left( x - 3 \\right)^2 - 4$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["E. de signe variable : il dépend de la valeur de $x$"],
+					"variables": {
+						"a": "3",
+						"b": "-3",
+						"k": "4",
+						"c": "-4",
+						"expression1": "3(x-3)^2-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{a}}(x{{eval:b;+}})^2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "strictement positif pour tout réel $x$"
+					},
+					{
+						"content": "positif, et nul pour une seule valeur de $x$"
+					},
+					{
+						"content": "strictement négatif pour tout réel $x$"
+					},
+					{
+						"content": "négatif, et nul pour une seule valeur de $x$"
+					},
+					{
+						"content": "de signe variable : il dépend de la valeur de $x$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 50,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 50,
+						"exemples": [
+							"1(x+1)^2",
+							"2(x-3)^2",
+							"1(x-1)^2",
+							"4(x-3)^2",
+							"1(x+2)^2",
+							"1(x+5)^2",
+							"4(x-2)^2",
+							"5(x-4)^2",
+							"5(x+2)^2",
+							"3(x+2)^2",
+							"2(x-5)^2",
+							"3(x+1)^2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 5,
+							"nb_distinctes": 5,
+							"valeurs": [1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["positif, et nul pour une seule valeur de $x"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "169/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 42,
+					"max": 42
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 7,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$\\left( x + 5 \\right)^2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["B. positif, et nul pour une seule valeur de $x$"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"expression1": "1(x+5)^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$\\left( x + 1 \\right)^2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["B. positif, et nul pour une seule valeur de $x$"],
+					"variables": {
+						"a": "1",
+						"b": "1",
+						"expression1": "1(x+1)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$2 \\left( x - 3 \\right)^2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["B. positif, et nul pour une seule valeur de $x$"],
+					"variables": {
+						"a": "2",
+						"b": "-3",
+						"expression1": "2(x-3)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$\\left( x - 1 \\right)^2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["B. positif, et nul pour une seule valeur de $x$"],
+					"variables": {
+						"a": "1",
+						"b": "-1",
+						"expression1": "1(x-1)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$4 \\left( x - 3 \\right)^2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["B. positif, et nul pour une seule valeur de $x$"],
+					"variables": {
+						"a": "4",
+						"b": "-3",
+						"expression1": "4(x-3)^2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-5..-1"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{a}}(x{{eval:b;+}})^2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe de cette expression ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "strictement positif pour tout réel $x$"
+					},
+					{
+						"content": "positif, et nul pour une seule valeur de $x$"
+					},
+					{
+						"content": "strictement négatif pour tout réel $x$"
+					},
+					{
+						"content": "négatif, et nul pour une seule valeur de $x$"
+					},
+					{
+						"content": "de signe variable : il dépend de la valeur de $x$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 50,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-5, -4, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 50,
+						"exemples": [
+							"-5(x+1)^2",
+							"-4(x-3)^2",
+							"-5(x-1)^2",
+							"-2(x-3)^2",
+							"-5(x+2)^2",
+							"-5(x+5)^2",
+							"-2(x-2)^2",
+							"-1(x-4)^2",
+							"-1(x+2)^2",
+							"-3(x+2)^2",
+							"-4(x-5)^2",
+							"-3(x+1)^2"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 10,
+							"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["négatif, et nul pour une seule valeur de $x"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "169/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 42,
+					"max": 42
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-5 \\left( x + 1 \\right)^2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["D. négatif, et nul pour une seule valeur de $x$"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"expression1": "-5(x+1)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-4 \\left( x - 3 \\right)^2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["D. négatif, et nul pour une seule valeur de $x$"],
+					"variables": {
+						"a": "-4",
+						"b": "-3",
+						"expression1": "-4(x-3)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-5 \\left( x - 1 \\right)^2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["D. négatif, et nul pour une seule valeur de $x$"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"expression1": "-5(x-1)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-2 \\left( x - 3 \\right)^2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["D. négatif, et nul pour une seule valeur de $x$"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"expression1": "-2(x-3)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Quel est le signe de cette expression ?\n\n$$-5 \\left( x + 2 \\right)^2$$\n\n- A. strictement positif pour tout réel $x$\n- B. positif, et nul pour une seule valeur de $x$\n- C. strictement négatif pour tout réel $x$\n- D. négatif, et nul pour une seule valeur de $x$\n- E. de signe variable : il dépend de la valeur de $x$",
+					"reponse": ["D. négatif, et nul pour une seule valeur de $x$"],
+					"variables": {
+						"a": "-5",
+						"b": "2",
+						"expression1": "-5(x+2)^2"
+					}
+				}
+			]
+		}
+	]
+}

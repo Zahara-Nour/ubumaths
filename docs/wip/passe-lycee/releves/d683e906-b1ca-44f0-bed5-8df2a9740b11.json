@@ -1,0 +1,907 @@
+{
+	"template_id": "d683e906-b1ca-44f0-bed5-8df2a9740b11",
+	"titre": "Probabilités de la loi de X à partir d'un arbre pondéré",
+	"sous_titre": "Deux épreuves successives représentées par un arbre : regrouper les chemins qui donnent la même valeur de X (nombre de succès ou gain) et additionner leurs probabilités",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Variables aléatoires > Loi d'une variable aléatoire",
+	"mis_a_jour": "2026-10-02T21:39:26.849113+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-355",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "g",
+						"expression": "3..6"
+					},
+					{
+						"name": "m",
+						"expression": "2..3"
+					}
+				],
+				"conditions": ["k != 5", "g > m"],
+				"enonce_brut": "Un joueur tire deux fois au but. Chaque tir est réussi avec la probabilité $0.{{k}}$, indépendamment de l'autre. Un tir réussi rapporte ${{g}}$ points, un tir manqué fait perdre ${{m}}$ points. On note $R$ l'événement « le tir est réussi » et $X$ le nombre total de points obtenus (positif ou négatif) à l'issue des deux tirs.\n\n```probtree\nR:0.{{k}}\n  R:0.{{k}}\n  \\overline{R}:0.{{eval:10-k}}\n\\overline{R}:0.{{eval:10-k}}\n  R:0.{{k}}\n  \\overline{R}:0.{{eval:10-k}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{eval:2*g}})=?$\n\n$P(X={{eval:g-m}})=?$",
+				"reponses_brutes": ["{{eval:k*k/100}}", "{{eval:2*k*(10-k)/100}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 56,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.01,
+						"max": 0.81,
+						"negatif_possible": false,
+						"denominateurs": [25, 100],
+						"denominateur_min": 25,
+						"denominateur_max": 100,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\dfrac{16}{25}",
+							"\\dfrac{1}{100}",
+							"\\dfrac{1}{25}",
+							"\\dfrac{49}{100}",
+							"\\dfrac{4}{25}",
+							"\\dfrac{81}{100}",
+							"\\dfrac{9}{100}",
+							"\\dfrac{9}{25}"
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.18,
+						"max": 0.48,
+						"negatif_possible": false,
+						"denominateurs": [25, 50],
+						"denominateur_min": 25,
+						"denominateur_max": 50,
+						"nb_distinctes": 4,
+						"valeurs": ["\\dfrac{12}{25}", "\\dfrac{21}{50}", "\\dfrac{8}{25}", "\\dfrac{9}{50}"]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.1,
+				"max": 12,
+				"nb_distinctes": 17,
+				"valeurs": [0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9, 1, 2, 3, 4, 5, 6, 8, 10, 12],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 12,
+				"valeurs": [1, 4, 8, 9, 12, 16, 21, 25, 49, 50, 81, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.1,
+				"max": 100,
+				"nb_distinctes": 25,
+				"valeurs": [
+					0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 16, 21, 25, 49,
+					50, 81, 100
+				],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [25, 50, 100],
+				"denominateur_min": 25,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 81,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"probability-tree": 300
+				},
+				"mots_hors_maths": {
+					"min": 62,
+					"max": 62
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Un joueur tire deux fois au but. Chaque tir est réussi avec la probabilité $0{,}1$, indépendamment de l'autre. Un tir réussi rapporte $5$ points, un tir manqué fait perdre $3$ points. On note $R$ l'événement « le tir est réussi » et $X$ le nombre total de points obtenus (positif ou négatif) à l'issue des deux tirs.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 10 \\right) = [?]$\n\n$P \\left( X = 2 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{100}", "\\dfrac{9}{50}"],
+					"variables": {
+						"k": "1",
+						"g": "5",
+						"m": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un joueur tire deux fois au but. Chaque tir est réussi avec la probabilité $0{,}3$, indépendamment de l'autre. Un tir réussi rapporte $4$ points, un tir manqué fait perdre $3$ points. On note $R$ l'événement « le tir est réussi » et $X$ le nombre total de points obtenus (positif ou négatif) à l'issue des deux tirs.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 8 \\right) = [?]$\n\n$P \\left( X = 1 \\right) = [?]$",
+					"reponse": ["\\dfrac{9}{100}", "\\dfrac{21}{50}"],
+					"variables": {
+						"k": "3",
+						"g": "4",
+						"m": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un joueur tire deux fois au but. Chaque tir est réussi avec la probabilité $0{,}1$, indépendamment de l'autre. Un tir réussi rapporte $4$ points, un tir manqué fait perdre $2$ points. On note $R$ l'événement « le tir est réussi » et $X$ le nombre total de points obtenus (positif ou négatif) à l'issue des deux tirs.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 8 \\right) = [?]$\n\n$P \\left( X = 2 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{100}", "\\dfrac{9}{50}"],
+					"variables": {
+						"k": "1",
+						"g": "4",
+						"m": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Un joueur tire deux fois au but. Chaque tir est réussi avec la probabilité $0{,}3$, indépendamment de l'autre. Un tir réussi rapporte $3$ points, un tir manqué fait perdre $2$ points. On note $R$ l'événement « le tir est réussi » et $X$ le nombre total de points obtenus (positif ou négatif) à l'issue des deux tirs.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 6 \\right) = [?]$\n\n$P \\left( X = 1 \\right) = [?]$",
+					"reponse": ["\\dfrac{9}{100}", "\\dfrac{21}{50}"],
+					"variables": {
+						"k": "3",
+						"g": "3",
+						"m": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Un joueur tire deux fois au but. Chaque tir est réussi avec la probabilité $0{,}1$, indépendamment de l'autre. Un tir réussi rapporte $5$ points, un tir manqué fait perdre $2$ points. On note $R$ l'événement « le tir est réussi » et $X$ le nombre total de points obtenus (positif ou négatif) à l'issue des deux tirs.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 10 \\right) = [?]$\n\n$P \\left( X = 3 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{100}", "\\dfrac{9}{50}"],
+					"variables": {
+						"k": "1",
+						"g": "5",
+						"m": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "1..9"
+					},
+					{
+						"name": "w",
+						"expression": "1..2"
+					}
+				],
+				"conditions": ["r != n", "gcd(r,n) = 1", "r+n <= 12"],
+				"enonce_brut": "Une urne contient ${{r}}$ {{if:r == 1|boule rouge|boules rouges}} et ${{n}}$ {{if:n == 1|boule noire|boules noires}}. On tire une boule au hasard, on note sa couleur, on la remet dans l'urne, puis on tire une deuxième boule. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n```probtree\nR:{{r}}/{{eval:r+n}}\n  R:{{r}}/{{eval:r+n}}\n  \\overline{R}:{{n}}/{{eval:r+n}}\n\\overline{R}:{{n}}/{{eval:r+n}}\n  R:{{r}}/{{eval:r+n}}\n  \\overline{R}:{{n}}/{{eval:r+n}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X=1)=?$\n\n$P(X{{if:w == 1|\\geqslant|\\leqslant}} 1)=?$",
+				"reponses_brutes": ["{{eval:2*r*n/(r+n)^2}}", "{{eval:1-((2-w)*n^2+(w-1)*r^2)/(r+n)^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 78,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.18,
+						"max": 0.49586776859504134,
+						"negatif_possible": false,
+						"denominateurs": [8, 9, 18, 25, 32, 49, 50, 72, 81, 121],
+						"denominateur_min": 8,
+						"denominateur_max": 121,
+						"nb_distinctes": 20,
+						"valeurs": [
+							"\\dfrac{12}{25}",
+							"\\dfrac{12}{49}",
+							"\\dfrac{15}{32}",
+							"\\dfrac{16}{81}",
+							"\\dfrac{20}{49}",
+							"\\dfrac{21}{50}",
+							"\\dfrac{24}{49}",
+							"\\dfrac{28}{81}",
+							"\\dfrac{35}{72}",
+							"\\dfrac{36}{121}",
+							"\\dfrac{3}{8}",
+							"\\dfrac{40}{81}",
+							"\\dfrac{48}{121}",
+							"\\dfrac{4}{9}",
+							"\\dfrac{56}{121}",
+							"\\dfrac{5}{18}",
+							"\\dfrac{60}{121}",
+							"\\dfrac{7}{32}",
+							"\\dfrac{8}{25}",
+							"\\dfrac{9}{50}"
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.19,
+						"max": 0.99,
+						"negatif_possible": false,
+						"denominateurs": [9, 16, 25, 36, 49, 64, 81, 100, 121, 144],
+						"denominateur_min": 9,
+						"denominateur_max": 144,
+						"nb_distinctes": 40
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 144,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 144,
+				"nb_distinctes": 56,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [8, 9, 16, 18, 25, 32, 36, 49, 50, 64, 72, 81, 100, 121, 144],
+				"denominateur_min": 8,
+				"denominateur_max": 144,
+				"numerateur_min": 3,
+				"numerateur_max": 119,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"probability-tree": 300
+				},
+				"mots_hors_maths": {
+					"min": 57,
+					"max": 57
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (144)",
+					"graine": 26,
+					"enonce": "Une urne contient $7$ boules rouges et $5$ boules noires. On tire une boule au hasard, on note sa couleur, on la remet dans l'urne, puis on tire une deuxième boule. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$\n\n$P(X\\geqslant 1)=[?]$",
+					"reponse": ["\\dfrac{35}{72}", "\\dfrac{119}{144}"],
+					"variables": {
+						"r": "7",
+						"n": "5",
+						"w": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Une urne contient $1$ boule rouge et $5$ boules noires. On tire une boule au hasard, on note sa couleur, on la remet dans l'urne, puis on tire une deuxième boule. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$\n\n$P(X\\leqslant 1)=[?]$",
+					"reponse": ["\\dfrac{5}{18}", "\\dfrac{35}{36}"],
+					"variables": {
+						"r": "1",
+						"n": "5",
+						"w": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une urne contient $7$ boules rouges et $4$ boules noires. On tire une boule au hasard, on note sa couleur, on la remet dans l'urne, puis on tire une deuxième boule. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$\n\n$P(X\\leqslant 1)=[?]$",
+					"reponse": ["\\dfrac{56}{121}", "\\dfrac{72}{121}"],
+					"variables": {
+						"r": "7",
+						"n": "4",
+						"w": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une urne contient $1$ boule rouge et $5$ boules noires. On tire une boule au hasard, on note sa couleur, on la remet dans l'urne, puis on tire une deuxième boule. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$\n\n$P(X\\geqslant 1)=[?]$",
+					"reponse": ["\\dfrac{5}{18}", "\\dfrac{11}{36}"],
+					"variables": {
+						"r": "1",
+						"n": "5",
+						"w": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une urne contient $3$ boules rouges et $2$ boules noires. On tire une boule au hasard, on note sa couleur, on la remet dans l'urne, puis on tire une deuxième boule. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$\n\n$P(X\\geqslant 1)=[?]$",
+					"reponse": ["\\dfrac{12}{25}", "\\dfrac{21}{25}"],
+					"variables": {
+						"r": "3",
+						"n": "2",
+						"w": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "2..9"
+					},
+					{
+						"name": "n",
+						"expression": "2..9"
+					},
+					{
+						"name": "k",
+						"expression": "0..2"
+					}
+				],
+				"conditions": ["r != n", "r+n <= 13"],
+				"enonce_brut": "Une urne contient ${{r}}$ boules rouges et ${{n}}$ boules noires. On tire successivement deux boules au hasard, sans remise. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n```probtree\nR:{{r}}/{{eval:r+n}}\n  R:{{eval:r-1}}/{{eval:r+n-1}}\n  \\overline{R}:{{n}}/{{eval:r+n-1}}\n\\overline{R}:{{n}}/{{eval:r+n}}\n  R:{{r}}/{{eval:r+n-1}}\n  \\overline{R}:{{eval:n-1}}/{{eval:r+n-1}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{k}})=?$",
+				"reponses_brutes": [
+					"{{eval:(n*(n-1)*(k-1)*(k-2)/2+2*r*n*k*(2-k)+r*(r-1)*k*(k-1)/2)/((r+n)*(r+n-1))}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 121,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.01818181818181818,
+						"max": 0.6545454545454545,
+						"negatif_possible": false,
+						"denominateurs": [
+							2, 3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 18, 21, 22, 26, 28, 33, 36, 39, 45, 55, 66
+						],
+						"denominateur_min": 2,
+						"denominateur_max": 66,
+						"nb_distinctes": 58
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 66,
+				"nb_distinctes": 30,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 21, 22, 24, 26, 28, 33, 35,
+					36, 39, 45, 55, 66
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 66,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [
+					2, 3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 18, 21, 22, 26, 28, 33, 36, 39, 45, 55, 66
+				],
+				"denominateur_min": 2,
+				"denominateur_max": 66,
+				"numerateur_min": 1,
+				"numerateur_max": 36,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"probability-tree": 300
+				},
+				"mots_hors_maths": {
+					"min": 45,
+					"max": 45
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (66)",
+					"graine": 88,
+					"enonce": "Une urne contient $7$ boules rouges et $5$ boules noires. On tire successivement deux boules au hasard, sans remise. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$",
+					"reponse": ["\\dfrac{35}{66}"],
+					"variables": {
+						"r": "7",
+						"n": "5",
+						"k": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 2,
+					"enonce": "Une urne contient $4$ boules rouges et $8$ boules noires. On tire successivement deux boules au hasard, sans remise. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 0 \\right) = [?]$",
+					"reponse": ["\\dfrac{14}{33}"],
+					"variables": {
+						"r": "4",
+						"n": "8",
+						"k": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une urne contient $2$ boules rouges et $6$ boules noires. On tire successivement deux boules au hasard, sans remise. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 2 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{28}"],
+					"variables": {
+						"r": "2",
+						"n": "6",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une urne contient $2$ boules rouges et $5$ boules noires. On tire successivement deux boules au hasard, sans remise. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 0 \\right) = [?]$",
+					"reponse": ["\\dfrac{10}{21}"],
+					"variables": {
+						"r": "2",
+						"n": "5",
+						"k": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une urne contient $4$ boules rouges et $3$ boules noires. On tire successivement deux boules au hasard, sans remise. On note $R$ l'événement « la boule tirée est rouge » et $X$ le nombre de boules rouges obtenues.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 0 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{7}"],
+					"variables": {
+						"r": "4",
+						"n": "3",
+						"k": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["a != b", "a != 5", "b != 5"],
+				"enonce_brut": "Sur son trajet, un automobiliste rencontre deux feux tricolores qui fonctionnent indépendamment l'un de l'autre. Le premier est vert à son passage avec la probabilité $0.{{a}}$, le second avec la probabilité $0.{{b}}$. On note $V$ l'événement « le feu est vert » et $X$ le nombre de feux verts rencontrés.\n\n```probtree\nV:0.{{a}}\n  V:0.{{b}}\n  \\overline{V}:0.{{eval:10-b}}\n\\overline{V}:0.{{eval:10-a}}\n  V:0.{{b}}\n  \\overline{V}:0.{{eval:10-b}}\n```\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X=1)=?$",
+				"reponses_brutes": ["{{eval:(a*(10-b)+(10-a)*b)/100}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 56,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.26,
+						"max": 0.82,
+						"negatif_possible": false,
+						"denominateurs": [25, 50],
+						"denominateur_min": 25,
+						"denominateur_max": 50,
+						"nb_distinctes": 15,
+						"valeurs": [
+							"\\dfrac{11}{25}",
+							"\\dfrac{13}{25}",
+							"\\dfrac{13}{50}",
+							"\\dfrac{14}{25}",
+							"\\dfrac{17}{25}",
+							"\\dfrac{17}{50}",
+							"\\dfrac{19}{50}",
+							"\\dfrac{21}{50}",
+							"\\dfrac{23}{50}",
+							"\\dfrac{27}{50}",
+							"\\dfrac{29}{50}",
+							"\\dfrac{31}{50}",
+							"\\dfrac{33}{50}",
+							"\\dfrac{37}{50}",
+							"\\dfrac{41}{50}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.1,
+				"max": 1,
+				"nb_distinctes": 9,
+				"valeurs": [0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9, 1],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 11,
+				"max": 50,
+				"nb_distinctes": 15,
+				"valeurs": [11, 13, 14, 17, 19, 21, 23, 25, 27, 29, 31, 33, 37, 41, 50],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.1,
+				"max": 50,
+				"nb_distinctes": 24,
+				"valeurs": [
+					0.1, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 0.9, 1, 11, 13, 14, 17, 19, 21, 23, 25, 27, 29, 31, 33,
+					37, 41, 50
+				],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [25, 50],
+				"denominateur_min": 25,
+				"denominateur_max": 50,
+				"numerateur_min": 11,
+				"numerateur_max": 41,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"probability-tree": 300
+				},
+				"mots_hors_maths": {
+					"min": 56,
+					"max": 56
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (50)",
+					"graine": 1,
+					"enonce": "Sur son trajet, un automobiliste rencontre deux feux tricolores qui fonctionnent indépendamment l'un de l'autre. Le premier est vert à son passage avec la probabilité $0{,}3$, le second avec la probabilité $0{,}6$. On note $V$ l'événement « le feu est vert » et $X$ le nombre de feux verts rencontrés.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$",
+					"reponse": ["\\dfrac{27}{50}"],
+					"variables": {
+						"a": "3",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.1)",
+					"graine": 3,
+					"enonce": "Sur son trajet, un automobiliste rencontre deux feux tricolores qui fonctionnent indépendamment l'un de l'autre. Le premier est vert à son passage avec la probabilité $0{,}1$, le second avec la probabilité $0{,}7$. On note $V$ l'événement « le feu est vert » et $X$ le nombre de feux verts rencontrés.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$",
+					"reponse": ["\\dfrac{33}{50}"],
+					"variables": {
+						"a": "1",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur son trajet, un automobiliste rencontre deux feux tricolores qui fonctionnent indépendamment l'un de l'autre. Le premier est vert à son passage avec la probabilité $0{,}4$, le second avec la probabilité $0{,}8$. On note $V$ l'événement « le feu est vert » et $X$ le nombre de feux verts rencontrés.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$",
+					"reponse": ["\\dfrac{14}{25}"],
+					"variables": {
+						"a": "4",
+						"b": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Sur son trajet, un automobiliste rencontre deux feux tricolores qui fonctionnent indépendamment l'un de l'autre. Le premier est vert à son passage avec la probabilité $0{,}3$, le second avec la probabilité $0{,}2$. On note $V$ l'événement « le feu est vert » et $X$ le nombre de feux verts rencontrés.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$",
+					"reponse": ["\\dfrac{19}{50}"],
+					"variables": {
+						"a": "3",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur son trajet, un automobiliste rencontre deux feux tricolores qui fonctionnent indépendamment l'un de l'autre. Le premier est vert à son passage avec la probabilité $0{,}7$, le second avec la probabilité $0{,}2$. On note $V$ l'événement « le feu est vert » et $X$ le nombre de feux verts rencontrés.\n\n[probability-tree]\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 1 \\right) = [?]$",
+					"reponse": ["\\dfrac{31}{50}"],
+					"variables": {
+						"a": "7",
+						"b": "2"
+					}
+				}
+			]
+		}
+	]
+}

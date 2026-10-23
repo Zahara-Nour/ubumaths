@@ -1,0 +1,591 @@
+{
+	"template_id": "1cfc575d-e122-406d-9b4e-60556d3260a5",
+	"titre": "Probabilité d'un chemin dans un arbre pondéré",
+	"sous_titre": "P(A∩B) = P(A) × P_A(B) : on multiplie les probabilités le long du chemin",
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Probabilités conditionnelles > Arbres pondérés",
+	"mis_a_jour": "2026-10-04T12:00:49.445337+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-399",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["b != c", "a != b"],
+				"enonce_brut": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{b}}\n  \\overline{B}:0.{{eval:10-b}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(A\\cap B)=?$",
+				"reponses_brutes": ["{{eval:a*b/100}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.02,
+						"max": 0.72,
+						"negatif_possible": false,
+						"denominateurs": [5, 10, 20, 25, 50, 100],
+						"denominateur_min": 5,
+						"denominateur_max": 100,
+						"nb_distinctes": 31
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 18, 20, 21, 25, 27, 50, 63, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 18, 20, 21, 25, 27, 50, 63, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [5, 10, 20, 25, 50, 100],
+				"denominateur_min": 5,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 63,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"probability-tree": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 7,
+					"enonce": "On considère l'arbre pondéré ci-dessous.\n\n[probability-tree]\n\nDonne le résultat en fraction irréductible.\n\n$P(A\\cap B)=[?]$",
+					"reponse": ["\\dfrac{9}{100}"],
+					"variables": {
+						"a": "1",
+						"b": "9",
+						"c": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "On considère l'arbre pondéré ci-dessous.\n\n[probability-tree]\n\nDonne le résultat en fraction irréductible.\n\n$P(A\\cap B)=[?]$",
+					"reponse": ["\\dfrac{1}{20}"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "t",
+						"expression": "1..8"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["u != 5"],
+				"enonce_brut": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:0.{{a}}\n  B:0.{{c}}\n  \\overline{B}:0.{{eval:10-c}}\n\\overline{A}:0.{{eval:10-a}}\n  B:0.{{t}}{{u}}\n  \\overline{B}:0.{{eval:9-t}}{{eval:10-u}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(\\overline{A}\\cap \\overline{B})=?$",
+				"reponses_brutes": ["{{eval:(10-a)*(100-10*t-u)/1000}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.012,
+						"max": 0.801,
+						"negatif_possible": false,
+						"denominateurs": [25, 50, 100, 125, 200, 250, 500, 1000],
+						"denominateur_min": 25,
+						"denominateur_max": 1000,
+						"nb_distinctes": 196
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 1000,
+				"nb_distinctes": 112,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 1000,
+				"nb_distinctes": 112,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [25, 50, 100, 125, 200, 250, 500, 1000],
+				"denominateur_min": 25,
+				"denominateur_max": 1000,
+				"numerateur_min": 2,
+				"numerateur_max": 801,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"probability-tree": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 1,
+					"enonce": "On considère l'arbre pondéré ci-dessous.\n\n[probability-tree]\n\nDonne le résultat en fraction irréductible.\n\n$P(\\overline{A}\\cap \\overline{B})=[?]$",
+					"reponse": ["\\dfrac{99}{1000}"],
+					"variables": {
+						"a": "1",
+						"c": "5",
+						"t": "8",
+						"u": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 35,
+					"enonce": "On considère l'arbre pondéré ci-dessous.\n\n[probability-tree]\n\nDonne le résultat en fraction irréductible.\n\n$P(\\overline{A}\\cap \\overline{B})=[?]$",
+					"reponse": ["\\dfrac{2}{25}"],
+					"variables": {
+						"a": "5",
+						"c": "7",
+						"t": "8",
+						"u": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "d",
+						"expression": "3..9"
+					},
+					{
+						"name": "n",
+						"expression": "1..8"
+					},
+					{
+						"name": "s",
+						"expression": "3..9"
+					},
+					{
+						"name": "r",
+						"expression": "1..8"
+					},
+					{
+						"name": "q",
+						"expression": "3..9"
+					},
+					{
+						"name": "m",
+						"expression": "1..8"
+					}
+				],
+				"conditions": [
+					"n < d",
+					"gcd(n, d) = 1",
+					"r < s",
+					"gcd(r, s) = 1",
+					"m < q",
+					"gcd(m, q) = 1",
+					"s != d"
+				],
+				"enonce_brut": "On considère l'arbre pondéré ci-dessous.\n\n```probtree\nA:{{n}}/{{d}}\n  B:{{r}}/{{s}}\n  \\overline{B}:{{eval:s-r}}/{{s}}\n\\overline{A}:{{eval:d-n}}/{{d}}\n  B:{{m}}/{{q}}\n  \\overline{B}:{{eval:q-m}}/{{q}}\n```\n\nDonne le résultat en fraction irréductible.\n\n$P(A\\cap \\overline{B})=?$",
+				"reponses_brutes": ["{{eval:n*(s-r)/(d*s)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.013888888888888888,
+						"max": 0.7619047619047619,
+						"negatif_possible": false,
+						"denominateurs": [
+							2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 28, 32, 35, 36, 40,
+							42, 45, 48, 54, 56, 63, 72
+						],
+						"denominateur_min": 2,
+						"denominateur_max": 72,
+						"nb_distinctes": 115
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 72,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 72,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [
+					2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 28, 32, 35, 36, 40, 42,
+					45, 48, 54, 56, 63, 72
+				],
+				"denominateur_min": 2,
+				"denominateur_max": 72,
+				"numerateur_min": 1,
+				"numerateur_max": 49,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"probability-tree": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (72)",
+					"graine": 21,
+					"enonce": "On considère l'arbre pondéré ci-dessous.\n\n[probability-tree]\n\nDonne le résultat en fraction irréductible.\n\n$P(A\\cap \\overline{B})=[?]$",
+					"reponse": ["\\dfrac{25}{72}"],
+					"variables": {
+						"d": "9",
+						"n": "5",
+						"s": "8",
+						"r": "3",
+						"q": "9",
+						"m": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 2,
+					"enonce": "On considère l'arbre pondéré ci-dessous.\n\n[probability-tree]\n\nDonne le résultat en fraction irréductible.\n\n$P(A\\cap \\overline{B})=[?]$",
+					"reponse": ["\\dfrac{1}{9}"],
+					"variables": {
+						"d": "8",
+						"n": "1",
+						"s": "9",
+						"r": "1",
+						"q": "9",
+						"m": "5"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,211 @@
+{
+	"template_id": "727fb88a-0cb7-4937-88c7-c522dffe04f4",
+	"titre": "Calculer un terme d'une suite géométrique",
+	"sous_titre": "Calculer u_n à partir de u_0 et de la raison",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Suites géométriques > Calculer un terme",
+	"mis_a_jour": "2026-10-02T05:10:34.029342+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-225",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "q",
+						"expression": "2..3;±"
+					},
+					{
+						"name": "k",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison ${{q}}$.\n\nCalcule $u_{ {{k}} }$.\n\n$u_{ {{k}} }=?$",
+				"reponses_brutes": ["{{eval:a*(q)^k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 137,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -2, 2, 3]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1215,
+						"max": 1215,
+						"negatif_possible": true,
+						"nb_distinctes": 61
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -1215,
+				"max": 1215,
+				"nb_distinctes": 61,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1215,
+				"max": 1215,
+				"nb_distinctes": 70,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1215)",
+					"graine": 86,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 5$ et de raison $3$.\n\nCalcule $u_5$.\n\n$u_5 = [?]$",
+					"reponse": ["1215"],
+					"variables": {
+						"a": "5",
+						"q": "3",
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-1215)",
+					"graine": 103,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 5$ et de raison $-3$.\n\nCalcule $u_5$.\n\n$u_5 = [?]$",
+					"reponse": ["-1215"],
+					"variables": {
+						"a": "5",
+						"q": "-3",
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -5$ et de raison $2$.\n\nCalcule $u_5$.\n\n$u_5 = [?]$",
+					"reponse": ["-160"],
+					"variables": {
+						"a": "-5",
+						"q": "2",
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -2$ et de raison $-2$.\n\nCalcule $u_4$.\n\n$u_4 = [?]$",
+					"reponse": ["-32"],
+					"variables": {
+						"a": "-2",
+						"q": "-2",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -5$ et de raison $-2$.\n\nCalcule $u_2$.\n\n$u_2 = [?]$",
+					"reponse": ["-20"],
+					"variables": {
+						"a": "-5",
+						"q": "-2",
+						"k": "2"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,1008 @@
+{
+	"template_id": "6a5e58da-8015-4d0d-9a1f-6c8e8d9cae4d",
+	"titre": "Résoudre une inéquation du type eᵘ < eᶜ",
+	"sous_titre": "Inéquation avec v constant, réponse en intervalle ; a < 0 dans deux variations",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonction exponentielle > Équations et inéquations",
+	"mis_a_jour": "2026-10-02T04:20:49.138673+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-292",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": ["c != b"],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ {{eval:a*x+b}} }<e^{ {{c}} }$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["]-\\infty;{{eval:(c-b)/a}}["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 93,
+						"exemples": [
+							"]-\\infty;-\\dfrac{5}{4}[",
+							"]-\\infty;2[",
+							"]-\\infty;\\dfrac{13}{3}[",
+							"]-\\infty;\\dfrac{3}{2}[",
+							"]-\\infty;-\\dfrac{11}{2}[",
+							"]-\\infty;\\dfrac{7}{4}[",
+							"]-\\infty;-\\dfrac{4}{5}[",
+							"]-\\infty;-\\dfrac{2}{3}[",
+							"]-\\infty;-1[",
+							"]-\\infty;-\\dfrac{7}{4}[",
+							"]-\\infty;\\dfrac{5}{4}[",
+							"]-\\infty;-\\dfrac{15}{4}["
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 18,
+							"nb_distinctes": 18,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 18,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 18,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+					16, 17, 18
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 225,
+				"denominateurs": [2, 3, 4, 5],
+				"denominateur_min": 2,
+				"denominateur_max": 5,
+				"numerateur_min": 1,
+				"numerateur_max": 18,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"+": "151/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 214,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^{5 x + 9} < \\exponentialE^{-9}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-\\dfrac{18}{5}["],
+					"variables": {
+						"x": "x",
+						"a": "5",
+						"b": "9",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 61,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^{5 x + 5} < \\exponentialE^{-9}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-\\dfrac{14}{5}["],
+					"variables": {
+						"x": "x",
+						"a": "5",
+						"b": "5",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^{4 x + 4} < \\exponentialE^{-1}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-\\dfrac{5}{4}["],
+					"variables": {
+						"x": "x",
+						"a": "4",
+						"b": "4",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^{3 x + 1} < \\exponentialE^7$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;2["],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"b": "1",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^{3 x - 8} < \\exponentialE^5$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;\\dfrac{13}{3}["],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"b": "-8",
+						"c": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": ["c != b"],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ {{eval:a*x+b}} }\\geqslant e^{ {{c}} }$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["[{{eval:(c-b)/a}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 268,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 93,
+						"exemples": [
+							"[-\\dfrac{5}{4};+\\infty[",
+							"[2;+\\infty[",
+							"[\\dfrac{13}{3};+\\infty[",
+							"[\\dfrac{3}{2};+\\infty[",
+							"[-\\dfrac{11}{2};+\\infty[",
+							"[\\dfrac{7}{4};+\\infty[",
+							"[-\\dfrac{4}{5};+\\infty[",
+							"[-\\dfrac{2}{3};+\\infty[",
+							"[-1;+\\infty[",
+							"[-\\dfrac{7}{4};+\\infty[",
+							"[\\dfrac{5}{4};+\\infty[",
+							"[-\\dfrac{15}{4};+\\infty["
+						],
+						"nombres_contenus": {
+							"min": -8,
+							"max": 18,
+							"nb_distinctes": 26,
+							"valeurs": [
+								-8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+								16, 17, 18
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -8,
+				"max": 18,
+				"nb_distinctes": 26,
+				"valeurs": [
+					-8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+					18
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 18,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+					16, 17, 18
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 225,
+				"denominateurs": [2, 3, 4, 5],
+				"denominateur_min": 2,
+				"denominateur_max": 5,
+				"numerateur_min": 1,
+				"numerateur_max": 18,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "151/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 214,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ 5x+9 }\\geqslant e^{ -9 }$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[-\\dfrac{18}{5};+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "5",
+						"b": "9",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 61,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ 5x+5 }\\geqslant e^{ -9 }$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[-\\dfrac{14}{5};+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "5",
+						"b": "5",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ 4x+4 }\\geqslant e^{ -1 }$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[-\\dfrac{5}{4};+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "4",
+						"b": "4",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ 3x+1 }\\geqslant e^{ 7 }$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[2;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"b": "1",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ 3x-8 }\\geqslant e^{ 5 }$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[\\dfrac{13}{3};+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"b": "-8",
+						"c": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "-5..-1"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": ["c != b"],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ {{eval:a*x+b}} }<e^{ {{c}} }$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["]{{eval:(c-b)/a}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 278,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-5, -4, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 101,
+						"exemples": [
+							"]\\dfrac{5}{2};+\\infty[",
+							"]-\\dfrac{3}{2};+\\infty[",
+							"]-\\dfrac{13}{3};+\\infty[",
+							"]-\\dfrac{3}{4};+\\infty[",
+							"]\\dfrac{11}{4};+\\infty[",
+							"]-\\dfrac{7}{2};+\\infty[",
+							"]4;+\\infty[",
+							"]\\dfrac{1}{2};+\\infty[",
+							"]\\dfrac{2}{5};+\\infty[",
+							"]\\dfrac{7}{2};+\\infty[",
+							"]-\\dfrac{5}{2};+\\infty[",
+							"]5;+\\infty["
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 18,
+							"nb_distinctes": 18,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 18,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 18,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+					16, 17, 18
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 164,
+				"denominateurs": [2, 3, 4, 5],
+				"denominateur_min": 2,
+				"denominateur_max": 5,
+				"numerateur_min": 1,
+				"numerateur_max": 17,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"−": "121/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 214,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^{9 - x} < \\exponentialE^{-9}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]18;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "9",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 61,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^{5 - x} < \\exponentialE^{-9}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]14;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "5",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^{4 - 2 x} < \\exponentialE^{-1}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]\\dfrac{5}{2};+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"b": "4",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^{1 - 4 x} < \\exponentialE^7$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\dfrac{3}{2};+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "-4",
+						"b": "1",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^{-3 x - 8} < \\exponentialE^5$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\dfrac{13}{3};+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"b": "-8",
+						"c": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "-5..-1"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": ["c != b"],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ {{eval:a*x+b}} }\\geqslant e^{ {{c}} }$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["]-\\infty;{{eval:(c-b)/a}}]"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 278,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-5, -4, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 101,
+						"exemples": [
+							"]-\\infty;\\dfrac{5}{2}]",
+							"]-\\infty;-\\dfrac{3}{2}]",
+							"]-\\infty;-\\dfrac{13}{3}]",
+							"]-\\infty;-\\dfrac{3}{4}]",
+							"]-\\infty;\\dfrac{11}{4}]",
+							"]-\\infty;-\\dfrac{7}{2}]",
+							"]-\\infty;4]",
+							"]-\\infty;\\dfrac{1}{2}]",
+							"]-\\infty;\\dfrac{2}{5}]",
+							"]-\\infty;\\dfrac{7}{2}]",
+							"]-\\infty;-\\dfrac{5}{2}]",
+							"]-\\infty;5]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 18,
+							"nb_distinctes": 18,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 18,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 18,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+					16, 17, 18
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 164,
+				"denominateurs": [2, 3, 4, 5],
+				"denominateur_min": 2,
+				"denominateur_max": 5,
+				"numerateur_min": 1,
+				"numerateur_max": 17,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "121/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 214,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ 9-x }\\geqslant e^{ -9 }$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;18]"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "9",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 61,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ 5-x }\\geqslant e^{ -9 }$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;14]"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "5",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ 4-2x }\\geqslant e^{ -1 }$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;\\dfrac{5}{2}]"],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"b": "4",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ 1-4x }\\geqslant e^{ 7 }$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-\\dfrac{3}{2}]"],
+					"variables": {
+						"x": "x",
+						"a": "-4",
+						"b": "1",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{ -3x-8 }\\geqslant e^{ 5 }$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-\\dfrac{13}{3}]"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"b": "-8",
+						"c": "5"
+					}
+				}
+			]
+		}
+	]
+}

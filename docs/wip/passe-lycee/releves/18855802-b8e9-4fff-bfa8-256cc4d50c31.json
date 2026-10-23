@@ -1,0 +1,408 @@
+{
+	"template_id": "18855802-b8e9-4fff-bfa8-256cc4d50c31",
+	"titre": "Lire la parité sur la courbe d'une fonction trigonométrique",
+	"sous_titre": "Symétrie par rapport à l'axe des ordonnées (paire) ou à l'origine (impaire), lue sur une courbe tracée sur [−2π ; 2π] (pièges : axe et origine confondus, symétrie seulement apparente)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonctions trigonométriques > Parité et périodicité",
+	"mis_a_jour": "2026-10-05T09:32:00.064054+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-456",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: {{eval:-a-2}} ; {{eval:a+2}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*cos(x)+cos(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2π à 2π.\n```\n\nD'après le graphique, la fonction $f$ semble :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "paire"
+					},
+					{
+						"content": "impaire"
+					},
+					{
+						"content": "ni paire ni impaire"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["paire"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nD'après le graphique, la fonction $f$ semble :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["A. paire"],
+					"variables": {
+						"a": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: {{eval:-a-2}} ; {{eval:a+2}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+sin(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2π à 2π.\n```\n\nD'après le graphique, la fonction $f$ semble :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "paire"
+					},
+					{
+						"content": "impaire"
+					},
+					{
+						"content": "ni paire ni impaire"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["impaire"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nD'après le graphique, la fonction $f$ semble :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: {{eval:-a-2}} ; {{eval:a+2}}\ngrille: pi/2 ; 1\nf(x) = {{a}}*sin(x)+cos(2*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2π à 2π.\n```\n\nD'après le graphique, la fonction $f$ semble :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "paire"
+					},
+					{
+						"content": "impaire"
+					},
+					{
+						"content": "ni paire ni impaire"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni paire ni impaire"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nD'après le graphique, la fonction $f$ semble :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["C. ni paire ni impaire"],
+					"variables": {
+						"a": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: -4 ; 4\ngrille: pi/2 ; 1\nf(x) = x*cos(x)/{{a}}   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f tracée pour x de −2π à 2π.\n```\n\nD'après le graphique, la fonction $f$ semble :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "paire"
+					},
+					{
+						"content": "impaire"
+					},
+					{
+						"content": "ni paire ni impaire"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["impaire"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ définie sur $\\mathbb{R}$.\n\n[courbe]\n\nD'après le graphique, la fonction $f$ semble :\n\n- A. paire\n- B. impaire\n- C. ni paire ni impaire",
+					"reponse": ["B. impaire"],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		}
+	]
+}

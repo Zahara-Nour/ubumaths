@@ -1,0 +1,673 @@
+{
+	"template_id": "83b1f614-95db-4d74-9fbf-d4d502ee8c01",
+	"titre": "Maximum local d'une fonction polynôme de degré 3",
+	"sous_titre": "Dérivée, signe d'un trinôme à racines entières, tableau de variations : abscisse et valeur du maximum local",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Variations",
+	"mis_a_jour": "2026-10-02T11:08:51.976198+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-283",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": ["c != 0"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^3-3*a^2*x+c}}$. Elle admet un maximum local.\n\nIl est atteint en $x_0=?$ et vaut $f(x_0)=?$.",
+				"reponses_brutes": ["{{eval:-a}}", "{{eval:2*a^3+c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 54,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-3, -2, -1]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 63,
+						"negatif_possible": true,
+						"nb_distinctes": 49
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 27,
+				"nb_distinctes": 12,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 27],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -7,
+				"max": 63,
+				"nb_distinctes": 49,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -7,
+				"max": 63,
+				"nb_distinctes": 51,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "159/300",
+					"−": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (63)",
+					"graine": 102,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^3 - 27 x + 9$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["-3", "63"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"c": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-7)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^3 - 3 x - 9$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["-1", "-7"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^3 - 12 x + 9$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["-2", "25"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^3 - 3 x + 1$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["-1", "3"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^3 - 12 x - 8$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["-2", "8"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"c": "-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": ["c != 0"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:-x^3+3*a^2*x+c}}$. Elle admet un maximum local.\n\nIl est atteint en $x_0=?$ et vaut $f(x_0)=?$.",
+				"reponses_brutes": ["{{a}}", "{{eval:2*a^3+c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 54,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 63,
+						"negatif_possible": true,
+						"nb_distinctes": 49
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 27,
+				"nb_distinctes": 12,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 27],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -7,
+				"max": 63,
+				"nb_distinctes": 50,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -7,
+				"max": 63,
+				"nb_distinctes": 51,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (63)",
+					"graine": 102,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^3 + 27 x + 9$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["3", "63"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"c": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-7)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^3 + 3 x - 9$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["1", "-7"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^3 + 12 x + 9$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["2", "25"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^3 + 3 x + 1$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["1", "3"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^3 + 12 x - 8$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["2", "8"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"c": "-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "p",
+						"expression": "-3..2"
+					},
+					{
+						"name": "d",
+						"expression": "1..3"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p+d"
+					},
+					{
+						"name": "c",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": ["q <= 3", "p*q != 0", "p+q != 0", "c != 0"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:2*x^3-3*(p+q)*x^2+6*p*q*x+c}}$. Elle admet un maximum local.\n\nIl est atteint en $x_0=?$ et vaut $f(x_0)=?$.",
+				"reponses_brutes": ["{{p}}", "{{eval:-p^3+3*p^2*q+c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 78,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-3, -2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-3, -2, -1, 1, 2]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -32,
+						"max": 33,
+						"negatif_possible": true,
+						"nb_distinctes": 50
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 36,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 9, 12, 15, 18, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -32,
+				"max": 33,
+				"nb_distinctes": 50,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -32,
+				"max": 36,
+				"nb_distinctes": 51,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "189/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "285/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (36)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x^3 + 15 x^2 + 36 x - 5$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["-3", "-32"],
+					"variables": {
+						"x": "x",
+						"p": "-3",
+						"d": "1",
+						"q": "-2",
+						"c": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x^3 - 3 x^2 - 12 x - 2$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["-1", "5"],
+					"variables": {
+						"x": "x",
+						"p": "-1",
+						"d": "3",
+						"q": "2",
+						"c": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x^3 - 9 x^2 + 12 x - 1$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["1", "4"],
+					"variables": {
+						"x": "x",
+						"p": "1",
+						"d": "1",
+						"q": "2",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x^3 + 9 x^2 + 12 x + 2$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["-2", "-2"],
+					"variables": {
+						"x": "x",
+						"p": "-2",
+						"d": "1",
+						"q": "-1",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x^3 + 9 x^2 + 12 x - 3$. Elle admet un maximum local.\n\nIl est atteint en $x_0 = [?]$ et vaut $f\\left( x_0 \\right) = [?]$.",
+					"reponse": ["-2", "-7"],
+					"variables": {
+						"x": "x",
+						"p": "-2",
+						"d": "1",
+						"q": "-1",
+						"c": "-3"
+					}
+				}
+			]
+		}
+	]
+}

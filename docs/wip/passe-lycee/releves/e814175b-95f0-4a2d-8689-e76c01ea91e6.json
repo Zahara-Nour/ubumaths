@@ -1,0 +1,684 @@
+{
+	"template_id": "e814175b-95f0-4a2d-8689-e76c01ea91e6",
+	"titre": "Inégalité déduite de la convexité (tangente)",
+	"sous_titre": "Courbe convexe au-dessus de sa tangente, concave en dessous : eˣ ≥ x + 1, ln x ≤ x − 1, x² ≥ 2ax − a², √x ≤ (x + 1)/2 (spécialité seulement)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions convexes > Convexité > Inégalités de convexité",
+	"mis_a_jour": "2026-10-04T15:23:38.738139+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-417",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "La fonction exponentielle est convexe sur $\\mathbb{R}$ et sa tangente au point d'abscisse $0$ a pour équation $y=x+1$.\n\nQue peut-on en déduire ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Pour tout réel $x$, $e^{x}\\geqslant x+1$"
+					},
+					{
+						"content": "Pour tout réel $x$, $e^{x}\\leqslant x+1$"
+					},
+					{
+						"content": "$e^{x}\\geqslant x+1$ seulement pour $x\\geqslant 0$"
+					},
+					{
+						"content": "Rien : il faut étudier la fonction $x\\mapsto e^{x}-x-1$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Pour tout réel $x$, $e^{x}\\geqslant x+1"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1,
+							"nb_distinctes": 1,
+							"valeurs": [1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 33,
+					"max": 33
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "La fonction exponentielle est convexe sur $\\mathbb{R}$ et sa tangente au point d'abscisse $0$ a pour équation $y = x + 1$.\n\nQue peut-on en déduire ?\n\n- A. Rien : il faut étudier la fonction $x\\mapsto e^{x}-x-1$\n- B. $e^{x}\\geqslant x+1$ seulement pour $x\\geqslant 0$\n- C. Pour tout réel $x$, $e^{x}\\leqslant x+1$\n- D. Pour tout réel $x$, $e^{x}\\geqslant x+1$",
+					"reponse": ["D. Pour tout réel $x$, $e^{x}\\geqslant x+1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La fonction exponentielle est convexe sur $\\mathbb{R}$ et sa tangente au point d'abscisse $0$ a pour équation $y = x + 1$.\n\nQue peut-on en déduire ?\n\n- A. $e^{x}\\geqslant x+1$ seulement pour $x\\geqslant 0$\n- B. Rien : il faut étudier la fonction $x\\mapsto e^{x}-x-1$\n- C. Pour tout réel $x$, $e^{x}\\geqslant x+1$\n- D. Pour tout réel $x$, $e^{x}\\leqslant x+1$",
+					"reponse": ["C. Pour tout réel $x$, $e^{x}\\geqslant x+1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La fonction exponentielle est convexe sur $\\mathbb{R}$ et sa tangente au point d'abscisse $0$ a pour équation $y = x + 1$.\n\nQue peut-on en déduire ?\n\n- A. $e^{x}\\geqslant x+1$ seulement pour $x\\geqslant 0$\n- B. Rien : il faut étudier la fonction $x\\mapsto e^{x}-x-1$\n- C. Pour tout réel $x$, $e^{x}\\leqslant x+1$\n- D. Pour tout réel $x$, $e^{x}\\geqslant x+1$",
+					"reponse": ["D. Pour tout réel $x$, $e^{x}\\geqslant x+1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La fonction exponentielle est convexe sur $\\mathbb{R}$ et sa tangente au point d'abscisse $0$ a pour équation $y = x + 1$.\n\nQue peut-on en déduire ?\n\n- A. Rien : il faut étudier la fonction $x\\mapsto e^{x}-x-1$\n- B. $e^{x}\\geqslant x+1$ seulement pour $x\\geqslant 0$\n- C. Pour tout réel $x$, $e^{x}\\geqslant x+1$\n- D. Pour tout réel $x$, $e^{x}\\leqslant x+1$",
+					"reponse": ["C. Pour tout réel $x$, $e^{x}\\geqslant x+1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La fonction exponentielle est convexe sur $\\mathbb{R}$ et sa tangente au point d'abscisse $0$ a pour équation $y = x + 1$.\n\nQue peut-on en déduire ?\n\n- A. $e^{x}\\geqslant x+1$ seulement pour $x\\geqslant 0$\n- B. Pour tout réel $x$, $e^{x}\\leqslant x+1$\n- C. Pour tout réel $x$, $e^{x}\\geqslant x+1$\n- D. Rien : il faut étudier la fonction $x\\mapsto e^{x}-x-1$",
+					"reponse": ["C. Pour tout réel $x$, $e^{x}\\geqslant x+1$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "La fonction $\\ln$ est concave sur $]0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y=x-1$.\n\nQue peut-on en déduire ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$"
+					},
+					{
+						"content": "Pour tout réel $x>0$, $\\ln(x)\\geqslant x-1$"
+					},
+					{
+						"content": "$\\ln(x)\\leqslant x-1$ seulement pour $x\\geqslant 1$"
+					},
+					{
+						"content": "Pour tout réel $x>0$, $\\ln(x)=x-1$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 1,
+							"nb_distinctes": 2,
+							"valeurs": [0, 1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "La fonction $\\ln$ est concave sur $]0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y = x - 1$.\n\nQue peut-on en déduire ?\n\n- A. Pour tout réel $x>0$, $\\ln(x)=x-1$\n- B. $\\ln(x)\\leqslant x-1$ seulement pour $x\\geqslant 1$\n- C. Pour tout réel $x>0$, $\\ln(x)\\geqslant x-1$\n- D. Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$",
+					"reponse": ["D. Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La fonction $\\ln$ est concave sur $]0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y = x - 1$.\n\nQue peut-on en déduire ?\n\n- A. $\\ln(x)\\leqslant x-1$ seulement pour $x\\geqslant 1$\n- B. Pour tout réel $x>0$, $\\ln(x)=x-1$\n- C. Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$\n- D. Pour tout réel $x>0$, $\\ln(x)\\geqslant x-1$",
+					"reponse": ["C. Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La fonction $\\ln$ est concave sur $]0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y = x - 1$.\n\nQue peut-on en déduire ?\n\n- A. $\\ln(x)\\leqslant x-1$ seulement pour $x\\geqslant 1$\n- B. Pour tout réel $x>0$, $\\ln(x)=x-1$\n- C. Pour tout réel $x>0$, $\\ln(x)\\geqslant x-1$\n- D. Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$",
+					"reponse": ["D. Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La fonction $\\ln$ est concave sur $]0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y = x - 1$.\n\nQue peut-on en déduire ?\n\n- A. Pour tout réel $x>0$, $\\ln(x)=x-1$\n- B. $\\ln(x)\\leqslant x-1$ seulement pour $x\\geqslant 1$\n- C. Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$\n- D. Pour tout réel $x>0$, $\\ln(x)\\geqslant x-1$",
+					"reponse": ["C. Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La fonction $\\ln$ est concave sur $]0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y = x - 1$.\n\nQue peut-on en déduire ?\n\n- A. $\\ln(x)\\leqslant x-1$ seulement pour $x\\geqslant 1$\n- B. Pour tout réel $x>0$, $\\ln(x)\\geqslant x-1$\n- C. Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$\n- D. Pour tout réel $x>0$, $\\ln(x)=x-1$",
+					"reponse": ["C. Pour tout réel $x>0$, $\\ln(x)\\leqslant x-1$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La fonction carré est convexe sur $\\mathbb{R}$. Sa tangente au point d'abscisse ${{a}}$ a pour équation $y={{eval:2*a}}x{{eval:-a^2;+}}$.\n\nQue peut-on en déduire ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Pour tout réel $x$, $x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}$"
+					},
+					{
+						"content": "Pour tout réel $x$, $x^2\\leqslant {{eval:2*a}}x{{eval:-a^2;+}}$"
+					},
+					{
+						"content": "$x^2\\geqslant {{eval:2*a}}x{{eval:-a^2;+}}$ seulement pour $x\\geqslant {{a}}$"
+					},
+					{
+						"content": "Pour tout réel $x$, $x^2\\geqslant {{eval:2*a}}x$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 176,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"Pour tout réel $x$, $x^2\\geqslant -10x-25",
+							"Pour tout réel $x$, $x^2\\geqslant -2x-1",
+							"Pour tout réel $x$, $x^2\\geqslant -4x-4",
+							"Pour tout réel $x$, $x^2\\geqslant -6x-9",
+							"Pour tout réel $x$, $x^2\\geqslant -8x-16",
+							"Pour tout réel $x$, $x^2\\geqslant 10x-25",
+							"Pour tout réel $x$, $x^2\\geqslant 2x-1",
+							"Pour tout réel $x$, $x^2\\geqslant 4x-4",
+							"Pour tout réel $x$, $x^2\\geqslant 6x-9",
+							"Pour tout réel $x$, $x^2\\geqslant 8x-16"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 25,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 4, 6, 8, 9, 10, 16, 25],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -10,
+				"max": 25,
+				"nb_distinctes": 16,
+				"valeurs": [-10, -8, -6, -4, -2, 1, 2, 3, 4, 5, 6, 8, 9, 10, 16, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 25,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 4, 6, 8, 9, 10, 16, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 25,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 8, 9, 10, 16, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": -10,
+				"max": 25,
+				"nb_distinctes": 16,
+				"valeurs": [-10, -8, -6, -4, -2, 1, 2, 3, 4, 5, 6, 8, 9, 10, 16, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (25)",
+					"graine": 1,
+					"enonce": "La fonction carré est convexe sur $\\mathbb{R}$. Sa tangente au point d'abscisse $-5$ a pour équation $y = -10 x - 25$.\n\nQue peut-on en déduire ?\n\n- A. Pour tout réel $x$, $x^2\\geqslant -10x-25$\n- B. Pour tout réel $x$, $x^2\\leqslant -10x-25$\n- C. Pour tout réel $x$, $x^2\\geqslant -10x$\n- D. $x^2\\geqslant -10x-25$ seulement pour $x\\geqslant -5$",
+					"reponse": ["A. Pour tout réel $x$, $x^2\\geqslant -10x-25$"],
+					"variables": {
+						"a": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La fonction carré est convexe sur $\\mathbb{R}$. Sa tangente au point d'abscisse $-2$ a pour équation $y = -4 x - 4$.\n\nQue peut-on en déduire ?\n\n- A. Pour tout réel $x$, $x^2\\geqslant -4x-4$\n- B. $x^2\\geqslant -4x-4$ seulement pour $x\\geqslant -2$\n- C. Pour tout réel $x$, $x^2\\geqslant -4x$\n- D. Pour tout réel $x$, $x^2\\leqslant -4x-4$",
+					"reponse": ["A. Pour tout réel $x$, $x^2\\geqslant -4x-4$"],
+					"variables": {
+						"a": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La fonction carré est convexe sur $\\mathbb{R}$. Sa tangente au point d'abscisse $-5$ a pour équation $y = -10 x - 25$.\n\nQue peut-on en déduire ?\n\n- A. $x^2\\geqslant -10x-25$ seulement pour $x\\geqslant -5$\n- B. Pour tout réel $x$, $x^2\\geqslant -10x$\n- C. Pour tout réel $x$, $x^2\\geqslant -10x-25$\n- D. Pour tout réel $x$, $x^2\\leqslant -10x-25$",
+					"reponse": ["C. Pour tout réel $x$, $x^2\\geqslant -10x-25$"],
+					"variables": {
+						"a": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La fonction carré est convexe sur $\\mathbb{R}$. Sa tangente au point d'abscisse $-2$ a pour équation $y = -4 x - 4$.\n\nQue peut-on en déduire ?\n\n- A. Pour tout réel $x$, $x^2\\leqslant -4x-4$\n- B. $x^2\\geqslant -4x-4$ seulement pour $x\\geqslant -2$\n- C. Pour tout réel $x$, $x^2\\geqslant -4x$\n- D. Pour tout réel $x$, $x^2\\geqslant -4x-4$",
+					"reponse": ["D. Pour tout réel $x$, $x^2\\geqslant -4x-4$"],
+					"variables": {
+						"a": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La fonction carré est convexe sur $\\mathbb{R}$. Sa tangente au point d'abscisse $3$ a pour équation $y = 6 x - 9$.\n\nQue peut-on en déduire ?\n\n- A. $x^2\\geqslant 6x-9$ seulement pour $x\\geqslant 3$\n- B. Pour tout réel $x$, $x^2\\geqslant 6x$\n- C. Pour tout réel $x$, $x^2\\leqslant 6x-9$\n- D. Pour tout réel $x$, $x^2\\geqslant 6x-9$",
+					"reponse": ["D. Pour tout réel $x$, $x^2\\geqslant 6x-9$"],
+					"variables": {
+						"a": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "La fonction racine carrée est concave sur $[0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y=\\dfrac{1}{2}x+\\dfrac{1}{2}$.\n\nQue peut-on en déduire ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$"
+					},
+					{
+						"content": "Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\geqslant\\dfrac{x+1}{2}$"
+					},
+					{
+						"content": "$\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$ seulement pour $x\\geqslant 1$"
+					},
+					{
+						"content": "Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x}{2}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 2,
+							"nb_distinctes": 3,
+							"valeurs": [0, 1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"racine": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "La fonction racine carrée est concave sur $[0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y = \\dfrac{1}{2} x + \\dfrac{1}{2}$.\n\nQue peut-on en déduire ?\n\n- A. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x}{2}$\n- B. $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$ seulement pour $x\\geqslant 1$\n- C. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\geqslant\\dfrac{x+1}{2}$\n- D. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$",
+					"reponse": ["D. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La fonction racine carrée est concave sur $[0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y = \\dfrac{1}{2} x + \\dfrac{1}{2}$.\n\nQue peut-on en déduire ?\n\n- A. $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$ seulement pour $x\\geqslant 1$\n- B. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x}{2}$\n- C. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$\n- D. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\geqslant\\dfrac{x+1}{2}$",
+					"reponse": ["C. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La fonction racine carrée est concave sur $[0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y = \\dfrac{1}{2} x + \\dfrac{1}{2}$.\n\nQue peut-on en déduire ?\n\n- A. $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$ seulement pour $x\\geqslant 1$\n- B. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x}{2}$\n- C. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\geqslant\\dfrac{x+1}{2}$\n- D. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$",
+					"reponse": ["D. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La fonction racine carrée est concave sur $[0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y = \\dfrac{1}{2} x + \\dfrac{1}{2}$.\n\nQue peut-on en déduire ?\n\n- A. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x}{2}$\n- B. $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$ seulement pour $x\\geqslant 1$\n- C. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$\n- D. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\geqslant\\dfrac{x+1}{2}$",
+					"reponse": ["C. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La fonction racine carrée est concave sur $[0\\,;+\\infty[$ et sa tangente au point d'abscisse $1$ a pour équation $y = \\dfrac{1}{2} x + \\dfrac{1}{2}$.\n\nQue peut-on en déduire ?\n\n- A. $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$ seulement pour $x\\geqslant 1$\n- B. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\geqslant\\dfrac{x+1}{2}$\n- C. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$\n- D. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x}{2}$",
+					"reponse": ["C. Pour tout réel $x\\geqslant 0$, $\\sqrt{x}\\leqslant\\dfrac{x+1}{2}$"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

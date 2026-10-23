@@ -1,0 +1,1970 @@
+{
+	"template_id": "f7c15433-a944-4440-bb42-4a2f899e5f06",
+	"titre": "Al-Kashi : calculer un angle",
+	"sous_titre": "Calculer le cosinus puis la mesure d'un angle d'un triangle dont on connaît les trois côtés, avec la formule d'Al-Kashi",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Angles et longueurs",
+	"mis_a_jour": "2026-10-20T20:27:04.986386+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-319",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "2..7"
+					},
+					{
+						"name": "n",
+						"expression": "1..6"
+					},
+					{
+						"name": "k",
+						"expression": "1..4"
+					},
+					{
+						"name": "a0",
+						"expression": "{{eval:m^2+-m*n+n^2}}"
+					},
+					{
+						"name": "b0",
+						"expression": "{{eval:m^2-n^2}}"
+					},
+					{
+						"name": "c0",
+						"expression": "{{eval:2*m*n-n^2}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:gcd(gcd(a0,b0),c0)}}"
+					},
+					{
+						"name": "a",
+						"expression": "{{eval:k*a0/g}}"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:k*b0/g}}"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:k*c0/g}}"
+					},
+					{
+						"name": "al",
+						"expression": "60"
+					},
+					{
+						"name": "Xc",
+						"expression": "{{eval:round(1000*b*(1/2))/1000}}"
+					},
+					{
+						"name": "Yc",
+						"expression": "{{eval:round(1000*b*sqrt(1-(1/2)^2))/1000}}"
+					},
+					{
+						"name": "Hb",
+						"expression": "{{eval:round(2*b*c*cos(al*\\pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
+					}
+				],
+				"conditions": [
+					"n < m",
+					"m != 2*n",
+					"b <= 2.2*c",
+					"c <= 2.2*b",
+					"a <= 32",
+					"b <= 32",
+					"c <= 32",
+					"Hb >= 70"
+				],
+				"enonce_brut": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $BC={{a}}$ cm.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(b,c)))/100;d}} ; {{eval:round(100*(max(c,Xc)+0.3*max(b,c)))/100;d}} ; {{eval:round(100*(-0.25*max(b,c)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(b,c)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC dont les trois côtés sont indiqués ; l'angle marqué est cherché.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:round(100*(c))/100;d}}, 0, etiquette=\"bas-droite\")\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}}, etiquette=\"haut\")\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*(((c)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(0)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-1))))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/(b)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Xc)/(b)))))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((((c)+(Xc))/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, \"{{a}} cm\")\ntexte({{eval:round(100*((0)+(36+5.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(cos(al*\\pi/360))))/100;d}}, {{eval:round(100*((0)+(36+5.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(sin(al*\\pi/360))))/100;d}}, \"?\")\n```\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=?$\n\n$\\widehat{BAC}=?$",
+				"reponses_brutes": ["\\frac{1}{2}", "60"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 18,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 39,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [7, 13, 19, 28, 39]
+					}
+				},
+				{
+					"nom": "b0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [5, 7, 8, 15, 16, 20, 21, 24, 32, 45]
+					}
+				},
+				{
+					"nom": "c0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [5, 7, 8, 15, 16, 20, 21, 24, 32, 45]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 3, 4]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 28,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [7, 13, 14, 19, 21, 26, 28]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 32,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [5, 7, 8, 10, 14, 15, 16, 20, 21, 24, 30, 32]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 32,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [5, 7, 8, 10, 14, 15, 16, 20, 21, 24, 30, 32]
+					}
+				},
+				{
+					"nom": "al",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 60,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [60]
+					}
+				},
+				{
+					"nom": "Xc",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6766666666666666,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"10",
+							"12",
+							"15",
+							"16",
+							"4",
+							"5",
+							"7",
+							"8",
+							"\\dfrac{15}{2}",
+							"\\dfrac{21}{2}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{7}{2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 21,
+							"nb_distinctes": 10,
+							"valeurs": [2, 4, 5, 7, 8, 10, 12, 15, 16, 21],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "Yc",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 4.33,
+						"max": 27.713,
+						"negatif_possible": false,
+						"denominateurs": [50, 100, 125, 200, 250, 500, 1000],
+						"denominateur_min": 50,
+						"denominateur_max": 1000,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"\\dfrac{1299}{100}",
+							"\\dfrac{17321}{1000}",
+							"\\dfrac{1732}{125}",
+							"\\dfrac{18187}{1000}",
+							"\\dfrac{25981}{1000}",
+							"\\dfrac{27713}{1000}",
+							"\\dfrac{3031}{250}",
+							"\\dfrac{3031}{500}",
+							"\\dfrac{4157}{200}",
+							"\\dfrac{433}{100}",
+							"\\dfrac{433}{50}",
+							"\\dfrac{866}{125}"
+						]
+					}
+				},
+				{
+					"nom": "Hb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 138,
+						"max": 220,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [138, 151, 167, 187, 200, 213, 218, 220]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.5,
+						"max": 0.5,
+						"negatif_possible": false,
+						"denominateurs": [2],
+						"denominateur_min": 2,
+						"denominateur_max": 2,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{1}{2}"]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 60,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [60]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 32,
+				"nb_distinctes": 16,
+				"valeurs": [5, 7, 8, 10, 13, 14, 15, 16, 19, 20, 21, 24, 26, 28, 30, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 60,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 60],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 60,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 5, 7, 8, 10, 13, 14, 15, 16, 19, 20, 21, 24, 26, 28, 30, 32, 60],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (60)",
+					"graine": 1,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 15$ cm, $AC = 7$ cm et $BC = 13$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["\\frac{1}{2}", "60"],
+					"variables": {
+						"m": "4",
+						"n": "3",
+						"k": "1",
+						"a0": "13",
+						"b0": "7",
+						"c0": "15",
+						"g": "1",
+						"a": "13",
+						"b": "7",
+						"c": "15",
+						"al": "60",
+						"Xc": "\\dfrac{7}{2}",
+						"Yc": "\\dfrac{3031}{500}",
+						"Hb": "138"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 24$ cm, $AC = 15$ cm et $BC = 21$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["\\frac{1}{2}", "60"],
+					"variables": {
+						"m": "3",
+						"n": "2",
+						"k": "3",
+						"a0": "7",
+						"b0": "5",
+						"c0": "8",
+						"g": "1",
+						"a": "21",
+						"b": "15",
+						"c": "24",
+						"al": "60",
+						"Xc": "\\dfrac{15}{2}",
+						"Yc": "\\dfrac{1299}{100}",
+						"Hb": "167"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 15$ cm, $AC = 24$ cm et $BC = 21$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["\\frac{1}{2}", "60"],
+					"variables": {
+						"m": "3",
+						"n": "1",
+						"k": "3",
+						"a0": "7",
+						"b0": "8",
+						"c0": "5",
+						"g": "1",
+						"a": "21",
+						"b": "24",
+						"c": "15",
+						"al": "60",
+						"Xc": "12",
+						"Yc": "\\dfrac{4157}{200}",
+						"Hb": "218"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 8$ cm, $AC = 5$ cm et $BC = 7$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["\\frac{1}{2}", "60"],
+					"variables": {
+						"m": "3",
+						"n": "2",
+						"k": "1",
+						"a0": "7",
+						"b0": "5",
+						"c0": "8",
+						"g": "1",
+						"a": "7",
+						"b": "5",
+						"c": "8",
+						"al": "60",
+						"Xc": "\\dfrac{5}{2}",
+						"Yc": "\\dfrac{433}{100}",
+						"Hb": "167"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 10$ cm, $AC = 16$ cm et $BC = 14$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["\\frac{1}{2}", "60"],
+					"variables": {
+						"m": "6",
+						"n": "2",
+						"k": "2",
+						"a0": "28",
+						"b0": "32",
+						"c0": "20",
+						"g": "4",
+						"a": "14",
+						"b": "16",
+						"c": "10",
+						"al": "60",
+						"Xc": "8",
+						"Yc": "\\dfrac{1732}{125}",
+						"Hb": "218"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "2..6"
+					},
+					{
+						"name": "n",
+						"expression": "1..5"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "a0",
+						"expression": "{{eval:m^2+m*n+n^2}}"
+					},
+					{
+						"name": "b0",
+						"expression": "{{eval:m^2-n^2}}"
+					},
+					{
+						"name": "c0",
+						"expression": "{{eval:2*m*n+n^2}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:gcd(gcd(a0,b0),c0)}}"
+					},
+					{
+						"name": "a",
+						"expression": "{{eval:k*a0/g}}"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:k*b0/g}}"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:k*c0/g}}"
+					},
+					{
+						"name": "al",
+						"expression": "120"
+					},
+					{
+						"name": "Xc",
+						"expression": "{{eval:round(1000*b*(-1/2))/1000}}"
+					},
+					{
+						"name": "Yc",
+						"expression": "{{eval:round(1000*b*sqrt(1-(-1/2)^2))/1000}}"
+					},
+					{
+						"name": "Hb",
+						"expression": "{{eval:round(2*b*c*cos(al*\\pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
+					}
+				],
+				"conditions": ["n < m", "b <= 2.2*c", "c <= 2.2*b", "a <= 35", "Hb >= 70"],
+				"enonce_brut": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $BC={{a}}$ cm.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(b,c)))/100;d}} ; {{eval:round(100*(max(c,Xc)+0.3*max(b,c)))/100;d}} ; {{eval:round(100*(-0.25*max(b,c)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(b,c)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC dont les trois côtés sont indiqués ; l'angle marqué est cherché.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:round(100*(c))/100;d}}, 0, etiquette=\"bas-droite\")\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}}, etiquette=\"haut\")\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*(((c)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(0)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-1))))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/(b)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Xc)/(b)))))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((((c)+(Xc))/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, \"{{a}} cm\")\ntexte({{eval:round(100*((0)+(36+5.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(cos(al*\\pi/360))))/100;d}}, {{eval:round(100*((0)+(36+5.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(sin(al*\\pi/360))))/100;d}}, \"?\")\n```\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=?$\n\n$\\widehat{BAC}=?$",
+				"reponses_brutes": ["-\\frac{1}{2}", "120"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 15,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 63,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [7, 13, 21, 28, 31, 39, 52, 63]
+					}
+				},
+				{
+					"nom": "b0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 32,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [3, 8, 12, 15, 21, 24, 27, 32]
+					}
+				},
+				{
+					"nom": "c0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 7, 9, 11, 20, 24, 28, 45]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 3, 4, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 35,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [7, 13, 14, 21, 26, 28, 31, 35]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [3, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 20, 24, 25]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [3, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 20, 25]
+					}
+				},
+				{
+					"nom": "al",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 120,
+						"max": 120,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [120]
+					}
+				},
+				{
+					"nom": "Xc",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.4866666666666667,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"-10",
+							"-12",
+							"-3",
+							"-4",
+							"-5",
+							"-6",
+							"-7",
+							"-8",
+							"-\\dfrac{15}{2}",
+							"-\\dfrac{25}{2}",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"-\\dfrac{7}{2}",
+							"-\\dfrac{9}{2}"
+						],
+						"nombres_contenus": {
+							"min": -12,
+							"max": 25,
+							"nb_distinctes": 15,
+							"valeurs": [-12, -10, -8, -7, -6, -5, -4, -3, 2, 3, 5, 7, 9, 15, 25],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "Yc",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 2.598,
+						"max": 21.651,
+						"negatif_possible": false,
+						"denominateurs": [50, 100, 125, 200, 250, 500, 1000],
+						"denominateur_min": 50,
+						"denominateur_max": 1000,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"\\dfrac{1299}{100}",
+							"\\dfrac{1299}{125}",
+							"\\dfrac{1299}{250}",
+							"\\dfrac{1299}{500}",
+							"\\dfrac{17321}{1000}",
+							"\\dfrac{1732}{125}",
+							"\\dfrac{21651}{1000}",
+							"\\dfrac{3031}{250}",
+							"\\dfrac{3031}{500}",
+							"\\dfrac{3897}{500}",
+							"\\dfrac{4157}{200}",
+							"\\dfrac{433}{100}",
+							"\\dfrac{433}{50}",
+							"\\dfrac{866}{125}"
+						]
+					}
+				},
+				{
+					"nom": "Hb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 79,
+						"max": 95,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [79, 81, 88, 92, 95]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{1}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 120,
+						"max": 120,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [120]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 35,
+				"nb_distinctes": 21,
+				"valeurs": [3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 21, 24, 25, 26, 28, 31, 35],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 120,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 120],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 120,
+				"nb_distinctes": 24,
+				"valeurs": [
+					1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 21, 24, 25, 26, 28, 31, 35, 120
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (120)",
+					"graine": 1,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 5$ cm, $AC = 3$ cm et $BC = 7$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["-\\frac{1}{2}", "120"],
+					"variables": {
+						"m": "4",
+						"n": "2",
+						"k": "1",
+						"a0": "28",
+						"b0": "12",
+						"c0": "20",
+						"g": "4",
+						"a": "7",
+						"b": "3",
+						"c": "5",
+						"al": "120",
+						"Xc": "-\\dfrac{3}{2}",
+						"Yc": "\\dfrac{1299}{500}",
+						"Hb": "79"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 20$ cm, $AC = 12$ cm et $BC = 28$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["-\\frac{1}{2}", "120"],
+					"variables": {
+						"m": "2",
+						"n": "1",
+						"k": "4",
+						"a0": "7",
+						"b0": "3",
+						"c0": "5",
+						"g": "1",
+						"a": "28",
+						"b": "12",
+						"c": "20",
+						"al": "120",
+						"Xc": "-6",
+						"Yc": "\\dfrac{1299}{125}",
+						"Hb": "79"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 8$ cm, $AC = 7$ cm et $BC = 13$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["-\\frac{1}{2}", "120"],
+					"variables": {
+						"m": "5",
+						"n": "2",
+						"k": "1",
+						"a0": "39",
+						"b0": "21",
+						"c0": "24",
+						"g": "3",
+						"a": "13",
+						"b": "7",
+						"c": "8",
+						"al": "120",
+						"Xc": "-\\dfrac{7}{2}",
+						"Yc": "\\dfrac{3031}{500}",
+						"Hb": "92"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 3$ cm, $AC = 5$ cm et $BC = 7$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["-\\frac{1}{2}", "120"],
+					"variables": {
+						"m": "4",
+						"n": "1",
+						"k": "1",
+						"a0": "21",
+						"b0": "15",
+						"c0": "9",
+						"g": "3",
+						"a": "7",
+						"b": "5",
+						"c": "3",
+						"al": "120",
+						"Xc": "-\\dfrac{5}{2}",
+						"Yc": "\\dfrac{433}{100}",
+						"Hb": "88"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 6$ cm, $AC = 10$ cm et $BC = 14$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["-\\frac{1}{2}", "120"],
+					"variables": {
+						"m": "4",
+						"n": "1",
+						"k": "2",
+						"a0": "21",
+						"b0": "15",
+						"c0": "9",
+						"g": "3",
+						"a": "14",
+						"b": "10",
+						"c": "6",
+						"al": "120",
+						"Xc": "-5",
+						"Yc": "\\dfrac{433}{50}",
+						"Hb": "88"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "3..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:max(3,abs(a-b)+1)}}..{{eval:min(9,a+b-1)}}"
+					},
+					{
+						"name": "q",
+						"expression": "{{eval:(b^2+c^2-a^2)/(2*b*c)}}"
+					},
+					{
+						"name": "T",
+						"expression": "{{eval:arccos(q)*180/\\pi}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:round(T)}}"
+					},
+					{
+						"name": "al",
+						"expression": "{{eval:round(100*T)/100}}"
+					},
+					{
+						"name": "Xc",
+						"expression": "{{eval:round(1000*b*(q))/1000}}"
+					},
+					{
+						"name": "Yc",
+						"expression": "{{eval:round(1000*b*sqrt(1-(q)^2))/1000}}"
+					},
+					{
+						"name": "Hb",
+						"expression": "{{eval:round(2*b*c*cos(al*\\pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
+					}
+				],
+				"conditions": [
+					"a < b+c",
+					"b < a+c",
+					"c < a+b",
+					"b^2+c^2-a^2 != 0",
+					"abs(2*(b^2+c^2-a^2)) != b*c",
+					"abs(abs(T-round(T))-0.5) > 0.1",
+					"T >= 30",
+					"b <= 2*c",
+					"c <= 2*b",
+					"Hb >= 70"
+				],
+				"enonce_brut": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $BC={{a}}$ cm.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(b,c)))/100;d}} ; {{eval:round(100*(max(c,Xc)+0.3*max(b,c)))/100;d}} ; {{eval:round(100*(-0.25*max(b,c)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(b,c)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC dont les trois côtés sont indiqués ; l'angle marqué est cherché.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:round(100*(c))/100;d}}, 0, etiquette=\"bas-droite\")\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}}, etiquette=\"haut\")\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*(((c)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(0)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-1))))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/(b)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Xc)/(b)))))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((((c)+(Xc))/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, \"{{a}} cm\")\ntexte({{eval:round(100*((0)+(36+5.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(cos(al*\\pi/360))))/100;d}}, {{eval:round(100*((0)+(36+5.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(sin(al*\\pi/360))))/100;d}}, \"?\")\n```\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{BAC}$, arrondie au degré.\n\n$\\cos\\widehat{BAC}=?$\n\n$\\widehat{BAC}\\approx ?$",
+				"reponses_brutes": ["{{q}}", "{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 134,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 70,
+						"exemples": [
+							"-\\dfrac{1}{64}",
+							"\\dfrac{9}{16}",
+							"\\dfrac{1}{9}",
+							"\\dfrac{29}{36}",
+							"\\dfrac{7}{9}",
+							"-\\dfrac{11}{24}",
+							"\\dfrac{5}{12}",
+							"\\dfrac{5}{14}",
+							"\\dfrac{1}{56}",
+							"\\dfrac{2}{7}",
+							"\\dfrac{31}{49}",
+							"\\dfrac{3}{5}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 162,
+							"nb_distinctes": 51,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				},
+				{
+					"nom": "T",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.07,
+						"nb_distinctes": 70,
+						"exemples": [
+							"\\dfrac{180 \\arccos\\left( -\\dfrac{1}{64} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{9}{16} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{1}{9} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{29}{36} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{7}{9} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( -\\dfrac{11}{24} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{5}{12} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{5}{14} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{1}{56} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{2}{7} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{31}{49} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{3}{5} \\right)}{\\pi}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 180,
+							"nb_distinctes": 54,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 31,
+						"max": 128,
+						"negatif_possible": false,
+						"nb_distinctes": 55
+					}
+				},
+				{
+					"nom": "al",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.07,
+						"nb_distinctes": 70,
+						"exemples": [
+							"\\dfrac{909}{10}",
+							"\\dfrac{5577}{100}",
+							"\\dfrac{4181}{50}",
+							"\\dfrac{1817}{50}",
+							"\\dfrac{1947}{50}",
+							"\\dfrac{2932}{25}",
+							"\\dfrac{3269}{50}",
+							"\\dfrac{1727}{25}",
+							"\\dfrac{4449}{50}",
+							"\\dfrac{367}{5}",
+							"\\dfrac{203}{4}",
+							"\\dfrac{5313}{100}"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 12717,
+							"nb_distinctes": 74,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 5
+						}
+					}
+				},
+				{
+					"nom": "Xc",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.14666666666666667,
+						"nb_distinctes": 109,
+						"exemples": [
+							"-0.062",
+							"\\dfrac{9}{4}",
+							"\\dfrac{667}{1000}",
+							"\\dfrac{4833}{1000}",
+							"7",
+							"-\\dfrac{11}{8}",
+							"\\dfrac{2083}{1000}",
+							"\\dfrac{893}{500}",
+							"\\dfrac{1}{8}",
+							"2",
+							"\\dfrac{4429}{1000}",
+							"\\dfrac{9}{5}"
+						],
+						"nombres_contenus": {
+							"min": -0.062,
+							"max": 7611,
+							"nb_distinctes": 81,
+							"nature": "décimal",
+							"decimales_max": 3,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				},
+				{
+					"nom": "Yc",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.04,
+						"nb_distinctes": 94,
+						"exemples": [
+							"4",
+							"\\dfrac{3307}{1000}",
+							"\\dfrac{5963}{1000}",
+							"\\dfrac{711}{200}",
+							"\\dfrac{5657}{1000}",
+							"\\dfrac{1333}{500}",
+							"\\dfrac{909}{200}",
+							"\\dfrac{467}{100}",
+							"\\dfrac{6999}{1000}",
+							"\\dfrac{1677}{250}",
+							"\\dfrac{5421}{1000}",
+							"\\dfrac{12}{5}"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 7999,
+							"nb_distinctes": 95,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				},
+				{
+					"nom": "Hb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 70,
+						"max": 242,
+						"negatif_possible": false,
+						"nb_distinctes": 82
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 70,
+						"exemples": [
+							"-\\dfrac{1}{64}",
+							"\\dfrac{9}{16}",
+							"\\dfrac{1}{9}",
+							"\\dfrac{29}{36}",
+							"\\dfrac{7}{9}",
+							"-\\dfrac{11}{24}",
+							"\\dfrac{5}{12}",
+							"\\dfrac{5}{14}",
+							"\\dfrac{1}{56}",
+							"\\dfrac{2}{7}",
+							"\\dfrac{31}{49}",
+							"\\dfrac{3}{5}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 162,
+							"nb_distinctes": 51,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 31,
+						"max": 128,
+						"negatif_possible": false,
+						"nb_distinctes": 55
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 9,
+				"nb_distinctes": 7,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 162,
+				"nb_distinctes": 91,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 162,
+				"nb_distinctes": 92,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateur_min": 2,
+				"denominateur_max": 162,
+				"numerateur_min": 1,
+				"numerateur_max": 137,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≈": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (162)",
+					"graine": 117,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 9$ cm, $AC = 9$ cm et $BC = 7$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{BAC}$, arrondie au degré.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}\\approx [?]$",
+					"reponse": ["\\dfrac{113}{162}", "46"],
+					"variables": {
+						"a": "7",
+						"b": "9",
+						"c": "9",
+						"q": "\\dfrac{113}{162}",
+						"T": "\\dfrac{180 \\arccos\\left( \\dfrac{113}{162} \\right)}{\\pi}",
+						"R": "46",
+						"al": "\\dfrac{4577}{100}",
+						"Xc": "\\dfrac{3139}{500}",
+						"Yc": "\\dfrac{6449}{1000}",
+						"Hb": "230"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 8$ cm, $AC = 4$ cm et $BC = 9$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{BAC}$, arrondie au degré.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}\\approx [?]$",
+					"reponse": ["-\\dfrac{1}{64}", "91"],
+					"variables": {
+						"a": "9",
+						"b": "4",
+						"c": "8",
+						"q": "-\\dfrac{1}{64}",
+						"T": "\\dfrac{180 \\arccos\\left( -\\dfrac{1}{64} \\right)}{\\pi}",
+						"R": "91",
+						"al": "\\dfrac{909}{10}",
+						"Xc": "-0.062",
+						"Yc": "4",
+						"Hb": "116"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 6$ cm, $AC = 4$ cm et $BC = 5$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{BAC}$, arrondie au degré.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}\\approx [?]$",
+					"reponse": ["\\dfrac{9}{16}", "56"],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"c": "6",
+						"q": "\\dfrac{9}{16}",
+						"T": "\\dfrac{180 \\arccos\\left( \\dfrac{9}{16} \\right)}{\\pi}",
+						"R": "56",
+						"al": "\\dfrac{5577}{100}",
+						"Xc": "\\dfrac{9}{4}",
+						"Yc": "\\dfrac{3307}{1000}",
+						"Hb": "177"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 6$ cm, $AC = 6$ cm et $BC = 8$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{BAC}$, arrondie au degré.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}\\approx [?]$",
+					"reponse": ["\\dfrac{1}{9}", "84"],
+					"variables": {
+						"a": "8",
+						"b": "6",
+						"c": "6",
+						"q": "\\dfrac{1}{9}",
+						"T": "\\dfrac{180 \\arccos\\left( \\dfrac{1}{9} \\right)}{\\pi}",
+						"R": "84",
+						"al": "\\dfrac{4181}{50}",
+						"Xc": "\\dfrac{667}{1000}",
+						"Yc": "\\dfrac{5963}{1000}",
+						"Hb": "186"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 3$ cm, $AC = 6$ cm et $BC = 4$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{BAC}$, arrondie au degré.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}\\approx [?]$",
+					"reponse": ["\\dfrac{29}{36}", "36"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"c": "3",
+						"q": "\\dfrac{29}{36}",
+						"T": "\\dfrac{180 \\arccos\\left( \\dfrac{29}{36} \\right)}{\\pi}",
+						"R": "36",
+						"al": "\\dfrac{1817}{50}",
+						"Xc": "\\dfrac{4833}{1000}",
+						"Yc": "\\dfrac{711}{200}",
+						"Hb": "180"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "3..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:max(3,abs(a-b)+1)}}..{{eval:min(9,a+b-1)}}"
+					},
+					{
+						"name": "q",
+						"expression": "{{eval:(a^2+c^2-b^2)/(2*a*c)}}"
+					},
+					{
+						"name": "T",
+						"expression": "{{eval:arccos(q)*180/\\pi}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:round(T)}}"
+					},
+					{
+						"name": "al",
+						"expression": "{{eval:round(100*T)/100}}"
+					},
+					{
+						"name": "Xc",
+						"expression": "{{eval:round(1000*c*(q))/1000}}"
+					},
+					{
+						"name": "Yc",
+						"expression": "{{eval:round(1000*c*sqrt(1-(q)^2))/1000}}"
+					},
+					{
+						"name": "Hb",
+						"expression": "{{eval:round(2*c*a*cos(al*\\pi/360)/(c+a)*400/(max(a,Xc)-min(0,Xc)+0.6*max(c,a)))}}"
+					}
+				],
+				"conditions": [
+					"a < b+c",
+					"b < a+c",
+					"c < a+b",
+					"a^2+c^2-b^2 != 0",
+					"abs(2*(a^2+c^2-b^2)) != a*c",
+					"abs(abs(T-round(T))-0.5) > 0.1",
+					"T >= 30",
+					"a <= 2*c",
+					"c <= 2*a",
+					"Hb >= 70"
+				],
+				"enonce_brut": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $BC={{a}}$ cm.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(c,a)))/100;d}} ; {{eval:round(100*(max(a,Xc)+0.3*max(c,a)))/100;d}} ; {{eval:round(100*(-0.25*max(c,a)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(c,a)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC dont les trois côtés sont indiqués ; l'angle marqué est cherché.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:round(100*(a))/100;d}}, 0, etiquette=\"bas-droite\")\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}}, etiquette=\"haut\")\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*(((a)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*(0)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((-1))))/100;d}}, \"{{a}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(c)))+7.0*abs(((Xc)/(c))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((-(Yc)/(c)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(c)))+7.0*abs(((Xc)/(c))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*(((Xc)/(c)))))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*((((a)+(Xc))/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(a))^2+(Yc)^2)))+7.0*abs((((a)-(Xc))/sqrt(((Xc)-(a))^2+(Yc)^2))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*(((Yc)/sqrt(((Xc)-(a))^2+(Yc)^2)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs(((Yc)/sqrt(((Xc)-(a))^2+(Yc)^2)))+7.0*abs((((a)-(Xc))/sqrt(((Xc)-(a))^2+(Yc)^2))))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*((((a)-(Xc))/sqrt(((Xc)-(a))^2+(Yc)^2)))))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((0)+(36+5.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*(cos(al*\\pi/360))))/100;d}}, {{eval:round(100*((0)+(36+5.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(a,Xc)-min(0,Xc)+0.6*max(c,a))/400)*(sin(al*\\pi/360))))/100;d}}, \"?\")\n```\n\nCalcule $\\cos\\widehat{ABC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{ABC}$, arrondie au degré.\n\n$\\cos\\widehat{ABC}=?$\n\n$\\widehat{ABC}\\approx ?$",
+				"reponses_brutes": ["{{q}}", "{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 130,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 73,
+						"exemples": [
+							"\\dfrac{3}{5}",
+							"\\dfrac{17}{27}",
+							"-\\dfrac{11}{24}",
+							"\\dfrac{7}{16}",
+							"-\\dfrac{1}{9}",
+							"\\dfrac{47}{72}",
+							"\\dfrac{73}{98}",
+							"\\dfrac{31}{64}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{3}{7}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{1}{2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 162,
+							"nb_distinctes": 52,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				},
+				{
+					"nom": "T",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.06333333333333334,
+						"nb_distinctes": 73,
+						"exemples": [
+							"\\dfrac{180 \\arccos\\left( \\dfrac{3}{5} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{17}{27} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( -\\dfrac{11}{24} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{7}{16} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( -\\dfrac{1}{9} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{47}{72} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{73}{98} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{31}{64} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{2}{3} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{3}{7} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{4}{5} \\right)}{\\pi}",
+							"60"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 180,
+							"nb_distinctes": 55,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 31,
+						"max": 128,
+						"negatif_possible": false,
+						"nb_distinctes": 58
+					}
+				},
+				{
+					"nom": "al",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.06333333333333334,
+						"nb_distinctes": 73,
+						"exemples": [
+							"\\dfrac{5313}{100}",
+							"\\dfrac{2549}{50}",
+							"\\dfrac{2932}{25}",
+							"\\dfrac{3203}{50}",
+							"\\dfrac{4819}{50}",
+							"\\dfrac{197}{4}",
+							"\\dfrac{837}{20}",
+							"\\dfrac{6103}{100}",
+							"\\dfrac{4819}{100}",
+							"\\dfrac{3231}{50}",
+							"\\dfrac{3687}{100}",
+							"60"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 12717,
+							"nb_distinctes": 77,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 5
+						}
+					}
+				},
+				{
+					"nom": "Xc",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.14333333333333334,
+						"nb_distinctes": 104,
+						"exemples": [
+							"\\dfrac{9}{5}",
+							"\\dfrac{1889}{500}",
+							"-\\dfrac{1833}{1000}",
+							"\\dfrac{3063}{1000}",
+							"-\\dfrac{667}{1000}",
+							"\\dfrac{3917}{1000}",
+							"\\dfrac{2607}{500}",
+							"\\dfrac{969}{500}",
+							"\\dfrac{5333}{1000}",
+							"3",
+							"4",
+							"\\dfrac{3}{2}"
+						],
+						"nombres_contenus": {
+							"min": -2,
+							"max": 7611,
+							"nb_distinctes": 76,
+							"nature": "décimal",
+							"decimales_max": 3,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				},
+				{
+					"nom": "Yc",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.03,
+						"nb_distinctes": 89,
+						"exemples": [
+							"\\dfrac{12}{5}",
+							"\\dfrac{4661}{1000}",
+							"\\dfrac{711}{200}",
+							"\\dfrac{1259}{200}",
+							"\\dfrac{5963}{1000}",
+							"\\dfrac{909}{200}",
+							"\\dfrac{467}{100}",
+							"\\dfrac{3499}{1000}",
+							"\\dfrac{253}{40}",
+							"3",
+							"\\dfrac{1299}{500}",
+							"\\dfrac{24}{5}"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 7999,
+							"nb_distinctes": 89,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				},
+				{
+					"nom": "Hb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 70,
+						"max": 242,
+						"negatif_possible": false,
+						"nb_distinctes": 78
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 73,
+						"exemples": [
+							"\\dfrac{3}{5}",
+							"\\dfrac{17}{27}",
+							"-\\dfrac{11}{24}",
+							"\\dfrac{7}{16}",
+							"-\\dfrac{1}{9}",
+							"\\dfrac{47}{72}",
+							"\\dfrac{73}{98}",
+							"\\dfrac{31}{64}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{3}{7}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{1}{2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 162,
+							"nb_distinctes": 52,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 31,
+						"max": 128,
+						"negatif_possible": false,
+						"nb_distinctes": 58
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 9,
+				"nb_distinctes": 7,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 162,
+				"nb_distinctes": 95,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 162,
+				"nb_distinctes": 96,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateur_min": 2,
+				"denominateur_max": 162,
+				"numerateur_min": 1,
+				"numerateur_max": 137,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≈": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (162)",
+					"graine": 228,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 9$ cm, $AC = 5$ cm et $BC = 9$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{ABC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{ABC}$, arrondie au degré.\n\n$\\cos\\widehat{ABC}=[?]$\n\n$\\widehat{ABC}\\approx [?]$",
+					"reponse": ["\\dfrac{137}{162}", "32"],
+					"variables": {
+						"a": "9",
+						"b": "5",
+						"c": "9",
+						"q": "\\dfrac{137}{162}",
+						"T": "\\dfrac{180 \\arccos\\left( \\dfrac{137}{162} \\right)}{\\pi}",
+						"R": "32",
+						"al": "\\dfrac{1613}{50}",
+						"Xc": "\\dfrac{7611}{1000}",
+						"Yc": "\\dfrac{4803}{1000}",
+						"Hb": "240"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 6,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 6$ cm, $AC = 7$ cm et $BC = 3$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{ABC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{ABC}$, arrondie au degré.\n\n$\\cos\\widehat{ABC}=[?]$\n\n$\\widehat{ABC}\\approx [?]$",
+					"reponse": ["-\\dfrac{1}{9}", "96"],
+					"variables": {
+						"a": "3",
+						"b": "7",
+						"c": "6",
+						"q": "-\\dfrac{1}{9}",
+						"T": "\\dfrac{180 \\arccos\\left( -\\dfrac{1}{9} \\right)}{\\pi}",
+						"R": "96",
+						"al": "\\dfrac{4819}{50}",
+						"Xc": "-\\dfrac{667}{1000}",
+						"Yc": "\\dfrac{5963}{1000}",
+						"Hb": "147"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 3$ cm, $AC = 4$ cm et $BC = 5$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{ABC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{ABC}$, arrondie au degré.\n\n$\\cos\\widehat{ABC}=[?]$\n\n$\\widehat{ABC}\\approx [?]$",
+					"reponse": ["\\dfrac{3}{5}", "53"],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"c": "3",
+						"q": "\\dfrac{3}{5}",
+						"T": "\\dfrac{180 \\arccos\\left( \\dfrac{3}{5} \\right)}{\\pi}",
+						"R": "53",
+						"al": "\\dfrac{5313}{100}",
+						"Xc": "\\dfrac{9}{5}",
+						"Yc": "\\dfrac{12}{5}",
+						"Hb": "168"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 6$ cm, $AC = 7$ cm et $BC = 9$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{ABC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{ABC}$, arrondie au degré.\n\n$\\cos\\widehat{ABC}=[?]$\n\n$\\widehat{ABC}\\approx [?]$",
+					"reponse": ["\\dfrac{17}{27}", "51"],
+					"variables": {
+						"a": "9",
+						"b": "7",
+						"c": "6",
+						"q": "\\dfrac{17}{27}",
+						"T": "\\dfrac{180 \\arccos\\left( \\dfrac{17}{27} \\right)}{\\pi}",
+						"R": "51",
+						"al": "\\dfrac{2549}{50}",
+						"Xc": "\\dfrac{1889}{500}",
+						"Yc": "\\dfrac{4661}{1000}",
+						"Hb": "181"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 4$ cm, $AC = 6$ cm et $BC = 3$ cm.\n\n[figure]\n\nCalcule $\\cos\\widehat{ABC}$ (valeur exacte, sous forme de fraction irréductible), puis la mesure en degrés de l'angle $\\widehat{ABC}$, arrondie au degré.\n\n$\\cos\\widehat{ABC}=[?]$\n\n$\\widehat{ABC}\\approx [?]$",
+					"reponse": ["-\\dfrac{11}{24}", "117"],
+					"variables": {
+						"a": "3",
+						"b": "6",
+						"c": "4",
+						"q": "-\\dfrac{11}{24}",
+						"T": "\\dfrac{180 \\arccos\\left( -\\dfrac{11}{24} \\right)}{\\pi}",
+						"R": "117",
+						"al": "\\dfrac{2932}{25}",
+						"Xc": "-\\dfrac{1833}{1000}",
+						"Yc": "\\dfrac{711}{200}",
+						"Hb": "99"
+					}
+				}
+			]
+		}
+	]
+}

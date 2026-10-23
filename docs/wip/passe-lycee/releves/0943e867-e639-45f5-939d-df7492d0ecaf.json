@@ -1,0 +1,834 @@
+{
+	"template_id": "0943e867-e639-45f5-939d-df7492d0ecaf",
+	"titre": "Inégalité de Bienaymé-Tchebychev",
+	"sous_titre": "P(|X − μ| ⩾ δ) ⩽ V(X)/δ² : majorer un écart, minorer la probabilité d'un intervalle centré, avec la variance ou l'écart type (pièges : V/δ, σ/δ², oubli du 1 − …)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Concentration et loi des grands nombres > Inégalité de Bienaymé-Tchebychev",
+	"mis_a_jour": "2026-10-04T20:32:56.589172+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-530",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "5..50"
+					},
+					{
+						"name": "v",
+						"expression": "1..20"
+					},
+					{
+						"name": "d",
+						"expression": "2..10"
+					}
+				],
+				"conditions": ["v < d^2"],
+				"enonce_brut": "Une variable aléatoire $X$ a pour espérance $\\mu={{m}}$ et pour variance $V(X)={{v}}$.\n\nDonne le majorant de $P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant ?$",
+				"reponses_brutes": ["{{eval:v/d^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.012345679012345678,
+						"max": 0.9375,
+						"negatif_possible": false,
+						"denominateurs": [
+							2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 25, 27, 32, 36, 49, 50, 64, 81, 100
+						],
+						"denominateur_min": 2,
+						"denominateur_max": 100,
+						"nb_distinctes": 108
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 50,
+				"nb_distinctes": 50,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 29,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 27, 32, 36, 49,
+					50, 64, 81, 100
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [
+					2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 25, 27, 32, 36, 49, 50, 64, 81, 100
+				],
+				"denominateur_min": 2,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 20,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 5$ et pour variance $V \\left( X \\right) = 11$.\n\nDonne le majorant de $P\\left(\\left|X-5\\right|\\geqslant 10\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-5\\right|\\geqslant 10\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{11}{100}"],
+					"variables": {
+						"m": "5",
+						"v": "11",
+						"d": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 2,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 19$ et pour variance $V \\left( X \\right) = 6$.\n\nDonne le majorant de $P\\left(\\left|X-19\\right|\\geqslant 6\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-19\\right|\\geqslant 6\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{1}{6}"],
+					"variables": {
+						"m": "19",
+						"v": "6",
+						"d": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 40$ et pour variance $V \\left( X \\right) = 10$.\n\nDonne le majorant de $P\\left(\\left|X-40\\right|\\geqslant 6\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-40\\right|\\geqslant 6\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{5}{18}"],
+					"variables": {
+						"m": "40",
+						"v": "10",
+						"d": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 49$ et pour variance $V \\left( X \\right) = 13$.\n\nDonne le majorant de $P\\left(\\left|X-49\\right|\\geqslant 8\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-49\\right|\\geqslant 8\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{13}{64}"],
+					"variables": {
+						"m": "49",
+						"v": "13",
+						"d": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 40$ et pour variance $V \\left( X \\right) = 5$.\n\nDonne le majorant de $P\\left(\\left|X-40\\right|\\geqslant 7\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-40\\right|\\geqslant 7\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{5}{49}"],
+					"variables": {
+						"m": "40",
+						"v": "5",
+						"d": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "5..50"
+					},
+					{
+						"name": "v",
+						"expression": "1..20"
+					},
+					{
+						"name": "d",
+						"expression": "2..10"
+					}
+				],
+				"conditions": ["v < d^2"],
+				"enonce_brut": "Une variable aléatoire $X$ a pour espérance $\\mu={{m}}$ et pour variance $V(X)={{v}}$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(\\left|X-{{m}}\\right|<{{d}}\\right)$.\n\n$P\\left(\\left|X-{{m}}\\right|<{{d}}\\right)\\geqslant ?$",
+				"reponses_brutes": ["{{eval:1-v/d^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.0625,
+						"max": 0.9876543209876543,
+						"negatif_possible": false,
+						"denominateurs": [
+							2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 25, 27, 32, 36, 49, 50, 64, 81, 100
+						],
+						"denominateur_min": 2,
+						"denominateur_max": 100,
+						"nb_distinctes": 108
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 50,
+				"nb_distinctes": 50,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 72,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 75,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [
+					2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 25, 27, 32, 36, 49, 50, 64, 81, 100
+				],
+				"denominateur_min": 2,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 97,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 5$ et pour variance $V \\left( X \\right) = 11$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(\\left|X-5\\right|<10\\right)$.\n\n$P\\left(\\left|X-5\\right|<10\\right)\\geqslant [?]$",
+					"reponse": ["\\dfrac{89}{100}"],
+					"variables": {
+						"m": "5",
+						"v": "11",
+						"d": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 6,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 29$ et pour variance $V \\left( X \\right) = 2$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(\\left|X-29\\right|<2\\right)$.\n\n$P\\left(\\left|X-29\\right|<2\\right)\\geqslant [?]$",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"m": "29",
+						"v": "2",
+						"d": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 19$ et pour variance $V \\left( X \\right) = 6$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(\\left|X-19\\right|<6\\right)$.\n\n$P\\left(\\left|X-19\\right|<6\\right)\\geqslant [?]$",
+					"reponse": ["\\dfrac{5}{6}"],
+					"variables": {
+						"m": "19",
+						"v": "6",
+						"d": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 40$ et pour variance $V \\left( X \\right) = 10$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(\\left|X-40\\right|<6\\right)$.\n\n$P\\left(\\left|X-40\\right|<6\\right)\\geqslant [?]$",
+					"reponse": ["\\dfrac{13}{18}"],
+					"variables": {
+						"m": "40",
+						"v": "10",
+						"d": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 49$ et pour variance $V \\left( X \\right) = 13$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(\\left|X-49\\right|<8\\right)$.\n\n$P\\left(\\left|X-49\\right|<8\\right)\\geqslant [?]$",
+					"reponse": ["\\dfrac{51}{64}"],
+					"variables": {
+						"m": "49",
+						"v": "13",
+						"d": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "20..60"
+					},
+					{
+						"name": "v",
+						"expression": "1..20"
+					},
+					{
+						"name": "d",
+						"expression": "3..10"
+					}
+				],
+				"conditions": ["v < d^2"],
+				"enonce_brut": "Une variable aléatoire $X$ a pour espérance ${{m}}$ et pour variance ${{v}}$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left({{eval:m-d}}<X<{{eval:m+d}}\\right)$.\n\n$P\\left({{eval:m-d}}<X<{{eval:m+d}}\\right)\\geqslant ?$",
+				"reponses_brutes": ["{{eval:1-v/d^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.0625,
+						"max": 0.99,
+						"negatif_possible": false,
+						"denominateurs": [
+							2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 25, 27, 32, 36, 49, 50, 64, 81, 100
+						],
+						"denominateur_min": 2,
+						"denominateur_max": 100,
+						"nb_distinctes": 116
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 69,
+				"nb_distinctes": 69,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 75,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 85,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [
+					2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 18, 20, 25, 27, 32, 36, 49, 50, 64, 81, 100
+				],
+				"denominateur_min": 2,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 99,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"<": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $20$ et pour variance $11$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(10<X<30\\right)$.\n\n$P\\left(10<X<30\\right)\\geqslant [?]$",
+					"reponse": ["\\dfrac{89}{100}"],
+					"variables": {
+						"m": "20",
+						"v": "11",
+						"d": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 6,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $20$ et pour variance $14$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(16<X<24\\right)$.\n\n$P\\left(16<X<24\\right)\\geqslant [?]$",
+					"reponse": ["\\dfrac{1}{8}"],
+					"variables": {
+						"m": "20",
+						"v": "14",
+						"d": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $33$ et pour variance $6$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(26<X<40\\right)$.\n\n$P\\left(26<X<40\\right)\\geqslant [?]$",
+					"reponse": ["\\dfrac{43}{49}"],
+					"variables": {
+						"m": "33",
+						"v": "6",
+						"d": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $51$ et pour variance $10$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(45<X<57\\right)$.\n\n$P\\left(45<X<57\\right)\\geqslant [?]$",
+					"reponse": ["\\dfrac{13}{18}"],
+					"variables": {
+						"m": "51",
+						"v": "10",
+						"d": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $33$ et pour variance $5$.\n\nÀ l'aide de l'inégalité de Bienaymé-Tchebychev, donne un minorant de $P\\left(30<X<36\\right)$.\n\n$P\\left(30<X<36\\right)\\geqslant [?]$",
+					"reponse": ["\\dfrac{4}{9}"],
+					"variables": {
+						"m": "33",
+						"v": "5",
+						"d": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "5..50"
+					},
+					{
+						"name": "s",
+						"expression": "1..5"
+					},
+					{
+						"name": "d",
+						"expression": "2..12"
+					}
+				],
+				"conditions": ["s < d"],
+				"enonce_brut": "Une variable aléatoire $X$ a pour espérance $\\mu={{m}}$ et pour **écart type** $\\sigma={{s}}$.\n\nDonne le majorant de $P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-{{m}}\\right|\\geqslant {{d}}\\right)\\leqslant ?$",
+				"reponses_brutes": ["{{eval:s^2/d^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 286,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.006944444444444444,
+						"max": 0.6944444444444444,
+						"negatif_possible": false,
+						"denominateurs": [4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144],
+						"denominateur_min": 4,
+						"denominateur_max": 144,
+						"nb_distinctes": 32
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 50,
+				"nb_distinctes": 50,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 144,
+				"nb_distinctes": 12,
+				"valeurs": [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 144,
+				"nb_distinctes": 55,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144],
+				"denominateur_min": 4,
+				"denominateur_max": 144,
+				"numerateur_min": 1,
+				"numerateur_max": 25,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (144)",
+					"graine": 43,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 16$ et pour écart type $\\sigma = 5$.\n\nDonne le majorant de $P\\left(\\left|X-16\\right|\\geqslant 12\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-16\\right|\\geqslant 12\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{25}{144}"],
+					"variables": {
+						"m": "16",
+						"s": "5",
+						"d": "12"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 5$ et pour écart type $\\sigma = 3$.\n\nDonne le majorant de $P\\left(\\left|X-5\\right|\\geqslant 12\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-5\\right|\\geqslant 12\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{1}{16}"],
+					"variables": {
+						"m": "5",
+						"s": "3",
+						"d": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 19$ et pour écart type $\\sigma = 2$.\n\nDonne le majorant de $P\\left(\\left|X-19\\right|\\geqslant 7\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-19\\right|\\geqslant 7\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{4}{49}"],
+					"variables": {
+						"m": "19",
+						"s": "2",
+						"d": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 40$ et pour écart type $\\sigma = 3$.\n\nDonne le majorant de $P\\left(\\left|X-40\\right|\\geqslant 7\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-40\\right|\\geqslant 7\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{9}{49}"],
+					"variables": {
+						"m": "40",
+						"s": "3",
+						"d": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $\\mu = 49$ et pour écart type $\\sigma = 4$.\n\nDonne le majorant de $P\\left(\\left|X-49\\right|\\geqslant 9\\right)$ fourni par l'inégalité de Bienaymé-Tchebychev.\n\n$P\\left(\\left|X-49\\right|\\geqslant 9\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{16}{81}"],
+					"variables": {
+						"m": "49",
+						"s": "4",
+						"d": "9"
+					}
+				}
+			]
+		}
+	]
+}

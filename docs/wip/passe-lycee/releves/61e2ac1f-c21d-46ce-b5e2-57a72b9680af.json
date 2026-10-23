@@ -1,0 +1,1383 @@
+{
+	"template_id": "61e2ac1f-c21d-46ce-b5e2-57a72b9680af",
+	"titre": "Reconnaître une suite arithmétique ou géométrique à partir de ses premiers termes",
+	"sous_titre": "Différences constantes, quotients constants, ou ni l'un ni l'autre",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Reconnaître une suite > Arithmétique ou géométrique",
+	"mis_a_jour": "2026-10-01T20:22:22.51011+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-213",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..9"
+					},
+					{
+						"name": "r",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:a"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:a+(r)"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:a+2*(r)"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:a+3*(r)"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:a+4*(r)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 193,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -18,
+						"max": 17,
+						"negatif_possible": true,
+						"nb_distinctes": 35
+					}
+				},
+				{
+					"nom": "t2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -27,
+						"max": 25,
+						"negatif_possible": true,
+						"nb_distinctes": 51
+					}
+				},
+				{
+					"nom": "t3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -36,
+						"max": 34,
+						"negatif_possible": true,
+						"nb_distinctes": 67
+					}
+				},
+				{
+					"nom": "t4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -45,
+						"max": 43,
+						"negatif_possible": true,
+						"nb_distinctes": 81
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["arithmétique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 45,
+				"nb_distinctes": 45,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 45,
+				"nb_distinctes": 45,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (45)",
+					"graine": 27,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-9 \\quad ; \\quad -18 \\quad ; \\quad -27 \\quad ; \\quad -36 \\quad ; \\quad -45$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"a": "-9",
+						"r": "-9",
+						"t0": "-9",
+						"t1": "-18",
+						"t2": "-27",
+						"t3": "-36",
+						"t4": "-45"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-9 \\quad ; \\quad -7 \\quad ; \\quad -5 \\quad ; \\quad -3 \\quad ; \\quad -1$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"a": "-9",
+						"r": "2",
+						"t0": "-9",
+						"t1": "-7",
+						"t2": "-5",
+						"t3": "-3",
+						"t4": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-3 \\quad ; \\quad -8 \\quad ; \\quad -13 \\quad ; \\quad -18 \\quad ; \\quad -23$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"a": "-3",
+						"r": "-5",
+						"t0": "-3",
+						"t1": "-8",
+						"t2": "-13",
+						"t3": "-18",
+						"t4": "-23"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-9 \\quad ; \\quad -11 \\quad ; \\quad -13 \\quad ; \\quad -15 \\quad ; \\quad -17$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"a": "-9",
+						"r": "-2",
+						"t0": "-9",
+						"t1": "-11",
+						"t2": "-13",
+						"t3": "-15",
+						"t4": "-17"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-3 \\quad ; \\quad -9 \\quad ; \\quad -15 \\quad ; \\quad -21 \\quad ; \\quad -27$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"a": "-3",
+						"r": "-6",
+						"t0": "-3",
+						"t1": "-9",
+						"t2": "-15",
+						"t3": "-21",
+						"t4": "-27"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "q",
+						"expression": "2..3;±"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:a"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:a*(q)"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:a*(q)^2"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:a*(q)^3"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:a*(q)^4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 40,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -2, 2, 3]
+					}
+				},
+				{
+					"nom": "t0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "t1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-15, -12, -10, -9, -8, -6, -4, -3, -2, 2, 3, 4, 6, 8, 9, 10, 12, 15]
+					}
+				},
+				{
+					"nom": "t2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -45,
+						"max": 45,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [
+							-45, -36, -27, -20, -18, -16, -12, -9, -8, -4, 4, 8, 9, 12, 16, 18, 20, 27, 36, 45
+						]
+					}
+				},
+				{
+					"nom": "t3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -135,
+						"max": 135,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [
+							-135, -108, -81, -54, -40, -32, -27, -24, -16, -8, 8, 16, 24, 27, 32, 40, 54, 81, 108,
+							135
+						]
+					}
+				},
+				{
+					"nom": "t4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -405,
+						"max": 405,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [
+							-405, -324, -243, -162, -81, -80, -64, -48, -32, -16, 16, 32, 48, 64, 80, 81, 162,
+							243, 324, 405
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["géométrique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 405,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 405,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (405)",
+					"graine": 7,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-5 \\quad ; \\quad -15 \\quad ; \\quad -45 \\quad ; \\quad -135 \\quad ; \\quad -405$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-5",
+						"q": "3",
+						"t0": "-5",
+						"t1": "-15",
+						"t2": "-45",
+						"t3": "-135",
+						"t4": "-405"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-5 \\quad ; \\quad -10 \\quad ; \\quad -20 \\quad ; \\quad -40 \\quad ; \\quad -80$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-5",
+						"q": "2",
+						"t0": "-5",
+						"t1": "-10",
+						"t2": "-20",
+						"t3": "-40",
+						"t4": "-80"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-2 \\quad ; \\quad 4 \\quad ; \\quad -8 \\quad ; \\quad 16 \\quad ; \\quad -32$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-2",
+						"q": "-2",
+						"t0": "-2",
+						"t1": "4",
+						"t2": "-8",
+						"t3": "16",
+						"t4": "-32"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-5 \\quad ; \\quad 10 \\quad ; \\quad -20 \\quad ; \\quad 40 \\quad ; \\quad -80$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-5",
+						"q": "-2",
+						"t0": "-5",
+						"t1": "10",
+						"t2": "-20",
+						"t3": "40",
+						"t4": "-80"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-2 \\quad ; \\quad 6 \\quad ; \\quad -18 \\quad ; \\quad 54 \\quad ; \\quad -162$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-2",
+						"q": "-3",
+						"t0": "-2",
+						"t1": "6",
+						"t2": "-18",
+						"t3": "54",
+						"t4": "-162"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:16*m"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:8*m"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:4*m"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:2*m"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:m"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "t0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -80,
+						"max": 80,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-80, -64, -48, -32, -16, 16, 32, 48, 64, 80]
+					}
+				},
+				{
+					"nom": "t1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -40,
+						"max": 40,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-40, -32, -24, -16, -8, 8, 16, 24, 32, 40]
+					}
+				},
+				{
+					"nom": "t2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -20,
+						"max": 20,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-20, -16, -12, -8, -4, 4, 8, 12, 16, 20]
+					}
+				},
+				{
+					"nom": "t3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -10,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-10, -8, -6, -4, -2, 2, 4, 6, 8, 10]
+					}
+				},
+				{
+					"nom": "t4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["géométrique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 80,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32, 40, 48, 64, 80],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 80,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32, 40, 48, 64, 80],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (80)",
+					"graine": 1,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-80 \\quad ; \\quad -40 \\quad ; \\quad -20 \\quad ; \\quad -10 \\quad ; \\quad -5$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"m": "-5",
+						"t0": "-80",
+						"t1": "-40",
+						"t2": "-20",
+						"t3": "-10",
+						"t4": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-32 \\quad ; \\quad -16 \\quad ; \\quad -8 \\quad ; \\quad -4 \\quad ; \\quad -2$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"m": "-2",
+						"t0": "-32",
+						"t1": "-16",
+						"t2": "-8",
+						"t3": "-4",
+						"t4": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$48 \\quad ; \\quad 24 \\quad ; \\quad 12 \\quad ; \\quad 6 \\quad ; \\quad 3$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"m": "3",
+						"t0": "48",
+						"t1": "24",
+						"t2": "12",
+						"t3": "6",
+						"t4": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$32 \\quad ; \\quad 16 \\quad ; \\quad 8 \\quad ; \\quad 4 \\quad ; \\quad 2$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"m": "2",
+						"t0": "32",
+						"t1": "16",
+						"t2": "8",
+						"t3": "4",
+						"t4": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$64 \\quad ; \\quad 32 \\quad ; \\quad 16 \\quad ; \\quad 8 \\quad ; \\quad 4$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"m": "4",
+						"t0": "64",
+						"t1": "32",
+						"t2": "16",
+						"t3": "8",
+						"t4": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:c"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:1+c"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:4+c"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:9+c"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:16+c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "t2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13]
+					}
+				},
+				{
+					"nom": "t3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				},
+				{
+					"nom": "t4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 17,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [17, 18, 19, 20, 21, 22, 23, 24, 25]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni arithmétique, ni géométrique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 25,
+				"nb_distinctes": 26,
+				"valeurs": [
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+					25
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 25,
+				"nb_distinctes": 26,
+				"valeurs": [
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+					25
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (25)",
+					"graine": 10,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$9 \\quad ; \\quad 10 \\quad ; \\quad 13 \\quad ; \\quad 18 \\quad ; \\quad 25$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"c": "9",
+						"t0": "9",
+						"t1": "10",
+						"t2": "13",
+						"t3": "18",
+						"t4": "25"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$1 \\quad ; \\quad 2 \\quad ; \\quad 5 \\quad ; \\quad 10 \\quad ; \\quad 17$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"c": "1",
+						"t0": "1",
+						"t1": "2",
+						"t2": "5",
+						"t3": "10",
+						"t4": "17"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$3 \\quad ; \\quad 4 \\quad ; \\quad 7 \\quad ; \\quad 12 \\quad ; \\quad 19$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"c": "3",
+						"t0": "3",
+						"t1": "4",
+						"t2": "7",
+						"t3": "12",
+						"t4": "19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$7 \\quad ; \\quad 8 \\quad ; \\quad 11 \\quad ; \\quad 16 \\quad ; \\quad 23$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"c": "7",
+						"t0": "7",
+						"t1": "8",
+						"t2": "11",
+						"t3": "16",
+						"t4": "23"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$6 \\quad ; \\quad 7 \\quad ; \\quad 10 \\quad ; \\quad 15 \\quad ; \\quad 22$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"c": "6",
+						"t0": "6",
+						"t1": "7",
+						"t2": "10",
+						"t3": "15",
+						"t4": "22"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "r",
+						"expression": "2..6;±"
+					},
+					{
+						"name": "k",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "t0",
+						"expression": "eval:a"
+					},
+					{
+						"name": "t1",
+						"expression": "eval:a+(r)"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:a+2*(r)"
+					},
+					{
+						"name": "t3",
+						"expression": "eval:a+3*(r)+(k)"
+					},
+					{
+						"name": "t4",
+						"expression": "eval:a+4*(r)+(k)"
+					}
+				],
+				"conditions": ["a+r != 0", "a+2*r != 0"],
+				"enonce_brut": "Voici les cinq premiers termes d'une suite $(u_n)$, à partir de $u_0$ :\n\n$${{t0}} \\quad ; \\quad {{t1}} \\quad ; \\quad {{t2}} \\quad ; \\quad {{t3}} \\quad ; \\quad {{t4}}$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 248,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "t0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 30,
+						"valeurs": [
+							-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7,
+							8, 9, 10, 11, 12, 13, 14, 15
+						]
+					}
+				},
+				{
+					"nom": "t2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -21,
+						"max": 21,
+						"negatif_possible": true,
+						"nb_distinctes": 42
+					}
+				},
+				{
+					"nom": "t3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -29,
+						"max": 26,
+						"negatif_possible": true,
+						"nb_distinctes": 52
+					}
+				},
+				{
+					"nom": "t4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -35,
+						"max": 32,
+						"negatif_possible": true,
+						"nb_distinctes": 61
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni arithmétique, ni géométrique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 35,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 35,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (35)",
+					"graine": 27,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-9 \\quad ; \\quad -15 \\quad ; \\quad -21 \\quad ; \\quad -29 \\quad ; \\quad -35$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"a": "-9",
+						"r": "-6",
+						"k": "-2",
+						"t0": "-9",
+						"t1": "-15",
+						"t2": "-21",
+						"t3": "-29",
+						"t4": "-35"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-9 \\quad ; \\quad -7 \\quad ; \\quad -5 \\quad ; \\quad -1 \\quad ; \\quad 1$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"a": "-9",
+						"r": "2",
+						"k": "2",
+						"t0": "-9",
+						"t1": "-7",
+						"t2": "-5",
+						"t3": "-1",
+						"t4": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-4 \\quad ; \\quad -8 \\quad ; \\quad -12 \\quad ; \\quad -15 \\quad ; \\quad -19$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"a": "-4",
+						"r": "-4",
+						"k": "1",
+						"t0": "-4",
+						"t1": "-8",
+						"t2": "-12",
+						"t3": "-15",
+						"t4": "-19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-9 \\quad ; \\quad -11 \\quad ; \\quad -13 \\quad ; \\quad -17 \\quad ; \\quad -19$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"a": "-9",
+						"r": "-2",
+						"k": "-2",
+						"t0": "-9",
+						"t1": "-11",
+						"t2": "-13",
+						"t3": "-17",
+						"t4": "-19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Voici les cinq premiers termes d'une suite $\\left( u_n \\right)$, à partir de $u_0$ :\n\n$$-4 \\quad ; \\quad -8 \\quad ; \\quad -12 \\quad ; \\quad -18 \\quad ; \\quad -22$$\n\nD'après ces termes, la suite semble-t-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"a": "-4",
+						"r": "-4",
+						"k": "-2",
+						"t0": "-4",
+						"t1": "-8",
+						"t2": "-12",
+						"t3": "-18",
+						"t4": "-22"
+					}
+				}
+			]
+		}
+	]
+}

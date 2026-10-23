@@ -1,0 +1,410 @@
+{
+	"template_id": "536c01bb-8401-4f53-b8ca-faf9bf4c243d",
+	"titre": "Identité, équation, statut des lettres",
+	"sous_titre": "Reconnaître une identité (égalité vraie pour tout x) et le statut d'une lettre : variable, inconnue ou paramètre",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Logique > Logique et raisonnement > Quantificateurs et négation",
+	"mis_a_jour": "2026-10-03T10:09:20.103243+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-202",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "0..5"
+					},
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère l'égalité ${{if:k=0|(x+{{a}})^2=x^2+{{eval:2*a}}x+{{eval:a^2}}}}{{if:k=1|(x+{{a}})^2=x^2+{{eval:a^2}}}}{{if:k=2|(x-{{a}})(x+{{a}})=x^2-{{eval:a^2}}}}{{if:k=3|(x-{{a}})^2=x^2-{{eval:a^2}}}}{{if:k=4|{{a}}(x+{{b}})={{a}}x+{{eval:a*b}}}}{{if:k=5|{{a}}(x+{{b}})={{a}}x+{{b}}}}$.\n\nCette égalité est-elle vraie pour tout réel $x$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui : elle est vraie pour tout réel $x$, c'est une identité."
+					},
+					{
+						"content": "Non : elle n'est pas vraie pour tout réel $x$."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 105,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": [
+							"Non : elle n'est pas vraie pour tout réel $x$.",
+							"Oui : elle est vraie pour tout réel $x$, c'est une identité."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "256/300",
+					"puissance": "196/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "104/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 7,
+					"enonce": "On considère l'égalité $\\left( x + 9 \\right)^2 = x^2 + 18 x + 81$.\n\nCette égalité est-elle vraie pour tout réel $x$ ?\n\n- A. Oui : elle est vraie pour tout réel $x$, c'est une identité.\n- B. Non : elle n'est pas vraie pour tout réel $x$.",
+					"reponse": ["A. Oui : elle est vraie pour tout réel $x$, c'est une identité."],
+					"variables": {
+						"k": "0",
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "On considère l'égalité $\\left( x + 6 \\right)^2 = x^2 + 12 x + 36$.\n\nCette égalité est-elle vraie pour tout réel $x$ ?\n\n- A. Oui : elle est vraie pour tout réel $x$, c'est une identité.\n- B. Non : elle n'est pas vraie pour tout réel $x$.",
+					"reponse": ["A. Oui : elle est vraie pour tout réel $x$, c'est une identité."],
+					"variables": {
+						"k": "0",
+						"a": "6",
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère l'égalité $\\left( x + 4 \\right)^2 = x^2 + 16$.\n\nCette égalité est-elle vraie pour tout réel $x$ ?\n\n- A. Oui : elle est vraie pour tout réel $x$, c'est une identité.\n- B. Non : elle n'est pas vraie pour tout réel $x$.",
+					"reponse": ["B. Non : elle n'est pas vraie pour tout réel $x$."],
+					"variables": {
+						"k": "1",
+						"a": "4",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère l'égalité $\\left( x + 5 \\right)^2 = x^2 + 10 x + 25$.\n\nCette égalité est-elle vraie pour tout réel $x$ ?\n\n- A. Oui : elle est vraie pour tout réel $x$, c'est une identité.\n- B. Non : elle n'est pas vraie pour tout réel $x$.",
+					"reponse": ["A. Oui : elle est vraie pour tout réel $x$, c'est une identité."],
+					"variables": {
+						"k": "0",
+						"a": "5",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère l'égalité $\\left( x + 3 \\right)^2 = x^2 + 9$.\n\nCette égalité est-elle vraie pour tout réel $x$ ?\n\n- A. Oui : elle est vraie pour tout réel $x$, c'est une identité.\n- B. Non : elle n'est pas vraie pour tout réel $x$.",
+					"reponse": ["B. Non : elle n'est pas vraie pour tout réel $x$."],
+					"variables": {
+						"k": "1",
+						"a": "3",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "0..5"
+					},
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "{{if:k=0|On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f(x)={{a}}x^2+{{b}}$.\n\nDans cette définition, quel est le statut de la lettre $x$ ?}}{{if:k=1|On cherche tous les réels $x$ tels que $x^2-{{a}}x+{{b}}=0$.\n\nQuel est le statut de la lettre $x$ ?}}{{if:k=2|Soit $m$ un nombre réel. On considère l'équation $x^2+mx+{{b}}=0$, d'inconnue $x$.\n\nQuel est le statut de la lettre $m$ ?}}{{if:k=3|Soit $k$ un nombre réel. On note $f_k$ la fonction définie sur $\\mathbb{R}$ par $f_k(x)=kx+{{b}}$.\n\nDans cette définition, quel est le statut de la lettre $x$ ?}}{{if:k=4|Résous dans $\\mathbb{R}$ l'équation ${{a}}t-{{b}}=0$.\n\nQuel est le statut de la lettre $t$ ?}}{{if:k=5|Soit $k$ un nombre réel. On note $f_k$ la fonction définie sur $\\mathbb{R}$ par $f_k(x)=kx+{{b}}$.\n\nDans cette définition, quel est le statut de la lettre $k$ ?}}",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Une variable."
+					},
+					{
+						"content": "Une inconnue."
+					},
+					{
+						"content": "Un paramètre."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 122,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["Un paramètre.", "Une inconnue.", "Une variable."],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "250/300",
+					"puissance": "152/300",
+					"parenthèses": "142/300",
+					"lettre dans les maths": "300/300",
+					"−": "48/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 6 x^2 + 9$.\n\nDans cette définition, quel est le statut de la lettre $x$ ?\n\n- A. Une variable.\n- B. Une inconnue.\n- C. Un paramètre.",
+					"reponse": ["A. Une variable."],
+					"variables": {
+						"k": "0",
+						"a": "6",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 2,
+					"enonce": "On cherche tous les réels $x$ tels que $x^2 - 4 x + 6 = 0$.\n\nQuel est le statut de la lettre $x$ ?\n\n- A. Une variable.\n- B. Une inconnue.\n- C. Un paramètre.",
+					"reponse": ["B. Une inconnue."],
+					"variables": {
+						"k": "1",
+						"a": "4",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la fonction $f$ définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 5 x^2 + 2$.\n\nDans cette définition, quel est le statut de la lettre $x$ ?\n\n- A. Une variable.\n- B. Une inconnue.\n- C. Un paramètre.",
+					"reponse": ["A. Une variable."],
+					"variables": {
+						"k": "0",
+						"a": "5",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On cherche tous les réels $x$ tels que $x^2 - 3 x + 2 = 0$.\n\nQuel est le statut de la lettre $x$ ?\n\n- A. Une variable.\n- B. Une inconnue.\n- C. Un paramètre.",
+					"reponse": ["B. Une inconnue."],
+					"variables": {
+						"k": "1",
+						"a": "3",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Résous dans $\\mathbb{R}$ l'équation $3 t - 6 = 0$.\n\nQuel est le statut de la lettre $t$ ?\n\n- A. Une variable.\n- B. Une inconnue.\n- C. Un paramètre.",
+					"reponse": ["B. Une inconnue."],
+					"variables": {
+						"k": "4",
+						"a": "3",
+						"b": "6"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,758 @@
+{
+	"template_id": "3cb90b97-2ec4-4050-973e-4b194aa65fb3",
+	"titre": "Loi uniforme sur {1, …, n} : probabilités et espérance",
+	"sous_titre": "X uniforme sur {1, …, n} : P(X = k) = 1/n, P(X ⩽ k) = k/n, P(a ⩽ X ⩽ b) = (b − a + 1)/n, E(X) = (n + 1)/2 (pièges : n/2, b − a au lieu de b − a + 1)",
+	"consigne": null,
+	"grades": ["T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Lois discrètes > Loi uniforme",
+	"mis_a_jour": "2026-10-04T20:32:56.095661+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-285",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..30"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, {{n}}\\}$.\n\nCalcule son espérance.\n\n$E(X)=?$",
+				"reponses_brutes": ["{{eval:(n+1)/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 26,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 26,
+						"valeurs": [
+							5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+							28, 29, 30
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.5133333333333333,
+						"nb_distinctes": 26,
+						"valeurs": [
+							"10",
+							"11",
+							"12",
+							"13",
+							"14",
+							"15",
+							"3",
+							"4",
+							"5",
+							"6",
+							"7",
+							"8",
+							"9",
+							"\\dfrac{11}{2}",
+							"\\dfrac{13}{2}",
+							"\\dfrac{15}{2}",
+							"\\dfrac{17}{2}",
+							"\\dfrac{19}{2}",
+							"\\dfrac{21}{2}",
+							"\\dfrac{23}{2}",
+							"\\dfrac{25}{2}",
+							"\\dfrac{27}{2}",
+							"\\dfrac{29}{2}",
+							"\\dfrac{31}{2}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{9}{2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 31,
+							"nb_distinctes": 22,
+							"valeurs": [
+								2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 21, 23, 25, 27, 29, 31
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 30,
+				"nb_distinctes": 28,
+				"valeurs": [
+					1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+					27, 28, 29, 30
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 31,
+				"nb_distinctes": 22,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 21, 23, 25, 27, 29, 31],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 31,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 146,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 7,
+				"numerateur_max": 31,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"…": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (31)",
+					"graine": 24,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 30\\}$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{31}{2}"],
+					"variables": {
+						"n": "30"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 5\\}$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["3"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 13\\}$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["7"],
+					"variables": {
+						"n": "13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 6\\}$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{7}{2}"],
+					"variables": {
+						"n": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 25\\}$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["13"],
+					"variables": {
+						"n": "25"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "6..20"
+					},
+					{
+						"name": "k",
+						"expression": "2..{{eval:n-1}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, {{n}}\\}$.\n\nCalcule $P(X\\leqslant {{k}})$.\n\n$P(X\\leqslant {{k}})=?$",
+				"reponses_brutes": ["{{eval:k/n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 133,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9473684210526315,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+						"denominateur_min": 2,
+						"denominateur_max": 20,
+						"nb_distinctes": 100
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"denominateur_min": 2,
+				"denominateur_max": 20,
+				"numerateur_min": 1,
+				"numerateur_max": 18,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"…": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 24,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 20\\}$.\n\nCalcule $P(X\\leqslant 7)$.\n\n$P(X\\leqslant 7)=[?]$",
+					"reponse": ["\\dfrac{7}{20}"],
+					"variables": {
+						"n": "20",
+						"k": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 6\\}$.\n\nCalcule $P(X\\leqslant 4)$.\n\n$P(X\\leqslant 4)=[?]$",
+					"reponse": ["\\dfrac{2}{3}"],
+					"variables": {
+						"n": "6",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 10\\}$.\n\nCalcule $P(X\\leqslant 4)$.\n\n$P(X\\leqslant 4)=[?]$",
+					"reponse": ["\\dfrac{2}{5}"],
+					"variables": {
+						"n": "10",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 6\\}$.\n\nCalcule $P(X\\leqslant 3)$.\n\n$P(X\\leqslant 3)=[?]$",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"n": "6",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 10\\}$.\n\nCalcule $P(X\\leqslant 3)$.\n\n$P(X\\leqslant 3)=[?]$",
+					"reponse": ["\\dfrac{3}{10}"],
+					"variables": {
+						"n": "10",
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "10..20"
+					},
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+2}}..{{eval:n-1}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, {{n}}\\}$.\n\nCalcule $P({{a}}\\leqslant X\\leqslant {{b}})$.\n\n$P({{a}}\\leqslant X\\leqslant {{b}})=?$",
+				"reponses_brutes": ["{{eval:(b-a+1)/n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 202,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.15,
+						"max": 0.8947368421052632,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+						"denominateur_min": 2,
+						"denominateur_max": 20,
+						"nb_distinctes": 86
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"denominateur_min": 2,
+				"denominateur_max": 20,
+				"numerateur_min": 1,
+				"numerateur_max": 17,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"…": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 10,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 20\\}$.\n\nCalcule $P(4\\leqslant X\\leqslant 17)$.\n\n$P(4\\leqslant X\\leqslant 17)=[?]$",
+					"reponse": ["\\dfrac{7}{10}"],
+					"variables": {
+						"n": "20",
+						"a": "4",
+						"b": "17"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 10\\}$.\n\nCalcule $P(4\\leqslant X\\leqslant 9)$.\n\n$P(4\\leqslant X\\leqslant 9)=[?]$",
+					"reponse": ["\\dfrac{3}{5}"],
+					"variables": {
+						"n": "10",
+						"a": "4",
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 13\\}$.\n\nCalcule $P(3\\leqslant X\\leqslant 9)$.\n\n$P(3\\leqslant X\\leqslant 9)=[?]$",
+					"reponse": ["\\dfrac{7}{13}"],
+					"variables": {
+						"n": "13",
+						"a": "3",
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 10\\}$.\n\nCalcule $P(3\\leqslant X\\leqslant 5)$.\n\n$P(3\\leqslant X\\leqslant 5)=[?]$",
+					"reponse": ["\\dfrac{3}{10}"],
+					"variables": {
+						"n": "10",
+						"a": "3",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\{1, 2, \\ldots, 13\\}$.\n\nCalcule $P(2\\leqslant X\\leqslant 4)$.\n\n$P(2\\leqslant X\\leqslant 4)=[?]$",
+					"reponse": ["\\dfrac{3}{13}"],
+					"variables": {
+						"n": "13",
+						"a": "2",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "4|6|8|10|12|20"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On lance un dé équilibré à ${{n}}$ faces numérotées de $1$ à ${{n}}$ et on gagne, en euros, le double du numéro obtenu.\n\nQuel est le gain moyen, en euros ?\n\n$?$",
+				"reponses_brutes": ["{{eval:n+1}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [4, 6, 8, 10, 12, 20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 21,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 7, 9, 11, 13, 21]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 7,
+				"valeurs": [1, 4, 6, 8, 10, 12, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 5,
+				"max": 21,
+				"nb_distinctes": 6,
+				"valeurs": [5, 7, 9, 11, 13, 21],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 21,
+				"nb_distinctes": 13,
+				"valeurs": [1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 20, 21],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 25,
+					"max": 25
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (21)",
+					"graine": 9,
+					"enonce": "On lance un dé équilibré à $20$ faces numérotées de $1$ à $20$ et on gagne, en euros, le double du numéro obtenu.\n\nQuel est le gain moyen, en euros ?\n\n$[?]$",
+					"reponse": ["21"],
+					"variables": {
+						"n": "20"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "On lance un dé équilibré à $4$ faces numérotées de $1$ à $4$ et on gagne, en euros, le double du numéro obtenu.\n\nQuel est le gain moyen, en euros ?\n\n$[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On lance un dé équilibré à $6$ faces numérotées de $1$ à $6$ et on gagne, en euros, le double du numéro obtenu.\n\nQuel est le gain moyen, en euros ?\n\n$[?]$",
+					"reponse": ["7"],
+					"variables": {
+						"n": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On lance un dé équilibré à $12$ faces numérotées de $1$ à $12$ et on gagne, en euros, le double du numéro obtenu.\n\nQuel est le gain moyen, en euros ?\n\n$[?]$",
+					"reponse": ["13"],
+					"variables": {
+						"n": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On lance un dé équilibré à $10$ faces numérotées de $1$ à $10$ et on gagne, en euros, le double du numéro obtenu.\n\nQuel est le gain moyen, en euros ?\n\n$[?]$",
+					"reponse": ["11"],
+					"variables": {
+						"n": "10"
+					}
+				}
+			]
+		}
+	]
+}

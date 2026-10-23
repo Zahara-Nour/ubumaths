@@ -1,0 +1,667 @@
+{
+	"template_id": "bb6749d5-59a2-4b26-b259-bb64dcf9b600",
+	"titre": "Chiffrement affine : clé valable et formule de déchiffrement",
+	"sous_titre": "Reconnaître la condition PGCD(a, 26) = 1 pour qu'un chiffrement affine se déchiffre, ce qui se passe sinon, et la formule de déchiffrement x ≡ a'(y − b) [26] (pièges : « a premier » ou « a impair » au lieu de « premier avec 26 », division par a, a' appliqué avant de retrancher b)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "multiple_choice",
+	"theme": "Arithmétique > Congruences > Chiffrement",
+	"mis_a_jour": "2026-10-05T19:11:46.259364+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-291",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "1..25"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv ax + {{b}} \\,[26]$, avec $y \\in \\{0, 1, \\ldots, 25\\}$.\n\nPour quelles valeurs de $a$ deux lettres différentes sont-elles toujours chiffrées par deux lettres différentes (ce qui permet de déchiffrer) ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Lorsque $a$ et $26$ sont premiers entre eux"
+					},
+					{
+						"content": "Lorsque $a$ est un nombre premier"
+					},
+					{
+						"content": "Lorsque $a$ est impair"
+					},
+					{
+						"content": "Lorsque ${{b}}$ et $26$ sont premiers entre eux"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 246,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 25,
+						"valeurs": [
+							1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+							25
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Lorsque $a$ et $26$ sont premiers entre eux"],
+						"nombres_contenus": {
+							"min": 26,
+							"max": 26,
+							"nb_distinctes": 1,
+							"valeurs": [26],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 26,
+				"nb_distinctes": 27,
+				"valeurs": [
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+					25, 26
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 26,
+				"max": 26,
+				"nb_distinctes": 1,
+				"valeurs": [26],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 26,
+				"nb_distinctes": 26,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+					26
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 26,
+				"nb_distinctes": 27,
+				"valeurs": [
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+					25, 26
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"…": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 48,
+					"max": 48
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (26)",
+					"graine": 1,
+					"enonce": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv ax + 1 \\,[26]$, avec $y \\in \\{0, 1, \\ldots, 25\\}$.\n\nPour quelles valeurs de $a$ deux lettres différentes sont-elles toujours chiffrées par deux lettres différentes (ce qui permet de déchiffrer) ?\n\n- A. Lorsque $a$ et $26$ sont premiers entre eux\n- B. Lorsque $a$ est un nombre premier\n- C. Lorsque $1$ et $26$ sont premiers entre eux\n- D. Lorsque $a$ est impair",
+					"reponse": ["A. Lorsque $a$ et $26$ sont premiers entre eux"],
+					"variables": {
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv ax + 9 \\,[26]$, avec $y \\in \\{0, 1, \\ldots, 25\\}$.\n\nPour quelles valeurs de $a$ deux lettres différentes sont-elles toujours chiffrées par deux lettres différentes (ce qui permet de déchiffrer) ?\n\n- A. Lorsque $a$ et $26$ sont premiers entre eux\n- B. Lorsque $a$ est impair\n- C. Lorsque $9$ et $26$ sont premiers entre eux\n- D. Lorsque $a$ est un nombre premier",
+					"reponse": ["A. Lorsque $a$ et $26$ sont premiers entre eux"],
+					"variables": {
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv ax + 1 \\,[26]$, avec $y \\in \\{0, 1, \\ldots, 25\\}$.\n\nPour quelles valeurs de $a$ deux lettres différentes sont-elles toujours chiffrées par deux lettres différentes (ce qui permet de déchiffrer) ?\n\n- A. Lorsque $a$ est impair\n- B. Lorsque $1$ et $26$ sont premiers entre eux\n- C. Lorsque $a$ et $26$ sont premiers entre eux\n- D. Lorsque $a$ est un nombre premier",
+					"reponse": ["C. Lorsque $a$ et $26$ sont premiers entre eux"],
+					"variables": {
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv ax + 9 \\,[26]$, avec $y \\in \\{0, 1, \\ldots, 25\\}$.\n\nPour quelles valeurs de $a$ deux lettres différentes sont-elles toujours chiffrées par deux lettres différentes (ce qui permet de déchiffrer) ?\n\n- A. Lorsque $a$ est un nombre premier\n- B. Lorsque $a$ est impair\n- C. Lorsque $9$ et $26$ sont premiers entre eux\n- D. Lorsque $a$ et $26$ sont premiers entre eux",
+					"reponse": ["D. Lorsque $a$ et $26$ sont premiers entre eux"],
+					"variables": {
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv ax + 20 \\,[26]$, avec $y \\in \\{0, 1, \\ldots, 25\\}$.\n\nPour quelles valeurs de $a$ deux lettres différentes sont-elles toujours chiffrées par deux lettres différentes (ce qui permet de déchiffrer) ?\n\n- A. Lorsque $a$ est impair\n- B. Lorsque $20$ et $26$ sont premiers entre eux\n- C. Lorsque $a$ est un nombre premier\n- D. Lorsque $a$ et $26$ sont premiers entre eux",
+					"reponse": ["D. Lorsque $a$ et $26$ sont premiers entre eux"],
+					"variables": {
+						"b": "20"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2|4|6|8|10|12|13|14|16"
+					},
+					{
+						"name": "b",
+						"expression": "1..25"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv {{a}}x + {{b}} \\,[26]$.\n\nQue peut-on affirmer ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Deux lettres différentes peuvent être chiffrées par la même lettre"
+					},
+					{
+						"content": "Le message se déchiffre avec un inverse de ${{a}}$ modulo $26$"
+					},
+					{
+						"content": "Deux lettres différentes ont toujours des chiffrés différents"
+					},
+					{
+						"content": "Le chiffrement ne dépend pas de ${{b}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 290,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 16,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 4, 6, 8, 10, 12, 13, 14, 16]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 25,
+						"valeurs": [
+							1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+							25
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Deux lettres différentes peuvent être chiffrées par la même lettre"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 26,
+				"nb_distinctes": 27,
+				"valeurs": [
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+					25, 26
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 26,
+				"nb_distinctes": 26,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+					26
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 26,
+				"nb_distinctes": 27,
+				"valeurs": [
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+					25, 26
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 44,
+					"max": 44
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (26)",
+					"graine": 1,
+					"enonce": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv 2x + 14 \\,[26]$.\n\nQue peut-on affirmer ?\n\n- A. Le message se déchiffre avec un inverse de $2$ modulo $26$\n- B. Deux lettres différentes peuvent être chiffrées par la même lettre\n- C. Deux lettres différentes ont toujours des chiffrés différents\n- D. Le chiffrement ne dépend pas de $14$",
+					"reponse": ["B. Deux lettres différentes peuvent être chiffrées par la même lettre"],
+					"variables": {
+						"a": "2",
+						"b": "14"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv 6x + 8 \\,[26]$.\n\nQue peut-on affirmer ?\n\n- A. Deux lettres différentes peuvent être chiffrées par la même lettre\n- B. Le message se déchiffre avec un inverse de $6$ modulo $26$\n- C. Le chiffrement ne dépend pas de $8$\n- D. Deux lettres différentes ont toujours des chiffrés différents",
+					"reponse": ["A. Deux lettres différentes peuvent être chiffrées par la même lettre"],
+					"variables": {
+						"a": "6",
+						"b": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv 2x + 12 \\,[26]$.\n\nQue peut-on affirmer ?\n\n- A. Le message se déchiffre avec un inverse de $2$ modulo $26$\n- B. Le chiffrement ne dépend pas de $12$\n- C. Deux lettres différentes ont toujours des chiffrés différents\n- D. Deux lettres différentes peuvent être chiffrées par la même lettre",
+					"reponse": ["D. Deux lettres différentes peuvent être chiffrées par la même lettre"],
+					"variables": {
+						"a": "2",
+						"b": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv 6x + 6 \\,[26]$.\n\nQue peut-on affirmer ?\n\n- A. Deux lettres différentes ont toujours des chiffrés différents\n- B. Le message se déchiffre avec un inverse de $6$ modulo $26$\n- C. Le chiffrement ne dépend pas de $6$\n- D. Deux lettres différentes peuvent être chiffrées par la même lettre",
+					"reponse": ["D. Deux lettres différentes peuvent être chiffrées par la même lettre"],
+					"variables": {
+						"a": "6",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On chiffre les lettres (numérotées de $0$ à $25$) par $y \\equiv 13x + 6 \\,[26]$.\n\nQue peut-on affirmer ?\n\n- A. Le chiffrement ne dépend pas de $6$\n- B. Le message se déchiffre avec un inverse de $13$ modulo $26$\n- C. Deux lettres différentes peuvent être chiffrées par la même lettre\n- D. Deux lettres différentes ont toujours des chiffrés différents",
+					"reponse": ["C. Deux lettres différentes peuvent être chiffrées par la même lettre"],
+					"variables": {
+						"a": "13",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3|5|7|9|11|15|17|19|21|23"
+					},
+					{
+						"name": "b",
+						"expression": "1..25"
+					},
+					{
+						"name": "inv",
+						"expression": "eval:mod(mod(a^5,26)^2*a,26)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un message est chiffré par $y \\equiv {{a}}x + {{b}} \\,[26]$. On sait que ${{a}} \\times {{inv}} \\equiv 1 \\,[26]$.\n\nComment retrouve-t-on le rang $x$ de la lettre d'origine à partir du rang $y$ de la lettre chiffrée ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$x \\equiv {{inv}}(y - {{b}}) \\,[26]$"
+					},
+					{
+						"content": "$x = \\dfrac{y - {{b}}}{{{a}}}$"
+					},
+					{
+						"content": "$x \\equiv {{inv}}y - {{b}} \\,[26]$"
+					},
+					{
+						"content": "$x \\equiv {{a}}(y - {{b}}) \\,[26]$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 294,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 23,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [3, 5, 7, 9, 11, 15, 17, 19, 21, 23]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 25,
+						"valeurs": [
+							1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+							25
+						]
+					}
+				},
+				{
+					"nom": "inv",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 23,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [3, 5, 7, 9, 11, 15, 17, 19, 21, 23]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 173,
+						"exemples": [
+							"x \\equiv 9(y - 14) \\,[26]",
+							"x \\equiv 3(y - 8) \\,[26]",
+							"x \\equiv 9(y - 12) \\,[26]",
+							"x \\equiv 3(y - 6) \\,[26]",
+							"x \\equiv 11(y - 6) \\,[26]",
+							"x \\equiv 9(y - 17) \\,[26]",
+							"x \\equiv 9(y - 25) \\,[26]",
+							"x \\equiv 23(y - 8) \\,[26]",
+							"x \\equiv 5(y - 4) \\,[26]",
+							"x \\equiv 17(y - 18) \\,[26]",
+							"x \\equiv 7(y - 16) \\,[26]",
+							"x \\equiv 9(y - 15) \\,[26]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 26,
+							"nb_distinctes": 26,
+							"valeurs": [
+								1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+								24, 25, 26
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 26,
+				"nb_distinctes": 26,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+					26
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 26,
+				"nb_distinctes": 26,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+					26
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 26,
+				"nb_distinctes": 26,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+					26
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 26,
+				"nb_distinctes": 26,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+					26
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (26)",
+					"graine": 1,
+					"enonce": "Un message est chiffré par $y \\equiv 3x + 14 \\,[26]$. On sait que $3 \\times 9 \\equiv 1 \\,[26]$.\n\nComment retrouve-t-on le rang $x$ de la lettre d'origine à partir du rang $y$ de la lettre chiffrée ?\n\n- A. $x = \\dfrac{y - 14}{3}$\n- B. $x \\equiv 9(y - 14) \\,[26]$\n- C. $x \\equiv 9y - 14 \\,[26]$\n- D. $x \\equiv 3(y - 14) \\,[26]$",
+					"reponse": ["B. $x \\equiv 9(y - 14) \\,[26]$"],
+					"variables": {
+						"a": "3",
+						"b": "14",
+						"inv": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un message est chiffré par $y \\equiv 9x + 8 \\,[26]$. On sait que $9 \\times 3 \\equiv 1 \\,[26]$.\n\nComment retrouve-t-on le rang $x$ de la lettre d'origine à partir du rang $y$ de la lettre chiffrée ?\n\n- A. $x \\equiv 3(y - 8) \\,[26]$\n- B. $x = \\dfrac{y - 8}{9}$\n- C. $x \\equiv 9(y - 8) \\,[26]$\n- D. $x \\equiv 3y - 8 \\,[26]$",
+					"reponse": ["A. $x \\equiv 3(y - 8) \\,[26]$"],
+					"variables": {
+						"a": "9",
+						"b": "8",
+						"inv": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un message est chiffré par $y \\equiv 3x + 12 \\,[26]$. On sait que $3 \\times 9 \\equiv 1 \\,[26]$.\n\nComment retrouve-t-on le rang $x$ de la lettre d'origine à partir du rang $y$ de la lettre chiffrée ?\n\n- A. $x = \\dfrac{y - 12}{3}$\n- B. $x \\equiv 3(y - 12) \\,[26]$\n- C. $x \\equiv 9y - 12 \\,[26]$\n- D. $x \\equiv 9(y - 12) \\,[26]$",
+					"reponse": ["D. $x \\equiv 9(y - 12) \\,[26]$"],
+					"variables": {
+						"a": "3",
+						"b": "12",
+						"inv": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Un message est chiffré par $y \\equiv 9x + 6 \\,[26]$. On sait que $9 \\times 3 \\equiv 1 \\,[26]$.\n\nComment retrouve-t-on le rang $x$ de la lettre d'origine à partir du rang $y$ de la lettre chiffrée ?\n\n- A. $x \\equiv 3y - 6 \\,[26]$\n- B. $x = \\dfrac{y - 6}{9}$\n- C. $x \\equiv 9(y - 6) \\,[26]$\n- D. $x \\equiv 3(y - 6) \\,[26]$",
+					"reponse": ["D. $x \\equiv 3(y - 6) \\,[26]$"],
+					"variables": {
+						"a": "9",
+						"b": "6",
+						"inv": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un message est chiffré par $y \\equiv 19x + 6 \\,[26]$. On sait que $19 \\times 11 \\equiv 1 \\,[26]$.\n\nComment retrouve-t-on le rang $x$ de la lettre d'origine à partir du rang $y$ de la lettre chiffrée ?\n\n- A. $x \\equiv 19(y - 6) \\,[26]$\n- B. $x = \\dfrac{y - 6}{19}$\n- C. $x \\equiv 11(y - 6) \\,[26]$\n- D. $x \\equiv 11y - 6 \\,[26]$",
+					"reponse": ["C. $x \\equiv 11(y - 6) \\,[26]$"],
+					"variables": {
+						"a": "19",
+						"b": "6",
+						"inv": "11"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,481 @@
+{
+	"template_id": "234270ac-a763-4cb9-bf87-4d44f441cde5",
+	"titre": "Matrice d'adjacence d'un graphe",
+	"sous_titre": "Écrire une ligne de la matrice d'adjacence d'un graphe donné par sa figure, lire degré et nombre d'arêtes sur la matrice, arcs sortants d'un graphe orienté (pièges : 1 sur la diagonale, ligne et colonne confondues pour un graphe orienté, somme des coefficients non divisée par 2)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Graphes et matrices > Graphes > Matrice d'adjacence",
+	"mis_a_jour": "2026-10-05T17:43:26.835183+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-322",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On considère le graphe ci-dessous ; ses sommets sont rangés dans l'ordre $A$, $B$, $C$, $D$, $E$.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nComplète la ligne de $B$ de sa matrice d'adjacence.\n\n|  | $A$ | $B$ | $C$ | $D$ | $E$ |\n| --- | --- | --- | --- | --- | --- |\n| ligne de $B$ | $?$ | $?$ | $?$ | $?$ | $?$ |",
+				"reponses_brutes": ["1", "0", "1", "1", "1"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"case": 5,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 5,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300,
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "On considère le graphe ci-dessous ; ses sommets sont rangés dans l'ordre $A$, $B$, $C$, $D$, $E$.\n\n[figure]\n\nComplète la ligne de $B$ de sa matrice d'adjacence.\n\n|  | $A$ | $B$ | $C$ | $D$ | $E$ |\n| ligne de $B$ | $[?]$ | $[?]$ | $[?]$ | $[?]$ | $[?]$ |",
+					"reponse": ["1", "0", "1", "1", "1"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "La matrice d'adjacence d'un graphe non orienté, de sommets $A$, $B$, $C$, $D$, $E$ (dans cet ordre), est\n\n$$M = \\begin{pmatrix}0&1&1&0&0\\\\1&0&1&1&0\\\\1&1&0&1&1\\\\0&1&1&0&1\\\\0&0&1&1&0\\end{pmatrix}$$\n\nDegré du sommet $C$ : $?$\n\nNombre d'arêtes du graphe : $?$",
+				"reponses_brutes": ["4", "7"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [7]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 7,
+				"nb_distinctes": 2,
+				"valeurs": [4, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 7,
+				"nb_distinctes": 4,
+				"valeurs": [0, 1, 4, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 1,
+					"enonce": "La matrice d'adjacence d'un graphe non orienté, de sommets $A$, $B$, $C$, $D$, $E$ (dans cet ordre), est\n\n$$M = \\begin{pmatrix}0&1&1&0&0\\\\1&0&1&1&0\\\\1&1&0&1&1\\\\0&1&1&0&1\\\\0&0&1&1&0\\end{pmatrix}$$\n\nDegré du sommet $C$ : $[?]$\n\nNombre d'arêtes du graphe : $[?]$",
+					"reponse": ["4", "7"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "La matrice d'adjacence d'un graphe **orienté** de sommets $A$, $B$, $C$, $D$ (dans cet ordre) est\n\n$$M = \\begin{pmatrix}0&1&0&0\\\\0&0&1&1\\\\1&0&0&1\\\\0&0&0&0\\end{pmatrix}$$\n\n(le coefficient ligne $X$, colonne $Y$ vaut $1$ s'il y a un arc de $X$ vers $Y$).\n\nNombre d'arcs **partant** de $B$ : $?$\n\nNombre d'arcs **arrivant** en $B$ : $?$",
+				"reponses_brutes": ["2", "1"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "La matrice d'adjacence d'un graphe orienté de sommets $A$, $B$, $C$, $D$ (dans cet ordre) est\n\n$$M = \\begin{pmatrix}0&1&0&0\\\\0&0&1&1\\\\1&0&0&1\\\\0&0&0&0\\end{pmatrix}$$\n\n(le coefficient ligne $X$, colonne $Y$ vaut $1$ s'il y a un arc de $X$ vers $Y$).\n\nNombre d'arcs partant de $B$ : $[?]$\n\nNombre d'arcs arrivant en $B$ : $[?]$",
+					"reponse": ["2", "1"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On considère le graphe ci-dessous ; ses sommets sont rangés dans l'ordre $A$, $B$, $C$, $D$.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 4 sommets A, B, C, D ; arêtes AB, AC, BC, CD.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(0, 4, etiquette=\"haut\")\nC = point(3, 2, etiquette=\"haut\")\nD = point(6, 2, etiquette=\"droite\")\nsegment(A, B)\nsegment(A, C)\nsegment(B, C)\nsegment(C, D)\n```\n\nÉcris sa matrice d'adjacence $M$ (onglet « Matrice » du clavier : gabarit 3 × 3, puis « + ligne » et « + colonne »).\n\n$M=?$",
+				"reponses_brutes": [
+					"\\begin{pmatrix}0&1&1&0\\\\1&0&1&0\\\\1&1&0&1\\\\0&0&1&0\\end{pmatrix}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\begin{pmatrix}0&1&1&0\\\\1&0&1&0\\\\1&1&0&1\\\\0&0&1&0\\end{pmatrix}"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 1,
+							"nb_distinctes": 2,
+							"valeurs": [0, 1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "On considère le graphe ci-dessous ; ses sommets sont rangés dans l'ordre $A$, $B$, $C$, $D$.\n\n[figure]\n\nÉcris sa matrice d'adjacence $M$ (onglet « Matrice » du clavier : gabarit 3 × 3, puis « + ligne » et « + colonne »).\n\n$M = [?]$",
+					"reponse": ["\\begin{pmatrix}0&1&1&0\\\\1&0&1&0\\\\1&1&0&1\\\\0&0&1&0\\end{pmatrix}"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,687 @@
+{
+	"template_id": "7d552757-61db-493a-a846-7d2cdc0ec631",
+	"titre": "Reconnaître une équation ou une inéquation sur le cercle trigonométrique",
+	"sous_titre": "Arc ou points du cercle (mesures principales) : retrouver cos x ⩾ a, sin x ⩾ a ou sin x = a (pièges : cosinus = abscisse et sinus = ordonnée confondus, sens, signe)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonctions trigonométriques > Équations et inéquations",
+	"mis_a_jour": "2026-10-20T20:27:04.638887+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-457",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*a/\\pi"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) >= cos({{n}}*pi/12)\nmode: arc\nmesures: principales\n```\n\nDe quelle inéquation s'agit-il ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$\\cos x\\geqslant{{eval:cos(n*\\pi/12)}}$"
+					},
+					{
+						"content": "$\\cos x\\leqslant{{eval:cos(n*\\pi/12)}}$"
+					},
+					{
+						"content": "$\\sin x\\geqslant{{eval:cos(n*\\pi/12)}}$"
+					},
+					{
+						"content": "$\\sin x\\leqslant{{eval:cos(n*\\pi/12)}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\frac{\\pi}{3}", "\\frac{\\pi}{4}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"\\cos x\\geqslant\\dfrac{1}{2}",
+							"\\cos x\\geqslant\\dfrac{\\sqrt{2}}{2}",
+							"\\cos x\\geqslant\\dfrac{\\sqrt{3}}{2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 416,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": {
+				"nb": 104,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"racine": "196/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"trig-circle": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n[trig-circle]\n\nDe quelle inéquation s'agit-il ?\n\n- A. $\\cos x\\geqslant\\dfrac{\\sqrt{3}}{2}$\n- B. $\\cos x\\leqslant\\dfrac{\\sqrt{3}}{2}$\n- C. $\\sin x\\leqslant\\dfrac{\\sqrt{3}}{2}$\n- D. $\\sin x\\geqslant\\dfrac{\\sqrt{3}}{2}$",
+					"reponse": ["A. $\\cos x\\geqslant\\dfrac{\\sqrt{3}}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 5,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n[trig-circle]\n\nDe quelle inéquation s'agit-il ?\n\n- A. $\\sin x\\geqslant\\dfrac{1}{2}$\n- B. $\\sin x\\leqslant\\dfrac{1}{2}$\n- C. $\\cos x\\leqslant\\dfrac{1}{2}$\n- D. $\\cos x\\geqslant\\dfrac{1}{2}$",
+					"reponse": ["D. $\\cos x\\geqslant\\dfrac{1}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{3}",
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n[trig-circle]\n\nDe quelle inéquation s'agit-il ?\n\n- A. $\\cos x\\geqslant\\dfrac{\\sqrt{3}}{2}$\n- B. $\\sin x\\geqslant\\dfrac{\\sqrt{3}}{2}$\n- C. $\\sin x\\leqslant\\dfrac{\\sqrt{3}}{2}$\n- D. $\\cos x\\leqslant\\dfrac{\\sqrt{3}}{2}$",
+					"reponse": ["A. $\\cos x\\geqslant\\dfrac{\\sqrt{3}}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n[trig-circle]\n\nDe quelle inéquation s'agit-il ?\n\n- A. $\\sin x\\geqslant\\dfrac{\\sqrt{3}}{2}$\n- B. $\\sin x\\leqslant\\dfrac{\\sqrt{3}}{2}$\n- C. $\\cos x\\geqslant\\dfrac{\\sqrt{3}}{2}$\n- D. $\\cos x\\leqslant\\dfrac{\\sqrt{3}}{2}$",
+					"reponse": ["C. $\\cos x\\geqslant\\dfrac{\\sqrt{3}}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n[trig-circle]\n\nDe quelle inéquation s'agit-il ?\n\n- A. $\\cos x\\leqslant\\dfrac{\\sqrt{3}}{2}$\n- B. $\\sin x\\geqslant\\dfrac{\\sqrt{3}}{2}$\n- C. $\\sin x\\leqslant\\dfrac{\\sqrt{3}}{2}$\n- D. $\\cos x\\geqslant\\dfrac{\\sqrt{3}}{2}$",
+					"reponse": ["D. $\\cos x\\geqslant\\dfrac{\\sqrt{3}}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*a/\\pi"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n```trig\npreset: custom\nangles: {{n}}*pi/12, {{eval:12-n}}*pi/12\nequation: sin(x) >= sin({{n}}*pi/12)\nmode: arc\nmesures: principales\n```\n\nDe quelle inéquation s'agit-il ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$\\sin x\\geqslant{{eval:sin(n*\\pi/12)}}$"
+					},
+					{
+						"content": "$\\sin x\\leqslant{{eval:sin(n*\\pi/12)}}$"
+					},
+					{
+						"content": "$\\cos x\\geqslant{{eval:sin(n*\\pi/12)}}$"
+					},
+					{
+						"content": "$\\cos x\\leqslant{{eval:sin(n*\\pi/12)}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\frac{\\pi}{3}", "\\frac{\\pi}{4}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"\\sin x\\geqslant\\dfrac{1}{2}",
+							"\\sin x\\geqslant\\dfrac{\\sqrt{2}}{2}",
+							"\\sin x\\geqslant\\dfrac{\\sqrt{3}}{2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 368,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": {
+				"nb": 92,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"lettre dans les maths": "300/300",
+					"racine": "208/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"trig-circle": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 5,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n[trig-circle]\n\nDe quelle inéquation s'agit-il ?\n\n- A. $\\cos x\\geqslant\\dfrac{\\sqrt{3}}{2}$\n- B. $\\cos x\\leqslant\\dfrac{\\sqrt{3}}{2}$\n- C. $\\sin x\\leqslant\\dfrac{\\sqrt{3}}{2}$\n- D. $\\sin x\\geqslant\\dfrac{\\sqrt{3}}{2}$",
+					"reponse": ["D. $\\sin x\\geqslant\\dfrac{\\sqrt{3}}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{3}",
+						"n": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n[trig-circle]\n\nDe quelle inéquation s'agit-il ?\n\n- A. $\\sin x\\geqslant\\dfrac{1}{2}$\n- B. $\\sin x\\leqslant\\dfrac{1}{2}$\n- C. $\\cos x\\leqslant\\dfrac{1}{2}$\n- D. $\\cos x\\geqslant\\dfrac{1}{2}$",
+					"reponse": ["A. $\\sin x\\geqslant\\dfrac{1}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n[trig-circle]\n\nDe quelle inéquation s'agit-il ?\n\n- A. $\\sin x\\geqslant\\dfrac{1}{2}$\n- B. $\\cos x\\geqslant\\dfrac{1}{2}$\n- C. $\\cos x\\leqslant\\dfrac{1}{2}$\n- D. $\\sin x\\leqslant\\dfrac{1}{2}$",
+					"reponse": ["A. $\\sin x\\geqslant\\dfrac{1}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n[trig-circle]\n\nDe quelle inéquation s'agit-il ?\n\n- A. $\\cos x\\geqslant\\dfrac{1}{2}$\n- B. $\\cos x\\leqslant\\dfrac{1}{2}$\n- C. $\\sin x\\geqslant\\dfrac{1}{2}$\n- D. $\\sin x\\leqslant\\dfrac{1}{2}$",
+					"reponse": ["C. $\\sin x\\geqslant\\dfrac{1}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, l'arc coloré représente l'ensemble des solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une inéquation.\n\n[trig-circle]\n\nDe quelle inéquation s'agit-il ?\n\n- A. $\\sin x\\leqslant\\dfrac{1}{2}$\n- B. $\\cos x\\geqslant\\dfrac{1}{2}$\n- C. $\\cos x\\leqslant\\dfrac{1}{2}$\n- D. $\\sin x\\geqslant\\dfrac{1}{2}$",
+					"reponse": ["D. $\\sin x\\geqslant\\dfrac{1}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*a/\\pi"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur le cercle trigonométrique ci-dessous, les points marqués représentent les solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une équation.\n\n```trig\npreset: custom\nangles: -{{n}}*pi/12, -{{eval:12-n}}*pi/12\nequation: sin(x) = sin(-{{n}}*pi/12)\nmode: points\nmesures: principales\n```\n\nDe quelle équation s'agit-il ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$\\sin x={{eval:-sin(n*\\pi/12)}}$"
+					},
+					{
+						"content": "$\\sin x={{eval:sin(n*\\pi/12)}}$"
+					},
+					{
+						"content": "$\\cos x={{eval:-sin(n*\\pi/12)}}$"
+					},
+					{
+						"content": "$\\cos x={{eval:sin(n*\\pi/12)}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\frac{\\pi}{3}", "\\frac{\\pi}{4}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"\\sin x=-\\dfrac{1}{2}",
+							"\\sin x=-\\dfrac{\\sqrt{2}}{2}",
+							"\\sin x=-\\dfrac{\\sqrt{3}}{2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 368,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": {
+				"nb": 92,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"lettre dans les maths": "300/300",
+					"racine": "208/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"trig-circle": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 5,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, les points marqués représentent les solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une équation.\n\n[trig-circle]\n\nDe quelle équation s'agit-il ?\n\n- A. $\\cos x=-\\dfrac{\\sqrt{3}}{2}$\n- B. $\\cos x=\\dfrac{\\sqrt{3}}{2}$\n- C. $\\sin x=\\dfrac{\\sqrt{3}}{2}$\n- D. $\\sin x=-\\dfrac{\\sqrt{3}}{2}$",
+					"reponse": ["D. $\\sin x=-\\dfrac{\\sqrt{3}}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{3}",
+						"n": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, les points marqués représentent les solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une équation.\n\n[trig-circle]\n\nDe quelle équation s'agit-il ?\n\n- A. $\\sin x=-\\dfrac{1}{2}$\n- B. $\\sin x=\\dfrac{1}{2}$\n- C. $\\cos x=\\dfrac{1}{2}$\n- D. $\\cos x=-\\dfrac{1}{2}$",
+					"reponse": ["A. $\\sin x=-\\dfrac{1}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, les points marqués représentent les solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une équation.\n\n[trig-circle]\n\nDe quelle équation s'agit-il ?\n\n- A. $\\sin x=-\\dfrac{1}{2}$\n- B. $\\cos x=-\\dfrac{1}{2}$\n- C. $\\cos x=\\dfrac{1}{2}$\n- D. $\\sin x=\\dfrac{1}{2}$",
+					"reponse": ["A. $\\sin x=-\\dfrac{1}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, les points marqués représentent les solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une équation.\n\n[trig-circle]\n\nDe quelle équation s'agit-il ?\n\n- A. $\\cos x=-\\dfrac{1}{2}$\n- B. $\\cos x=\\dfrac{1}{2}$\n- C. $\\sin x=-\\dfrac{1}{2}$\n- D. $\\sin x=\\dfrac{1}{2}$",
+					"reponse": ["C. $\\sin x=-\\dfrac{1}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Sur le cercle trigonométrique ci-dessous, les points marqués représentent les solutions dans $\\left]-\\pi\\,;\\pi\\right]$ d'une équation.\n\n[trig-circle]\n\nDe quelle équation s'agit-il ?\n\n- A. $\\sin x=\\dfrac{1}{2}$\n- B. $\\cos x=-\\dfrac{1}{2}$\n- C. $\\cos x=\\dfrac{1}{2}$\n- D. $\\sin x=-\\dfrac{1}{2}$",
+					"reponse": ["D. $\\sin x=-\\dfrac{1}{2}$"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				}
+			]
+		}
+	]
+}

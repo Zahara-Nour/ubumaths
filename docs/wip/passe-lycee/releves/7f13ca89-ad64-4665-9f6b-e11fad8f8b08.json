@@ -1,0 +1,710 @@
+{
+	"template_id": "7f13ca89-ad64-4665-9f6b-e11fad8f8b08",
+	"titre": "Intervalle de croissance ou de décroissance d'une fonction avec ln",
+	"sous_titre": "Signe de f′ pour x − a ln x, a ln x − bx, x ln x − ax sur ]0 ; +∞[ ; réponse en intervalle, bornes fermées ouvrables (pièges : domaine x > 0 oublié, sens, (x ln x)′)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Variations",
+	"mis_a_jour": "2026-10-04T17:40:59.798362+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-231",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-416",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-{{a}}\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
+				"reponses_brutes": ["[{{a}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"[2;+\\infty[",
+							"[3;+\\infty[",
+							"[4;+\\infty[",
+							"[5;+\\infty[",
+							"[6;+\\infty[",
+							"[7;+\\infty[",
+							"[8;+\\infty[",
+							"[9;+\\infty["
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-9\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["[9;+\\infty["],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-2\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["[2;+\\infty["],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-4\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["[4;+\\infty["],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-8\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["[8;+\\infty["],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-7\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["[7;+\\infty["],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-{{a}}\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **décroissante**.\n\n$I=?$",
+				"reponses_brutes": ["]0;{{a}}]"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["]0;2]", "]0;3]", "]0;4]", "]0;5]", "]0;6]", "]0;7]", "]0;8]", "]0;9]"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-9\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est décroissante.\n\n$I = [?]$",
+					"reponse": ["]0;9]"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-2\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est décroissante.\n\n$I = [?]$",
+					"reponse": ["]0;2]"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-4\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est décroissante.\n\n$I = [?]$",
+					"reponse": ["]0;4]"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-8\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est décroissante.\n\n$I = [?]$",
+					"reponse": ["]0;8]"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x-7\\ln x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est décroissante.\n\n$I = [?]$",
+					"reponse": ["]0;7]"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..5"
+					}
+				],
+				"conditions": ["a != b"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)={{a}}\\ln x-{{b}}x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
+				"reponses_brutes": ["]0;{{eval:a/b}}]"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 28,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 24,
+						"valeurs": [
+							"]0;2]",
+							"]0;3]",
+							"]0;4]",
+							"]0;\\dfrac{1}{2}]",
+							"]0;\\dfrac{2}{3}]",
+							"]0;\\dfrac{2}{5}]",
+							"]0;\\dfrac{3}{2}]",
+							"]0;\\dfrac{3}{4}]",
+							"]0;\\dfrac{3}{5}]",
+							"]0;\\dfrac{4}{3}]",
+							"]0;\\dfrac{4}{5}]",
+							"]0;\\dfrac{5}{2}]",
+							"]0;\\dfrac{5}{3}]",
+							"]0;\\dfrac{5}{4}]",
+							"]0;\\dfrac{6}{5}]",
+							"]0;\\dfrac{7}{2}]",
+							"]0;\\dfrac{7}{3}]",
+							"]0;\\dfrac{7}{4}]",
+							"]0;\\dfrac{7}{5}]",
+							"]0;\\dfrac{8}{3}]",
+							"]0;\\dfrac{8}{5}]",
+							"]0;\\dfrac{9}{2}]",
+							"]0;\\dfrac{9}{4}]",
+							"]0;\\dfrac{9}{5}]"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 9,
+							"nb_distinctes": 10,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 242,
+				"denominateurs": [2, 3, 4, 5],
+				"denominateur_min": 2,
+				"denominateur_max": 5,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=9\\ln x-4x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["]0;\\dfrac{9}{4}]"],
+					"variables": {
+						"a": "9",
+						"b": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=2\\ln x-4x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["]0;\\dfrac{1}{2}]"],
+					"variables": {
+						"a": "2",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=4\\ln x-3x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["]0;\\dfrac{4}{3}]"],
+					"variables": {
+						"a": "4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=2\\ln x-3x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["]0;\\dfrac{2}{3}]"],
+					"variables": {
+						"a": "2",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=4\\ln x-2x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["]0;2]"],
+					"variables": {
+						"a": "4",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x\\ln x-{{a}}x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
+				"reponses_brutes": ["[{{if:a==2|e|e^{ {{eval:a-1}} }}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["[e;+\\infty[", "[e^{ 2 };+\\infty[", "[e^{ 3 };+\\infty["],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 3,
+							"nb_distinctes": 2,
+							"valeurs": [2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 4,
+				"nb_distinctes": 4,
+				"valeurs": [0, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 4,
+				"nb_distinctes": 4,
+				"valeurs": [0, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x\\ln x-4x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["[e^{ 3 };+\\infty["],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x\\ln x-2x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["[e;+\\infty["],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]0\\,;+\\infty\\right[$ par $f(x)=x\\ln x-3x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est croissante.\n\n$I = [?]$",
+					"reponse": ["[e^{ 2 };+\\infty["],
+					"variables": {
+						"a": "3"
+					}
+				}
+			]
+		}
+	]
+}

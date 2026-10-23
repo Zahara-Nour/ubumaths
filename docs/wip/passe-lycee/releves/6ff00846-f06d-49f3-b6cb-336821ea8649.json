@@ -1,0 +1,747 @@
+{
+	"template_id": "6ff00846-f06d-49f3-b6cb-336821ea8649",
+	"titre": "Nombre de racines d'un polynôme, racines conjuguées",
+	"sous_titre": "Un polynôme de degré n a au plus n racines ; un polynôme de degré au plus n qui s'annule en n + 1 points est nul ; à coefficients réels, le conjugué d'une racine est racine, un degré impair donne une racine réelle (pièges : « exactement n racines distinctes », opposé au lieu du conjugué, « aucun polynôme ne convient »)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "multiple_choice",
+	"theme": "Nombres complexes > Équations polynomiales > Racines d'un polynôme",
+	"mis_a_jour": "2026-10-05T19:11:37.70731+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-246",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "3..8"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$P$ est un polynôme de degré ${{n}}$ à coefficients complexes.\n\nQue peut-on dire du nombre de solutions dans $\\mathbb{C}$ de l'équation $P(z) = 0$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Elle a au plus ${{n}}$ solutions"
+					},
+					{
+						"content": "Elle a exactement ${{n}}$ solutions distinctes"
+					},
+					{
+						"content": "Elle a au plus ${{eval:n-1}}$ solutions"
+					},
+					{
+						"content": "Elle a au moins ${{n}}$ solutions"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 128,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"Elle a au plus $3$ solutions",
+							"Elle a au plus $4$ solutions",
+							"Elle a au plus $5$ solutions",
+							"Elle a au plus $6$ solutions",
+							"Elle a au plus $7$ solutions",
+							"Elle a au plus $8$ solutions"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 8,
+							"nb_distinctes": 6,
+							"valeurs": [3, 4, 5, 6, 7, 8],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 8,
+				"nb_distinctes": 7,
+				"valeurs": [0, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 8,
+				"nb_distinctes": 6,
+				"valeurs": [3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 8,
+				"nb_distinctes": 8,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 9,
+					"enonce": "$P$ est un polynôme de degré $8$ à coefficients complexes.\n\nQue peut-on dire du nombre de solutions dans $\\mathbb{C}$ de l'équation $P\\left( z \\right) = 0$ ?\n\n- A. Elle a au moins $8$ solutions\n- B. Elle a exactement $8$ solutions distinctes\n- C. Elle a au plus $7$ solutions\n- D. Elle a au plus $8$ solutions",
+					"reponse": ["D. Elle a au plus $8$ solutions"],
+					"variables": {
+						"n": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "$P$ est un polynôme de degré $3$ à coefficients complexes.\n\nQue peut-on dire du nombre de solutions dans $\\mathbb{C}$ de l'équation $P\\left( z \\right) = 0$ ?\n\n- A. Elle a au plus $3$ solutions\n- B. Elle a exactement $3$ solutions distinctes\n- C. Elle a au moins $3$ solutions\n- D. Elle a au plus $2$ solutions",
+					"reponse": ["A. Elle a au plus $3$ solutions"],
+					"variables": {
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$P$ est un polynôme de degré $4$ à coefficients complexes.\n\nQue peut-on dire du nombre de solutions dans $\\mathbb{C}$ de l'équation $P\\left( z \\right) = 0$ ?\n\n- A. Elle a au plus $4$ solutions\n- B. Elle a au plus $3$ solutions\n- C. Elle a au moins $4$ solutions\n- D. Elle a exactement $4$ solutions distinctes",
+					"reponse": ["A. Elle a au plus $4$ solutions"],
+					"variables": {
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$P$ est un polynôme de degré $3$ à coefficients complexes.\n\nQue peut-on dire du nombre de solutions dans $\\mathbb{C}$ de l'équation $P\\left( z \\right) = 0$ ?\n\n- A. Elle a au plus $2$ solutions\n- B. Elle a au moins $3$ solutions\n- C. Elle a au plus $3$ solutions\n- D. Elle a exactement $3$ solutions distinctes",
+					"reponse": ["C. Elle a au plus $3$ solutions"],
+					"variables": {
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$P$ est un polynôme de degré $4$ à coefficients complexes.\n\nQue peut-on dire du nombre de solutions dans $\\mathbb{C}$ de l'équation $P\\left( z \\right) = 0$ ?\n\n- A. Elle a exactement $4$ solutions distinctes\n- B. Elle a au plus $3$ solutions\n- C. Elle a au moins $4$ solutions\n- D. Elle a au plus $4$ solutions",
+					"reponse": ["D. Elle a au plus $4$ solutions"],
+					"variables": {
+						"n": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$P$ est un polynôme de degré au plus ${{n}}$, et $P$ s'annule en ${{eval:n+1}}$ nombres complexes distincts.\n\nQue peut-on en conclure ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$P$ est le polynôme nul"
+					},
+					{
+						"content": "$P$ est de degré ${{eval:n+1}}$"
+					},
+					{
+						"content": "$P$ est une constante non nulle"
+					},
+					{
+						"content": "C'est impossible : aucun polynôme ne convient"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 113,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["P$ est le polynôme nul"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 6,
+				"valeurs": [2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 3,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 6,
+				"valeurs": [2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 9,
+					"enonce": "$P$ est un polynôme de degré au plus $6$, et $P$ s'annule en $7$ nombres complexes distincts.\n\nQue peut-on en conclure ?\n\n- A. C'est impossible : aucun polynôme ne convient\n- B. $P$ est de degré $7$\n- C. $P$ est une constante non nulle\n- D. $P$ est le polynôme nul",
+					"reponse": ["D. $P$ est le polynôme nul"],
+					"variables": {
+						"n": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "$P$ est un polynôme de degré au plus $2$, et $P$ s'annule en $3$ nombres complexes distincts.\n\nQue peut-on en conclure ?\n\n- A. $P$ est le polynôme nul\n- B. $P$ est de degré $3$\n- C. C'est impossible : aucun polynôme ne convient\n- D. $P$ est une constante non nulle",
+					"reponse": ["A. $P$ est le polynôme nul"],
+					"variables": {
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$P$ est un polynôme de degré au plus $3$, et $P$ s'annule en $4$ nombres complexes distincts.\n\nQue peut-on en conclure ?\n\n- A. $P$ est le polynôme nul\n- B. $P$ est une constante non nulle\n- C. C'est impossible : aucun polynôme ne convient\n- D. $P$ est de degré $4$",
+					"reponse": ["A. $P$ est le polynôme nul"],
+					"variables": {
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$P$ est un polynôme de degré au plus $2$, et $P$ s'annule en $3$ nombres complexes distincts.\n\nQue peut-on en conclure ?\n\n- A. $P$ est une constante non nulle\n- B. C'est impossible : aucun polynôme ne convient\n- C. $P$ est le polynôme nul\n- D. $P$ est de degré $3$",
+					"reponse": ["C. $P$ est le polynôme nul"],
+					"variables": {
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$P$ est un polynôme de degré au plus $3$, et $P$ s'annule en $4$ nombres complexes distincts.\n\nQue peut-on en conclure ?\n\n- A. $P$ est de degré $4$\n- B. $P$ est une constante non nulle\n- C. C'est impossible : aucun polynôme ne convient\n- D. $P$ est le polynôme nul",
+					"reponse": ["D. $P$ est le polynôme nul"],
+					"variables": {
+						"n": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$P$ est un polynôme à coefficients RÉELS, et $P({{a}}+{{b}}i) = 0$.\n\nQuel autre nombre est forcément une racine de $P$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "${{a}}-{{b}}i$"
+					},
+					{
+						"content": "${{eval:-a}}+{{b}}i$"
+					},
+					{
+						"content": "${{eval:-a}}-{{b}}i$"
+					},
+					{
+						"content": "${{a}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 250,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 32,
+						"exemples": [
+							"-4 - 4 \\imaginaryI",
+							"-2 - 3 \\imaginaryI",
+							"-4 - 3 \\imaginaryI",
+							"-2 - 2 \\imaginaryI",
+							"3 - 2 \\imaginaryI",
+							"-4 - 5 \\imaginaryI",
+							"2 - 3 \\imaginaryI",
+							"4 - 4 \\imaginaryI",
+							"1 - 4 \\imaginaryI",
+							"-1 - 4 \\imaginaryI",
+							"-1 - 3 \\imaginaryI",
+							"-3 - 5 \\imaginaryI"
+						],
+						"nombres_contenus": {
+							"min": -4,
+							"max": 5,
+							"nb_distinctes": 9,
+							"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -4,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 7,
+					"enonce": "$P$ est un polynôme à coefficients RÉELS, et $P\\left( -4 + 5 \\imaginaryI \\right) = 0$.\n\nQuel autre nombre est forcément une racine de $P$ ?\n\n- A. $-4$\n- B. $-4 - 5 \\imaginaryI$\n- C. $4 + 5 \\imaginaryI$\n- D. $4 - 5 \\imaginaryI$",
+					"reponse": ["B. $-4 - 5 \\imaginaryI$"],
+					"variables": {
+						"a": "-4",
+						"b": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-4)",
+					"graine": 1,
+					"enonce": "$P$ est un polynôme à coefficients RÉELS, et $P\\left( -4 + 4 \\imaginaryI \\right) = 0$.\n\nQuel autre nombre est forcément une racine de $P$ ?\n\n- A. $4 + 4 \\imaginaryI$\n- B. $-4 - 4 \\imaginaryI$\n- C. $4 - 4 \\imaginaryI$\n- D. $-4$",
+					"reponse": ["B. $-4 - 4 \\imaginaryI$"],
+					"variables": {
+						"a": "-4",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$P$ est un polynôme à coefficients RÉELS, et $P\\left( -2 + 3 \\imaginaryI \\right) = 0$.\n\nQuel autre nombre est forcément une racine de $P$ ?\n\n- A. $-2 - 3 \\imaginaryI$\n- B. $2 + 3 \\imaginaryI$\n- C. $-2$\n- D. $2 - 3 \\imaginaryI$",
+					"reponse": ["A. $-2 - 3 \\imaginaryI$"],
+					"variables": {
+						"a": "-2",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$P$ est un polynôme à coefficients RÉELS, et $P\\left( -4 + 3 \\imaginaryI \\right) = 0$.\n\nQuel autre nombre est forcément une racine de $P$ ?\n\n- A. $4 + 3 \\imaginaryI$\n- B. $-4$\n- C. $4 - 3 \\imaginaryI$\n- D. $-4 - 3 \\imaginaryI$",
+					"reponse": ["D. $-4 - 3 \\imaginaryI$"],
+					"variables": {
+						"a": "-4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$P$ est un polynôme à coefficients RÉELS, et $P\\left( -2 + 2 \\imaginaryI \\right) = 0$.\n\nQuel autre nombre est forcément une racine de $P$ ?\n\n- A. $2 - 2 \\imaginaryI$\n- B. $2 + 2 \\imaginaryI$\n- C. $-2$\n- D. $-2 - 2 \\imaginaryI$",
+					"reponse": ["D. $-2 - 2 \\imaginaryI$"],
+					"variables": {
+						"a": "-2",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "3|5|7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$P$ est un polynôme de degré ${{n}}$ à coefficients RÉELS.\n\nQue peut-on affirmer ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$P$ a au moins une racine réelle"
+					},
+					{
+						"content": "$P$ a ${{n}}$ racines réelles"
+					},
+					{
+						"content": "$P$ peut n'avoir aucune racine réelle"
+					},
+					{
+						"content": "$P$ a exactement ${{eval:n-1}}$ racines non réelles"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 5, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["P$ a au moins une racine réelle"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 7,
+				"nb_distinctes": 3,
+				"valeurs": [3, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 6,
+				"valeurs": [2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 6,
+				"valeurs": [2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 5,
+					"enonce": "$P$ est un polynôme de degré $7$ à coefficients RÉELS.\n\nQue peut-on affirmer ?\n\n- A. $P$ peut n'avoir aucune racine réelle\n- B. $P$ a exactement $6$ racines non réelles\n- C. $P$ a $7$ racines réelles\n- D. $P$ a au moins une racine réelle",
+					"reponse": ["D. $P$ a au moins une racine réelle"],
+					"variables": {
+						"n": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "$P$ est un polynôme de degré $3$ à coefficients RÉELS.\n\nQue peut-on affirmer ?\n\n- A. $P$ a au moins une racine réelle\n- B. $P$ a $3$ racines réelles\n- C. $P$ a exactement $2$ racines non réelles\n- D. $P$ peut n'avoir aucune racine réelle",
+					"reponse": ["A. $P$ a au moins une racine réelle"],
+					"variables": {
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$P$ est un polynôme de degré $3$ à coefficients RÉELS.\n\nQue peut-on affirmer ?\n\n- A. $P$ a au moins une racine réelle\n- B. $P$ peut n'avoir aucune racine réelle\n- C. $P$ a exactement $2$ racines non réelles\n- D. $P$ a $3$ racines réelles",
+					"reponse": ["A. $P$ a au moins une racine réelle"],
+					"variables": {
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$P$ est un polynôme de degré $3$ à coefficients RÉELS.\n\nQue peut-on affirmer ?\n\n- A. $P$ peut n'avoir aucune racine réelle\n- B. $P$ a exactement $2$ racines non réelles\n- C. $P$ a au moins une racine réelle\n- D. $P$ a $3$ racines réelles",
+					"reponse": ["C. $P$ a au moins une racine réelle"],
+					"variables": {
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$P$ est un polynôme de degré $3$ à coefficients RÉELS.\n\nQue peut-on affirmer ?\n\n- A. $P$ a $3$ racines réelles\n- B. $P$ peut n'avoir aucune racine réelle\n- C. $P$ a exactement $2$ racines non réelles\n- D. $P$ a au moins une racine réelle",
+					"reponse": ["D. $P$ a au moins une racine réelle"],
+					"variables": {
+						"n": "3"
+					}
+				}
+			]
+		}
+	]
+}

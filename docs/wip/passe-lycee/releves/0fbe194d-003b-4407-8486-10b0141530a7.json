@@ -1,0 +1,508 @@
+{
+	"template_id": "0fbe194d-003b-4407-8486-10b0141530a7",
+	"titre": "Infinité des nombres premiers : l'idée de la preuve",
+	"sous_titre": "Comprendre la preuve d'Euclide : N = p₁ × … × pₖ + 1 n'est divisible par aucun pᵢ (reste 1), son plus petit diviseur premier est hors de la liste, N n'est pas forcément premier (pièges : « N est premier », « N est impair », conclure que la liste était fausse sans raison)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "multiple_choice",
+	"theme": "Arithmétique > Nombres premiers > Nombres premiers",
+	"mis_a_jour": "2026-10-05T19:11:46.464748+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-295",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Pour démontrer que l'ensemble des nombres premiers est infini, on suppose qu'il n'y en a qu'un nombre fini : $p_1$, $p_2$, …, $p_k$. On pose $N = p_1 \\times p_2 \\times \\cdots \\times p_k + 1$.\n\nPourquoi aucun des $p_i$ ne divise-t-il $N$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$"
+					},
+					{
+						"content": "Parce que $N$ est un nombre premier"
+					},
+					{
+						"content": "Parce que $N$ est impair"
+					},
+					{
+						"content": "Parce que $N$ est plus grand que chaque $p_i$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Le reste de la division euclidienne de $N$ par $p_i$ vaut $1"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1,
+							"nb_distinctes": 1,
+							"valeurs": [1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"…": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 51,
+					"max": 51
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Pour démontrer que l'ensemble des nombres premiers est infini, on suppose qu'il n'y en a qu'un nombre fini : $p_1$, $p_2$, …, $p_k$. On pose $N = p_1 \\times p_2 \\times \\cdots \\times p_k + 1$.\n\nPourquoi aucun des $p_i$ ne divise-t-il $N$ ?\n\n- A. Parce que $N$ est plus grand que chaque $p_i$\n- B. Parce que $N$ est impair\n- C. Parce que $N$ est un nombre premier\n- D. Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$",
+					"reponse": ["D. Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Pour démontrer que l'ensemble des nombres premiers est infini, on suppose qu'il n'y en a qu'un nombre fini : $p_1$, $p_2$, …, $p_k$. On pose $N = p_1 \\times p_2 \\times \\cdots \\times p_k + 1$.\n\nPourquoi aucun des $p_i$ ne divise-t-il $N$ ?\n\n- A. Parce que $N$ est impair\n- B. Parce que $N$ est plus grand que chaque $p_i$\n- C. Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$\n- D. Parce que $N$ est un nombre premier",
+					"reponse": ["C. Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Pour démontrer que l'ensemble des nombres premiers est infini, on suppose qu'il n'y en a qu'un nombre fini : $p_1$, $p_2$, …, $p_k$. On pose $N = p_1 \\times p_2 \\times \\cdots \\times p_k + 1$.\n\nPourquoi aucun des $p_i$ ne divise-t-il $N$ ?\n\n- A. Parce que $N$ est impair\n- B. Parce que $N$ est plus grand que chaque $p_i$\n- C. Parce que $N$ est un nombre premier\n- D. Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$",
+					"reponse": ["D. Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Pour démontrer que l'ensemble des nombres premiers est infini, on suppose qu'il n'y en a qu'un nombre fini : $p_1$, $p_2$, …, $p_k$. On pose $N = p_1 \\times p_2 \\times \\cdots \\times p_k + 1$.\n\nPourquoi aucun des $p_i$ ne divise-t-il $N$ ?\n\n- A. Parce que $N$ est plus grand que chaque $p_i$\n- B. Parce que $N$ est impair\n- C. Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$\n- D. Parce que $N$ est un nombre premier",
+					"reponse": ["C. Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Pour démontrer que l'ensemble des nombres premiers est infini, on suppose qu'il n'y en a qu'un nombre fini : $p_1$, $p_2$, …, $p_k$. On pose $N = p_1 \\times p_2 \\times \\cdots \\times p_k + 1$.\n\nPourquoi aucun des $p_i$ ne divise-t-il $N$ ?\n\n- A. Parce que $N$ est impair\n- B. Parce que $N$ est un nombre premier\n- C. Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$\n- D. Parce que $N$ est plus grand que chaque $p_i$",
+					"reponse": ["C. Le reste de la division euclidienne de $N$ par $p_i$ vaut $1$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Dans la preuve d'Euclide, on suppose que $p_1$, …, $p_k$ sont TOUS les nombres premiers, on pose $N = p_1 \\times \\cdots \\times p_k + 1$, et on montre qu'aucun $p_i$ ne divise $N$.\n\nComment conclut-on ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction"
+					},
+					{
+						"content": "$N$ est premier et n'est pas dans la liste : contradiction"
+					},
+					{
+						"content": "$N$ est divisible par $p_k + 1$, qui est premier"
+					},
+					{
+						"content": "$N$ n'a aucun diviseur premier, ce qui est absurde car $N$ est pair"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2,
+							"nb_distinctes": 1,
+							"valeurs": [2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"…": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 57,
+					"max": 57
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Dans la preuve d'Euclide, on suppose que $p_1$, …, $p_k$ sont TOUS les nombres premiers, on pose $N = p_1 \\times \\cdots \\times p_k + 1$, et on montre qu'aucun $p_i$ ne divise $N$.\n\nComment conclut-on ?\n\n- A. $N$ n'a aucun diviseur premier, ce qui est absurde car $N$ est pair\n- B. $N$ est divisible par $p_k + 1$, qui est premier\n- C. $N$ est premier et n'est pas dans la liste : contradiction\n- D. $N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction",
+					"reponse": [
+						"D. $N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction"
+					],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans la preuve d'Euclide, on suppose que $p_1$, …, $p_k$ sont TOUS les nombres premiers, on pose $N = p_1 \\times \\cdots \\times p_k + 1$, et on montre qu'aucun $p_i$ ne divise $N$.\n\nComment conclut-on ?\n\n- A. $N$ est divisible par $p_k + 1$, qui est premier\n- B. $N$ n'a aucun diviseur premier, ce qui est absurde car $N$ est pair\n- C. $N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction\n- D. $N$ est premier et n'est pas dans la liste : contradiction",
+					"reponse": [
+						"C. $N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction"
+					],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans la preuve d'Euclide, on suppose que $p_1$, …, $p_k$ sont TOUS les nombres premiers, on pose $N = p_1 \\times \\cdots \\times p_k + 1$, et on montre qu'aucun $p_i$ ne divise $N$.\n\nComment conclut-on ?\n\n- A. $N$ est divisible par $p_k + 1$, qui est premier\n- B. $N$ n'a aucun diviseur premier, ce qui est absurde car $N$ est pair\n- C. $N$ est premier et n'est pas dans la liste : contradiction\n- D. $N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction",
+					"reponse": [
+						"D. $N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction"
+					],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans la preuve d'Euclide, on suppose que $p_1$, …, $p_k$ sont TOUS les nombres premiers, on pose $N = p_1 \\times \\cdots \\times p_k + 1$, et on montre qu'aucun $p_i$ ne divise $N$.\n\nComment conclut-on ?\n\n- A. $N$ n'a aucun diviseur premier, ce qui est absurde car $N$ est pair\n- B. $N$ est divisible par $p_k + 1$, qui est premier\n- C. $N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction\n- D. $N$ est premier et n'est pas dans la liste : contradiction",
+					"reponse": [
+						"C. $N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction"
+					],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans la preuve d'Euclide, on suppose que $p_1$, …, $p_k$ sont TOUS les nombres premiers, on pose $N = p_1 \\times \\cdots \\times p_k + 1$, et on montre qu'aucun $p_i$ ne divise $N$.\n\nComment conclut-on ?\n\n- A. $N$ est divisible par $p_k + 1$, qui est premier\n- B. $N$ est premier et n'est pas dans la liste : contradiction\n- C. $N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction\n- D. $N$ n'a aucun diviseur premier, ce qui est absurde car $N$ est pair",
+					"reponse": [
+						"C. $N \\geqslant 2$ a un diviseur premier, qui n'est aucun des $p_i$ : contradiction"
+					],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "$2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 + 1 = 30\\,031 = 59 \\times 509$.\n\nQue montre cet exemple ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier"
+					},
+					{
+						"content": "La preuve d'Euclide est fausse"
+					},
+					{
+						"content": "Il n'existe qu'un nombre fini de nombres premiers"
+					},
+					{
+						"content": "$59$ divise l'un des nombres $2$, $3$, $5$, $7$, $11$, $13$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1,
+							"nb_distinctes": 1,
+							"valeurs": [1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 30031,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 5, 7, 11, 13, 59, 509, 30031],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 59,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 5, 7, 11, 13, 59],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 30031,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 5, 7, 11, 13, 59, 509, 30031],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30031)",
+					"graine": 1,
+					"enonce": "$2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 + 1 = 30\\,031 = 59 \\times 509$.\n\nQue montre cet exemple ?\n\n- A. $59$ divise l'un des nombres $2$, $3$, $5$, $7$, $11$, $13$\n- B. Il n'existe qu'un nombre fini de nombres premiers\n- C. La preuve d'Euclide est fausse\n- D. Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier",
+					"reponse": [
+						"D. Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier"
+					],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 + 1 = 30\\,031 = 59 \\times 509$.\n\nQue montre cet exemple ?\n\n- A. Il n'existe qu'un nombre fini de nombres premiers\n- B. $59$ divise l'un des nombres $2$, $3$, $5$, $7$, $11$, $13$\n- C. Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier\n- D. La preuve d'Euclide est fausse",
+					"reponse": [
+						"C. Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier"
+					],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 + 1 = 30\\,031 = 59 \\times 509$.\n\nQue montre cet exemple ?\n\n- A. Il n'existe qu'un nombre fini de nombres premiers\n- B. $59$ divise l'un des nombres $2$, $3$, $5$, $7$, $11$, $13$\n- C. La preuve d'Euclide est fausse\n- D. Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier",
+					"reponse": [
+						"D. Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier"
+					],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 + 1 = 30\\,031 = 59 \\times 509$.\n\nQue montre cet exemple ?\n\n- A. $59$ divise l'un des nombres $2$, $3$, $5$, $7$, $11$, $13$\n- B. Il n'existe qu'un nombre fini de nombres premiers\n- C. Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier\n- D. La preuve d'Euclide est fausse",
+					"reponse": [
+						"C. Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier"
+					],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$2 \\times 3 \\times 5 \\times 7 \\times 11 \\times 13 + 1 = 30\\,031 = 59 \\times 509$.\n\nQue montre cet exemple ?\n\n- A. Il n'existe qu'un nombre fini de nombres premiers\n- B. La preuve d'Euclide est fausse\n- C. Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier\n- D. $59$ divise l'un des nombres $2$, $3$, $5$, $7$, $11$, $13$",
+					"reponse": [
+						"C. Le nombre $p_1 \\times \\cdots \\times p_k + 1$ n'est pas toujours premier"
+					],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

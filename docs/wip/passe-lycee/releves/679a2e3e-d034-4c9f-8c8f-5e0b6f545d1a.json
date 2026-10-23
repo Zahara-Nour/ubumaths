@@ -1,0 +1,935 @@
+{
+	"template_id": "679a2e3e-d034-4c9f-8c8f-5e0b6f545d1a",
+	"titre": "Cosinus et sinus d'angles associés",
+	"sous_titre": "cos et sin de 5π/6, −π/4, 4π/3, 7π/6… par symétrie sur le cercle à partir de π/6, π/4 ou π/3",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions trigonométriques > Cosinus et sinus d'un réel",
+	"mis_a_jour": "2026-10-20T20:27:04.364007+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-307",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "\\frac{5\\pi}{6}|\\frac{3\\pi}{4}|\\frac{2\\pi}{3}|-\\frac{7\\pi}{6}|-\\frac{5\\pi}{4}|-\\frac{4\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*r/\\pi"
+					},
+					{
+						"name": "m",
+						"expression": "eval:abs(12-abs(n))"
+					},
+					{
+						"name": "d",
+						"expression": "eval:12/m"
+					},
+					{
+						"name": "c",
+						"expression": "eval:n/gcd(abs(n),12)"
+					},
+					{
+						"name": "q",
+						"expression": "eval:12/gcd(abs(n),12)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+				"reponses_brutes": ["{{eval:cos(n*\\pi/12)}}", "{{eval:sin(n*\\pi/12)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-\\frac{4\\pi}{3}",
+							"-\\frac{5\\pi}{4}",
+							"-\\frac{7\\pi}{6}",
+							"\\frac{2\\pi}{3}",
+							"\\frac{3\\pi}{4}",
+							"\\frac{5\\pi}{6}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 7,
+							"nb_distinctes": 6,
+							"valeurs": [2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -16,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-16, -15, -14, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-7, -5, -4, 2, 3, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["-\\dfrac{1}{2}", "-\\dfrac{\\sqrt{2}}{2}", "-\\dfrac{\\sqrt{3}}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\dfrac{1}{2}", "\\dfrac{\\sqrt{2}}{2}", "\\dfrac{\\sqrt{3}}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 6,
+				"valeurs": [2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 7,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 202,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 8,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(-\\frac{7\\pi}{6}\\right)=[?]$ et $\\sin\\left(-\\frac{7\\pi}{6}\\right)=[?]$",
+					"reponse": ["-\\dfrac{\\sqrt{3}}{2}", "\\dfrac{1}{2}"],
+					"variables": {
+						"r": "-\\frac{7\\pi}{6}",
+						"n": "-14",
+						"m": "2",
+						"d": "6",
+						"c": "-7",
+						"q": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{5\\pi}{6}\\right)=[?]$ et $\\sin\\left(\\frac{5\\pi}{6}\\right)=[?]$",
+					"reponse": ["-\\dfrac{\\sqrt{3}}{2}", "\\dfrac{1}{2}"],
+					"variables": {
+						"r": "\\frac{5\\pi}{6}",
+						"n": "10",
+						"m": "2",
+						"d": "6",
+						"c": "5",
+						"q": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{3\\pi}{4}\\right)=[?]$ et $\\sin\\left(\\frac{3\\pi}{4}\\right)=[?]$",
+					"reponse": ["-\\dfrac{\\sqrt{2}}{2}", "\\dfrac{\\sqrt{2}}{2}"],
+					"variables": {
+						"r": "\\frac{3\\pi}{4}",
+						"n": "9",
+						"m": "3",
+						"d": "4",
+						"c": "3",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(-\\frac{5\\pi}{4}\\right)=[?]$ et $\\sin\\left(-\\frac{5\\pi}{4}\\right)=[?]$",
+					"reponse": ["-\\dfrac{\\sqrt{2}}{2}", "\\dfrac{\\sqrt{2}}{2}"],
+					"variables": {
+						"r": "-\\frac{5\\pi}{4}",
+						"n": "-15",
+						"m": "3",
+						"d": "4",
+						"c": "-5",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(-\\frac{4\\pi}{3}\\right)=[?]$ et $\\sin\\left(-\\frac{4\\pi}{3}\\right)=[?]$",
+					"reponse": ["-\\dfrac{1}{2}", "\\dfrac{\\sqrt{3}}{2}"],
+					"variables": {
+						"r": "-\\frac{4\\pi}{3}",
+						"n": "-16",
+						"m": "4",
+						"d": "3",
+						"c": "-4",
+						"q": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "-\\frac{\\pi}{6}|-\\frac{\\pi}{4}|-\\frac{\\pi}{3}|\\frac{11\\pi}{6}|\\frac{7\\pi}{4}|\\frac{5\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*r/\\pi"
+					},
+					{
+						"name": "m",
+						"expression": "eval:12-abs(12-abs(n))"
+					},
+					{
+						"name": "d",
+						"expression": "eval:12/m"
+					},
+					{
+						"name": "c",
+						"expression": "eval:n/gcd(abs(n),12)"
+					},
+					{
+						"name": "q",
+						"expression": "eval:12/gcd(abs(n),12)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+				"reponses_brutes": ["{{eval:cos(n*\\pi/12)}}", "{{eval:sin(n*\\pi/12)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-\\frac{\\pi}{3}",
+							"-\\frac{\\pi}{4}",
+							"-\\frac{\\pi}{6}",
+							"\\frac{11\\pi}{6}",
+							"\\frac{5\\pi}{3}",
+							"\\frac{7\\pi}{4}"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 11,
+							"nb_distinctes": 6,
+							"valeurs": [3, 4, 5, 6, 7, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 22,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-4, -3, -2, 20, 21, 22]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-1, 5, 7, 11]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\dfrac{1}{2}", "\\dfrac{\\sqrt{2}}{2}", "\\dfrac{\\sqrt{3}}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["-\\dfrac{1}{2}", "-\\dfrac{\\sqrt{2}}{2}", "-\\dfrac{\\sqrt{3}}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 11,
+				"nb_distinctes": 6,
+				"valeurs": [3, 4, 5, 6, 7, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 202,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (11)",
+					"graine": 8,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{11\\pi}{6}\\right)=[?]$ et $\\sin\\left(\\frac{11\\pi}{6}\\right)=[?]$",
+					"reponse": ["\\dfrac{\\sqrt{3}}{2}", "-\\dfrac{1}{2}"],
+					"variables": {
+						"r": "\\frac{11\\pi}{6}",
+						"n": "22",
+						"m": "2",
+						"d": "6",
+						"c": "11",
+						"q": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(-\\frac{\\pi}{6}\\right)=[?]$ et $\\sin\\left(-\\frac{\\pi}{6}\\right)=[?]$",
+					"reponse": ["\\dfrac{\\sqrt{3}}{2}", "-\\dfrac{1}{2}"],
+					"variables": {
+						"r": "-\\frac{\\pi}{6}",
+						"n": "-2",
+						"m": "2",
+						"d": "6",
+						"c": "-1",
+						"q": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(-\\frac{\\pi}{4}\\right)=[?]$ et $\\sin\\left(-\\frac{\\pi}{4}\\right)=[?]$",
+					"reponse": ["\\dfrac{\\sqrt{2}}{2}", "-\\dfrac{\\sqrt{2}}{2}"],
+					"variables": {
+						"r": "-\\frac{\\pi}{4}",
+						"n": "-3",
+						"m": "3",
+						"d": "4",
+						"c": "-1",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{7\\pi}{4}\\right)=[?]$ et $\\sin\\left(\\frac{7\\pi}{4}\\right)=[?]$",
+					"reponse": ["\\dfrac{\\sqrt{2}}{2}", "-\\dfrac{\\sqrt{2}}{2}"],
+					"variables": {
+						"r": "\\frac{7\\pi}{4}",
+						"n": "21",
+						"m": "3",
+						"d": "4",
+						"c": "7",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{5\\pi}{3}\\right)=[?]$ et $\\sin\\left(\\frac{5\\pi}{3}\\right)=[?]$",
+					"reponse": ["\\dfrac{1}{2}", "-\\dfrac{\\sqrt{3}}{2}"],
+					"variables": {
+						"r": "\\frac{5\\pi}{3}",
+						"n": "20",
+						"m": "4",
+						"d": "3",
+						"c": "5",
+						"q": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "-\\frac{5\\pi}{6}|-\\frac{3\\pi}{4}|-\\frac{2\\pi}{3}|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*r/\\pi"
+					},
+					{
+						"name": "m",
+						"expression": "eval:abs(12-abs(n))"
+					},
+					{
+						"name": "d",
+						"expression": "eval:12/m"
+					},
+					{
+						"name": "c",
+						"expression": "eval:n/gcd(abs(n),12)"
+					},
+					{
+						"name": "q",
+						"expression": "eval:12/gcd(abs(n),12)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Donne les valeurs exactes.\n\n$\\cos\\left({{r}}\\right)=?$ et $\\sin\\left({{r}}\\right)=?$",
+				"reponses_brutes": ["{{eval:cos(n*\\pi/12)}}", "{{eval:sin(n*\\pi/12)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-\\frac{2\\pi}{3}",
+							"-\\frac{3\\pi}{4}",
+							"-\\frac{5\\pi}{6}",
+							"\\frac{4\\pi}{3}",
+							"\\frac{5\\pi}{4}",
+							"\\frac{7\\pi}{6}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 7,
+							"nb_distinctes": 6,
+							"valeurs": [2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -10,
+						"max": 16,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-10, -9, -8, 14, 15, 16]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-5, -3, -2, 4, 5, 7]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["-\\dfrac{1}{2}", "-\\dfrac{\\sqrt{2}}{2}", "-\\dfrac{\\sqrt{3}}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["-\\dfrac{1}{2}", "-\\dfrac{\\sqrt{2}}{2}", "-\\dfrac{\\sqrt{3}}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 6,
+				"valeurs": [2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 7,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 202,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 8,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{7\\pi}{6}\\right)=[?]$ et $\\sin\\left(\\frac{7\\pi}{6}\\right)=[?]$",
+					"reponse": ["-\\dfrac{\\sqrt{3}}{2}", "-\\dfrac{1}{2}"],
+					"variables": {
+						"r": "\\frac{7\\pi}{6}",
+						"n": "14",
+						"m": "2",
+						"d": "6",
+						"c": "7",
+						"q": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(-\\frac{5\\pi}{6}\\right)=[?]$ et $\\sin\\left(-\\frac{5\\pi}{6}\\right)=[?]$",
+					"reponse": ["-\\dfrac{\\sqrt{3}}{2}", "-\\dfrac{1}{2}"],
+					"variables": {
+						"r": "-\\frac{5\\pi}{6}",
+						"n": "-10",
+						"m": "2",
+						"d": "6",
+						"c": "-5",
+						"q": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(-\\frac{3\\pi}{4}\\right)=[?]$ et $\\sin\\left(-\\frac{3\\pi}{4}\\right)=[?]$",
+					"reponse": ["-\\dfrac{\\sqrt{2}}{2}", "-\\dfrac{\\sqrt{2}}{2}"],
+					"variables": {
+						"r": "-\\frac{3\\pi}{4}",
+						"n": "-9",
+						"m": "3",
+						"d": "4",
+						"c": "-3",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{5\\pi}{4}\\right)=[?]$ et $\\sin\\left(\\frac{5\\pi}{4}\\right)=[?]$",
+					"reponse": ["-\\dfrac{\\sqrt{2}}{2}", "-\\dfrac{\\sqrt{2}}{2}"],
+					"variables": {
+						"r": "\\frac{5\\pi}{4}",
+						"n": "15",
+						"m": "3",
+						"d": "4",
+						"c": "5",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{4\\pi}{3}\\right)=[?]$ et $\\sin\\left(\\frac{4\\pi}{3}\\right)=[?]$",
+					"reponse": ["-\\dfrac{1}{2}", "-\\dfrac{\\sqrt{3}}{2}"],
+					"variables": {
+						"r": "\\frac{4\\pi}{3}",
+						"n": "16",
+						"m": "4",
+						"d": "3",
+						"c": "4",
+						"q": "3"
+					}
+				}
+			]
+		}
+	]
+}

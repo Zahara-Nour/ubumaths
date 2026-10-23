@@ -1,0 +1,609 @@
+{
+	"template_id": "27d77564-e109-4681-8a64-13a3ee1729cd",
+	"titre": "Valeur d'un placement à intérêts simples ou composés",
+	"sous_titre": "Capital au bout de n années, exact ou arrondi",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Modélisation > Placements",
+	"mis_a_jour": "2026-10-03T06:50:34.955804+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-230",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "5..50"
+					},
+					{
+						"name": "C",
+						"expression": "eval:100*k"
+					},
+					{
+						"name": "t",
+						"expression": "1..6"
+					},
+					{
+						"name": "n",
+						"expression": "2..15"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On place ${{C}}$ € à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital initial.\n\nQuel est le capital au bout de ${{n}}$ années ?\n\nLe capital est de $?$ €.",
+				"reponses_brutes": ["{{eval:C*(1+n*t/100)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 283,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "C",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 500,
+						"max": 5000,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 560,
+						"max": 7920,
+						"negatif_possible": false,
+						"nb_distinctes": 262
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5000,
+				"nb_distinctes": 61,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 560,
+				"max": 7920,
+				"nb_distinctes": 262,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 7920,
+				"nb_distinctes": 312,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7920)",
+					"graine": 86,
+					"enonce": "On place $4\\,800$ € à intérêts simples au taux annuel de $5\\,\\%$ : chaque année, on ajoute au capital $5\\,\\%$ du capital initial.\n\nQuel est le capital au bout de $13$ années ?\n\nLe capital est de $[?]$ €.",
+					"reponse": ["7920"],
+					"variables": {
+						"k": "48",
+						"C": "4800",
+						"t": "5",
+						"n": "13"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 9,
+					"enonce": "On place $4\\,400$ € à intérêts simples au taux annuel de $1\\,\\%$ : chaque année, on ajoute au capital $1\\,\\%$ du capital initial.\n\nQuel est le capital au bout de $13$ années ?\n\nLe capital est de $[?]$ €.",
+					"reponse": ["4972"],
+					"variables": {
+						"k": "44",
+						"C": "4400",
+						"t": "1",
+						"n": "13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On place $500$ € à intérêts simples au taux annuel de $4\\,\\%$ : chaque année, on ajoute au capital $4\\,\\%$ du capital initial.\n\nQuel est le capital au bout de $15$ années ?\n\nLe capital est de $[?]$ €.",
+					"reponse": ["800"],
+					"variables": {
+						"k": "5",
+						"C": "500",
+						"t": "4",
+						"n": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On place $1\\,900$ € à intérêts simples au taux annuel de $2\\,\\%$ : chaque année, on ajoute au capital $2\\,\\%$ du capital initial.\n\nQuel est le capital au bout de $9$ années ?\n\nLe capital est de $[?]$ €.",
+					"reponse": ["2242"],
+					"variables": {
+						"k": "19",
+						"C": "1900",
+						"t": "2",
+						"n": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On place $600$ € à intérêts simples au taux annuel de $3\\,\\%$ : chaque année, on ajoute au capital $3\\,\\%$ du capital initial.\n\nQuel est le capital au bout de $3$ années ?\n\nLe capital est de $[?]$ €.",
+					"reponse": ["654"],
+					"variables": {
+						"k": "6",
+						"C": "600",
+						"t": "3",
+						"n": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "C",
+						"expression": "500|1000|1500|2000|2500|3000|4000|5000"
+					},
+					{
+						"name": "t",
+						"expression": "1..5"
+					},
+					{
+						"name": "n",
+						"expression": "5..12"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On place ${{C}}$ € à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de ${{n}}$ années ? Arrondis au centime.\n\nLe capital est d'environ $?$ €.",
+				"reponses_brutes": ["{{eval:round(C*(1+t/100)^n*100)/100;d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 199,
+			"variables": [
+				{
+					"nom": "C",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 500,
+						"max": 5000,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 530.76,
+						"max": 8144.47,
+						"negatif_possible": false,
+						"nb_distinctes": 199
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5000,
+				"nb_distinctes": 20,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 530.76,
+				"max": 8144.47,
+				"nb_distinctes": 199,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 8144.47,
+				"nb_distinctes": 219,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8144.47)",
+					"graine": 207,
+					"enonce": "On place $5\\,000$ € à intérêts composés au taux annuel de $5\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de $10$ années ? Arrondis au centime.\n\nLe capital est d'environ $[?]$ €.",
+					"reponse": ["8144.47"],
+					"variables": {
+						"C": "5000",
+						"t": "5",
+						"n": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 9,
+					"enonce": "On place $4\\,000$ € à intérêts composés au taux annuel de $1\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de $11$ années ? Arrondis au centime.\n\nLe capital est d'environ $[?]$ €.",
+					"reponse": ["4462.67"],
+					"variables": {
+						"C": "4000",
+						"t": "1",
+						"n": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On place $500$ € à intérêts composés au taux annuel de $3\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de $12$ années ? Arrondis au centime.\n\nLe capital est d'environ $[?]$ €.",
+					"reponse": ["712.88"],
+					"variables": {
+						"C": "500",
+						"t": "3",
+						"n": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On place $1\\,500$ € à intérêts composés au taux annuel de $2\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de $9$ années ? Arrondis au centime.\n\nLe capital est d'environ $[?]$ €.",
+					"reponse": ["1792.64"],
+					"variables": {
+						"C": "1500",
+						"t": "2",
+						"n": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On place $500$ € à intérêts composés au taux annuel de $3\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de $5$ années ? Arrondis au centime.\n\nLe capital est d'environ $[?]$ €.",
+					"reponse": ["579.64"],
+					"variables": {
+						"C": "500",
+						"t": "3",
+						"n": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "C",
+						"expression": "500|1000|1500|2000|2500|3000|4000|5000"
+					},
+					{
+						"name": "t",
+						"expression": "1..5"
+					},
+					{
+						"name": "n",
+						"expression": "5..12"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On place ${{C}}$ € à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de ${{n}}$ années ? Arrondis à l'euro.\n\nLe capital est d'environ $?$ €.",
+				"reponses_brutes": ["{{eval:round(C*(1+t/100)^n)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 199,
+			"variables": [
+				{
+					"nom": "C",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 500,
+						"max": 5000,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 531,
+						"max": 8144,
+						"negatif_possible": false,
+						"nb_distinctes": 198
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5000,
+				"nb_distinctes": 20,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 531,
+				"max": 8144,
+				"nb_distinctes": 198,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 8144,
+				"nb_distinctes": 218,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8144)",
+					"graine": 207,
+					"enonce": "On place $5\\,000$ € à intérêts composés au taux annuel de $5\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de $10$ années ? Arrondis à l'euro.\n\nLe capital est d'environ $[?]$ €.",
+					"reponse": ["8144"],
+					"variables": {
+						"C": "5000",
+						"t": "5",
+						"n": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 9,
+					"enonce": "On place $4\\,000$ € à intérêts composés au taux annuel de $1\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de $11$ années ? Arrondis à l'euro.\n\nLe capital est d'environ $[?]$ €.",
+					"reponse": ["4463"],
+					"variables": {
+						"C": "4000",
+						"t": "1",
+						"n": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On place $500$ € à intérêts composés au taux annuel de $3\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de $12$ années ? Arrondis à l'euro.\n\nLe capital est d'environ $[?]$ €.",
+					"reponse": ["713"],
+					"variables": {
+						"C": "500",
+						"t": "3",
+						"n": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On place $1\\,500$ € à intérêts composés au taux annuel de $2\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de $9$ années ? Arrondis à l'euro.\n\nLe capital est d'environ $[?]$ €.",
+					"reponse": ["1793"],
+					"variables": {
+						"C": "1500",
+						"t": "2",
+						"n": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On place $500$ € à intérêts composés au taux annuel de $3\\,\\%$ : chaque année, les intérêts s'ajoutent au capital.\n\nQuel est le capital au bout de $5$ années ? Arrondis à l'euro.\n\nLe capital est d'environ $[?]$ €.",
+					"reponse": ["580"],
+					"variables": {
+						"C": "500",
+						"t": "3",
+						"n": "5"
+					}
+				}
+			]
+		}
+	]
+}

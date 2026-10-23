@@ -1,0 +1,254 @@
+{
+	"template_id": "b1e27739-f316-47b0-b820-989d5b94af10",
+	"titre": "Réduire une racine carrée",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Racines carrées > Manipuler > Réduire",
+	"mis_a_jour": "2026-10-04T23:04:42.665452+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-271",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2|3|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "2|3|5"
+					},
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a*a*b}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réduis sous la forme $a\\sqrt{b}$.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 10]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 5]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"sqrt(12)",
+							"sqrt(125)",
+							"sqrt(18)",
+							"sqrt(20)",
+							"sqrt(200)",
+							"sqrt(27)",
+							"sqrt(300)",
+							"sqrt(45)",
+							"sqrt(50)",
+							"sqrt(500)",
+							"sqrt(75)",
+							"sqrt(8)"
+						],
+						"nombres_contenus": {
+							"min": 8,
+							"max": 500,
+							"nb_distinctes": 12,
+							"valeurs": [8, 12, 18, 20, 27, 45, 50, 75, 125, 200, 300, 500],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"10 \\sqrt{2}",
+							"10 \\sqrt{3}",
+							"10 \\sqrt{5}",
+							"2 \\sqrt{2}",
+							"2 \\sqrt{3}",
+							"2 \\sqrt{5}",
+							"3 \\sqrt{2}",
+							"3 \\sqrt{3}",
+							"3 \\sqrt{5}",
+							"5 \\sqrt{2}",
+							"5 \\sqrt{3}",
+							"5 \\sqrt{5}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 4,
+							"valeurs": [2, 3, 5, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 8,
+				"max": 500,
+				"nb_distinctes": 12,
+				"valeurs": [8, 12, 18, 20, 27, 45, 50, 75, 125, 200, 300, 500],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 5, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 500,
+				"nb_distinctes": 16,
+				"valeurs": [2, 3, 5, 8, 10, 12, 18, 20, 27, 45, 50, 75, 125, 200, 300, 500],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"racine": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (500)",
+					"graine": 10,
+					"enonce": "Réduis sous la forme $a\\sqrt{b}$.\n\n$$\\sqrt{500} = [?]$$",
+					"reponse": ["10 \\sqrt{5}"],
+					"variables": {
+						"a": "10",
+						"b": "5",
+						"expression1": "sqrt(500)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Réduis sous la forme $a\\sqrt{b}$.\n\n$$\\sqrt{12} = [?]$$",
+					"reponse": ["2 \\sqrt{3}"],
+					"variables": {
+						"a": "2",
+						"b": "3",
+						"expression1": "sqrt(12)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réduis sous la forme $a\\sqrt{b}$.\n\n$$\\sqrt{18} = [?]$$",
+					"reponse": ["3 \\sqrt{2}"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"expression1": "sqrt(18)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Réduis sous la forme $a\\sqrt{b}$.\n\n$$\\sqrt{200} = [?]$$",
+					"reponse": ["10 \\sqrt{2}"],
+					"variables": {
+						"a": "10",
+						"b": "2",
+						"expression1": "sqrt(200)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Réduis sous la forme $a\\sqrt{b}$.\n\n$$\\sqrt{20} = [?]$$",
+					"reponse": ["2 \\sqrt{5}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"expression1": "sqrt(20)"
+					}
+				}
+			]
+		}
+	]
+}

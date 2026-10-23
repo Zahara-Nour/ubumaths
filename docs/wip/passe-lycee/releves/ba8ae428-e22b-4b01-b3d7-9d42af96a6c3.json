@@ -1,0 +1,1274 @@
+{
+	"template_id": "ba8ae428-e22b-4b01-b3d7-9d42af96a6c3",
+	"titre": "Produit scalaire avec les normes et l'angle",
+	"sous_titre": "Calculer un produit scalaire à partir des normes de deux vecteurs et d'une mesure de leur angle (angles remarquables), valeur exacte",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Calculer un produit scalaire",
+	"mis_a_jour": "2026-10-04T23:06:21.793455+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-321",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "s",
+						"expression": "{{eval:sign(k-3)}}"
+					},
+					{
+						"name": "t",
+						"expression": "{{eval:90-30*s}}"
+					},
+					{
+						"name": "P",
+						"expression": "{{eval:s*a*b}}"
+					}
+				],
+				"conditions": ["a != b"],
+				"enonce_brut": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est ${{t}}^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["{{eval:P/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 140,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 60,
+						"max": 120,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [60, 90, 120]
+					}
+				},
+				{
+					"nom": "P",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -72,
+						"max": 72,
+						"negatif_possible": true,
+						"nb_distinctes": 50
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.8433333333333334,
+						"nb_distinctes": 50,
+						"exemples": [
+							"6",
+							"0",
+							"-5",
+							"-6",
+							"12",
+							"-7",
+							"9",
+							"14",
+							"\\dfrac{63}{2}",
+							"-24",
+							"-4",
+							"-15"
+						],
+						"nombres_contenus": {
+							"min": -36,
+							"max": 63,
+							"nb_distinctes": 42,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 120,
+				"nb_distinctes": 11,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 60, 90, 120],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": -36,
+				"max": 63,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -36,
+				"max": 120,
+				"nb_distinctes": 45,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 47,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 15,
+				"numerateur_max": 63,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (120)",
+					"graine": 3,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $120^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-5"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"k": "1",
+						"s": "-1",
+						"t": "120",
+						"P": "-10"
+					}
+				},
+				{
+					"role": "plus petite valeur (-36)",
+					"graine": 45,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=9$, $\\|\\vec{v}\\|=8$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $120^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-36"],
+					"variables": {
+						"a": "9",
+						"b": "8",
+						"k": "2",
+						"s": "-1",
+						"t": "120",
+						"P": "-72"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=6$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $60^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"k": "5",
+						"s": "1",
+						"t": "60",
+						"P": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=9$, $\\|\\vec{v}\\|=7$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $90^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"a": "9",
+						"b": "7",
+						"k": "3",
+						"s": "0",
+						"t": "90",
+						"P": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=4$, $\\|\\vec{v}\\|=3$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $120^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-6"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"k": "1",
+						"s": "-1",
+						"t": "120",
+						"P": "-12"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "m",
+						"expression": "2..3"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "s",
+						"expression": "{{eval:sign(k-3)}}"
+					},
+					{
+						"name": "t",
+						"expression": "{{eval:90-s*(15+15*m)}}"
+					},
+					{
+						"name": "P",
+						"expression": "{{eval:s*a*b}}"
+					}
+				],
+				"conditions": ["a != b"],
+				"enonce_brut": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est ${{t}}^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte : un entier, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["{{eval:P/2*sqrt(m)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 188,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 150,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [30, 45, 90, 135, 150]
+					}
+				},
+				{
+					"nom": "P",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -72,
+						"max": 72,
+						"negatif_possible": true,
+						"nb_distinctes": 50
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.20666666666666667,
+						"nb_distinctes": 91,
+						"exemples": [
+							"6 \\sqrt{3}",
+							"\\dfrac{35 \\sqrt{2}}{2}",
+							"5 \\sqrt{2}",
+							"-6 \\sqrt{2}",
+							"-12 \\sqrt{3}",
+							"0",
+							"12 \\sqrt{3}",
+							"-6 \\sqrt{3}",
+							"-4 \\sqrt{2}",
+							"-15 \\sqrt{2}",
+							"-\\dfrac{63 \\sqrt{2}}{2}",
+							"-12 \\sqrt{2}"
+						],
+						"nombres_contenus": {
+							"min": -36,
+							"max": 63,
+							"nb_distinctes": 42,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 150,
+				"nb_distinctes": 13,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 30, 45, 90, 135, 150],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": -36,
+				"max": 63,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -36,
+				"max": 150,
+				"nb_distinctes": 46,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 38,
+					"max": 38
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (150)",
+					"graine": 5,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=8$, $\\|\\vec{v}\\|=3$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $150^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte : un entier, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-12 \\sqrt{3}"],
+					"variables": {
+						"a": "8",
+						"b": "3",
+						"m": "3",
+						"k": "1",
+						"s": "-1",
+						"t": "150",
+						"P": "-24"
+					}
+				},
+				{
+					"role": "plus petite valeur (-36)",
+					"graine": 121,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=9$, $\\|\\vec{v}\\|=8$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $135^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte : un entier, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-36 \\sqrt{2}"],
+					"variables": {
+						"a": "9",
+						"b": "8",
+						"m": "2",
+						"k": "2",
+						"s": "-1",
+						"t": "135",
+						"P": "-72"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=6$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $30^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte : un entier, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["6 \\sqrt{3}"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"m": "3",
+						"k": "5",
+						"s": "1",
+						"t": "30",
+						"P": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=7$, $\\|\\vec{v}\\|=5$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $45^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte : un entier, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\dfrac{35 \\sqrt{2}}{2}"],
+					"variables": {
+						"a": "7",
+						"b": "5",
+						"m": "2",
+						"k": "4",
+						"s": "1",
+						"t": "45",
+						"P": "35"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $45^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte : un entier, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["5 \\sqrt{2}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"m": "2",
+						"k": "4",
+						"s": "1",
+						"t": "45",
+						"P": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "m",
+						"expression": "1..3"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "s",
+						"expression": "{{eval:sign(k-3)}}"
+					},
+					{
+						"name": "t",
+						"expression": "{{eval:90-s*(15+15*m)}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:gcd(t,180)}}"
+					},
+					{
+						"name": "num",
+						"expression": "{{eval:t/g}}"
+					},
+					{
+						"name": "den",
+						"expression": "{{eval:180/g}}"
+					},
+					{
+						"name": "P",
+						"expression": "{{eval:s*a*b}}"
+					}
+				],
+				"conditions": ["a != b"],
+				"enonce_brut": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est ${{if:num==1|\\dfrac{\\pi}{ {{den}} }|\\dfrac{ {{num}}\\pi}{ {{den}} }}}$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte (un entier, une fraction, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ avec $n$ le plus petit possible).\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["{{eval:P/2*sqrt(m)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 205,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 150,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [30, 45, 60, 90, 120, 135, 150]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [30, 45, 60, 90]
+					}
+				},
+				{
+					"nom": "num",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 5]
+					}
+				},
+				{
+					"nom": "den",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 6]
+					}
+				},
+				{
+					"nom": "P",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -72,
+						"max": 72,
+						"negatif_possible": true,
+						"nb_distinctes": 50
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.42333333333333334,
+						"nb_distinctes": 117,
+						"exemples": [
+							"6 \\sqrt{3}",
+							"\\dfrac{35 \\sqrt{2}}{2}",
+							"5",
+							"-6",
+							"-12 \\sqrt{2}",
+							"0",
+							"12 \\sqrt{3}",
+							"6 \\sqrt{2}",
+							"-6 \\sqrt{3}",
+							"-4",
+							"-15 \\sqrt{2}",
+							"-\\dfrac{63}{2}"
+						],
+						"nombres_contenus": {
+							"min": -36,
+							"max": 63,
+							"nb_distinctes": 42,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -36,
+				"max": 63,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -36,
+				"max": 63,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 12,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 15,
+				"numerateur_max": 63,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"fraction": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (63)",
+					"graine": 15,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=7$, $\\|\\vec{v}\\|=9$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $\\dfrac{ 2\\pi}{ 3 }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte (un entier, une fraction, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ avec $n$ le plus petit possible).\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-\\dfrac{63}{2}"],
+					"variables": {
+						"a": "7",
+						"b": "9",
+						"m": "1",
+						"k": "1",
+						"s": "-1",
+						"t": "120",
+						"g": "60",
+						"num": "2",
+						"den": "3",
+						"P": "-63"
+					}
+				},
+				{
+					"role": "plus petite valeur (-36)",
+					"graine": 121,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=9$, $\\|\\vec{v}\\|=8$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $\\dfrac{ 2\\pi}{ 3 }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte (un entier, une fraction, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ avec $n$ le plus petit possible).\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-36"],
+					"variables": {
+						"a": "9",
+						"b": "8",
+						"m": "1",
+						"k": "2",
+						"s": "-1",
+						"t": "120",
+						"g": "60",
+						"num": "2",
+						"den": "3",
+						"P": "-72"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=6$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $\\dfrac{\\pi}{ 6 }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte (un entier, une fraction, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ avec $n$ le plus petit possible).\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["6 \\sqrt{3}"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"m": "3",
+						"k": "5",
+						"s": "1",
+						"t": "30",
+						"g": "30",
+						"num": "1",
+						"den": "6",
+						"P": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=7$, $\\|\\vec{v}\\|=5$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $\\dfrac{\\pi}{ 4 }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte (un entier, une fraction, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ avec $n$ le plus petit possible).\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\dfrac{35 \\sqrt{2}}{2}"],
+					"variables": {
+						"a": "7",
+						"b": "5",
+						"m": "2",
+						"k": "4",
+						"s": "1",
+						"t": "45",
+						"g": "45",
+						"num": "1",
+						"den": "4",
+						"P": "35"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $\\dfrac{\\pi}{ 3 }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte (un entier, une fraction, ou une écriture $k\\sqrt{n}$ ou $\\dfrac{k\\sqrt{n}}{2}$ avec $n$ le plus petit possible).\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"m": "1",
+						"k": "4",
+						"s": "1",
+						"t": "60",
+						"g": "60",
+						"num": "1",
+						"den": "3",
+						"P": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "m",
+						"expression": "2..3"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "s",
+						"expression": "{{eval:sign(k-3)}}"
+					},
+					{
+						"name": "t",
+						"expression": "{{eval:90-s*(15+15*m)}}"
+					},
+					{
+						"name": "P",
+						"expression": "{{eval:s*a*b*m}}"
+					}
+				],
+				"conditions": ["a != b"],
+				"enonce_brut": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{eval:a*sqrt(m)}}$, $\\|\\vec{v}\\|={{b}}$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est ${{t}}^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["{{eval:P/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 157,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 150,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [30, 45, 90, 135, 150]
+					}
+				},
+				{
+					"nom": "P",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -120,
+						"max": 135,
+						"negatif_possible": true,
+						"nb_distinctes": 67
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.9166666666666666,
+						"nb_distinctes": 67,
+						"exemples": [
+							"9",
+							"12",
+							"5",
+							"-6",
+							"-18",
+							"0",
+							"\\dfrac{45}{2}",
+							"27",
+							"-9",
+							"-15",
+							"-8",
+							"24"
+						],
+						"nombres_contenus": {
+							"min": -60,
+							"max": 135,
+							"nb_distinctes": 59,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 150,
+				"nb_distinctes": 13,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 30, 45, 90, 135, 150],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": -60,
+				"max": 135,
+				"nb_distinctes": 59,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -60,
+				"max": 150,
+				"nb_distinctes": 61,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 25,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 9,
+				"numerateur_max": 135,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (150)",
+					"graine": 5,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=4 \\sqrt{3}$, $\\|\\vec{v}\\|=3$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $150^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-18"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"m": "3",
+						"k": "1",
+						"s": "-1",
+						"t": "150",
+						"P": "-36"
+					}
+				},
+				{
+					"role": "plus petite valeur (-60)",
+					"graine": 207,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=5 \\sqrt{3}$, $\\|\\vec{v}\\|=8$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $150^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-60"],
+					"variables": {
+						"a": "5",
+						"b": "8",
+						"m": "3",
+						"k": "1",
+						"s": "-1",
+						"t": "150",
+						"P": "-120"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=\\sqrt{3}$, $\\|\\vec{v}\\|=6$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $30^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["9"],
+					"variables": {
+						"a": "1",
+						"b": "6",
+						"m": "3",
+						"k": "5",
+						"s": "1",
+						"t": "30",
+						"P": "18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2 \\sqrt{3}$, $\\|\\vec{v}\\|=4$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $30^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["12"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"m": "3",
+						"k": "5",
+						"s": "1",
+						"t": "30",
+						"P": "24"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=\\sqrt{2}$, $\\|\\vec{v}\\|=5$ et une mesure de l'angle $(\\vec{u},\\vec{v})$ est $45^\\circ$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"m": "2",
+						"k": "4",
+						"s": "1",
+						"t": "45",
+						"P": "10"
+					}
+				}
+			]
+		}
+	]
+}

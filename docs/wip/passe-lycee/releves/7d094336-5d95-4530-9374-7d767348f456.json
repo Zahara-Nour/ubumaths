@@ -1,0 +1,1099 @@
+{
+	"template_id": "7d094336-5d95-4530-9374-7d767348f456",
+	"titre": "Modéliser une situation par une matrice",
+	"sous_titre": "Traduire une situation par une matrice : système de prix AX = B, échanges de population U(n+1) = MU(n) (pourcentages), suite récurrente d'ordre 2 X(n+1) = AX(n), système U(n+1) = AU(n) + C (pièges : matrice transposée, pourcentages gardés entiers, lignes de la suite échangées, terme constant oublié)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Graphes et matrices > Matrices > Modélisation matricielle",
+	"mis_a_jour": "2026-10-05T19:11:52.952101+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-336",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..5"
+					},
+					{
+						"name": "q",
+						"expression": "1..5"
+					},
+					{
+						"name": "r",
+						"expression": "1..5"
+					},
+					{
+						"name": "s",
+						"expression": "1..5"
+					},
+					{
+						"name": "x",
+						"expression": "2..6"
+					},
+					{
+						"name": "y",
+						"expression": "2..6"
+					}
+				],
+				"conditions": ["p*s != q*r", "q != r", "x != y"],
+				"enonce_brut": "Au marché, ${{p}}$ kg de pommes et ${{q}}$ kg de poires coûtent ${{eval:p*x+q*y}}$ € ; ${{r}}$ kg de pommes et ${{s}}$ kg de poires coûtent ${{eval:r*x+s*y}}$ €. On note $x$ le prix (en €) d'un kilogramme de pommes et $y$ celui d'un kilogramme de poires.\n\nCe problème s'écrit $AX = B$ avec $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$. Donne la matrice $A$, puis la matrice colonne $B$.\n\n$A=?$\n\n$B=?$",
+				"reponses_brutes": [
+					"\\begin{pmatrix}{{p}}&{{q}}\\\\{{r}}&{{s}}\\end{pmatrix}",
+					"\\begin{pmatrix}{{eval:p*x+q*y}}\\\\{{eval:r*x+s*y}}\\end{pmatrix}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 229,
+						"exemples": [
+							"\\begin{pmatrix}1&3\\\\5&5\\end{pmatrix}",
+							"\\begin{pmatrix}2&2\\\\3&5\\end{pmatrix}",
+							"\\begin{pmatrix}1&2\\\\3&1\\end{pmatrix}",
+							"\\begin{pmatrix}2&2\\\\1&2\\end{pmatrix}",
+							"\\begin{pmatrix}4&2\\\\4&1\\end{pmatrix}",
+							"\\begin{pmatrix}5&5\\\\2&5\\end{pmatrix}",
+							"\\begin{pmatrix}2&3\\\\4&2\\end{pmatrix}",
+							"\\begin{pmatrix}4&2\\\\4&3\\end{pmatrix}",
+							"\\begin{pmatrix}5&1\\\\5&4\\end{pmatrix}",
+							"\\begin{pmatrix}5&4\\\\5&3\\end{pmatrix}",
+							"\\begin{pmatrix}3&4\\\\3&5\\end{pmatrix}",
+							"\\begin{pmatrix}1&3\\\\5&1\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 5,
+							"nb_distinctes": 5,
+							"valeurs": [1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 255,
+						"exemples": [
+							"\\begin{pmatrix}18\\\\40\\end{pmatrix}",
+							"\\begin{pmatrix}18\\\\35\\end{pmatrix}",
+							"\\begin{pmatrix}12\\\\11\\end{pmatrix}",
+							"\\begin{pmatrix}12\\\\8\\end{pmatrix}",
+							"\\begin{pmatrix}26\\\\21\\end{pmatrix}",
+							"\\begin{pmatrix}25\\\\16\\end{pmatrix}",
+							"\\begin{pmatrix}19\\\\18\\end{pmatrix}",
+							"\\begin{pmatrix}28\\\\34\\end{pmatrix}",
+							"\\begin{pmatrix}28\\\\37\\end{pmatrix}",
+							"\\begin{pmatrix}32\\\\29\\end{pmatrix}",
+							"\\begin{pmatrix}20\\\\22\\end{pmatrix}",
+							"\\begin{pmatrix}17\\\\15\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 5,
+							"max": 50,
+							"nb_distinctes": 44,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 44,
+					"max": 44
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (50)",
+					"graine": 53,
+					"enonce": "Au marché, $4$ kg de pommes et $3$ kg de poires coûtent $39$ € ; $5$ kg de pommes et $4$ kg de poires coûtent $50$ €. On note $x$ le prix (en €) d'un kilogramme de pommes et $y$ celui d'un kilogramme de poires.\n\nCe problème s'écrit $A X = B$ avec $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$. Donne la matrice $A$, puis la matrice colonne $B$.\n\n$A = [?]$\n\n$B = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}4&3\\\\5&4\\end{pmatrix}",
+						"\\begin{pmatrix}39\\\\50\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "4",
+						"q": "3",
+						"r": "5",
+						"s": "4",
+						"x": "6",
+						"y": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Au marché, $1$ kg de pommes et $3$ kg de poires coûtent $18$ € ; $5$ kg de pommes et $5$ kg de poires coûtent $40$ €. On note $x$ le prix (en €) d'un kilogramme de pommes et $y$ celui d'un kilogramme de poires.\n\nCe problème s'écrit $A X = B$ avec $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$. Donne la matrice $A$, puis la matrice colonne $B$.\n\n$A = [?]$\n\n$B = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}1&3\\\\5&5\\end{pmatrix}",
+						"\\begin{pmatrix}18\\\\40\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "1",
+						"q": "3",
+						"r": "5",
+						"s": "5",
+						"x": "3",
+						"y": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Au marché, $2$ kg de pommes et $2$ kg de poires coûtent $18$ € ; $3$ kg de pommes et $5$ kg de poires coûtent $35$ €. On note $x$ le prix (en €) d'un kilogramme de pommes et $y$ celui d'un kilogramme de poires.\n\nCe problème s'écrit $A X = B$ avec $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$. Donne la matrice $A$, puis la matrice colonne $B$.\n\n$A = [?]$\n\n$B = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}2&2\\\\3&5\\end{pmatrix}",
+						"\\begin{pmatrix}18\\\\35\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "2",
+						"q": "2",
+						"r": "3",
+						"s": "5",
+						"x": "5",
+						"y": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Au marché, $1$ kg de pommes et $2$ kg de poires coûtent $12$ € ; $3$ kg de pommes et $1$ kg de poires coûtent $11$ €. On note $x$ le prix (en €) d'un kilogramme de pommes et $y$ celui d'un kilogramme de poires.\n\nCe problème s'écrit $A X = B$ avec $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$. Donne la matrice $A$, puis la matrice colonne $B$.\n\n$A = [?]$\n\n$B = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}1&2\\\\3&1\\end{pmatrix}",
+						"\\begin{pmatrix}12\\\\11\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "1",
+						"q": "2",
+						"r": "3",
+						"s": "1",
+						"x": "2",
+						"y": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Au marché, $2$ kg de pommes et $2$ kg de poires coûtent $12$ € ; $1$ kg de pommes et $2$ kg de poires coûtent $8$ €. On note $x$ le prix (en €) d'un kilogramme de pommes et $y$ celui d'un kilogramme de poires.\n\nCe problème s'écrit $A X = B$ avec $X = \\begin{pmatrix}x\\\\y\\end{pmatrix}$. Donne la matrice $A$, puis la matrice colonne $B$.\n\n$A = [?]$\n\n$B = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}2&2\\\\1&2\\end{pmatrix}",
+						"\\begin{pmatrix}12\\\\8\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "2",
+						"q": "2",
+						"r": "1",
+						"s": "2",
+						"x": "4",
+						"y": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "5|10|15|20|25|30"
+					},
+					{
+						"name": "q",
+						"expression": "5|10|15|20|25|30"
+					}
+				],
+				"conditions": ["p != q"],
+				"enonce_brut": "Chaque année, ${{p}}$ % des habitants de la ville $V$ partent s'installer à la campagne $C$, et ${{q}}$ % des habitants de $C$ partent s'installer en ville ; les autres ne bougent pas, et la population totale est constante. On note $v_n$ et $c_n$ les populations de $V$ et de $C$ l'année $n$, et $U_n = \\begin{pmatrix}v_n\\\\c_n\\end{pmatrix}$.\n\nDonne la matrice $M$ telle que, pour tout $n$, $U_{n+1} = MU_n$ (valeurs exactes ou décimales).\n\n$M=?$",
+				"reponses_brutes": [
+					"\\begin{pmatrix}{{eval:(100-p)/100}}&{{eval:q/100}}\\\\{{eval:p/100}}&{{eval:(100-q)/100}}\\end{pmatrix}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 30,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 10, 15, 20, 25, 30]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 10, 15, 20, 25, 30]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 30,
+						"valeurs": [
+							"\\begin{pmatrix}\\dfrac{17}{20}&\\dfrac{1}{10}\\\\\\dfrac{3}{20}&\\dfrac{9}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{17}{20}&\\dfrac{1}{20}\\\\\\dfrac{3}{20}&\\dfrac{19}{20}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{17}{20}&\\dfrac{1}{4}\\\\\\dfrac{3}{20}&\\dfrac{3}{4}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{17}{20}&\\dfrac{1}{5}\\\\\\dfrac{3}{20}&\\dfrac{4}{5}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{17}{20}&\\dfrac{3}{10}\\\\\\dfrac{3}{20}&\\dfrac{7}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{19}{20}&\\dfrac{1}{10}\\\\\\dfrac{1}{20}&\\dfrac{9}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{19}{20}&\\dfrac{1}{4}\\\\\\dfrac{1}{20}&\\dfrac{3}{4}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{19}{20}&\\dfrac{1}{5}\\\\\\dfrac{1}{20}&\\dfrac{4}{5}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{19}{20}&\\dfrac{3}{10}\\\\\\dfrac{1}{20}&\\dfrac{7}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{19}{20}&\\dfrac{3}{20}\\\\\\dfrac{1}{20}&\\dfrac{17}{20}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{3}{4}&\\dfrac{1}{10}\\\\\\dfrac{1}{4}&\\dfrac{9}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{3}{4}&\\dfrac{1}{20}\\\\\\dfrac{1}{4}&\\dfrac{19}{20}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{3}{4}&\\dfrac{1}{5}\\\\\\dfrac{1}{4}&\\dfrac{4}{5}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{3}{4}&\\dfrac{3}{10}\\\\\\dfrac{1}{4}&\\dfrac{7}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{3}{4}&\\dfrac{3}{20}\\\\\\dfrac{1}{4}&\\dfrac{17}{20}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{4}{5}&\\dfrac{1}{10}\\\\\\dfrac{1}{5}&\\dfrac{9}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{4}{5}&\\dfrac{1}{20}\\\\\\dfrac{1}{5}&\\dfrac{19}{20}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{4}{5}&\\dfrac{1}{4}\\\\\\dfrac{1}{5}&\\dfrac{3}{4}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{4}{5}&\\dfrac{3}{10}\\\\\\dfrac{1}{5}&\\dfrac{7}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{4}{5}&\\dfrac{3}{20}\\\\\\dfrac{1}{5}&\\dfrac{17}{20}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{7}{10}&\\dfrac{1}{10}\\\\\\dfrac{3}{10}&\\dfrac{9}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{7}{10}&\\dfrac{1}{20}\\\\\\dfrac{3}{10}&\\dfrac{19}{20}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{7}{10}&\\dfrac{1}{4}\\\\\\dfrac{3}{10}&\\dfrac{3}{4}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{7}{10}&\\dfrac{1}{5}\\\\\\dfrac{3}{10}&\\dfrac{4}{5}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{7}{10}&\\dfrac{3}{20}\\\\\\dfrac{3}{10}&\\dfrac{17}{20}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{9}{10}&\\dfrac{1}{20}\\\\\\dfrac{1}{10}&\\dfrac{19}{20}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{9}{10}&\\dfrac{1}{4}\\\\\\dfrac{1}{10}&\\dfrac{3}{4}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{9}{10}&\\dfrac{1}{5}\\\\\\dfrac{1}{10}&\\dfrac{4}{5}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{9}{10}&\\dfrac{3}{10}\\\\\\dfrac{1}{10}&\\dfrac{7}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{9}{10}&\\dfrac{3}{20}\\\\\\dfrac{1}{10}&\\dfrac{17}{20}\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 20,
+							"nb_distinctes": 10,
+							"valeurs": [1, 3, 4, 5, 7, 9, 10, 17, 19, 20],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 30,
+				"nb_distinctes": 7,
+				"valeurs": [1, 5, 10, 15, 20, 25, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 10,
+				"valeurs": [1, 3, 4, 5, 7, 9, 10, 17, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 30,
+				"nb_distinctes": 13,
+				"valeurs": [1, 3, 4, 5, 7, 9, 10, 15, 17, 19, 20, 25, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 1200,
+				"denominateurs": [4, 5, 10, 20],
+				"denominateur_min": 4,
+				"denominateur_max": 20,
+				"numerateur_min": 1,
+				"numerateur_max": 19,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 51,
+					"max": 51
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30)",
+					"graine": 2,
+					"enonce": "Chaque année, $20$ % des habitants de la ville $V$ partent s'installer à la campagne $C$, et $30$ % des habitants de $C$ partent s'installer en ville ; les autres ne bougent pas, et la population totale est constante. On note $v_n$ et $c_n$ les populations de $V$ et de $C$ l'année $n$, et $U_n = \\begin{pmatrix}v_n\\\\c_n\\end{pmatrix}$.\n\nDonne la matrice $M$ telle que, pour tout $n$, $U_{n + 1} = M U_n$ (valeurs exactes ou décimales).\n\n$M = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\dfrac{4}{5}&\\dfrac{3}{10}\\\\\\dfrac{1}{5}&\\dfrac{7}{10}\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "20",
+						"q": "30"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Chaque année, $5$ % des habitants de la ville $V$ partent s'installer à la campagne $C$, et $20$ % des habitants de $C$ partent s'installer en ville ; les autres ne bougent pas, et la population totale est constante. On note $v_n$ et $c_n$ les populations de $V$ et de $C$ l'année $n$, et $U_n = \\begin{pmatrix}v_n\\\\c_n\\end{pmatrix}$.\n\nDonne la matrice $M$ telle que, pour tout $n$, $U_{n + 1} = M U_n$ (valeurs exactes ou décimales).\n\n$M = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\dfrac{19}{20}&\\dfrac{1}{5}\\\\\\dfrac{1}{20}&\\dfrac{4}{5}\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "5",
+						"q": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Chaque année, $5$ % des habitants de la ville $V$ partent s'installer à la campagne $C$, et $15$ % des habitants de $C$ partent s'installer en ville ; les autres ne bougent pas, et la population totale est constante. On note $v_n$ et $c_n$ les populations de $V$ et de $C$ l'année $n$, et $U_n = \\begin{pmatrix}v_n\\\\c_n\\end{pmatrix}$.\n\nDonne la matrice $M$ telle que, pour tout $n$, $U_{n + 1} = M U_n$ (valeurs exactes ou décimales).\n\n$M = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\dfrac{19}{20}&\\dfrac{3}{20}\\\\\\dfrac{1}{20}&\\dfrac{17}{20}\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "5",
+						"q": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Chaque année, $5$ % des habitants de la ville $V$ partent s'installer à la campagne $C$, et $10$ % des habitants de $C$ partent s'installer en ville ; les autres ne bougent pas, et la population totale est constante. On note $v_n$ et $c_n$ les populations de $V$ et de $C$ l'année $n$, et $U_n = \\begin{pmatrix}v_n\\\\c_n\\end{pmatrix}$.\n\nDonne la matrice $M$ telle que, pour tout $n$, $U_{n + 1} = M U_n$ (valeurs exactes ou décimales).\n\n$M = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\dfrac{19}{20}&\\dfrac{1}{10}\\\\\\dfrac{1}{20}&\\dfrac{9}{10}\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "5",
+						"q": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Chaque année, $25$ % des habitants de la ville $V$ partent s'installer à la campagne $C$, et $10$ % des habitants de $C$ partent s'installer en ville ; les autres ne bougent pas, et la population totale est constante. On note $v_n$ et $c_n$ les populations de $V$ et de $C$ l'année $n$, et $U_n = \\begin{pmatrix}v_n\\\\c_n\\end{pmatrix}$.\n\nDonne la matrice $M$ telle que, pour tout $n$, $U_{n + 1} = M U_n$ (valeurs exactes ou décimales).\n\n$M = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\dfrac{3}{4}&\\dfrac{1}{10}\\\\\\dfrac{1}{4}&\\dfrac{9}{10}\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "25",
+						"q": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": ["a != b"],
+				"enonce_brut": "La suite $(u_n)$ vérifie $u_{n+2} = {{a}}u_{n+1}+({{b}})u_n$ pour tout entier naturel $n$. On pose $X_n = \\begin{pmatrix}u_{n+1}\\\\u_n\\end{pmatrix}$.\n\nDonne la matrice $A$ telle que, pour tout $n$, $X_{n+1} = AX_n$.\n\n$A=?$",
+				"reponses_brutes": ["\\begin{pmatrix}{{a}}&{{b}}\\\\1&0\\end{pmatrix}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 87,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 87,
+						"exemples": [
+							"\\begin{pmatrix}-5&1\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}-2&-3\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}-5&-1\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}3&-3\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}-5&2\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}-5&5\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}2&-2\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}4&-4\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}5&2\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}1&2\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}-2&-5\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}-1&1\\\\1&0\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 5,
+							"nb_distinctes": 6,
+							"valeurs": [0, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 9,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 5,
+				"nb_distinctes": 6,
+				"valeurs": [0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "103/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ vérifie $u_{n + 2} = -5 u_{n + 1} + u_n$ pour tout entier naturel $n$. On pose $X_n = \\begin{pmatrix}u_{n+1}\\\\u_n\\end{pmatrix}$.\n\nDonne la matrice $A$ telle que, pour tout $n$, $X_{n + 1} = A X_n$.\n\n$A = [?]$",
+					"reponse": ["\\begin{pmatrix}-5&1\\\\1&0\\end{pmatrix}"],
+					"variables": {
+						"a": "-5",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La suite $\\left( u_n \\right)$ vérifie $u_{n + 2} = -2 u_{n + 1} - 3 u_n$ pour tout entier naturel $n$. On pose $X_n = \\begin{pmatrix}u_{n+1}\\\\u_n\\end{pmatrix}$.\n\nDonne la matrice $A$ telle que, pour tout $n$, $X_{n + 1} = A X_n$.\n\n$A = [?]$",
+					"reponse": ["\\begin{pmatrix}-2&-3\\\\1&0\\end{pmatrix}"],
+					"variables": {
+						"a": "-2",
+						"b": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La suite $\\left( u_n \\right)$ vérifie $u_{n + 2} = -5 u_{n + 1} - u_n$ pour tout entier naturel $n$. On pose $X_n = \\begin{pmatrix}u_{n+1}\\\\u_n\\end{pmatrix}$.\n\nDonne la matrice $A$ telle que, pour tout $n$, $X_{n + 1} = A X_n$.\n\n$A = [?]$",
+					"reponse": ["\\begin{pmatrix}-5&-1\\\\1&0\\end{pmatrix}"],
+					"variables": {
+						"a": "-5",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La suite $\\left( u_n \\right)$ vérifie $u_{n + 2} = 3 u_{n + 1} - 3 u_n$ pour tout entier naturel $n$. On pose $X_n = \\begin{pmatrix}u_{n+1}\\\\u_n\\end{pmatrix}$.\n\nDonne la matrice $A$ telle que, pour tout $n$, $X_{n + 1} = A X_n$.\n\n$A = [?]$",
+					"reponse": ["\\begin{pmatrix}3&-3\\\\1&0\\end{pmatrix}"],
+					"variables": {
+						"a": "3",
+						"b": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "La suite $\\left( u_n \\right)$ vérifie $u_{n + 2} = -5 u_{n + 1} + 2 u_n$ pour tout entier naturel $n$. On pose $X_n = \\begin{pmatrix}u_{n+1}\\\\u_n\\end{pmatrix}$.\n\nDonne la matrice $A$ telle que, pour tout $n$, $X_{n + 1} = A X_n$.\n\n$A = [?]$",
+					"reponse": ["\\begin{pmatrix}-5&2\\\\1&0\\end{pmatrix}"],
+					"variables": {
+						"a": "-5",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "r",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "s",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "t",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "w",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": ["q != s"],
+				"enonce_brut": "Deux suites $(a_n)$ et $(b_n)$ vérifient, pour tout entier naturel $n$ :\n\n$a_{n+1} = {{p}}a_n+({{q}})b_n+({{r}})$ et $b_{n+1} = {{s}}a_n+({{t}})b_n+({{w}})$.\n\nAvec $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, ce système s'écrit $U_{n+1} = AU_n + C$. Donne la matrice $A$, puis la matrice colonne $C$.\n\n$A=?$\n\n$C=?$",
+				"reponses_brutes": [
+					"\\begin{pmatrix}{{p}}&{{q}}\\\\{{s}}&{{t}}\\end{pmatrix}",
+					"\\begin{pmatrix}{{r}}\\\\{{w}}\\end{pmatrix}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 282,
+						"exemples": [
+							"\\begin{pmatrix}-4&1\\\\4&-2\\end{pmatrix}",
+							"\\begin{pmatrix}-2&-2\\\\4&2\\end{pmatrix}",
+							"\\begin{pmatrix}-4&-1\\\\3&-1\\end{pmatrix}",
+							"\\begin{pmatrix}4&1\\\\3&-2\\end{pmatrix}",
+							"\\begin{pmatrix}3&-3\\\\-4&1\\end{pmatrix}",
+							"\\begin{pmatrix}-4&2\\\\1&-4\\end{pmatrix}",
+							"\\begin{pmatrix}-4&4\\\\1&-1\\end{pmatrix}",
+							"\\begin{pmatrix}2&-2\\\\1&-1\\end{pmatrix}",
+							"\\begin{pmatrix}3&-3\\\\2&2\\end{pmatrix}",
+							"\\begin{pmatrix}4&2\\\\-1&-1\\end{pmatrix}",
+							"\\begin{pmatrix}1&1\\\\3&1\\end{pmatrix}",
+							"\\begin{pmatrix}-4&1\\\\-3&-4\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 4,
+							"nb_distinctes": 4,
+							"valeurs": [1, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 126,
+						"exemples": [
+							"\\begin{pmatrix}6\\\\2\\end{pmatrix}",
+							"\\begin{pmatrix}1\\\\-1\\end{pmatrix}",
+							"\\begin{pmatrix}-6\\\\-1\\end{pmatrix}",
+							"\\begin{pmatrix}3\\\\3\\end{pmatrix}",
+							"\\begin{pmatrix}2\\\\3\\end{pmatrix}",
+							"\\begin{pmatrix}-4\\\\-6\\end{pmatrix}",
+							"\\begin{pmatrix}3\\\\-1\\end{pmatrix}",
+							"\\begin{pmatrix}3\\\\4\\end{pmatrix}",
+							"\\begin{pmatrix}4\\\\-3\\end{pmatrix}",
+							"\\begin{pmatrix}4\\\\-4\\end{pmatrix}",
+							"\\begin{pmatrix}2\\\\-6\\end{pmatrix}",
+							"\\begin{pmatrix}6\\\\3\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 6,
+							"nb_distinctes": 6,
+							"valeurs": [1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 6,
+				"nb_distinctes": 9,
+				"valeurs": [-4, -3, -2, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 6,
+				"nb_distinctes": 9,
+				"valeurs": [-4, -3, -2, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "Deux suites $\\left( a_n \\right)$ et $\\left( b_n \\right)$ vérifient, pour tout entier naturel $n$ :\n\n$a_{n + 1} = -4 a_n + b_n + 6$ et $b_{n + 1} = 4 a_n - 2 b_n + 2$.\n\nAvec $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, ce système s'écrit $U_{n + 1} = A U_n + C$. Donne la matrice $A$, puis la matrice colonne $C$.\n\n$A = [?]$\n\n$C = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}-4&1\\\\4&-2\\end{pmatrix}",
+						"\\begin{pmatrix}6\\\\2\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "-4",
+						"q": "1",
+						"r": "6",
+						"s": "4",
+						"t": "-2",
+						"w": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Deux suites $\\left( a_n \\right)$ et $\\left( b_n \\right)$ vérifient, pour tout entier naturel $n$ :\n\n$a_{n + 1} = -2 a_n - 2 b_n + 1$ et $b_{n + 1} = 4 a_n + 2 b_n - 1$.\n\nAvec $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, ce système s'écrit $U_{n + 1} = A U_n + C$. Donne la matrice $A$, puis la matrice colonne $C$.\n\n$A = [?]$\n\n$C = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}-2&-2\\\\4&2\\end{pmatrix}",
+						"\\begin{pmatrix}1\\\\-1\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "-2",
+						"q": "-2",
+						"r": "1",
+						"s": "4",
+						"t": "2",
+						"w": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Deux suites $\\left( a_n \\right)$ et $\\left( b_n \\right)$ vérifient, pour tout entier naturel $n$ :\n\n$a_{n + 1} = -4 a_n - b_n - 6$ et $b_{n + 1} = 3 a_n - b_n - 1$.\n\nAvec $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, ce système s'écrit $U_{n + 1} = A U_n + C$. Donne la matrice $A$, puis la matrice colonne $C$.\n\n$A = [?]$\n\n$C = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}-4&-1\\\\3&-1\\end{pmatrix}",
+						"\\begin{pmatrix}-6\\\\-1\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "-4",
+						"q": "-1",
+						"r": "-6",
+						"s": "3",
+						"t": "-1",
+						"w": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Deux suites $\\left( a_n \\right)$ et $\\left( b_n \\right)$ vérifient, pour tout entier naturel $n$ :\n\n$a_{n + 1} = 4 a_n + b_n + 3$ et $b_{n + 1} = 3 a_n - 2 b_n + 3$.\n\nAvec $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, ce système s'écrit $U_{n + 1} = A U_n + C$. Donne la matrice $A$, puis la matrice colonne $C$.\n\n$A = [?]$\n\n$C = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}4&1\\\\3&-2\\end{pmatrix}",
+						"\\begin{pmatrix}3\\\\3\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "4",
+						"q": "1",
+						"r": "3",
+						"s": "3",
+						"t": "-2",
+						"w": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Deux suites $\\left( a_n \\right)$ et $\\left( b_n \\right)$ vérifient, pour tout entier naturel $n$ :\n\n$a_{n + 1} = 3 a_n - 3 b_n + 2$ et $b_{n + 1} = -4 a_n + b_n + 3$.\n\nAvec $U_n = \\begin{pmatrix}a_n\\\\b_n\\end{pmatrix}$, ce système s'écrit $U_{n + 1} = A U_n + C$. Donne la matrice $A$, puis la matrice colonne $C$.\n\n$A = [?]$\n\n$C = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}3&-3\\\\-4&1\\end{pmatrix}",
+						"\\begin{pmatrix}2\\\\3\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "3",
+						"q": "-3",
+						"r": "2",
+						"s": "-4",
+						"t": "1",
+						"w": "3"
+					}
+				}
+			]
+		}
+	]
+}

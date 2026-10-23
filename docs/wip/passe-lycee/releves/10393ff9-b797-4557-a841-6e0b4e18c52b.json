@@ -1,0 +1,462 @@
+{
+	"template_id": "10393ff9-b797-4557-a841-6e0b4e18c52b",
+	"titre": "Continuité lue sur une courbe : saut ou point anguleux",
+	"sous_titre": "Reconnaître sur un graphique une discontinuité (saut) et distinguer continuité et dérivabilité (point anguleux : continue, non dérivable)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Continuité > Lecture graphique",
+	"mis_a_jour": "2026-10-04T17:40:56.872304+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-220",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-425",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "-2..2"
+					},
+					{
+						"name": "k",
+						"expression": "-1..1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$.\n\n```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-3}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = 0.5*(x-{{c}})+{{k}} sur [{{eval:c-3}} ; {{c}}]   bleu\ng(x) = 0.5*(x-{{c}})+{{eval:k+2}} sur ]{{c}} ; {{eval:c+3}}]   bleu\ntaille: moyenne\ndescription: Courbe en deux morceaux de droites parallèles ; en x = {{c}}, la courbe saute de {{k}} à {{eval:k+2}}.\n```\n\nQue peut-on dire de la continuité de $f$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f$ n'est pas continue en ${{c}}$."
+					},
+					{
+						"content": "$f$ est continue sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$."
+					},
+					{
+						"content": "$f$ n'est pas continue en ${{eval:c-3}}$ ni en ${{eval:c+3}}$, extrémités de l'intervalle."
+					},
+					{
+						"content": "$f$ est continue sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$, car elle est définie en ${{c}}$."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 108,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"f$ n'est pas continue en $-1$.",
+							"f$ n'est pas continue en $-2$.",
+							"f$ n'est pas continue en $0$.",
+							"f$ n'est pas continue en $1$.",
+							"f$ n'est pas continue en $2$."
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 2,
+							"nb_distinctes": 3,
+							"valeurs": [0, 1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 43,
+					"max": 43
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-5\\,;1\\right]$.\n\n[courbe]\n\nQue peut-on dire de la continuité de $f$ ?\n\n- A. $f$ est continue sur $\\left[-5\\,;1\\right]$.\n- B. $f$ n'est pas continue en $-2$.\n- C. $f$ n'est pas continue en $-5$ ni en $1$, extrémités de l'intervalle.\n- D. $f$ est continue sur $\\left[-5\\,;1\\right]$, car elle est définie en $-2$.",
+					"reponse": ["B. $f$ n'est pas continue en $-2$."],
+					"variables": {
+						"c": "-2",
+						"k": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-4\\,;2\\right]$.\n\n[courbe]\n\nQue peut-on dire de la continuité de $f$ ?\n\n- A. $f$ n'est pas continue en $-1$.\n- B. $f$ est continue sur $\\left[-4\\,;2\\right]$.\n- C. $f$ est continue sur $\\left[-4\\,;2\\right]$, car elle est définie en $-1$.\n- D. $f$ n'est pas continue en $-4$ ni en $2$, extrémités de l'intervalle.",
+					"reponse": ["A. $f$ n'est pas continue en $-1$."],
+					"variables": {
+						"c": "-1",
+						"k": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-5\\,;1\\right]$.\n\n[courbe]\n\nQue peut-on dire de la continuité de $f$ ?\n\n- A. $f$ est continue sur $\\left[-5\\,;1\\right]$.\n- B. $f$ est continue sur $\\left[-5\\,;1\\right]$, car elle est définie en $-2$.\n- C. $f$ n'est pas continue en $-5$ ni en $1$, extrémités de l'intervalle.\n- D. $f$ n'est pas continue en $-2$.",
+					"reponse": ["D. $f$ n'est pas continue en $-2$."],
+					"variables": {
+						"c": "-2",
+						"k": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-4\\,;2\\right]$.\n\n[courbe]\n\nQue peut-on dire de la continuité de $f$ ?\n\n- A. $f$ n'est pas continue en $-4$ ni en $2$, extrémités de l'intervalle.\n- B. $f$ est continue sur $\\left[-4\\,;2\\right]$.\n- C. $f$ est continue sur $\\left[-4\\,;2\\right]$, car elle est définie en $-1$.\n- D. $f$ n'est pas continue en $-1$.",
+					"reponse": ["D. $f$ n'est pas continue en $-1$."],
+					"variables": {
+						"c": "-1",
+						"k": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-2\\,;4\\right]$.\n\n[courbe]\n\nQue peut-on dire de la continuité de $f$ ?\n\n- A. $f$ est continue sur $\\left[-2\\,;4\\right]$, car elle est définie en $1$.\n- B. $f$ est continue sur $\\left[-2\\,;4\\right]$.\n- C. $f$ n'est pas continue en $1$.\n- D. $f$ n'est pas continue en $-2$ ni en $4$, extrémités de l'intervalle.",
+					"reponse": ["C. $f$ n'est pas continue en $1$."],
+					"variables": {
+						"c": "1",
+						"k": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "-2..2"
+					},
+					{
+						"name": "k",
+						"expression": "-1..1"
+					},
+					{
+						"name": "s",
+						"expression": "-1|1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$.\n\n```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-3}} ; {{eval:k+4}}\ngrille: 1 ; 1\nf(x) = {{k}}-{{s}}*0.8*(x-{{c}}) sur [{{eval:c-3}} ; {{c}}]   bleu\ng(x) = {{k}}+{{s}}*0.8*(x-{{c}}) sur [{{c}} ; {{eval:c+3}}]   bleu\ntaille: moyenne\ndescription: Courbe en forme de V {{if:s>0|pointé vers le bas|pointé vers le haut}}, d'un seul tenant, avec un point anguleux en x = {{c}}.\n```\n\nQue peut-on dire de la continuité de $f$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f$ est continue sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$."
+					},
+					{
+						"content": "$f$ n'est pas continue en ${{c}}$, car sa courbe y forme un angle."
+					},
+					{
+						"content": "$f$ n'est pas continue en ${{c}}$, car elle n'y est pas dérivable."
+					},
+					{
+						"content": "$f$ n'est continue que sur $\\left[{{eval:c-3}}\\,;{{c}}\\right[$."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 109,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"f$ est continue sur $\\left[-1\\,;5\\right]$.",
+							"f$ est continue sur $\\left[-2\\,;4\\right]$.",
+							"f$ est continue sur $\\left[-3\\,;3\\right]$.",
+							"f$ est continue sur $\\left[-4\\,;2\\right]$.",
+							"f$ est continue sur $\\left[-5\\,;1\\right]$."
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 10,
+							"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 46,
+					"max": 46
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 9,
+					"enonce": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-1\\,;5\\right]$.\n\n[courbe]\n\nQue peut-on dire de la continuité de $f$ ?\n\n- A. $f$ n'est pas continue en $2$, car sa courbe y forme un angle.\n- B. $f$ est continue sur $\\left[-1\\,;5\\right]$.\n- C. $f$ n'est continue que sur $\\left[-1\\,;2\\right[$.\n- D. $f$ n'est pas continue en $2$, car elle n'y est pas dérivable.",
+					"reponse": ["B. $f$ est continue sur $\\left[-1\\,;5\\right]$."],
+					"variables": {
+						"c": "2",
+						"k": "-1",
+						"s": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-5\\,;1\\right]$.\n\n[courbe]\n\nQue peut-on dire de la continuité de $f$ ?\n\n- A. $f$ n'est pas continue en $-2$, car elle n'y est pas dérivable.\n- B. $f$ n'est pas continue en $-2$, car sa courbe y forme un angle.\n- C. $f$ est continue sur $\\left[-5\\,;1\\right]$.\n- D. $f$ n'est continue que sur $\\left[-5\\,;-2\\right[$.",
+					"reponse": ["C. $f$ est continue sur $\\left[-5\\,;1\\right]$."],
+					"variables": {
+						"c": "-2",
+						"k": "0",
+						"s": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-4\\,;2\\right]$.\n\n[courbe]\n\nQue peut-on dire de la continuité de $f$ ?\n\n- A. $f$ n'est pas continue en $-1$, car elle n'y est pas dérivable.\n- B. $f$ est continue sur $\\left[-4\\,;2\\right]$.\n- C. $f$ n'est pas continue en $-1$, car sa courbe y forme un angle.\n- D. $f$ n'est continue que sur $\\left[-4\\,;-1\\right[$.",
+					"reponse": ["B. $f$ est continue sur $\\left[-4\\,;2\\right]$."],
+					"variables": {
+						"c": "-1",
+						"k": "-1",
+						"s": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-5\\,;1\\right]$.\n\n[courbe]\n\nQue peut-on dire de la continuité de $f$ ?\n\n- A. $f$ n'est pas continue en $-2$, car elle n'y est pas dérivable.\n- B. $f$ est continue sur $\\left[-5\\,;1\\right]$.\n- C. $f$ n'est pas continue en $-2$, car sa courbe y forme un angle.\n- D. $f$ n'est continue que sur $\\left[-5\\,;-2\\right[$.",
+					"reponse": ["B. $f$ est continue sur $\\left[-5\\,;1\\right]$."],
+					"variables": {
+						"c": "-2",
+						"k": "0",
+						"s": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On a représenté ci-dessous la courbe d'une fonction $f$ définie sur $\\left[-4\\,;2\\right]$.\n\n[courbe]\n\nQue peut-on dire de la continuité de $f$ ?\n\n- A. $f$ n'est pas continue en $-1$, car elle n'y est pas dérivable.\n- B. $f$ n'est continue que sur $\\left[-4\\,;-1\\right[$.\n- C. $f$ n'est pas continue en $-1$, car sa courbe y forme un angle.\n- D. $f$ est continue sur $\\left[-4\\,;2\\right]$.",
+					"reponse": ["D. $f$ est continue sur $\\left[-4\\,;2\\right]$."],
+					"variables": {
+						"c": "-1",
+						"k": "-1",
+						"s": "-1"
+					}
+				}
+			]
+		}
+	]
+}

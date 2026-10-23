@@ -1,0 +1,560 @@
+{
+	"template_id": "6be786ef-507f-4fdb-80ec-74db1b9179f5",
+	"titre": "Chaîne, cycle, connexité",
+	"sous_titre": "Reconnaître une chaîne, sa longueur, un cycle, un graphe connexe, sur une figure (pièges : longueur comptée en sommets, arête inexistante, graphe dessiné en un seul bloc mais non connexe)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "multiple_choice",
+	"theme": "Graphes et matrices > Graphes > Chaînes et connexité",
+	"mis_a_jour": "2026-10-05T16:06:57.990828+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-315",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nQue peut-on dire de la suite de sommets $A - B - C - D$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "C'est une chaîne de longueur $3$."
+					},
+					{
+						"content": "C'est une chaîne de longueur $4$."
+					},
+					{
+						"content": "C'est un cycle."
+					},
+					{
+						"content": "Ce n'est pas une chaîne."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["C'est une chaîne de longueur $3$."],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 3,
+							"nb_distinctes": 1,
+							"valeurs": [3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - B - C - D$ ?\n\n- A. Ce n'est pas une chaîne.\n- B. C'est un cycle.\n- C. C'est une chaîne de longueur $4$.\n- D. C'est une chaîne de longueur $3$.",
+					"reponse": ["D. C'est une chaîne de longueur $3$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - B - C - D$ ?\n\n- A. C'est un cycle.\n- B. Ce n'est pas une chaîne.\n- C. C'est une chaîne de longueur $3$.\n- D. C'est une chaîne de longueur $4$.",
+					"reponse": ["C. C'est une chaîne de longueur $3$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - B - C - D$ ?\n\n- A. C'est un cycle.\n- B. Ce n'est pas une chaîne.\n- C. C'est une chaîne de longueur $4$.\n- D. C'est une chaîne de longueur $3$.",
+					"reponse": ["D. C'est une chaîne de longueur $3$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - B - C - D$ ?\n\n- A. Ce n'est pas une chaîne.\n- B. C'est un cycle.\n- C. C'est une chaîne de longueur $3$.\n- D. C'est une chaîne de longueur $4$.",
+					"reponse": ["C. C'est une chaîne de longueur $3$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - B - C - D$ ?\n\n- A. C'est un cycle.\n- B. C'est une chaîne de longueur $4$.\n- C. C'est une chaîne de longueur $3$.\n- D. Ce n'est pas une chaîne.",
+					"reponse": ["C. C'est une chaîne de longueur $3$."],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nQue peut-on dire de la suite de sommets $A - B - E - A$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "C'est un cycle de longueur $3$."
+					},
+					{
+						"content": "C'est un cycle de longueur $4$."
+					},
+					{
+						"content": "C'est une chaîne, mais pas un cycle."
+					},
+					{
+						"content": "Ce n'est pas une chaîne, car $A$ y figure deux fois."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["C'est un cycle de longueur $3$."],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 3,
+							"nb_distinctes": 1,
+							"valeurs": [3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 42,
+					"max": 42
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - B - E - A$ ?\n\n- A. Ce n'est pas une chaîne, car $A$ y figure deux fois.\n- B. C'est une chaîne, mais pas un cycle.\n- C. C'est un cycle de longueur $4$.\n- D. C'est un cycle de longueur $3$.",
+					"reponse": ["D. C'est un cycle de longueur $3$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - B - E - A$ ?\n\n- A. C'est une chaîne, mais pas un cycle.\n- B. Ce n'est pas une chaîne, car $A$ y figure deux fois.\n- C. C'est un cycle de longueur $3$.\n- D. C'est un cycle de longueur $4$.",
+					"reponse": ["C. C'est un cycle de longueur $3$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - B - E - A$ ?\n\n- A. C'est une chaîne, mais pas un cycle.\n- B. Ce n'est pas une chaîne, car $A$ y figure deux fois.\n- C. C'est un cycle de longueur $4$.\n- D. C'est un cycle de longueur $3$.",
+					"reponse": ["D. C'est un cycle de longueur $3$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - B - E - A$ ?\n\n- A. Ce n'est pas une chaîne, car $A$ y figure deux fois.\n- B. C'est une chaîne, mais pas un cycle.\n- C. C'est un cycle de longueur $3$.\n- D. C'est un cycle de longueur $4$.",
+					"reponse": ["C. C'est un cycle de longueur $3$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - B - E - A$ ?\n\n- A. C'est une chaîne, mais pas un cycle.\n- B. C'est un cycle de longueur $4$.\n- C. C'est un cycle de longueur $3$.\n- D. Ce n'est pas une chaîne, car $A$ y figure deux fois.",
+					"reponse": ["C. C'est un cycle de longueur $3$."],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 6.8 ; -0.8 ; 4.8\ntaille: petite\ndescription: Graphe non orienté à 5 sommets A, B, C, D, E ; arêtes AB, AE, BC, BE, CD, BD.\n---\nA = point(0, 2, etiquette=\"gauche\")\nB = point(2, 4, etiquette=\"haut\")\nC = point(6, 4, etiquette=\"haut\")\nD = point(6, 0, etiquette=\"bas\")\nE = point(2, 0, etiquette=\"bas\")\nsegment(A, B)\nsegment(A, E)\nsegment(B, C)\nsegment(B, E)\nsegment(C, D)\nsegment(B, D)\n```\n\nQue peut-on dire de la suite de sommets $A - E - D - C$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents."
+					},
+					{
+						"content": "C'est une chaîne de longueur $3$."
+					},
+					{
+						"content": "C'est une chaîne de longueur $4$."
+					},
+					{
+						"content": "C'est un cycle."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents."],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 39,
+					"max": 39
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - E - D - C$ ?\n\n- A. C'est un cycle.\n- B. C'est une chaîne de longueur $4$.\n- C. C'est une chaîne de longueur $3$.\n- D. Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents.",
+					"reponse": ["D. Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - E - D - C$ ?\n\n- A. C'est une chaîne de longueur $4$.\n- B. C'est un cycle.\n- C. Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents.\n- D. C'est une chaîne de longueur $3$.",
+					"reponse": ["C. Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - E - D - C$ ?\n\n- A. C'est une chaîne de longueur $4$.\n- B. C'est un cycle.\n- C. C'est une chaîne de longueur $3$.\n- D. Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents.",
+					"reponse": ["D. Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - E - D - C$ ?\n\n- A. C'est un cycle.\n- B. C'est une chaîne de longueur $4$.\n- C. Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents.\n- D. C'est une chaîne de longueur $3$.",
+					"reponse": ["C. Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nQue peut-on dire de la suite de sommets $A - E - D - C$ ?\n\n- A. C'est une chaîne de longueur $4$.\n- B. C'est une chaîne de longueur $3$.\n- C. Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents.\n- D. C'est un cycle.",
+					"reponse": ["C. Ce n'est pas une chaîne : $E$ et $D$ ne sont pas adjacents."],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On considère le graphe ci-dessous.\n\n```figure\nfenetre: -0.8 ; 10.8 ; -0.8 ; 3.8\ntaille: petite\ndescription: Graphe à 6 sommets ; arêtes AB, BC, AC, DE, EF (aucune arête entre {A, B, C} et {D, E, F}).\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(2, 3, etiquette=\"haut\")\nC = point(4, 0, etiquette=\"bas\")\nD = point(6, 3, etiquette=\"haut\")\nE = point(8, 0, etiquette=\"bas\")\nF = point(10, 3, etiquette=\"haut\")\nsegment(A, B)\nsegment(B, C)\nsegment(A, C)\nsegment(D, E)\nsegment(E, F)\n```\n\nCe graphe est-il connexe ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Non : aucune chaîne ne relie $A$ à $D$."
+					},
+					{
+						"content": "Oui : chaque sommet a au moins un voisin."
+					},
+					{
+						"content": "Oui : il a $6$ sommets et $5$ arêtes."
+					},
+					{
+						"content": "On ne peut pas savoir sans sa matrice d'adjacence."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non : aucune chaîne ne relie $A$ à $D$."],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 5,
+				"max": 6,
+				"nb_distinctes": 2,
+				"valeurs": [5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 5,
+				"max": 6,
+				"nb_distinctes": 2,
+				"valeurs": [5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 38,
+					"max": 38
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nCe graphe est-il connexe ?\n\n- A. On ne peut pas savoir sans sa matrice d'adjacence.\n- B. Oui : il a $6$ sommets et $5$ arêtes.\n- C. Oui : chaque sommet a au moins un voisin.\n- D. Non : aucune chaîne ne relie $A$ à $D$.",
+					"reponse": ["D. Non : aucune chaîne ne relie $A$ à $D$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nCe graphe est-il connexe ?\n\n- A. Oui : il a $6$ sommets et $5$ arêtes.\n- B. On ne peut pas savoir sans sa matrice d'adjacence.\n- C. Non : aucune chaîne ne relie $A$ à $D$.\n- D. Oui : chaque sommet a au moins un voisin.",
+					"reponse": ["C. Non : aucune chaîne ne relie $A$ à $D$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nCe graphe est-il connexe ?\n\n- A. Oui : il a $6$ sommets et $5$ arêtes.\n- B. On ne peut pas savoir sans sa matrice d'adjacence.\n- C. Oui : chaque sommet a au moins un voisin.\n- D. Non : aucune chaîne ne relie $A$ à $D$.",
+					"reponse": ["D. Non : aucune chaîne ne relie $A$ à $D$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nCe graphe est-il connexe ?\n\n- A. On ne peut pas savoir sans sa matrice d'adjacence.\n- B. Oui : il a $6$ sommets et $5$ arêtes.\n- C. Non : aucune chaîne ne relie $A$ à $D$.\n- D. Oui : chaque sommet a au moins un voisin.",
+					"reponse": ["C. Non : aucune chaîne ne relie $A$ à $D$."],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère le graphe ci-dessous.\n\n[figure]\n\nCe graphe est-il connexe ?\n\n- A. Oui : il a $6$ sommets et $5$ arêtes.\n- B. Oui : chaque sommet a au moins un voisin.\n- C. Non : aucune chaîne ne relie $A$ à $D$.\n- D. On ne peut pas savoir sans sa matrice d'adjacence.",
+					"reponse": ["C. Non : aucune chaîne ne relie $A$ à $D$."],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

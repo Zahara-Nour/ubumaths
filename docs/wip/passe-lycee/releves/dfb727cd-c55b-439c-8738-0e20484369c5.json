@@ -1,0 +1,773 @@
+{
+	"template_id": "dfb727cd-c55b-439c-8738-0e20484369c5",
+	"titre": "Nombre de parties d'un ensemble : 2 puissance n",
+	"sous_titre": "Parties d'un ensemble à n éléments, mots binaires, garnitures (avec ou sans partie vide), issues de n épreuves de Bernoulli (pièges : 2n, n², oubli ou ajout à tort de la partie vide)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > Parties d'un ensemble",
+	"mis_a_jour": "2026-10-05T06:04:01.342289+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-308",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "3..12"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un ensemble $E$ contient ${{n}}$ éléments.\n\nCombien de parties (sous-ensembles) possède-t-il, en comptant l'ensemble vide et $E$ lui-même ?\n\n$?$",
+				"reponses_brutes": ["{{eval:2^n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 4096,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 12,
+				"nb_distinctes": 10,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 8,
+				"max": 4096,
+				"nb_distinctes": 10,
+				"valeurs": [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 4096,
+				"nb_distinctes": 19,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4096)",
+					"graine": 10,
+					"enonce": "Un ensemble $E$ contient $12$ éléments.\n\nCombien de parties (sous-ensembles) possède-t-il, en comptant l'ensemble vide et $E$ lui-même ?\n\n$[?]$",
+					"reponse": ["4096"],
+					"variables": {
+						"n": "12"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 1,
+					"enonce": "Un ensemble $E$ contient $3$ éléments.\n\nCombien de parties (sous-ensembles) possède-t-il, en comptant l'ensemble vide et $E$ lui-même ?\n\n$[?]$",
+					"reponse": ["8"],
+					"variables": {
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un ensemble $E$ contient $6$ éléments.\n\nCombien de parties (sous-ensembles) possède-t-il, en comptant l'ensemble vide et $E$ lui-même ?\n\n$[?]$",
+					"reponse": ["64"],
+					"variables": {
+						"n": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un ensemble $E$ contient $10$ éléments.\n\nCombien de parties (sous-ensembles) possède-t-il, en comptant l'ensemble vide et $E$ lui-même ?\n\n$[?]$",
+					"reponse": ["1024"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Un ensemble $E$ contient $9$ éléments.\n\nCombien de parties (sous-ensembles) possède-t-il, en comptant l'ensemble vide et $E$ lui-même ?\n\n$[?]$",
+					"reponse": ["512"],
+					"variables": {
+						"n": "9"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "4..16"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un mot binaire est une suite de chiffres $0$ ou $1$.\n\nCombien de mots binaires de longueur ${{n}}$ existe-t-il ?\n\n$?$",
+				"reponses_brutes": ["{{eval:2^n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 13,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 16,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 16,
+						"max": 65536,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 16,
+				"nb_distinctes": 15,
+				"valeurs": [0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 16,
+				"max": 65536,
+				"nb_distinctes": 13,
+				"valeurs": [16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 65536,
+				"nb_distinctes": 27,
+				"valeurs": [
+					0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 32, 64, 128, 256, 512, 1024, 2048,
+					4096, 8192, 16384, 32768, 65536
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (65536)",
+					"graine": 24,
+					"enonce": "Un mot binaire est une suite de chiffres $0$ ou $1$.\n\nCombien de mots binaires de longueur $16$ existe-t-il ?\n\n$[?]$",
+					"reponse": ["65536"],
+					"variables": {
+						"n": "16"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Un mot binaire est une suite de chiffres $0$ ou $1$.\n\nCombien de mots binaires de longueur $4$ existe-t-il ?\n\n$[?]$",
+					"reponse": ["16"],
+					"variables": {
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un mot binaire est une suite de chiffres $0$ ou $1$.\n\nCombien de mots binaires de longueur $8$ existe-t-il ?\n\n$[?]$",
+					"reponse": ["256"],
+					"variables": {
+						"n": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un mot binaire est une suite de chiffres $0$ ou $1$.\n\nCombien de mots binaires de longueur $14$ existe-t-il ?\n\n$[?]$",
+					"reponse": ["16384"],
+					"variables": {
+						"n": "14"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Un mot binaire est une suite de chiffres $0$ ou $1$.\n\nCombien de mots binaires de longueur $12$ existe-t-il ?\n\n$[?]$",
+					"reponse": ["4096"],
+					"variables": {
+						"n": "12"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une pizzeria propose ${{n}}$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) ; il peut aussi n'en prendre **aucune** (pizza nature).\n\nCombien de pizzas différentes peut-il commander ?\n\n$?$",
+				"reponses_brutes": ["{{eval:2^n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 32,
+						"max": 1024,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [32, 64, 128, 256, 512, 1024]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 10,
+				"nb_distinctes": 6,
+				"valeurs": [5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 32,
+				"max": 1024,
+				"nb_distinctes": 6,
+				"valeurs": [32, 64, 128, 256, 512, 1024],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 5,
+				"max": 1024,
+				"nb_distinctes": 12,
+				"valeurs": [5, 6, 7, 8, 9, 10, 32, 64, 128, 256, 512, 1024],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 32,
+					"max": 32
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1024)",
+					"graine": 9,
+					"enonce": "Une pizzeria propose $10$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) ; il peut aussi n'en prendre aucune (pizza nature).\n\nCombien de pizzas différentes peut-il commander ?\n\n$[?]$",
+					"reponse": ["1024"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (5)",
+					"graine": 1,
+					"enonce": "Une pizzeria propose $5$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) ; il peut aussi n'en prendre aucune (pizza nature).\n\nCombien de pizzas différentes peut-il commander ?\n\n$[?]$",
+					"reponse": ["32"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une pizzeria propose $6$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) ; il peut aussi n'en prendre aucune (pizza nature).\n\nCombien de pizzas différentes peut-il commander ?\n\n$[?]$",
+					"reponse": ["64"],
+					"variables": {
+						"n": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une pizzeria propose $9$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) ; il peut aussi n'en prendre aucune (pizza nature).\n\nCombien de pizzas différentes peut-il commander ?\n\n$[?]$",
+					"reponse": ["512"],
+					"variables": {
+						"n": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une pizzeria propose $8$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) ; il peut aussi n'en prendre aucune (pizza nature).\n\nCombien de pizzas différentes peut-il commander ?\n\n$[?]$",
+					"reponse": ["256"],
+					"variables": {
+						"n": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une pizzeria propose ${{n}}$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) et en prend **au moins une**.\n\nCombien de pizzas différentes peut-il commander ?\n\n$?$",
+				"reponses_brutes": ["{{eval:2^n-1}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 31,
+						"max": 1023,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [31, 63, 127, 255, 511, 1023]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 10,
+				"nb_distinctes": 6,
+				"valeurs": [5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 31,
+				"max": 1023,
+				"nb_distinctes": 6,
+				"valeurs": [31, 63, 127, 255, 511, 1023],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 5,
+				"max": 1023,
+				"nb_distinctes": 12,
+				"valeurs": [5, 6, 7, 8, 9, 10, 31, 63, 127, 255, 511, 1023],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1023)",
+					"graine": 9,
+					"enonce": "Une pizzeria propose $10$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) et en prend au moins une.\n\nCombien de pizzas différentes peut-il commander ?\n\n$[?]$",
+					"reponse": ["1023"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (5)",
+					"graine": 1,
+					"enonce": "Une pizzeria propose $5$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) et en prend au moins une.\n\nCombien de pizzas différentes peut-il commander ?\n\n$[?]$",
+					"reponse": ["31"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une pizzeria propose $6$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) et en prend au moins une.\n\nCombien de pizzas différentes peut-il commander ?\n\n$[?]$",
+					"reponse": ["63"],
+					"variables": {
+						"n": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une pizzeria propose $9$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) et en prend au moins une.\n\nCombien de pizzas différentes peut-il commander ?\n\n$[?]$",
+					"reponse": ["511"],
+					"variables": {
+						"n": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une pizzeria propose $8$ garnitures. Le client choisit les garnitures de sa pizza (chacune au plus une fois) et en prend au moins une.\n\nCombien de pizzas différentes peut-il commander ?\n\n$[?]$",
+					"reponse": ["255"],
+					"variables": {
+						"n": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "3..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On lance ${{n}}$ fois une pièce et on note la suite des résultats (Pile ou Face). On représente l'expérience par un arbre.\n\nCombien de chemins comporte cet arbre ?\n\n$?$",
+				"reponses_brutes": ["{{eval:2^n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 1024,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [8, 16, 32, 64, 128, 256, 512, 1024]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 8,
+				"max": 1024,
+				"nb_distinctes": 8,
+				"valeurs": [8, 16, 32, 64, 128, 256, 512, 1024],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 1024,
+				"nb_distinctes": 15,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 16, 32, 64, 128, 256, 512, 1024],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1024)",
+					"graine": 10,
+					"enonce": "On lance $10$ fois une pièce et on note la suite des résultats (Pile ou Face). On représente l'expérience par un arbre.\n\nCombien de chemins comporte cet arbre ?\n\n$[?]$",
+					"reponse": ["1024"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 1,
+					"enonce": "On lance $3$ fois une pièce et on note la suite des résultats (Pile ou Face). On représente l'expérience par un arbre.\n\nCombien de chemins comporte cet arbre ?\n\n$[?]$",
+					"reponse": ["8"],
+					"variables": {
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On lance $5$ fois une pièce et on note la suite des résultats (Pile ou Face). On représente l'expérience par un arbre.\n\nCombien de chemins comporte cet arbre ?\n\n$[?]$",
+					"reponse": ["32"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On lance $9$ fois une pièce et on note la suite des résultats (Pile ou Face). On représente l'expérience par un arbre.\n\nCombien de chemins comporte cet arbre ?\n\n$[?]$",
+					"reponse": ["512"],
+					"variables": {
+						"n": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On lance $8$ fois une pièce et on note la suite des résultats (Pile ou Face). On représente l'expérience par un arbre.\n\nCombien de chemins comporte cet arbre ?\n\n$[?]$",
+					"reponse": ["256"],
+					"variables": {
+						"n": "8"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,1795 @@
+{
+	"template_id": "2b240d8c-bdc2-4a55-a8db-a028f02ec889",
+	"titre": "Espace : trouver un vecteur directeur ou un vecteur normal",
+	"sous_titre": "Vecteur directeur de (AB), d'une droite orthogonale à un plan, de l'intersection de deux plans ; vecteur normal au plan (ABC) — tout vecteur colinéaire non nul est juste (pièges : point pris pour vecteur, vecteur directeur pris pour normal)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Représentations paramétriques et équations cartésiennes > Vecteurs directeurs et normaux",
+	"mis_a_jour": "2026-10-04T21:39:28.547456+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-375",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "ax",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ay",
+						"expression": "-5..5"
+					},
+					{
+						"name": "az",
+						"expression": "-5..5"
+					},
+					{
+						"name": "bx",
+						"expression": "-5..5"
+					},
+					{
+						"name": "by",
+						"expression": "-5..5"
+					},
+					{
+						"name": "bz",
+						"expression": "-5..5"
+					},
+					{
+						"name": "w1",
+						"expression": "{{eval:bx-ax}}"
+					},
+					{
+						"name": "w2",
+						"expression": "{{eval:by-ay}}"
+					},
+					{
+						"name": "w3",
+						"expression": "{{eval:bz-az}}"
+					}
+				],
+				"conditions": ["bx != ax", "abs(by-ay)+abs(bz-az) > 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nUne représentation paramétrique de la droite $(AB)$ est $x=x_A+at$, $y=y_A+bt$, $z=z_A+ct$ ($t\\in\\mathbb{R}$), où $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ est un vecteur directeur de $(AB)$. Donne un tel vecteur $\\vec{u}$ : $?$",
+				"reponses_brutes": ["({{eval:bx-ax}};{{eval:by-ay}};{{eval:bz-az}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "bx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "by",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "bz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "w1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -10,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "w2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "w3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -10,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 21,
+						"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 291,
+						"exemples": [
+							"(10;-2;-4)",
+							"(6;3;0)",
+							"(8;0;5)",
+							"(-1;3;0)",
+							"(-8;4;1)",
+							"(5;-7;-2)",
+							"(5;-6;-2)",
+							"(3;-5;6)",
+							"(-2;6;-7)",
+							"(-5;-3;-6)",
+							"(4;-1;-6)",
+							"(1;-6;-3)"
+						],
+						"nombres_contenus": {
+							"min": -10,
+							"max": 10,
+							"nb_distinctes": 21,
+							"valeurs": [
+								-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -10,
+				"max": 10,
+				"nb_distinctes": 21,
+				"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -10,
+				"max": 10,
+				"nb_distinctes": 21,
+				"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["vecteur"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-5\\,;\\,0\\,;\\,5)$ et $B(5\\,;\\,-2\\,;\\,1)$.\n\nUne représentation paramétrique de la droite $\\left( AB \\right)$ est $x = x_A + a t$, $y = y_A + b t$, $z = z_A + c t$ ($t\\in\\mathbb{R}$), où $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ est un vecteur directeur de $\\left( AB \\right)$. Donne un tel vecteur $\\vec{u}$ : $[?]$",
+					"reponse": ["(10;-2;-4)"],
+					"variables": {
+						"ax": "-5",
+						"ay": "0",
+						"az": "5",
+						"bx": "5",
+						"by": "-2",
+						"bz": "1",
+						"w1": "10",
+						"w2": "-2",
+						"w3": "-4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-10)",
+					"graine": 167,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(5\\,;\\,-2\\,;\\,2)$ et $B(-5\\,;\\,-3\\,;\\,-4)$.\n\nUne représentation paramétrique de la droite $\\left( AB \\right)$ est $x = x_A + a t$, $y = y_A + b t$, $z = z_A + c t$ ($t\\in\\mathbb{R}$), où $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ est un vecteur directeur de $\\left( AB \\right)$. Donne un tel vecteur $\\vec{u}$ : $[?]$",
+					"reponse": ["(-10;-1;-6)"],
+					"variables": {
+						"ax": "5",
+						"ay": "-2",
+						"az": "2",
+						"bx": "-5",
+						"by": "-3",
+						"bz": "-4",
+						"w1": "-10",
+						"w2": "-1",
+						"w3": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-2\\,;\\,-2\\,;\\,0)$ et $B(4\\,;\\,1\\,;\\,0)$.\n\nUne représentation paramétrique de la droite $\\left( AB \\right)$ est $x = x_A + a t$, $y = y_A + b t$, $z = z_A + c t$ ($t\\in\\mathbb{R}$), où $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ est un vecteur directeur de $\\left( AB \\right)$. Donne un tel vecteur $\\vec{u}$ : $[?]$",
+					"reponse": ["(6;3;0)"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-2",
+						"az": "0",
+						"bx": "4",
+						"by": "1",
+						"bz": "0",
+						"w1": "6",
+						"w2": "3",
+						"w3": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-5\\,;\\,0\\,;\\,-5)$ et $B(3\\,;\\,0\\,;\\,0)$.\n\nUne représentation paramétrique de la droite $\\left( AB \\right)$ est $x = x_A + a t$, $y = y_A + b t$, $z = z_A + c t$ ($t\\in\\mathbb{R}$), où $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ est un vecteur directeur de $\\left( AB \\right)$. Donne un tel vecteur $\\vec{u}$ : $[?]$",
+					"reponse": ["(8;0;5)"],
+					"variables": {
+						"ax": "-5",
+						"ay": "0",
+						"az": "-5",
+						"bx": "3",
+						"by": "0",
+						"bz": "0",
+						"w1": "8",
+						"w2": "0",
+						"w3": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-2\\,;\\,-3\\,;\\,-5)$ et $B(-3\\,;\\,0\\,;\\,-5)$.\n\nUne représentation paramétrique de la droite $\\left( AB \\right)$ est $x = x_A + a t$, $y = y_A + b t$, $z = z_A + c t$ ($t\\in\\mathbb{R}$), où $\\vec{u}\\begin{pmatrix}a\\\\b\\\\c\\end{pmatrix}$ est un vecteur directeur de $\\left( AB \\right)$. Donne un tel vecteur $\\vec{u}$ : $[?]$",
+					"reponse": ["(-1;3;0)"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-3",
+						"az": "-5",
+						"bx": "-3",
+						"by": "0",
+						"bz": "-5",
+						"w1": "-1",
+						"w2": "3",
+						"w3": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "ax",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ay",
+						"expression": "-5..5"
+					},
+					{
+						"name": "az",
+						"expression": "-5..5"
+					},
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "-5..5"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$.\n\nDonne un vecteur directeur de la droite $\\Delta$ passant par $A$ et orthogonale à $\\mathcal{P}$ : $?$",
+				"reponses_brutes": ["({{a}};{{b}};{{c}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 259,
+						"exemples": [
+							"(5;-2;2)",
+							"(4;1;-1)",
+							"(3;0;-1)",
+							"(-3;0;-5)",
+							"(-5;1;3)",
+							"(1;-5;-5)",
+							"(1;-1;-1)",
+							"(1;-1;4)",
+							"(3;2;-3)",
+							"(-1;-1;-3)",
+							"(4;0;-5)",
+							"(-4;-5;2)"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 11,
+							"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 15,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 15,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["vecteur"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "248/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 25,
+					"max": 25
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(-2\\,;\\,-3\\,;\\,-5)$ et le plan $\\mathcal{P}$ d'équation $-3 x - 5 z + 9 = 0$.\n\nDonne un vecteur directeur de la droite $\\Delta$ passant par $A$ et orthogonale à $\\mathcal{P}$ : $[?]$",
+					"reponse": ["(-3;0;-5)"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-3",
+						"az": "-5",
+						"a": "-3",
+						"b": "0",
+						"c": "-5",
+						"d": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(-5\\,;\\,0\\,;\\,5)$ et le plan $\\mathcal{P}$ d'équation $5 x - 2 y + 2 z + 4 = 0$.\n\nDonne un vecteur directeur de la droite $\\Delta$ passant par $A$ et orthogonale à $\\mathcal{P}$ : $[?]$",
+					"reponse": ["(5;-2;2)"],
+					"variables": {
+						"ax": "-5",
+						"ay": "0",
+						"az": "5",
+						"a": "5",
+						"b": "-2",
+						"c": "2",
+						"d": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(-2\\,;\\,-2\\,;\\,0)$ et le plan $\\mathcal{P}$ d'équation $4 x + y - z - 3 = 0$.\n\nDonne un vecteur directeur de la droite $\\Delta$ passant par $A$ et orthogonale à $\\mathcal{P}$ : $[?]$",
+					"reponse": ["(4;1;-1)"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-2",
+						"az": "0",
+						"a": "4",
+						"b": "1",
+						"c": "-1",
+						"d": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(-5\\,;\\,0\\,;\\,-5)$ et le plan $\\mathcal{P}$ d'équation $3 x - z - 7 = 0$.\n\nDonne un vecteur directeur de la droite $\\Delta$ passant par $A$ et orthogonale à $\\mathcal{P}$ : $[?]$",
+					"reponse": ["(3;0;-1)"],
+					"variables": {
+						"ax": "-5",
+						"ay": "0",
+						"az": "-5",
+						"a": "3",
+						"b": "0",
+						"c": "-1",
+						"d": "-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(3\\,;\\,-3\\,;\\,1)$ et le plan $\\mathcal{P}$ d'équation $-5 x + y + 3 z - 1 = 0$.\n\nDonne un vecteur directeur de la droite $\\Delta$ passant par $A$ et orthogonale à $\\mathcal{P}$ : $[?]$",
+					"reponse": ["(-5;1;3)"],
+					"variables": {
+						"ax": "3",
+						"ay": "-3",
+						"az": "1",
+						"a": "-5",
+						"b": "1",
+						"c": "3",
+						"d": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "ax",
+						"expression": "-3..3"
+					},
+					{
+						"name": "ay",
+						"expression": "-3..3"
+					},
+					{
+						"name": "az",
+						"expression": "-3..3"
+					},
+					{
+						"name": "p1",
+						"expression": "-3..3"
+					},
+					{
+						"name": "p2",
+						"expression": "-3..3"
+					},
+					{
+						"name": "p3",
+						"expression": "-3..3"
+					},
+					{
+						"name": "q1",
+						"expression": "-3..3"
+					},
+					{
+						"name": "q2",
+						"expression": "-3..3"
+					},
+					{
+						"name": "q3",
+						"expression": "-3..3"
+					},
+					{
+						"name": "bx",
+						"expression": "{{eval:ax+p1}}"
+					},
+					{
+						"name": "by",
+						"expression": "{{eval:ay+p2}}"
+					},
+					{
+						"name": "bz",
+						"expression": "{{eval:az+p3}}"
+					},
+					{
+						"name": "cx",
+						"expression": "{{eval:ax+q1}}"
+					},
+					{
+						"name": "cy",
+						"expression": "{{eval:ay+q2}}"
+					},
+					{
+						"name": "cz",
+						"expression": "{{eval:az+q3}}"
+					},
+					{
+						"name": "c1",
+						"expression": "{{eval:p2*q3-p3*q2}}"
+					},
+					{
+						"name": "c2",
+						"expression": "{{eval:p3*q1-p1*q3}}"
+					},
+					{
+						"name": "c3",
+						"expression": "{{eval:p1*q2-p2*q1}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:gcd(gcd(abs(c1),abs(c2)),abs(c3))}}"
+					},
+					{
+						"name": "n1",
+						"expression": "{{eval:c1/g}}"
+					},
+					{
+						"name": "n2",
+						"expression": "{{eval:c2/g}}"
+					},
+					{
+						"name": "n3",
+						"expression": "{{eval:c3/g}}"
+					}
+				],
+				"conditions": ["abs(p2*q3-p3*q2)+abs(p3*q1-p1*q3)+abs(p1*q2-p2*q1) > 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$, non alignés.\n\nDonne un vecteur normal au plan $(ABC)$ : $?$",
+				"reponses_brutes": ["({{n1}};{{n2}};{{n3}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "p1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "p2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "p3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "q1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "q2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "q3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "bx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "by",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "bz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "cx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "cy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "cz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-15, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 15
+						]
+					}
+				},
+				{
+					"nom": "c2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 26,
+						"valeurs": [
+							-15, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							11, 12, 15
+						]
+					}
+				},
+				{
+					"nom": "c3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -18,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-18, -15, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7,
+							8, 9, 12, 13, 15
+						]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15]
+					}
+				},
+				{
+					"nom": "n1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 24,
+						"valeurs": [
+							-15, -11, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+						]
+					}
+				},
+				{
+					"nom": "n2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 24,
+						"valeurs": [
+							-15, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 9, 11,
+							12
+						]
+					}
+				},
+				{
+					"nom": "n3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-15, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							12, 13
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 242,
+						"exemples": [
+							"(-5;-7;1)",
+							"(-3;9;7)",
+							"(0;0;-1)",
+							"(3;-7;-2)",
+							"(-8;-6;-9)",
+							"(5;-3;3)",
+							"(-1;0;-1)",
+							"(0;-1;0)",
+							"(-5;-8;-9)",
+							"(-1;1;0)",
+							"(3;0;2)",
+							"(-6;5;3)"
+						],
+						"nombres_contenus": {
+							"min": -15,
+							"max": 15,
+							"nb_distinctes": 26,
+							"valeurs": [
+								-15, -11, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+								12, 13, 15
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -15,
+				"max": 15,
+				"nb_distinctes": 26,
+				"valeurs": [
+					-15, -11, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+					13, 15
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -15,
+				"max": 15,
+				"nb_distinctes": 26,
+				"valeurs": [
+					-15, -11, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+					13, 15
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["vecteur"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (15)",
+					"graine": 136,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(2\\,;\\,0\\,;\\,-1)$, $B(5\\,;\\,2\\,;\\,-3)$ et $C(5\\,;\\,-3\\,;\\,0)$, non alignés.\n\nDonne un vecteur normal au plan $\\left( ABC \\right)$ : $[?]$",
+					"reponse": ["(-4;-9;-15)"],
+					"variables": {
+						"ax": "2",
+						"ay": "0",
+						"az": "-1",
+						"p1": "3",
+						"p2": "2",
+						"p3": "-2",
+						"q1": "3",
+						"q2": "-3",
+						"q3": "1",
+						"bx": "5",
+						"by": "2",
+						"bz": "-3",
+						"cx": "5",
+						"cy": "-3",
+						"cz": "0",
+						"c1": "-4",
+						"c2": "-9",
+						"c3": "-15",
+						"g": "1",
+						"n1": "-4",
+						"n2": "-9",
+						"n3": "-15"
+					}
+				},
+				{
+					"role": "plus petite valeur (-15)",
+					"graine": 166,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-3\\,;\\,0\\,;\\,-3)$, $B(-1\\,;\\,3\\,;\\,-6)$ et $C(-2\\,;\\,-3\\,;\\,-5)$, non alignés.\n\nDonne un vecteur normal au plan $\\left( ABC \\right)$ : $[?]$",
+					"reponse": ["(-15;1;-9)"],
+					"variables": {
+						"ax": "-3",
+						"ay": "0",
+						"az": "-3",
+						"p1": "2",
+						"p2": "3",
+						"p3": "-3",
+						"q1": "1",
+						"q2": "-3",
+						"q3": "-2",
+						"bx": "-1",
+						"by": "3",
+						"bz": "-6",
+						"cx": "-2",
+						"cy": "-3",
+						"cz": "-5",
+						"c1": "-15",
+						"c2": "1",
+						"c3": "-9",
+						"g": "1",
+						"n1": "-15",
+						"n2": "1",
+						"n3": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-3\\,;\\,0\\,;\\,3)$, $B(0\\,;\\,-2\\,;\\,4)$ et $C(-1\\,;\\,-1\\,;\\,6)$, non alignés.\n\nDonne un vecteur normal au plan $\\left( ABC \\right)$ : $[?]$",
+					"reponse": ["(-5;-7;1)"],
+					"variables": {
+						"ax": "-3",
+						"ay": "0",
+						"az": "3",
+						"p1": "3",
+						"p2": "-2",
+						"p3": "1",
+						"q1": "2",
+						"q2": "-1",
+						"q3": "3",
+						"bx": "0",
+						"by": "-2",
+						"bz": "4",
+						"cx": "-1",
+						"cy": "-1",
+						"cz": "6",
+						"c1": "-5",
+						"c2": "-7",
+						"c3": "1",
+						"g": "1",
+						"n1": "-5",
+						"n2": "-7",
+						"n3": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-1\\,;\\,-2\\,;\\,0)$, $B(2\\,;\\,-1\\,;\\,0)$ et $C(-2\\,;\\,0\\,;\\,-3)$, non alignés.\n\nDonne un vecteur normal au plan $\\left( ABC \\right)$ : $[?]$",
+					"reponse": ["(-3;9;7)"],
+					"variables": {
+						"ax": "-1",
+						"ay": "-2",
+						"az": "0",
+						"p1": "3",
+						"p2": "1",
+						"p3": "0",
+						"q1": "-1",
+						"q2": "2",
+						"q3": "-3",
+						"bx": "2",
+						"by": "-1",
+						"bz": "0",
+						"cx": "-2",
+						"cy": "0",
+						"cz": "-3",
+						"c1": "-3",
+						"c2": "9",
+						"c3": "7",
+						"g": "1",
+						"n1": "-3",
+						"n2": "9",
+						"n3": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-3\\,;\\,0\\,;\\,-3)$, $B(-1\\,;\\,0\\,;\\,-3)$ et $C(-5\\,;\\,-2\\,;\\,-3)$, non alignés.\n\nDonne un vecteur normal au plan $\\left( ABC \\right)$ : $[?]$",
+					"reponse": ["(0;0;-1)"],
+					"variables": {
+						"ax": "-3",
+						"ay": "0",
+						"az": "-3",
+						"p1": "2",
+						"p2": "0",
+						"p3": "0",
+						"q1": "-2",
+						"q2": "-2",
+						"q3": "0",
+						"bx": "-1",
+						"by": "0",
+						"bz": "-3",
+						"cx": "-5",
+						"cy": "-2",
+						"cz": "-3",
+						"c1": "0",
+						"c2": "0",
+						"c3": "-4",
+						"g": "4",
+						"n1": "0",
+						"n2": "0",
+						"n3": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "-3..3"
+					},
+					{
+						"name": "a2",
+						"expression": "-3..3"
+					},
+					{
+						"name": "a3",
+						"expression": "-3..3"
+					},
+					{
+						"name": "b1",
+						"expression": "-3..3"
+					},
+					{
+						"name": "b2",
+						"expression": "-3..3"
+					},
+					{
+						"name": "b3",
+						"expression": "-3..3"
+					},
+					{
+						"name": "d",
+						"expression": "-6..6"
+					},
+					{
+						"name": "q",
+						"expression": "-6..6"
+					},
+					{
+						"name": "c1",
+						"expression": "{{eval:a2*b3-a3*b2}}"
+					},
+					{
+						"name": "c2",
+						"expression": "{{eval:a3*b1-a1*b3}}"
+					},
+					{
+						"name": "c3",
+						"expression": "{{eval:a1*b2-a2*b1}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:gcd(gcd(abs(c1),abs(c2)),abs(c3))}}"
+					},
+					{
+						"name": "n1",
+						"expression": "{{eval:c1/g}}"
+					},
+					{
+						"name": "n2",
+						"expression": "{{eval:c2/g}}"
+					},
+					{
+						"name": "n3",
+						"expression": "{{eval:c3/g}}"
+					}
+				],
+				"conditions": [
+					"abs(a2*b3-a3*b2)+abs(a3*b1-a1*b3)+abs(a1*b2-a2*b1) > 0",
+					"abs(a1)+abs(a2)+abs(a3) > 1",
+					"abs(b1)+abs(b2)+abs(b3) > 1"
+				],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère les plans sécants $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives ${{a1}}x+({{a2}})y+({{a3}})z+({{d}})=0$ et ${{b1}}x+({{b2}})y+({{b3}})z+({{q}})=0$.\n\nDonne un vecteur directeur de leur droite d'intersection : $?$",
+				"reponses_brutes": ["({{n1}};{{n2}};{{n3}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 18,
+						"negatif_possible": true,
+						"nb_distinctes": 28,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 15, 18
+						]
+					}
+				},
+				{
+					"nom": "c2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 28,
+						"valeurs": [
+							-15, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7,
+							8, 9, 10, 12, 13, 15
+						]
+					}
+				},
+				{
+					"nom": "c3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -18,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 28,
+						"valeurs": [
+							-18, -15, -12, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13, 15
+						]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15]
+					}
+				},
+				{
+					"nom": "n1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 24,
+						"valeurs": [
+							-13, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11,
+							15
+						]
+					}
+				},
+				{
+					"nom": "n2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-13, -11, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13
+						]
+					}
+				},
+				{
+					"nom": "n3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 24,
+						"valeurs": [
+							-12, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 239,
+						"exemples": [
+							"(1;2;1)",
+							"(0;0;1)",
+							"(0;-1;0)",
+							"(6;3;-4)",
+							"(-5;-7;-4)",
+							"(-1;-1;1)",
+							"(1;0;1)",
+							"(-2;-1;1)",
+							"(1;2;2)",
+							"(-1;3;0)",
+							"(-3;2;-2)",
+							"(10;-3;11)"
+						],
+						"nombres_contenus": {
+							"min": -13,
+							"max": 15,
+							"nb_distinctes": 27,
+							"valeurs": [
+								-13, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+								11, 12, 13, 15
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -13,
+				"max": 15,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-13, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+					12, 13, 15
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -13,
+				"max": 15,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-13, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+					12, 13, 15
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["vecteur"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "288/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (15)",
+					"graine": 89,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans sécants $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-2 x + 3 y + 2 z + 4 = 0$ et $-2 x - 3 y + 3 z + 5 = 0$.\n\nDonne un vecteur directeur de leur droite d'intersection : $[?]$",
+					"reponse": ["(15;2;12)"],
+					"variables": {
+						"a1": "-2",
+						"a2": "3",
+						"a3": "2",
+						"b1": "-2",
+						"b2": "-3",
+						"b3": "3",
+						"d": "4",
+						"q": "5",
+						"c1": "15",
+						"c2": "2",
+						"c3": "12",
+						"g": "1",
+						"n1": "15",
+						"n2": "2",
+						"n3": "12"
+					}
+				},
+				{
+					"role": "plus petite valeur (-13)",
+					"graine": 209,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans sécants $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $3 x + 2 y - 3 z = 0$ et $-x - 3 y - 2 z + 3 = 0$.\n\nDonne un vecteur directeur de leur droite d'intersection : $[?]$",
+					"reponse": ["(-13;9;-7)"],
+					"variables": {
+						"a1": "3",
+						"a2": "2",
+						"a3": "-3",
+						"b1": "-1",
+						"b2": "-3",
+						"b3": "-2",
+						"d": "0",
+						"q": "3",
+						"c1": "-13",
+						"c2": "9",
+						"c3": "-7",
+						"g": "1",
+						"n1": "-13",
+						"n2": "9",
+						"n3": "-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans sécants $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-3 x + 3 z + 3 = 0$ et $3 x - 2 y + z - 1 = 0$.\n\nDonne un vecteur directeur de leur droite d'intersection : $[?]$",
+					"reponse": ["(1;2;1)"],
+					"variables": {
+						"a1": "-3",
+						"a2": "0",
+						"a3": "3",
+						"b1": "3",
+						"b2": "-2",
+						"b3": "1",
+						"d": "3",
+						"q": "-1",
+						"c1": "6",
+						"c2": "12",
+						"c3": "6",
+						"g": "6",
+						"n1": "1",
+						"n2": "2",
+						"n3": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans sécants $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-x - 2 y - 2 = 0$ et $3 x + y + 4 = 0$.\n\nDonne un vecteur directeur de leur droite d'intersection : $[?]$",
+					"reponse": ["(0;0;1)"],
+					"variables": {
+						"a1": "-1",
+						"a2": "-2",
+						"a3": "0",
+						"b1": "3",
+						"b2": "1",
+						"b3": "0",
+						"d": "-2",
+						"q": "4",
+						"c1": "0",
+						"c2": "0",
+						"c3": "5",
+						"g": "5",
+						"n1": "0",
+						"n2": "0",
+						"n3": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans sécants $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-3 x - 3 z - 4 = 0$ et $2 x - 3 = 0$.\n\nDonne un vecteur directeur de leur droite d'intersection : $[?]$",
+					"reponse": ["(0;-1;0)"],
+					"variables": {
+						"a1": "-3",
+						"a2": "0",
+						"a3": "-3",
+						"b1": "2",
+						"b2": "0",
+						"b3": "0",
+						"d": "-4",
+						"q": "-3",
+						"c1": "0",
+						"c2": "-6",
+						"c3": "0",
+						"g": "6",
+						"n1": "0",
+						"n2": "-1",
+						"n3": "0"
+					}
+				}
+			]
+		}
+	]
+}

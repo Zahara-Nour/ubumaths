@@ -1,0 +1,1426 @@
+{
+	"template_id": "0808e518-9aa6-4241-85b0-5132033fe3c8",
+	"titre": "Espace : intersection d'une droite et d'un plan",
+	"sous_titre": "Reporter une représentation paramétrique dans l'équation du plan : paramètre t puis coordonnées du point d'intersection (pièges : signe de t, t mal reporté, point de la droite recopié)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Représentations paramétriques et équations cartésiennes > Intersections",
+	"mis_a_jour": "2026-10-04T21:39:28.739993+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-372",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "b",
+						"expression": "-3..3"
+					},
+					{
+						"name": "c",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "x0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "y0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "z0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u1",
+						"expression": "-3..3"
+					},
+					{
+						"name": "u2",
+						"expression": "-3..3"
+					},
+					{
+						"name": "u3",
+						"expression": "-3..3"
+					},
+					{
+						"name": "t0",
+						"expression": "-3..3!0"
+					},
+					{
+						"name": "ix",
+						"expression": "{{eval:x0+t0*u1}}"
+					},
+					{
+						"name": "iy",
+						"expression": "{{eval:y0+t0*u2}}"
+					},
+					{
+						"name": "iz",
+						"expression": "{{eval:z0+t0*u3}}"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:-(a*ix+b*iy+c*iz)}}"
+					}
+				],
+				"conditions": ["a*u1+b*u2+c*u3 != 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $d$ coupe $\\mathcal{P}$ en un point $I$. Détermine le paramètre $t$ de $I$, puis ses coordonnées.\n\n$t=?$ et $I(?\\,;\\,?\\,;\\,?)$",
+				"reponses_brutes": ["{{t0}}", "{{ix}}", "{{iy}}", "{{iz}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "z0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "t0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "ix",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-13, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+							12, 13
+						]
+					}
+				},
+				{
+					"nom": "iy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 26,
+						"valeurs": [
+							-13, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "iz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12
+						]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -66,
+						"max": 64,
+						"negatif_possible": true,
+						"nb_distinctes": 79
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-13, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+							12, 13
+						]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 26,
+						"valeurs": [
+							-13, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12, 13
+						]
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 66,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -13,
+				"max": 13,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+					11, 12, 13
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -13,
+				"max": 66,
+				"nb_distinctes": 62,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 4,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "289/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "169/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (66)",
+					"graine": 103,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $3 x - 3 y + 3 z - 66 = 0$ et la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2-3t\\\\y=-3+2t\\\\z=-2t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $d$ coupe $\\mathcal{P}$ en un point $I$. Détermine le paramètre $t$ de $I$, puis ses coordonnées.\n\n$t = [?]$ et $I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-3", "7", "-9", "6"],
+					"variables": {
+						"a": "3",
+						"b": "-3",
+						"c": "3",
+						"x0": "-2",
+						"y0": "-3",
+						"z0": "0",
+						"u1": "-3",
+						"u2": "2",
+						"u3": "-2",
+						"t0": "-3",
+						"ix": "7",
+						"iy": "-9",
+						"iz": "6",
+						"d": "-66"
+					}
+				},
+				{
+					"role": "plus petite valeur (-13)",
+					"graine": 73,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $3 x + 3 y - 2 z + 5 = 0$ et la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=3-3t\\\\y=-4+3t\\\\z=-2-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $d$ coupe $\\mathcal{P}$ en un point $I$. Détermine le paramètre $t$ de $I$, puis ses coordonnées.\n\n$t = [?]$ et $I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-3", "12", "-13", "1"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "-2",
+						"x0": "3",
+						"y0": "-4",
+						"z0": "-2",
+						"u1": "-3",
+						"u2": "3",
+						"u3": "-1",
+						"t0": "-3",
+						"ix": "12",
+						"iy": "-13",
+						"iz": "1",
+						"d": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-3 x + 3 z + 18 = 0$ et la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=4+2t\\\\y=-2-t\\\\z=1+3t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $d$ coupe $\\mathcal{P}$ en un point $I$. Détermine le paramètre $t$ de $I$, puis ses coordonnées.\n\n$t = [?]$ et $I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-3", "-2", "1", "-8"],
+					"variables": {
+						"a": "-3",
+						"b": "0",
+						"c": "3",
+						"x0": "4",
+						"y0": "-2",
+						"z0": "1",
+						"u1": "2",
+						"u2": "-1",
+						"u3": "3",
+						"t0": "-3",
+						"ix": "-2",
+						"iy": "1",
+						"iz": "-8",
+						"d": "18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-2 x - 2 y + z + 18 = 0$ et la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=3-t\\\\y=1+2t\\\\z=-3t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $d$ coupe $\\mathcal{P}$ en un point $I$. Détermine le paramètre $t$ de $I$, puis ses coordonnées.\n\n$t = [?]$ et $I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["2", "1", "5", "-6"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "1",
+						"x0": "3",
+						"y0": "1",
+						"z0": "0",
+						"u1": "-1",
+						"u2": "2",
+						"u3": "-3",
+						"t0": "2",
+						"ix": "1",
+						"iy": "5",
+						"iz": "-6",
+						"d": "18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-3 x - 3 z + 18 = 0$ et la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=2-2t\\\\y=-2t\\\\z=0\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $d$ coupe $\\mathcal{P}$ en un point $I$. Détermine le paramètre $t$ de $I$, puis ses coordonnées.\n\n$t = [?]$ et $I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-2", "6", "4", "0"],
+					"variables": {
+						"a": "-3",
+						"b": "0",
+						"c": "-3",
+						"x0": "2",
+						"y0": "0",
+						"z0": "0",
+						"u1": "-2",
+						"u2": "-2",
+						"u3": "0",
+						"t0": "-2",
+						"ix": "6",
+						"iy": "4",
+						"iz": "0",
+						"d": "18"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "b",
+						"expression": "-3..3"
+					},
+					{
+						"name": "c",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "x0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "y0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "z0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u1",
+						"expression": "-3..3"
+					},
+					{
+						"name": "u2",
+						"expression": "-3..3"
+					},
+					{
+						"name": "u3",
+						"expression": "-3..3"
+					},
+					{
+						"name": "t0",
+						"expression": "-3..3!0"
+					},
+					{
+						"name": "ix",
+						"expression": "{{eval:x0+t0*u1}}"
+					},
+					{
+						"name": "iy",
+						"expression": "{{eval:y0+t0*u2}}"
+					},
+					{
+						"name": "iz",
+						"expression": "{{eval:z0+t0*u3}}"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:-(a*ix+b*iy+c*iz)}}"
+					},
+					{
+						"name": "bx",
+						"expression": "{{eval:x0+u1}}"
+					},
+					{
+						"name": "by",
+						"expression": "{{eval:y0+u2}}"
+					},
+					{
+						"name": "bz",
+						"expression": "{{eval:z0+u3}}"
+					}
+				],
+				"conditions": ["a*u1+b*u2+c*u3 != 0", "t0 != 1"],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{x0}}\\,;\\,{{y0}}\\,;\\,{{z0}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$, et le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$.\n\nLa droite $(AB)$ coupe $\\mathcal{P}$ en un point $I$. Détermine ses coordonnées.\n\n$I(?\\,;\\,?\\,;\\,?)$",
+				"reponses_brutes": ["{{ix}}", "{{iy}}", "{{iz}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "z0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "t0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-3, -2, -1, 2, 3]
+					}
+				},
+				{
+					"nom": "ix",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "iy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "iz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12
+						]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -66,
+						"max": 81,
+						"negatif_possible": true,
+						"nb_distinctes": 87
+					}
+				},
+				{
+					"nom": "bx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "by",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "bz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -7,
+				"max": 81,
+				"nb_distinctes": 60,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -13,
+				"max": 13,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+					11, 12, 13
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -13,
+				"max": 81,
+				"nb_distinctes": 66,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "265/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 53,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(3\\,;\\,0\\,;\\,3)$ et $B(5\\,;\\,-3\\,;\\,6)$, et le plan $\\mathcal{P}$ d'équation $-2 x + 3 y - 3 z + 81 = 0$.\n\nLa droite $\\left( AB \\right)$ coupe $\\mathcal{P}$ en un point $I$. Détermine ses coordonnées.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["9", "-9", "12"],
+					"variables": {
+						"a": "-2",
+						"b": "3",
+						"c": "-3",
+						"x0": "3",
+						"y0": "0",
+						"z0": "3",
+						"u1": "2",
+						"u2": "-3",
+						"u3": "3",
+						"t0": "3",
+						"ix": "9",
+						"iy": "-9",
+						"iz": "12",
+						"d": "81",
+						"bx": "5",
+						"by": "-3",
+						"bz": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-13)",
+					"graine": 13,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-1\\,;\\,-4\\,;\\,-2)$ et $B(-4\\,;\\,-7\\,;\\,-3)$, et le plan $\\mathcal{P}$ d'équation $-x - 3 y + 2 z - 39 = 0$.\n\nLa droite $\\left( AB \\right)$ coupe $\\mathcal{P}$ en un point $I$. Détermine ses coordonnées.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-10", "-13", "-5"],
+					"variables": {
+						"a": "-1",
+						"b": "-3",
+						"c": "2",
+						"x0": "-1",
+						"y0": "-4",
+						"z0": "-2",
+						"u1": "-3",
+						"u2": "-3",
+						"u3": "-1",
+						"t0": "3",
+						"ix": "-10",
+						"iy": "-13",
+						"iz": "-5",
+						"d": "-39",
+						"bx": "-4",
+						"by": "-7",
+						"bz": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(4\\,;\\,-2\\,;\\,1)$ et $B(6\\,;\\,-3\\,;\\,4)$, et le plan $\\mathcal{P}$ d'équation $-3 x + 3 z + 18 = 0$.\n\nLa droite $\\left( AB \\right)$ coupe $\\mathcal{P}$ en un point $I$. Détermine ses coordonnées.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-2", "1", "-8"],
+					"variables": {
+						"a": "-3",
+						"b": "0",
+						"c": "3",
+						"x0": "4",
+						"y0": "-2",
+						"z0": "1",
+						"u1": "2",
+						"u2": "-1",
+						"u3": "3",
+						"t0": "-3",
+						"ix": "-2",
+						"iy": "1",
+						"iz": "-8",
+						"d": "18",
+						"bx": "6",
+						"by": "-3",
+						"bz": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(3\\,;\\,1\\,;\\,0)$ et $B(2\\,;\\,3\\,;\\,-3)$, et le plan $\\mathcal{P}$ d'équation $-2 x - 2 y + z + 18 = 0$.\n\nLa droite $\\left( AB \\right)$ coupe $\\mathcal{P}$ en un point $I$. Détermine ses coordonnées.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["1", "5", "-6"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "1",
+						"x0": "3",
+						"y0": "1",
+						"z0": "0",
+						"u1": "-1",
+						"u2": "2",
+						"u3": "-3",
+						"t0": "2",
+						"ix": "1",
+						"iy": "5",
+						"iz": "-6",
+						"d": "18",
+						"bx": "2",
+						"by": "3",
+						"bz": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(2\\,;\\,0\\,;\\,0)$ et $B(0\\,;\\,-2\\,;\\,0)$, et le plan $\\mathcal{P}$ d'équation $-3 x - 3 z + 18 = 0$.\n\nLa droite $\\left( AB \\right)$ coupe $\\mathcal{P}$ en un point $I$. Détermine ses coordonnées.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["6", "4", "0"],
+					"variables": {
+						"a": "-3",
+						"b": "0",
+						"c": "-3",
+						"x0": "2",
+						"y0": "0",
+						"z0": "0",
+						"u1": "-2",
+						"u2": "-2",
+						"u3": "0",
+						"t0": "-2",
+						"ix": "6",
+						"iy": "4",
+						"iz": "0",
+						"d": "18",
+						"bx": "0",
+						"by": "-2",
+						"bz": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "y0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "z0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u1",
+						"expression": "-3..3"
+					},
+					{
+						"name": "u2",
+						"expression": "-3..3"
+					},
+					{
+						"name": "u3",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "t0",
+						"expression": "-3..3!0"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:z0+t0*u3}}"
+					},
+					{
+						"name": "ix",
+						"expression": "{{eval:x0+t0*u1}}"
+					},
+					{
+						"name": "iy",
+						"expression": "{{eval:y0+t0*u2}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$ et le plan $\\mathcal{P}$ d'équation $z={{h}}$.\n\nDétermine les coordonnées du point d'intersection $I$ de $d$ et $\\mathcal{P}$.\n\n$I(?\\,;\\,?\\,;\\,?)$",
+				"reponses_brutes": ["{{ix}}", "{{iy}}", "{{h}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "z0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "t0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-13, -12, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12
+						]
+					}
+				},
+				{
+					"nom": "ix",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "iy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+							12, 13
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+							12, 13
+						]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-13, -12, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -13,
+				"max": 12,
+				"nb_distinctes": 25,
+				"valeurs": [
+					-13, -12, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+					12
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -13,
+				"max": 13,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+					11, 12, 13
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -13,
+				"max": 13,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+					11, 12, 13
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "220/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "177/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 25,
+					"max": 25
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (13)",
+					"graine": 73,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=3+3t\\\\y=4-3t\\\\z=-3-2t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\net le plan $\\mathcal{P}$ d'équation $z = 3$.\n\nDétermine les coordonnées du point d'intersection $I$ de $d$ et $\\mathcal{P}$.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-6", "13", "3"],
+					"variables": {
+						"x0": "3",
+						"y0": "4",
+						"z0": "-3",
+						"u1": "3",
+						"u2": "-3",
+						"u3": "-2",
+						"t0": "-3",
+						"h": "3",
+						"ix": "-6",
+						"iy": "13"
+					}
+				},
+				{
+					"role": "plus petite valeur (-13)",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2-2t\\\\y=-3\\\\z=-4-3t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\net le plan $\\mathcal{P}$ d'équation $z = -13$.\n\nDétermine les coordonnées du point d'intersection $I$ de $d$ et $\\mathcal{P}$.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-8", "-3", "-13"],
+					"variables": {
+						"x0": "-2",
+						"y0": "-3",
+						"z0": "-4",
+						"u1": "-2",
+						"u2": "0",
+						"u3": "-3",
+						"t0": "3",
+						"h": "-13",
+						"ix": "-8",
+						"iy": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-4+3t\\\\y=-2t\\\\z=4+t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\net le plan $\\mathcal{P}$ d'équation $z = 6$.\n\nDétermine les coordonnées du point d'intersection $I$ de $d$ et $\\mathcal{P}$.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["2", "-4", "6"],
+					"variables": {
+						"x0": "-4",
+						"y0": "0",
+						"z0": "4",
+						"u1": "3",
+						"u2": "-2",
+						"u3": "1",
+						"t0": "2",
+						"h": "6",
+						"ix": "2",
+						"iy": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2+3t\\\\y=-2+t\\\\z=-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\net le plan $\\mathcal{P}$ d'équation $z = 1$.\n\nDétermine les coordonnées du point d'intersection $I$ de $d$ et $\\mathcal{P}$.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-5", "-3", "1"],
+					"variables": {
+						"x0": "-2",
+						"y0": "-2",
+						"z0": "0",
+						"u1": "3",
+						"u2": "1",
+						"u3": "-1",
+						"t0": "-1",
+						"h": "1",
+						"ix": "-5",
+						"iy": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-4+2t\\\\y=0\\\\z=-4-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\net le plan $\\mathcal{P}$ d'équation $z = -2$.\n\nDétermine les coordonnées du point d'intersection $I$ de $d$ et $\\mathcal{P}$.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-8", "0", "-2"],
+					"variables": {
+						"x0": "-4",
+						"y0": "0",
+						"z0": "-4",
+						"u1": "2",
+						"u2": "0",
+						"u3": "-1",
+						"t0": "-2",
+						"h": "-2",
+						"ix": "-8",
+						"iy": "0"
+					}
+				}
+			]
+		}
+	]
+}

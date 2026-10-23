@@ -1,0 +1,670 @@
+{
+	"template_id": "4f8f420a-c93b-4d99-8fe2-acfac2d38cbe",
+	"titre": "Associer une formule à un nuage de points",
+	"sous_titre": "Reconnaître la formule explicite d'une suite arithmétique ou géométrique sur son nuage de points",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Représentation graphique > Associer formule et nuage",
+	"mis_a_jour": "2026-10-01T20:22:23.95164+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-221",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "a",
+						"expression": "1..8;±"
+					},
+					{
+						"name": "r",
+						"expression": "2..3;±"
+					}
+				],
+				"conditions": ["a+5*r >= -9", "a+5*r <= 13"],
+				"enonce_brut": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -10 ; 14\ngrille: 1 ; 2\nu(n) = {{a}}+({{r}})*n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$u_n={{eval:a+r*n}}$"
+					},
+					{
+						"content": "$u_n={{eval:a-r*n}}$"
+					},
+					{
+						"content": "$u_n={{eval:a+r+r*n}}$"
+					},
+					{
+						"content": "$u_n={{a}}\\times{{eval:r;()}}^n$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 246,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -2, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 29,
+						"valeurs": [
+							"u_n = 1 - 2 n",
+							"u_n = 2 - 2 n",
+							"u_n = 2 n + 1",
+							"u_n = 2 n + 2",
+							"u_n = 2 n + 3",
+							"u_n = 2 n - 1",
+							"u_n = 2 n - 2",
+							"u_n = 2 n - 3",
+							"u_n = 2 n - 4",
+							"u_n = 2 n - 5",
+							"u_n = 2 n - 6",
+							"u_n = 2 n - 7",
+							"u_n = 2 n - 8",
+							"u_n = 3 - 2 n",
+							"u_n = 3 n - 2",
+							"u_n = 3 n - 3",
+							"u_n = 3 n - 4",
+							"u_n = 3 n - 5",
+							"u_n = 3 n - 6",
+							"u_n = 3 n - 7",
+							"u_n = 3 n - 8",
+							"u_n = 4 - 2 n",
+							"u_n = 5 - 2 n",
+							"u_n = 6 - 2 n",
+							"u_n = 6 - 3 n",
+							"u_n = 7 - 2 n",
+							"u_n = 7 - 3 n",
+							"u_n = 8 - 2 n",
+							"u_n = 8 - 3 n"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 8,
+							"nb_distinctes": 8,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 8,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": -8,
+				"max": 8,
+				"nb_distinctes": 16,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -8,
+				"max": 8,
+				"nb_distinctes": 16,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "173/300",
+					"−": "157/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 6,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n = 5 - 3 n$\n- B. $u_n = 8 - 3 n$\n- C. $u_n = 3 n + 8$\n- D. $u_n=8\\times(-3)^n$",
+					"reponse": ["B. $u_n = 8 - 3 n$"],
+					"variables": {
+						"n": "n",
+						"a": "8",
+						"r": "-3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-8)",
+					"graine": 10,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n = -3 n - 8$\n- B. $u_n = 3 n - 5$\n- C. $u_n = 3 n - 8$\n- D. $u_n=-8\\times3^n$",
+					"reponse": ["C. $u_n = 3 n - 8$"],
+					"variables": {
+						"n": "n",
+						"a": "-8",
+						"r": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n = 2 n - 4$\n- B. $u_n=-4\\times2^n$\n- C. $u_n = -2 n - 4$\n- D. $u_n = 2 n - 2$",
+					"reponse": ["A. $u_n = 2 n - 4$"],
+					"variables": {
+						"n": "n",
+						"a": "-4",
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n = 2 n - 2$\n- B. $u_n = 2 n - 4$\n- C. $u_n = -2 n - 4$\n- D. $u_n=-4\\times2^n$",
+					"reponse": ["B. $u_n = 2 n - 4$"],
+					"variables": {
+						"n": "n",
+						"a": "-4",
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n = 2 n - 2$\n- B. $u_n = -2 n - 4$\n- C. $u_n=-4\\times2^n$\n- D. $u_n = 2 n - 4$",
+					"reponse": ["D. $u_n = 2 n - 4$"],
+					"variables": {
+						"n": "n",
+						"a": "-4",
+						"r": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "a",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -2 ; {{a}}*16+3\nu(n) = {{a}}*2^n pour n de 0 à 4   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$u_n={{a}}\\times 2^n$"
+					},
+					{
+						"content": "$u_n={{a}}\\times(-2)^n$"
+					},
+					{
+						"content": "$u_n={{eval:2*a}}\\times 2^n$"
+					},
+					{
+						"content": "$u_n={{eval:a+a*n}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 91,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"u_n=2\\times 2^n",
+							"u_n=3\\times 2^n",
+							"u_n=4\\times 2^n",
+							"u_n=5\\times 2^n"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 5,
+							"nb_distinctes": 4,
+							"valeurs": [2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": -2,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [-2, 2, 3, 4, 5, 6, 8, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": -2,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [-2, 2, 3, 4, 5, 6, 8, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 7,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n = 5 n + 5$\n- B. $u_n=5\\times 2^n$\n- C. $u_n=5\\times(-2)^n$\n- D. $u_n=10\\times 2^n$",
+					"reponse": ["B. $u_n=5\\times 2^n$"],
+					"variables": {
+						"n": "n",
+						"a": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-2)",
+					"graine": 1,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n=4\\times(-2)^n$\n- B. $u_n=4\\times 2^n$\n- C. $u_n=8\\times 2^n$\n- D. $u_n = 4 n + 4$",
+					"reponse": ["B. $u_n=4\\times 2^n$"],
+					"variables": {
+						"n": "n",
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n=3\\times 2^n$\n- B. $u_n=3\\times(-2)^n$\n- C. $u_n = 3 n + 3$\n- D. $u_n=6\\times 2^n$",
+					"reponse": ["A. $u_n=3\\times 2^n$"],
+					"variables": {
+						"n": "n",
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n=3\\times(-2)^n$\n- B. $u_n = 3 n + 3$\n- C. $u_n=6\\times 2^n$\n- D. $u_n=3\\times 2^n$",
+					"reponse": ["D. $u_n=3\\times 2^n$"],
+					"variables": {
+						"n": "n",
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n=4\\times 2^n$\n- B. $u_n=2\\times(-2)^n$\n- C. $u_n = 2 n + 2$\n- D. $u_n=2\\times 2^n$",
+					"reponse": ["D. $u_n=2\\times 2^n$"],
+					"variables": {
+						"n": "n",
+						"a": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "a",
+						"expression": "8|16|24|32"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le nuage de points ci-dessous représente les premiers termes d'une suite $(u_n)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -2 ; {{a}}+2\nu(n) = {{a}}*0.5^n pour n de 0 à 4   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, un point par rang n.\n```\n\nQuelle formule définit cette suite ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$u_n={{a}}\\times 0.5^n$"
+					},
+					{
+						"content": "$u_n={{a}}\\times(-0.5)^n$"
+					},
+					{
+						"content": "$u_n={{eval:a/2}}\\times 0.5^n$"
+					},
+					{
+						"content": "$u_n={{eval:a-a/2*n}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 91,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 32,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [8, 16, 24, 32]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"u_n=16\\times 0.5^n",
+							"u_n=24\\times 0.5^n",
+							"u_n=32\\times 0.5^n",
+							"u_n=8\\times 0.5^n"
+						],
+						"nombres_contenus": {
+							"min": 0.5,
+							"max": 32,
+							"nb_distinctes": 5,
+							"valeurs": [0.5, 8, 16, 24, 32],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 0.5,
+				"max": 32,
+				"nb_distinctes": 5,
+				"valeurs": [0.5, 8, 16, 24, 32],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": -0.5,
+				"max": 32,
+				"nb_distinctes": 8,
+				"valeurs": [-0.5, 0.5, 4, 8, 12, 16, 24, 32],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": -0.5,
+				"max": 32,
+				"nb_distinctes": 8,
+				"valeurs": [-0.5, 0.5, 4, 8, 12, 16, 24, 32],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (32)",
+					"graine": 7,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n = 32 - 16 n$\n- B. $u_n=32\\times 0{,}5^n$\n- C. $u_n=32\\times(-0{,}5)^n$\n- D. $u_n=16\\times 0{,}5^n$",
+					"reponse": ["B. $u_n=32\\times 0{,}5^n$"],
+					"variables": {
+						"n": "n",
+						"a": "32"
+					}
+				},
+				{
+					"role": "plus petite valeur (-0.5)",
+					"graine": 1,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n=24\\times(-0{,}5)^n$\n- B. $u_n=24\\times 0{,}5^n$\n- C. $u_n=12\\times 0{,}5^n$\n- D. $u_n = 24 - 12 n$",
+					"reponse": ["B. $u_n=24\\times 0{,}5^n$"],
+					"variables": {
+						"n": "n",
+						"a": "24"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n=16\\times 0{,}5^n$\n- B. $u_n=16\\times(-0{,}5)^n$\n- C. $u_n = 16 - 8 n$\n- D. $u_n=8\\times 0{,}5^n$",
+					"reponse": ["A. $u_n=16\\times 0{,}5^n$"],
+					"variables": {
+						"n": "n",
+						"a": "16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n=16\\times(-0{,}5)^n$\n- B. $u_n = 16 - 8 n$\n- C. $u_n=8\\times 0{,}5^n$\n- D. $u_n=16\\times 0{,}5^n$",
+					"reponse": ["D. $u_n=16\\times 0{,}5^n$"],
+					"variables": {
+						"n": "n",
+						"a": "16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le nuage de points ci-dessous représente les premiers termes d'une suite $\\left( u_n \\right)$ : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nQuelle formule définit cette suite ?\n\n- A. $u_n=4\\times 0{,}5^n$\n- B. $u_n=8\\times(-0{,}5)^n$\n- C. $u_n = 8 - 4 n$\n- D. $u_n=8\\times 0{,}5^n$",
+					"reponse": ["D. $u_n=8\\times 0{,}5^n$"],
+					"variables": {
+						"n": "n",
+						"a": "8"
+					}
+				}
+			]
+		}
+	]
+}

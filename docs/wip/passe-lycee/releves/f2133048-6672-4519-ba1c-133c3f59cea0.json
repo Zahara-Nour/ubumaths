@@ -1,0 +1,947 @@
+{
+	"template_id": "f2133048-6672-4519-ba1c-133c3f59cea0",
+	"titre": "Ensembles de points et images de z̄, iz dans le plan complexe",
+	"sous_titre": "|z − z_A| = r (cercle), |z − z_A| = |z − z_B| (médiatrice), |z̄ − w| = r (centre conjugué), image de z̄ et de iz (pièges : signe du centre, rayon au carré, conjugué oublié, symétrie et rotation confondues)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "multiple_choice",
+	"theme": "Nombres complexes > Géométrie et nombres complexes > Ensembles de points",
+	"mis_a_jour": "2026-10-05T16:03:09.311084+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-264",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "r",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "L'ensemble des points $M$ d'affixe $z$ tels que $|z-({{a}}{{if:b==1|+i|{{if:b==-1|-i|{{eval:b;+}}i}}}})|={{r}}$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "le cercle de centre le point d'affixe ${{eval:-a}}+({{eval:-b}})i$ et de rayon ${{r}}$"
+					},
+					{
+						"content": "le cercle de centre le point d'affixe ${{a}}+({{b}})i$ et de rayon ${{r}}$"
+					},
+					{
+						"content": "le cercle de centre le point d'affixe ${{a}}+({{b}})i$ et de rayon ${{eval:r^2}}$"
+					},
+					{
+						"content": "la droite passant par le point d'affixe ${{a}}+({{b}})i$ et par l'origine"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 219,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 219,
+						"exemples": [
+							"le cercle de centre le point d'affixe $-5 + \\imaginaryI$ et de rayon $6",
+							"le cercle de centre le point d'affixe $-2 - 3 \\imaginaryI$ et de rayon $4",
+							"le cercle de centre le point d'affixe $-5 - \\imaginaryI$ et de rayon $2",
+							"le cercle de centre le point d'affixe $-2 - 3 \\imaginaryI$ et de rayon $2",
+							"le cercle de centre le point d'affixe $3 - 3 \\imaginaryI$ et de rayon $5",
+							"le cercle de centre le point d'affixe $-5 + 2 \\imaginaryI$ et de rayon $3",
+							"le cercle de centre le point d'affixe $-5 + 5 \\imaginaryI$ et de rayon $5",
+							"le cercle de centre le point d'affixe $2 - 2 \\imaginaryI$ et de rayon $5",
+							"le cercle de centre le point d'affixe $4 - 4 \\imaginaryI$ et de rayon $6",
+							"le cercle de centre le point d'affixe $5 + 2 \\imaginaryI$ et de rayon $6",
+							"le cercle de centre le point d'affixe $1 + 2 \\imaginaryI$ et de rayon $4",
+							"le cercle de centre le point d'affixe $-2 - 5 \\imaginaryI$ et de rayon $2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 6,
+							"nb_distinctes": 6,
+							"valeurs": [1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 6,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 9, 16, 25, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": -5,
+				"max": 36,
+				"nb_distinctes": 15,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 9, 16, 25, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "231/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 47,
+					"max": 47
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (36)",
+					"graine": 1,
+					"enonce": "L'ensemble des points $M$ d'affixe $z$ tels que $\\left| z - \\left( -5 + \\imaginaryI \\right) \\right| = 6$ est :\n\n- A. le cercle de centre le point d'affixe $5 - \\imaginaryI$ et de rayon $6$\n- B. le cercle de centre le point d'affixe $-5 + \\imaginaryI$ et de rayon $6$\n- C. le cercle de centre le point d'affixe $-5 + \\imaginaryI$ et de rayon $36$\n- D. la droite passant par le point d'affixe $-5 + \\imaginaryI$ et par l'origine",
+					"reponse": [
+						"B. le cercle de centre le point d'affixe $-5 + \\imaginaryI$ et de rayon $6$"
+					],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"r": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "L'ensemble des points $M$ d'affixe $z$ tels que $\\left| z - \\left( -2 - 3 \\imaginaryI \\right) \\right| = 4$ est :\n\n- A. le cercle de centre le point d'affixe $2 + 3 \\imaginaryI$ et de rayon $4$\n- B. le cercle de centre le point d'affixe $-2 - 3 \\imaginaryI$ et de rayon $4$\n- C. le cercle de centre le point d'affixe $-2 - 3 \\imaginaryI$ et de rayon $16$\n- D. la droite passant par le point d'affixe $-2 - 3 \\imaginaryI$ et par l'origine",
+					"reponse": [
+						"B. le cercle de centre le point d'affixe $-2 - 3 \\imaginaryI$ et de rayon $4$"
+					],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"r": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "L'ensemble des points $M$ d'affixe $z$ tels que $\\left| z - \\left( -5 - \\imaginaryI \\right) \\right| = 2$ est :\n\n- A. le cercle de centre le point d'affixe $5 + \\imaginaryI$ et de rayon $2$\n- B. le cercle de centre le point d'affixe $-5 - \\imaginaryI$ et de rayon $2$\n- C. le cercle de centre le point d'affixe $-5 - \\imaginaryI$ et de rayon $4$\n- D. la droite passant par le point d'affixe $-5 - \\imaginaryI$ et par l'origine",
+					"reponse": [
+						"B. le cercle de centre le point d'affixe $-5 - \\imaginaryI$ et de rayon $2$"
+					],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "L'ensemble des points $M$ d'affixe $z$ tels que $\\left| z - \\left( -2 - 3 \\imaginaryI \\right) \\right| = 2$ est :\n\n- A. le cercle de centre le point d'affixe $2 + 3 \\imaginaryI$ et de rayon $2$\n- B. le cercle de centre le point d'affixe $-2 - 3 \\imaginaryI$ et de rayon $2$\n- C. le cercle de centre le point d'affixe $-2 - 3 \\imaginaryI$ et de rayon $4$\n- D. la droite passant par le point d'affixe $-2 - 3 \\imaginaryI$ et par l'origine",
+					"reponse": [
+						"B. le cercle de centre le point d'affixe $-2 - 3 \\imaginaryI$ et de rayon $2$"
+					],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "L'ensemble des points $M$ d'affixe $z$ tels que $\\left| z - \\left( 3 - 3 \\imaginaryI \\right) \\right| = 5$ est :\n\n- A. le cercle de centre le point d'affixe $-3 + 3 \\imaginaryI$ et de rayon $5$\n- B. le cercle de centre le point d'affixe $3 - 3 \\imaginaryI$ et de rayon $5$\n- C. le cercle de centre le point d'affixe $3 - 3 \\imaginaryI$ et de rayon $25$\n- D. la droite passant par le point d'affixe $3 - 3 \\imaginaryI$ et par l'origine",
+					"reponse": [
+						"B. le cercle de centre le point d'affixe $3 - 3 \\imaginaryI$ et de rayon $5$"
+					],
+					"variables": {
+						"a": "3",
+						"b": "-3",
+						"r": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": ["a != c or b != d"],
+				"enonce_brut": "$A$ et $B$ ont pour affixes ${{a}}+({{b}})i$ et ${{c}}+({{d}})i$. L'ensemble des points $M$ d'affixe $z$ tels que $|z-({{a}}{{if:b==1|+i|{{if:b==-1|-i|{{eval:b;+}}i}}}})|=|z-({{c}}{{if:d==1|+i|{{if:d==-1|-i|{{eval:d;+}}i}}}})|$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "la droite $(AB)$"
+					},
+					{
+						"content": "le cercle de diamètre $[AB]$"
+					},
+					{
+						"content": "le milieu du segment $[AB]$"
+					},
+					{
+						"content": "la médiatrice du segment $[AB]$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 295,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["la médiatrice du segment $[AB]"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "233/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "177/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "$A$ et $B$ ont pour affixes $-5 + \\imaginaryI$ et $5 + 5 \\imaginaryI$. L'ensemble des points $M$ d'affixe $z$ tels que $\\left| z - \\left( -5 + \\imaginaryI \\right) \\right| = \\left| z - \\left( 5 + 5 \\imaginaryI \\right) \\right|$ est :\n\n- A. la droite $(AB)$\n- B. le cercle de diamètre $[AB]$\n- C. le milieu du segment $[AB]$\n- D. la médiatrice du segment $[AB]$",
+					"reponse": ["D. la médiatrice du segment $[AB]$"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"c": "5",
+						"d": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$A$ et $B$ ont pour affixes $-2 - 3 \\imaginaryI$ et $1 + 4 \\imaginaryI$. L'ensemble des points $M$ d'affixe $z$ tels que $\\left| z - \\left( -2 - 3 \\imaginaryI \\right) \\right| = \\left| z - \\left( 1 + 4 \\imaginaryI \\right) \\right|$ est :\n\n- A. la droite $(AB)$\n- B. le cercle de diamètre $[AB]$\n- C. le milieu du segment $[AB]$\n- D. la médiatrice du segment $[AB]$",
+					"reponse": ["D. la médiatrice du segment $[AB]$"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "1",
+						"d": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$A$ et $B$ ont pour affixes $-5 - \\imaginaryI$ et $-5 + 3 \\imaginaryI$. L'ensemble des points $M$ d'affixe $z$ tels que $\\left| z - \\left( -5 - \\imaginaryI \\right) \\right| = \\left| z - \\left( -5 + 3 \\imaginaryI \\right) \\right|$ est :\n\n- A. la droite $(AB)$\n- B. le cercle de diamètre $[AB]$\n- C. le milieu du segment $[AB]$\n- D. la médiatrice du segment $[AB]$",
+					"reponse": ["D. la médiatrice du segment $[AB]$"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"c": "-5",
+						"d": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$A$ et $B$ ont pour affixes $-2 - 3 \\imaginaryI$ et $-5 - 3 \\imaginaryI$. L'ensemble des points $M$ d'affixe $z$ tels que $\\left| z - \\left( -2 - 3 \\imaginaryI \\right) \\right| = \\left| z - \\left( -5 - 3 \\imaginaryI \\right) \\right|$ est :\n\n- A. la droite $(AB)$\n- B. le cercle de diamètre $[AB]$\n- C. le milieu du segment $[AB]$\n- D. la médiatrice du segment $[AB]$",
+					"reponse": ["D. la médiatrice du segment $[AB]$"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "-5",
+						"d": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$A$ et $B$ ont pour affixes $3 - 3 \\imaginaryI$ et $2 - 5 \\imaginaryI$. L'ensemble des points $M$ d'affixe $z$ tels que $\\left| z - \\left( 3 - 3 \\imaginaryI \\right) \\right| = \\left| z - \\left( 2 - 5 \\imaginaryI \\right) \\right|$ est :\n\n- A. la droite $(AB)$\n- B. le cercle de diamètre $[AB]$\n- C. le milieu du segment $[AB]$\n- D. la médiatrice du segment $[AB]$",
+					"reponse": ["D. la médiatrice du segment $[AB]$"],
+					"variables": {
+						"a": "3",
+						"b": "-3",
+						"c": "2",
+						"d": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "r",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "L'ensemble des points $M$ d'affixe $z$ tels que $|\\overline{z}-({{a}}{{if:b==1|+i|{{if:b==-1|-i|{{eval:b;+}}i}}}})|={{r}}$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "le cercle de centre le point d'affixe ${{a}}-({{b}})i$ et de rayon ${{r}}$"
+					},
+					{
+						"content": "le cercle de centre le point d'affixe ${{a}}+({{b}})i$ et de rayon ${{r}}$"
+					},
+					{
+						"content": "le cercle de centre le point d'affixe ${{eval:-a}}+({{b}})i$ et de rayon ${{r}}$"
+					},
+					{
+						"content": "le cercle de centre l'origine et de rayon ${{r}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 219,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 219,
+						"exemples": [
+							"le cercle de centre le point d'affixe $-5 - \\imaginaryI$ et de rayon $6",
+							"le cercle de centre le point d'affixe $-2 + 3 \\imaginaryI$ et de rayon $4",
+							"le cercle de centre le point d'affixe $-5 + \\imaginaryI$ et de rayon $2",
+							"le cercle de centre le point d'affixe $-2 + 3 \\imaginaryI$ et de rayon $2",
+							"le cercle de centre le point d'affixe $3 + 3 \\imaginaryI$ et de rayon $5",
+							"le cercle de centre le point d'affixe $-5 - 2 \\imaginaryI$ et de rayon $3",
+							"le cercle de centre le point d'affixe $-5 - 5 \\imaginaryI$ et de rayon $5",
+							"le cercle de centre le point d'affixe $2 + 2 \\imaginaryI$ et de rayon $5",
+							"le cercle de centre le point d'affixe $4 + 4 \\imaginaryI$ et de rayon $6",
+							"le cercle de centre le point d'affixe $5 - 2 \\imaginaryI$ et de rayon $6",
+							"le cercle de centre le point d'affixe $1 - 2 \\imaginaryI$ et de rayon $4",
+							"le cercle de centre le point d'affixe $-2 + 5 \\imaginaryI$ et de rayon $2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 6,
+							"nb_distinctes": 6,
+							"valeurs": [1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 6,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -5,
+				"max": 6,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 45,
+					"max": 45
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "L'ensemble des points $M$ d'affixe $z$ tels que $|\\overline{z}-(-5+i)|=6$ est :\n\n- A. le cercle de centre le point d'affixe $-5 - \\imaginaryI$ et de rayon $6$\n- B. le cercle de centre le point d'affixe $-5 + \\imaginaryI$ et de rayon $6$\n- C. le cercle de centre le point d'affixe $5 + \\imaginaryI$ et de rayon $6$\n- D. le cercle de centre l'origine et de rayon $6$",
+					"reponse": [
+						"A. le cercle de centre le point d'affixe $-5 - \\imaginaryI$ et de rayon $6$"
+					],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"r": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "L'ensemble des points $M$ d'affixe $z$ tels que $|\\overline{z}-(-2-3i)|=4$ est :\n\n- A. le cercle de centre le point d'affixe $-2 + 3 \\imaginaryI$ et de rayon $4$\n- B. le cercle de centre le point d'affixe $-2 - 3 \\imaginaryI$ et de rayon $4$\n- C. le cercle de centre le point d'affixe $2 - 3 \\imaginaryI$ et de rayon $4$\n- D. le cercle de centre l'origine et de rayon $4$",
+					"reponse": [
+						"A. le cercle de centre le point d'affixe $-2 + 3 \\imaginaryI$ et de rayon $4$"
+					],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"r": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "L'ensemble des points $M$ d'affixe $z$ tels que $|\\overline{z}-(-5-i)|=2$ est :\n\n- A. le cercle de centre le point d'affixe $-5 + \\imaginaryI$ et de rayon $2$\n- B. le cercle de centre le point d'affixe $-5 - \\imaginaryI$ et de rayon $2$\n- C. le cercle de centre le point d'affixe $5 - \\imaginaryI$ et de rayon $2$\n- D. le cercle de centre l'origine et de rayon $2$",
+					"reponse": [
+						"A. le cercle de centre le point d'affixe $-5 + \\imaginaryI$ et de rayon $2$"
+					],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "L'ensemble des points $M$ d'affixe $z$ tels que $|\\overline{z}-(-2-3i)|=2$ est :\n\n- A. le cercle de centre le point d'affixe $-2 + 3 \\imaginaryI$ et de rayon $2$\n- B. le cercle de centre le point d'affixe $-2 - 3 \\imaginaryI$ et de rayon $2$\n- C. le cercle de centre le point d'affixe $2 - 3 \\imaginaryI$ et de rayon $2$\n- D. le cercle de centre l'origine et de rayon $2$",
+					"reponse": [
+						"A. le cercle de centre le point d'affixe $-2 + 3 \\imaginaryI$ et de rayon $2$"
+					],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "L'ensemble des points $M$ d'affixe $z$ tels que $|\\overline{z}-(3-3i)|=5$ est :\n\n- A. le cercle de centre le point d'affixe $3 + 3 \\imaginaryI$ et de rayon $5$\n- B. le cercle de centre le point d'affixe $3 - 3 \\imaginaryI$ et de rayon $5$\n- C. le cercle de centre le point d'affixe $-3 - 3 \\imaginaryI$ et de rayon $5$\n- D. le cercle de centre l'origine et de rayon $5$",
+					"reponse": [
+						"A. le cercle de centre le point d'affixe $3 + 3 \\imaginaryI$ et de rayon $5$"
+					],
+					"variables": {
+						"a": "3",
+						"b": "-3",
+						"r": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Le point $M$ a pour affixe $z$. Le point $M'$ d'affixe $\\overline{z}$ est l'image de $M$ par :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "la symétrie de centre $O$"
+					},
+					{
+						"content": "la symétrie d'axe l'axe des réels"
+					},
+					{
+						"content": "la symétrie d'axe l'axe des imaginaires purs"
+					},
+					{
+						"content": "la rotation de centre $O$ et d'angle $\\frac{\\pi}{2}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["la symétrie d'axe l'axe des réels"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Le point $M$ a pour affixe $z$. Le point $M'$ d'affixe $\\overline{z}$ est l'image de $M$ par :\n\n- A. la symétrie de centre $O$\n- B. la symétrie d'axe l'axe des réels\n- C. la symétrie d'axe l'axe des imaginaires purs\n- D. la rotation de centre $O$ et d'angle $\\frac{\\pi}{2}$",
+					"reponse": ["B. la symétrie d'axe l'axe des réels"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Le point $M$ a pour affixe $z$. Le point $M'$ d'affixe $iz$ est l'image de $M$ par :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "la symétrie d'axe l'axe des imaginaires purs"
+					},
+					{
+						"content": "la symétrie de centre $O$"
+					},
+					{
+						"content": "la rotation de centre $O$ et d'angle $\\frac{\\pi}{2}$"
+					},
+					{
+						"content": "la symétrie d'axe l'axe des réels"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["la rotation de centre $O$ et d'angle $\\frac{\\pi}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2,
+							"nb_distinctes": 1,
+							"valeurs": [2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Le point $M$ a pour affixe $z$. Le point $M'$ d'affixe $\\imaginaryI z$ est l'image de $M$ par :\n\n- A. la symétrie d'axe l'axe des imaginaires purs\n- B. la symétrie de centre $O$\n- C. la rotation de centre $O$ et d'angle $\\frac{\\pi}{2}$\n- D. la symétrie d'axe l'axe des réels",
+					"reponse": ["C. la rotation de centre $O$ et d'angle $\\frac{\\pi}{2}$"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

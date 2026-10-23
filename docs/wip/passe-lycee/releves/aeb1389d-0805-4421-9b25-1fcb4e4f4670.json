@@ -1,0 +1,819 @@
+{
+	"template_id": "aeb1389d-0805-4421-9b25-1fcb4e4f4670",
+	"titre": "Évolution en pourcentage et suite géométrique",
+	"sous_titre": "Hausse ou baisse de t % par période : raison, puis expression de uₙ",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Modélisation > Pourcentages",
+	"mis_a_jour": "2026-10-01T20:22:25.212978+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-230",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "20..99"
+					},
+					{
+						"name": "u0",
+						"expression": "eval:100*k"
+					},
+					{
+						"name": "t",
+						"expression": "1|2|3|4|5|6|8|10|12|15|20|25"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une ville compte ${{u0}}$ habitants en 2025 et sa population augmente de ${{t}}\\,\\%$ par an. On note $u_n$ le nombre d'habitants $n$ années après 2025 : la suite $(u_n)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q=?$",
+				"reponses_brutes": ["{{eval:1+t/100;d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 257,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 78
+					}
+				},
+				{
+					"nom": "u0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2000,
+						"max": 9900,
+						"negatif_possible": false,
+						"nb_distinctes": 78
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 1.01,
+						"max": 1.25,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1.01, 1.02, 1.03, 1.04, 1.05, 1.06, 1.08, 1.1, 1.12, 1.15, 1.2, 1.25]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9900,
+				"nb_distinctes": 91,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1.01,
+				"max": 1.25,
+				"nb_distinctes": 12,
+				"valeurs": [1.01, 1.02, 1.03, 1.04, 1.05, 1.06, 1.08, 1.1, 1.12, 1.15, 1.2, 1.25],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9900,
+				"nb_distinctes": 103,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9900)",
+					"graine": 37,
+					"enonce": "Une ville compte $9\\,900$ habitants en 2025 et sa population augmente de $1\\,\\%$ par an. On note $u_n$ le nombre d'habitants $n$ années après 2025 : la suite $\\left( u_n \\right)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q = [?]$",
+					"reponse": ["1.01"],
+					"variables": {
+						"k": "99",
+						"u0": "9900",
+						"t": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 13,
+					"enonce": "Une ville compte $4\\,800$ habitants en 2025 et sa population augmente de $1\\,\\%$ par an. On note $u_n$ le nombre d'habitants $n$ années après 2025 : la suite $\\left( u_n \\right)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q = [?]$",
+					"reponse": ["1.01"],
+					"variables": {
+						"k": "48",
+						"u0": "4800",
+						"t": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une ville compte $2\\,000$ habitants en 2025 et sa population augmente de $8\\,\\%$ par an. On note $u_n$ le nombre d'habitants $n$ années après 2025 : la suite $\\left( u_n \\right)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q = [?]$",
+					"reponse": ["1.08"],
+					"variables": {
+						"k": "20",
+						"u0": "2000",
+						"t": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une ville compte $4\\,500$ habitants en 2025 et sa population augmente de $4\\,\\%$ par an. On note $u_n$ le nombre d'habitants $n$ années après 2025 : la suite $\\left( u_n \\right)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q = [?]$",
+					"reponse": ["1.04"],
+					"variables": {
+						"k": "45",
+						"u0": "4500",
+						"t": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une ville compte $2\\,300$ habitants en 2025 et sa population augmente de $6\\,\\%$ par an. On note $u_n$ le nombre d'habitants $n$ années après 2025 : la suite $\\left( u_n \\right)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q = [?]$",
+					"reponse": ["1.06"],
+					"variables": {
+						"k": "23",
+						"u0": "2300",
+						"t": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "12..45"
+					},
+					{
+						"name": "u0",
+						"expression": "eval:1000*k"
+					},
+					{
+						"name": "t",
+						"expression": "1|2|3|4|5|6|8|10|12|15|20|25|30"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une voiture neuve vaut ${{u0}}$ € en 2025 et perd ${{t}}\\,\\%$ de sa valeur chaque année. On note $u_n$ sa valeur $n$ années après 2025 : la suite $(u_n)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q=?$",
+				"reponses_brutes": ["{{eval:1-t/100;d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 221,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 12,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 34
+					}
+				},
+				{
+					"nom": "u0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 12000,
+						"max": 45000,
+						"negatif_possible": false,
+						"nb_distinctes": 34
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.7,
+						"max": 0.99,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [0.7, 0.75, 0.8, 0.85, 0.88, 0.9, 0.92, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 45000,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_reponse": {
+				"min": 0.7,
+				"max": 0.99,
+				"nb_distinctes": 13,
+				"valeurs": [0.7, 0.75, 0.8, 0.85, 0.88, 0.9, 0.92, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.7,
+				"max": 45000,
+				"nb_distinctes": 61,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (45000)",
+					"graine": 37,
+					"enonce": "Une voiture neuve vaut $45\\,000$ € en 2025 et perd $1\\,\\%$ de sa valeur chaque année. On note $u_n$ sa valeur $n$ années après 2025 : la suite $\\left( u_n \\right)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q = [?]$",
+					"reponse": ["0.99"],
+					"variables": {
+						"k": "45",
+						"u0": "45000",
+						"t": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.7)",
+					"graine": 7,
+					"enonce": "Une voiture neuve vaut $14\\,000$ € en 2025 et perd $30\\,\\%$ de sa valeur chaque année. On note $u_n$ sa valeur $n$ années après 2025 : la suite $\\left( u_n \\right)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q = [?]$",
+					"reponse": ["0.7"],
+					"variables": {
+						"k": "14",
+						"u0": "14000",
+						"t": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une voiture neuve vaut $12\\,000$ € en 2025 et perd $8\\,\\%$ de sa valeur chaque année. On note $u_n$ sa valeur $n$ années après 2025 : la suite $\\left( u_n \\right)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q = [?]$",
+					"reponse": ["0.92"],
+					"variables": {
+						"k": "12",
+						"u0": "12000",
+						"t": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une voiture neuve vaut $23\\,000$ € en 2025 et perd $4\\,\\%$ de sa valeur chaque année. On note $u_n$ sa valeur $n$ années après 2025 : la suite $\\left( u_n \\right)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q = [?]$",
+					"reponse": ["0.96"],
+					"variables": {
+						"k": "23",
+						"u0": "23000",
+						"t": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une voiture neuve vaut $13\\,000$ € en 2025 et perd $6\\,\\%$ de sa valeur chaque année. On note $u_n$ sa valeur $n$ années après 2025 : la suite $\\left( u_n \\right)$ est géométrique.\n\nQuelle est sa raison ?\n\n$q = [?]$",
+					"reponse": ["0.94"],
+					"variables": {
+						"k": "13",
+						"u0": "13000",
+						"t": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "20..99"
+					},
+					{
+						"name": "u0",
+						"expression": "eval:10*k"
+					},
+					{
+						"name": "t",
+						"expression": "1|2|3|4|5|6|8|10|12|15|20|25"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une colonie compte ${{u0}}$ bactéries. Son effectif augmente de ${{t}}\\,\\%$ par heure. On note $u_n$ l'effectif au bout de $n$ heures, avec $u_0={{u0}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+				"reponses_brutes": ["{{u0}}\\times{{eval:1+t/100;d}}^n"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 257,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 78
+					}
+				},
+				{
+					"nom": "u0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 200,
+						"max": 990,
+						"negatif_possible": false,
+						"nb_distinctes": 78
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 257,
+						"exemples": [
+							"200\\times1.08^n",
+							"450\\times1.04^n",
+							"230\\times1.06^n",
+							"460\\times1.03^n",
+							"810\\times1.03^n",
+							"200\\times1.1^n",
+							"240\\times1.25^n",
+							"700\\times1.04^n",
+							"880\\times1.02^n",
+							"930\\times1.12^n",
+							"620\\times1.1^n",
+							"260\\times1.08^n"
+						],
+						"nombres_contenus": {
+							"min": 1.01,
+							"max": 990,
+							"nb_distinctes": 90,
+							"nature": "décimal",
+							"decimales_max": 2,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 990,
+				"nb_distinctes": 91,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1.01,
+				"max": 990,
+				"nb_distinctes": 90,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 990,
+				"nb_distinctes": 103,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"%": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (990)",
+					"graine": 37,
+					"enonce": "Une colonie compte $990$ bactéries. Son effectif augmente de $1\\,\\%$ par heure. On note $u_n$ l'effectif au bout de $n$ heures, avec $u_0 = 990$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["990\\times1.01^n"],
+					"variables": {
+						"k": "99",
+						"u0": "990",
+						"t": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Une colonie compte $200$ bactéries. Son effectif augmente de $8\\,\\%$ par heure. On note $u_n$ l'effectif au bout de $n$ heures, avec $u_0 = 200$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["200\\times1.08^n"],
+					"variables": {
+						"k": "20",
+						"u0": "200",
+						"t": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une colonie compte $450$ bactéries. Son effectif augmente de $4\\,\\%$ par heure. On note $u_n$ l'effectif au bout de $n$ heures, avec $u_0 = 450$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["450\\times1.04^n"],
+					"variables": {
+						"k": "45",
+						"u0": "450",
+						"t": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une colonie compte $230$ bactéries. Son effectif augmente de $6\\,\\%$ par heure. On note $u_n$ l'effectif au bout de $n$ heures, avec $u_0 = 230$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["230\\times1.06^n"],
+					"variables": {
+						"k": "23",
+						"u0": "230",
+						"t": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une colonie compte $460$ bactéries. Son effectif augmente de $3\\,\\%$ par heure. On note $u_n$ l'effectif au bout de $n$ heures, avec $u_0 = 460$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["460\\times1.03^n"],
+					"variables": {
+						"k": "46",
+						"u0": "460",
+						"t": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "10..60"
+					},
+					{
+						"name": "u0",
+						"expression": "eval:10*k"
+					},
+					{
+						"name": "t",
+						"expression": "1|2|3|4|5|6|8|10|12|15|20|25|30"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On injecte ${{u0}}$ mg d'un médicament dans le sang d'un patient. La quantité présente diminue de ${{t}}\\,\\%$ par heure. On note $u_n$ la quantité (en mg) au bout de $n$ heures, avec $u_0={{u0}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+				"reponses_brutes": ["{{u0}}\\times{{eval:1-t/100;d}}^n"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 238,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 50
+					}
+				},
+				{
+					"nom": "u0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 600,
+						"negatif_possible": false,
+						"nb_distinctes": 50
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 238,
+						"exemples": [
+							"100\\times0.92^n",
+							"260\\times0.96^n",
+							"110\\times0.94^n",
+							"260\\times0.97^n",
+							"490\\times0.97^n",
+							"100\\times0.88^n",
+							"130\\times0.7^n",
+							"410\\times0.96^n",
+							"530\\times0.98^n",
+							"560\\times0.88^n",
+							"370\\times0.9^n",
+							"130\\times0.9^n"
+						],
+						"nombres_contenus": {
+							"min": 0.7,
+							"max": 600,
+							"nb_distinctes": 63,
+							"nature": "décimal",
+							"decimales_max": 2,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 600,
+				"nb_distinctes": 64,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 0.7,
+				"max": 600,
+				"nb_distinctes": 63,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 600,
+				"nb_distinctes": 77,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 32,
+					"max": 32
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 37,
+					"enonce": "On injecte $600$ mg d'un médicament dans le sang d'un patient. La quantité présente diminue de $1\\,\\%$ par heure. On note $u_n$ la quantité (en mg) au bout de $n$ heures, avec $u_0 = 600$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["600\\times0.99^n"],
+					"variables": {
+						"k": "60",
+						"u0": "600",
+						"t": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On injecte $100$ mg d'un médicament dans le sang d'un patient. La quantité présente diminue de $8\\,\\%$ par heure. On note $u_n$ la quantité (en mg) au bout de $n$ heures, avec $u_0 = 100$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["100\\times0.92^n"],
+					"variables": {
+						"k": "10",
+						"u0": "100",
+						"t": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On injecte $260$ mg d'un médicament dans le sang d'un patient. La quantité présente diminue de $4\\,\\%$ par heure. On note $u_n$ la quantité (en mg) au bout de $n$ heures, avec $u_0 = 260$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["260\\times0.96^n"],
+					"variables": {
+						"k": "26",
+						"u0": "260",
+						"t": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On injecte $110$ mg d'un médicament dans le sang d'un patient. La quantité présente diminue de $6\\,\\%$ par heure. On note $u_n$ la quantité (en mg) au bout de $n$ heures, avec $u_0 = 110$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["110\\times0.94^n"],
+					"variables": {
+						"k": "11",
+						"u0": "110",
+						"t": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On injecte $260$ mg d'un médicament dans le sang d'un patient. La quantité présente diminue de $3\\,\\%$ par heure. On note $u_n$ la quantité (en mg) au bout de $n$ heures, avec $u_0 = 260$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["260\\times0.97^n"],
+					"variables": {
+						"k": "26",
+						"u0": "260",
+						"t": "3"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,742 @@
+{
+	"template_id": "146a7c79-ad5c-443c-85a1-c8d0014c2ad8",
+	"titre": "Comportement d'une suite sur l'escalier",
+	"sous_titre": "Construction en escalier : sens de variation et convergence ou divergence de la suite",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Représentation graphique > Escalier",
+	"mis_a_jour": "2026-10-01T20:22:24.407654+00:00",
+	"points_candidats": [
+		{
+			"decision": "SANS_POINT",
+			"code": "",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "u0",
+						"expression": "0..2"
+					},
+					{
+						"name": "L",
+						"expression": "eval:2*b"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b+2}}\ny: -1 ; {{eval:2*b+2}}\nu(0) = {{u0}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ semble croissante et converger"
+					},
+					{
+						"content": "$(u_n)$ semble décroissante et converger"
+					},
+					{
+						"content": "$(u_n)$ semble croissante et tendre vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ semble décroissante et tendre vers $-\\infty$"
+					},
+					{
+						"content": "$(u_n)$ ne semble ni croissante ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "u0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				},
+				{
+					"nom": "L",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [4, 6, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["(u_n)$ semble croissante et converger"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 59,
+					"max": 59
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie par son premier terme $u_0$ et la relation $u_{n + 1} = f\\left( u_n \\right)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y = x$ et l'escalier qui part de $u_0$.\n\n[courbe]\n\nQue semble-t-il se passer pour la suite $\\left( u_n \\right)$ ?\n\n- A. $(u_n)$ semble croissante et converger\n- B. $(u_n)$ semble décroissante et converger\n- C. $(u_n)$ semble croissante et tendre vers $+\\infty$\n- D. $(u_n)$ semble décroissante et tendre vers $-\\infty$\n- E. $(u_n)$ ne semble ni croissante ni décroissante",
+					"reponse": ["A. $(u_n)$ semble croissante et converger"],
+					"variables": {
+						"b": "2",
+						"u0": "1",
+						"L": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "d",
+						"expression": "3|4"
+					},
+					{
+						"name": "L",
+						"expression": "eval:2*b"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b+5}}\ny: -1 ; {{eval:2*b+5}}\nu(0) = {{eval:2*b+d}} ; u(n+1) = 0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ semble croissante et converger"
+					},
+					{
+						"content": "$(u_n)$ semble décroissante et converger"
+					},
+					{
+						"content": "$(u_n)$ semble croissante et tendre vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ semble décroissante et tendre vers $-\\infty$"
+					},
+					{
+						"content": "$(u_n)$ ne semble ni croissante ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3, 4]
+					}
+				},
+				{
+					"nom": "L",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 4, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["(u_n)$ semble décroissante et converger"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 59,
+					"max": 59
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie par son premier terme $u_0$ et la relation $u_{n + 1} = f\\left( u_n \\right)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y = x$ et l'escalier qui part de $u_0$.\n\n[courbe]\n\nQue semble-t-il se passer pour la suite $\\left( u_n \\right)$ ?\n\n- A. $(u_n)$ semble croissante et converger\n- B. $(u_n)$ semble décroissante et converger\n- C. $(u_n)$ semble croissante et tendre vers $+\\infty$\n- D. $(u_n)$ semble décroissante et tendre vers $-\\infty$\n- E. $(u_n)$ ne semble ni croissante ni décroissante",
+					"reponse": ["B. $(u_n)$ semble décroissante et converger"],
+					"variables": {
+						"b": "1",
+						"d": "4",
+						"L": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..3"
+					},
+					{
+						"name": "d",
+						"expression": "0.5|1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:c+8*d+1}}\ny: -1 ; {{eval:c+8*d+1}}\nu(0) = {{eval:c+d}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ semble croissante et converger"
+					},
+					{
+						"content": "$(u_n)$ semble décroissante et converger"
+					},
+					{
+						"content": "$(u_n)$ semble croissante et tendre vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ semble décroissante et tendre vers $-\\infty$"
+					},
+					{
+						"content": "$(u_n)$ ne semble ni croissante ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 0.5,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0.5, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["(u_n)$ semble croissante et tendre vers $+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 59,
+					"max": 59
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie par son premier terme $u_0$ et la relation $u_{n + 1} = f\\left( u_n \\right)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y = x$ et l'escalier qui part de $u_0$.\n\n[courbe]\n\nQue semble-t-il se passer pour la suite $\\left( u_n \\right)$ ?\n\n- A. $(u_n)$ semble croissante et converger\n- B. $(u_n)$ semble décroissante et converger\n- C. $(u_n)$ semble croissante et tendre vers $+\\infty$\n- D. $(u_n)$ semble décroissante et tendre vers $-\\infty$\n- E. $(u_n)$ ne semble ni croissante ni décroissante",
+					"reponse": ["C. $(u_n)$ semble croissante et tendre vers $+\\infty$"],
+					"variables": {
+						"c": "1",
+						"d": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "4..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: {{eval:c-9}} ; {{eval:c+2}}\ny: {{eval:c-9}} ; {{eval:c+2}}\nu(0) = {{eval:c-1}} ; u(n+1) = 2*u(n)-{{c}} pour n de 0 à 3   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ semble croissante et converger"
+					},
+					{
+						"content": "$(u_n)$ semble décroissante et converger"
+					},
+					{
+						"content": "$(u_n)$ semble croissante et tendre vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ semble décroissante et tendre vers $-\\infty$"
+					},
+					{
+						"content": "$(u_n)$ ne semble ni croissante ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["(u_n)$ semble décroissante et tendre vers $-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 59,
+					"max": 59
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie par son premier terme $u_0$ et la relation $u_{n + 1} = f\\left( u_n \\right)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y = x$ et l'escalier qui part de $u_0$.\n\n[courbe]\n\nQue semble-t-il se passer pour la suite $\\left( u_n \\right)$ ?\n\n- A. $(u_n)$ semble croissante et converger\n- B. $(u_n)$ semble décroissante et converger\n- C. $(u_n)$ semble croissante et tendre vers $+\\infty$\n- D. $(u_n)$ semble décroissante et tendre vers $-\\infty$\n- E. $(u_n)$ ne semble ni croissante ni décroissante",
+					"reponse": ["D. $(u_n)$ semble décroissante et tendre vers $-\\infty$"],
+					"variables": {
+						"c": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "3|6"
+					},
+					{
+						"name": "d",
+						"expression": "3|4|-2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie par son premier terme $u_0$ et la relation $u_{n+1}=f(u_n)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y=x$ et l'escalier qui part de $u_0$.\n\n```courbe\nx: -1 ; {{eval:2*b/3+5}}\ny: -1 ; {{eval:2*b/3+5}}\nu(0) = {{eval:2*b/3+d}} ; u(n+1) = -0.5*u(n)+{{b}} pour n de 0 à 5   rouge   escalier   nom=C_f\ntaille: moyenne\ndescription: Courbe de la fonction f, droite d'équation y = x et escalier de la suite (u_n) construit à partir de u_0 sur l'axe des abscisses.\n```\n\nQue semble-t-il se passer pour la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ semble croissante et converger"
+					},
+					{
+						"content": "$(u_n)$ semble décroissante et converger"
+					},
+					{
+						"content": "$(u_n)$ semble croissante et tendre vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ semble décroissante et tendre vers $-\\infty$"
+					},
+					{
+						"content": "$(u_n)$ ne semble ni croissante ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3, 6]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["(u_n)$ ne semble ni croissante ni décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 59,
+					"max": 59
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie par son premier terme $u_0$ et la relation $u_{n + 1} = f\\left( u_n \\right)$. On a tracé ci-dessous la courbe $\\mathcal{C}_f$ de $f$, la droite d'équation $y = x$ et l'escalier qui part de $u_0$.\n\n[courbe]\n\nQue semble-t-il se passer pour la suite $\\left( u_n \\right)$ ?\n\n- A. $(u_n)$ semble croissante et converger\n- B. $(u_n)$ semble décroissante et converger\n- C. $(u_n)$ semble croissante et tendre vers $+\\infty$\n- D. $(u_n)$ semble décroissante et tendre vers $-\\infty$\n- E. $(u_n)$ ne semble ni croissante ni décroissante",
+					"reponse": ["E. $(u_n)$ ne semble ni croissante ni décroissante"],
+					"variables": {
+						"b": "3",
+						"d": "4"
+					}
+				}
+			]
+		}
+	]
+}

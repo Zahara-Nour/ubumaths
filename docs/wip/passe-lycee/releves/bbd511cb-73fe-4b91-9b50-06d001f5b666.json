@@ -1,0 +1,496 @@
+{
+	"template_id": "bbd511cb-73fe-4b91-9b50-06d001f5b666",
+	"titre": "Trouver le taux d'évolution réciproque",
+	"sous_titre": "Évolution qui ramène à la valeur initiale",
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Variations",
+	"mis_a_jour": "2026-10-04T14:09:14.854878+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-379",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "t",
+						"expression": "25|60|100|150|300|400|900"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une grandeur subit une hausse de ${{t}}\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $?$.",
+				"reponses_brutes": ["{{eval:-100*t/(100+t);d}}%"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 7,
+			"variables": [
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 25,
+						"max": 900,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [25, 60, 100, 150, 300, 400, 900]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 7,
+						"valeurs": ["-20%", "-37.5%", "-50%", "-60%", "-75%", "-80%", "-90%"],
+						"nombres_contenus": {
+							"min": -90,
+							"max": -20,
+							"nb_distinctes": 7,
+							"valeurs": [-90, -80, -75, -60, -50, -37.5, -20],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 25,
+				"max": 900,
+				"nb_distinctes": 7,
+				"valeurs": [25, 60, 100, 150, 300, 400, 900],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": -90,
+				"max": -20,
+				"nb_distinctes": 7,
+				"valeurs": [-90, -80, -75, -60, -50, -37.5, -20],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -90,
+				"max": 900,
+				"nb_distinctes": 14,
+				"valeurs": [-90, -80, -75, -60, -50, -37.5, -20, 25, 60, 100, 150, 300, 400, 900],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (900)",
+					"graine": 10,
+					"enonce": "Une grandeur subit une hausse de $900\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $[?]$.",
+					"reponse": ["-90%"],
+					"variables": {
+						"t": "900"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une grandeur subit une hausse de $25\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $[?]$.",
+					"reponse": ["-20%"],
+					"variables": {
+						"t": "25"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une grandeur subit une hausse de $100\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $[?]$.",
+					"reponse": ["-50%"],
+					"variables": {
+						"t": "100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une grandeur subit une hausse de $400\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $[?]$.",
+					"reponse": ["-80%"],
+					"variables": {
+						"t": "400"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une grandeur subit une hausse de $300\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $[?]$.",
+					"reponse": ["-75%"],
+					"variables": {
+						"t": "300"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "t",
+						"expression": "20|50|60|75|80|90"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une grandeur subit une baisse de ${{t}}\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $?$.",
+				"reponses_brutes": ["{{eval:100*t/(100-t);d}}%"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [20, 50, 60, 75, 80, 90]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 6,
+						"valeurs": ["100%", "150%", "25%", "300%", "400%", "900%"],
+						"nombres_contenus": {
+							"min": 25,
+							"max": 900,
+							"nb_distinctes": 6,
+							"valeurs": [25, 100, 150, 300, 400, 900],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 20,
+				"max": 90,
+				"nb_distinctes": 6,
+				"valeurs": [20, 50, 60, 75, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 25,
+				"max": 900,
+				"nb_distinctes": 6,
+				"valeurs": [25, 100, 150, 300, 400, 900],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 20,
+				"max": 900,
+				"nb_distinctes": 12,
+				"valeurs": [20, 25, 50, 60, 75, 80, 90, 100, 150, 300, 400, 900],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (900)",
+					"graine": 9,
+					"enonce": "Une grandeur subit une baisse de $90\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $[?]$.",
+					"reponse": ["900%"],
+					"variables": {
+						"t": "90"
+					}
+				},
+				{
+					"role": "plus petite valeur (20)",
+					"graine": 1,
+					"enonce": "Une grandeur subit une baisse de $20\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $[?]$.",
+					"reponse": ["25%"],
+					"variables": {
+						"t": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une grandeur subit une baisse de $50\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $[?]$.",
+					"reponse": ["100%"],
+					"variables": {
+						"t": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une grandeur subit une baisse de $80\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $[?]$.",
+					"reponse": ["400%"],
+					"variables": {
+						"t": "80"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une grandeur subit une baisse de $75\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale.\n\nLe taux d'évolution réciproque est $[?]$.",
+					"reponse": ["300%"],
+					"variables": {
+						"t": "75"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "t",
+						"expression": "10|15|30|35|40|45|70|80"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une grandeur subit une hausse de ${{t}}\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale, arrondi à $0{,}1\\,\\%$ près.\n\nLe taux d'évolution réciproque est environ $?$.",
+				"reponses_brutes": ["{{eval:round(-1000*t/(100+t))/10;d}}%"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 80,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [10, 15, 30, 35, 40, 45, 70, 80]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["-13%", "-23.1%", "-25.9%", "-28.6%", "-31%", "-41.2%", "-44.4%", "-9.1%"],
+						"nombres_contenus": {
+							"min": -44.4,
+							"max": -9.1,
+							"nb_distinctes": 8,
+							"valeurs": [-44.4, -41.2, -31, -28.6, -25.9, -23.1, -13, -9.1],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.1,
+				"max": 80,
+				"nb_distinctes": 9,
+				"valeurs": [0.1, 10, 15, 30, 35, 40, 45, 70, 80],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -44.4,
+				"max": -9.1,
+				"nb_distinctes": 8,
+				"valeurs": [-44.4, -41.2, -31, -28.6, -25.9, -23.1, -13, -9.1],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -44.4,
+				"max": 80,
+				"nb_distinctes": 17,
+				"valeurs": [
+					-44.4, -41.2, -31, -28.6, -25.9, -23.1, -13, -9.1, 0.1, 10, 15, 30, 35, 40, 45, 70, 80
+				],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 25,
+					"max": 25
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (80)",
+					"graine": 10,
+					"enonce": "Une grandeur subit une hausse de $80\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale, arrondi à $0{,}1\\,\\%$ près.\n\nLe taux d'évolution réciproque est environ $[?]$.",
+					"reponse": ["-44.4%"],
+					"variables": {
+						"t": "80"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une grandeur subit une hausse de $10\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale, arrondi à $0{,}1\\,\\%$ près.\n\nLe taux d'évolution réciproque est environ $[?]$.",
+					"reponse": ["-9.1%"],
+					"variables": {
+						"t": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une grandeur subit une hausse de $30\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale, arrondi à $0{,}1\\,\\%$ près.\n\nLe taux d'évolution réciproque est environ $[?]$.",
+					"reponse": ["-23.1%"],
+					"variables": {
+						"t": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une grandeur subit une hausse de $70\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale, arrondi à $0{,}1\\,\\%$ près.\n\nLe taux d'évolution réciproque est environ $[?]$.",
+					"reponse": ["-41.2%"],
+					"variables": {
+						"t": "70"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une grandeur subit une hausse de $45\\,\\%$. Donne le taux d'évolution (en %) qui la ramène à sa valeur initiale, arrondi à $0{,}1\\,\\%$ près.\n\nLe taux d'évolution réciproque est environ $[?]$.",
+					"reponse": ["-31%"],
+					"variables": {
+						"t": "45"
+					}
+				}
+			]
+		}
+	]
+}

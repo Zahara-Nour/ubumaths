@@ -1,0 +1,696 @@
+{
+	"template_id": "3aca54e9-28c7-4ea4-930b-30be6979549b",
+	"titre": "Combinaisons en situation : délégués, mains de cartes, loto, poignées de main",
+	"sous_titre": "Parties à k éléments d'un ensemble à n éléments comptées par la formule : délégués, mains de cartes, grille de loto, poignées de main (pièges : arrangement au lieu de combinaison, soit k! fois trop ; compter deux fois chaque poignée de main)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > Combinaisons",
+	"mis_a_jour": "2026-10-05T08:35:44.593811+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-312",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "25..35"
+					},
+					{
+						"name": "k",
+						"expression": "2..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans une classe de ${{n}}$ élèves, on désigne ${{k}}$ élèves pour représenter la classe au conseil, sans rôle particulier.\n\nCombien de groupes de représentants sont possibles ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(n,k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 22,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 25,
+						"max": 35,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 300,
+						"max": 6545,
+						"negatif_possible": false,
+						"nb_distinctes": 22,
+						"valeurs": [
+							300, 325, 351, 378, 406, 435, 465, 496, 528, 561, 595, 2300, 2600, 2925, 3276, 3654,
+							4060, 4495, 4960, 5456, 5984, 6545
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 35,
+				"nb_distinctes": 13,
+				"valeurs": [2, 3, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 300,
+				"max": 6545,
+				"nb_distinctes": 22,
+				"valeurs": [
+					300, 325, 351, 378, 406, 435, 465, 496, 528, 561, 595, 2300, 2600, 2925, 3276, 3654, 4060,
+					4495, 4960, 5456, 5984, 6545
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 6545,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6545)",
+					"graine": 10,
+					"enonce": "Dans une classe de $35$ élèves, on désigne $3$ élèves pour représenter la classe au conseil, sans rôle particulier.\n\nCombien de groupes de représentants sont possibles ?\n\n$[?]$",
+					"reponse": ["6545"],
+					"variables": {
+						"n": "35",
+						"k": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 2,
+					"enonce": "Dans une classe de $28$ élèves, on désigne $2$ élèves pour représenter la classe au conseil, sans rôle particulier.\n\nCombien de groupes de représentants sont possibles ?\n\n$[?]$",
+					"reponse": ["378"],
+					"variables": {
+						"n": "28",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans une classe de $25$ élèves, on désigne $3$ élèves pour représenter la classe au conseil, sans rôle particulier.\n\nCombien de groupes de représentants sont possibles ?\n\n$[?]$",
+					"reponse": ["2300"],
+					"variables": {
+						"n": "25",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans une classe de $25$ élèves, on désigne $2$ élèves pour représenter la classe au conseil, sans rôle particulier.\n\nCombien de groupes de représentants sont possibles ?\n\n$[?]$",
+					"reponse": ["300"],
+					"variables": {
+						"n": "25",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans une classe de $33$ élèves, on désigne $2$ élèves pour représenter la classe au conseil, sans rôle particulier.\n\nCombien de groupes de représentants sont possibles ?\n\n$[?]$",
+					"reponse": ["528"],
+					"variables": {
+						"n": "33",
+						"k": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "32"
+					},
+					{
+						"name": "k",
+						"expression": "3..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une main est un ensemble de ${{k}}$ cartes tirées d'un jeu de $32$ cartes (l'ordre des cartes ne compte pas).\n\nCombien de mains différentes existe-t-il ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(n,k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 32,
+						"max": 32,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [32]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4960,
+						"max": 201376,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [4960, 35960, 201376]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 32,
+				"nb_distinctes": 4,
+				"valeurs": [3, 4, 5, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4960,
+				"max": 201376,
+				"nb_distinctes": 3,
+				"valeurs": [4960, 35960, 201376],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 201376,
+				"nb_distinctes": 7,
+				"valeurs": [3, 4, 5, 32, 4960, 35960, 201376],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (201376)",
+					"graine": 5,
+					"enonce": "Une main est un ensemble de $5$ cartes tirées d'un jeu de $32$ cartes (l'ordre des cartes ne compte pas).\n\nCombien de mains différentes existe-t-il ?\n\n$[?]$",
+					"reponse": ["201376"],
+					"variables": {
+						"n": "32",
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 1,
+					"enonce": "Une main est un ensemble de $3$ cartes tirées d'un jeu de $32$ cartes (l'ordre des cartes ne compte pas).\n\nCombien de mains différentes existe-t-il ?\n\n$[?]$",
+					"reponse": ["4960"],
+					"variables": {
+						"n": "32",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une main est un ensemble de $4$ cartes tirées d'un jeu de $32$ cartes (l'ordre des cartes ne compte pas).\n\nCombien de mains différentes existe-t-il ?\n\n$[?]$",
+					"reponse": ["35960"],
+					"variables": {
+						"n": "32",
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "20..49"
+					},
+					{
+						"name": "k",
+						"expression": "3..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une grille de loterie, on coche ${{k}}$ numéros parmi ${{n}}$.\n\nCombien de grilles différentes peut-on remplir ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(n,k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 86,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 49,
+						"negatif_possible": false,
+						"nb_distinctes": 30,
+						"valeurs": [
+							20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+							41, 42, 43, 44, 45, 46, 47, 48, 49
+						]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1140,
+						"max": 1906884,
+						"negatif_possible": false,
+						"nb_distinctes": 86
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 49,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1140,
+				"max": 1906884,
+				"nb_distinctes": 86,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 1906884,
+				"nb_distinctes": 119,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1906884)",
+					"graine": 79,
+					"enonce": "Sur une grille de loterie, on coche $5$ numéros parmi $49$.\n\nCombien de grilles différentes peut-on remplir ?\n\n$[?]$",
+					"reponse": ["1906884"],
+					"variables": {
+						"n": "49",
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 2,
+					"enonce": "Sur une grille de loterie, on coche $3$ numéros parmi $29$.\n\nCombien de grilles différentes peut-on remplir ?\n\n$[?]$",
+					"reponse": ["3654"],
+					"variables": {
+						"n": "29",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Sur une grille de loterie, on coche $4$ numéros parmi $20$.\n\nCombien de grilles différentes peut-on remplir ?\n\n$[?]$",
+					"reponse": ["4845"],
+					"variables": {
+						"n": "20",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Sur une grille de loterie, on coche $4$ numéros parmi $21$.\n\nCombien de grilles différentes peut-on remplir ?\n\n$[?]$",
+					"reponse": ["5985"],
+					"variables": {
+						"n": "21",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une grille de loterie, on coche $3$ numéros parmi $43$.\n\nCombien de grilles différentes peut-on remplir ?\n\n$[?]$",
+					"reponse": ["12341"],
+					"variables": {
+						"n": "43",
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "6..30"
+					},
+					{
+						"name": "k",
+						"expression": "2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "À une réunion, ${{n}}$ personnes se serrent la main, chacune une fois avec chacune des autres.\n\nCombien de poignées de main sont échangées ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(n,k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 25,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 25,
+						"valeurs": [
+							6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
+							28, 29, 30
+						]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 435,
+						"negatif_possible": false,
+						"nb_distinctes": 25,
+						"valeurs": [
+							15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153, 171, 190, 210, 231, 253, 276,
+							300, 325, 351, 378, 406, 435
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 6,
+				"max": 30,
+				"nb_distinctes": 25,
+				"valeurs": [
+					6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+					29, 30
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 15,
+				"max": 435,
+				"nb_distinctes": 25,
+				"valeurs": [
+					15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153, 171, 190, 210, 231, 253, 276, 300,
+					325, 351, 378, 406, 435
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 6,
+				"max": 435,
+				"nb_distinctes": 47,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (435)",
+					"graine": 24,
+					"enonce": "À une réunion, $30$ personnes se serrent la main, chacune une fois avec chacune des autres.\n\nCombien de poignées de main sont échangées ?\n\n$[?]$",
+					"reponse": ["435"],
+					"variables": {
+						"n": "30",
+						"k": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (6)",
+					"graine": 1,
+					"enonce": "À une réunion, $6$ personnes se serrent la main, chacune une fois avec chacune des autres.\n\nCombien de poignées de main sont échangées ?\n\n$[?]$",
+					"reponse": ["15"],
+					"variables": {
+						"n": "6",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "À une réunion, $14$ personnes se serrent la main, chacune une fois avec chacune des autres.\n\nCombien de poignées de main sont échangées ?\n\n$[?]$",
+					"reponse": ["91"],
+					"variables": {
+						"n": "14",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "À une réunion, $25$ personnes se serrent la main, chacune une fois avec chacune des autres.\n\nCombien de poignées de main sont échangées ?\n\n$[?]$",
+					"reponse": ["300"],
+					"variables": {
+						"n": "25",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "À une réunion, $7$ personnes se serrent la main, chacune une fois avec chacune des autres.\n\nCombien de poignées de main sont échangées ?\n\n$[?]$",
+					"reponse": ["21"],
+					"variables": {
+						"n": "7",
+						"k": "2"
+					}
+				}
+			]
+		}
+	]
+}

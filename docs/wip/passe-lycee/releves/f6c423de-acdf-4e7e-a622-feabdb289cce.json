@@ -1,0 +1,1543 @@
+{
+	"template_id": "f6c423de-acdf-4e7e-a622-feabdb289cce",
+	"titre": "Distance d'un point à une droite",
+	"sous_titre": "Calculer la distance d'un point à une droite comme la longueur MH, où H est le projeté orthogonal du point sur la droite (valeur exacte)",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Géométrie repérée > Projeté orthogonal",
+	"mis_a_jour": "2026-10-04T23:06:10.59663+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-331",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "xH",
+						"expression": "-3..3"
+					},
+					{
+						"name": "yH",
+						"expression": "-3..3"
+					},
+					{
+						"name": "t",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "xM",
+						"expression": "eval:xH+t*a"
+					},
+					{
+						"name": "yM",
+						"expression": "eval:yH+t*b"
+					},
+					{
+						"name": "c",
+						"expression": "eval:-(a*xH+b*yH)"
+					},
+					{
+						"name": "S",
+						"expression": "eval:a*a+b*b"
+					},
+					{
+						"name": "N",
+						"expression": "eval:a*xM+b*yM+c"
+					},
+					{
+						"name": "mt",
+						"expression": "eval:-t"
+					}
+				],
+				"conditions": ["abs(xM) <= 6", "abs(yM) <= 6"],
+				"enonce_brut": "On considère la droite $d$ d'équation ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$ et le point $M({{eval:xM}}\\,;\\,{{eval:yM}})$.\n\nCalcule la distance du point $M$ à la droite $d$, c'est-à-dire la longueur $MH$ où $H$ est le projeté orthogonal de $M$ sur $d$. Donne la valeur exacte.\n\n$MH=?$",
+				"reponses_brutes": ["{{eval:abs(t)*sqrt(S)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "xH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "yH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "xM",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "yM",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 18,
+						"negatif_possible": true,
+						"nb_distinctes": 28,
+						"valeurs": [
+							-15, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7,
+							8, 9, 10, 11, 12, 18
+						]
+					}
+				},
+				{
+					"nom": "S",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 5, 8, 10, 13, 18]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -36,
+						"max": 36,
+						"negatif_possible": true,
+						"nb_distinctes": 21,
+						"valeurs": [
+							-36, -26, -20, -18, -13, -10, -8, -5, -4, -2, 2, 4, 5, 8, 10, 13, 16, 18, 20, 26, 36
+						]
+					}
+				},
+				{
+					"nom": "mt",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"2 \\sqrt{10}",
+							"2 \\sqrt{13}",
+							"2 \\sqrt{2}",
+							"2 \\sqrt{5}",
+							"3 \\sqrt{2}",
+							"4 \\sqrt{2}",
+							"6 \\sqrt{2}",
+							"\\sqrt{10}",
+							"\\sqrt{13}",
+							"\\sqrt{2}",
+							"\\sqrt{5}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 13,
+							"nb_distinctes": 7,
+							"valeurs": [2, 3, 4, 5, 6, 10, 13],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 18,
+				"nb_distinctes": 22,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 13,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 10, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 18,
+				"nb_distinctes": 22,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "230/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 146,
+					"enonce": "On considère la droite $d$ d'équation $-3 x - 3 y + 18 = 0$ et le point $M(0\\,;\\,0)$.\n\nCalcule la distance du point $M$ à la droite $d$, c'est-à-dire la longueur $MH$ où $H$ est le projeté orthogonal de $M$ sur $d$. Donne la valeur exacte.\n\n$MH = [?]$",
+					"reponse": ["3 \\sqrt{2}"],
+					"variables": {
+						"a": "-3",
+						"b": "-3",
+						"xH": "3",
+						"yH": "3",
+						"t": "1",
+						"xM": "0",
+						"yM": "0",
+						"c": "18",
+						"S": "18",
+						"N": "18",
+						"mt": "-1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 17,
+					"enonce": "On considère la droite $d$ d'équation $-2 x + y - 1 = 0$ et le point $M(-6\\,;\\,-1)$.\n\nCalcule la distance du point $M$ à la droite $d$, c'est-à-dire la longueur $MH$ où $H$ est le projeté orthogonal de $M$ sur $d$. Donne la valeur exacte.\n\n$MH = [?]$",
+					"reponse": ["2 \\sqrt{5}"],
+					"variables": {
+						"a": "-2",
+						"b": "1",
+						"xH": "-2",
+						"yH": "-3",
+						"t": "2",
+						"xM": "-6",
+						"yM": "-1",
+						"c": "-1",
+						"S": "5",
+						"N": "10",
+						"mt": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère la droite $d$ d'équation $-3 x + y + 6 = 0$ et le point $M(6\\,;\\,2)$.\n\nCalcule la distance du point $M$ à la droite $d$, c'est-à-dire la longueur $MH$ où $H$ est le projeté orthogonal de $M$ sur $d$. Donne la valeur exacte.\n\n$MH = [?]$",
+					"reponse": ["\\sqrt{10}"],
+					"variables": {
+						"a": "-3",
+						"b": "1",
+						"xH": "3",
+						"yH": "3",
+						"t": "-1",
+						"xM": "6",
+						"yM": "2",
+						"c": "6",
+						"S": "10",
+						"N": "-10",
+						"mt": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la droite $d$ d'équation $-2 x - 2 y + 6 = 0$ et le point $M(-2\\,;\\,1)$.\n\nCalcule la distance du point $M$ à la droite $d$, c'est-à-dire la longueur $MH$ où $H$ est le projeté orthogonal de $M$ sur $d$. Donne la valeur exacte.\n\n$MH = [?]$",
+					"reponse": ["2 \\sqrt{2}"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"xH": "0",
+						"yH": "3",
+						"t": "1",
+						"xM": "-2",
+						"yM": "1",
+						"c": "6",
+						"S": "8",
+						"N": "8",
+						"mt": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la droite $d$ d'équation $-3 x - y - 7 = 0$ et le point $M(0\\,;\\,3)$.\n\nCalcule la distance du point $M$ à la droite $d$, c'est-à-dire la longueur $MH$ où $H$ est le projeté orthogonal de $M$ sur $d$. Donne la valeur exacte.\n\n$MH = [?]$",
+					"reponse": ["\\sqrt{10}"],
+					"variables": {
+						"a": "-3",
+						"b": "-1",
+						"xH": "-3",
+						"yH": "2",
+						"t": "-1",
+						"xM": "0",
+						"yM": "3",
+						"c": "-7",
+						"S": "10",
+						"N": "-10",
+						"mt": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "u1",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "u2",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "xA",
+						"expression": "-3..3"
+					},
+					{
+						"name": "yA",
+						"expression": "-3..3"
+					},
+					{
+						"name": "s",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "t",
+						"expression": "1|-1"
+					},
+					{
+						"name": "xH",
+						"expression": "eval:xA+s*u1"
+					},
+					{
+						"name": "yH",
+						"expression": "eval:yA+s*u2"
+					},
+					{
+						"name": "xM",
+						"expression": "eval:xH-t*u2"
+					},
+					{
+						"name": "yM",
+						"expression": "eval:yH+t*u1"
+					},
+					{
+						"name": "AMx",
+						"expression": "eval:xM-xA"
+					},
+					{
+						"name": "AMy",
+						"expression": "eval:yM-yA"
+					},
+					{
+						"name": "UU",
+						"expression": "eval:u1*u1+u2*u2"
+					},
+					{
+						"name": "PS",
+						"expression": "eval:AMx*u1+AMy*u2"
+					}
+				],
+				"conditions": ["abs(xH) <= 6", "abs(yH) <= 6", "abs(xM) <= 6", "abs(yM) <= 6"],
+				"enonce_brut": "La droite $d$ passe par le point $A({{eval:xA}}\\,;\\,{{eval:yA}})$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}{{eval:u1}}\\\\{{eval:u2}}\\end{pmatrix}$. On considère le point $M({{eval:xM}}\\,;\\,{{eval:yM}})$.\n\nCalcule la distance du point $M$ à la droite $d$ (valeur exacte).\n\n$MH=?$",
+				"reponses_brutes": ["{{eval:sqrt(UU)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "xA",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "yA",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "xH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "yH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "xM",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "yM",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "AMx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "AMy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "UU",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 5, 8, 10, 13, 18]
+					}
+				},
+				{
+					"nom": "PS",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -26,
+						"max": 26,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [
+							-26, -20, -18, -16, -13, -10, -8, -5, -4, -2, 2, 4, 5, 8, 10, 13, 16, 18, 20, 26
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"2 \\sqrt{2}",
+							"3 \\sqrt{2}",
+							"\\sqrt{10}",
+							"\\sqrt{13}",
+							"\\sqrt{2}",
+							"\\sqrt{5}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 13,
+							"nb_distinctes": 5,
+							"valeurs": [2, 3, 5, 10, 13],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 13,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 5, 10, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 13,
+				"nb_distinctes": 15,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 10, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "167/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (13)",
+					"graine": 9,
+					"enonce": "La droite $d$ passe par le point $A(2\\,;\\,1)$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}3\\\\-2\\end{pmatrix}$. On considère le point $M(-3\\,;\\,0)$.\n\nCalcule la distance du point $M$ à la droite $d$ (valeur exacte).\n\n$MH = [?]$",
+					"reponse": ["\\sqrt{13}"],
+					"variables": {
+						"u1": "3",
+						"u2": "-2",
+						"xA": "2",
+						"yA": "1",
+						"s": "-1",
+						"t": "-1",
+						"xH": "-1",
+						"yH": "3",
+						"xM": "-3",
+						"yM": "0",
+						"AMx": "-5",
+						"AMy": "-1",
+						"UU": "13",
+						"PS": "-13"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 4,
+					"enonce": "La droite $d$ passe par le point $A(-3\\,;\\,-2)$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}-2\\\\-2\\end{pmatrix}$. On considère le point $M(-3\\,;\\,-6)$.\n\nCalcule la distance du point $M$ à la droite $d$ (valeur exacte).\n\n$MH = [?]$",
+					"reponse": ["2 \\sqrt{2}"],
+					"variables": {
+						"u1": "-2",
+						"u2": "-2",
+						"xA": "-3",
+						"yA": "-2",
+						"s": "1",
+						"t": "1",
+						"xH": "-5",
+						"yH": "-4",
+						"xM": "-3",
+						"yM": "-6",
+						"AMx": "0",
+						"AMy": "-4",
+						"UU": "8",
+						"PS": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La droite $d$ passe par le point $A(3\\,;\\,0)$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}2\\\\-1\\end{pmatrix}$. On considère le point $M(2\\,;\\,3)$.\n\nCalcule la distance du point $M$ à la droite $d$ (valeur exacte).\n\n$MH = [?]$",
+					"reponse": ["\\sqrt{5}"],
+					"variables": {
+						"u1": "2",
+						"u2": "-1",
+						"xA": "3",
+						"yA": "0",
+						"s": "-1",
+						"t": "1",
+						"xH": "1",
+						"yH": "1",
+						"xM": "2",
+						"yM": "3",
+						"AMx": "-1",
+						"AMy": "3",
+						"UU": "5",
+						"PS": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La droite $d$ passe par le point $A(0\\,;\\,3)$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}-2\\\\-2\\end{pmatrix}$. On considère le point $M(0\\,;\\,-1)$.\n\nCalcule la distance du point $M$ à la droite $d$ (valeur exacte).\n\n$MH = [?]$",
+					"reponse": ["2 \\sqrt{2}"],
+					"variables": {
+						"u1": "-2",
+						"u2": "-2",
+						"xA": "0",
+						"yA": "3",
+						"s": "1",
+						"t": "1",
+						"xH": "-2",
+						"yH": "1",
+						"xM": "0",
+						"yM": "-1",
+						"AMx": "0",
+						"AMy": "-4",
+						"UU": "8",
+						"PS": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La droite $d$ passe par le point $A(-3\\,;\\,2)$ et a pour vecteur directeur $\\vec{u}\\begin{pmatrix}-3\\\\-1\\end{pmatrix}$. On considère le point $M(1\\,;\\,0)$.\n\nCalcule la distance du point $M$ à la droite $d$ (valeur exacte).\n\n$MH = [?]$",
+					"reponse": ["\\sqrt{10}"],
+					"variables": {
+						"u1": "-3",
+						"u2": "-1",
+						"xA": "-3",
+						"yA": "2",
+						"s": "-1",
+						"t": "1",
+						"xH": "0",
+						"yH": "3",
+						"xM": "1",
+						"yM": "0",
+						"AMx": "4",
+						"AMy": "-2",
+						"UU": "10",
+						"PS": "-10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "u1",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "u2",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "xH",
+						"expression": "-2..2"
+					},
+					{
+						"name": "yH",
+						"expression": "-2..2"
+					},
+					{
+						"name": "s1",
+						"expression": "-2..-1"
+					},
+					{
+						"name": "s2",
+						"expression": "1..2"
+					},
+					{
+						"name": "t",
+						"expression": "1|-1|2|-2"
+					},
+					{
+						"name": "xB",
+						"expression": "eval:xH+s1*u1"
+					},
+					{
+						"name": "yB",
+						"expression": "eval:yH+s1*u2"
+					},
+					{
+						"name": "xC",
+						"expression": "eval:xH+s2*u1"
+					},
+					{
+						"name": "yC",
+						"expression": "eval:yH+s2*u2"
+					},
+					{
+						"name": "xA",
+						"expression": "eval:xH-t*u2"
+					},
+					{
+						"name": "yA",
+						"expression": "eval:yH+t*u1"
+					},
+					{
+						"name": "BCx",
+						"expression": "eval:xC-xB"
+					},
+					{
+						"name": "BCy",
+						"expression": "eval:yC-yB"
+					},
+					{
+						"name": "BAx",
+						"expression": "eval:xA-xB"
+					},
+					{
+						"name": "BAy",
+						"expression": "eval:yA-yB"
+					},
+					{
+						"name": "PS",
+						"expression": "eval:BAx*BCx+BAy*BCy"
+					},
+					{
+						"name": "BC2",
+						"expression": "eval:BCx^2+BCy^2"
+					},
+					{
+						"name": "kk",
+						"expression": "eval:PS/BC2"
+					},
+					{
+						"name": "gx",
+						"expression": "eval:(xA+xB+xC)/3"
+					},
+					{
+						"name": "gy",
+						"expression": "eval:(yA+yB+yC)/3"
+					},
+					{
+						"name": "UU",
+						"expression": "eval:u1*u1+u2*u2"
+					}
+				],
+				"conditions": [
+					"abs(xA) <= 6",
+					"abs(yA) <= 6",
+					"abs(xB) <= 6",
+					"abs(yB) <= 6",
+					"abs(xC) <= 6",
+					"abs(yC) <= 6"
+				],
+				"enonce_brut": "On considère les points $A({{eval:xA}}\\,;\\,{{eval:yA}})$, $B({{eval:xB}}\\,;\\,{{eval:yB}})$ et $C({{eval:xC}}\\,;\\,{{eval:yC}})$.\n\n```figure\nfenetre: {{eval:min(min(min(xA,xB),xC),0)-1.5}} ; {{eval:max(max(max(xA,xB),xC),0)+1.5}} ; {{eval:min(min(min(yA,yB),yC),0)-1.5}} ; {{eval:max(max(max(yA,yB),yC),0)+1.5}}\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; le triangle ABC.\n---\nA = point({{xA}}, {{yA}}, etiquette=\"{{if:yA>gy|haut|bas}}-{{if:xA>gx|droite|gauche}}\")\nB = point({{xB}}, {{yB}}, etiquette=\"{{if:yB>gy|haut|bas}}-{{if:xB>gx|droite|gauche}}\")\nC = point({{xC}}, {{yC}}, etiquette=\"{{if:yC>gy|haut|bas}}-{{if:xC>gx|droite|gauche}}\")\npolygone(A, B, C)\n```\n\nCalcule la distance du point $A$ à la droite $(BC)$ (valeur exacte).\n\n$AH=?$",
+				"reponses_brutes": ["{{eval:abs(t)*sqrt(UU)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 291,
+			"variables": [
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "xH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "yH",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "s1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-2, -1]
+					}
+				},
+				{
+					"nom": "s2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "xB",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "yB",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "xC",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "yC",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "xA",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "yA",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "BCx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-8, -6, -4, -3, -2, 2, 3, 4, 6, 8]
+					}
+				},
+				{
+					"nom": "BCy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-8, -6, -4, -3, -2, 2, 3, 4, 6, 8]
+					}
+				},
+				{
+					"nom": "BAx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8]
+					}
+				},
+				{
+					"nom": "BAy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8]
+					}
+				},
+				{
+					"nom": "PS",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 64,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [4, 6, 10, 12, 15, 16, 24, 30, 40, 48, 64]
+					}
+				},
+				{
+					"nom": "BC2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 128,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [8, 18, 20, 32, 45, 72, 80, 128]
+					}
+				},
+				{
+					"nom": "kk",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.3333333333333333,
+						"max": 0.6666666666666666,
+						"negatif_possible": false,
+						"denominateurs": [2, 3],
+						"denominateur_min": 2,
+						"denominateur_max": 3,
+						"nb_distinctes": 3,
+						"valeurs": ["\\dfrac{1}{2}", "\\dfrac{1}{3}", "\\dfrac{2}{3}"]
+					}
+				},
+				{
+					"nom": "gx",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.2633333333333333,
+						"nb_distinctes": 24,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-3",
+							"-4",
+							"-\\dfrac{10}{3}",
+							"-\\dfrac{1}{3}",
+							"-\\dfrac{2}{3}",
+							"-\\dfrac{4}{3}",
+							"-\\dfrac{5}{3}",
+							"-\\dfrac{7}{3}",
+							"-\\dfrac{8}{3}",
+							"0",
+							"1",
+							"2",
+							"3",
+							"4",
+							"\\dfrac{10}{3}",
+							"\\dfrac{11}{3}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{4}{3}",
+							"\\dfrac{5}{3}",
+							"\\dfrac{7}{3}",
+							"\\dfrac{8}{3}"
+						],
+						"nombres_contenus": {
+							"min": -4,
+							"max": 11,
+							"nb_distinctes": 14,
+							"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 7, 8, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "gy",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.21,
+						"nb_distinctes": 22,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-3",
+							"-\\dfrac{10}{3}",
+							"-\\dfrac{11}{3}",
+							"-\\dfrac{1}{3}",
+							"-\\dfrac{2}{3}",
+							"-\\dfrac{4}{3}",
+							"-\\dfrac{5}{3}",
+							"-\\dfrac{7}{3}",
+							"-\\dfrac{8}{3}",
+							"0",
+							"1",
+							"2",
+							"3",
+							"\\dfrac{10}{3}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{4}{3}",
+							"\\dfrac{5}{3}",
+							"\\dfrac{7}{3}",
+							"\\dfrac{8}{3}"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 11,
+							"nb_distinctes": 13,
+							"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4, 5, 7, 8, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "UU",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 5, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["2 \\sqrt{2}", "2 \\sqrt{5}", "4 \\sqrt{2}", "\\sqrt{2}", "\\sqrt{5}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 5,
+							"nb_distinctes": 3,
+							"valeurs": [2, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 3,
+				"valeurs": [2, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "On considère les points $A(0\\,;\\,-2)$, $B(6\\,;\\,0)$ et $C(-2\\,;\\,4)$.\n\n[figure]\n\nCalcule la distance du point $A$ à la droite $\\left( BC \\right)$ (valeur exacte).\n\n$AH = [?]$",
+					"reponse": ["2 \\sqrt{5}"],
+					"variables": {
+						"u1": "-2",
+						"u2": "1",
+						"xH": "2",
+						"yH": "2",
+						"s1": "-2",
+						"s2": "2",
+						"t": "2",
+						"xB": "6",
+						"yB": "0",
+						"xC": "-2",
+						"yC": "4",
+						"xA": "0",
+						"yA": "-2",
+						"BCx": "-8",
+						"BCy": "4",
+						"BAx": "-6",
+						"BAy": "-2",
+						"PS": "40",
+						"BC2": "80",
+						"kk": "\\dfrac{1}{2}",
+						"gx": "\\dfrac{4}{3}",
+						"gy": "\\dfrac{2}{3}",
+						"UU": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 4,
+					"enonce": "On considère les points $A(-6\\,;\\,1)$, $B(-1\\,;\\,1)$ et $C(-3\\,;\\,-3)$.\n\n[figure]\n\nCalcule la distance du point $A$ à la droite $\\left( BC \\right)$ (valeur exacte).\n\n$AH = [?]$",
+					"reponse": ["2 \\sqrt{5}"],
+					"variables": {
+						"u1": "-1",
+						"u2": "-2",
+						"xH": "-2",
+						"yH": "-1",
+						"s1": "-1",
+						"s2": "1",
+						"t": "-2",
+						"xB": "-1",
+						"yB": "1",
+						"xC": "-3",
+						"yC": "-3",
+						"xA": "-6",
+						"yA": "1",
+						"BCx": "-2",
+						"BCy": "-4",
+						"BAx": "-5",
+						"BAy": "0",
+						"PS": "10",
+						"BC2": "20",
+						"kk": "\\dfrac{1}{2}",
+						"gx": "-\\dfrac{10}{3}",
+						"gy": "-\\dfrac{1}{3}",
+						"UU": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère les points $A(-1\\,;\\,3)$, $B(1\\,;\\,3)$ et $C(-1\\,;\\,1)$.\n\n[figure]\n\nCalcule la distance du point $A$ à la droite $\\left( BC \\right)$ (valeur exacte).\n\n$AH = [?]$",
+					"reponse": ["\\sqrt{2}"],
+					"variables": {
+						"u1": "-1",
+						"u2": "-1",
+						"xH": "0",
+						"yH": "2",
+						"s1": "-1",
+						"s2": "1",
+						"t": "-1",
+						"xB": "1",
+						"yB": "3",
+						"xC": "-1",
+						"yC": "1",
+						"xA": "-1",
+						"yA": "3",
+						"BCx": "-2",
+						"BCy": "-2",
+						"BAx": "-2",
+						"BAy": "0",
+						"PS": "4",
+						"BC2": "8",
+						"kk": "\\dfrac{1}{2}",
+						"gx": "-\\dfrac{1}{3}",
+						"gy": "\\dfrac{7}{3}",
+						"UU": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère les points $A(-1\\,;\\,-1)$, $B(2\\,;\\,3)$ et $C(-4\\,;\\,0)$.\n\n[figure]\n\nCalcule la distance du point $A$ à la droite $\\left( BC \\right)$ (valeur exacte).\n\n$AH = [?]$",
+					"reponse": ["\\sqrt{5}"],
+					"variables": {
+						"u1": "-2",
+						"u2": "-1",
+						"xH": "-2",
+						"yH": "1",
+						"s1": "-2",
+						"s2": "1",
+						"t": "1",
+						"xB": "2",
+						"yB": "3",
+						"xC": "-4",
+						"yC": "0",
+						"xA": "-1",
+						"yA": "-1",
+						"BCx": "-6",
+						"BCy": "-3",
+						"BAx": "-3",
+						"BAy": "-4",
+						"PS": "30",
+						"BC2": "45",
+						"kk": "\\dfrac{2}{3}",
+						"gx": "-1",
+						"gy": "\\dfrac{2}{3}",
+						"UU": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère les points $A(-1\\,;\\,-4)$, $B(-1\\,;\\,0)$ et $C(5\\,;\\,-6)$.\n\n[figure]\n\nCalcule la distance du point $A$ à la droite $\\left( BC \\right)$ (valeur exacte).\n\n$AH = [?]$",
+					"reponse": ["2 \\sqrt{2}"],
+					"variables": {
+						"u1": "2",
+						"u2": "-2",
+						"xH": "1",
+						"yH": "-2",
+						"s1": "-1",
+						"s2": "2",
+						"t": "-1",
+						"xB": "-1",
+						"yB": "0",
+						"xC": "5",
+						"yC": "-6",
+						"xA": "-1",
+						"yA": "-4",
+						"BCx": "6",
+						"BCy": "-6",
+						"BAx": "0",
+						"BAy": "-4",
+						"PS": "24",
+						"BC2": "72",
+						"kk": "\\dfrac{1}{3}",
+						"gx": "1",
+						"gy": "-\\dfrac{10}{3}",
+						"UU": "8"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,1077 @@
+{
+	"template_id": "44b58fce-45ec-4979-819f-e4bdb8540944",
+	"titre": "Reconnaître la forme d'une expression du second degré",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Polynôme du second degré > Apprivoiser",
+	"mis_a_jour": "2026-10-01T09:01:32.43362+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-254",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±!b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:ax^2+bx+c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est la forme de cette expression du second degré ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "développée"
+					},
+					{
+						"content": "factorisée"
+					},
+					{
+						"content": "canonique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 292,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 254,
+						"exemples": [
+							"5x^2-5x+1",
+							"4x^2-2x-3",
+							"3x^2-5x-1",
+							"-3x^2-2x-3",
+							"x^2+3x+2",
+							"x^2-5x+2",
+							"-x^2-5x+2",
+							"4x^2+2x+1",
+							"-3x^2+4x+3",
+							"-x^2+5x+2",
+							"4x^2+x+2",
+							"-4x^2-5x+1"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 9,
+							"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["développée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "233/300",
+					"−": "119/300",
+					"puissance": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$5 x^2 - 5 x + 1$$\n\n- A. canonique\n- B. factorisée\n- C. développée",
+					"reponse": ["C. développée"],
+					"variables": {
+						"b": "-5",
+						"c": "1",
+						"x": "x",
+						"a": "5",
+						"expression1": "5x^2-5x+1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$4 x^2 - 2 x - 3$$\n\n- A. canonique\n- B. développée\n- C. factorisée",
+					"reponse": ["B. développée"],
+					"variables": {
+						"b": "-2",
+						"c": "-3",
+						"x": "x",
+						"a": "4",
+						"expression1": "4x^2-2x-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$3 x^2 - 5 x - 1$$\n\n- A. canonique\n- B. développée\n- C. factorisée",
+					"reponse": ["B. développée"],
+					"variables": {
+						"b": "-5",
+						"c": "-1",
+						"x": "x",
+						"a": "3",
+						"expression1": "3x^2-5x-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$-3 x^2 - 2 x - 3$$\n\n- A. canonique\n- B. développée\n- C. factorisée",
+					"reponse": ["B. développée"],
+					"variables": {
+						"b": "-2",
+						"c": "-3",
+						"x": "x",
+						"a": "-3",
+						"expression1": "-3x^2-2x-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$x^2 + 3 x + 2$$\n\n- A. factorisée\n- B. développée\n- C. canonique",
+					"reponse": ["B. développée"],
+					"variables": {
+						"b": "3",
+						"c": "2",
+						"x": "x",
+						"a": "1",
+						"expression1": "x^2+3x+2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±!b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "expression2",
+						"expression": "eval:a(x+b)(x+c)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est la forme de cette expression du second degré ?\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "développée"
+					},
+					{
+						"content": "factorisée"
+					},
+					{
+						"content": "canonique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 281,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 211,
+						"exemples": [
+							"5(x+1)(x-5)",
+							"4(x-2)(x-3)",
+							"3(x-1)(x-5)",
+							"-3(x-2)(x-3)",
+							"(x+2)(x+3)",
+							"(x+2)(x-5)",
+							"-(x+2)(x-5)",
+							"4(x+1)(x+2)",
+							"-3(x+3)(x+4)",
+							"-(x+2)(x+5)",
+							"-4(x+1)(x-5)",
+							"-5(x-2)(x-5)"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 9,
+							"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["factorisée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "233/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$5 \\left( x + 1 \\right) \\left( x - 5 \\right)$$\n\n- A. canonique\n- B. factorisée\n- C. développée",
+					"reponse": ["B. factorisée"],
+					"variables": {
+						"b": "-5",
+						"c": "1",
+						"x": "x",
+						"a": "5",
+						"expression2": "5(x+1)(x-5)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$4 \\left( x - 2 \\right) \\left( x - 3 \\right)$$\n\n- A. canonique\n- B. développée\n- C. factorisée",
+					"reponse": ["C. factorisée"],
+					"variables": {
+						"b": "-2",
+						"c": "-3",
+						"x": "x",
+						"a": "4",
+						"expression2": "4(x-2)(x-3)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$3 \\left( x - 1 \\right) \\left( x - 5 \\right)$$\n\n- A. canonique\n- B. développée\n- C. factorisée",
+					"reponse": ["C. factorisée"],
+					"variables": {
+						"b": "-5",
+						"c": "-1",
+						"x": "x",
+						"a": "3",
+						"expression2": "3(x-1)(x-5)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$-3 \\left( x - 2 \\right) \\left( x - 3 \\right)$$\n\n- A. canonique\n- B. développée\n- C. factorisée",
+					"reponse": ["C. factorisée"],
+					"variables": {
+						"b": "-2",
+						"c": "-3",
+						"x": "x",
+						"a": "-3",
+						"expression2": "-3(x-2)(x-3)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$\\left( x + 2 \\right) \\left( x + 3 \\right)$$\n\n- A. factorisée\n- B. développée\n- C. canonique",
+					"reponse": ["A. factorisée"],
+					"variables": {
+						"b": "3",
+						"c": "2",
+						"x": "x",
+						"a": "1",
+						"expression2": "(x+2)(x+3)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±!b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "expression3",
+						"expression": "eval:a(x+b)^2+c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est la forme de cette expression du second degré ?\n\n$${{expression3}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "développée"
+					},
+					{
+						"content": "factorisée"
+					},
+					{
+						"content": "canonique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 292,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "expression3",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 254,
+						"exemples": [
+							"1+5(x-5)^2",
+							"4(x-2)^2-3",
+							"3(x-5)^2-1",
+							"-3-3(x-2)^2",
+							"2+(x+3)^2",
+							"2+(x-5)^2",
+							"2-(x-5)^2",
+							"1+4(x+2)^2",
+							"3-3(x+4)^2",
+							"2-(x+5)^2",
+							"2+4(x+1)^2",
+							"1-4(x-5)^2"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 10,
+							"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["canonique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "193/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "185/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$1 + 5 \\left( x - 5 \\right)^2$$\n\n- A. canonique\n- B. factorisée\n- C. développée",
+					"reponse": ["A. canonique"],
+					"variables": {
+						"b": "-5",
+						"c": "1",
+						"x": "x",
+						"a": "5",
+						"expression3": "1+5(x-5)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$4 \\left( x - 2 \\right)^2 - 3$$\n\n- A. canonique\n- B. développée\n- C. factorisée",
+					"reponse": ["A. canonique"],
+					"variables": {
+						"b": "-2",
+						"c": "-3",
+						"x": "x",
+						"a": "4",
+						"expression3": "4(x-2)^2-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$3 \\left( x - 5 \\right)^2 - 1$$\n\n- A. canonique\n- B. développée\n- C. factorisée",
+					"reponse": ["A. canonique"],
+					"variables": {
+						"b": "-5",
+						"c": "-1",
+						"x": "x",
+						"a": "3",
+						"expression3": "3(x-5)^2-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$-3 - 3 \\left( x - 2 \\right)^2$$\n\n- A. canonique\n- B. développée\n- C. factorisée",
+					"reponse": ["A. canonique"],
+					"variables": {
+						"b": "-2",
+						"c": "-3",
+						"x": "x",
+						"a": "-3",
+						"expression3": "-3-3(x-2)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la forme de cette expression du second degré ?\n\n$$2 + \\left( x + 3 \\right)^2$$\n\n- A. factorisée\n- B. développée\n- C. canonique",
+					"reponse": ["C. canonique"],
+					"variables": {
+						"b": "3",
+						"c": "2",
+						"x": "x",
+						"a": "1",
+						"expression3": "2+(x+3)^2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±!b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "h",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "expression4",
+						"expression": "eval:a(x-h)^2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sous quelle forme cette expression du second degré est-elle écrite ?\n\n$${{expression4}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "factorisée seulement"
+					},
+					{
+						"content": "canonique seulement"
+					},
+					{
+						"content": "à la fois factorisée et canonique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 212,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "expression4",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 60,
+						"exemples": [
+							"3(x+3)^2",
+							"3(x-2)^2",
+							"2(x+1)^2",
+							"-2(x-1)^2",
+							"(x-3)^2",
+							"(x+5)^2",
+							"-(x+1)^2",
+							"2(x+3)^2",
+							"-2(x-5)^2",
+							"3(x-1)^2",
+							"-3(x+5)^2",
+							"-(x-2)^2"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 5,
+							"nb_distinctes": 7,
+							"valeurs": [-3, -2, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["à la fois factorisée et canonique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "157/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 6,
+					"enonce": "Sous quelle forme cette expression du second degré est-elle écrite ?\n\n$$\\left( x + 5 \\right)^2$$\n\n- A. à la fois factorisée et canonique\n- B. canonique seulement\n- C. factorisée seulement",
+					"reponse": ["A. à la fois factorisée et canonique"],
+					"variables": {
+						"b": "-5",
+						"c": "2",
+						"x": "x",
+						"a": "1",
+						"h": "-5",
+						"expression4": "(x+5)^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 3,
+					"enonce": "Sous quelle forme cette expression du second degré est-elle écrite ?\n\n$$2 \\left( x + 1 \\right)^2$$\n\n- A. à la fois factorisée et canonique\n- B. factorisée seulement\n- C. canonique seulement",
+					"reponse": ["A. à la fois factorisée et canonique"],
+					"variables": {
+						"b": "-5",
+						"c": "-1",
+						"x": "x",
+						"a": "2",
+						"h": "-1",
+						"expression4": "2(x+1)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Sous quelle forme cette expression du second degré est-elle écrite ?\n\n$$3 \\left( x + 3 \\right)^2$$\n\n- A. factorisée seulement\n- B. à la fois factorisée et canonique\n- C. canonique seulement",
+					"reponse": ["B. à la fois factorisée et canonique"],
+					"variables": {
+						"b": "-5",
+						"c": "1",
+						"x": "x",
+						"a": "3",
+						"h": "-3",
+						"expression4": "3(x+3)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sous quelle forme cette expression du second degré est-elle écrite ?\n\n$$3 \\left( x - 2 \\right)^2$$\n\n- A. à la fois factorisée et canonique\n- B. factorisée seulement\n- C. canonique seulement",
+					"reponse": ["A. à la fois factorisée et canonique"],
+					"variables": {
+						"b": "-2",
+						"c": "-3",
+						"x": "x",
+						"a": "3",
+						"h": "2",
+						"expression4": "3(x-2)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Sous quelle forme cette expression du second degré est-elle écrite ?\n\n$$-2 \\left( x - 1 \\right)^2$$\n\n- A. à la fois factorisée et canonique\n- B. canonique seulement\n- C. factorisée seulement",
+					"reponse": ["A. à la fois factorisée et canonique"],
+					"variables": {
+						"b": "-2",
+						"c": "-3",
+						"x": "x",
+						"a": "-2",
+						"h": "1",
+						"expression4": "-2(x-1)^2"
+					}
+				}
+			]
+		}
+	]
+}

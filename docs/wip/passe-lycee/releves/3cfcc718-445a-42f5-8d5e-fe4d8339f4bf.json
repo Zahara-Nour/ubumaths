@@ -1,0 +1,777 @@
+{
+	"template_id": "3cfcc718-445a-42f5-8d5e-fe4d8339f4bf",
+	"titre": "Loi à densité : probabilité = aire sous la courbe, constante de normalisation",
+	"sous_titre": "Lire une probabilité comme une aire sous la densité (figure), fonction de répartition F(x) = P(X ⩽ x), constante k pour que f soit une densité (aire totale 1) (pièges : t/a au lieu de t²/a², b − a au lieu de 1/(b − a))",
+	"consigne": null,
+	"grades": ["T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Lois à densité > Densité et aire",
+	"mis_a_jour": "2026-10-04T20:32:57.291209+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-315",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "t",
+						"expression": "1..{{eval:a-1}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;{{a}}\\right]$ par $f(x)={{eval:2/a^2}}x$, représentée ci-dessous.\n\n```courbe\nx: -0.5 ; {{eval:a+1}}\ny: -0.1 ; {{eval:2/a+0.2;d}}\ngrille: 1 ; {{eval:1/(2*a);d}}\nf(x) = 2*x/{{eval:a^2}} sur [0 ; {{a}}]   bleu   nom=C_f\naire: f ; 0 ; {{t}}\ntaille: moyenne\ndescription: Densité triangulaire croissante sur [0 ; {{a}}], aire coloriée entre 0 et {{t}}.\n```\n\nCalcule $P(X\\leqslant {{t}})$, aire du domaine colorié.\n\n$P(X\\leqslant {{t}})=?$",
+				"reponses_brutes": ["{{eval:t^2/a^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 15,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.027777777777777776,
+						"max": 0.6944444444444444,
+						"negatif_possible": false,
+						"denominateurs": [4, 9, 16, 25, 36],
+						"denominateur_min": 4,
+						"denominateur_max": 36,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"\\dfrac{16}{25}",
+							"\\dfrac{1}{16}",
+							"\\dfrac{1}{25}",
+							"\\dfrac{1}{36}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{9}",
+							"\\dfrac{25}{36}",
+							"\\dfrac{4}{25}",
+							"\\dfrac{4}{9}",
+							"\\dfrac{9}{16}",
+							"\\dfrac{9}{25}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 25,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 8, 9, 18, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 6,
+				"valeurs": [1, 4, 9, 16, 25, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 36,
+				"nb_distinctes": 13,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 8, 9, 16, 18, 25, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [2, 8, 9, 18, 25],
+				"denominateur_min": 2,
+				"denominateur_max": 25,
+				"numerateur_min": 1,
+				"numerateur_max": 2,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [4, 9, 16, 25, 36],
+				"denominateur_min": 4,
+				"denominateur_max": 36,
+				"numerateur_min": 1,
+				"numerateur_max": 25,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (36)",
+					"graine": 9,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;6\\right]$ par $f\\left( x \\right) = \\dfrac{1}{18} x$, représentée ci-dessous.\n\n[courbe]\n\nCalcule $P(X\\leqslant 1)$, aire du domaine colorié.\n\n$P(X\\leqslant 1)=[?]$",
+					"reponse": ["\\dfrac{1}{36}"],
+					"variables": {
+						"a": "6",
+						"t": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;2\\right]$ par $f\\left( x \\right) = \\dfrac{1}{2} x$, représentée ci-dessous.\n\n[courbe]\n\nCalcule $P(X\\leqslant 1)$, aire du domaine colorié.\n\n$P(X\\leqslant 1)=[?]$",
+					"reponse": ["\\dfrac{1}{4}"],
+					"variables": {
+						"a": "2",
+						"t": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;3\\right]$ par $f\\left( x \\right) = \\dfrac{2}{9} x$, représentée ci-dessous.\n\n[courbe]\n\nCalcule $P(X\\leqslant 1)$, aire du domaine colorié.\n\n$P(X\\leqslant 1)=[?]$",
+					"reponse": ["\\dfrac{1}{9}"],
+					"variables": {
+						"a": "3",
+						"t": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;5\\right]$ par $f\\left( x \\right) = \\dfrac{2}{25} x$, représentée ci-dessous.\n\n[courbe]\n\nCalcule $P(X\\leqslant 1)$, aire du domaine colorié.\n\n$P(X\\leqslant 1)=[?]$",
+					"reponse": ["\\dfrac{1}{25}"],
+					"variables": {
+						"a": "5",
+						"t": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;5\\right]$ par $f\\left( x \\right) = \\dfrac{2}{25} x$, représentée ci-dessous.\n\n[courbe]\n\nCalcule $P(X\\leqslant 2)$, aire du domaine colorié.\n\n$P(X\\leqslant 2)=[?]$",
+					"reponse": ["\\dfrac{4}{25}"],
+					"variables": {
+						"a": "5",
+						"t": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "4..10"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:b-1}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La variable aléatoire $X$ suit la loi uniforme sur $\\left[0\\,;{{b}}\\right]$, de densité représentée ci-dessous. On note $F$ sa fonction de répartition : $F(x)=P(X\\leqslant x)$.\n\n```courbe\nx: -0.5 ; {{eval:b+1}}\ny: -0.05 ; {{eval:1/b+0.1;d}}\ngrille: 1 ; {{eval:1/b;d}}\nf(x) = 1/{{b}} sur [0 ; {{b}}]   bleu   nom=C_f\naire: f ; 0 ; {{c}}\ntaille: moyenne\ndescription: Densité constante sur [0 ; {{b}}], rectangle colorié entre 0 et {{c}}.\n```\n\nCalcule $F({{c}})$.\n\n$F({{c}})=?$",
+				"reponses_brutes": ["{{eval:c/b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 42,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 31
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"denominateur_min": 2,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 10,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\left[0\\,;10\\right]$, de densité représentée ci-dessous. On note $F$ sa fonction de répartition : $F(x)=P(X\\leqslant x)$.\n\n[courbe]\n\nCalcule $F\\left( 7 \\right)$.\n\n$F\\left( 7 \\right) = [?]$",
+					"reponse": ["\\dfrac{7}{10}"],
+					"variables": {
+						"b": "10",
+						"c": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\left[0\\,;4\\right]$, de densité représentée ci-dessous. On note $F$ sa fonction de répartition : $F(x)=P(X\\leqslant x)$.\n\n[courbe]\n\nCalcule $F\\left( 2 \\right)$.\n\n$F\\left( 2 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"b": "4",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\left[0\\,;6\\right]$, de densité représentée ci-dessous. On note $F$ sa fonction de répartition : $F(x)=P(X\\leqslant x)$.\n\n[courbe]\n\nCalcule $F\\left( 2 \\right)$.\n\n$F\\left( 2 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{3}"],
+					"variables": {
+						"b": "6",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\left[0\\,;9\\right]$, de densité représentée ci-dessous. On note $F$ sa fonction de répartition : $F(x)=P(X\\leqslant x)$.\n\n[courbe]\n\nCalcule $F\\left( 2 \\right)$.\n\n$F\\left( 2 \\right) = [?]$",
+					"reponse": ["\\dfrac{2}{9}"],
+					"variables": {
+						"b": "9",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "La variable aléatoire $X$ suit la loi uniforme sur $\\left[0\\,;4\\right]$, de densité représentée ci-dessous. On note $F$ sa fonction de répartition : $F(x)=P(X\\leqslant x)$.\n\n[courbe]\n\nCalcule $F\\left( 3 \\right)$.\n\n$F\\left( 3 \\right) = [?]$",
+					"reponse": ["\\dfrac{3}{4}"],
+					"variables": {
+						"b": "4",
+						"c": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..5"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+2}}..{{eval:a+12}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On définit sur $\\left[{{a}}\\,;{{b}}\\right]$ la fonction constante $f(x)=k$, avec $k$ réel.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[{{a}}\\,;{{b}}\\right]$ ?\n\n$k=?$",
+				"reponses_brutes": ["{{eval:1/(b-a)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 66,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 17,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.08333333333333333,
+						"max": 0.5,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+						"denominateur_min": 2,
+						"denominateur_max": 12,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{11}",
+							"\\dfrac{1}{12}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{1}{6}",
+							"\\dfrac{1}{7}",
+							"\\dfrac{1}{8}",
+							"\\dfrac{1}{9}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 17,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 17,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"denominateur_min": 2,
+				"denominateur_max": 12,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (17)",
+					"graine": 73,
+					"enonce": "On définit sur $\\left[5\\,;17\\right]$ la fonction constante $f\\left( x \\right) = k$, avec $k$ réel.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[5\\,;17\\right]$ ?\n\n$k = [?]$",
+					"reponse": ["\\dfrac{1}{12}"],
+					"variables": {
+						"a": "5",
+						"b": "17"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On définit sur $\\left[0\\,;7\\right]$ la fonction constante $f\\left( x \\right) = k$, avec $k$ réel.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[0\\,;7\\right]$ ?\n\n$k = [?]$",
+					"reponse": ["\\dfrac{1}{7}"],
+					"variables": {
+						"a": "0",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On définit sur $\\left[1\\,;6\\right]$ la fonction constante $f\\left( x \\right) = k$, avec $k$ réel.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[1\\,;6\\right]$ ?\n\n$k = [?]$",
+					"reponse": ["\\dfrac{1}{5}"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On définit sur $\\left[1\\,;5\\right]$ la fonction constante $f\\left( x \\right) = k$, avec $k$ réel.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[1\\,;5\\right]$ ?\n\n$k = [?]$",
+					"reponse": ["\\dfrac{1}{4}"],
+					"variables": {
+						"a": "1",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On définit sur $\\left[4\\,;8\\right]$ la fonction constante $f\\left( x \\right) = k$, avec $k$ réel.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[4\\,;8\\right]$ ?\n\n$k = [?]$",
+					"reponse": ["\\dfrac{1}{4}"],
+					"variables": {
+						"a": "4",
+						"b": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On définit sur $\\left[0\\,;{{a}}\\right]$ la fonction $f(x)=kx$, avec $k$ réel strictement positif.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[0\\,;{{a}}\\right]$ ?\n\n$k=?$",
+				"reponses_brutes": ["{{eval:2/a^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.02,
+						"max": 0.5,
+						"negatif_possible": false,
+						"denominateurs": [2, 8, 9, 18, 25, 32, 49, 50, 81],
+						"denominateur_min": 2,
+						"denominateur_max": 81,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{1}{18}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{32}",
+							"\\dfrac{1}{50}",
+							"\\dfrac{1}{8}",
+							"\\dfrac{2}{25}",
+							"\\dfrac{2}{49}",
+							"\\dfrac{2}{81}",
+							"\\dfrac{2}{9}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 8, 9, 18, 25, 32, 49, 50, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 81,
+				"nb_distinctes": 17,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 18, 25, 32, 49, 50, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 8, 9, 18, 25, 32, 49, 50, 81],
+				"denominateur_min": 2,
+				"denominateur_max": 81,
+				"numerateur_min": 1,
+				"numerateur_max": 2,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 9,
+					"enonce": "On définit sur $\\left[0\\,;9\\right]$ la fonction $f\\left( x \\right) = k x$, avec $k$ réel strictement positif.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[0\\,;9\\right]$ ?\n\n$k = [?]$",
+					"reponse": ["\\dfrac{2}{81}"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On définit sur $\\left[0\\,;2\\right]$ la fonction $f\\left( x \\right) = k x$, avec $k$ réel strictement positif.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[0\\,;2\\right]$ ?\n\n$k = [?]$",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On définit sur $\\left[0\\,;4\\right]$ la fonction $f\\left( x \\right) = k x$, avec $k$ réel strictement positif.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[0\\,;4\\right]$ ?\n\n$k = [?]$",
+					"reponse": ["\\dfrac{1}{8}"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On définit sur $\\left[0\\,;8\\right]$ la fonction $f\\left( x \\right) = k x$, avec $k$ réel strictement positif.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[0\\,;8\\right]$ ?\n\n$k = [?]$",
+					"reponse": ["\\dfrac{1}{32}"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On définit sur $\\left[0\\,;7\\right]$ la fonction $f\\left( x \\right) = k x$, avec $k$ réel strictement positif.\n\nPour quelle valeur de $k$ la fonction $f$ est-elle une densité de probabilité sur $\\left[0\\,;7\\right]$ ?\n\n$k = [?]$",
+					"reponse": ["\\dfrac{2}{49}"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		}
+	]
+}

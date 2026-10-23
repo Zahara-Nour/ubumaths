@@ -1,0 +1,701 @@
+{
+	"template_id": "0417223e-923d-4ae2-b25c-89b60f4c7631",
+	"titre": "Linéarité de l'espérance",
+	"sous_titre": "Utiliser E(aX+b) = aE(X) + b pour calculer une espérance, ou pour retrouver E(X) à partir de E(aX+b)",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Variables aléatoires > Espérance",
+	"mis_a_jour": "2026-10-03T14:03:50.761623+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-351",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "-45..45"
+					},
+					{
+						"name": "a",
+						"expression": "-5..6"
+					},
+					{
+						"name": "b",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": ["m != 0", "a != 0", "b != 0", "a*m+10*b != 0"],
+				"enonce_brut": "Une variable aléatoire $X$ a pour espérance $E(X)={{eval:m/10;d}}$. On considère la variable aléatoire $Y={{a}}X{{b;+}}$.\n\nCalcule l'espérance de $Y$. Réponds par un nombre entier ou décimal exact.\n\n$E(Y)=?$",
+				"reponses_brutes": ["{{eval:a*m/10+b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -45,
+						"max": 45,
+						"negatif_possible": true,
+						"nb_distinctes": 88
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.19,
+						"nb_distinctes": 192,
+						"exemples": [
+							"\\dfrac{9}{2}",
+							"\\dfrac{21}{5}",
+							"\\dfrac{36}{5}",
+							"-\\dfrac{7}{2}",
+							"-\\dfrac{11}{2}",
+							"-15",
+							"-20",
+							"\\dfrac{9}{5}",
+							"-\\dfrac{34}{5}",
+							"\\dfrac{87}{5}",
+							"\\dfrac{13}{5}",
+							"\\dfrac{41}{10}"
+						],
+						"nombres_contenus": {
+							"min": -29,
+							"max": 177,
+							"nb_distinctes": 100,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 94,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -29,
+				"max": 177,
+				"nb_distinctes": 100,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -29,
+				"max": 177,
+				"nb_distinctes": 180,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 243,
+				"denominateurs": [2, 5, 10],
+				"denominateur_min": 2,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 177,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "159/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (177)",
+					"graine": 230,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $E \\left( X \\right) = -3{,}9$. On considère la variable aléatoire $Y = 3 X - 6$.\n\nCalcule l'espérance de $Y$. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( Y \\right) = [?]$",
+					"reponse": ["-\\dfrac{177}{10}"],
+					"variables": {
+						"m": "-39",
+						"a": "3",
+						"b": "-6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-29)",
+					"graine": 266,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $E \\left( X \\right) = 4$. On considère la variable aléatoire $Y = -5 X - 9$.\n\nCalcule l'espérance de $Y$. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( Y \\right) = [?]$",
+					"reponse": ["-29"],
+					"variables": {
+						"m": "40",
+						"a": "-5",
+						"b": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $E \\left( X \\right) = -4{,}5$. On considère la variable aléatoire $Y = X + 9$.\n\nCalcule l'espérance de $Y$. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( Y \\right) = [?]$",
+					"reponse": ["\\dfrac{9}{2}"],
+					"variables": {
+						"m": "-45",
+						"a": "1",
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $E \\left( X \\right) = -1{,}6$. On considère la variable aléatoire $Y = -2 X + 1$.\n\nCalcule l'espérance de $Y$. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( Y \\right) = [?]$",
+					"reponse": ["\\dfrac{21}{5}"],
+					"variables": {
+						"m": "-16",
+						"a": "-2",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une variable aléatoire $X$ a pour espérance $E \\left( X \\right) = -3{,}1$. On considère la variable aléatoire $Y = -2 X + 1$.\n\nCalcule l'espérance de $Y$. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( Y \\right) = [?]$",
+					"reponse": ["\\dfrac{36}{5}"],
+					"variables": {
+						"m": "-31",
+						"a": "-2",
+						"b": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "405..1195"
+					},
+					{
+						"name": "p",
+						"expression": "2..4"
+					},
+					{
+						"name": "q",
+						"expression": "8..20"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10*q}}"
+					}
+				],
+				"conditions": ["mod(m,10) != 0"],
+				"enonce_brut": "Un marchand de glaces note $X$ le nombre de glaces vendues au cours d'une journée d'été. Une étude sur plusieurs saisons donne $E(X)={{eval:m/10;d}}$. Chaque glace est vendue ${{p}}$ € et les frais fixes s'élèvent à ${{c}}$ € par jour. Le bénéfice journalier, en euros, est la variable aléatoire $B={{p}}X-{{c}}$.\n\nCalcule le bénéfice moyen par jour, $E(B)$. Réponds par un nombre entier ou décimal exact.\n\n$E(B)=?$",
+				"reponses_brutes": ["{{eval:p*m/10-c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 405,
+						"max": 1194,
+						"negatif_possible": false,
+						"nb_distinctes": 250
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 80,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.043333333333333335,
+						"nb_distinctes": 279,
+						"exemples": [
+							"-\\dfrac{779}{10}",
+							"-\\dfrac{38}{5}",
+							"\\dfrac{101}{2}",
+							"\\dfrac{218}{5}",
+							"\\dfrac{216}{5}",
+							"\\dfrac{109}{5}",
+							"\\dfrac{58}{5}",
+							"\\dfrac{49}{5}",
+							"\\dfrac{178}{5}",
+							"\\dfrac{649}{5}",
+							"\\dfrac{486}{5}",
+							"-\\dfrac{304}{5}"
+						],
+						"nombres_contenus": {
+							"min": -47,
+							"max": 2431,
+							"nb_distinctes": 266,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 200,
+				"nb_distinctes": 266,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": -47,
+				"max": 2431,
+				"nb_distinctes": 266,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -47,
+				"max": 2431,
+				"nb_distinctes": 531,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 287,
+				"denominateurs": [2, 5, 10],
+				"denominateur_min": 2,
+				"denominateur_max": 10,
+				"numerateur_min": 7,
+				"numerateur_max": 2431,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 55,
+					"max": 55
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2431)",
+					"graine": 39,
+					"enonce": "Un marchand de glaces note $X$ le nombre de glaces vendues au cours d'une journée d'été. Une étude sur plusieurs saisons donne $E \\left( X \\right) = 107{,}7$. Chaque glace est vendue $3$ € et les frais fixes s'élèvent à $80$ € par jour. Le bénéfice journalier, en euros, est la variable aléatoire $B = 3 X - 80$.\n\nCalcule le bénéfice moyen par jour, $E \\left( B \\right)$. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( B \\right) = [?]$",
+					"reponse": ["\\dfrac{2431}{10}"],
+					"variables": {
+						"m": "1077",
+						"p": "3",
+						"q": "8",
+						"c": "80"
+					}
+				},
+				{
+					"role": "plus petite valeur (-47)",
+					"graine": 57,
+					"enonce": "Un marchand de glaces note $X$ le nombre de glaces vendues au cours d'une journée d'été. Une étude sur plusieurs saisons donne $E \\left( X \\right) = 56{,}5$. Chaque glace est vendue $2$ € et les frais fixes s'élèvent à $160$ € par jour. Le bénéfice journalier, en euros, est la variable aléatoire $B = 2 X - 160$.\n\nCalcule le bénéfice moyen par jour, $E \\left( B \\right)$. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( B \\right) = [?]$",
+					"reponse": ["-47"],
+					"variables": {
+						"m": "565",
+						"p": "2",
+						"q": "16",
+						"c": "160"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Un marchand de glaces note $X$ le nombre de glaces vendues au cours d'une journée d'été. Une étude sur plusieurs saisons donne $E \\left( X \\right) = 40{,}7$. Chaque glace est vendue $3$ € et les frais fixes s'élèvent à $200$ € par jour. Le bénéfice journalier, en euros, est la variable aléatoire $B = 3 X - 200$.\n\nCalcule le bénéfice moyen par jour, $E \\left( B \\right)$. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( B \\right) = [?]$",
+					"reponse": ["-\\dfrac{779}{10}"],
+					"variables": {
+						"m": "407",
+						"p": "3",
+						"q": "20",
+						"c": "200"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un marchand de glaces note $X$ le nombre de glaces vendues au cours d'une journée d'été. Une étude sur plusieurs saisons donne $E \\left( X \\right) = 66{,}2$. Chaque glace est vendue $2$ € et les frais fixes s'élèvent à $140$ € par jour. Le bénéfice journalier, en euros, est la variable aléatoire $B = 2 X - 140$.\n\nCalcule le bénéfice moyen par jour, $E \\left( B \\right)$. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( B \\right) = [?]$",
+					"reponse": ["-\\dfrac{38}{5}"],
+					"variables": {
+						"m": "662",
+						"p": "2",
+						"q": "14",
+						"c": "140"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un marchand de glaces note $X$ le nombre de glaces vendues au cours d'une journée d'été. Une étude sur plusieurs saisons donne $E \\left( X \\right) = 43{,}5$. Chaque glace est vendue $3$ € et les frais fixes s'élèvent à $80$ € par jour. Le bénéfice journalier, en euros, est la variable aléatoire $B = 3 X - 80$.\n\nCalcule le bénéfice moyen par jour, $E \\left( B \\right)$. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( B \\right) = [?]$",
+					"reponse": ["\\dfrac{101}{2}"],
+					"variables": {
+						"m": "435",
+						"p": "3",
+						"q": "8",
+						"c": "80"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "5..45"
+					},
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "s",
+						"expression": "3..10"
+					}
+				],
+				"conditions": ["a*m != 10*s"],
+				"enonce_brut": "À un stand de fête foraine, un joueur lance cinq fléchettes. On note $X$ le nombre de cibles atteintes au cours d'une partie. Le joueur paie ${{s}}$ € pour jouer et reçoit ${{a}}$ € par cible atteinte : son gain algébrique, en euros, est la variable aléatoire $G={{a}}X-{{s}}$.\n\nOn sait que $E(G)={{eval:a*m/10-s;d}}$. Calcule $E(X)$, le nombre moyen de cibles atteintes par partie. Réponds par un nombre entier ou décimal exact.\n\n$E(X)=?$",
+				"reponses_brutes": ["{{eval:m/10}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 267,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.08,
+						"nb_distinctes": 41,
+						"exemples": [
+							"\\dfrac{1}{2}",
+							"\\dfrac{9}{5}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{18}{5}",
+							"\\dfrac{7}{10}",
+							"3",
+							"\\dfrac{39}{10}",
+							"\\dfrac{21}{5}",
+							"\\dfrac{13}{5}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{19}{10}",
+							"\\dfrac{11}{5}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 43,
+							"nb_distinctes": 29,
+							"valeurs": [
+								1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 27, 29,
+								31, 33, 37, 39, 41, 43
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -8.4,
+				"max": 19.5,
+				"nb_distinctes": 133,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 43,
+				"nb_distinctes": 29,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 27, 29, 31, 33,
+					37, 39, 41, 43
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -8.4,
+				"max": 43,
+				"nb_distinctes": 147,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 276,
+				"denominateurs": [2, 5, 10],
+				"denominateur_min": 2,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 43,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 60,
+					"max": 60
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (43)",
+					"graine": 36,
+					"enonce": "À un stand de fête foraine, un joueur lance cinq fléchettes. On note $X$ le nombre de cibles atteintes au cours d'une partie. Le joueur paie $4$ € pour jouer et reçoit $3$ € par cible atteinte : son gain algébrique, en euros, est la variable aléatoire $G = 3 X - 4$.\n\nOn sait que $E \\left( G \\right) = 8{,}9$. Calcule $E \\left( X \\right)$, le nombre moyen de cibles atteintes par partie. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{43}{10}"],
+					"variables": {
+						"m": "43",
+						"a": "3",
+						"s": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-8.4)",
+					"graine": 146,
+					"enonce": "À un stand de fête foraine, un joueur lance cinq fléchettes. On note $X$ le nombre de cibles atteintes au cours d'une partie. Le joueur paie $10$ € pour jouer et reçoit $2$ € par cible atteinte : son gain algébrique, en euros, est la variable aléatoire $G = 2 X - 10$.\n\nOn sait que $E \\left( G \\right) = -8{,}4$. Calcule $E \\left( X \\right)$, le nombre moyen de cibles atteintes par partie. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{4}{5}"],
+					"variables": {
+						"m": "8",
+						"a": "2",
+						"s": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "À un stand de fête foraine, un joueur lance cinq fléchettes. On note $X$ le nombre de cibles atteintes au cours d'une partie. Le joueur paie $10$ € pour jouer et reçoit $4$ € par cible atteinte : son gain algébrique, en euros, est la variable aléatoire $G = 4 X - 10$.\n\nOn sait que $E \\left( G \\right) = -8$. Calcule $E \\left( X \\right)$, le nombre moyen de cibles atteintes par partie. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"m": "5",
+						"a": "4",
+						"s": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "À un stand de fête foraine, un joueur lance cinq fléchettes. On note $X$ le nombre de cibles atteintes au cours d'une partie. Le joueur paie $7$ € pour jouer et reçoit $3$ € par cible atteinte : son gain algébrique, en euros, est la variable aléatoire $G = 3 X - 7$.\n\nOn sait que $E \\left( G \\right) = -1{,}6$. Calcule $E \\left( X \\right)$, le nombre moyen de cibles atteintes par partie. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{9}{5}"],
+					"variables": {
+						"m": "18",
+						"a": "3",
+						"s": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "À un stand de fête foraine, un joueur lance cinq fléchettes. On note $X$ le nombre de cibles atteintes au cours d'une partie. Le joueur paie $3$ € pour jouer et reçoit $3$ € par cible atteinte : son gain algébrique, en euros, est la variable aléatoire $G = 3 X - 3$.\n\nOn sait que $E \\left( G \\right) = -1{,}2$. Calcule $E \\left( X \\right)$, le nombre moyen de cibles atteintes par partie. Réponds par un nombre entier ou décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{3}{5}"],
+					"variables": {
+						"m": "6",
+						"a": "3",
+						"s": "3"
+					}
+				}
+			]
+		}
+	]
+}

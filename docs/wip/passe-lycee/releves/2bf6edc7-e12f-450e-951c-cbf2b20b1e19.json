@@ -1,0 +1,808 @@
+{
+	"template_id": "2bf6edc7-e12f-450e-951c-cbf2b20b1e19",
+	"titre": "Suite monotone et bornée : que peut-on conclure ?",
+	"sous_titre": "QCM : croissante majorée ⟹ convergente (vers ℓ ≤ M, pas forcément M) ; croissante non majorée ⟹ +∞ ; majorée seule ou croissante seule : pas de conclusion",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Comportement global > Convergence monotone",
+	"mis_a_jour": "2026-10-04T16:56:23.671759+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-384",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "M",
+						"expression": "2..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On sait qu'une suite $(u_n)$ est **croissante** et **majorée** par ${{M}}$.\n\nQue peut-on en conclure ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ converge vers un réel $\\ell\\leqslant{{M}}$"
+					},
+					{
+						"content": "$(u_n)$ converge vers ${{M}}$"
+					},
+					{
+						"content": "$(u_n)$ tend vers $+\\infty$"
+					},
+					{
+						"content": "On ne peut pas savoir si $(u_n)$ converge"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 215,
+			"variables": [
+				{
+					"nom": "M",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-2",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-3",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-4",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-5",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-6",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-7",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-8",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-9",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant2",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant3",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant4",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant5",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant6",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant7",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant8",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant9"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est croissante et majorée par $-9$.\n\nQue peut-on en conclure ?\n\n- A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-9$\n- B. $\\left( u_n \\right)$ converge vers $-9$\n- C. On ne peut pas savoir si $(u_n)$ converge\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-9$"],
+					"variables": {
+						"M": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 11,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est croissante et majorée par $2$.\n\nQue peut-on en conclure ?\n\n- A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant2$\n- B. On ne peut pas savoir si $(u_n)$ converge\n- C. $\\left( u_n \\right)$ converge vers $2$\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant2$"],
+					"variables": {
+						"M": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est croissante et majorée par $-4$.\n\nQue peut-on en conclure ?\n\n- A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-4$\n- B. $(u_n)$ tend vers $+\\infty$\n- C. On ne peut pas savoir si $(u_n)$ converge\n- D. $\\left( u_n \\right)$ converge vers $-4$",
+					"reponse": ["A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-4$"],
+					"variables": {
+						"M": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est croissante et majorée par $-9$.\n\nQue peut-on en conclure ?\n\n- A. $(u_n)$ tend vers $+\\infty$\n- B. On ne peut pas savoir si $(u_n)$ converge\n- C. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-9$\n- D. $\\left( u_n \\right)$ converge vers $-9$",
+					"reponse": ["C. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-9$"],
+					"variables": {
+						"M": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est croissante et majorée par $-4$.\n\nQue peut-on en conclure ?\n\n- A. $\\left( u_n \\right)$ converge vers $-4$\n- B. $(u_n)$ tend vers $+\\infty$\n- C. On ne peut pas savoir si $(u_n)$ converge\n- D. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-4$",
+					"reponse": ["D. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-4$"],
+					"variables": {
+						"M": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "M",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On sait qu'une suite $(u_n)$ est **décroissante** et **minorée** par ${{M}}$.\n\nQue peut-on en conclure ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ converge vers un réel $\\ell\\geqslant{{M}}$"
+					},
+					{
+						"content": "$(u_n)$ converge vers ${{M}}$"
+					},
+					{
+						"content": "$(u_n)$ tend vers $-\\infty$"
+					},
+					{
+						"content": "On ne peut pas savoir si $(u_n)$ converge"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 223,
+			"variables": [
+				{
+					"nom": "M",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-1",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-2",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-3",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-4",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-5",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-6",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-7",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-8",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-9",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant0",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant1",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant2",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant3",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant4",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant5",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant6",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant7",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant8",
+							"\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant9"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 9,
+							"nb_distinctes": 10,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est décroissante et minorée par $-9$.\n\nQue peut-on en conclure ?\n\n- A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-9$\n- B. $\\left( u_n \\right)$ converge vers $-9$\n- C. On ne peut pas savoir si $(u_n)$ converge\n- D. $(u_n)$ tend vers $-\\infty$",
+					"reponse": ["A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-9$"],
+					"variables": {
+						"M": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 35,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est décroissante et minorée par $0$.\n\nQue peut-on en conclure ?\n\n- A. $\\left( u_n \\right)$ converge vers $0$\n- B. $\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant0$\n- C. On ne peut pas savoir si $(u_n)$ converge\n- D. $(u_n)$ tend vers $-\\infty$",
+					"reponse": ["B. $\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant0$"],
+					"variables": {
+						"M": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est décroissante et minorée par $-3$.\n\nQue peut-on en conclure ?\n\n- A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-3$\n- B. $(u_n)$ tend vers $-\\infty$\n- C. On ne peut pas savoir si $(u_n)$ converge\n- D. $\\left( u_n \\right)$ converge vers $-3$",
+					"reponse": ["A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-3$"],
+					"variables": {
+						"M": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est décroissante et minorée par $-9$.\n\nQue peut-on en conclure ?\n\n- A. $(u_n)$ tend vers $-\\infty$\n- B. On ne peut pas savoir si $(u_n)$ converge\n- C. $\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-9$\n- D. $\\left( u_n \\right)$ converge vers $-9$",
+					"reponse": ["C. $\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-9$"],
+					"variables": {
+						"M": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est décroissante et minorée par $-3$.\n\nQue peut-on en conclure ?\n\n- A. $\\left( u_n \\right)$ converge vers $-3$\n- B. $(u_n)$ tend vers $-\\infty$\n- C. On ne peut pas savoir si $(u_n)$ converge\n- D. $\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-3$",
+					"reponse": ["D. $\\left( u_n \\right)$ converge vers un réel $\\ell\\geqslant-3$"],
+					"variables": {
+						"M": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On sait qu'une suite $(u_n)$ est **croissante** et **n'est pas majorée**.\n\nQue peut-on en conclure ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$(u_n)$ tend vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ converge"
+					},
+					{
+						"content": "$(u_n)$ n'a pas de limite"
+					},
+					{
+						"content": "On ne peut pas conclure"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["(u_n)$ tend vers $+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est croissante et n'est pas majorée.\n\nQue peut-on en conclure ?\n\n- A. On ne peut pas conclure\n- B. $(u_n)$ n'a pas de limite\n- C. $(u_n)$ converge\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["D. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est croissante et n'est pas majorée.\n\nQue peut-on en conclure ?\n\n- A. $(u_n)$ n'a pas de limite\n- B. On ne peut pas conclure\n- C. $(u_n)$ tend vers $+\\infty$\n- D. $(u_n)$ converge",
+					"reponse": ["C. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est croissante et n'est pas majorée.\n\nQue peut-on en conclure ?\n\n- A. $(u_n)$ n'a pas de limite\n- B. On ne peut pas conclure\n- C. $(u_n)$ converge\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["D. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est croissante et n'est pas majorée.\n\nQue peut-on en conclure ?\n\n- A. On ne peut pas conclure\n- B. $(u_n)$ n'a pas de limite\n- C. $(u_n)$ tend vers $+\\infty$\n- D. $(u_n)$ converge",
+					"reponse": ["C. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On sait qu'une suite $\\left( u_n \\right)$ est croissante et n'est pas majorée.\n\nQue peut-on en conclure ?\n\n- A. $(u_n)$ n'a pas de limite\n- B. $(u_n)$ converge\n- C. $(u_n)$ tend vers $+\\infty$\n- D. On ne peut pas conclure",
+					"reponse": ["C. $(u_n)$ tend vers $+\\infty$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "M",
+						"expression": "2..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On sait seulement qu'une suite $(u_n)$ est **majorée** par ${{M}}$.\n\nQue peut-on en conclure ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite"
+					},
+					{
+						"content": "$(u_n)$ converge vers un réel $\\ell\\leqslant{{M}}$"
+					},
+					{
+						"content": "$(u_n)$ converge vers ${{M}}$"
+					},
+					{
+						"content": "$(u_n)$ tend vers $-\\infty$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 215,
+			"variables": [
+				{
+					"nom": "M",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite"
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "On sait seulement qu'une suite $\\left( u_n \\right)$ est majorée par $-9$.\n\nQue peut-on en conclure ?\n\n- A. Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite\n- B. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-9$\n- C. $(u_n)$ tend vers $-\\infty$\n- D. $\\left( u_n \\right)$ converge vers $-9$",
+					"reponse": [
+						"A. Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite"
+					],
+					"variables": {
+						"M": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 11,
+					"enonce": "On sait seulement qu'une suite $\\left( u_n \\right)$ est majorée par $2$.\n\nQue peut-on en conclure ?\n\n- A. Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite\n- B. $(u_n)$ tend vers $-\\infty$\n- C. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant2$\n- D. $\\left( u_n \\right)$ converge vers $2$",
+					"reponse": [
+						"A. Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite"
+					],
+					"variables": {
+						"M": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On sait seulement qu'une suite $\\left( u_n \\right)$ est majorée par $-4$.\n\nQue peut-on en conclure ?\n\n- A. Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite\n- B. $\\left( u_n \\right)$ converge vers $-4$\n- C. $(u_n)$ tend vers $-\\infty$\n- D. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-4$",
+					"reponse": [
+						"A. Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite"
+					],
+					"variables": {
+						"M": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On sait seulement qu'une suite $\\left( u_n \\right)$ est majorée par $-9$.\n\nQue peut-on en conclure ?\n\n- A. $\\left( u_n \\right)$ converge vers $-9$\n- B. $(u_n)$ tend vers $-\\infty$\n- C. Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite\n- D. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-9$",
+					"reponse": [
+						"C. Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite"
+					],
+					"variables": {
+						"M": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On sait seulement qu'une suite $\\left( u_n \\right)$ est majorée par $-4$.\n\nQue peut-on en conclure ?\n\n- A. $\\left( u_n \\right)$ converge vers un réel $\\ell\\leqslant-4$\n- B. $\\left( u_n \\right)$ converge vers $-4$\n- C. $(u_n)$ tend vers $-\\infty$\n- D. Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite",
+					"reponse": [
+						"D. Rien sur sa limite : elle peut converger, tendre vers $-\\infty$ ou n'avoir aucune limite"
+					],
+					"variables": {
+						"M": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On sait seulement qu'une suite $(u_n)$ est **croissante**.\n\nQue peut-on en conclure ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non"
+					},
+					{
+						"content": "$(u_n)$ tend vers $+\\infty$"
+					},
+					{
+						"content": "$(u_n)$ converge"
+					},
+					{
+						"content": "$(u_n)$ peut n'avoir aucune limite"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On sait seulement qu'une suite $\\left( u_n \\right)$ est croissante.\n\nQue peut-on en conclure ?\n\n- A. $(u_n)$ peut n'avoir aucune limite\n- B. $(u_n)$ converge\n- C. $(u_n)$ tend vers $+\\infty$\n- D. Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non",
+					"reponse": ["D. Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On sait seulement qu'une suite $\\left( u_n \\right)$ est croissante.\n\nQue peut-on en conclure ?\n\n- A. $(u_n)$ converge\n- B. $(u_n)$ peut n'avoir aucune limite\n- C. Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["C. Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On sait seulement qu'une suite $\\left( u_n \\right)$ est croissante.\n\nQue peut-on en conclure ?\n\n- A. $(u_n)$ converge\n- B. $(u_n)$ peut n'avoir aucune limite\n- C. $(u_n)$ tend vers $+\\infty$\n- D. Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non",
+					"reponse": ["D. Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On sait seulement qu'une suite $\\left( u_n \\right)$ est croissante.\n\nQue peut-on en conclure ?\n\n- A. $(u_n)$ peut n'avoir aucune limite\n- B. $(u_n)$ converge\n- C. Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non\n- D. $(u_n)$ tend vers $+\\infty$",
+					"reponse": ["C. Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On sait seulement qu'une suite $\\left( u_n \\right)$ est croissante.\n\nQue peut-on en conclure ?\n\n- A. $(u_n)$ converge\n- B. $(u_n)$ tend vers $+\\infty$\n- C. Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non\n- D. $(u_n)$ peut n'avoir aucune limite",
+					"reponse": ["C. Elle converge ou tend vers $+\\infty$, selon qu'elle est majorée ou non"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

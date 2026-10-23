@@ -1,0 +1,1256 @@
+{
+	"template_id": "0113c53d-ee4a-4da9-9327-537461ffdc85",
+	"titre": "Variations et extremum d'une fonction du second degré",
+	"sous_titre": "Sens de variation et extremum depuis ax² + bx + c ; tableau de variations au corrigé",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Polynôme du second degré > Variations",
+	"mis_a_jour": "2026-10-01T08:36:39.643136+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-287",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "h",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "k",
+						"expression": "-9..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-2*a*h"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*h^2+k"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$. Complète.\n\nSur $\\left]-\\infty\\,;?\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $?$.",
+				"reponses_brutes": [
+					"{{eval:-b/(2*a)}}",
+					"décroissante",
+					"croissante",
+					"minimum",
+					"{{eval:c-b^2/(4*a)}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 215,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -24,
+						"max": 24,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-24, -18, -16, -12, -8, -6, -4, -2, 2, 4, 6, 8, 12, 16, 18, 24]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 57,
+						"negatif_possible": true,
+						"nb_distinctes": 61
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["minimum"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 5,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 57,
+				"nb_distinctes": 52,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 57,
+				"nb_distinctes": 62,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math, text)",
+				"nb_cases": 5,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "278/300",
+					"−": "158/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"case texte [_]": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (57)",
+					"graine": 197,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 3 x^2 - 24 x + 57$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["4", "décroissante", "croissante", "minimum", "9"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"h": "4",
+						"k": "9",
+						"b": "-24",
+						"c": "57"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 + 8 x + 7$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-4", "décroissante", "croissante", "minimum", "-9"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"h": "-4",
+						"k": "-9",
+						"b": "8",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x^2 - 16 x + 41$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["4", "décroissante", "croissante", "minimum", "9"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"h": "4",
+						"k": "9",
+						"b": "-16",
+						"c": "41"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 - 2 x + 8$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["1", "décroissante", "croissante", "minimum", "7"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"h": "1",
+						"k": "7",
+						"b": "-2",
+						"c": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x^2 + 16 x + 37$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-4", "décroissante", "croissante", "minimum", "5"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"h": "-4",
+						"k": "5",
+						"b": "16",
+						"c": "37"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "-3..-1"
+					},
+					{
+						"name": "h",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "k",
+						"expression": "-9..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-2*a*h"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*h^2+k"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$. Complète.\n\nSur $\\left]-\\infty\\,;?\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $?$.",
+				"reponses_brutes": [
+					"{{eval:-b/(2*a)}}",
+					"croissante",
+					"décroissante",
+					"maximum",
+					"{{eval:c-b^2/(4*a)}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 215,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-3, -2, -1]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -24,
+						"max": 24,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-24, -18, -16, -12, -8, -6, -4, -2, 2, 4, 6, 8, 12, 16, 18, 24]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -57,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 59
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["maximum"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 5,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -3,
+				"max": 57,
+				"nb_distinctes": 52,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 57,
+				"nb_distinctes": 60,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math, text)",
+				"nb_cases": 5,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "172/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"case texte [_]": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "142/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (57)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -3 x^2 - 24 x - 57$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-4", "croissante", "décroissante", "maximum", "-9"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"h": "-4",
+						"k": "-9",
+						"b": "-24",
+						"c": "-57"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -2 x^2 + 16 x - 23$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["4", "croissante", "décroissante", "maximum", "9"],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"h": "4",
+						"k": "9",
+						"b": "16",
+						"c": "-23"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -3 x^2 + 6 x + 4$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["1", "croissante", "décroissante", "maximum", "7"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"h": "1",
+						"k": "7",
+						"b": "6",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -2 x^2 - 16 x - 27$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-4", "croissante", "décroissante", "maximum", "5"],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"h": "-4",
+						"k": "5",
+						"b": "-16",
+						"c": "-27"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -3 x^2 - 24 x - 53$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-4", "croissante", "décroissante", "maximum", "-5"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"h": "-4",
+						"k": "-5",
+						"b": "-24",
+						"c": "-53"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1"
+					},
+					{
+						"name": "b",
+						"expression": "1|3|5|-1|-3|-5"
+					},
+					{
+						"name": "c",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$. Complète.\n\nSur $\\left]-\\infty\\,;?\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $?$.",
+				"reponses_brutes": [
+					"{{eval:-b/(2*a)}}",
+					"décroissante",
+					"croissante",
+					"minimum",
+					"{{eval:c-b^2/(4*a)}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 69,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-5, -3, -1, 1, 3, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{5}{2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 5,
+							"nb_distinctes": 4,
+							"valeurs": [1, 2, 3, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["minimum"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 5,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"-\\dfrac{13}{4}",
+							"-\\dfrac{17}{4}",
+							"-\\dfrac{1}{4}",
+							"-\\dfrac{21}{4}",
+							"-\\dfrac{25}{4}",
+							"-\\dfrac{29}{4}",
+							"-\\dfrac{33}{4}",
+							"-\\dfrac{37}{4}",
+							"-\\dfrac{41}{4}",
+							"-\\dfrac{45}{4}",
+							"-\\dfrac{49}{4}",
+							"-\\dfrac{5}{4}",
+							"-\\dfrac{9}{4}",
+							"\\dfrac{11}{4}",
+							"\\dfrac{15}{4}",
+							"\\dfrac{19}{4}",
+							"\\dfrac{23}{4}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{7}{4}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 49,
+							"nb_distinctes": 20,
+							"valeurs": [1, 3, 4, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 29, 33, 37, 41, 45, 49],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 49,
+				"nb_distinctes": 21,
+				"valeurs": [1, 2, 3, 4, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 29, 33, 37, 41, 45, 49],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 49,
+				"nb_distinctes": 22,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 29, 33, 37, 41, 45, 49],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [2, 4],
+				"denominateur_min": 2,
+				"denominateur_max": 4,
+				"numerateur_min": 1,
+				"numerateur_max": 49,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math, text)",
+				"nb_cases": 5,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "222/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"case texte [_]": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "110/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (49)",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 + 5 x - 6$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-\\dfrac{5}{2}", "décroissante", "croissante", "minimum", "-\\dfrac{49}{4}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"b": "5",
+						"c": "-6"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 - x + 6$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["\\dfrac{1}{2}", "décroissante", "croissante", "minimum", "\\dfrac{23}{4}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"b": "-1",
+						"c": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 + 3 x + 1$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-\\dfrac{3}{2}", "décroissante", "croissante", "minimum", "-\\dfrac{5}{4}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"b": "3",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 + 3 x - 6$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-\\dfrac{3}{2}", "décroissante", "croissante", "minimum", "-\\dfrac{33}{4}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"b": "3",
+						"c": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 + 3 x + 2$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-\\dfrac{3}{2}", "décroissante", "croissante", "minimum", "-\\dfrac{1}{4}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"b": "3",
+						"c": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "-1"
+					},
+					{
+						"name": "b",
+						"expression": "1|3|5|-1|-3|-5"
+					},
+					{
+						"name": "c",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:ax^2+bx+c}}$. Complète.\n\nSur $\\left]-\\infty\\,;?\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $?$.",
+				"reponses_brutes": [
+					"{{eval:-b/(2*a)}}",
+					"croissante",
+					"décroissante",
+					"maximum",
+					"{{eval:c-b^2/(4*a)}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 69,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 1,
+						"valeurs": [-1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-5, -3, -1, 1, 3, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{5}{2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 5,
+							"nb_distinctes": 4,
+							"valeurs": [1, 2, 3, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["maximum"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"case": 5,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"-\\dfrac{11}{4}",
+							"-\\dfrac{15}{4}",
+							"-\\dfrac{19}{4}",
+							"-\\dfrac{23}{4}",
+							"-\\dfrac{3}{4}",
+							"-\\dfrac{7}{4}",
+							"\\dfrac{13}{4}",
+							"\\dfrac{17}{4}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{21}{4}",
+							"\\dfrac{25}{4}",
+							"\\dfrac{29}{4}",
+							"\\dfrac{33}{4}",
+							"\\dfrac{37}{4}",
+							"\\dfrac{41}{4}",
+							"\\dfrac{45}{4}",
+							"\\dfrac{49}{4}",
+							"\\dfrac{5}{4}",
+							"\\dfrac{9}{4}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 49,
+							"nb_distinctes": 20,
+							"valeurs": [1, 3, 4, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 29, 33, 37, 41, 45, 49],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 49,
+				"nb_distinctes": 21,
+				"valeurs": [1, 2, 3, 4, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 29, 33, 37, 41, 45, 49],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 49,
+				"nb_distinctes": 22,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 29, 33, 37, 41, 45, 49],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [2, 4],
+				"denominateur_min": 2,
+				"denominateur_max": 4,
+				"numerateur_min": 1,
+				"numerateur_max": 49,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math, text)",
+				"nb_cases": 5,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "222/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"case texte [_]": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "110/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (49)",
+					"graine": 156,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^2 - 5 x + 6$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-\\dfrac{5}{2}", "croissante", "décroissante", "maximum", "\\dfrac{49}{4}"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "-5",
+						"c": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^2 - x + 6$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["-\\dfrac{1}{2}", "croissante", "décroissante", "maximum", "\\dfrac{25}{4}"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "-1",
+						"c": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^2 + 3 x + 1$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["\\dfrac{3}{2}", "croissante", "décroissante", "maximum", "\\dfrac{13}{4}"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "3",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^2 + 5 x - 6$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["\\dfrac{5}{2}", "croissante", "décroissante", "maximum", "\\dfrac{1}{4}"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "5",
+						"c": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^2 + 3 x - 6$. Complète.\n\nSur $\\left]-\\infty\\,;[?]\\right]$, $f$ est [_] ; sur l'intervalle restant, $f$ est [_].\n\n$f$ admet un [_] égal à $[?]$.",
+					"reponse": ["\\dfrac{3}{2}", "croissante", "décroissante", "maximum", "-\\dfrac{15}{4}"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "3",
+						"c": "-6"
+					}
+				}
+			]
+		}
+	]
+}

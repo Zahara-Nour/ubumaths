@@ -1,0 +1,751 @@
+{
+	"template_id": "67b349ab-02c1-4e06-9026-b31d918acd46",
+	"titre": "k-uplets (avec répétition) : n puissance k",
+	"sous_titre": "Nombre de k-uplets d'un ensemble à n éléments : cadenas, questionnaire, ADN, dés, mots (pièges : kⁿ au lieu de nᵏ, n × k, éléments distincts à tort)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > k-uplets",
+	"mis_a_jour": "2026-10-05T06:04:01.210137+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-307",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "3..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un cadenas possède ${{k}}$ molettes, chacune portant les chiffres de $0$ à $9$.\n\nCombien de combinaisons différentes ce cadenas admet-il ?\n\n$?$",
+				"reponses_brutes": ["{{eval:10^k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1000,
+						"max": 100000,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1000, 10000, 100000]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 5,
+				"valeurs": [0, 3, 4, 5, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1000,
+				"max": 100000,
+				"nb_distinctes": 3,
+				"valeurs": [1000, 10000, 100000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 100000,
+				"nb_distinctes": 8,
+				"valeurs": [0, 3, 4, 5, 9, 1000, 10000, 100000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100000)",
+					"graine": 5,
+					"enonce": "Un cadenas possède $5$ molettes, chacune portant les chiffres de $0$ à $9$.\n\nCombien de combinaisons différentes ce cadenas admet-il ?\n\n$[?]$",
+					"reponse": ["100000"],
+					"variables": {
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Un cadenas possède $3$ molettes, chacune portant les chiffres de $0$ à $9$.\n\nCombien de combinaisons différentes ce cadenas admet-il ?\n\n$[?]$",
+					"reponse": ["1000"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Un cadenas possède $4$ molettes, chacune portant les chiffres de $0$ à $9$.\n\nCombien de combinaisons différentes ce cadenas admet-il ?\n\n$[?]$",
+					"reponse": ["10000"],
+					"variables": {
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "4..8"
+					},
+					{
+						"name": "m",
+						"expression": "3..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un questionnaire comporte ${{k}}$ questions ; chacune propose ${{m}}$ réponses et on en coche exactement une par question.\n\nCombien de grilles de réponses différentes peut-on remplir ?\n\n$?$",
+				"reponses_brutes": ["{{eval:m^k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 81,
+						"max": 65536,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [81, 243, 256, 729, 1024, 2187, 4096, 6561, 16384, 65536]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 8,
+				"nb_distinctes": 6,
+				"valeurs": [3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 81,
+				"max": 65536,
+				"nb_distinctes": 10,
+				"valeurs": [81, 243, 256, 729, 1024, 2187, 4096, 6561, 16384, 65536],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 65536,
+				"nb_distinctes": 16,
+				"valeurs": [3, 4, 5, 6, 7, 8, 81, 243, 256, 729, 1024, 2187, 4096, 6561, 16384, 65536],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (65536)",
+					"graine": 10,
+					"enonce": "Un questionnaire comporte $8$ questions ; chacune propose $4$ réponses et on en coche exactement une par question.\n\nCombien de grilles de réponses différentes peut-on remplir ?\n\n$[?]$",
+					"reponse": ["65536"],
+					"variables": {
+						"k": "8",
+						"m": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 2,
+					"enonce": "Un questionnaire comporte $5$ questions ; chacune propose $3$ réponses et on en coche exactement une par question.\n\nCombien de grilles de réponses différentes peut-on remplir ?\n\n$[?]$",
+					"reponse": ["243"],
+					"variables": {
+						"k": "5",
+						"m": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Un questionnaire comporte $4$ questions ; chacune propose $4$ réponses et on en coche exactement une par question.\n\nCombien de grilles de réponses différentes peut-on remplir ?\n\n$[?]$",
+					"reponse": ["256"],
+					"variables": {
+						"k": "4",
+						"m": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un questionnaire comporte $4$ questions ; chacune propose $3$ réponses et on en coche exactement une par question.\n\nCombien de grilles de réponses différentes peut-on remplir ?\n\n$[?]$",
+					"reponse": ["81"],
+					"variables": {
+						"k": "4",
+						"m": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un questionnaire comporte $7$ questions ; chacune propose $3$ réponses et on en coche exactement une par question.\n\nCombien de grilles de réponses différentes peut-on remplir ?\n\n$[?]$",
+					"reponse": ["2187"],
+					"variables": {
+						"k": "7",
+						"m": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "3..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un brin d'ADN est une suite de bases, chacune choisie parmi $\\mathrm{A}$, $\\mathrm{C}$, $\\mathrm{G}$ et $\\mathrm{T}$.\n\nCombien de séquences de ${{k}}$ bases existe-t-il ?\n\n$?$",
+				"reponses_brutes": ["{{eval:4^k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 64,
+						"max": 1048576,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [64, 256, 1024, 4096, 16384, 65536, 262144, 1048576]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 64,
+				"max": 1048576,
+				"nb_distinctes": 8,
+				"valeurs": [64, 256, 1024, 4096, 16384, 65536, 262144, 1048576],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 1048576,
+				"nb_distinctes": 16,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 64, 256, 1024, 4096, 16384, 65536, 262144, 1048576],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1048576)",
+					"graine": 10,
+					"enonce": "Un brin d'ADN est une suite de bases, chacune choisie parmi $\\mathrm{A}$, $\\mathrm{C}$, $\\mathrm{G}$ et $\\mathrm{T}$.\n\nCombien de séquences de $10$ bases existe-t-il ?\n\n$[?]$",
+					"reponse": ["1048576"],
+					"variables": {
+						"k": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 1,
+					"enonce": "Un brin d'ADN est une suite de bases, chacune choisie parmi $\\mathrm{A}$, $\\mathrm{C}$, $\\mathrm{G}$ et $\\mathrm{T}$.\n\nCombien de séquences de $3$ bases existe-t-il ?\n\n$[?]$",
+					"reponse": ["64"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un brin d'ADN est une suite de bases, chacune choisie parmi $\\mathrm{A}$, $\\mathrm{C}$, $\\mathrm{G}$ et $\\mathrm{T}$.\n\nCombien de séquences de $5$ bases existe-t-il ?\n\n$[?]$",
+					"reponse": ["1024"],
+					"variables": {
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un brin d'ADN est une suite de bases, chacune choisie parmi $\\mathrm{A}$, $\\mathrm{C}$, $\\mathrm{G}$ et $\\mathrm{T}$.\n\nCombien de séquences de $9$ bases existe-t-il ?\n\n$[?]$",
+					"reponse": ["262144"],
+					"variables": {
+						"k": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Un brin d'ADN est une suite de bases, chacune choisie parmi $\\mathrm{A}$, $\\mathrm{C}$, $\\mathrm{G}$ et $\\mathrm{T}$.\n\nCombien de séquences de $8$ bases existe-t-il ?\n\n$[?]$",
+					"reponse": ["65536"],
+					"variables": {
+						"k": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On lance ${{k}}$ fois un dé à six faces et on note la liste des résultats dans l'ordre.\n\nCombien de listes de résultats sont possibles ?\n\n$?$",
+				"reponses_brutes": ["{{eval:6^k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 36,
+						"max": 46656,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [36, 216, 1296, 7776, 46656]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 36,
+				"max": 46656,
+				"nb_distinctes": 5,
+				"valeurs": [36, 216, 1296, 7776, 46656],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 46656,
+				"nb_distinctes": 10,
+				"valeurs": [2, 3, 4, 5, 6, 36, 216, 1296, 7776, 46656],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (46656)",
+					"graine": 9,
+					"enonce": "On lance $6$ fois un dé à six faces et on note la liste des résultats dans l'ordre.\n\nCombien de listes de résultats sont possibles ?\n\n$[?]$",
+					"reponse": ["46656"],
+					"variables": {
+						"k": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "On lance $2$ fois un dé à six faces et on note la liste des résultats dans l'ordre.\n\nCombien de listes de résultats sont possibles ?\n\n$[?]$",
+					"reponse": ["36"],
+					"variables": {
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On lance $3$ fois un dé à six faces et on note la liste des résultats dans l'ordre.\n\nCombien de listes de résultats sont possibles ?\n\n$[?]$",
+					"reponse": ["216"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On lance $5$ fois un dé à six faces et on note la liste des résultats dans l'ordre.\n\nCombien de listes de résultats sont possibles ?\n\n$[?]$",
+					"reponse": ["7776"],
+					"variables": {
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "On lance $4$ fois un dé à six faces et on note la liste des résultats dans l'ordre.\n\nCombien de listes de résultats sont possibles ?\n\n$[?]$",
+					"reponse": ["1296"],
+					"variables": {
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Combien de « mots » de ${{k}}$ lettres (ayant un sens ou non) peut-on écrire avec les $26$ lettres de l'alphabet, une lettre pouvant être répétée ?\n\n$?$",
+				"reponses_brutes": ["{{eval:26^k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 676,
+						"max": 456976,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [676, 17576, 456976]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 26,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 26],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 676,
+				"max": 456976,
+				"nb_distinctes": 3,
+				"valeurs": [676, 17576, 456976],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 456976,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 26, 676, 17576, 456976],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (456976)",
+					"graine": 5,
+					"enonce": "Combien de « mots » de $4$ lettres (ayant un sens ou non) peut-on écrire avec les $26$ lettres de l'alphabet, une lettre pouvant être répétée ?\n\n$[?]$",
+					"reponse": ["456976"],
+					"variables": {
+						"k": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Combien de « mots » de $2$ lettres (ayant un sens ou non) peut-on écrire avec les $26$ lettres de l'alphabet, une lettre pouvant être répétée ?\n\n$[?]$",
+					"reponse": ["676"],
+					"variables": {
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Combien de « mots » de $3$ lettres (ayant un sens ou non) peut-on écrire avec les $26$ lettres de l'alphabet, une lettre pouvant être répétée ?\n\n$[?]$",
+					"reponse": ["17576"],
+					"variables": {
+						"k": "3"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,943 @@
+{
+	"template_id": "6c3ee9e6-3c71-4ff9-943b-22691a9a92c7",
+	"titre": "« Et », « ou » et intervalles",
+	"sous_titre": "Traduire une proposition composée avec « et » ou « ou » par un intervalle ou une réunion d'intervalles",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Logique > Logique et raisonnement > Connecteurs et contre-exemples",
+	"mis_a_jour": "2026-10-03T10:09:19.77384+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-210",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..6"
+					},
+					{
+						"name": "d",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+d}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x>{{a}}$ et $x\\leqslant{{b}}$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S=?$",
+				"reponses_brutes": ["]{{a}};{{b}}]"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 115,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 14,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 115,
+						"exemples": [
+							"]-9;-4]",
+							"]-4;-1]",
+							"]-9;-5]",
+							"]-4;-2]",
+							"]3;5]",
+							"]-9;-3]",
+							"]-9;-1]",
+							"]1;4]",
+							"]4;6]",
+							"]5;11]",
+							"]-1;4]",
+							"]-8;-3]"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 14,
+							"nb_distinctes": 15,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 14,
+				"nb_distinctes": 15,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 14,
+				"nb_distinctes": 15,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 14,
+				"nb_distinctes": 15,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 32,
+					"max": 32
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (14)",
+					"graine": 115,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x > 6$ et $x\\leqslant14$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]6;14]"],
+					"variables": {
+						"a": "6",
+						"d": "8",
+						"b": "14"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 16,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x > -7$ et $x\\leqslant0$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-7;0]"],
+					"variables": {
+						"a": "-7",
+						"d": "7",
+						"b": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x > -9$ et $x\\leqslant-4$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-9;-4]"],
+					"variables": {
+						"a": "-9",
+						"d": "5",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x > -4$ et $x\\leqslant-1$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-4;-1]"],
+					"variables": {
+						"a": "-4",
+						"d": "3",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x > -9$ et $x\\leqslant-5$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-9;-5]"],
+					"variables": {
+						"a": "-9",
+						"d": "4",
+						"b": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..6"
+					},
+					{
+						"name": "d",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+d}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<{{a}}$ ou $x\\geqslant{{b}}$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S=?$",
+				"reponses_brutes": ["]-\\infty;{{a}}[\\cup[{{b}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 115,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 14,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 115,
+						"exemples": [
+							"]-\\infty;-9[\\cup[-4;+\\infty[",
+							"]-\\infty;-4[\\cup[-1;+\\infty[",
+							"]-\\infty;-9[\\cup[-5;+\\infty[",
+							"]-\\infty;-4[\\cup[-2;+\\infty[",
+							"]-\\infty;3[\\cup[5;+\\infty[",
+							"]-\\infty;-9[\\cup[-3;+\\infty[",
+							"]-\\infty;-9[\\cup[-1;+\\infty[",
+							"]-\\infty;1[\\cup[4;+\\infty[",
+							"]-\\infty;4[\\cup[6;+\\infty[",
+							"]-\\infty;5[\\cup[11;+\\infty[",
+							"]-\\infty;-1[\\cup[4;+\\infty[",
+							"]-\\infty;-8[\\cup[-3;+\\infty["
+						],
+						"nombres_contenus": {
+							"min": -8,
+							"max": 14,
+							"nb_distinctes": 23,
+							"valeurs": [
+								-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 14,
+				"nb_distinctes": 15,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -8,
+				"max": 14,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -8,
+				"max": 14,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 32,
+					"max": 32
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (14)",
+					"graine": 115,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x < 6$ ou $x\\geqslant14$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-\\infty;6[\\cup[14;+\\infty["],
+					"variables": {
+						"a": "6",
+						"d": "8",
+						"b": "14"
+					}
+				},
+				{
+					"role": "plus petite valeur (-8)",
+					"graine": 27,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<-9$ ou $x\\geqslant-8$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-9[\\cup[-8;+\\infty["],
+					"variables": {
+						"a": "-9",
+						"d": "1",
+						"b": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<-9$ ou $x\\geqslant-4$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-9[\\cup[-4;+\\infty["],
+					"variables": {
+						"a": "-9",
+						"d": "5",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<-4$ ou $x\\geqslant-1$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-4[\\cup[-1;+\\infty["],
+					"variables": {
+						"a": "-4",
+						"d": "3",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<-9$ ou $x\\geqslant-5$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-9[\\cup[-5;+\\infty["],
+					"variables": {
+						"a": "-9",
+						"d": "4",
+						"b": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..9"
+					},
+					{
+						"name": "b",
+						"expression": "-9..9"
+					},
+					{
+						"name": "m",
+						"expression": "{{eval:max(a,b)}}"
+					},
+					{
+						"name": "n",
+						"expression": "{{eval:min(a,b)}}"
+					}
+				],
+				"conditions": ["a != b"],
+				"enonce_brut": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\geqslant{{a}}$ et $x\\geqslant{{b}}$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S=?$",
+				"reponses_brutes": ["[{{m}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 206,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 18,
+						"valeurs": [
+							"[-1;+\\infty[",
+							"[-2;+\\infty[",
+							"[-3;+\\infty[",
+							"[-4;+\\infty[",
+							"[-5;+\\infty[",
+							"[-6;+\\infty[",
+							"[-7;+\\infty[",
+							"[-8;+\\infty[",
+							"[0;+\\infty[",
+							"[1;+\\infty[",
+							"[2;+\\infty[",
+							"[3;+\\infty[",
+							"[4;+\\infty[",
+							"[5;+\\infty[",
+							"[6;+\\infty[",
+							"[7;+\\infty[",
+							"[8;+\\infty[",
+							"[9;+\\infty["
+						],
+						"nombres_contenus": {
+							"min": -8,
+							"max": 9,
+							"nb_distinctes": 18,
+							"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -8,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -8,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 32,
+					"max": 32
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\geqslant-9$ et $x\\geqslant1$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["[1;+\\infty["],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"m": "1",
+						"n": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-8)",
+					"graine": 242,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\geqslant-8$ et $x\\geqslant-9$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["[-8;+\\infty["],
+					"variables": {
+						"a": "-8",
+						"b": "-9",
+						"m": "-8",
+						"n": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\geqslant-3$ et $x\\geqslant-4$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["[-3;+\\infty["],
+					"variables": {
+						"a": "-3",
+						"b": "-4",
+						"m": "-3",
+						"n": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\geqslant-9$ et $x\\geqslant-1$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["[-1;+\\infty["],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"m": "-1",
+						"n": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\geqslant-3$ et $x\\geqslant-5$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["[-3;+\\infty["],
+					"variables": {
+						"a": "-3",
+						"b": "-5",
+						"m": "-3",
+						"n": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..9"
+					},
+					{
+						"name": "b",
+						"expression": "-9..9"
+					},
+					{
+						"name": "m",
+						"expression": "{{eval:max(a,b)}}"
+					},
+					{
+						"name": "n",
+						"expression": "{{eval:min(a,b)}}"
+					}
+				],
+				"conditions": ["a != b"],
+				"enonce_brut": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<{{a}}$ ou $x<{{b}}$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S=?$",
+				"reponses_brutes": ["]-\\infty;{{m}}["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 206,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 18,
+						"valeurs": [
+							"]-\\infty;-1[",
+							"]-\\infty;-2[",
+							"]-\\infty;-3[",
+							"]-\\infty;-4[",
+							"]-\\infty;-5[",
+							"]-\\infty;-6[",
+							"]-\\infty;-7[",
+							"]-\\infty;-8[",
+							"]-\\infty;0[",
+							"]-\\infty;1[",
+							"]-\\infty;2[",
+							"]-\\infty;3[",
+							"]-\\infty;4[",
+							"]-\\infty;5[",
+							"]-\\infty;6[",
+							"]-\\infty;7[",
+							"]-\\infty;8[",
+							"]-\\infty;9["
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 9,
+							"nb_distinctes": 10,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 32,
+					"max": 32
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<-9$ ou $x < 1$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-\\infty;1["],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"m": "1",
+						"n": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 14,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<-1$ ou $x < 0$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-\\infty;0["],
+					"variables": {
+						"a": "-1",
+						"b": "0",
+						"m": "0",
+						"n": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<-3$ ou $x<-4$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-3["],
+					"variables": {
+						"a": "-3",
+						"b": "-4",
+						"m": "-3",
+						"n": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<-9$ ou $x<-1$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-1["],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"m": "-1",
+						"n": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<-3$ ou $x<-5$ ».\n\nÉcris l'ensemble des réels $x$ pour lesquels $P$ est vraie sous la forme d'un intervalle ou d'une réunion d'intervalles (bornes séparées par un point-virgule).\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-3["],
+					"variables": {
+						"a": "-3",
+						"b": "-5",
+						"m": "-3",
+						"n": "-5"
+					}
+				}
+			]
+		}
+	]
+}

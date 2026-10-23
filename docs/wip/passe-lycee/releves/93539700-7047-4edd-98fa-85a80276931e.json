@@ -1,0 +1,1101 @@
+{
+	"template_id": "93539700-7047-4edd-98fa-85a80276931e",
+	"titre": "Image d'un point par une transformation, composée = produit de matrices",
+	"sous_titre": "Calculer l'image d'un point par la matrice d'une transformation, par une rotation de centre O d'angle ±π/2 ou π, la matrice d'une composée (produit dans le bon ordre), un antécédent par la matrice inverse (pièges : produit ligne × matrice, ordre de la composée inversé, multiplier par A au lieu de A⁻¹)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Graphes et matrices > Matrices > Transformations du plan",
+	"mis_a_jour": "2026-10-05T19:11:52.801053+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-323",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "-4..4"
+					},
+					{
+						"name": "a2",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "a3",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "a4",
+						"expression": "-4..4"
+					},
+					{
+						"name": "x",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "y",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": ["a2 != a3", "x != y"],
+				"enonce_brut": "Une transformation $f$ du plan a pour matrice $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$ : le point de coordonnées $(x \\,;\\, y)$ a pour image le point de coordonnées $(X \\,;\\, Y)$ avec $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = A\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\nDonne les coordonnées de l'image $M'$ du point $M({{x}} \\,;\\, {{y}})$, sous la forme d'un vecteur colonne.\n\n$?$",
+				"reponses_brutes": ["({{eval:a1*x+a2*y}};{{eval:a3*x+a4*y}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 267,
+						"exemples": [
+							"(14;-4)",
+							"(-2;-1)",
+							"(9;-14)",
+							"(13;6)",
+							"(-7;-11)",
+							"(-28;-14)",
+							"(11;-14)",
+							"(-9;2)",
+							"(15;0)",
+							"(-10;-3)",
+							"(-1;-4)",
+							"(22;-26)"
+						],
+						"nombres_contenus": {
+							"min": -29,
+							"max": 31,
+							"nb_distinctes": 59,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -29,
+				"max": 31,
+				"nb_distinctes": 59,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -29,
+				"max": 31,
+				"nb_distinctes": 59,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["vecteur"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "135/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (31)",
+					"graine": 166,
+					"enonce": "Une transformation $f$ du plan a pour matrice $A = \\begin{pmatrix}-4&-1\\\\-4&3\\end{pmatrix}$ : le point de coordonnées $(x \\,;\\, y)$ a pour image le point de coordonnées $(X \\,;\\, Y)$ avec $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = A\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\nDonne les coordonnées de l'image $M'$ du point $M(4 \\,;\\, -5)$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(-11;-31)"],
+					"variables": {
+						"a1": "-4",
+						"a2": "-1",
+						"a3": "-4",
+						"a4": "3",
+						"x": "4",
+						"y": "-5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-29)",
+					"graine": 110,
+					"enonce": "Une transformation $f$ du plan a pour matrice $A = \\begin{pmatrix}-4&3\\\\2&-3\\end{pmatrix}$ : le point de coordonnées $(x \\,;\\, y)$ a pour image le point de coordonnées $(X \\,;\\, Y)$ avec $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = A\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\nDonne les coordonnées de l'image $M'$ du point $M(5 \\,;\\, -3)$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(-29;19)"],
+					"variables": {
+						"a1": "-4",
+						"a2": "3",
+						"a3": "2",
+						"a4": "-3",
+						"x": "5",
+						"y": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une transformation $f$ du plan a pour matrice $A = \\begin{pmatrix}-4&1\\\\4&4\\end{pmatrix}$ : le point de coordonnées $(x \\,;\\, y)$ a pour image le point de coordonnées $(X \\,;\\, Y)$ avec $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = A\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\nDonne les coordonnées de l'image $M'$ du point $M(-3 \\,;\\, 2)$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(14;-4)"],
+					"variables": {
+						"a1": "-4",
+						"a2": "1",
+						"a3": "4",
+						"a4": "4",
+						"x": "-3",
+						"y": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une transformation $f$ du plan a pour matrice $A = \\begin{pmatrix}-2&-2\\\\1&3\\end{pmatrix}$ : le point de coordonnées $(x \\,;\\, y)$ a pour image le point de coordonnées $(X \\,;\\, Y)$ avec $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = A\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\nDonne les coordonnées de l'image $M'$ du point $M(2 \\,;\\, -1)$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(-2;-1)"],
+					"variables": {
+						"a1": "-2",
+						"a2": "-2",
+						"a3": "1",
+						"a4": "3",
+						"x": "2",
+						"y": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une transformation $f$ du plan a pour matrice $A = \\begin{pmatrix}-3&-2\\\\1&-3\\end{pmatrix}$ : le point de coordonnées $(x \\,;\\, y)$ a pour image le point de coordonnées $(X \\,;\\, Y)$ avec $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = A\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\nDonne les coordonnées de l'image $M'$ du point $M(-5 \\,;\\, 3)$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(9;-14)"],
+					"variables": {
+						"a1": "-3",
+						"a2": "-2",
+						"a3": "1",
+						"a4": "-3",
+						"x": "-5",
+						"y": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "1..3"
+					},
+					{
+						"name": "co",
+						"expression": "{{if:m==2|-1|0}}"
+					},
+					{
+						"name": "si",
+						"expression": "{{if:m==1|1|{{if:m==2|0|-1}}}}"
+					},
+					{
+						"name": "x",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "y",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": ["abs(x) != abs(y)"],
+				"enonce_brut": "Dans un repère orthonormé d'origine $O$, $r$ est la rotation de centre $O$ et d'angle ${{if:m==1|\\dfrac{\\pi}{2}|{{if:m==2|\\pi|-\\dfrac{\\pi}{2}}}}}$.\n\nDonne les coordonnées de l'image par $r$ du point $M({{x}} \\,;\\, {{y}})$, sous la forme d'un vecteur colonne.\n\n$?$",
+				"reponses_brutes": ["({{eval:co*x-si*y}};{{eval:si*x+co*y}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 206,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "co",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 0,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 0]
+					}
+				},
+				{
+					"nom": "si",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 111,
+						"exemples": [
+							"(-6;1)",
+							"(-1;-3)",
+							"(6;-1)",
+							"(6;-4)",
+							"(2;4)",
+							"(4;2)",
+							"(-3;6)",
+							"(1;-4)",
+							"(4;5)",
+							"(4;-3)",
+							"(-6;-1)",
+							"(5;-6)"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 6,
+							"nb_distinctes": 12,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["vecteur"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "195/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "Dans un repère orthonormé d'origine $O$, $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$.\n\nDonne les coordonnées de l'image par $r$ du point $M(1 \\,;\\, 6)$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(-6;1)"],
+					"variables": {
+						"m": "1",
+						"co": "0",
+						"si": "1",
+						"x": "1",
+						"y": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans un repère orthonormé d'origine $O$, $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$.\n\nDonne les coordonnées de l'image par $r$ du point $M(-3 \\,;\\, 1)$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(-1;-3)"],
+					"variables": {
+						"m": "1",
+						"co": "0",
+						"si": "1",
+						"x": "-3",
+						"y": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans un repère orthonormé d'origine $O$, $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$.\n\nDonne les coordonnées de l'image par $r$ du point $M(-1 \\,;\\, -6)$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(6;-1)"],
+					"variables": {
+						"m": "1",
+						"co": "0",
+						"si": "1",
+						"x": "-1",
+						"y": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans un repère orthonormé d'origine $O$, $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$.\n\nDonne les coordonnées de l'image par $r$ du point $M(-4 \\,;\\, -6)$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(6;-4)"],
+					"variables": {
+						"m": "1",
+						"co": "0",
+						"si": "1",
+						"x": "-4",
+						"y": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans un repère orthonormé d'origine $O$, $r$ est la rotation de centre $O$ et d'angle $-\\dfrac{\\pi}{2}$.\n\nDonne les coordonnées de l'image par $r$ du point $M(-4 \\,;\\, 2)$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(2;4)"],
+					"variables": {
+						"m": "3",
+						"co": "0",
+						"si": "-1",
+						"x": "-4",
+						"y": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "t",
+						"expression": "1..3"
+					},
+					{
+						"name": "o",
+						"expression": "1..2"
+					},
+					{
+						"name": "s1",
+						"expression": "{{if:t==1|1|{{if:t==2|-1|0}}}}"
+					},
+					{
+						"name": "s2",
+						"expression": "{{if:t==3|1|0}}"
+					},
+					{
+						"name": "s3",
+						"expression": "{{if:t==3|1|0}}"
+					},
+					{
+						"name": "s4",
+						"expression": "{{if:t==1|-1|{{if:t==2|1|0}}}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans un repère orthonormé d'origine $O$ :\n\n- $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$, de matrice $R = \\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$ ;\n- $s$ est la symétrie d'axe {{if:t==1|$(Ox)$|{{if:t==2|$(Oy)$|la droite d'équation $y = x$}}}}, de matrice $S = \\begin{pmatrix}{{s1}}&{{s2}}\\\\{{s3}}&{{s4}}\\end{pmatrix}$.\n\nOn applique d'abord {{if:o==1|$s$, puis $r$|$r$, puis $s$}}. Donne la matrice de cette transformation composée.\n\n$?$",
+				"reponses_brutes": [
+					"\\begin{pmatrix}{{eval:(2-o)*(-s3)+(o-1)*s2}}&{{eval:(2-o)*(-s4)+(o-1)*(-s1)}}\\\\{{eval:(2-o)*s1+(o-1)*s4}}&{{eval:(2-o)*s2+(o-1)*(-s3)}}\\end{pmatrix}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "o",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "s1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "s2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "s3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "s4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}",
+							"\\begin{pmatrix}0&-1\\\\-1&0\\end{pmatrix}",
+							"\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}1&0\\\\0&-1\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 1,
+							"nb_distinctes": 2,
+							"valeurs": [0, 1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "196/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "104/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Dans un repère orthonormé d'origine $O$ :\n\n- $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$, de matrice $R = \\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$ ;\n- $s$ est la symétrie d'axe $\\left( O x \\right)$, de matrice $S = \\begin{pmatrix}1&0\\\\0&-1\\end{pmatrix}$.\n\nOn applique d'abord $r$, puis $s$. Donne la matrice de cette transformation composée.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}0&-1\\\\-1&0\\end{pmatrix}"],
+					"variables": {
+						"t": "1",
+						"o": "2",
+						"s1": "1",
+						"s2": "0",
+						"s3": "0",
+						"s4": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans un repère orthonormé d'origine $O$ :\n\n- $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$, de matrice $R = \\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$ ;\n- $s$ est la symétrie d'axe $\\left( O x \\right)$, de matrice $S = \\begin{pmatrix}1&0\\\\0&-1\\end{pmatrix}$.\n\nOn applique d'abord $s$, puis $r$. Donne la matrice de cette transformation composée.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}"],
+					"variables": {
+						"t": "1",
+						"o": "1",
+						"s1": "1",
+						"s2": "0",
+						"s3": "0",
+						"s4": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans un repère orthonormé d'origine $O$ :\n\n- $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$, de matrice $R = \\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$ ;\n- $s$ est la symétrie d'axe la droite d'équation $y = x$, de matrice $S = \\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$.\n\nOn applique d'abord $s$, puis $r$. Donne la matrice de cette transformation composée.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}"],
+					"variables": {
+						"t": "3",
+						"o": "1",
+						"s1": "0",
+						"s2": "1",
+						"s3": "1",
+						"s4": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Dans un repère orthonormé d'origine $O$ :\n\n- $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$, de matrice $R = \\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$ ;\n- $s$ est la symétrie d'axe $\\left( O y \\right)$, de matrice $S = \\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}$.\n\nOn applique d'abord $s$, puis $r$. Donne la matrice de cette transformation composée.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}0&-1\\\\-1&0\\end{pmatrix}"],
+					"variables": {
+						"t": "2",
+						"o": "1",
+						"s1": "-1",
+						"s2": "0",
+						"s3": "0",
+						"s4": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 10,
+					"enonce": "Dans un repère orthonormé d'origine $O$ :\n\n- $r$ est la rotation de centre $O$ et d'angle $\\dfrac{\\pi}{2}$, de matrice $R = \\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$ ;\n- $s$ est la symétrie d'axe la droite d'équation $y = x$, de matrice $S = \\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$.\n\nOn applique d'abord $r$, puis $s$. Donne la matrice de cette transformation composée.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}1&0\\\\0&-1\\end{pmatrix}"],
+					"variables": {
+						"t": "3",
+						"o": "2",
+						"s1": "0",
+						"s2": "1",
+						"s3": "1",
+						"s4": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..4"
+					},
+					{
+						"name": "a2",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "a3",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "a4",
+						"expression": "eval:(1+a2*a3)/a1"
+					},
+					{
+						"name": "x",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "y",
+						"expression": "1..4;±"
+					}
+				],
+				"conditions": ["mod(1+a2*a3,a1) == 0", "a4 != 0", "x != y"],
+				"enonce_brut": "Une transformation du plan a pour matrice $A = \\begin{pmatrix}{{a1}}&{{a2}}\\\\{{a3}}&{{a4}}\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}{{a4}}&{{eval:-a2}}\\\\{{eval:-a3}}&{{a1}}\\end{pmatrix}$.\n\nLe point $N({{eval:a1*x+a2*y}} \\,;\\, {{eval:a3*x+a4*y}})$ est l'image d'un point $M$. Donne les coordonnées de $M$, sous la forme d'un vecteur colonne.\n\n$?$",
+				"reponses_brutes": ["({{x}};{{y}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 295,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "a4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 17,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-15, -11, -8, -7, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 7, 9, 10, 13, 17]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 56,
+						"exemples": [
+							"(4;-2)",
+							"(1;-3)",
+							"(3;-1)",
+							"(2;3)",
+							"(-3;3)",
+							"(1;-4)",
+							"(1;-1)",
+							"(2;-2)",
+							"(-1;4)",
+							"(-1;1)",
+							"(-3;-4)",
+							"(3;2)"
+						],
+						"nombres_contenus": {
+							"min": -4,
+							"max": 4,
+							"nb_distinctes": 8,
+							"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -68,
+				"max": 61,
+				"nb_distinctes": 85,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -4,
+				"max": 4,
+				"nb_distinctes": 8,
+				"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -68,
+				"max": 61,
+				"nb_distinctes": 85,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["vecteur"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "128/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (61)",
+					"graine": 275,
+					"enonce": "Une transformation du plan a pour matrice $A = \\begin{pmatrix}1&4\\\\3&13\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}13&-4\\\\-3&1\\end{pmatrix}$.\n\nLe point $N(19 \\,;\\, 61)$ est l'image d'un point $M$. Donne les coordonnées de $M$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(3;4)"],
+					"variables": {
+						"a1": "1",
+						"a2": "4",
+						"a3": "3",
+						"a4": "13",
+						"x": "3",
+						"y": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-68)",
+					"graine": 136,
+					"enonce": "Une transformation du plan a pour matrice $A = \\begin{pmatrix}1&4\\\\-4&-15\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}-15&-4\\\\4&1\\end{pmatrix}$.\n\nLe point $N(18 \\,;\\, -68)$ est l'image d'un point $M$. Donne les coordonnées de $M$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(2;4)"],
+					"variables": {
+						"a1": "1",
+						"a2": "4",
+						"a3": "-4",
+						"a4": "-15",
+						"x": "2",
+						"y": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une transformation du plan a pour matrice $A = \\begin{pmatrix}1&1\\\\4&5\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}5&-1\\\\-4&1\\end{pmatrix}$.\n\nLe point $N(2 \\,;\\, 6)$ est l'image d'un point $M$. Donne les coordonnées de $M$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(4;-2)"],
+					"variables": {
+						"a1": "1",
+						"a2": "1",
+						"a3": "4",
+						"a4": "5",
+						"x": "4",
+						"y": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une transformation du plan a pour matrice $A = \\begin{pmatrix}1&-1\\\\3&-2\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}-2&1\\\\-3&1\\end{pmatrix}$.\n\nLe point $N(4 \\,;\\, 9)$ est l'image d'un point $M$. Donne les coordonnées de $M$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(1;-3)"],
+					"variables": {
+						"a1": "1",
+						"a2": "-1",
+						"a3": "3",
+						"a4": "-2",
+						"x": "1",
+						"y": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une transformation du plan a pour matrice $A = \\begin{pmatrix}1&-1\\\\-4&5\\end{pmatrix}$, et $A^{-1} = \\begin{pmatrix}5&1\\\\4&1\\end{pmatrix}$.\n\nLe point $N(4 \\,;\\, -17)$ est l'image d'un point $M$. Donne les coordonnées de $M$, sous la forme d'un vecteur colonne.\n\n$[?]$",
+					"reponse": ["(3;-1)"],
+					"variables": {
+						"a1": "1",
+						"a2": "-1",
+						"a3": "-4",
+						"a4": "5",
+						"x": "3",
+						"y": "-1"
+					}
+				}
+			]
+		}
+	]
+}

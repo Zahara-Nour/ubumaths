@@ -1,0 +1,644 @@
+{
+	"template_id": "36abc642-aa7a-44a2-8597-4246fc62069c",
+	"titre": "Composer deux évolutions successives",
+	"sous_titre": "Coefficient multiplicateur et taux d'évolution globaux",
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Variations",
+	"mis_a_jour": "2026-10-04T14:09:14.534362+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-378",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "5|10|15|20|25|30|40|50"
+					},
+					{
+						"name": "b",
+						"expression": "5|10|15|20|25|30|40|50"
+					}
+				],
+				"conditions": ["(100+a)*(100-b)!=10000", "mod(a*b,10)!=5"],
+				"enonce_brut": "Une grandeur augmente de ${{a}}\\,\\%$ puis diminue de ${{b}}\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $?$.\n\nLe taux d'évolution global est $?$.",
+				"reponses_brutes": ["{{eval:(1+a/100)*(1-b/100);d}}", "{{eval:(100+a)*(100-b)/100-100;d}}%"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 52,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 10, 15, 20, 25, 30, 40, 50]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 10, 15, 20, 25, 30, 40, 50]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 0.525,
+						"max": 1.425,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 46,
+						"exemples": [
+							"-25%",
+							"-37.5%",
+							"-16%",
+							"3.5%",
+							"26%",
+							"-26.5%",
+							"-47.5%",
+							"10.5%",
+							"5%",
+							"35%",
+							"-2%",
+							"-10%"
+						],
+						"nombres_contenus": {
+							"min": -47.5,
+							"max": 42.5,
+							"nb_distinctes": 46,
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 50,
+				"nb_distinctes": 8,
+				"valeurs": [5, 10, 15, 20, 25, 30, 40, 50],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -47.5,
+				"max": 42.5,
+				"nb_distinctes": 92,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -47.5,
+				"max": 50,
+				"nb_distinctes": 98,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (50)",
+					"graine": 1,
+					"enonce": "Une grandeur augmente de $50\\,\\%$ puis diminue de $50\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["0.75", "-25%"],
+					"variables": {
+						"a": "50",
+						"b": "50"
+					}
+				},
+				{
+					"role": "plus petite valeur (-47.5)",
+					"graine": 7,
+					"enonce": "Une grandeur augmente de $5\\,\\%$ puis diminue de $50\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["0.525", "-47.5%"],
+					"variables": {
+						"a": "5",
+						"b": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une grandeur augmente de $25\\,\\%$ puis diminue de $50\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["0.625", "-37.5%"],
+					"variables": {
+						"a": "25",
+						"b": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une grandeur augmente de $5\\,\\%$ puis diminue de $20\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["0.84", "-16%"],
+					"variables": {
+						"a": "5",
+						"b": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une grandeur augmente de $15\\,\\%$ puis diminue de $10\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["1.035", "3.5%"],
+					"variables": {
+						"a": "15",
+						"b": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "5|10|15|20|25|30|40|50"
+					},
+					{
+						"name": "b",
+						"expression": "5|10|15|20|25|30|40|50"
+					}
+				],
+				"conditions": ["(100-a)*(100+b)!=10000", "mod(a*b,10)!=5"],
+				"enonce_brut": "Une grandeur diminue de ${{a}}\\,\\%$ puis augmente de ${{b}}\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $?$.\n\nLe taux d'évolution global est $?$.",
+				"reponses_brutes": ["{{eval:(1-a/100)*(1+b/100);d}}", "{{eval:(100-a)*(100+b)/100-100;d}}%"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 52,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 10, 15, 20, 25, 30, 40, 50]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 10, 15, 20, 25, 30, 40, 50]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 0.525,
+						"max": 1.425,
+						"negatif_possible": false,
+						"nb_distinctes": 47
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 47,
+						"exemples": [
+							"-25%",
+							"12.5%",
+							"14%",
+							"-6.5%",
+							"-34%",
+							"23.5%",
+							"42.5%",
+							"-19.5%",
+							"-35%",
+							"5%",
+							"-45%",
+							"-22%"
+						],
+						"nombres_contenus": {
+							"min": -47.5,
+							"max": 42.5,
+							"nb_distinctes": 47,
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 50,
+				"nb_distinctes": 8,
+				"valeurs": [5, 10, 15, 20, 25, 30, 40, 50],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -47.5,
+				"max": 42.5,
+				"nb_distinctes": 94,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -47.5,
+				"max": 50,
+				"nb_distinctes": 100,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (50)",
+					"graine": 1,
+					"enonce": "Une grandeur diminue de $50\\,\\%$ puis augmente de $50\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["0.75", "-25%"],
+					"variables": {
+						"a": "50",
+						"b": "50"
+					}
+				},
+				{
+					"role": "plus petite valeur (-47.5)",
+					"graine": 37,
+					"enonce": "Une grandeur diminue de $50\\,\\%$ puis augmente de $5\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["0.525", "-47.5%"],
+					"variables": {
+						"a": "50",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une grandeur diminue de $25\\,\\%$ puis augmente de $50\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["1.125", "12.5%"],
+					"variables": {
+						"a": "25",
+						"b": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une grandeur diminue de $5\\,\\%$ puis augmente de $20\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["1.14", "14%"],
+					"variables": {
+						"a": "5",
+						"b": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une grandeur diminue de $15\\,\\%$ puis augmente de $10\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["0.935", "-6.5%"],
+					"variables": {
+						"a": "15",
+						"b": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "5|10|15|20|25|30|40|50"
+					},
+					{
+						"name": "b",
+						"expression": "5|10|15|20|25|30|40|50"
+					}
+				],
+				"conditions": ["mod(a*b,10)!=5"],
+				"enonce_brut": "Une grandeur augmente de ${{a}}\\,\\%$ puis encore de ${{b}}\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $?$.\n\nLe taux d'évolution global est $?$.",
+				"reponses_brutes": ["{{eval:(1+a/100)*(1+b/100);d}}", "{{eval:(100+a)*(100+b)/100-100;d}}%"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 53,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 10, 15, 20, 25, 30, 40, 50]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 10, 15, 20, 25, 30, 40, 50]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 1.155,
+						"max": 2.25,
+						"negatif_possible": false,
+						"nb_distinctes": 30,
+						"valeurs": [
+							1.155, 1.21, 1.26, 1.265, 1.32, 1.365, 1.375, 1.38, 1.43, 1.44, 1.47, 1.495, 1.5,
+							1.54, 1.56, 1.575, 1.61, 1.625, 1.65, 1.68, 1.69, 1.725, 1.75, 1.8, 1.82, 1.875, 1.95,
+							1.96, 2.1, 2.25
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 30,
+						"valeurs": [
+							"110%",
+							"125%",
+							"15.5%",
+							"21%",
+							"26%",
+							"26.5%",
+							"32%",
+							"36.5%",
+							"37.5%",
+							"38%",
+							"43%",
+							"44%",
+							"47%",
+							"49.5%",
+							"50%",
+							"54%",
+							"56%",
+							"57.5%",
+							"61%",
+							"62.5%",
+							"65%",
+							"68%",
+							"69%",
+							"72.5%",
+							"75%",
+							"80%",
+							"82%",
+							"87.5%",
+							"95%",
+							"96%"
+						],
+						"nombres_contenus": {
+							"min": 15.5,
+							"max": 125,
+							"nb_distinctes": 30,
+							"valeurs": [
+								15.5, 21, 26, 26.5, 32, 36.5, 37.5, 38, 43, 44, 47, 49.5, 50, 54, 56, 57.5, 61,
+								62.5, 65, 68, 69, 72.5, 75, 80, 82, 87.5, 95, 96, 110, 125
+							],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 50,
+				"nb_distinctes": 8,
+				"valeurs": [5, 10, 15, 20, 25, 30, 40, 50],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1.155,
+				"max": 125,
+				"nb_distinctes": 60,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1.155,
+				"max": 125,
+				"nb_distinctes": 67,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (125)",
+					"graine": 1,
+					"enonce": "Une grandeur augmente de $50\\,\\%$ puis encore de $50\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["2.25", "125%"],
+					"variables": {
+						"a": "50",
+						"b": "50"
+					}
+				},
+				{
+					"role": "plus petite valeur (1.155)",
+					"graine": 44,
+					"enonce": "Une grandeur augmente de $10\\,\\%$ puis encore de $5\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["1.155", "15.5%"],
+					"variables": {
+						"a": "10",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une grandeur augmente de $25\\,\\%$ puis encore de $50\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["1.875", "87.5%"],
+					"variables": {
+						"a": "25",
+						"b": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une grandeur augmente de $5\\,\\%$ puis encore de $20\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["1.26", "26%"],
+					"variables": {
+						"a": "5",
+						"b": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une grandeur augmente de $15\\,\\%$ puis encore de $10\\,\\%$. Donne le coefficient multiplicateur global, puis le taux d'évolution global.\n\nLe coefficient multiplicateur global est $[?]$.\n\nLe taux d'évolution global est $[?]$.",
+					"reponse": ["1.265", "26.5%"],
+					"variables": {
+						"a": "15",
+						"b": "10"
+					}
+				}
+			]
+		}
+	]
+}

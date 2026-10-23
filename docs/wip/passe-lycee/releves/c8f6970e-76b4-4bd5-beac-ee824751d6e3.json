@@ -1,0 +1,685 @@
+{
+	"template_id": "c8f6970e-76b4-4bd5-beac-ee824751d6e3",
+	"titre": "Chaîne de Markov : distribution après n transitions",
+	"sous_titre": "Calculer π₁ = π₀P et π₂, lire une probabilité de transition en n étapes dans Pⁿ (pièges : Pπ₀ en colonne au lieu de π₀P en ligne, coefficient (j, i) de Pⁿ au lieu de (i, j), π₂ = 2π₁)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Graphes et matrices > Chaînes de Markov > Chaînes de Markov",
+	"mis_a_jour": "2026-10-05T18:23:44.911117+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-343",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["p != q", "p + q != 10", "x != 5"],
+				"enonce_brut": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}{{eval:(10-p)/10;d}}&{{eval:p/10;d}}\\\\{{eval:q/10;d}}&{{eval:(10-q)/10;d}}\\end{pmatrix}$ et pour distribution initiale $\\pi_0 = \\begin{pmatrix}{{eval:x/10;d}}&{{eval:(10-x)/10;d}}\\end{pmatrix}$.\n\nOn note $\\pi_1 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après une transition.\n\n$a=?$\n\n$b=?$",
+				"reponses_brutes": ["{{eval:(x*(10-p)+(10-x)*q)/100}}", "{{eval:(x*p+(10-x)*(10-q))/100}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 225,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.12,
+						"max": 0.88,
+						"negatif_possible": false,
+						"denominateurs": [2, 4, 5, 10, 20, 25, 50, 100],
+						"denominateur_min": 2,
+						"denominateur_max": 100,
+						"nb_distinctes": 76
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.12,
+						"max": 0.88,
+						"negatif_possible": false,
+						"denominateurs": [2, 4, 5, 10, 20, 25, 50, 100],
+						"denominateur_min": 2,
+						"denominateur_max": 100,
+						"nb_distinctes": 76
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 11,
+				"valeurs": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 50,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 100,
+				"nb_distinctes": 60,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [2, 4, 5, 10, 20, 25, 50, 100],
+				"denominateur_min": 2,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 87,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 8,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}0{,}4&0{,}6\\\\0{,}3&0{,}7\\end{pmatrix}$ et pour distribution initiale $\\pi_0 = \\begin{pmatrix}0{,}7&0{,}3\\end{pmatrix}$.\n\nOn note $\\pi_1 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après une transition.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\dfrac{37}{100}", "\\dfrac{63}{100}"],
+					"variables": {
+						"p": "6",
+						"q": "3",
+						"x": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}0{,}9&0{,}1\\\\0{,}5&0{,}5\\end{pmatrix}$ et pour distribution initiale $\\pi_0 = \\begin{pmatrix}0{,}9&0{,}1\\end{pmatrix}$.\n\nOn note $\\pi_1 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après une transition.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\dfrac{43}{50}", "\\dfrac{7}{50}"],
+					"variables": {
+						"p": "1",
+						"q": "5",
+						"x": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}0{,}6&0{,}4\\\\0{,}8&0{,}2\\end{pmatrix}$ et pour distribution initiale $\\pi_0 = \\begin{pmatrix}0{,}2&0{,}8\\end{pmatrix}$.\n\nOn note $\\pi_1 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après une transition.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\dfrac{19}{25}", "\\dfrac{6}{25}"],
+					"variables": {
+						"p": "4",
+						"q": "8",
+						"x": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}0{,}9&0{,}1\\\\0{,}5&0{,}5\\end{pmatrix}$ et pour distribution initiale $\\pi_0 = \\begin{pmatrix}0{,}1&0{,}9\\end{pmatrix}$.\n\nOn note $\\pi_1 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après une transition.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\dfrac{27}{50}", "\\dfrac{23}{50}"],
+					"variables": {
+						"p": "1",
+						"q": "5",
+						"x": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}0{,}7&0{,}3\\\\0{,}2&0{,}8\\end{pmatrix}$ et pour distribution initiale $\\pi_0 = \\begin{pmatrix}0{,}1&0{,}9\\end{pmatrix}$.\n\nOn note $\\pi_1 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après une transition.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\dfrac{1}{4}", "\\dfrac{3}{4}"],
+					"variables": {
+						"p": "3",
+						"q": "2",
+						"x": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["p != q", "p + q != 10"],
+				"enonce_brut": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}{{eval:(10-p)/10;d}}&{{eval:p/10;d}}\\\\{{eval:q/10;d}}&{{eval:(10-q)/10;d}}\\end{pmatrix}$. Elle part de l'état $A$ : $\\pi_0 = \\begin{pmatrix} 1 & 0 \\end{pmatrix}$.\n\nOn note $\\pi_2 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après deux transitions.\n\n$a=?$\n\n$b=?$",
+				"reponses_brutes": ["{{eval:((10-p)*(10-p)+p*q)/100}}", "{{eval:((10-p)*p+p*(10-q))/100}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 63,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.12,
+						"max": 0.89,
+						"negatif_possible": false,
+						"denominateurs": [5, 10, 20, 25, 50, 100],
+						"denominateur_min": 5,
+						"denominateur_max": 100,
+						"nb_distinctes": 42
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.11,
+						"max": 0.88,
+						"negatif_possible": false,
+						"denominateurs": [5, 10, 20, 25, 50, 100],
+						"denominateur_min": 5,
+						"denominateur_max": 100,
+						"nb_distinctes": 42
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 12,
+				"valeurs": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 100,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 100,
+				"nb_distinctes": 53,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [5, 10, 20, 25, 50, 100],
+				"denominateur_min": 5,
+				"denominateur_max": 100,
+				"numerateur_min": 2,
+				"numerateur_max": 89,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 5,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}0{,}3&0{,}7\\\\0{,}2&0{,}8\\end{pmatrix}$. Elle part de l'état $A$ : $\\pi_0 = \\begin{pmatrix} 1 & 0 \\end{pmatrix}$.\n\nOn note $\\pi_2 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après deux transitions.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\dfrac{23}{100}", "\\dfrac{77}{100}"],
+					"variables": {
+						"p": "7",
+						"q": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}0{,}9&0{,}1\\\\0{,}5&0{,}5\\end{pmatrix}$. Elle part de l'état $A$ : $\\pi_0 = \\begin{pmatrix} 1 & 0 \\end{pmatrix}$.\n\nOn note $\\pi_2 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après deux transitions.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\dfrac{43}{50}", "\\dfrac{7}{50}"],
+					"variables": {
+						"p": "1",
+						"q": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}0{,}5&0{,}5\\\\0{,}8&0{,}2\\end{pmatrix}$. Elle part de l'état $A$ : $\\pi_0 = \\begin{pmatrix} 1 & 0 \\end{pmatrix}$.\n\nOn note $\\pi_2 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après deux transitions.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\dfrac{13}{20}", "\\dfrac{7}{20}"],
+					"variables": {
+						"p": "5",
+						"q": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}0{,}7&0{,}3\\\\0{,}2&0{,}8\\end{pmatrix}$. Elle part de l'état $A$ : $\\pi_0 = \\begin{pmatrix} 1 & 0 \\end{pmatrix}$.\n\nOn note $\\pi_2 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après deux transitions.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\dfrac{11}{20}", "\\dfrac{9}{20}"],
+					"variables": {
+						"p": "3",
+						"q": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ a pour matrice de transition $P = \\begin{pmatrix}0{,}9&0{,}1\\\\0{,}6&0{,}4\\end{pmatrix}$. Elle part de l'état $A$ : $\\pi_0 = \\begin{pmatrix} 1 & 0 \\end{pmatrix}$.\n\nOn note $\\pi_2 = \\begin{pmatrix} a & b \\end{pmatrix}$ la distribution après deux transitions.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\dfrac{87}{100}", "\\dfrac{13}{100}"],
+					"variables": {
+						"p": "1",
+						"q": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					},
+					{
+						"name": "t2",
+						"expression": "eval:(10-p)*(10-p)+p*q"
+					},
+					{
+						"name": "s2",
+						"expression": "eval:q*(10-p)+(10-q)*q"
+					},
+					{
+						"name": "u",
+						"expression": "eval:t2*(10-p)+(100-t2)*q"
+					},
+					{
+						"name": "w",
+						"expression": "eval:s2*(10-p)+(100-s2)*q"
+					}
+				],
+				"conditions": ["p != q", "p + q != 10", "u + w != 1000"],
+				"enonce_brut": "Une chaîne de Markov à deux états $A$, $B$ (dans cet ordre) a pour matrice de transition $P$, et\n\n$$P^3 = \\begin{pmatrix}{{eval:u/1000;d}}&{{eval:(1000-u)/1000;d}}\\\\{{eval:w/1000;d}}&{{eval:(1000-w)/1000;d}}\\end{pmatrix}$$\n\nQuelle est la probabilité d'être dans l'état $B$ trois transitions plus tard, sachant qu'on est dans l'état $A$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:(1000-u)/1000}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 63,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 12,
+						"max": 89,
+						"negatif_possible": false,
+						"nb_distinctes": 42
+					}
+				},
+				{
+					"nom": "s2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 88,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 112,
+						"max": 889,
+						"negatif_possible": false,
+						"nb_distinctes": 59
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 111,
+						"max": 888,
+						"negatif_possible": false,
+						"nb_distinctes": 58
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.111,
+						"max": 0.888,
+						"negatif_possible": false,
+						"denominateurs": [5, 10, 20, 40, 50, 125, 200, 250, 500, 1000],
+						"denominateur_min": 5,
+						"denominateur_max": 1000,
+						"nb_distinctes": 59
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.111,
+				"max": 3,
+				"nb_distinctes": 113,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 1000,
+				"nb_distinctes": 45,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.111,
+				"max": 1000,
+				"nb_distinctes": 157,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [5, 10, 20, 40, 50, 125, 200, 250, 500, 1000],
+				"denominateur_min": 5,
+				"denominateur_max": 1000,
+				"numerateur_min": 3,
+				"numerateur_max": 819,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 5,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ (dans cet ordre) a pour matrice de transition $P$, et\n\n$$P^3 = \\begin{pmatrix}0{,}223&0{,}777\\\\0{,}222&0{,}778\\end{pmatrix}$$\n\nQuelle est la probabilité d'être dans l'état $B$ trois transitions plus tard, sachant qu'on est dans l'état $A$ ?\n\n$[?]$",
+					"reponse": ["\\dfrac{777}{1000}"],
+					"variables": {
+						"p": "7",
+						"q": "2",
+						"t2": "23",
+						"s2": "22",
+						"u": "223",
+						"w": "222"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.111)",
+					"graine": 38,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ (dans cet ordre) a pour matrice de transition $P$, et\n\n$$P^3 = \\begin{pmatrix}0{,}112&0{,}888\\\\0{,}111&0{,}889\\end{pmatrix}$$\n\nQuelle est la probabilité d'être dans l'état $B$ trois transitions plus tard, sachant qu'on est dans l'état $A$ ?\n\n$[?]$",
+					"reponse": ["\\dfrac{111}{125}"],
+					"variables": {
+						"p": "8",
+						"q": "1",
+						"t2": "12",
+						"s2": "11",
+						"u": "112",
+						"w": "111"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ (dans cet ordre) a pour matrice de transition $P$, et\n\n$$P^3 = \\begin{pmatrix}0{,}844&0{,}156\\\\0{,}78&0{,}22\\end{pmatrix}$$\n\nQuelle est la probabilité d'être dans l'état $B$ trois transitions plus tard, sachant qu'on est dans l'état $A$ ?\n\n$[?]$",
+					"reponse": ["\\dfrac{39}{250}"],
+					"variables": {
+						"p": "1",
+						"q": "5",
+						"t2": "86",
+						"s2": "70",
+						"u": "844",
+						"w": "780"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ (dans cet ordre) a pour matrice de transition $P$, et\n\n$$P^3 = \\begin{pmatrix}0{,}605&0{,}395\\\\0{,}632&0{,}368\\end{pmatrix}$$\n\nQuelle est la probabilité d'être dans l'état $B$ trois transitions plus tard, sachant qu'on est dans l'état $A$ ?\n\n$[?]$",
+					"reponse": ["\\dfrac{79}{200}"],
+					"variables": {
+						"p": "5",
+						"q": "8",
+						"t2": "65",
+						"s2": "56",
+						"u": "605",
+						"w": "632"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une chaîne de Markov à deux états $A$, $B$ (dans cet ordre) a pour matrice de transition $P$, et\n\n$$P^3 = \\begin{pmatrix}0{,}475&0{,}525\\\\0{,}35&0{,}65\\end{pmatrix}$$\n\nQuelle est la probabilité d'être dans l'état $B$ trois transitions plus tard, sachant qu'on est dans l'état $A$ ?\n\n$[?]$",
+					"reponse": ["\\dfrac{21}{40}"],
+					"variables": {
+						"p": "3",
+						"q": "2",
+						"t2": "55",
+						"s2": "30",
+						"u": "475",
+						"w": "350"
+					}
+				}
+			]
+		}
+	]
+}

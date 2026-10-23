@@ -1,0 +1,966 @@
+{
+	"template_id": "f98164b1-031d-4ff9-8d16-8c97ebe485f6",
+	"titre": "Donner un contre-exemple",
+	"sous_titre": "Prouver qu'une proposition universelle est fausse en donnant un contre-exemple ; tout contre-exemple valable est accepté",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Logique > Logique et raisonnement > Connecteurs et contre-exemples",
+	"mis_a_jour": "2026-10-03T14:03:49.193282+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-212",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..9"
+					},
+					{
+						"name": "u",
+						"expression": "{{eval:sign(a)}}"
+					}
+				],
+				"conditions": ["abs(a) >= 2"],
+				"enonce_brut": "On considère la proposition : « pour tout réel $x$, $x^2\\geqslant{{a}}x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2\\geqslant{{a}}x$ est faux.\n\n$x=?$",
+				"reponses_brutes": ["{{eval:sign(a)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -1,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [-1, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "On considère la proposition : « pour tout réel $x$, $x^2\\geqslant-9x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2\\geqslant-9x$ est faux.\n\n$x = [?]$",
+					"reponse": ["-1"],
+					"variables": {
+						"a": "-9",
+						"u": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la proposition : « pour tout réel $x$, $x^2\\geqslant-3x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2\\geqslant-3x$ est faux.\n\n$x = [?]$",
+					"reponse": ["-1"],
+					"variables": {
+						"a": "-3",
+						"u": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère la proposition : « pour tout réel $x$, $x^2\\geqslant5x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2\\geqslant5x$ est faux.\n\n$x = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "5",
+						"u": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "On considère la proposition : « pour tout réel $x$, $x^2\\geqslant-8x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2\\geqslant-8x$ est faux.\n\n$x = [?]$",
+					"reponse": ["-1"],
+					"variables": {
+						"a": "-8",
+						"u": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On considère la proposition : « pour tout réel $x$, $x^2\\geqslant2x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2\\geqslant2x$ est faux.\n\n$x = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "2",
+						"u": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-12..12!0"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un élève affirme : « pour tout réel $x$, $(x{{a;+}})^2=x^2+{{eval:a^2}}$ ».\n\nCette affirmation est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel l'égalité est fausse.\n\n$x=?$",
+				"reponses_brutes": ["1"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 24,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+							12
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 144,
+				"nb_distinctes": 21,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 25, 36, 49, 64, 81, 100, 121, 144],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 144,
+				"nb_distinctes": 21,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 25, 36, 49, 64, 81, 100, 121, 144],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (144)",
+					"graine": 1,
+					"enonce": "Un élève affirme : « pour tout réel $x$, $\\left( x - 12 \\right)^2 = x^2 + 144$ ».\n\nCette affirmation est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel l'égalité est fausse.\n\n$x = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "-12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un élève affirme : « pour tout réel $x$, $\\left( x - 4 \\right)^2 = x^2 + 16$ ».\n\nCette affirmation est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel l'égalité est fausse.\n\n$x = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un élève affirme : « pour tout réel $x$, $\\left( x + 7 \\right)^2 = x^2 + 49$ ».\n\nCette affirmation est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel l'égalité est fausse.\n\n$x = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Un élève affirme : « pour tout réel $x$, $\\left( x - 11 \\right)^2 = x^2 + 121$ ».\n\nCette affirmation est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel l'égalité est fausse.\n\n$x = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "-11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Un élève affirme : « pour tout réel $x$, $\\left( x + 3 \\right)^2 = x^2 + 9$ ».\n\nCette affirmation est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel l'égalité est fausse.\n\n$x = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..15"
+					},
+					{
+						"name": "b",
+						"expression": "2..10"
+					}
+				],
+				"conditions": ["a % b != 0"],
+				"enonce_brut": "On considère la proposition : « tout entier naturel multiple de ${{a}}$ est un multiple de ${{b}}$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un entier naturel multiple de ${{a}}$ qui n'est pas un multiple de ${{b}}$.\n\n$n=?$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 94,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 15,
+				"nb_distinctes": 14,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 15,
+				"nb_distinctes": 14,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 15,
+				"nb_distinctes": 14,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 32,
+					"max": 32
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (15)",
+					"graine": 24,
+					"enonce": "On considère la proposition : « tout entier naturel multiple de $15$ est un multiple de $4$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un entier naturel multiple de $15$ qui n'est pas un multiple de $4$.\n\n$n = [?]$",
+					"reponse": ["15"],
+					"variables": {
+						"a": "15",
+						"b": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "On considère la proposition : « tout entier naturel multiple de $2$ est un multiple de $6$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un entier naturel multiple de $2$ qui n'est pas un multiple de $6$.\n\n$n = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la proposition : « tout entier naturel multiple de $6$ est un multiple de $4$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un entier naturel multiple de $6$ qui n'est pas un multiple de $4$.\n\n$n = [?]$",
+					"reponse": ["6"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère la proposition : « tout entier naturel multiple de $3$ est un multiple de $4$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un entier naturel multiple de $3$ qui n'est pas un multiple de $4$.\n\n$n = [?]$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère la proposition : « tout entier naturel multiple de $10$ est un multiple de $8$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un entier naturel multiple de $10$ qui n'est pas un multiple de $8$.\n\n$n = [?]$",
+					"reponse": ["10"],
+					"variables": {
+						"a": "10",
+						"b": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "-5..4"
+					},
+					{
+						"name": "k",
+						"expression": "2..4"
+					},
+					{
+						"name": "s",
+						"expression": "{{eval:r+k}}"
+					},
+					{
+						"name": "p",
+						"expression": "{{eval:r*s}}"
+					},
+					{
+						"name": "q",
+						"expression": "{{eval:r+s}}"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:r+1}}"
+					}
+				],
+				"conditions": ["q != 0"],
+				"enonce_brut": "On considère la proposition : « pour tout réel $x$, $x^2{{p;+}}\\geqslant{{q}}x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2{{p;+}}\\geqslant{{q}}x$ est faux.\n\n$x=?$",
+				"reponses_brutes": ["{{eval:r+1}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 28,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 32,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-3, -2, 0, 3, 4, 5, 8, 10, 12, 15, 18, 21, 24, 28, 32]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 32,
+				"nb_distinctes": 17,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 24, 28, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -4,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 32,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 24, 28, 32
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "194/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "52/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (32)",
+					"graine": 10,
+					"enonce": "On considère la proposition : « pour tout réel $x$, $x^2+32\\geqslant12x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2+32\\geqslant12x$ est faux.\n\n$x = [?]$",
+					"reponse": ["5"],
+					"variables": {
+						"r": "4",
+						"k": "4",
+						"s": "8",
+						"p": "32",
+						"q": "12",
+						"c": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-4)",
+					"graine": 1,
+					"enonce": "On considère la proposition : « pour tout réel $x$, $x^2+10\\geqslant-7x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2+10\\geqslant-7x$ est faux.\n\n$x = [?]$",
+					"reponse": ["-4"],
+					"variables": {
+						"r": "-5",
+						"k": "3",
+						"s": "-2",
+						"p": "10",
+						"q": "-7",
+						"c": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la proposition : « pour tout réel $x$, $x^2 \\geqslant -2 x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2 \\geqslant -2 x$ est faux.\n\n$x = [?]$",
+					"reponse": ["-1"],
+					"variables": {
+						"r": "-2",
+						"k": "2",
+						"s": "0",
+						"p": "0",
+						"q": "-2",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère la proposition : « pour tout réel $x$, $x^2+8\\geqslant6x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2+8\\geqslant6x$ est faux.\n\n$x = [?]$",
+					"reponse": ["3"],
+					"variables": {
+						"r": "2",
+						"k": "2",
+						"s": "4",
+						"p": "8",
+						"q": "6",
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "On considère la proposition : « pour tout réel $x$, $x^2+5\\geqslant-6x$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x$ pour lequel $x^2+5\\geqslant-6x$ est faux.\n\n$x = [?]$",
+					"reponse": ["-4"],
+					"variables": {
+						"r": "-5",
+						"k": "4",
+						"s": "-1",
+						"p": "5",
+						"q": "-6",
+						"c": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..20"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la proposition : « pour tout réel $x$ strictement positif, $\\dfrac{1}{x}\\leqslant {{a}}$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x>0$ pour lequel $\\dfrac{1}{x}\\leqslant {{a}}$ est faux.\n\n$x=?$",
+				"reponses_brutes": ["{{eval:1/(a+1)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.047619047619047616,
+						"max": 0.3333333333333333,
+						"negatif_possible": false,
+						"denominateurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+						"denominateur_min": 3,
+						"denominateur_max": 21,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{11}",
+							"\\dfrac{1}{12}",
+							"\\dfrac{1}{13}",
+							"\\dfrac{1}{14}",
+							"\\dfrac{1}{15}",
+							"\\dfrac{1}{16}",
+							"\\dfrac{1}{17}",
+							"\\dfrac{1}{18}",
+							"\\dfrac{1}{19}",
+							"\\dfrac{1}{20}",
+							"\\dfrac{1}{21}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{1}{6}",
+							"\\dfrac{1}{7}",
+							"\\dfrac{1}{8}",
+							"\\dfrac{1}{9}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 20,
+				"nb_distinctes": 21,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 21,
+				"nb_distinctes": 20,
+				"valeurs": [1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 21,
+				"nb_distinctes": 22,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+				"denominateur_min": 3,
+				"denominateur_max": 21,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (21)",
+					"graine": 24,
+					"enonce": "On considère la proposition : « pour tout réel $x$ strictement positif, $\\dfrac{1}{x}\\leqslant 20$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x > 0$ pour lequel $\\dfrac{1}{x}\\leqslant 20$ est faux.\n\n$x = [?]$",
+					"reponse": ["\\dfrac{1}{21}"],
+					"variables": {
+						"a": "20"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On considère la proposition : « pour tout réel $x$ strictement positif, $\\dfrac{1}{x}\\leqslant 2$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x > 0$ pour lequel $\\dfrac{1}{x}\\leqslant 2$ est faux.\n\n$x = [?]$",
+					"reponse": ["\\dfrac{1}{3}"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la proposition : « pour tout réel $x$ strictement positif, $\\dfrac{1}{x}\\leqslant 8$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x > 0$ pour lequel $\\dfrac{1}{x}\\leqslant 8$ est faux.\n\n$x = [?]$",
+					"reponse": ["\\dfrac{1}{9}"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère la proposition : « pour tout réel $x$ strictement positif, $\\dfrac{1}{x}\\leqslant 16$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x > 0$ pour lequel $\\dfrac{1}{x}\\leqslant 16$ est faux.\n\n$x = [?]$",
+					"reponse": ["\\dfrac{1}{17}"],
+					"variables": {
+						"a": "16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "On considère la proposition : « pour tout réel $x$ strictement positif, $\\dfrac{1}{x}\\leqslant 3$ ».\n\nCette proposition est fausse.\n\nDonne un contre-exemple : un réel $x > 0$ pour lequel $\\dfrac{1}{x}\\leqslant 3$ est faux.\n\n$x = [?]$",
+					"reponse": ["\\dfrac{1}{4}"],
+					"variables": {
+						"a": "3"
+					}
+				}
+			]
+		}
+	]
+}

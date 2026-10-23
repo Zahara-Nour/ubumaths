@@ -1,0 +1,701 @@
+{
+	"template_id": "1666b8e9-8225-4e66-8b8c-4d5190806ed1",
+	"titre": "Dériver un polynôme",
+	"sous_titre": "Dérivée d'un polynôme de degré 2 ou 3, coefficients entiers ou fractionnaires simples",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Fonctions dérivées",
+	"mis_a_jour": "2026-10-03T14:03:46.557684+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-266",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^2{{eval:b;+}}x{{eval:c;+}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{eval:2*a}}x{{eval:b;+}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 290,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 168,
+						"exemples": [
+							"-12x+1",
+							"-6x-4",
+							"-12x-1",
+							"-6x-6",
+							"8x-6",
+							"-12x+3",
+							"-12x+9",
+							"4x-4",
+							"10x-7",
+							"12x+4",
+							"2x+2",
+							"-12x+2"
+						],
+						"nombres_contenus": {
+							"min": -12,
+							"max": 12,
+							"nb_distinctes": 17,
+							"valeurs": [-12, -10, -8, -6, -4, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 17,
+				"valeurs": [-12, -10, -8, -6, -4, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 19,
+				"valeurs": [-12, -10, -8, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "236/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "114/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 6 x^2 + 4 x + 6$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["12x+4"],
+					"variables": {
+						"a": "6",
+						"b": "4",
+						"c": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-12)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -6 x^2 + x + 9$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-12x+1"],
+					"variables": {
+						"a": "-6",
+						"b": "1",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -3 x^2 - 4 x + 1$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-6x-4"],
+					"variables": {
+						"a": "-3",
+						"b": "-4",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -6 x^2 - x - 8$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-12x-1"],
+					"variables": {
+						"a": "-6",
+						"b": "-1",
+						"c": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -3 x^2 - 6 x - 8$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-6x-6"],
+					"variables": {
+						"a": "-3",
+						"b": "-6",
+						"c": "-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x^3{{eval:b;+}}x^2{{eval:c;+}}x{{eval:d;+}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{eval:3*a}}x^2{{eval:2*b;+}}x{{eval:c;+}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 283,
+						"exemples": [
+							"-15x^2+2x+9",
+							"-6x^2-6x+1",
+							"-15x^2-2x-8",
+							"-6x^2-8x-8",
+							"9x^2-8x+3",
+							"-15x^2+4x-6",
+							"-15x^2+12x+4",
+							"6x^2-6x+4",
+							"12x^2-10x+6",
+							"15x^2+6x+6",
+							"3x^2+4x+2",
+							"-15x^2+2x+8"
+						],
+						"nombres_contenus": {
+							"min": -15,
+							"max": 15,
+							"nb_distinctes": 17,
+							"valeurs": [-15, -12, -9, -6, -3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 13,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -15,
+				"max": 15,
+				"nb_distinctes": 17,
+				"valeurs": [-15, -12, -9, -6, -3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -15,
+				"max": 15,
+				"nb_distinctes": 20,
+				"valeurs": [-15, -12, -9, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "265/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "190/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (15)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 5 x^3 + 3 x^2 + 6 x - 1$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["15x^2+6x+6"],
+					"variables": {
+						"a": "5",
+						"b": "3",
+						"c": "6",
+						"d": "-1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-15)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -5 x^3 + x^2 + 9 x + 9$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-15x^2+2x+9"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"c": "9",
+						"d": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -2 x^3 - 3 x^2 + x + 7$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-6x^2-6x+1"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "1",
+						"d": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -5 x^3 - x^2 - 8 x + 5$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-15x^2-2x-8"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"c": "-8",
+						"d": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -2 x^3 - 4 x^2 - 8 x - 5$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-6x^2-8x-8"],
+					"variables": {
+						"a": "-2",
+						"b": "-4",
+						"c": "-8",
+						"d": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2|4|5|-2|-4|-5"
+					},
+					{
+						"name": "b",
+						"expression": "3|5|7|-3|-5|-7"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:a/3}}x^3{{eval:b/2;+}}x^2{{eval:c;+}}x$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{a}}x^2{{eval:b;+}}x{{eval:c;+}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 236,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-5, -4, -2, 2, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-7, -5, -3, 3, 5, 7]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 236,
+						"exemples": [
+							"2x^2-3x+9",
+							"4x^2+5x+1",
+							"2x^2+7x-8",
+							"4x^2+5x-8",
+							"-4x^2+5x+3",
+							"2x^2-3x-6",
+							"2x^2-7x+4",
+							"-2x^2+5x+4",
+							"-5x^2+3x+6",
+							"-5x^2-5x+6",
+							"-2x^2-3x+2",
+							"2x^2-3x+8"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 9,
+							"nb_distinctes": 12,
+							"valeurs": [-5, -4, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 12,
+				"valeurs": [-5, -4, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 12,
+				"valeurs": [-5, -4, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3],
+				"denominateur_min": 2,
+				"denominateur_max": 3,
+				"numerateur_min": 2,
+				"numerateur_max": 7,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "222/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "126/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\dfrac{2}{3} x^3 - \\dfrac{3}{2} x^2 + 9 x$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2x^2-3x+9"],
+					"variables": {
+						"a": "2",
+						"b": "-3",
+						"c": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 9,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -\\dfrac{5}{3} x^3 + \\dfrac{3}{2} x^2 + 6 x$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-5x^2+3x+6"],
+					"variables": {
+						"a": "-5",
+						"b": "3",
+						"c": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\dfrac{4}{3} x^3 + \\dfrac{5}{2} x^2 + x$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["4x^2+5x+1"],
+					"variables": {
+						"a": "4",
+						"b": "5",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\dfrac{2}{3} x^3 + \\dfrac{7}{2} x^2 - 8 x$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2x^2+7x-8"],
+					"variables": {
+						"a": "2",
+						"b": "7",
+						"c": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\dfrac{4}{3} x^3 + \\dfrac{5}{2} x^2 - 8 x$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["4x^2+5x-8"],
+					"variables": {
+						"a": "4",
+						"b": "5",
+						"c": "-8"
+					}
+				}
+			]
+		}
+	]
+}

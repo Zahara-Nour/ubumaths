@@ -1,0 +1,582 @@
+{
+	"template_id": "fece187e-691f-488b-84c6-d37c84173066",
+	"titre": "Résoudre cos x = a sur un tour (valeurs remarquables)",
+	"sous_titre": "cos x = a, a valeur remarquable, résolue dans ]−π ; π] ; réponse : ensemble fini de solutions",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions trigonométriques > Équations",
+	"mis_a_jour": "2026-10-20T20:27:05.155614+00:00",
+	"points_candidats": [
+		{
+			"decision": "SANS_POINT",
+			"code": "",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*a/\\pi"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x={{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["\\{-{{a}};{{a}}\\}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\frac{\\pi}{3}", "\\frac{\\pi}{4}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"\\{-\\frac{\\pi}{3};\\frac{\\pi}{3}\\}",
+							"\\{-\\frac{\\pi}{4};\\frac{\\pi}{4}\\}",
+							"\\{-\\frac{\\pi}{6};\\frac{\\pi}{6}\\}"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 6,
+				"nb_distinctes": 3,
+				"valeurs": [3, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 104,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"racine": "196/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=\\dfrac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{-\\frac{\\pi}{6};\\frac{\\pi}{6}\\}"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 5,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=\\dfrac{1}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{-\\frac{\\pi}{3};\\frac{\\pi}{3}\\}"],
+					"variables": {
+						"a": "\\frac{\\pi}{3}",
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=\\dfrac{\\sqrt{2}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{-\\frac{\\pi}{4};\\frac{\\pi}{4}\\}"],
+					"variables": {
+						"a": "\\frac{\\pi}{4}",
+						"n": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*a/\\pi"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x={{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["\\{-{{a}};{{a}}\\}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"\\frac{2\\pi}{3}",
+							"\\frac{3\\pi}{4}",
+							"\\frac{5\\pi}{6}",
+							"\\frac{\\pi}{2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 6,
+							"nb_distinctes": 5,
+							"valeurs": [2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [6, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"\\{-\\frac{2\\pi}{3};\\frac{2\\pi}{3}\\}",
+							"\\{-\\frac{3\\pi}{4};\\frac{3\\pi}{4}\\}",
+							"\\{-\\frac{5\\pi}{6};\\frac{5\\pi}{6}\\}",
+							"\\{-\\frac{\\pi}{2};\\frac{\\pi}{2}\\}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 6,
+							"nb_distinctes": 5,
+							"valeurs": [2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 4,
+				"valeurs": [0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 89,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"fraction": "237/300",
+					"racine": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 5,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=-\\dfrac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{-\\frac{5\\pi}{6};\\frac{5\\pi}{6}\\}"],
+					"variables": {
+						"a": "\\frac{5\\pi}{6}",
+						"n": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{-\\frac{\\pi}{2};\\frac{\\pi}{2}\\}"],
+					"variables": {
+						"a": "\\frac{\\pi}{2}",
+						"n": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=-\\dfrac{1}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{-\\frac{2\\pi}{3};\\frac{2\\pi}{3}\\}"],
+					"variables": {
+						"a": "\\frac{2\\pi}{3}",
+						"n": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=-\\dfrac{\\sqrt{2}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{-\\frac{3\\pi}{4};\\frac{3\\pi}{4}\\}"],
+					"variables": {
+						"a": "\\frac{3\\pi}{4}",
+						"n": "9"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=1$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["\\{0\\}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\{0\\}"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 0,
+							"nb_distinctes": 1,
+							"valeurs": [0],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=1$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{0\\}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=-1$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["\\{\\pi\\}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\{\\pi\\}"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -1,
+				"max": -1,
+				"nb_distinctes": 1,
+				"valeurs": [-1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": -1,
+				"nb_distinctes": 1,
+				"valeurs": [-1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-1)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos x=-1$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{\\pi\\}"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

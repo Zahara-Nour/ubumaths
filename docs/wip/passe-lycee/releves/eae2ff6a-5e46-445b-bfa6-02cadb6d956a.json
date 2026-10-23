@@ -1,0 +1,201 @@
+{
+	"template_id": "eae2ff6a-5e46-445b-bfa6-02cadb6d956a",
+	"titre": "Déterminer les racines d'un polynôme du second degré.",
+	"sous_titre": "Graphiquement",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Polynôme du second degré > Apprivoiser",
+	"mis_a_jour": "2026-10-01T11:45:07.590074+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-244",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "-4..4"
+					},
+					{
+						"name": "q",
+						"expression": "-4..4"
+					},
+					{
+						"name": "s",
+						"expression": "-1|1"
+					},
+					{
+						"name": "k",
+						"expression": "1|2|4"
+					}
+				],
+				"conditions": ["p < q", "k*(q-p)^2 >= 4", "k*(q-p)^2 <= 128"],
+				"enonce_brut": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n```courbe\nx: -6 ; 6\ny: -{{k}}*({{q}}-{{p}})^2/8-3+{{s}} ; {{k}}*({{q}}-{{p}})^2/8+3+{{s}}\nf(x) = {{s}}*{{k}}/2*(x-{{p}})*(x-{{q}})   bleu   nom=C_f\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\nLes racines sont $?$ et $?$.",
+				"reponses_brutes": ["{{p}}", "{{q}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -4,
+				"max": 4,
+				"nb_distinctes": 9,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 4,
+				"nb_distinctes": 9,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 7,
+					"enonce": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n[courbe]\n\nLes racines sont $[?]$ et $[?]$.",
+					"reponse": ["-4", "4"],
+					"variables": {
+						"p": "-4",
+						"q": "4",
+						"s": "1",
+						"k": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-4)",
+					"graine": 1,
+					"enonce": "Détermine graphiquement les racines du polynôme représenté par cette parabole.\n\n[courbe]\n\nLes racines sont $[?]$ et $[?]$.",
+					"reponse": ["-4", "0"],
+					"variables": {
+						"p": "-4",
+						"q": "0",
+						"s": "1",
+						"k": "4"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,463 @@
+{
+	"template_id": "46913a48-c97f-4f00-9cdc-b98214b8420b",
+	"titre": "Taux de variation et nombre dérivé",
+	"sous_titre": "Taux de variation de x² ou x² + bx entre a et a + h, simplifié en fonction de h, puis sa limite f′(a) quand h tend vers 0",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Nombre dérivé",
+	"mis_a_jour": "2026-10-03T14:03:46.058842+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-260",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^2$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
+				"reponses_brutes": ["{{eval:2*a}}+h", "{{eval:2*a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"-10+h",
+							"-12+h",
+							"-2+h",
+							"-4+h",
+							"-6+h",
+							"-8+h",
+							"10+h",
+							"12+h",
+							"2+h",
+							"4+h",
+							"6+h",
+							"8+h"
+						],
+						"nombres_contenus": {
+							"min": -12,
+							"max": 12,
+							"nb_distinctes": 12,
+							"valeurs": [-12, -10, -8, -6, -4, -2, 2, 4, 6, 8, 10, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-12, -10, -8, -6, -4, -2, 2, 4, 6, 8, 10, 12]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 12,
+				"valeurs": [-12, -10, -8, -6, -4, -2, 2, 4, 6, 8, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 19,
+				"valeurs": [-12, -10, -8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre $6$ et $6 + h$ sous forme simplifiée, puis déduis-en $f'\\left( 6 \\right)$.\n\n$\\dfrac{f(6+h)-f(6)}{h}=[?]$\n\n$f'\\left( 6 \\right) = [?]$",
+					"reponse": ["12+h", "12"],
+					"variables": {
+						"a": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-12)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre $-6$ et $-6 + h$ sous forme simplifiée, puis déduis-en $f'\\left( -6 \\right)$.\n\n$\\dfrac{f(-6+h)-f(-6)}{h}=[?]$\n\n$f'\\left( -6 \\right) = [?]$",
+					"reponse": ["-12+h", "-12"],
+					"variables": {
+						"a": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre $-3$ et $-3 + h$ sous forme simplifiée, puis déduis-en $f'\\left( -3 \\right)$.\n\n$\\dfrac{f(-3+h)-f(-3)}{h}=[?]$\n\n$f'\\left( -3 \\right) = [?]$",
+					"reponse": ["-6+h", "-6"],
+					"variables": {
+						"a": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre $4$ et $4 + h$ sous forme simplifiée, puis déduis-en $f'\\left( 4 \\right)$.\n\n$\\dfrac{f(4+h)-f(4)}{h}=[?]$\n\n$f'\\left( 4 \\right) = [?]$",
+					"reponse": ["8+h", "8"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre $2$ et $2 + h$ sous forme simplifiée, puis déduis-en $f'\\left( 2 \\right)$.\n\n$\\dfrac{f(2+h)-f(2)}{h}=[?]$\n\n$f'\\left( 2 \\right) = [?]$",
+					"reponse": ["4+h", "4"],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "b",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "a",
+						"expression": "1..4;±"
+					}
+				],
+				"conditions": ["2*a+b != 0"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:x^2+b*x}}$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre ${{a}}$ et ${{a}}+h$ sous forme simplifiée, puis déduis-en $f'({{a}})$.\n\n$\\dfrac{f({{a}}+h)-f({{a}})}{h}=?$\n\n$f'({{a}})=?$",
+				"reponses_brutes": ["{{eval:2*a+b}}+h", "{{eval:2*a+b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 86,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 28,
+						"valeurs": [
+							"-1+h",
+							"-10+h",
+							"-11+h",
+							"-12+h",
+							"-13+h",
+							"-14+h",
+							"-2+h",
+							"-3+h",
+							"-4+h",
+							"-5+h",
+							"-6+h",
+							"-7+h",
+							"-8+h",
+							"-9+h",
+							"1+h",
+							"10+h",
+							"11+h",
+							"12+h",
+							"13+h",
+							"14+h",
+							"2+h",
+							"3+h",
+							"4+h",
+							"5+h",
+							"6+h",
+							"7+h",
+							"8+h",
+							"9+h"
+						],
+						"nombres_contenus": {
+							"min": -14,
+							"max": 14,
+							"nb_distinctes": 28,
+							"valeurs": [
+								-14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8,
+								9, 10, 11, 12, 13, 14
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -14,
+						"max": 14,
+						"negatif_possible": true,
+						"nb_distinctes": 28,
+						"valeurs": [
+							-14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8,
+							9, 10, 11, 12, 13, 14
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 6,
+				"nb_distinctes": 11,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -14,
+				"max": 14,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+					10, 11, 12, 13, 14
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -14,
+				"max": 14,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+					10, 11, 12, 13, 14
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "107/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (14)",
+					"graine": 156,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 + 6 x$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre $4$ et $4 + h$ sous forme simplifiée, puis déduis-en $f'\\left( 4 \\right)$.\n\n$\\dfrac{f(4+h)-f(4)}{h}=[?]$\n\n$f'\\left( 4 \\right) = [?]$",
+					"reponse": ["14+h", "14"],
+					"variables": {
+						"x": "x",
+						"b": "6",
+						"a": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-14)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 - 6 x$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre $-4$ et $-4 + h$ sous forme simplifiée, puis déduis-en $f'\\left( -4 \\right)$.\n\n$\\dfrac{f(-4+h)-f(-4)}{h}=[?]$\n\n$f'\\left( -4 \\right) = [?]$",
+					"reponse": ["-14+h", "-14"],
+					"variables": {
+						"x": "x",
+						"b": "-6",
+						"a": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 + x$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre $4$ et $4 + h$ sous forme simplifiée, puis déduis-en $f'\\left( 4 \\right)$.\n\n$\\dfrac{f(4+h)-f(4)}{h}=[?]$\n\n$f'\\left( 4 \\right) = [?]$",
+					"reponse": ["9+h", "9"],
+					"variables": {
+						"x": "x",
+						"b": "1",
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 - 3 x$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre $1$ et $1 + h$ sous forme simplifiée, puis déduis-en $f'\\left( 1 \\right)$.\n\n$\\dfrac{f(1+h)-f(1)}{h}=[?]$\n\n$f'\\left( 1 \\right) = [?]$",
+					"reponse": ["-1+h", "-1"],
+					"variables": {
+						"x": "x",
+						"b": "-3",
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 - x$.\n\nPour $h\\neq0$, exprime le taux de variation de $f$ entre $-4$ et $-4 + h$ sous forme simplifiée, puis déduis-en $f'\\left( -4 \\right)$.\n\n$\\dfrac{f(-4+h)-f(-4)}{h}=[?]$\n\n$f'\\left( -4 \\right) = [?]$",
+					"reponse": ["-9+h", "-9"],
+					"variables": {
+						"x": "x",
+						"b": "-1",
+						"a": "-4"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,611 @@
+{
+	"template_id": "3dbc5a7b-ceea-4ab9-8922-b77ee206f329",
+	"titre": "Deux primitives d'une même fonction diffèrent d'une constante",
+	"sous_titre": "Utiliser G = F + k : retrouver une autre primitive, calculer G(t) − F(t) ou la constante k entre deux expressions",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Primitives et équations différentielles > Primitives > Notion de primitive",
+	"mis_a_jour": "2026-10-04T10:01:21.989047+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-247",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-462",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "c",
+						"expression": "-6..6"
+					},
+					{
+						"name": "y0",
+						"expression": "-6..6"
+					}
+				],
+				"conditions": ["y0 != c"],
+				"enonce_brut": "La fonction $F$ définie sur $\\mathbb{R}$ par $F(x)={{if:a==1|x^2}}{{if:a==-1|-x^2}}{{if:a!=1 && a!=-1|{{eval:a}}x^2}}{{if:b==1|+x}}{{if:b==-1|-x}}{{if:b>0 && b!=1|+{{eval:b}}x}}{{if:b<0 && b!=-1|{{eval:b}}x}}{{if:c>0|+{{eval:c}}}}{{if:c<0|{{eval:c}}}}$ est une primitive d'une fonction $f$.\n\n$G$ est une autre primitive de $f$ sur $\\mathbb{R}$, telle que $G(0)={{eval:y0}}$. Détermine $G(x)$.\n\n$G(x)=?$",
+				"reponses_brutes": [
+					"{{if:a==1|x^2}}{{if:a==-1|-x^2}}{{if:a!=1 && a!=-1|{{eval:a}}x^2}}{{if:b==1|+x}}{{if:b==-1|-x}}{{if:b>0 && b!=1|+{{eval:b}}x}}{{if:b<0 && b!=-1|{{eval:b}}x}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 277,
+						"exemples": [
+							"-3x^2+2x-1",
+							"-2x^2-3x+5",
+							"-5x^2-x+3",
+							"-2x^2-4x-3",
+							"3x^2-4x-5",
+							"-5x^2+2x+1",
+							"-5x^2+6x",
+							"2x^2-3x+1",
+							"4x^2-5x+3",
+							"5x^2+3x-1",
+							"x^2+2x+5",
+							"-5x^2+x-5"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 6,
+							"nb_distinctes": 10,
+							"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 6,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "232/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "108/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 3,
+					"enonce": "La fonction $F$ définie sur $\\mathbb{R}$ par $F\\left( x \\right) = -5 x^2 - x - 6$ est une primitive d'une fonction $f$.\n\n$G$ est une autre primitive de $f$ sur $\\mathbb{R}$, telle que $G\\left( 0 \\right) = 3$. Détermine $G\\left( x \\right)$.\n\n$G\\left( x \\right) = [?]$",
+					"reponse": ["-5x^2-x+3"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"c": "-6",
+						"y0": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 55,
+					"enonce": "La fonction $F$ définie sur $\\mathbb{R}$ par $F\\left( x \\right) = 4 x^2 + 3 x + 3$ est une primitive d'une fonction $f$.\n\n$G$ est une autre primitive de $f$ sur $\\mathbb{R}$, telle que $G\\left( 0 \\right) = -6$. Détermine $G\\left( x \\right)$.\n\n$G\\left( x \\right) = [?]$",
+					"reponse": ["4x^2+3x-6"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "3",
+						"y0": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La fonction $F$ définie sur $\\mathbb{R}$ par $F\\left( x \\right) = -3 x^2 + 2 x + 3$ est une primitive d'une fonction $f$.\n\n$G$ est une autre primitive de $f$ sur $\\mathbb{R}$, telle que $G\\left( 0 \\right) = -1$. Détermine $G\\left( x \\right)$.\n\n$G\\left( x \\right) = [?]$",
+					"reponse": ["-3x^2+2x-1"],
+					"variables": {
+						"a": "-3",
+						"b": "2",
+						"c": "3",
+						"y0": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La fonction $F$ définie sur $\\mathbb{R}$ par $F\\left( x \\right) = -2 x^2 - 3 x$ est une primitive d'une fonction $f$.\n\n$G$ est une autre primitive de $f$ sur $\\mathbb{R}$, telle que $G\\left( 0 \\right) = 5$. Détermine $G\\left( x \\right)$.\n\n$G\\left( x \\right) = [?]$",
+					"reponse": ["-2x^2-3x+5"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "0",
+						"y0": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La fonction $F$ définie sur $\\mathbb{R}$ par $F\\left( x \\right) = -2 x^2 - 4 x - 5$ est une primitive d'une fonction $f$.\n\n$G$ est une autre primitive de $f$ sur $\\mathbb{R}$, telle que $G\\left( 0 \\right) = -3$. Détermine $G\\left( x \\right)$.\n\n$G\\left( x \\right) = [?]$",
+					"reponse": ["-2x^2-4x-3"],
+					"variables": {
+						"a": "-2",
+						"b": "-4",
+						"c": "-5",
+						"y0": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "-9..9"
+					},
+					{
+						"name": "q",
+						"expression": "-9..9"
+					},
+					{
+						"name": "t",
+						"expression": "2..9"
+					}
+				],
+				"conditions": ["p != q"],
+				"enonce_brut": "$F$ et $G$ sont deux primitives d'une même fonction $f$ sur $\\mathbb{R}$, avec $F(1)={{eval:p}}$ et $G(1)={{eval:q}}$.\n\nCalcule $G({{eval:t}})-F({{eval:t}})$.\n\n$G({{eval:t}})-F({{eval:t}})=?$",
+				"reponses_brutes": ["{{eval:q-p}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 287,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -18,
+						"max": 18,
+						"negatif_possible": true,
+						"nb_distinctes": 35
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -18,
+				"max": 18,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -18,
+				"max": 18,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 91,
+					"enonce": "$F$ et $G$ sont deux primitives d'une même fonction $f$ sur $\\mathbb{R}$, avec $F\\left( 1 \\right) = -9$ et $G\\left( 1 \\right) = 9$.\n\nCalcule $G\\left( 5 \\right) - F\\left( 5 \\right)$.\n\n$G\\left( 5 \\right) - F\\left( 5 \\right) = [?]$",
+					"reponse": ["18"],
+					"variables": {
+						"p": "-9",
+						"q": "9",
+						"t": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-18)",
+					"graine": 37,
+					"enonce": "$F$ et $G$ sont deux primitives d'une même fonction $f$ sur $\\mathbb{R}$, avec $F\\left( 1 \\right) = 9$ et $G\\left( 1 \\right) = -9$.\n\nCalcule $G\\left( 7 \\right) - F\\left( 7 \\right)$.\n\n$G\\left( 7 \\right) - F\\left( 7 \\right) = [?]$",
+					"reponse": ["-18"],
+					"variables": {
+						"p": "9",
+						"q": "-9",
+						"t": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$F$ et $G$ sont deux primitives d'une même fonction $f$ sur $\\mathbb{R}$, avec $F\\left( 1 \\right) = -9$ et $G\\left( 1 \\right) = 1$.\n\nCalcule $G\\left( 9 \\right) - F\\left( 9 \\right)$.\n\n$G\\left( 9 \\right) - F\\left( 9 \\right) = [?]$",
+					"reponse": ["10"],
+					"variables": {
+						"p": "-9",
+						"q": "1",
+						"t": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$F$ et $G$ sont deux primitives d'une même fonction $f$ sur $\\mathbb{R}$, avec $F\\left( 1 \\right) = -3$ et $G\\left( 1 \\right) = -4$.\n\nCalcule $G\\left( 6 \\right) - F\\left( 6 \\right)$.\n\n$G\\left( 6 \\right) - F\\left( 6 \\right) = [?]$",
+					"reponse": ["-1"],
+					"variables": {
+						"p": "-3",
+						"q": "-4",
+						"t": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$F$ et $G$ sont deux primitives d'une même fonction $f$ sur $\\mathbb{R}$, avec $F\\left( 1 \\right) = -9$ et $G\\left( 1 \\right) = -1$.\n\nCalcule $G\\left( 2 \\right) - F\\left( 2 \\right)$.\n\n$G\\left( 2 \\right) - F\\left( 2 \\right) = [?]$",
+					"reponse": ["8"],
+					"variables": {
+						"p": "-9",
+						"q": "-1",
+						"t": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les fonctions $F$ et $G$ définies sur $\\mathbb{R}$ par $F(x)=(x{{if:p>0|+{{eval:p}}}}{{if:p<0|{{eval:p}}}})^2$ et $G(x)=x^2{{if:2*p==1|+x}}{{if:2*p==-1|-x}}{{if:2*p>0 && 2*p!=1|+{{eval:2*p}}x}}{{if:2*p<0 && 2*p!=-1|{{eval:2*p}}x}}$ sont deux primitives d'une même fonction $f$.\n\nDétermine la constante $k$ telle que $G(x)=F(x)+k$ pour tout réel $x$.\n\n$k=?$",
+				"reponses_brutes": ["{{eval:-p^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -36,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-36, -25, -16, -9, -4, -1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 8, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -36,
+				"max": -1,
+				"nb_distinctes": 6,
+				"valeurs": [-36, -25, -16, -9, -4, -1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -36,
+				"max": 12,
+				"nb_distinctes": 15,
+				"valeurs": [-36, -25, -16, -9, -4, -1, 1, 2, 3, 4, 5, 6, 8, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "152/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 1,
+					"enonce": "Les fonctions $F$ et $G$ définies sur $\\mathbb{R}$ par $F\\left( x \\right) = \\left( x - 6 \\right)^2$ et $G\\left( x \\right) = x^2 - 12 x$ sont deux primitives d'une même fonction $f$.\n\nDétermine la constante $k$ telle que $G\\left( x \\right) = F\\left( x \\right) + k$ pour tout réel $x$.\n\n$k = [?]$",
+					"reponse": ["-36"],
+					"variables": {
+						"p": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Les fonctions $F$ et $G$ définies sur $\\mathbb{R}$ par $F\\left( x \\right) = \\left( x - 3 \\right)^2$ et $G\\left( x \\right) = x^2 - 6 x$ sont deux primitives d'une même fonction $f$.\n\nDétermine la constante $k$ telle que $G\\left( x \\right) = F\\left( x \\right) + k$ pour tout réel $x$.\n\n$k = [?]$",
+					"reponse": ["-9"],
+					"variables": {
+						"p": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Les fonctions $F$ et $G$ définies sur $\\mathbb{R}$ par $F\\left( x \\right) = \\left( x + 4 \\right)^2$ et $G\\left( x \\right) = x^2 + 8 x$ sont deux primitives d'une même fonction $f$.\n\nDétermine la constante $k$ telle que $G\\left( x \\right) = F\\left( x \\right) + k$ pour tout réel $x$.\n\n$k = [?]$",
+					"reponse": ["-16"],
+					"variables": {
+						"p": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Les fonctions $F$ et $G$ définies sur $\\mathbb{R}$ par $F\\left( x \\right) = \\left( x + 2 \\right)^2$ et $G\\left( x \\right) = x^2 + 4 x$ sont deux primitives d'une même fonction $f$.\n\nDétermine la constante $k$ telle que $G\\left( x \\right) = F\\left( x \\right) + k$ pour tout réel $x$.\n\n$k = [?]$",
+					"reponse": ["-4"],
+					"variables": {
+						"p": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Les fonctions $F$ et $G$ définies sur $\\mathbb{R}$ par $F\\left( x \\right) = \\left( x + 5 \\right)^2$ et $G\\left( x \\right) = x^2 + 10 x$ sont deux primitives d'une même fonction $f$.\n\nDétermine la constante $k$ telle que $G\\left( x \\right) = F\\left( x \\right) + k$ pour tout réel $x$.\n\n$k = [?]$",
+					"reponse": ["-25"],
+					"variables": {
+						"p": "5"
+					}
+				}
+			]
+		}
+	]
+}

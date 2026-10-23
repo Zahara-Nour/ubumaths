@@ -1,0 +1,795 @@
+{
+	"template_id": "49fac266-f622-4ef5-8a2b-5638ca5a4c99",
+	"titre": "Ajustement affine : interpréter le coefficient directeur, l'ordonnée à l'origine et r",
+	"sous_titre": "Sorties de calculatrice données : interpréter a (variation moyenne de y par unité de x), b (estimation en x = 0), et la valeur de r (pertinence de l'ajustement affine)",
+	"consigne": null,
+	"grades": ["T_COMP"],
+	"type": "multiple_choice",
+	"theme": "Statistiques > Statistique à deux variables > Ajustement affine",
+	"mis_a_jour": "2026-10-04T20:32:58.132099+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-328",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "A",
+						"expression": "12..95"
+					},
+					{
+						"name": "B",
+						"expression": "20..80"
+					}
+				],
+				"conditions": ["mod(A, 10) != 0"],
+				"enonce_brut": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y={{eval:A/10;d}}x+{{B}}$.\n\nComment interpréter le coefficient ${{eval:A/10;d}}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Le nombre d'abonnés augmente d'environ ${{eval:A/10;d}}$ milliers chaque année"
+					},
+					{
+						"content": "Le nombre d'abonnés augmente d'environ ${{eval:A/10;d}}\\,\\%$ chaque année"
+					},
+					{
+						"content": "Le nombre d'abonnés est multiplié par ${{eval:A/10;d}}$ chaque année"
+					},
+					{
+						"content": "Il y avait ${{eval:A/10;d}}$ milliers d'abonnés l'année de rang $0$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "A",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 12,
+						"max": 95,
+						"negatif_possible": false,
+						"nb_distinctes": 73
+					}
+				},
+				{
+					"nom": "B",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 80,
+						"negatif_possible": false,
+						"nb_distinctes": 60
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 73,
+						"exemples": [
+							"Le nombre d'abonnés augmente d'environ $1.2$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $3.9$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $1.5$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $7.6$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $1.7$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $6.4$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $8.3$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $8.9$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $5.6$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $1.8$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $4.2$ milliers chaque année",
+							"Le nombre d'abonnés augmente d'environ $4.7$ milliers chaque année"
+						],
+						"nombres_contenus": {
+							"min": 1.2,
+							"max": 9.5,
+							"nb_distinctes": 73,
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1.2,
+				"max": 80,
+				"nb_distinctes": 133,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1.2,
+				"max": 9.5,
+				"nb_distinctes": 73,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 9.5,
+				"nb_distinctes": 74,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 80,
+				"nb_distinctes": 134,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 56,
+					"max": 56
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (80)",
+					"graine": 73,
+					"enonce": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y = 8{,}6 x + 80$.\n\nComment interpréter le coefficient $8{,}6$ ?\n\n- A. Le nombre d'abonnés augmente d'environ $8{,}6\\,\\%$ chaque année\n- B. Il y avait $8{,}6$ milliers d'abonnés l'année de rang $0$\n- C. Le nombre d'abonnés est multiplié par $8{,}6$ chaque année\n- D. Le nombre d'abonnés augmente d'environ $8{,}6$ milliers chaque année",
+					"reponse": ["D. Le nombre d'abonnés augmente d'environ $8{,}6$ milliers chaque année"],
+					"variables": {
+						"A": "86",
+						"B": "80"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y = 1{,}2 x + 52$.\n\nComment interpréter le coefficient $1{,}2$ ?\n\n- A. Le nombre d'abonnés augmente d'environ $1{,}2\\,\\%$ chaque année\n- B. Le nombre d'abonnés augmente d'environ $1{,}2$ milliers chaque année\n- C. Le nombre d'abonnés est multiplié par $1{,}2$ chaque année\n- D. Il y avait $1{,}2$ milliers d'abonnés l'année de rang $0$",
+					"reponse": ["B. Le nombre d'abonnés augmente d'environ $1{,}2$ milliers chaque année"],
+					"variables": {
+						"A": "12",
+						"B": "52"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y = 3{,}9 x + 37$.\n\nComment interpréter le coefficient $3{,}9$ ?\n\n- A. Le nombre d'abonnés augmente d'environ $3{,}9$ milliers chaque année\n- B. Le nombre d'abonnés augmente d'environ $3{,}9\\,\\%$ chaque année\n- C. Il y avait $3{,}9$ milliers d'abonnés l'année de rang $0$\n- D. Le nombre d'abonnés est multiplié par $3{,}9$ chaque année",
+					"reponse": ["A. Le nombre d'abonnés augmente d'environ $3{,}9$ milliers chaque année"],
+					"variables": {
+						"A": "39",
+						"B": "37"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y = 1{,}5 x + 47$.\n\nComment interpréter le coefficient $1{,}5$ ?\n\n- A. Le nombre d'abonnés augmente d'environ $1{,}5\\,\\%$ chaque année\n- B. Il y avait $1{,}5$ milliers d'abonnés l'année de rang $0$\n- C. Le nombre d'abonnés est multiplié par $1{,}5$ chaque année\n- D. Le nombre d'abonnés augmente d'environ $1{,}5$ milliers chaque année",
+					"reponse": ["D. Le nombre d'abonnés augmente d'environ $1{,}5$ milliers chaque année"],
+					"variables": {
+						"A": "15",
+						"B": "47"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y = 3{,}9 x + 33$.\n\nComment interpréter le coefficient $3{,}9$ ?\n\n- A. Le nombre d'abonnés est multiplié par $3{,}9$ chaque année\n- B. Le nombre d'abonnés augmente d'environ $3{,}9\\,\\%$ chaque année\n- C. Il y avait $3{,}9$ milliers d'abonnés l'année de rang $0$\n- D. Le nombre d'abonnés augmente d'environ $3{,}9$ milliers chaque année",
+					"reponse": ["D. Le nombre d'abonnés augmente d'environ $3{,}9$ milliers chaque année"],
+					"variables": {
+						"A": "39",
+						"B": "33"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "A",
+						"expression": "12..95"
+					},
+					{
+						"name": "B",
+						"expression": "20..80"
+					}
+				],
+				"conditions": ["mod(A, 10) != 0"],
+				"enonce_brut": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y={{eval:A/10;d}}x+{{B}}$.\n\nComment interpréter le nombre ${{B}}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "L'ajustement estime à ${{B}}$ milliers le nombre d'abonnés l'année de rang $0$"
+					},
+					{
+						"content": "Le nombre d'abonnés augmente d'environ ${{B}}$ milliers chaque année"
+					},
+					{
+						"content": "Le nombre d'abonnés ne descendra jamais sous ${{B}}$ milliers"
+					},
+					{
+						"content": "Le nombre moyen d'abonnés sur la période est ${{B}}$ milliers"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "A",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 12,
+						"max": 95,
+						"negatif_possible": false,
+						"nb_distinctes": 73
+					}
+				},
+				{
+					"nom": "B",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 80,
+						"negatif_possible": false,
+						"nb_distinctes": 60
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 60,
+						"exemples": [
+							"L'ajustement estime à $52$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $37$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $47$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $33$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $60$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $79$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $38$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $28$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $62$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $57$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $55$ milliers le nombre d'abonnés l'année de rang $0",
+							"L'ajustement estime à $24$ milliers le nombre d'abonnés l'année de rang $0"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 80,
+							"nb_distinctes": 61,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1.2,
+				"max": 80,
+				"nb_distinctes": 133,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 80,
+				"nb_distinctes": 61,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 80,
+				"nb_distinctes": 61,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 80,
+				"nb_distinctes": 134,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 60,
+					"max": 60
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (80)",
+					"graine": 73,
+					"enonce": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y = 8{,}6 x + 80$.\n\nComment interpréter le nombre $80$ ?\n\n- A. Le nombre d'abonnés augmente d'environ $80$ milliers chaque année\n- B. Le nombre moyen d'abonnés sur la période est $80$ milliers\n- C. Le nombre d'abonnés ne descendra jamais sous $80$ milliers\n- D. L'ajustement estime à $80$ milliers le nombre d'abonnés l'année de rang $0$",
+					"reponse": [
+						"D. L'ajustement estime à $80$ milliers le nombre d'abonnés l'année de rang $0$"
+					],
+					"variables": {
+						"A": "86",
+						"B": "80"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y = 1{,}2 x + 52$.\n\nComment interpréter le nombre $52$ ?\n\n- A. Le nombre d'abonnés augmente d'environ $52$ milliers chaque année\n- B. L'ajustement estime à $52$ milliers le nombre d'abonnés l'année de rang $0$\n- C. Le nombre d'abonnés ne descendra jamais sous $52$ milliers\n- D. Le nombre moyen d'abonnés sur la période est $52$ milliers",
+					"reponse": [
+						"B. L'ajustement estime à $52$ milliers le nombre d'abonnés l'année de rang $0$"
+					],
+					"variables": {
+						"A": "12",
+						"B": "52"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y = 3{,}9 x + 37$.\n\nComment interpréter le nombre $37$ ?\n\n- A. L'ajustement estime à $37$ milliers le nombre d'abonnés l'année de rang $0$\n- B. Le nombre d'abonnés augmente d'environ $37$ milliers chaque année\n- C. Le nombre moyen d'abonnés sur la période est $37$ milliers\n- D. Le nombre d'abonnés ne descendra jamais sous $37$ milliers",
+					"reponse": [
+						"A. L'ajustement estime à $37$ milliers le nombre d'abonnés l'année de rang $0$"
+					],
+					"variables": {
+						"A": "39",
+						"B": "37"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y = 1{,}5 x + 47$.\n\nComment interpréter le nombre $47$ ?\n\n- A. Le nombre d'abonnés augmente d'environ $47$ milliers chaque année\n- B. Le nombre moyen d'abonnés sur la période est $47$ milliers\n- C. Le nombre d'abonnés ne descendra jamais sous $47$ milliers\n- D. L'ajustement estime à $47$ milliers le nombre d'abonnés l'année de rang $0$",
+					"reponse": [
+						"D. L'ajustement estime à $47$ milliers le nombre d'abonnés l'année de rang $0$"
+					],
+					"variables": {
+						"A": "15",
+						"B": "47"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On étudie le nombre $y$ d'abonnés (en milliers) à un service selon le rang $x$ de l'année. La calculatrice donne la droite des moindres carrés $y = 3{,}9 x + 33$.\n\nComment interpréter le nombre $33$ ?\n\n- A. Le nombre d'abonnés ne descendra jamais sous $33$ milliers\n- B. Le nombre d'abonnés augmente d'environ $33$ milliers chaque année\n- C. Le nombre moyen d'abonnés sur la période est $33$ milliers\n- D. L'ajustement estime à $33$ milliers le nombre d'abonnés l'année de rang $0$",
+					"reponse": [
+						"D. L'ajustement estime à $33$ milliers le nombre d'abonnés l'année de rang $0$"
+					],
+					"variables": {
+						"A": "39",
+						"B": "33"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "R",
+						"expression": "951..998"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx {{eval:-R/1000;d}}$.\n\nQue peut-on en conclure ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente"
+					},
+					{
+						"content": "Il n'y a aucune liaison entre $x$ et $y$ car $r<0$"
+					},
+					{
+						"content": "Un ajustement affine est pertinent ; $y$ a tendance à augmenter quand $x$ augmente"
+					},
+					{
+						"content": "$y$ est proportionnel à $x$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 271,
+			"variables": [
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 951,
+						"max": 998,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": [
+							"Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente"
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.951,
+				"max": 0.998,
+				"nb_distinctes": 48,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0.998,
+				"nb_distinctes": 49,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"<": "300/300",
+					"≈": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 43,
+					"max": 43
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0.998)",
+					"graine": 37,
+					"enonce": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx -0{,}998$.\n\nQue peut-on en conclure ?\n\n- A. Il n'y a aucune liaison entre $x$ et $y$ car $r<0$\n- B. $y$ est proportionnel à $x$\n- C. Un ajustement affine est pertinent ; $y$ a tendance à augmenter quand $x$ augmente\n- D. Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente",
+					"reponse": [
+						"D. Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente"
+					],
+					"variables": {
+						"R": "998"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx -0{,}951$.\n\nQue peut-on en conclure ?\n\n- A. Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente\n- B. Il n'y a aucune liaison entre $x$ et $y$ car $r<0$\n- C. $y$ est proportionnel à $x$\n- D. Un ajustement affine est pertinent ; $y$ a tendance à augmenter quand $x$ augmente",
+					"reponse": [
+						"A. Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente"
+					],
+					"variables": {
+						"R": "951"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx -0{,}966$.\n\nQue peut-on en conclure ?\n\n- A. Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente\n- B. Un ajustement affine est pertinent ; $y$ a tendance à augmenter quand $x$ augmente\n- C. $y$ est proportionnel à $x$\n- D. Il n'y a aucune liaison entre $x$ et $y$ car $r<0$",
+					"reponse": [
+						"A. Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente"
+					],
+					"variables": {
+						"R": "966"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx -0{,}952$.\n\nQue peut-on en conclure ?\n\n- A. Un ajustement affine est pertinent ; $y$ a tendance à augmenter quand $x$ augmente\n- B. $y$ est proportionnel à $x$\n- C. Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente\n- D. Il n'y a aucune liaison entre $x$ et $y$ car $r<0$",
+					"reponse": [
+						"C. Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente"
+					],
+					"variables": {
+						"R": "952"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx -0{,}966$.\n\nQue peut-on en conclure ?\n\n- A. Il n'y a aucune liaison entre $x$ et $y$ car $r<0$\n- B. Un ajustement affine est pertinent ; $y$ a tendance à augmenter quand $x$ augmente\n- C. $y$ est proportionnel à $x$\n- D. Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente",
+					"reponse": [
+						"D. Un ajustement affine est pertinent ; $y$ a tendance à diminuer quand $x$ augmente"
+					],
+					"variables": {
+						"R": "966"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "R",
+						"expression": "5..35"
+					}
+				],
+				"conditions": ["mod(R, 10) != 0"],
+				"enonce_brut": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx {{eval:R/100;d}}$.\n\nQue peut-on en conclure ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Un ajustement affine n'est pas pertinent"
+					},
+					{
+						"content": "Un ajustement affine est pertinent car $r>0$"
+					},
+					{
+						"content": "$y$ diminue quand $x$ augmente"
+					},
+					{
+						"content": "Les points sont parfaitement alignés"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 245,
+			"variables": [
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 35,
+						"negatif_possible": false,
+						"nb_distinctes": 28,
+						"valeurs": [
+							5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+							31, 32, 33, 34, 35
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Un ajustement affine n'est pas pertinent"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.05,
+				"max": 0.35,
+				"nb_distinctes": 28,
+				"valeurs": [
+					0.05, 0.06, 0.07, 0.08, 0.09, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.21,
+					0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.31, 0.32, 0.33, 0.34, 0.35
+				],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0.35,
+				"nb_distinctes": 29,
+				"valeurs": [
+					0, 0.05, 0.06, 0.07, 0.08, 0.09, 0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19,
+					0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.31, 0.32, 0.33, 0.34, 0.35
+				],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					">": "300/300",
+					"≈": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0.35)",
+					"graine": 37,
+					"enonce": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx 0{,}35$.\n\nQue peut-on en conclure ?\n\n- A. Un ajustement affine est pertinent car $r>0$\n- B. Les points sont parfaitement alignés\n- C. $y$ diminue quand $x$ augmente\n- D. Un ajustement affine n'est pas pertinent",
+					"reponse": ["D. Un ajustement affine n'est pas pertinent"],
+					"variables": {
+						"R": "35"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx 0{,}05$.\n\nQue peut-on en conclure ?\n\n- A. Un ajustement affine n'est pas pertinent\n- B. Un ajustement affine est pertinent car $r>0$\n- C. Les points sont parfaitement alignés\n- D. $y$ diminue quand $x$ augmente",
+					"reponse": ["A. Un ajustement affine n'est pas pertinent"],
+					"variables": {
+						"R": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx 0{,}15$.\n\nQue peut-on en conclure ?\n\n- A. Un ajustement affine n'est pas pertinent\n- B. $y$ diminue quand $x$ augmente\n- C. Les points sont parfaitement alignés\n- D. Un ajustement affine est pertinent car $r>0$",
+					"reponse": ["A. Un ajustement affine n'est pas pertinent"],
+					"variables": {
+						"R": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx 0{,}06$.\n\nQue peut-on en conclure ?\n\n- A. $y$ diminue quand $x$ augmente\n- B. Les points sont parfaitement alignés\n- C. Un ajustement affine n'est pas pertinent\n- D. Un ajustement affine est pertinent car $r>0$",
+					"reponse": ["C. Un ajustement affine n'est pas pertinent"],
+					"variables": {
+						"R": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Pour une série statistique $(x_i\\,;y_i)$, la calculatrice affiche un coefficient de corrélation $r\\approx 0{,}15$.\n\nQue peut-on en conclure ?\n\n- A. Un ajustement affine est pertinent car $r>0$\n- B. $y$ diminue quand $x$ augmente\n- C. Les points sont parfaitement alignés\n- D. Un ajustement affine n'est pas pertinent",
+					"reponse": ["D. Un ajustement affine n'est pas pertinent"],
+					"variables": {
+						"R": "15"
+					}
+				}
+			]
+		}
+	]
+}

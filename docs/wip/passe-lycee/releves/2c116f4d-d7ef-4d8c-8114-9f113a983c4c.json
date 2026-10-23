@@ -1,0 +1,683 @@
+{
+	"template_id": "2c116f4d-d7ef-4d8c-8114-9f113a983c4c",
+	"titre": "Contrôle qualité : d'où vient la pièce défectueuse ?",
+	"sous_titre": "Deux machines (ou deux fournisseurs), parts et taux de défaut en pourcentages : probabilité qu'une pièce soit défectueuse (valeur exacte), puis provenance sachant l'état de la pièce, arrondie au centième ou au millième",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Probabilités conditionnelles > Problèmes en contexte",
+	"mis_a_jour": "2026-10-03T06:50:36.424822+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-400",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "30|35|40|45|55|60|65|70|75|80"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "w",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [
+					"u != w",
+					"abs(100*a*u/(a*u+(100-a)*w)-round(100*a*u/(a*u+(100-a)*w))) < 0.49",
+					"mod(round(100*a*u/(a*u+(100-a)*w)), 10) != 0"
+				],
+				"enonce_brut": "Une usine fabrique des pièces sur deux machines. La machine A produit ${{a}}\\,\\%$ des pièces, la machine B produit les autres. ${{u}}\\,\\%$ des pièces de la machine A sont défectueuses, contre ${{w}}\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P(D)=?$\n\nLa pièce prélevée est défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au centième.\n\n$P_D(A)\\approx ?$",
+				"reponses_brutes": [
+					"{{eval:(a*u+(100-a)*w)/10000}}",
+					"{{eval:round(100*a*u/(a*u+(100-a)*w))/100;d}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 241,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 80,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [30, 35, 40, 45, 55, 60, 65, 70, 75, 80]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.013,
+						"max": 0.087,
+						"negatif_possible": false,
+						"denominateurs": [16, 20, 25, 40, 80, 100, 125, 200, 250, 400, 500, 1000, 2000],
+						"denominateur_min": 16,
+						"denominateur_max": 2000,
+						"nb_distinctes": 111
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.05,
+						"max": 0.97,
+						"negatif_possible": false,
+						"nb_distinctes": 78
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 80,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0.05,
+				"max": 2000,
+				"nb_distinctes": 151,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.05,
+				"max": 2000,
+				"nb_distinctes": 160,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [16, 20, 25, 40, 80, 100, 125, 200, 250, 400, 500, 1000, 2000],
+				"denominateur_min": 16,
+				"denominateur_max": 2000,
+				"numerateur_min": 1,
+				"numerateur_max": 169,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≈": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 91,
+					"max": 91
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2000)",
+					"graine": 4,
+					"enonce": "Une usine fabrique des pièces sur deux machines. La machine A produit $45\\,\\%$ des pièces, la machine B produit les autres. $2\\,\\%$ des pièces de la machine A sont défectueuses, contre $1\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nLa pièce prélevée est défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au centième.\n\n$P_D(A)\\approx [?]$",
+					"reponse": ["\\dfrac{29}{2000}", "0.62"],
+					"variables": {
+						"a": "45",
+						"u": "2",
+						"w": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.05)",
+					"graine": 278,
+					"enonce": "Une usine fabrique des pièces sur deux machines. La machine A produit $30\\,\\%$ des pièces, la machine B produit les autres. $1\\,\\%$ des pièces de la machine A sont défectueuses, contre $8\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nLa pièce prélevée est défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au centième.\n\n$P_D(A)\\approx [?]$",
+					"reponse": ["\\dfrac{59}{1000}", "0.05"],
+					"variables": {
+						"a": "30",
+						"u": "1",
+						"w": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une usine fabrique des pièces sur deux machines. La machine A produit $30\\,\\%$ des pièces, la machine B produit les autres. $5\\,\\%$ des pièces de la machine A sont défectueuses, contre $9\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nLa pièce prélevée est défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au centième.\n\n$P_D(A)\\approx [?]$",
+					"reponse": ["\\dfrac{39}{500}", "0.19"],
+					"variables": {
+						"a": "30",
+						"u": "5",
+						"w": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une usine fabrique des pièces sur deux machines. La machine A produit $45\\,\\%$ des pièces, la machine B produit les autres. $3\\,\\%$ des pièces de la machine A sont défectueuses, contre $5\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nLa pièce prélevée est défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au centième.\n\n$P_D(A)\\approx [?]$",
+					"reponse": ["\\dfrac{41}{1000}", "0.33"],
+					"variables": {
+						"a": "45",
+						"u": "3",
+						"w": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une usine fabrique des pièces sur deux machines. La machine A produit $30\\,\\%$ des pièces, la machine B produit les autres. $5\\,\\%$ des pièces de la machine A sont défectueuses, contre $1\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nLa pièce prélevée est défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au centième.\n\n$P_D(A)\\approx [?]$",
+					"reponse": ["\\dfrac{11}{500}", "0.68"],
+					"variables": {
+						"a": "30",
+						"u": "5",
+						"w": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "30|35|40|45|55|60|65|70|75|80"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "w",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [
+					"u != w",
+					"abs(100*(100-a)*w/(a*u+(100-a)*w)-round(100*(100-a)*w/(a*u+(100-a)*w))) < 0.49",
+					"mod(round(100*(100-a)*w/(a*u+(100-a)*w)), 10) != 0"
+				],
+				"enonce_brut": "Un magasin achète ses ampoules à deux fournisseurs : ${{a}}\\,\\%$ viennent du fournisseur A, les autres du fournisseur B. ${{u}}\\,\\%$ des ampoules du fournisseur A sont défectueuses, contre ${{w}}\\,\\%$ des ampoules du fournisseur B.\n\nOn choisit une ampoule au hasard dans le stock. On note $A$ l'événement « l'ampoule vient du fournisseur A », $B$ l'événement « l'ampoule vient du fournisseur B » et $D$ l'événement « l'ampoule est défectueuse ».\n\nCalcule la probabilité que l'ampoule soit défectueuse. Donne la valeur exacte.\n\n$P(D)=?$\n\nL'ampoule choisie est défectueuse. Quelle est la probabilité qu'elle vienne du fournisseur B ? Arrondis au centième.\n\n$P_D(B)\\approx ?$",
+				"reponses_brutes": [
+					"{{eval:(a*u+(100-a)*w)/10000}}",
+					"{{eval:round(100*(100-a)*w/(a*u+(100-a)*w))/100;d}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 241,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 80,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [30, 35, 40, 45, 55, 60, 65, 70, 75, 80]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.013,
+						"max": 0.087,
+						"negatif_possible": false,
+						"denominateurs": [16, 20, 25, 40, 80, 100, 125, 200, 250, 400, 500, 1000, 2000],
+						"denominateur_min": 16,
+						"denominateur_max": 2000,
+						"nb_distinctes": 111
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.03,
+						"max": 0.95,
+						"negatif_possible": false,
+						"nb_distinctes": 78
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 80,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0.03,
+				"max": 2000,
+				"nb_distinctes": 151,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.03,
+				"max": 2000,
+				"nb_distinctes": 160,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [16, 20, 25, 40, 80, 100, 125, 200, 250, 400, 500, 1000, 2000],
+				"denominateur_min": 16,
+				"denominateur_max": 2000,
+				"numerateur_min": 1,
+				"numerateur_max": 169,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≈": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 77,
+					"max": 77
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2000)",
+					"graine": 4,
+					"enonce": "Un magasin achète ses ampoules à deux fournisseurs : $45\\,\\%$ viennent du fournisseur A, les autres du fournisseur B. $2\\,\\%$ des ampoules du fournisseur A sont défectueuses, contre $1\\,\\%$ des ampoules du fournisseur B.\n\nOn choisit une ampoule au hasard dans le stock. On note $A$ l'événement « l'ampoule vient du fournisseur A », $B$ l'événement « l'ampoule vient du fournisseur B » et $D$ l'événement « l'ampoule est défectueuse ».\n\nCalcule la probabilité que l'ampoule soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nL'ampoule choisie est défectueuse. Quelle est la probabilité qu'elle vienne du fournisseur B ? Arrondis au centième.\n\n$P_D(B)\\approx [?]$",
+					"reponse": ["\\dfrac{29}{2000}", "0.38"],
+					"variables": {
+						"a": "45",
+						"u": "2",
+						"w": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.03)",
+					"graine": 130,
+					"enonce": "Un magasin achète ses ampoules à deux fournisseurs : $80\\,\\%$ viennent du fournisseur A, les autres du fournisseur B. $7\\,\\%$ des ampoules du fournisseur A sont défectueuses, contre $1\\,\\%$ des ampoules du fournisseur B.\n\nOn choisit une ampoule au hasard dans le stock. On note $A$ l'événement « l'ampoule vient du fournisseur A », $B$ l'événement « l'ampoule vient du fournisseur B » et $D$ l'événement « l'ampoule est défectueuse ».\n\nCalcule la probabilité que l'ampoule soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nL'ampoule choisie est défectueuse. Quelle est la probabilité qu'elle vienne du fournisseur B ? Arrondis au centième.\n\n$P_D(B)\\approx [?]$",
+					"reponse": ["\\dfrac{29}{500}", "0.03"],
+					"variables": {
+						"a": "80",
+						"u": "7",
+						"w": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Un magasin achète ses ampoules à deux fournisseurs : $30\\,\\%$ viennent du fournisseur A, les autres du fournisseur B. $5\\,\\%$ des ampoules du fournisseur A sont défectueuses, contre $9\\,\\%$ des ampoules du fournisseur B.\n\nOn choisit une ampoule au hasard dans le stock. On note $A$ l'événement « l'ampoule vient du fournisseur A », $B$ l'événement « l'ampoule vient du fournisseur B » et $D$ l'événement « l'ampoule est défectueuse ».\n\nCalcule la probabilité que l'ampoule soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nL'ampoule choisie est défectueuse. Quelle est la probabilité qu'elle vienne du fournisseur B ? Arrondis au centième.\n\n$P_D(B)\\approx [?]$",
+					"reponse": ["\\dfrac{39}{500}", "0.81"],
+					"variables": {
+						"a": "30",
+						"u": "5",
+						"w": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un magasin achète ses ampoules à deux fournisseurs : $45\\,\\%$ viennent du fournisseur A, les autres du fournisseur B. $3\\,\\%$ des ampoules du fournisseur A sont défectueuses, contre $5\\,\\%$ des ampoules du fournisseur B.\n\nOn choisit une ampoule au hasard dans le stock. On note $A$ l'événement « l'ampoule vient du fournisseur A », $B$ l'événement « l'ampoule vient du fournisseur B » et $D$ l'événement « l'ampoule est défectueuse ».\n\nCalcule la probabilité que l'ampoule soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nL'ampoule choisie est défectueuse. Quelle est la probabilité qu'elle vienne du fournisseur B ? Arrondis au centième.\n\n$P_D(B)\\approx [?]$",
+					"reponse": ["\\dfrac{41}{1000}", "0.67"],
+					"variables": {
+						"a": "45",
+						"u": "3",
+						"w": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un magasin achète ses ampoules à deux fournisseurs : $30\\,\\%$ viennent du fournisseur A, les autres du fournisseur B. $5\\,\\%$ des ampoules du fournisseur A sont défectueuses, contre $1\\,\\%$ des ampoules du fournisseur B.\n\nOn choisit une ampoule au hasard dans le stock. On note $A$ l'événement « l'ampoule vient du fournisseur A », $B$ l'événement « l'ampoule vient du fournisseur B » et $D$ l'événement « l'ampoule est défectueuse ».\n\nCalcule la probabilité que l'ampoule soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nL'ampoule choisie est défectueuse. Quelle est la probabilité qu'elle vienne du fournisseur B ? Arrondis au centième.\n\n$P_D(B)\\approx [?]$",
+					"reponse": ["\\dfrac{11}{500}", "0.32"],
+					"variables": {
+						"a": "30",
+						"u": "5",
+						"w": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "30|35|40|45|55|60|65|70|75|80"
+					},
+					{
+						"name": "u",
+						"expression": "1..9"
+					},
+					{
+						"name": "w",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [
+					"u != w",
+					"abs(1000*a*(100-u)/(10000-(a*u+(100-a)*w))-round(1000*a*(100-u)/(10000-(a*u+(100-a)*w)))) < 0.49",
+					"mod(round(1000*a*(100-u)/(10000-(a*u+(100-a)*w))), 10) != 0"
+				],
+				"enonce_brut": "Une usine fabrique des pièces sur deux machines. La machine A produit ${{a}}\\,\\%$ des pièces, la machine B produit les autres. ${{u}}\\,\\%$ des pièces de la machine A sont défectueuses, contre ${{w}}\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P(D)=?$\n\nLa pièce prélevée n'est pas défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au millième.\n\n$P_{\\overline{D}}(A)\\approx ?$",
+				"reponses_brutes": [
+					"{{eval:(a*u+(100-a)*w)/10000}}",
+					"{{eval:round(1000*a*(100-u)/(10000-(a*u+(100-a)*w)))/1000;d}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 242,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 80,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [30, 35, 40, 45, 55, 60, 65, 70, 75, 80]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.0145,
+						"max": 0.087,
+						"negatif_possible": false,
+						"denominateurs": [16, 20, 25, 40, 50, 80, 100, 125, 200, 250, 400, 500, 1000, 2000],
+						"denominateur_min": 16,
+						"denominateur_max": 2000,
+						"nb_distinctes": 111
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 0.285,
+						"max": 0.808,
+						"negatif_possible": false,
+						"nb_distinctes": 124
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 80,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 30, 35, 40, 45, 55, 60, 65, 70, 75, 80],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0.285,
+				"max": 2000,
+				"nb_distinctes": 198,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.285,
+				"max": 2000,
+				"nb_distinctes": 207,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [16, 20, 25, 40, 50, 80, 100, 125, 200, 250, 400, 500, 1000, 2000],
+				"denominateur_min": 16,
+				"denominateur_max": 2000,
+				"numerateur_min": 1,
+				"numerateur_max": 169,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≈": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 92,
+					"max": 92
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2000)",
+					"graine": 4,
+					"enonce": "Une usine fabrique des pièces sur deux machines. La machine A produit $45\\,\\%$ des pièces, la machine B produit les autres. $2\\,\\%$ des pièces de la machine A sont défectueuses, contre $1\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nLa pièce prélevée n'est pas défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au millième.\n\n$P_{\\overline{D}}(A)\\approx [?]$",
+					"reponse": ["\\dfrac{29}{2000}", "0.447"],
+					"variables": {
+						"a": "45",
+						"u": "2",
+						"w": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.285)",
+					"graine": 75,
+					"enonce": "Une usine fabrique des pièces sur deux machines. La machine A produit $30\\,\\%$ des pièces, la machine B produit les autres. $8\\,\\%$ des pièces de la machine A sont défectueuses, contre $1\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nLa pièce prélevée n'est pas défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au millième.\n\n$P_{\\overline{D}}(A)\\approx [?]$",
+					"reponse": ["\\dfrac{31}{1000}", "0.285"],
+					"variables": {
+						"a": "30",
+						"u": "8",
+						"w": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une usine fabrique des pièces sur deux machines. La machine A produit $30\\,\\%$ des pièces, la machine B produit les autres. $5\\,\\%$ des pièces de la machine A sont défectueuses, contre $9\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nLa pièce prélevée n'est pas défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au millième.\n\n$P_{\\overline{D}}(A)\\approx [?]$",
+					"reponse": ["\\dfrac{39}{500}", "0.309"],
+					"variables": {
+						"a": "30",
+						"u": "5",
+						"w": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une usine fabrique des pièces sur deux machines. La machine A produit $45\\,\\%$ des pièces, la machine B produit les autres. $3\\,\\%$ des pièces de la machine A sont défectueuses, contre $5\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nLa pièce prélevée n'est pas défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au millième.\n\n$P_{\\overline{D}}(A)\\approx [?]$",
+					"reponse": ["\\dfrac{41}{1000}", "0.455"],
+					"variables": {
+						"a": "45",
+						"u": "3",
+						"w": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une usine fabrique des pièces sur deux machines. La machine A produit $30\\,\\%$ des pièces, la machine B produit les autres. $5\\,\\%$ des pièces de la machine A sont défectueuses, contre $1\\,\\%$ des pièces de la machine B.\n\nOn prélève une pièce au hasard dans la production. On note $A$ l'événement « la pièce vient de la machine A », $B$ l'événement « la pièce vient de la machine B » et $D$ l'événement « la pièce est défectueuse ».\n\nCalcule la probabilité que la pièce soit défectueuse. Donne la valeur exacte.\n\n$P \\left( D \\right) = [?]$\n\nLa pièce prélevée n'est pas défectueuse. Quelle est la probabilité qu'elle vienne de la machine A ? Arrondis au millième.\n\n$P_{\\overline{D}}(A)\\approx [?]$",
+					"reponse": ["\\dfrac{11}{500}", "0.291"],
+					"variables": {
+						"a": "30",
+						"u": "5",
+						"w": "1"
+					}
+				}
+			]
+		}
+	]
+}

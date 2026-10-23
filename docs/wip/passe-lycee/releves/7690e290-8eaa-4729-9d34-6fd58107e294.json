@@ -1,0 +1,1025 @@
+{
+	"template_id": "7690e290-8eaa-4729-9d34-6fd58107e294",
+	"titre": "Affixe d'un vecteur, distance, milieu, parallélogramme",
+	"sous_titre": "z_B − z_A, AB = |z_B − z_A|, milieu (z_A + z_B)/2, quatrième sommet d'un parallélogramme (pièges : z_A − z_B, |z_B| − |z_A|, mauvais sommet)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Nombres complexes > Géométrie et nombres complexes > Affixes et distances",
+	"mis_a_jour": "2026-10-05T16:03:08.738802+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-223",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": ["a != c", "b != d"],
+				"enonce_brut": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A={{a}}+({{b}})i$ et $z_B={{c}}+({{d}})i$. Donne l'affixe du vecteur $\\overrightarrow{AB}$.\n\nAffixe de $\\overrightarrow{AB}$ : $?$",
+				"reponses_brutes": ["{{eval:c-a}}+({{eval:d-b}})i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 203,
+						"exemples": [
+							"12+5i",
+							"4+8i",
+							"-4-2i",
+							"5+8i",
+							"-2-i",
+							"2-i",
+							"9-5i",
+							"1+5i",
+							"-1+8i",
+							"-2-4i",
+							"1+3i",
+							"12-6i"
+						],
+						"nombres_contenus": {
+							"min": -12,
+							"max": 12,
+							"nb_distinctes": 24,
+							"valeurs": [
+								-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+								11, 12
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 24,
+				"valeurs": [
+					-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 24,
+				"valeurs": [
+					-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "245/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "185/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 1,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = -6 + \\imaginaryI$ et $z_B = 6 + 6 \\imaginaryI$. Donne l'affixe du vecteur $\\overrightarrow{AB}$.\n\nAffixe de $\\overrightarrow{AB}$ : $[?]$",
+					"reponse": ["12+5i"],
+					"variables": {
+						"a": "-6",
+						"b": "1",
+						"c": "6",
+						"d": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-12)",
+					"graine": 130,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = 6 + 3 \\imaginaryI$ et $z_B = -6 - 2 \\imaginaryI$. Donne l'affixe du vecteur $\\overrightarrow{AB}$.\n\nAffixe de $\\overrightarrow{AB}$ : $[?]$",
+					"reponse": ["-12-5i"],
+					"variables": {
+						"a": "6",
+						"b": "3",
+						"c": "-6",
+						"d": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = -3 - 3 \\imaginaryI$ et $z_B = 1 + 5 \\imaginaryI$. Donne l'affixe du vecteur $\\overrightarrow{AB}$.\n\nAffixe de $\\overrightarrow{AB}$ : $[?]$",
+					"reponse": ["4+8i"],
+					"variables": {
+						"a": "-3",
+						"b": "-3",
+						"c": "1",
+						"d": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = -1 - \\imaginaryI$ et $z_B = -5 - 3 \\imaginaryI$. Donne l'affixe du vecteur $\\overrightarrow{AB}$.\n\nAffixe de $\\overrightarrow{AB}$ : $[?]$",
+					"reponse": ["-4-2i"],
+					"variables": {
+						"a": "-1",
+						"b": "-1",
+						"c": "-5",
+						"d": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = 1 - 6 \\imaginaryI$ et $z_B = 6 + 2 \\imaginaryI$. Donne l'affixe du vecteur $\\overrightarrow{AB}$.\n\nAffixe de $\\overrightarrow{AB}$ : $[?]$",
+					"reponse": ["5+8i"],
+					"variables": {
+						"a": "1",
+						"b": "-6",
+						"c": "6",
+						"d": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": ["a != c", "b != d"],
+				"enonce_brut": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A={{a}}+({{b}})i$ et $z_B={{c}}+({{d}})i$. Calcule la distance $AB$.\n\n$AB=?$",
+				"reponses_brutes": ["{{eval:sqrt((c-a)^2+(d-b)^2)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.05333333333333334,
+						"nb_distinctes": 61,
+						"exemples": [
+							"13",
+							"4 \\sqrt{5}",
+							"2 \\sqrt{5}",
+							"\\sqrt{89}",
+							"\\sqrt{5}",
+							"\\sqrt{106}",
+							"\\sqrt{26}",
+							"\\sqrt{65}",
+							"\\sqrt{10}",
+							"6 \\sqrt{5}",
+							"2 \\sqrt{13}",
+							"3 \\sqrt{5}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 265,
+							"nb_distinctes": 40,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 265,
+				"nb_distinctes": 40,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 265,
+				"nb_distinctes": 47,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "245/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "185/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (265)",
+					"graine": 266,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = 6 - 6 \\imaginaryI$ et $z_B = -6 + 5 \\imaginaryI$. Calcule la distance $AB$.\n\n$AB = [?]$",
+					"reponse": ["\\sqrt{265}"],
+					"variables": {
+						"a": "6",
+						"b": "-6",
+						"c": "-6",
+						"d": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 1,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = -6 + \\imaginaryI$ et $z_B = 6 + 6 \\imaginaryI$. Calcule la distance $AB$.\n\n$AB = [?]$",
+					"reponse": ["13"],
+					"variables": {
+						"a": "-6",
+						"b": "1",
+						"c": "6",
+						"d": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = -3 - 3 \\imaginaryI$ et $z_B = 1 + 5 \\imaginaryI$. Calcule la distance $AB$.\n\n$AB = [?]$",
+					"reponse": ["4 \\sqrt{5}"],
+					"variables": {
+						"a": "-3",
+						"b": "-3",
+						"c": "1",
+						"d": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = -1 - \\imaginaryI$ et $z_B = -5 - 3 \\imaginaryI$. Calcule la distance $AB$.\n\n$AB = [?]$",
+					"reponse": ["2 \\sqrt{5}"],
+					"variables": {
+						"a": "-1",
+						"b": "-1",
+						"c": "-5",
+						"d": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = 1 - 6 \\imaginaryI$ et $z_B = 6 + 2 \\imaginaryI$. Calcule la distance $AB$.\n\n$AB = [?]$",
+					"reponse": ["\\sqrt{89}"],
+					"variables": {
+						"a": "1",
+						"b": "-6",
+						"c": "6",
+						"d": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..7;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..7;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..7;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..7;±"
+					}
+				],
+				"conditions": [
+					"mod(a+c+20, 2) == 0",
+					"mod(b+d+20, 2) == 0",
+					"a+c != 0",
+					"b+d != 0",
+					"a != c"
+				],
+				"enonce_brut": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A={{a}}+({{b}})i$ et $z_B={{c}}+({{d}})i$. Donne l'affixe du milieu $I$ du segment $[AB]$.\n\n$z_I=?$",
+				"reponses_brutes": ["{{eval:(a+c)/2}}+({{eval:(b+d)/2}})i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 293,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 117,
+						"exemples": [
+							"-2+4i",
+							"-1+i",
+							"-3-5i",
+							"4-2i",
+							"3-5i",
+							"-6+2i",
+							"4+4i",
+							"-2-3i",
+							"2-2i",
+							"-1-i",
+							"5-5i",
+							"1-6i"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 7,
+							"nb_distinctes": 13,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -7,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 7,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -7,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "228/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "171/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 4,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = 1 - 6 \\imaginaryI$ et $z_B = 7 + 2 \\imaginaryI$. Donne l'affixe du milieu $I$ du segment $\\left[ AB \\right]$.\n\n$z_I = [?]$",
+					"reponse": ["4-2i"],
+					"variables": {
+						"a": "1",
+						"b": "-6",
+						"c": "7",
+						"d": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-7)",
+					"graine": 3,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = 1 - 5 \\imaginaryI$ et $z_B = -7 - 5 \\imaginaryI$. Donne l'affixe du milieu $I$ du segment $\\left[ AB \\right]$.\n\n$z_I = [?]$",
+					"reponse": ["-3-5i"],
+					"variables": {
+						"a": "1",
+						"b": "-5",
+						"c": "-7",
+						"d": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = 1 + 4 \\imaginaryI$ et $z_B = -5 + 4 \\imaginaryI$. Donne l'affixe du milieu $I$ du segment $\\left[ AB \\right]$.\n\n$z_I = [?]$",
+					"reponse": ["-2+4i"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "-5",
+						"d": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = -3 - 4 \\imaginaryI$ et $z_B = 1 + 6 \\imaginaryI$. Donne l'affixe du milieu $I$ du segment $\\left[ AB \\right]$.\n\n$z_I = [?]$",
+					"reponse": ["-1+i"],
+					"variables": {
+						"a": "-3",
+						"b": "-4",
+						"c": "1",
+						"d": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans le plan complexe, $A$ et $B$ ont pour affixes $z_A = 4 - 4 \\imaginaryI$ et $z_B = 2 - 6 \\imaginaryI$. Donne l'affixe du milieu $I$ du segment $\\left[ AB \\right]$.\n\n$z_I = [?]$",
+					"reponse": ["3-5i"],
+					"variables": {
+						"a": "4",
+						"b": "-4",
+						"c": "2",
+						"d": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "g",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "h2",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": ["a+g-c != 0", "b+h2-d != 0", "c != a", "c != g"],
+				"enonce_brut": "Dans le plan complexe, $A$, $B$ et $C$ ont pour affixes $z_A={{a}}+({{b}})i$, $z_B={{c}}+({{d}})i$ et $z_C={{g}}+({{h2}})i$. Donne l'affixe du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$z_D=?$",
+				"reponses_brutes": ["{{eval:a+g-c}}+({{eval:b+h2-d}})i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "h2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 217,
+						"exemples": [
+							"-13-2i",
+							"-1-8i",
+							"-10+4i",
+							"4-5i",
+							"2+5i",
+							"-7-4i",
+							"-8+3i",
+							"-13-10i",
+							"4-9i",
+							"-14-12i",
+							"6+2i",
+							"-15+7i"
+						],
+						"nombres_contenus": {
+							"min": -15,
+							"max": 14,
+							"nb_distinctes": 29,
+							"valeurs": [
+								-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6,
+								7, 8, 9, 10, 11, 12, 13, 14
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -15,
+				"max": 14,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8,
+					9, 10, 11, 12, 13, 14
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -15,
+				"max": 14,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8,
+					9, 10, 11, 12, 13, 14
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "261/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "241/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (14)",
+					"graine": 51,
+					"enonce": "Dans le plan complexe, $A$, $B$ et $C$ ont pour affixes $z_A = -5 - 5 \\imaginaryI$, $z_B = -3 + 4 \\imaginaryI$ et $z_C = -1 - 5 \\imaginaryI$. Donne l'affixe du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$z_D = [?]$",
+					"reponse": ["-3-14i"],
+					"variables": {
+						"a": "-5",
+						"b": "-5",
+						"c": "-3",
+						"d": "4",
+						"g": "-1",
+						"h2": "-5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-15)",
+					"graine": 12,
+					"enonce": "Dans le plan complexe, $A$, $B$ et $C$ ont pour affixes $z_A = -5 + \\imaginaryI$, $z_B = 5 - 4 \\imaginaryI$ et $z_C = -5 + 2 \\imaginaryI$. Donne l'affixe du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$z_D = [?]$",
+					"reponse": ["-15+7i"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"c": "5",
+						"d": "-4",
+						"g": "-5",
+						"h2": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans le plan complexe, $A$, $B$ et $C$ ont pour affixes $z_A = -5 + \\imaginaryI$, $z_B = 5 + 5 \\imaginaryI$ et $z_C = -3 + 2 \\imaginaryI$. Donne l'affixe du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$z_D = [?]$",
+					"reponse": ["-13-2i"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"c": "5",
+						"d": "5",
+						"g": "-3",
+						"h2": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le plan complexe, $A$, $B$ et $C$ ont pour affixes $z_A = -2 - 3 \\imaginaryI$, $z_B = 1 + 4 \\imaginaryI$ et $z_C = 2 - \\imaginaryI$. Donne l'affixe du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$z_D = [?]$",
+					"reponse": ["-1-8i"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "1",
+						"d": "4",
+						"g": "2",
+						"h2": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le plan complexe, $A$, $B$ et $C$ ont pour affixes $z_A = -4 - 3 \\imaginaryI$, $z_B = 1 - 4 \\imaginaryI$ et $z_C = -5 + 3 \\imaginaryI$. Donne l'affixe du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$z_D = [?]$",
+					"reponse": ["-10+4i"],
+					"variables": {
+						"a": "-4",
+						"b": "-3",
+						"c": "1",
+						"d": "-4",
+						"g": "-5",
+						"h2": "3"
+					}
+				}
+			]
+		}
+	]
+}

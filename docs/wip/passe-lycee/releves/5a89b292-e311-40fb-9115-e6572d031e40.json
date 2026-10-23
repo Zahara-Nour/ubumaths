@@ -1,0 +1,607 @@
+{
+	"template_id": "5a89b292-e311-40fb-9115-e6572d031e40",
+	"titre": "Cosinus et sinus des angles remarquables",
+	"sous_titre": "Valeurs exactes de cos et sin en 0, π/6, π/4, π/3 et π/2, lues sur le cercle trigonométrique",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions trigonométriques > Cosinus et sinus d'un réel",
+	"mis_a_jour": "2026-10-02T09:17:21.63363+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-305",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Donne les valeurs exactes.\n\n$\\cos\\left(0\\right)=?$ et $\\sin\\left(0\\right)=?$",
+				"reponses_brutes": ["1", "0"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(0\\right)=[?]$ et $\\sin\\left(0\\right)=[?]$",
+					"reponse": ["1", "0"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{6}\\right)=?$ et $\\sin\\left(\\frac{\\pi}{6}\\right)=?$",
+				"reponses_brutes": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{\\sqrt{3}}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 3,
+							"nb_distinctes": 2,
+							"valeurs": [2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.5,
+						"max": 0.5,
+						"negatif_possible": false,
+						"denominateurs": [2],
+						"denominateur_min": 2,
+						"denominateur_max": 2,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{1}{2}"]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 6,
+				"max": 6,
+				"nb_distinctes": 1,
+				"valeurs": [6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 4,
+				"valeurs": [1, 2, 3, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{6}\\right)=[?]$ et $\\sin\\left(\\frac{\\pi}{6}\\right)=[?]$",
+					"reponse": ["\\frac{\\sqrt{3}}{2}", "\\frac{1}{2}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{4}\\right)=?$ et $\\sin\\left(\\frac{\\pi}{4}\\right)=?$",
+				"reponses_brutes": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{\\sqrt{2}}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2,
+							"nb_distinctes": 1,
+							"valeurs": [2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{\\sqrt{2}}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2,
+							"nb_distinctes": 1,
+							"valeurs": [2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 4,
+				"nb_distinctes": 1,
+				"valeurs": [4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [2, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{4}\\right)=[?]$ et $\\sin\\left(\\frac{\\pi}{4}\\right)=[?]$",
+					"reponse": ["\\frac{\\sqrt{2}}{2}", "\\frac{\\sqrt{2}}{2}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{3}\\right)=?$ et $\\sin\\left(\\frac{\\pi}{3}\\right)=?$",
+				"reponses_brutes": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.5,
+						"max": 0.5,
+						"negatif_possible": false,
+						"denominateurs": [2],
+						"denominateur_min": 2,
+						"denominateur_max": 2,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{1}{2}"]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{\\sqrt{3}}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 3,
+							"nb_distinctes": 2,
+							"valeurs": [2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{3}\\right)=[?]$ et $\\sin\\left(\\frac{\\pi}{3}\\right)=[?]$",
+					"reponse": ["\\frac{1}{2}", "\\frac{\\sqrt{3}}{2}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{2}\\right)=?$ et $\\sin\\left(\\frac{\\pi}{2}\\right)=?$",
+				"reponses_brutes": ["0", "1"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Donne les valeurs exactes.\n\n$\\cos\\left(\\frac{\\pi}{2}\\right)=[?]$ et $\\sin\\left(\\frac{\\pi}{2}\\right)=[?]$",
+					"reponse": ["0", "1"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

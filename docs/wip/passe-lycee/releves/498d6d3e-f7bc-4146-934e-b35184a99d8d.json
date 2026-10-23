@@ -1,0 +1,610 @@
+{
+	"template_id": "498d6d3e-f7bc-4146-934e-b35184a99d8d",
+	"titre": "Vérifier l'égalité de deux expressions comportant des racines carrées",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["2"],
+	"type": "multiple_choice",
+	"theme": "Racines carrées > Manipuler > Egalité",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-261",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "2|3|5|6|7"
+					},
+					{
+						"name": "c",
+						"expression": "1..1;±"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a*a*b}})"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{a}}sqrt({{b}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Ces deux expressions sont-elles égales ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 20,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 20,
+						"valeurs": [
+							"sqrt(112)",
+							"sqrt(12)",
+							"sqrt(125)",
+							"sqrt(150)",
+							"sqrt(175)",
+							"sqrt(18)",
+							"sqrt(20)",
+							"sqrt(24)",
+							"sqrt(27)",
+							"sqrt(28)",
+							"sqrt(32)",
+							"sqrt(45)",
+							"sqrt(48)",
+							"sqrt(50)",
+							"sqrt(54)",
+							"sqrt(63)",
+							"sqrt(75)",
+							"sqrt(8)",
+							"sqrt(80)",
+							"sqrt(96)"
+						],
+						"nombres_contenus": {
+							"min": 8,
+							"max": 175,
+							"nb_distinctes": 20,
+							"valeurs": [
+								8, 12, 18, 20, 24, 27, 28, 32, 45, 48, 50, 54, 63, 75, 80, 96, 112, 125, 150, 175
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 20,
+						"valeurs": [
+							"2sqrt(2)",
+							"2sqrt(3)",
+							"2sqrt(5)",
+							"2sqrt(6)",
+							"2sqrt(7)",
+							"3sqrt(2)",
+							"3sqrt(3)",
+							"3sqrt(5)",
+							"3sqrt(6)",
+							"3sqrt(7)",
+							"4sqrt(2)",
+							"4sqrt(3)",
+							"4sqrt(5)",
+							"4sqrt(6)",
+							"4sqrt(7)",
+							"5sqrt(2)",
+							"5sqrt(3)",
+							"5sqrt(5)",
+							"5sqrt(6)",
+							"5sqrt(7)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 7,
+							"nb_distinctes": 6,
+							"valeurs": [2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 175,
+				"nb_distinctes": 26,
+				"valeurs": [
+					2, 3, 4, 5, 6, 7, 8, 12, 18, 20, 24, 27, 28, 32, 45, 48, 50, 54, 63, 75, 80, 96, 112, 125,
+					150, 175
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 175,
+				"nb_distinctes": 26,
+				"valeurs": [
+					2, 3, 4, 5, 6, 7, 8, 12, 18, 20, 24, 27, 28, 32, 45, 48, 50, 54, 63, 75, 80, 96, 112, 125,
+					150, 175
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (175)",
+					"graine": 73,
+					"enonce": "Ces deux expressions sont-elles égales ?\n\n$$\\sqrt{175}$$\n\n$$5 \\sqrt{7}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "5",
+						"b": "7",
+						"c": "-1",
+						"expression1": "sqrt(175)",
+						"expression2": "5sqrt(7)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Ces deux expressions sont-elles égales ?\n\n$$\\sqrt{20}$$\n\n$$2 \\sqrt{5}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"expression1": "sqrt(20)",
+						"expression2": "2sqrt(5)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Ces deux expressions sont-elles égales ?\n\n$$\\sqrt{27}$$\n\n$$3 \\sqrt{3}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "1",
+						"expression1": "sqrt(27)",
+						"expression2": "3sqrt(3)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Ces deux expressions sont-elles égales ?\n\n$$\\sqrt{75}$$\n\n$$5 \\sqrt{3}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "5",
+						"b": "3",
+						"c": "1",
+						"expression1": "sqrt(75)",
+						"expression2": "5sqrt(3)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Ces deux expressions sont-elles égales ?\n\n$$\\sqrt{24}$$\n\n$$2 \\sqrt{6}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"c": "-1",
+						"expression1": "sqrt(24)",
+						"expression2": "2sqrt(6)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "2|3|5|6|7"
+					},
+					{
+						"name": "c",
+						"expression": "1..1;±"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a*a*b}})"
+					},
+					{
+						"name": "expression2",
+						"expression": "{{a}}sqrt({{eval:b+(c)}})"
+					}
+				],
+				"conditions": ["b+(c) != 1", "b+(c) != 4", "b+(c) != 8"],
+				"enonce_brut": "Ces deux expressions sont-elles égales ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 20,
+						"valeurs": [
+							"sqrt(112)",
+							"sqrt(12)",
+							"sqrt(125)",
+							"sqrt(150)",
+							"sqrt(175)",
+							"sqrt(18)",
+							"sqrt(20)",
+							"sqrt(24)",
+							"sqrt(27)",
+							"sqrt(28)",
+							"sqrt(32)",
+							"sqrt(45)",
+							"sqrt(48)",
+							"sqrt(50)",
+							"sqrt(54)",
+							"sqrt(63)",
+							"sqrt(75)",
+							"sqrt(8)",
+							"sqrt(80)",
+							"sqrt(96)"
+						],
+						"nombres_contenus": {
+							"min": 8,
+							"max": 175,
+							"nb_distinctes": 20,
+							"valeurs": [
+								8, 12, 18, 20, 24, 27, 28, 32, 45, 48, 50, 54, 63, 75, 80, 96, 112, 125, 150, 175
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 20,
+						"valeurs": [
+							"2sqrt(2)",
+							"2sqrt(3)",
+							"2sqrt(5)",
+							"2sqrt(6)",
+							"2sqrt(7)",
+							"3sqrt(2)",
+							"3sqrt(3)",
+							"3sqrt(5)",
+							"3sqrt(6)",
+							"3sqrt(7)",
+							"4sqrt(2)",
+							"4sqrt(3)",
+							"4sqrt(5)",
+							"4sqrt(6)",
+							"4sqrt(7)",
+							"5sqrt(2)",
+							"5sqrt(3)",
+							"5sqrt(5)",
+							"5sqrt(6)",
+							"5sqrt(7)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 7,
+							"nb_distinctes": 6,
+							"valeurs": [2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 175,
+				"nb_distinctes": 26,
+				"valeurs": [
+					2, 3, 4, 5, 6, 7, 8, 12, 18, 20, 24, 27, 28, 32, 45, 48, 50, 54, 63, 75, 80, 96, 112, 125,
+					150, 175
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 175,
+				"nb_distinctes": 26,
+				"valeurs": [
+					2, 3, 4, 5, 6, 7, 8, 12, 18, 20, 24, 27, 28, 32, 45, 48, 50, 54, 63, 75, 80, 96, 112, 125,
+					150, 175
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (175)",
+					"graine": 62,
+					"enonce": "Ces deux expressions sont-elles égales ?\n\n$$\\sqrt{175}$$\n\n$$5 \\sqrt{6}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "5",
+						"b": "7",
+						"c": "-1",
+						"expression1": "sqrt(175)",
+						"expression2": "5sqrt(6)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Ces deux expressions sont-elles égales ?\n\n$$\\sqrt{20}$$\n\n$$2 \\sqrt{6}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"expression1": "sqrt(20)",
+						"expression2": "2sqrt(6)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Ces deux expressions sont-elles égales ?\n\n$$\\sqrt{150}$$\n\n$$5 \\sqrt{5}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "5",
+						"b": "6",
+						"c": "-1",
+						"expression1": "sqrt(150)",
+						"expression2": "5sqrt(5)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Ces deux expressions sont-elles égales ?\n\n$$\\sqrt{8}$$\n\n$$2 \\sqrt{3}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "1",
+						"expression1": "sqrt(8)",
+						"expression2": "2sqrt(3)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Ces deux expressions sont-elles égales ?\n\n$$\\sqrt{27}$$\n\n$$3 \\sqrt{2}$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "-1",
+						"expression1": "sqrt(27)",
+						"expression2": "3sqrt(2)"
+					}
+				}
+			]
+		}
+	]
+}

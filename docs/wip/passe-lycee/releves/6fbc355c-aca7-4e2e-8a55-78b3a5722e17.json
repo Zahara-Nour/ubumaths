@@ -1,0 +1,735 @@
+{
+	"template_id": "6fbc355c-aca7-4e2e-8a55-78b3a5722e17",
+	"titre": "Espérance à partir d'un énoncé",
+	"sous_titre": "Déterminer la loi d'une variable aléatoire (urne, dé, cartes) puis calculer son espérance",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Variables aléatoires > Espérance",
+	"mis_a_jour": "2026-10-02T21:39:27.571722+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-356",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "2..6"
+					},
+					{
+						"name": "v",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "gr",
+						"expression": "5..10"
+					},
+					{
+						"name": "gv",
+						"expression": "2..4"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:r+v+b}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une urne contient ${{r}}$ boules rouges, ${{v}}$ boules vertes et ${{b}}$ boules bleues, indiscernables au toucher. On tire une boule au hasard. Une boule rouge rapporte ${{gr}}$ points, une boule verte rapporte ${{gv}}$ points et une boule bleue ne rapporte rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+				"reponses_brutes": ["{{eval:(r*gr+v*gv)/N}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 290,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "gr",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "gv",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.07666666666666666,
+						"nb_distinctes": 154,
+						"exemples": [
+							"2",
+							"\\dfrac{39}{11}",
+							"\\dfrac{15}{4}",
+							"\\dfrac{27}{8}",
+							"\\dfrac{17}{7}",
+							"\\dfrac{13}{5}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{62}{15}",
+							"\\dfrac{19}{6}",
+							"\\dfrac{11}{3}",
+							"\\dfrac{9}{7}",
+							"\\dfrac{19}{7}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 72,
+							"nb_distinctes": 60,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 72,
+				"nb_distinctes": 60,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 72,
+				"nb_distinctes": 60,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 277,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+				"denominateur_min": 2,
+				"denominateur_max": 19,
+				"numerateur_min": 5,
+				"numerateur_max": 72,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 57,
+					"max": 57
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (72)",
+					"graine": 127,
+					"enonce": "Une urne contient $6$ boules rouges, $6$ boules vertes et $5$ boules bleues, indiscernables au toucher. On tire une boule au hasard. Une boule rouge rapporte $9$ points, une boule verte rapporte $3$ points et une boule bleue ne rapporte rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{72}{17}"],
+					"variables": {
+						"r": "6",
+						"v": "6",
+						"b": "5",
+						"gr": "9",
+						"gv": "3",
+						"N": "17"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Une urne contient $2$ boules rouges, $4$ boules vertes et $8$ boules bleues, indiscernables au toucher. On tire une boule au hasard. Une boule rouge rapporte $10$ points, une boule verte rapporte $2$ points et une boule bleue ne rapporte rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"r": "2",
+						"v": "4",
+						"b": "8",
+						"gr": "10",
+						"gv": "2",
+						"N": "14"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une urne contient $3$ boules rouges, $3$ boules vertes et $5$ boules bleues, indiscernables au toucher. On tire une boule au hasard. Une boule rouge rapporte $10$ points, une boule verte rapporte $3$ points et une boule bleue ne rapporte rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{39}{11}"],
+					"variables": {
+						"r": "3",
+						"v": "3",
+						"b": "5",
+						"gr": "10",
+						"gv": "3",
+						"N": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une urne contient $2$ boules rouges, $4$ boules vertes et $2$ boules bleues, indiscernables au toucher. On tire une boule au hasard. Une boule rouge rapporte $9$ points, une boule verte rapporte $3$ points et une boule bleue ne rapporte rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{15}{4}"],
+					"variables": {
+						"r": "2",
+						"v": "4",
+						"b": "2",
+						"gr": "9",
+						"gv": "3",
+						"N": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une urne contient $3$ boules rouges, $3$ boules vertes et $2$ boules bleues, indiscernables au toucher. On tire une boule au hasard. Une boule rouge rapporte $6$ points, une boule verte rapporte $3$ points et une boule bleue ne rapporte rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{27}{8}"],
+					"variables": {
+						"r": "3",
+						"v": "3",
+						"b": "2",
+						"gr": "6",
+						"gv": "3",
+						"N": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3..15"
+					},
+					{
+						"name": "b",
+						"expression": "1..6"
+					}
+				],
+				"conditions": ["b < a"],
+				"enonce_brut": "On lance un dé cubique équilibré dont les faces sont numérotées de $1$ à $6$. On marque ${{a}}$ points si on obtient $6$, ${{b}}$ {{if:b == 1|point|points}} si on obtient $4$ ou $5$, et aucun point sinon. On note $X$ le nombre de points marqués.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+				"reponses_brutes": ["{{eval:(a+2*b)/6}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 68,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.17666666666666667,
+						"nb_distinctes": 23,
+						"valeurs": [
+							"1",
+							"2",
+							"3",
+							"4",
+							"\\dfrac{10}{3}",
+							"\\dfrac{11}{3}",
+							"\\dfrac{11}{6}",
+							"\\dfrac{13}{3}",
+							"\\dfrac{13}{6}",
+							"\\dfrac{17}{6}",
+							"\\dfrac{19}{6}",
+							"\\dfrac{23}{6}",
+							"\\dfrac{25}{6}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{4}{3}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{5}{3}",
+							"\\dfrac{5}{6}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{7}{3}",
+							"\\dfrac{7}{6}",
+							"\\dfrac{8}{3}",
+							"\\dfrac{9}{2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 25,
+							"nb_distinctes": 16,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 17, 19, 23, 25],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 15,
+				"nb_distinctes": 15,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 25,
+				"nb_distinctes": 16,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 17, 19, 23, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 25,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 23, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 247,
+				"denominateurs": [2, 3, 6],
+				"denominateur_min": 2,
+				"denominateur_max": 6,
+				"numerateur_min": 3,
+				"numerateur_max": 25,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 48,
+					"max": 48
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (25)",
+					"graine": 79,
+					"enonce": "On lance un dé cubique équilibré dont les faces sont numérotées de $1$ à $6$. On marque $15$ points si on obtient $6$, $5$ points si on obtient $4$ ou $5$, et aucun point sinon. On note $X$ le nombre de points marqués.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{25}{6}"],
+					"variables": {
+						"a": "15",
+						"b": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "On lance un dé cubique équilibré dont les faces sont numérotées de $1$ à $6$. On marque $15$ points si on obtient $6$, $6$ points si on obtient $4$ ou $5$, et aucun point sinon. On note $X$ le nombre de points marqués.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{9}{2}"],
+					"variables": {
+						"a": "15",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On lance un dé cubique équilibré dont les faces sont numérotées de $1$ à $6$. On marque $7$ points si on obtient $6$, $2$ points si on obtient $4$ ou $5$, et aucun point sinon. On note $X$ le nombre de points marqués.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{11}{6}"],
+					"variables": {
+						"a": "7",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On lance un dé cubique équilibré dont les faces sont numérotées de $1$ à $6$. On marque $9$ points si on obtient $6$, $3$ points si on obtient $4$ ou $5$, et aucun point sinon. On note $X$ le nombre de points marqués.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{5}{2}"],
+					"variables": {
+						"a": "9",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On lance un dé cubique équilibré dont les faces sont numérotées de $1$ à $6$. On marque $13$ points si on obtient $6$, $2$ points si on obtient $4$ ou $5$, et aucun point sinon. On note $X$ le nombre de points marqués.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{17}{6}"],
+					"variables": {
+						"a": "13",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "N",
+						"expression": "32|52"
+					},
+					{
+						"name": "a",
+						"expression": "4..20"
+					},
+					{
+						"name": "b",
+						"expression": "1..6"
+					}
+				],
+				"conditions": ["b < a"],
+				"enonce_brut": "On tire une carte au hasard dans un jeu de ${{N}}$ cartes, qui compte $4$ as, $12$ figures (rois, dames et valets) et ${{eval:N-16}}$ autres cartes. Un as rapporte ${{a}}$ points, une figure rapporte ${{b}}$ {{if:b == 1|point|points}} et les autres cartes ne rapportent rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E(X)=?$",
+				"reponses_brutes": ["{{eval:(4*a+12*b)/N}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 140,
+			"variables": [
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 32,
+						"max": 52,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [32, 52]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.12666666666666668,
+						"nb_distinctes": 57,
+						"exemples": [
+							"\\dfrac{15}{4}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{7}{4}",
+							"\\dfrac{5}{4}",
+							"\\dfrac{19}{13}",
+							"\\dfrac{21}{8}",
+							"\\dfrac{35}{8}",
+							"\\dfrac{24}{13}",
+							"\\dfrac{21}{13}",
+							"\\dfrac{30}{13}",
+							"2",
+							"\\dfrac{31}{8}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 38,
+							"nb_distinctes": 34,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 52,
+				"nb_distinctes": 23,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 32, 36, 52
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 38,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 52,
+				"nb_distinctes": 38,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 262,
+				"denominateurs": [2, 4, 8, 13],
+				"denominateur_min": 2,
+				"denominateur_max": 13,
+				"numerateur_min": 3,
+				"numerateur_max": 38,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 58,
+					"max": 58
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (52)",
+					"graine": 5,
+					"enonce": "On tire une carte au hasard dans un jeu de $52$ cartes, qui compte $4$ as, $12$ figures (rois, dames et valets) et $36$ autres cartes. Un as rapporte $7$ points, une figure rapporte $4$ points et les autres cartes ne rapportent rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{19}{13}"],
+					"variables": {
+						"N": "52",
+						"a": "7",
+						"b": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 3,
+					"enonce": "On tire une carte au hasard dans un jeu de $32$ cartes, qui compte $4$ as, $12$ figures (rois, dames et valets) et $16$ autres cartes. Un as rapporte $11$ points, une figure rapporte $1$ point et les autres cartes ne rapportent rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{7}{4}"],
+					"variables": {
+						"N": "32",
+						"a": "11",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On tire une carte au hasard dans un jeu de $32$ cartes, qui compte $4$ as, $12$ figures (rois, dames et valets) et $16$ autres cartes. Un as rapporte $12$ points, une figure rapporte $6$ points et les autres cartes ne rapportent rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{15}{4}"],
+					"variables": {
+						"N": "32",
+						"a": "12",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On tire une carte au hasard dans un jeu de $32$ cartes, qui compte $4$ as, $12$ figures (rois, dames et valets) et $16$ autres cartes. Un as rapporte $8$ points, une figure rapporte $4$ points et les autres cartes ne rapportent rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{5}{2}"],
+					"variables": {
+						"N": "32",
+						"a": "8",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On tire une carte au hasard dans un jeu de $32$ cartes, qui compte $4$ as, $12$ figures (rois, dames et valets) et $16$ autres cartes. Un as rapporte $7$ points, une figure rapporte $1$ point et les autres cartes ne rapportent rien. On note $X$ le nombre de points obtenus.\n\nCalcule l'espérance de $X$. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{5}{4}"],
+					"variables": {
+						"N": "32",
+						"a": "7",
+						"b": "1"
+					}
+				}
+			]
+		}
+	]
+}

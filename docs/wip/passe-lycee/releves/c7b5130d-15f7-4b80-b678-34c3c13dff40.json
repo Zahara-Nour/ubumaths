@@ -1,0 +1,961 @@
+{
+	"template_id": "c7b5130d-15f7-4b80-b678-34c3c13dff40",
+	"titre": "Sens de variation d'une fonction exponentielle de paramètre k",
+	"sous_titre": "Le signe de C × k donne le sens de variation ; C·eᵏ sans x est constante",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonction exponentielle > Variations",
+	"mis_a_jour": "2026-10-03T14:03:47.56839+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-292",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "constante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 45,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 9 \\exponentialE^{4 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"x": "x",
+						"c": "9",
+						"k": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 \\exponentialE^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"x": "x",
+						"c": "2",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 5 \\exponentialE^{5 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"x": "x",
+						"c": "5",
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 3 \\exponentialE^{3 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"x": "x",
+						"c": "3",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 5 \\exponentialE^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"x": "x",
+						"c": "5",
+						"k": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "k",
+						"expression": "-5..-1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "constante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 45,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-5, -4, -3, -2, -1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 12,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 12,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 9 \\exponentialE^{-2 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"x": "x",
+						"c": "9",
+						"k": "-2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 5 \\exponentialE^{-5 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"x": "x",
+						"c": "5",
+						"k": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 5 \\exponentialE^{-x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"x": "x",
+						"c": "5",
+						"k": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 3 \\exponentialE^{-3 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"x": "x",
+						"c": "3",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 \\exponentialE^{-5 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"x": "x",
+						"c": "2",
+						"k": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "c",
+						"expression": "-9..-1"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "constante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 45,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 5,
+				"nb_distinctes": 12,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 5,
+				"nb_distinctes": 12,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -5 \\exponentialE^{5 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"x": "x",
+						"c": "-5",
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -9 \\exponentialE^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"x": "x",
+						"c": "-9",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -7 \\exponentialE^{3 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"x": "x",
+						"c": "-7",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -5 \\exponentialE^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"x": "x",
+						"c": "-5",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -8 \\exponentialE^x$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"x": "x",
+						"c": "-8",
+						"k": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "c",
+						"expression": "-9..-1"
+					},
+					{
+						"name": "k",
+						"expression": "-5..-1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{eval:k*x}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "constante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 45,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-5, -4, -3, -2, -1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": -2,
+				"nb_distinctes": 8,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": -2,
+				"nb_distinctes": 8,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-2)",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -8 \\exponentialE^{-2 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"x": "x",
+						"c": "-8",
+						"k": "-2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -9 \\exponentialE^{-5 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"x": "x",
+						"c": "-9",
+						"k": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -5 \\exponentialE^{-x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"x": "x",
+						"c": "-5",
+						"k": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -7 \\exponentialE^{-3 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"x": "x",
+						"c": "-7",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -5 \\exponentialE^{-5 x}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"x": "x",
+						"c": "-5",
+						"k": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "k",
+						"expression": "2..5;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{c}}e^{ {{k}} }$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "constante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 128,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["constante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 24,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 9 \\exponentialE^{-3}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["C. constante"],
+					"variables": {
+						"c": "9",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -9 \\exponentialE^2$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["C. constante"],
+					"variables": {
+						"c": "-9",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -4 \\exponentialE^{-3}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["C. constante"],
+					"variables": {
+						"c": "-4",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -9 \\exponentialE^{-2}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["C. constante"],
+					"variables": {
+						"c": "-9",
+						"k": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -4 \\exponentialE^{-4}$.\n\nQuel est le sens de variation de $f$ sur $\\mathbb{R}$ ?\n\n- A. croissante\n- B. décroissante\n- C. constante",
+					"reponse": ["C. constante"],
+					"variables": {
+						"c": "-4",
+						"k": "-4"
+					}
+				}
+			]
+		}
+	]
+}

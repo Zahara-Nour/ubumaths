@@ -1,0 +1,1191 @@
+{
+	"template_id": "518f7f0b-389b-4cf2-b67c-5591ca00afb9",
+	"titre": "Droite perpendiculaire passant par un point",
+	"sous_titre": "Déterminer une équation de la perpendiculaire à une droite passant par un point : un vecteur directeur de la droite est normal à la perpendiculaire",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Géométrie repérée > Vecteur normal et équation de droite",
+	"mis_a_jour": "2026-10-03T14:03:47.947363+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-330",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "-6..6"
+					},
+					{
+						"name": "x0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "cp",
+						"expression": "eval:b*x0-a*y0"
+					},
+					{
+						"name": "mb",
+						"expression": "eval:-b"
+					}
+				],
+				"conditions": ["a*x0+b*y0+c != 0", "gcd(abs(a),abs(b)) == 1"],
+				"enonce_brut": "On considère la droite $d$ d'équation ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$ et le point $A({{eval:x0}}\\,;\\,{{eval:y0}})$.\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$?$",
+				"reponses_brutes": ["{{eval:mb}}x{{a;+}}y{{cp;+}}=0"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "cp",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -41,
+						"max": 40,
+						"negatif_possible": true,
+						"nb_distinctes": 64
+					}
+				},
+				{
+					"nom": "mb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 286,
+						"exemples": [
+							"-x-5y-5=0",
+							"3x-2y-10=0",
+							"x-5y-3=0",
+							"3x-2y+9=0",
+							"x+3y-6=0",
+							"-2x-5y-25=0",
+							"3x-y-12=0",
+							"3x+4y+15=0",
+							"-5x-3y+11=0",
+							"-2x+5y+5=0",
+							"-2x+y+8=0",
+							"-x-5y-29=0"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 41,
+							"nb_distinctes": 41,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 41,
+				"nb_distinctes": 41,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 41,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["equation"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "229/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (41)",
+					"graine": 207,
+					"enonce": "On considère la droite $d$ d'équation $5 x + 4 y + 3 = 0$ et le point $A(-4\\,;\\,5)$.\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["-4x+5y-41=0"],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"c": "3",
+						"x0": "-4",
+						"y0": "5",
+						"cp": "-41",
+						"mb": "-4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 6,
+					"enonce": "On considère la droite $d$ d'équation $-5 x + 2 y - 4 = 0$ et le point $A(0\\,;\\,-5)$.\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["-2x-5y-25=0"],
+					"variables": {
+						"a": "-5",
+						"b": "2",
+						"c": "-4",
+						"x0": "0",
+						"y0": "-5",
+						"cp": "-25",
+						"mb": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère la droite $d$ d'équation $-5 x + y + 6 = 0$ et le point $A(5\\,;\\,-2)$.\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["-x-5y-5=0"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"c": "6",
+						"x0": "5",
+						"y0": "-2",
+						"cp": "-5",
+						"mb": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la droite $d$ d'équation $-2 x - 3 y = 0$ et le point $A(4\\,;\\,1)$.\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["3x-2y-10=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "0",
+						"x0": "4",
+						"y0": "1",
+						"cp": "-10",
+						"mb": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la droite $d$ d'équation $-5 x - y - 6 = 0$ et le point $A(3\\,;\\,0)$.\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["x-5y-3=0"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"c": "-6",
+						"x0": "3",
+						"y0": "0",
+						"cp": "-3",
+						"mb": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "im",
+						"expression": "eval:-1/m"
+					},
+					{
+						"name": "p",
+						"expression": "-5..5"
+					},
+					{
+						"name": "j",
+						"expression": "-2..2"
+					},
+					{
+						"name": "x0",
+						"expression": "eval:m*j"
+					},
+					{
+						"name": "y0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "q",
+						"expression": "eval:y0+j"
+					},
+					{
+						"name": "cp",
+						"expression": "eval:-(x0+m*y0)"
+					},
+					{
+						"name": "mcp",
+						"expression": "eval:x0+m*y0"
+					}
+				],
+				"conditions": ["abs(m) == 1 || q != 0", "y0 != m*x0+p"],
+				"enonce_brut": "On considère la droite $d$ d'équation $y={{if:m==1|x}}{{if:m==-1|-x}}{{if:m>1|{{eval:m}}x}}{{if:m< -1|{{eval:m}}x}}{{if:p>0|+{{eval:p}}}}{{if:p< 0|{{eval:p}}}}$ et le point $A({{eval:x0}}\\,;\\,{{eval:y0}})$.\n\nDonne l'équation réduite de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$?$",
+				"reponses_brutes": ["y={{eval:-1/m}}x{{q;+}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 287,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "im",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.27,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"-1",
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{1}{3}",
+							"-\\dfrac{1}{4}",
+							"1",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{1}{4}"
+						],
+						"nombres_contenus": {
+							"min": -1,
+							"max": 4,
+							"nb_distinctes": 5,
+							"valeurs": [-1, 1, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-8, -6, -4, -3, -2, -1, 0, 1, 2, 3, 4, 6, 8]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "cp",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -24,
+						"max": 24,
+						"negatif_possible": true,
+						"nb_distinctes": 30,
+						"valeurs": [
+							-24, -20, -18, -16, -12, -10, -9, -8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8,
+							9, 10, 12, 15, 16, 18, 20, 24
+						]
+					}
+				},
+				{
+					"nom": "mcp",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -24,
+						"max": 24,
+						"negatif_possible": true,
+						"nb_distinctes": 30,
+						"valeurs": [
+							-24, -20, -18, -16, -15, -12, -10, -9, -8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5,
+							6, 8, 9, 10, 12, 16, 18, 20, 24
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 85,
+						"exemples": [
+							"y=\\dfrac{1}{4}x+6",
+							"y=\\dfrac{1}{2}x+3",
+							"y=-x",
+							"y=\\dfrac{1}{2}x-4",
+							"y=-\\dfrac{1}{3}x-3",
+							"y=\\dfrac{1}{4}x-1",
+							"y=\\dfrac{1}{4}x+1",
+							"y=-\\dfrac{1}{2}x+2",
+							"y=-\\dfrac{1}{3}x+4",
+							"y=-\\dfrac{1}{4}x+2",
+							"y=-x+3",
+							"y=\\dfrac{1}{2}x-6"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 6,
+							"nb_distinctes": 6,
+							"valeurs": [1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -8,
+				"max": 8,
+				"nb_distinctes": 14,
+				"valeurs": [-8, -6, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -8,
+				"max": 8,
+				"nb_distinctes": 14,
+				"valeurs": [-8, -6, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 219,
+				"denominateurs": [2, 3, 4],
+				"denominateur_min": 2,
+				"denominateur_max": 4,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["equation"],
+				"forme_exigee": ["reduite"],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "147/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 10,
+					"enonce": "On considère la droite $d$ d'équation $y = 4 x + 2$ et le point $A(8\\,;\\,0)$.\n\nDonne l'équation réduite de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["y=-\\dfrac{1}{4}x+2"],
+					"variables": {
+						"m": "4",
+						"im": "-\\dfrac{1}{4}",
+						"p": "2",
+						"j": "2",
+						"x0": "8",
+						"y0": "0",
+						"q": "2",
+						"cp": "-8",
+						"mcp": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (-8)",
+					"graine": 1,
+					"enonce": "On considère la droite $d$ d'équation $y = -4 x$ et le point $A(-8\\,;\\,4)$.\n\nDonne l'équation réduite de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["y=\\dfrac{1}{4}x+6"],
+					"variables": {
+						"m": "-4",
+						"im": "\\dfrac{1}{4}",
+						"p": "0",
+						"j": "2",
+						"x0": "-8",
+						"y0": "4",
+						"q": "6",
+						"cp": "24",
+						"mcp": "-24"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la droite $d$ d'équation $y = -2 x - 2$ et le point $A(0\\,;\\,3)$.\n\nDonne l'équation réduite de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["y=\\dfrac{1}{2}x+3"],
+					"variables": {
+						"m": "-2",
+						"im": "\\dfrac{1}{2}",
+						"p": "-2",
+						"j": "0",
+						"x0": "0",
+						"y0": "3",
+						"q": "3",
+						"cp": "6",
+						"mcp": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la droite $d$ d'équation $y = x - 3$ et le point $A(-2\\,;\\,2)$.\n\nDonne l'équation réduite de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["y=-x"],
+					"variables": {
+						"m": "1",
+						"im": "-1",
+						"p": "-3",
+						"j": "-2",
+						"x0": "-2",
+						"y0": "2",
+						"q": "0",
+						"cp": "0",
+						"mcp": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère la droite $d$ d'équation $y = -2 x - 3$ et le point $A(4\\,;\\,-2)$.\n\nDonne l'équation réduite de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["y=\\dfrac{1}{2}x-4"],
+					"variables": {
+						"m": "-2",
+						"im": "\\dfrac{1}{2}",
+						"p": "-3",
+						"j": "-2",
+						"x0": "4",
+						"y0": "-2",
+						"q": "-4",
+						"cp": "-8",
+						"mcp": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "xB",
+						"expression": "-3..3"
+					},
+					{
+						"name": "yB",
+						"expression": "-3..3"
+					},
+					{
+						"name": "c",
+						"expression": "eval:-(a*xB+b*yB)"
+					},
+					{
+						"name": "x0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "y0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "cp",
+						"expression": "eval:b*x0-a*y0"
+					},
+					{
+						"name": "mb",
+						"expression": "eval:-b"
+					},
+					{
+						"name": "lam",
+						"expression": "eval:min((5*sign(-b)-xB)/(-b),(5*sign(a)-yB)/a)-0.6/sqrt(a^2+b^2)"
+					},
+					{
+						"name": "lam2",
+						"expression": "eval:max((-5*sign(-b)-xB)/(-b),(-5*sign(a)-yB)/a)+0.6/sqrt(a^2+b^2)"
+					},
+					{
+						"name": "P1x",
+						"expression": "eval:xB-lam*b+0.45*a/sqrt(a^2+b^2)"
+					},
+					{
+						"name": "P1y",
+						"expression": "eval:yB+lam*a+0.45*b/sqrt(a^2+b^2)"
+					},
+					{
+						"name": "P2x",
+						"expression": "eval:xB-lam2*b+0.45*a/sqrt(a^2+b^2)"
+					},
+					{
+						"name": "P2y",
+						"expression": "eval:yB+lam2*a+0.45*b/sqrt(a^2+b^2)"
+					},
+					{
+						"name": "e1",
+						"expression": "eval:min(abs(P1x),abs(P1y))"
+					},
+					{
+						"name": "e2",
+						"expression": "eval:min(abs(P2x),abs(P2y))"
+					}
+				],
+				"conditions": [
+					"a*x0+b*y0+c != 0",
+					"gcd(abs(a),abs(b)) == 1",
+					"abs(xB-b) <= 5",
+					"abs(yB+a) <= 5"
+				],
+				"enonce_brut": "La droite $d$ d'équation ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$ et le point $A({{eval:x0}}\\,;\\,{{eval:y0}})$ sont représentés ci-dessous.\n\n```figure\nfenetre: -6 ; 6 ; -6 ; 6\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; la droite d et le point A.\n---\nB = point({{xB}}, {{yB}}, visible=faux)\nB2 = point({{eval:xB-b}}, {{eval:yB+a}}, visible=faux)\nd = droite(B, B2)\nA = point({{x0}}, {{y0}}, etiquette=\"haut-droite\")\n{{if:e1>=e2|texte({{eval:P1x}}, {{eval:P1y}}, \"d\")|texte({{eval:P2x}}, {{eval:P2y}}, \"d\")}}\n```\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$?$",
+				"reponses_brutes": ["{{eval:mb}}x{{a;+}}y{{cp;+}}=0"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "xB",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "yB",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -21,
+						"max": 21,
+						"negatif_possible": true,
+						"nb_distinctes": 36
+					}
+				},
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "cp",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -29,
+						"max": 32,
+						"negatif_possible": true,
+						"nb_distinctes": 51
+					}
+				},
+				{
+					"nom": "mb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "lam",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 15,
+						"min": 0.731671842700025,
+						"max": 6.57573593128807,
+						"negatif_possible": false,
+						"nb_distinctes": 58
+					}
+				},
+				{
+					"nom": "lam2",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 15,
+						"min": -7.57573593128807,
+						"max": -0.28233031891709,
+						"negatif_possible": true,
+						"nb_distinctes": 55
+					}
+				},
+				{
+					"nom": "P1x",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 16,
+						"min": -5.19498010508591,
+						"max": 5.13416407864999,
+						"negatif_possible": true,
+						"nb_distinctes": 207
+					}
+				},
+				{
+					"nom": "P1y",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 16,
+						"min": -5.23717082451263,
+						"max": 5.23717082451263,
+						"negatif_possible": true,
+						"nb_distinctes": 191
+					}
+				},
+				{
+					"nom": "P2x",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 16,
+						"min": -5.04160251471689,
+						"max": 5.23717082451263,
+						"negatif_possible": true,
+						"nb_distinctes": 201
+					}
+				},
+				{
+					"nom": "P2y",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 17,
+						"min": -5.13416407864999,
+						"max": 5.23717082451263,
+						"negatif_possible": true,
+						"nb_distinctes": 182
+					}
+				},
+				{
+					"nom": "e1",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 16,
+						"min": 0.0410427500435993,
+						"max": 4.32917960675007,
+						"negatif_possible": false,
+						"nb_distinctes": 217
+					}
+				},
+				{
+					"nom": "e2",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 17,
+						"min": 0.00501989491409531,
+						"max": 4.35935108328917,
+						"negatif_possible": false,
+						"nb_distinctes": 215
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 274,
+						"exemples": [
+							"-x-5y+3=0",
+							"3x-2y-3=0",
+							"x-5y=0",
+							"-x+4y-8=0",
+							"x-5y+12=0",
+							"-2x-5y-28=0",
+							"-x-3y+3=0",
+							"-x-3y-1=0",
+							"-x-4y+7=0",
+							"-2x+5y+15=0",
+							"-2x+y+4=0",
+							"-x+2y+8=0"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 32,
+							"nb_distinctes": 32,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 21,
+				"nb_distinctes": 24,
+				"valeurs": [
+					-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 32,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 32,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["equation"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "235/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (32)",
+					"graine": 299,
+					"enonce": "La droite $d$ d'équation $-5 x - 4 y + 4 = 0$ et le point $A(-3\\,;\\,4)$ sont représentés ci-dessous.\n\n[figure]\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["4x-5y+32=0"],
+					"variables": {
+						"a": "-5",
+						"b": "-4",
+						"xB": "0",
+						"yB": "1",
+						"c": "4",
+						"x0": "-3",
+						"y0": "4",
+						"cp": "32",
+						"mb": "4",
+						"lam": "1.10629574286684",
+						"lam2": "-0.706295742866836",
+						"P1x": "4.073792007218",
+						"P1y": "-4.81259148573369",
+						"P2x": "-3.17657393571671",
+						"P2y": "4.25036594293469",
+						"e1": "4.073792007218",
+						"e2": "3.17657393571671"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 51,
+					"enonce": "La droite $d$ d'équation $-2 x + 5 y + 11 = 0$ et le point $A(4\\,;\\,1)$ sont représentés ci-dessous.\n\n[figure]\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["-5x-2y+22=0"],
+					"variables": {
+						"a": "-2",
+						"b": "5",
+						"xB": "3",
+						"yB": "-1",
+						"c": "11",
+						"x0": "4",
+						"y0": "1",
+						"cp": "22",
+						"mb": "-5",
+						"lam": "1.48858279709377",
+						"lam2": "-0.288582797093769",
+						"P1x": "-4.6100397898282",
+						"P1y": "-3.55935108328917",
+						"P2x": "4.2757881811095",
+						"P2y": "-0.00501989491409531",
+						"e1": "3.55935108328917",
+						"e2": "0.00501989491409531"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "La droite $d$ d'équation $-5 x + y + 12 = 0$ et le point $A(-2\\,;\\,1)$ sont représentés ci-dessous.\n\n[figure]\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["-x-5y+3=0"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"xB": "3",
+						"yB": "3",
+						"c": "12",
+						"x0": "-2",
+						"y0": "1",
+						"cp": "3",
+						"mb": "-1",
+						"lam": "1.48233031891709",
+						"lam2": "-0.28233031891709",
+						"P1x": "1.076408377022",
+						"P1y": "-4.32339933377327",
+						"P2x": "2.84106901485618",
+						"P2y": "4.49990385539763",
+						"e1": "1.076408377022",
+						"e2": "2.84106901485618"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La droite $d$ d'équation $-2 x - 3 y + 9 = 0$ et le point $A(1\\,;\\,0)$ sont représentés ci-dessous.\n\n[figure]\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["3x-2y-3=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"xB": "0",
+						"yB": "3",
+						"c": "9",
+						"x0": "1",
+						"y0": "0",
+						"cp": "-3",
+						"mb": "3",
+						"lam": "1.5002566077991",
+						"lam2": "-0.833589941132431",
+						"P1x": "4.25115473509595",
+						"P1y": "-0.37493584805023",
+						"P2x": "-2.75038491169865",
+						"P2y": "4.29275724981283",
+						"e1": "0.37493584805023",
+						"e2": "2.75038491169865"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La droite $d$ d'équation $-5 x - y - 13 = 0$ et le point $A(0\\,;\\,0)$ sont représentés ci-dessous.\n\n[figure]\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$[?]$",
+					"reponse": ["x-5y=0"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"xB": "-3",
+						"yB": "2",
+						"c": "-13",
+						"x0": "0",
+						"y0": "0",
+						"cp": "0",
+						"mb": "1",
+						"lam": "1.28233031891709",
+						"lam2": "-0.48233031891709",
+						"P1x": "-2.15893098514382",
+						"P1y": "-4.49990385539763",
+						"P2x": "-3.923591622978",
+						"P2y": "4.32339933377327",
+						"e1": "2.15893098514382",
+						"e2": "3.923591622978"
+					}
+				}
+			]
+		}
+	]
+}

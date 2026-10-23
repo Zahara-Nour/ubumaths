@@ -1,0 +1,165 @@
+{
+	"template_id": "d98aa53a-2a3f-4c2f-b702-9abbc5065e6a",
+	"titre": "Trouver le coefficient multiplicateur",
+	"sous_titre": "Diminution",
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Variations",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-366",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..100"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Donne le coefficient multiplicateur associé à une diminution de ${{a}}\\,\\%$.\n\nLe coefficient multiplicateur est $?$.",
+				"reponses_brutes": ["{{eval:1-a/100;d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 95,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 95
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0,
+						"max": 0.99,
+						"negatif_possible": false,
+						"nb_distinctes": 95
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 95,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0.99,
+				"nb_distinctes": 95,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 100,
+				"nb_distinctes": 190,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 37,
+					"enonce": "Donne le coefficient multiplicateur associé à une diminution de $100\\,\\%$.\n\nLe coefficient multiplicateur est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Donne le coefficient multiplicateur associé à une diminution de $1\\,\\%$.\n\nLe coefficient multiplicateur est $[?]$.",
+					"reponse": ["0.99"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Donne le coefficient multiplicateur associé à une diminution de $33\\,\\%$.\n\nLe coefficient multiplicateur est $[?]$.",
+					"reponse": ["0.67"],
+					"variables": {
+						"a": "33"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Donne le coefficient multiplicateur associé à une diminution de $4\\,\\%$.\n\nLe coefficient multiplicateur est $[?]$.",
+					"reponse": ["0.96"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Donne le coefficient multiplicateur associé à une diminution de $34\\,\\%$.\n\nLe coefficient multiplicateur est $[?]$.",
+					"reponse": ["0.66"],
+					"variables": {
+						"a": "34"
+					}
+				}
+			]
+		}
+	]
+}

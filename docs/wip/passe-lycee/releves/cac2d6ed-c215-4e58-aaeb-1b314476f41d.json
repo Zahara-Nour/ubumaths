@@ -1,0 +1,459 @@
+{
+	"template_id": "cac2d6ed-c215-4e58-aaeb-1b314476f41d",
+	"titre": "Optimum d'une fonction avec cos ou sin",
+	"sous_titre": "Abscisse du minimum de cx − 2 sin x, du maximum de 2 sin x − cx sur [0 ; π], valeur minimale de x − 2 sin x (pièges : cos et sin confondus, π − α, abscisse au lieu de la valeur)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions trigonométriques > Dérivées et variations",
+	"mis_a_jour": "2026-10-20T20:27:04.949215+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-459",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*a/\\pi"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)={{if:n==4||{{eval:2*cos(n*\\pi/12)}}}}x-2\\sin x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son **minimum** sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x=?$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\frac{\\pi}{3}", "\\frac{\\pi}{4}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\frac{\\pi}{3}", "\\frac{\\pi}{4}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [0, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 6,
+				"nb_distinctes": 3,
+				"valeurs": [3, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [0, 2, 3, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"racine": "196/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=\\sqrt{3}x-2\\sin x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son minimum sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x = [?]$",
+					"reponse": ["\\frac{\\pi}{6}"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=x-2\\sin x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son minimum sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x = [?]$",
+					"reponse": ["\\frac{\\pi}{3}"],
+					"variables": {
+						"a": "\\frac{\\pi}{3}",
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=\\sqrt{2}x-2\\sin x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son minimum sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x = [?]$",
+					"reponse": ["\\frac{\\pi}{4}"],
+					"variables": {
+						"a": "\\frac{\\pi}{4}",
+						"n": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*a/\\pi"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=2\\sin x-{{if:n==4||{{eval:2*cos(n*\\pi/12)}}}}x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son **maximum** sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x=?$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\frac{\\pi}{3}", "\\frac{\\pi}{4}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\frac{\\pi}{3}", "\\frac{\\pi}{4}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [0, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 6,
+				"nb_distinctes": 3,
+				"valeurs": [3, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [0, 2, 3, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"racine": "196/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=2\\sin x-\\sqrt{3}x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son maximum sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x = [?]$",
+					"reponse": ["\\frac{\\pi}{6}"],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=2\\sin x-x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son maximum sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x = [?]$",
+					"reponse": ["\\frac{\\pi}{3}"],
+					"variables": {
+						"a": "\\frac{\\pi}{3}",
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=2\\sin x-\\sqrt{2}x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son maximum sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x = [?]$",
+					"reponse": ["\\frac{\\pi}{4}"],
+					"variables": {
+						"a": "\\frac{\\pi}{4}",
+						"n": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=x-2\\sin x$.\n\nQuelle est la **valeur minimale** de $f$ sur $\\left[0\\,;\\pi\\right]$ ?\n\n$m=?$",
+				"reponses_brutes": ["\\frac{\\pi}{3}-\\sqrt{3}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{\\pi}{3}-\\sqrt{3}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 3,
+							"nb_distinctes": 1,
+							"valeurs": [3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [0, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [0, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=x-2\\sin x$.\n\nQuelle est la valeur minimale de $f$ sur $\\left[0\\,;\\pi\\right]$ ?\n\n$m = [?]$",
+					"reponse": ["\\frac{\\pi}{3}-\\sqrt{3}"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

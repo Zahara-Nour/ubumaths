@@ -1,0 +1,1075 @@
+{
+	"template_id": "0ab3faa5-a660-4841-9a5f-6563458d2489",
+	"titre": "Nier une proposition",
+	"sous_titre": "Choisir la négation d'une proposition quantifiée (« pour tout », « il existe ») ou d'une proposition avec « et », « ou »",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Logique > Logique et raisonnement > Quantificateurs et négation",
+	"mis_a_jour": "2026-10-03T14:03:49.387819+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-204",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-211",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "-5..5"
+					},
+					{
+						"name": "c",
+						"expression": "-9..9"
+					},
+					{
+						"name": "r",
+						"expression": "0..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est la négation de la proposition « pour tout réel $x$, $x^2{{b;+}}x{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$ » ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+					},
+					{
+						"content": "Pour tout réel $x$, $x^2{{b;+}}x{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+					},
+					{
+						"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$."
+					},
+					{
+						"content": "Il existe un réel $x$ tel que $x^2{{b;+}}x{{if:r=0|< }}{{if:r=1|\\leqslant}}{{if:r=2|>}}{{if:r=3|\\geqslant}}{{c}}$."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 252,
+						"exemples": [
+							"Il existe un réel $x$ tel que $x^2 - 5 x > 1$.",
+							"Il existe un réel $x$ tel que $x^2-2x\\geqslant-4$.",
+							"Il existe un réel $x$ tel que $x^2-5x\\leqslant-1$.",
+							"Il existe un réel $x$ tel que $x^2-2x\\leqslant-5$.",
+							"Il existe un réel $x$ tel que $x^2+3x\\geqslant-5$.",
+							"Il existe un réel $x$ tel que $x^2-5x\\leqslant3$.",
+							"Il existe un réel $x$ tel que $x^2-5x\\geqslant9$.",
+							"Il existe un réel $x$ tel que $x^2 + x \\geqslant -4$.",
+							"Il existe un réel $x$ tel que $x^2 + 4 x > -7$.",
+							"Il existe un réel $x$ tel que $x^2 + 5 x > 4$.",
+							"Il existe un réel $x$ tel que $x^2 \\geqslant 2$.",
+							"Il existe un réel $x$ tel que $x^2 - 5 x > 2$."
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 9,
+							"nb_distinctes": 10,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					">": "239/300",
+					"−": "105/300",
+					"puissance": "300/300",
+					"lettre dans les maths": "300/300",
+					"<": "226/300",
+					"+": "135/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Quelle est la négation de la proposition « pour tout réel $x$, $x^2 - 5 x < 9$ » ?\n\n- A. Il existe un réel $x$ tel que $x^2 - 5 x > 9$.\n- B. Il existe un réel $x$ tel que $x^2-5x\\geqslant9$.\n- C. Pour tout réel $x$, $x^2-5x\\geqslant9$.\n- D. Il existe un réel $x$ tel que $x^2 - 5 x < 9$.",
+					"reponse": ["B. Il existe un réel $x$ tel que $x^2-5x\\geqslant9$."],
+					"variables": {
+						"b": "-5",
+						"c": "9",
+						"r": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 14,
+					"enonce": "Quelle est la négation de la proposition « pour tout réel $x$, $x^2 - x \\geqslant 0$ » ?\n\n- A. Il existe un réel $x$ tel que $x^2 - x \\leqslant 0$.\n- B. Il existe un réel $x$ tel que $x^2 - x \\geqslant 0$.\n- C. Pour tout réel $x$, $x^2 - x < 0$.\n- D. Il existe un réel $x$ tel que $x^2 - x < 0$.",
+					"reponse": ["D. Il existe un réel $x$ tel que $x^2 - x < 0$."],
+					"variables": {
+						"b": "-1",
+						"c": "0",
+						"r": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quelle est la négation de la proposition « pour tout réel $x$, $x^2-5x\\leqslant1$ » ?\n\n- A. Il existe un réel $x$ tel que $x^2-5x\\leqslant1$.\n- B. Pour tout réel $x$, $x^2 - 5 x > 1$.\n- C. Il existe un réel $x$ tel que $x^2 - 5 x > 1$.\n- D. Il existe un réel $x$ tel que $x^2-5x\\geqslant1$.",
+					"reponse": ["C. Il existe un réel $x$ tel que $x^2 - 5 x > 1$."],
+					"variables": {
+						"b": "-5",
+						"c": "1",
+						"r": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la négation de la proposition « pour tout réel $x$, $x^2 - 2 x < -4$ » ?\n\n- A. Il existe un réel $x$ tel que $x^2 - 2 x < -4$.\n- B. Il existe un réel $x$ tel que $x^2-2x\\geqslant-4$.\n- C. Pour tout réel $x$, $x^2-2x\\geqslant-4$.\n- D. Il existe un réel $x$ tel que $x^2 - 2 x > -4$.",
+					"reponse": ["B. Il existe un réel $x$ tel que $x^2-2x\\geqslant-4$."],
+					"variables": {
+						"b": "-2",
+						"c": "-4",
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la négation de la proposition « pour tout réel $x$, $x^2 - 5 x > -1$ » ?\n\n- A. Il existe un réel $x$ tel que $x^2 - 5 x > -1$.\n- B. Il existe un réel $x$ tel que $x^2-5x\\leqslant-1$.\n- C. Pour tout réel $x$, $x^2-5x\\leqslant-1$.\n- D. Il existe un réel $x$ tel que $x^2 - 5 x < -1$.",
+					"reponse": ["B. Il existe un réel $x$ tel que $x^2-5x\\leqslant-1$."],
+					"variables": {
+						"b": "-5",
+						"c": "-1",
+						"r": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "-6..6"
+					},
+					{
+						"name": "p",
+						"expression": "-9..9"
+					},
+					{
+						"name": "c",
+						"expression": "-9..9"
+					},
+					{
+						"name": "r",
+						"expression": "0..3"
+					}
+				],
+				"conditions": ["m != 0", "p != c"],
+				"enonce_brut": "Quelle est la négation de la proposition « il existe un réel $x$ tel que ${{m}}x{{p;+}}{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$ » ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+					},
+					{
+						"content": "Il existe un réel $x$ tel que ${{m}}x{{p;+}}{{if:r=0|\\leqslant}}{{if:r=1|< }}{{if:r=2|\\geqslant}}{{if:r=3|>}}{{c}}$."
+					},
+					{
+						"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|>}}{{if:r=1|\\geqslant}}{{if:r=2|< }}{{if:r=3|\\leqslant}}{{c}}$."
+					},
+					{
+						"content": "Pour tout réel $x$, ${{m}}x{{p;+}}{{if:r=0|< }}{{if:r=1|\\leqslant}}{{if:r=2|>}}{{if:r=3|\\geqslant}}{{c}}$."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 295,
+						"exemples": [
+							"Pour tout réel $x$, $-6 x + 1 > 9$.",
+							"Pour tout réel $x$, $-2 x - 4 > 1$.",
+							"Pour tout réel $x$, $-6 x - 1 > -8$.",
+							"Pour tout réel $x$, $-2x-5\\leqslant-8$.",
+							"Pour tout réel $x$, $4x-5\\leqslant2$.",
+							"Pour tout réel $x$, $-6x+3\\geqslant-6$.",
+							"Pour tout réel $x$, $-6x+9\\geqslant4$.",
+							"Pour tout réel $x$, $2x-4\\geqslant4$.",
+							"Pour tout réel $x$, $5x-7\\geqslant6$.",
+							"Pour tout réel $x$, $5 x + 4 < 6$.",
+							"Pour tout réel $x$, $-x < 7$.",
+							"Pour tout réel $x$, $-6x+2\\leqslant8$."
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 9,
+							"nb_distinctes": 10,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					">": "223/300",
+					"+": "148/300",
+					"lettre dans les maths": "300/300",
+					"<": "226/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Quelle est la négation de la proposition « il existe un réel $x$ tel que $-6x+1\\leqslant9$ » ?\n\n- A. Pour tout réel $x$, $-6 x + 1 > 9$.\n- B. Pour tout réel $x$, $-6x+1\\leqslant9$.\n- C. Pour tout réel $x$, $-6x+1\\geqslant9$.\n- D. Il existe un réel $x$ tel que $-6 x + 1 > 9$.",
+					"reponse": ["A. Pour tout réel $x$, $-6 x + 1 > 9$."],
+					"variables": {
+						"m": "-6",
+						"p": "1",
+						"c": "9",
+						"r": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 54,
+					"enonce": "Quelle est la négation de la proposition « il existe un réel $x$ tel que $2x-3\\geqslant0$ » ?\n\n- A. Pour tout réel $x$, $2 x - 3 < 0$.\n- B. Pour tout réel $x$, $2x-3\\leqslant0$.\n- C. Il existe un réel $x$ tel que $2 x - 3 < 0$.\n- D. Pour tout réel $x$, $2x-3\\geqslant0$.",
+					"reponse": ["A. Pour tout réel $x$, $2 x - 3 < 0$."],
+					"variables": {
+						"m": "2",
+						"p": "-3",
+						"c": "0",
+						"r": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la négation de la proposition « il existe un réel $x$ tel que $-2x-4\\leqslant1$ » ?\n\n- A. Pour tout réel $x$, $-2x-4\\geqslant1$.\n- B. Pour tout réel $x$, $-2 x - 4 > 1$.\n- C. Il existe un réel $x$ tel que $-2 x - 4 > 1$.\n- D. Pour tout réel $x$, $-2x-4\\leqslant1$.",
+					"reponse": ["B. Pour tout réel $x$, $-2 x - 4 > 1$."],
+					"variables": {
+						"m": "-2",
+						"p": "-4",
+						"c": "1",
+						"r": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la négation de la proposition « il existe un réel $x$ tel que $-6x-1\\leqslant-8$ » ?\n\n- A. Pour tout réel $x$, $-6x-1\\leqslant-8$.\n- B. Pour tout réel $x$, $-6 x - 1 > -8$.\n- C. Pour tout réel $x$, $-6x-1\\geqslant-8$.\n- D. Il existe un réel $x$ tel que $-6 x - 1 > -8$.",
+					"reponse": ["B. Pour tout réel $x$, $-6 x - 1 > -8$."],
+					"variables": {
+						"m": "-6",
+						"p": "-1",
+						"c": "-8",
+						"r": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quelle est la négation de la proposition « il existe un réel $x$ tel que $-2 x - 5 > -8$ » ?\n\n- A. Pour tout réel $x$, $-2 x - 5 < -8$.\n- B. Il existe un réel $x$ tel que $-2x-5\\leqslant-8$.\n- C. Pour tout réel $x$, $-2x-5\\leqslant-8$.\n- D. Pour tout réel $x$, $-2 x - 5 > -8$.",
+					"reponse": ["C. Pour tout réel $x$, $-2x-5\\leqslant-8$."],
+					"variables": {
+						"m": "-2",
+						"p": "-5",
+						"c": "-8",
+						"r": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+d}}"
+					},
+					{
+						"name": "k",
+						"expression": "0..1"
+					},
+					{
+						"name": "s1",
+						"expression": "0..1"
+					},
+					{
+						"name": "s2",
+						"expression": "0..1"
+					},
+					{
+						"name": "r1",
+						"expression": "{{eval:s1+2*k}}"
+					},
+					{
+						"name": "r2",
+						"expression": "{{eval:s2+2-2*k}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $x$ un nombre réel. Quelle est la négation de la proposition « $x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|< }}{{if:r1=3|\\leqslant}}{{a}}$ {{if:k=1|ou|et}} $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|< }}{{if:r2=3|\\leqslant}}{{b}}$ » ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$x{{if:r1=0|\\leqslant}}{{if:r1=1|< }}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|< }}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$"
+					},
+					{
+						"content": "$x{{if:r1=0|\\leqslant}}{{if:r1=1|< }}{{if:r1=2|\\geqslant}}{{if:r1=3|>}}{{a}}$ {{if:k=1|ou|et}} $x{{if:r2=0|\\leqslant}}{{if:r2=1|< }}{{if:r2=2|\\geqslant}}{{if:r2=3|>}}{{b}}$"
+					},
+					{
+						"content": "$x{{if:r1=0|>}}{{if:r1=1|\\geqslant}}{{if:r1=2|< }}{{if:r1=3|\\leqslant}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|>}}{{if:r2=1|\\geqslant}}{{if:r2=2|< }}{{if:r2=3|\\leqslant}}{{b}}$"
+					},
+					{
+						"content": "$x{{if:r1=0|< }}{{if:r1=1|\\leqslant}}{{if:r1=2|>}}{{if:r1=3|\\geqslant}}{{a}}$ {{if:k=1|et|ou}} $x{{if:r2=0|< }}{{if:r2=1|\\leqslant}}{{if:r2=2|>}}{{if:r2=3|\\geqslant}}{{b}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 17,
+						"negatif_possible": true,
+						"nb_distinctes": 26,
+						"valeurs": [
+							-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+							16, 17
+						]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "s1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "s2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "r1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "r2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 270,
+						"exemples": [
+							"x > -9$ et $x\\leqslant-4",
+							"x > -3$ et $x < 0",
+							"x < -9$ ou $x\\geqslant-5",
+							"x\\leqslant-3$ ou $x > -1",
+							"x\\geqslant5$ et $x < 7",
+							"x < -9$ ou $x\\geqslant-3",
+							"x > -8$ et $x\\leqslant0",
+							"x > 2$ et $x\\leqslant5",
+							"x > 7$ et $x < 9",
+							"x\\geqslant8$ et $x\\leqslant14",
+							"x > 1$ et $x < 6",
+							"x\\geqslant-8$ et $x\\leqslant-3"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 17,
+							"nb_distinctes": 18,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 17,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 17,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 17,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 17,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"<": "300/300",
+					">": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (17)",
+					"graine": 115,
+					"enonce": "Soit $x$ un nombre réel. Quelle est la négation de la proposition « $x\\geqslant9$ et $x\\leqslant17$ » ?\n\n- A. $x\\leqslant9$ ou $x\\geqslant17$\n- B. $x\\geqslant9$ ou $x\\leqslant17$\n- C. $x < 9$ et $x > 17$\n- D. $x < 9$ ou $x > 17$",
+					"reponse": ["D. $x < 9$ ou $x > 17$"],
+					"variables": {
+						"a": "9",
+						"d": "8",
+						"b": "17",
+						"k": "0",
+						"s1": "1",
+						"s2": "1",
+						"r1": "1",
+						"r2": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 2,
+					"enonce": "Soit $x$ un nombre réel. Quelle est la négation de la proposition « $x\\leqslant-3$ ou $x\\geqslant0$ » ?\n\n- A. $x > -3$ et $x < 0$\n- B. $x\\leqslant-3$ et $x\\geqslant0$\n- C. $x\\geqslant-3$ et $x\\leqslant0$\n- D. $x > -3$ ou $x < 0$",
+					"reponse": ["A. $x > -3$ et $x < 0$"],
+					"variables": {
+						"a": "-3",
+						"d": "3",
+						"b": "0",
+						"k": "1",
+						"s1": "1",
+						"s2": "1",
+						"r1": "3",
+						"r2": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $x$ un nombre réel. Quelle est la négation de la proposition « $x\\leqslant-9$ ou $x > -4$ » ?\n\n- A. $x > -9$ ou $x\\leqslant-4$\n- B. $x > -9$ et $x\\leqslant-4$\n- C. $x\\geqslant-9$ et $x < -4$\n- D. $x\\leqslant-9$ et $x > -4$",
+					"reponse": ["B. $x > -9$ et $x\\leqslant-4$"],
+					"variables": {
+						"a": "-9",
+						"d": "5",
+						"b": "-4",
+						"k": "1",
+						"s1": "1",
+						"s2": "0",
+						"r1": "3",
+						"r2": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $x$ un nombre réel. Quelle est la négation de la proposition « $x\\geqslant-9$ et $x < -5$ » ?\n\n- A. $x\\leqslant-9$ ou $x > -5$\n- B. $x\\geqslant-9$ ou $x < -5$\n- C. $x < -9$ ou $x\\geqslant-5$\n- D. $x < -9$ et $x\\geqslant-5$",
+					"reponse": ["C. $x < -9$ ou $x\\geqslant-5$"],
+					"variables": {
+						"a": "-9",
+						"d": "4",
+						"b": "-5",
+						"k": "0",
+						"s1": "1",
+						"s2": "0",
+						"r1": "1",
+						"r2": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $x$ un nombre réel. Quelle est la négation de la proposition « $x > -3$ et $x\\leqslant-1$ » ?\n\n- A. $x < -3$ ou $x\\geqslant-1$\n- B. $x\\leqslant-3$ et $x > -1$\n- C. $x > -3$ ou $x\\leqslant-1$\n- D. $x\\leqslant-3$ ou $x > -1$",
+					"reponse": ["D. $x\\leqslant-3$ ou $x > -1$"],
+					"variables": {
+						"a": "-3",
+						"d": "2",
+						"b": "-1",
+						"k": "0",
+						"s1": "0",
+						"s2": "1",
+						"r1": "0",
+						"r2": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-6..6"
+					},
+					{
+						"name": "c",
+						"expression": "0..40"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est la négation de la proposition « pour tout réel $x$, si $x>{{a}}$, alors $x^2>{{c}}$ » ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Il existe un réel $x$ tel que $x>{{a}}$ et $x^2\\leqslant{{c}}$."
+					},
+					{
+						"content": "Il existe un réel $x$ tel que, si $x>{{a}}$, alors $x^2\\leqslant{{c}}$."
+					},
+					{
+						"content": "Pour tout réel $x$, si $x>{{a}}$, alors $x^2\\leqslant{{c}}$."
+					},
+					{
+						"content": "Il existe un réel $x$ tel que $x\\leqslant{{a}}$ et $x^2\\leqslant{{c}}$."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 295,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 40,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 233,
+						"exemples": [
+							"Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant21$.",
+							"Il existe un réel $x$ tel que $x > -2$ et $x^2\\leqslant11$.",
+							"Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant18$.",
+							"Il existe un réel $x$ tel que $x > -2$ et $x^2\\leqslant9$.",
+							"Il existe un réel $x$ tel que $x > 4$ et $x^2\\leqslant9$.",
+							"Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant27$.",
+							"Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant40$.",
+							"Il existe un réel $x$ tel que $x > 2$ et $x^2\\leqslant12$.",
+							"Il existe un réel $x$ tel que $x > 5$ et $x^2\\leqslant5$.",
+							"Il existe un réel $x$ tel que $x > 5$ et $x^2\\leqslant28$.",
+							"Il existe un réel $x$ tel que $x > 0$ et $x^2\\leqslant24$.",
+							"Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant23$."
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 40,
+							"nb_distinctes": 41,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 40,
+				"nb_distinctes": 41,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 40,
+				"nb_distinctes": 41,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 40,
+				"nb_distinctes": 41,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 40,
+				"nb_distinctes": 41,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					">": "300/300",
+					"puissance": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 39,
+					"max": 39
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (40)",
+					"graine": 7,
+					"enonce": "Quelle est la négation de la proposition « pour tout réel $x$, si $x > -6$, alors $x^2 > 40$ » ?\n\n- A. Il existe un réel $x$ tel que $x\\leqslant-6$ et $x^2\\leqslant40$.\n- B. Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant40$.\n- C. Il existe un réel $x$ tel que, si $x > -6$, alors $x^2\\leqslant40$.\n- D. Pour tout réel $x$, si $x > -6$, alors $x^2\\leqslant40$.",
+					"reponse": ["B. Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant40$."],
+					"variables": {
+						"a": "-6",
+						"c": "40"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 11,
+					"enonce": "Quelle est la négation de la proposition « pour tout réel $x$, si $x > 0$, alors $x^2 > 24$ » ?\n\n- A. Il existe un réel $x$ tel que $x > 0$ et $x^2\\leqslant24$.\n- B. Il existe un réel $x$ tel que, si $x > 0$, alors $x^2\\leqslant24$.\n- C. Il existe un réel $x$ tel que $x\\leqslant0$ et $x^2\\leqslant24$.\n- D. Pour tout réel $x$, si $x > 0$, alors $x^2\\leqslant24$.",
+					"reponse": ["A. Il existe un réel $x$ tel que $x > 0$ et $x^2\\leqslant24$."],
+					"variables": {
+						"a": "0",
+						"c": "24"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quelle est la négation de la proposition « pour tout réel $x$, si $x > -6$, alors $x^2 > 21$ » ?\n\n- A. Il existe un réel $x$ tel que, si $x > -6$, alors $x^2\\leqslant21$.\n- B. Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant21$.\n- C. Pour tout réel $x$, si $x > -6$, alors $x^2\\leqslant21$.\n- D. Il existe un réel $x$ tel que $x\\leqslant-6$ et $x^2\\leqslant21$.",
+					"reponse": ["B. Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant21$."],
+					"variables": {
+						"a": "-6",
+						"c": "21"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la négation de la proposition « pour tout réel $x$, si $x > -2$, alors $x^2 > 11$ » ?\n\n- A. Il existe un réel $x$ tel que $x > -2$ et $x^2\\leqslant11$.\n- B. Il existe un réel $x$ tel que, si $x > -2$, alors $x^2\\leqslant11$.\n- C. Il existe un réel $x$ tel que $x\\leqslant-2$ et $x^2\\leqslant11$.\n- D. Pour tout réel $x$, si $x > -2$, alors $x^2\\leqslant11$.",
+					"reponse": ["A. Il existe un réel $x$ tel que $x > -2$ et $x^2\\leqslant11$."],
+					"variables": {
+						"a": "-2",
+						"c": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la négation de la proposition « pour tout réel $x$, si $x > -6$, alors $x^2 > 18$ » ?\n\n- A. Il existe un réel $x$ tel que, si $x > -6$, alors $x^2\\leqslant18$.\n- B. Il existe un réel $x$ tel que $x\\leqslant-6$ et $x^2\\leqslant18$.\n- C. Pour tout réel $x$, si $x > -6$, alors $x^2\\leqslant18$.\n- D. Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant18$.",
+					"reponse": ["D. Il existe un réel $x$ tel que $x > -6$ et $x^2\\leqslant18$."],
+					"variables": {
+						"a": "-6",
+						"c": "18"
+					}
+				}
+			]
+		}
+	]
+}

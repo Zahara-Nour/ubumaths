@@ -1,0 +1,770 @@
+{
+	"template_id": "cffdd283-49ee-4292-b8ca-b6096b8b1ae2",
+	"titre": "Dériver une somme d'exponentielle et de polynôme",
+	"sous_titre": "Dérivée d'une somme : (k·eˣ)′ = k·eˣ, polynôme du second degré dérivé terme à terme",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonction exponentielle > Dérivation",
+	"mis_a_jour": "2026-10-02T04:20:49.58565+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-289",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "k",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "p",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "r",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{k}}e^{x}{{eval:p*x^2+q*x+r;+}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{k}}e^{x}{{eval:2*p*x+q;+}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 286,
+						"exemples": [
+							"2e^{x}+10x+9",
+							"-5e^{x}+2x+7",
+							"-2e^{x}+5-10x",
+							"-6e^{x}-10x-5",
+							"-6e^{x}+4x-8",
+							"4e^{x}+1-6x",
+							"9e^{x}+4x+1",
+							"-5e^{x}+4x+2",
+							"-7e^{x}+8x+5",
+							"5e^{x}+8x-1",
+							"3e^{x}+2x+7",
+							"3e^{x}+10x-7"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 10,
+							"nb_distinctes": 18,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 10,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 10,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "264/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "134/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 \\exponentialE^x + 5 x^2 + 9 x - 4$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2e^{x}+10x+9"],
+					"variables": {
+						"x": "x",
+						"k": "2",
+						"p": "5",
+						"q": "9",
+						"r": "-4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 27,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -9 \\exponentialE^x - 4 x^2 + 6 x - 5$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-9e^{x}+6-8x"],
+					"variables": {
+						"x": "x",
+						"k": "-9",
+						"p": "-4",
+						"q": "6",
+						"r": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -5 \\exponentialE^x + x^2 + 7 x + 3$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-5e^{x}+2x+7"],
+					"variables": {
+						"x": "x",
+						"k": "-5",
+						"p": "1",
+						"q": "7",
+						"r": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -2 \\exponentialE^x - 5 x^2 + 5 x - 1$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-2e^{x}+5-10x"],
+					"variables": {
+						"x": "x",
+						"k": "-2",
+						"p": "-5",
+						"q": "5",
+						"r": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -6 \\exponentialE^x - 5 x^2 - 5 x + 1$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-6e^{x}-10x-5"],
+					"variables": {
+						"x": "x",
+						"k": "-6",
+						"p": "-5",
+						"q": "-5",
+						"r": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "k",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "p",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "r",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:p*x^2+q*x+r}}{{eval:k;+}}e^{x}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{eval:2*p*x+q}}{{eval:k;+}}e^{x}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 286,
+						"exemples": [
+							"10x+9+2e^{x}",
+							"2x+7-5e^{x}",
+							"5-10x-2e^{x}",
+							"-10x-5-6e^{x}",
+							"4x-8-6e^{x}",
+							"1-6x+4e^{x}",
+							"4x+1+9e^{x}",
+							"4x+2-5e^{x}",
+							"8x+5-7e^{x}",
+							"8x-1+5e^{x}",
+							"2x+7+3e^{x}",
+							"10x-7+3e^{x}"
+						],
+						"nombres_contenus": {
+							"min": -10,
+							"max": 10,
+							"nb_distinctes": 15,
+							"valeurs": [-10, -8, -6, -4, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 13,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -10,
+				"max": 10,
+				"nb_distinctes": 15,
+				"valeurs": [-10, -8, -6, -4, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -10,
+				"max": 10,
+				"nb_distinctes": 17,
+				"valeurs": [-10, -8, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "271/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "202/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 5 x^2 + 9 x - 4 + 2 \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["10x+9+2e^{x}"],
+					"variables": {
+						"x": "x",
+						"k": "2",
+						"p": "5",
+						"q": "9",
+						"r": "-4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-10)",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -5 x^2 - 5 x + 1 - 6 \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-10x-5-6e^{x}"],
+					"variables": {
+						"x": "x",
+						"k": "-6",
+						"p": "-5",
+						"q": "-5",
+						"r": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 + 7 x + 3 - 5 \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2x+7-5e^{x}"],
+					"variables": {
+						"x": "x",
+						"k": "-5",
+						"p": "1",
+						"q": "7",
+						"r": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -5 x^2 + 5 x - 1 - 2 \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["5-10x-2e^{x}"],
+					"variables": {
+						"x": "x",
+						"k": "-2",
+						"p": "-5",
+						"q": "5",
+						"r": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x^2 - 8 x + 2 - 6 \\exponentialE^x$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["4x-8-6e^{x}"],
+					"variables": {
+						"x": "x",
+						"k": "-6",
+						"p": "2",
+						"q": "-8",
+						"r": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "p",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "r",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=e^{x}{{eval:p*x^2+q*x+r;+}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["e^{x}{{eval:2*p*x+q;+}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 286,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 154,
+						"exemples": [
+							"e^{x}+2x+9",
+							"e^{x}+1-6x",
+							"e^{x}-2x-8",
+							"e^{x}-6x-8",
+							"e^{x}+3-6x",
+							"e^{x}+4x-6",
+							"e^{x}+10x+4",
+							"e^{x}+4-4x",
+							"e^{x}+6-8x",
+							"e^{x}+4x+6",
+							"e^{x}+4x+2",
+							"e^{x}+2x+8"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "265/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "126/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\exponentialE^x + 5 x^2 + 4 x + 1$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["e^{x}+10x+4"],
+					"variables": {
+						"x": "x",
+						"p": "5",
+						"q": "4",
+						"r": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\exponentialE^x - 3 x^2 + x + 7$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["e^{x}+1-6x"],
+					"variables": {
+						"x": "x",
+						"p": "-3",
+						"q": "1",
+						"r": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\exponentialE^x + x^2 + 9 x + 9$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["e^{x}+2x+9"],
+					"variables": {
+						"x": "x",
+						"p": "1",
+						"q": "9",
+						"r": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\exponentialE^x - x^2 - 8 x + 5$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["e^{x}-2x-8"],
+					"variables": {
+						"x": "x",
+						"p": "-1",
+						"q": "-8",
+						"r": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\exponentialE^x - 3 x^2 - 8 x - 5$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["e^{x}-6x-8"],
+					"variables": {
+						"x": "x",
+						"p": "-3",
+						"q": "-8",
+						"r": "-5"
+					}
+				}
+			]
+		}
+	]
+}

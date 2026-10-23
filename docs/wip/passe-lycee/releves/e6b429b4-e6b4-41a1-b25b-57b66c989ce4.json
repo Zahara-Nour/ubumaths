@@ -1,0 +1,732 @@
+{
+	"template_id": "e6b429b4-e6b4-41a1-b25b-57b66c989ce4",
+	"titre": "Produit d'exponentielles",
+	"sous_titre": "eᵃ × eᵇ = eᵃ⁺ᵇ, exposants entiers puis affines en x",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonction exponentielle > Propriétés algébriques",
+	"mis_a_jour": "2026-10-04T19:47:45.879832+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-294",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..7;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..7;±"
+					}
+				],
+				"conditions": ["p+q != 0", "p+q != 1"],
+				"enonce_brut": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ {{p}} }\\times e^{ {{q}} }$\n\n$A=?$",
+				"reponses_brutes": ["e^{ {{eval:p+q}} }"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 142,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 26,
+						"valeurs": [
+							"e^{ -1 }",
+							"e^{ -10 }",
+							"e^{ -11 }",
+							"e^{ -12 }",
+							"e^{ -14 }",
+							"e^{ -2 }",
+							"e^{ -3 }",
+							"e^{ -4 }",
+							"e^{ -5 }",
+							"e^{ -6 }",
+							"e^{ -7 }",
+							"e^{ -8 }",
+							"e^{ -9 }",
+							"e^{ 10 }",
+							"e^{ 11 }",
+							"e^{ 12 }",
+							"e^{ 13 }",
+							"e^{ 14 }",
+							"e^{ 2 }",
+							"e^{ 3 }",
+							"e^{ 4 }",
+							"e^{ 5 }",
+							"e^{ 6 }",
+							"e^{ 7 }",
+							"e^{ 8 }",
+							"e^{ 9 }"
+						],
+						"nombres_contenus": {
+							"min": -14,
+							"max": 14,
+							"nb_distinctes": 26,
+							"valeurs": [
+								-14, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+								11, 12, 13, 14
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -7,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -14,
+				"max": 14,
+				"nb_distinctes": 26,
+				"valeurs": [
+					-14, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+					12, 13, 14
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -14,
+				"max": 14,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-14, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+					12, 13, 14
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (14)",
+					"graine": 197,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ 7 }\\times e^{ 7 }$\n\n$A = [?]$",
+					"reponse": ["e^{ 14 }"],
+					"variables": {
+						"p": "7",
+						"q": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (-14)",
+					"graine": 27,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ -7 }\\times e^{ -7 }$\n\n$A = [?]$",
+					"reponse": ["e^{ -14 }"],
+					"variables": {
+						"p": "-7",
+						"q": "-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ -7 }\\times e^{ 1 }$\n\n$A = [?]$",
+					"reponse": ["e^{ -6 }"],
+					"variables": {
+						"p": "-7",
+						"q": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ -3 }\\times e^{ -4 }$\n\n$A = [?]$",
+					"reponse": ["e^{ -7 }"],
+					"variables": {
+						"p": "-3",
+						"q": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ -7 }\\times e^{ -1 }$\n\n$A = [?]$",
+					"reponse": ["e^{ -8 }"],
+					"variables": {
+						"p": "-7",
+						"q": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "c",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": ["a+c != 0"],
+				"enonce_brut": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ {{eval:a*x}} }\\times e^{ {{eval:c*x+d}} }$\n\n$A=?$",
+				"reponses_brutes": ["e^{ {{eval:(a+c)*x+d}} }"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 192,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 106,
+						"exemples": [
+							"e^{ 8x+6 }",
+							"e^{ 4x+5 }",
+							"e^{ 4-x }",
+							"e^{ -2x-4 }",
+							"e^{ 3x-5 }",
+							"e^{ x+1 }",
+							"e^{ 7x+1 }",
+							"e^{ 5x+2 }",
+							"e^{ 5x+3 }",
+							"e^{ 7x-1 }",
+							"e^{ 5x+5 }",
+							"e^{ 8x-5 }"
+						],
+						"nombres_contenus": {
+							"min": -2,
+							"max": 9,
+							"nb_distinctes": 10,
+							"valeurs": [-2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 6,
+				"nb_distinctes": 9,
+				"valeurs": [-4, -3, -2, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -2,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [-2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 9,
+				"nb_distinctes": 12,
+				"valeurs": [-4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "87/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "47/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 102,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ 5x }\\times e^{ 4x+6 }$\n\n$A = [?]$",
+					"reponse": ["e^{ 9x+6 }"],
+					"variables": {
+						"x": "x",
+						"a": "5",
+						"c": "4",
+						"d": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-4)",
+					"graine": 4,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ 2x }\\times e^{ -4x-4 }$\n\n$A = [?]$",
+					"reponse": ["e^{ -2x-4 }"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"c": "-4",
+						"d": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ 4x }\\times e^{ 4x+6 }$\n\n$A = [?]$",
+					"reponse": ["e^{ 8x+6 }"],
+					"variables": {
+						"x": "x",
+						"a": "4",
+						"c": "4",
+						"d": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ 3x }\\times e^{ x+5 }$\n\n$A = [?]$",
+					"reponse": ["e^{ 4x+5 }"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"c": "1",
+						"d": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ 3x }\\times e^{ 4-4x }$\n\n$A = [?]$",
+					"reponse": ["e^{ 4-x }"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"c": "-4",
+						"d": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "d",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": ["a+c != 0", "b+d != 0"],
+				"enonce_brut": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ {{eval:a*x+b}} }\\times e^{ {{eval:c*x+d}} }$\n\n$A=?$",
+				"reponses_brutes": ["e^{ {{eval:(a+c)*x+b+d}} }"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 208,
+						"exemples": [
+							"e^{ 6x+3 }",
+							"e^{ x+3 }",
+							"e^{ 2x-7 }",
+							"e^{ -6x-5 }",
+							"e^{ 4-8x }",
+							"e^{ 3x-10 }",
+							"e^{ 6x+1 }",
+							"e^{ 2-x }",
+							"e^{ 7-x }",
+							"e^{ 5x-5 }",
+							"e^{ -10x-12 }",
+							"e^{ -3x-3 }"
+						],
+						"nombres_contenus": {
+							"min": -10,
+							"max": 12,
+							"nb_distinctes": 21,
+							"valeurs": [
+								-10, -9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 6,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -10,
+				"max": 12,
+				"nb_distinctes": 21,
+				"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -10,
+				"max": 12,
+				"nb_distinctes": 21,
+				"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "132/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "112/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 13,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ -5x-6 }\\times e^{ -5x-6 }$\n\n$A = [?]$",
+					"reponse": ["e^{ -10x-12 }"],
+					"variables": {
+						"x": "x",
+						"a": "-5",
+						"b": "-6",
+						"c": "-5",
+						"d": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ x+6 }\\times e^{ 5x-3 }$\n\n$A = [?]$",
+					"reponse": ["e^{ 6x+3 }"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"b": "6",
+						"c": "5",
+						"d": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ 1-3x }\\times e^{ 4x+2 }$\n\n$A = [?]$",
+					"reponse": ["e^{ x+3 }"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"b": "1",
+						"c": "4",
+						"d": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ -x-6 }\\times e^{ 3x-1 }$\n\n$A = [?]$",
+					"reponse": ["e^{ 2x-7 }"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "-6",
+						"c": "3",
+						"d": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Simplifie $A$ en réduisant l'exposant.\n\n$A=e^{ -3x-6 }\\times e^{ 1-3x }$\n\n$A = [?]$",
+					"reponse": ["e^{ -6x-5 }"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"b": "-6",
+						"c": "-3",
+						"d": "1"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,218 @@
+{
+	"template_id": "226e5b3b-fad4-4c99-92cb-42e123014055",
+	"titre": "Calculer la valeur d'une valeur absolue",
+	"sous_titre": "Nombres entiers",
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Valeur absolue > Apprivoiser",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-245",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "abs(a)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"abs(-1)",
+							"abs(-2)",
+							"abs(-3)",
+							"abs(-4)",
+							"abs(-5)",
+							"abs(-6)",
+							"abs(-7)",
+							"abs(-8)",
+							"abs(-9)",
+							"abs(0)",
+							"abs(1)",
+							"abs(2)",
+							"abs(3)",
+							"abs(4)",
+							"abs(5)",
+							"abs(6)",
+							"abs(7)",
+							"abs(8)",
+							"abs(9)"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 19,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$\\left| -9 \\right| = [?]$$",
+					"reponse": ["9"],
+					"variables": {
+						"a": "-9",
+						"expression1": "abs(-9)"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 35,
+					"enonce": "Calcule.\n\n$$\\left| 0 \\right| = [?]$$",
+					"reponse": ["0"],
+					"variables": {
+						"a": "0",
+						"expression1": "abs(0)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$\\left| -3 \\right| = [?]$$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "-3",
+						"expression1": "abs(-3)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$\\left| 5 \\right| = [?]$$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "5",
+						"expression1": "abs(5)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Calcule.\n\n$$\\left| -8 \\right| = [?]$$",
+					"reponse": ["8"],
+					"variables": {
+						"a": "-8",
+						"expression1": "abs(-8)"
+					}
+				}
+			]
+		}
+	]
+}

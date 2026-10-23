@@ -1,0 +1,76 @@
+{
+	"template_id": "b4096cd8-1aef-4b70-a185-b4b689258e08",
+	"titre": "Étude de fonction : où chercher les limites",
+	"sous_titre": "Carte de cours",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "course_card",
+	"theme": "Fonctions > Etude de fonction > Méthode",
+	"mis_a_jour": "2026-10-04T14:09:14.980533+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-231",
+			"statut": "published"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-416",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "À quels endroits doit-on chercher les limites d'une fonction ?",
+				"reponses_brutes": []
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "course_card",
+				"type_reponse": "inconnu",
+				"nb_cases": 0,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "À quels endroits doit-on chercher les limites d'une fonction ?",
+					"reponse": [],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,643 @@
+{
+	"template_id": "1bbfa5f2-1c32-4a81-92cf-b9e7c5996977",
+	"titre": "Calculer la différence de deux termes consécutifs",
+	"sous_titre": "u(n+1) − u(n) en fonction de n, développée et réduite",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Sens de variation > Différence de deux termes",
+	"mis_a_jour": "2026-10-03T14:03:50.530615+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-219",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la suite $(u_n)$ définie, pour tout entier naturel $n$, par $u_n={{eval:a*n+b}}$.\n\nExprime $u_{n+1}-u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n+1}-u_n=?$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 203,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "58/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = n + 9$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"n": "n",
+						"a": "1",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 27,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = -9 n - 6$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["-9"],
+					"variables": {
+						"n": "n",
+						"a": "-9",
+						"b": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = 1 - 4 n$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["-4"],
+					"variables": {
+						"n": "n",
+						"a": "-4",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = -n - 8$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["-1"],
+					"variables": {
+						"n": "n",
+						"a": "-1",
+						"b": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = -6 n - 8$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["-6"],
+					"variables": {
+						"n": "n",
+						"a": "-6",
+						"b": "-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "b",
+						"expression": "-9..9"
+					},
+					{
+						"name": "m",
+						"expression": "eval:b+1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la suite $(u_n)$ définie, pour tout entier naturel $n$, par $u_n=n^2{{eval:b*n;+}}$.\n\nExprime $u_{n+1}-u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n+1}-u_n=?$",
+				"reponses_brutes": ["{{eval:2*n+m}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"2n",
+							"2n+1",
+							"2n+10",
+							"2n+2",
+							"2n+3",
+							"2n+4",
+							"2n+5",
+							"2n+6",
+							"2n+7",
+							"2n+8",
+							"2n+9",
+							"2n-1",
+							"2n-2",
+							"2n-3",
+							"2n-4",
+							"2n-5",
+							"2n-6",
+							"2n-7",
+							"2n-8"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "110/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 7,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = n^2 + 9 n$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["2n+10"],
+					"variables": {
+						"n": "n",
+						"b": "9",
+						"m": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = n^2 + n$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["2n+2"],
+					"variables": {
+						"n": "n",
+						"b": "1",
+						"m": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = n^2 - 4 n$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["2n-3"],
+					"variables": {
+						"n": "n",
+						"b": "-4",
+						"m": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = n^2 - n$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["2n"],
+					"variables": {
+						"n": "n",
+						"b": "-1",
+						"m": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = n^2 - 5 n$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["2n-4"],
+					"variables": {
+						"n": "n",
+						"b": "-5",
+						"m": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la suite $(u_n)$ définie, pour tout entier naturel $n$, par $u_n={{a}}n^2$.\n\nExprime $u_{n+1}-u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n+1}-u_n=?$",
+				"reponses_brutes": ["{{eval:2*a*n+a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 18,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 18,
+						"valeurs": [
+							"-10n-5",
+							"-12n-6",
+							"-14n-7",
+							"-16n-8",
+							"-18n-9",
+							"-2n-1",
+							"-4n-2",
+							"-6n-3",
+							"-8n-4",
+							"10n+5",
+							"12n+6",
+							"14n+7",
+							"16n+8",
+							"18n+9",
+							"2n+1",
+							"4n+2",
+							"6n+3",
+							"8n+4"
+						],
+						"nombres_contenus": {
+							"min": -18,
+							"max": 18,
+							"nb_distinctes": 23,
+							"valeurs": [
+								-18, -16, -14, -12, -10, -8, -6, -4, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16,
+								18
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -18,
+				"max": 18,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-18, -16, -14, -12, -10, -8, -6, -4, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -18,
+				"max": 18,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-18, -16, -14, -12, -10, -9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+					12, 14, 16, 18
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 7,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = 9 n^2$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["18n+9"],
+					"variables": {
+						"n": "n",
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-18)",
+					"graine": 27,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = -9 n^2$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["-18n-9"],
+					"variables": {
+						"n": "n",
+						"a": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = n^2$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["2n+1"],
+					"variables": {
+						"n": "n",
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = -4 n^2$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["-8n-4"],
+					"variables": {
+						"n": "n",
+						"a": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la suite $\\left( u_n \\right)$ définie, pour tout entier naturel $n$, par $u_n = -n^2$.\n\nExprime $u_{n + 1} - u_n$ en fonction de $n$, sous forme développée et réduite.\n\n$u_{n + 1} - u_n = [?]$",
+					"reponse": ["-2n-1"],
+					"variables": {
+						"n": "n",
+						"a": "-1"
+					}
+				}
+			]
+		}
+	]
+}

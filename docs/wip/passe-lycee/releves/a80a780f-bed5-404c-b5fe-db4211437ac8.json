@@ -1,0 +1,649 @@
+{
+	"template_id": "a80a780f-bed5-404c-b5fe-db4211437ac8",
+	"titre": "Caractérisations de la convexité et du point d'inflexion",
+	"sous_titre": "QCM : f convexe ⟺ f′ croissante ⟺ f″ ≥ 0 ⟺ courbe au-dessus de ses tangentes ; point d'inflexion = la courbe traverse sa tangente",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "multiple_choice",
+	"theme": "Fonctions convexes > Convexité > Caractérisations",
+	"mis_a_jour": "2026-10-04T15:23:38.584961+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-262",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-411",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est **convexe** sur $I$ si et seulement si :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f''(x)\\geqslant 0$ pour tout $x$ de $I$"
+					},
+					{
+						"content": "$f'(x)\\geqslant 0$ pour tout $x$ de $I$"
+					},
+					{
+						"content": "$f(x)\\geqslant 0$ pour tout $x$ de $I$"
+					},
+					{
+						"content": "$f''$ est croissante sur $I$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f''(x)\\geqslant 0$ pour tout $x$ de $I"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 0,
+							"nb_distinctes": 1,
+							"valeurs": [0],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n- A. $f''$ est croissante sur $I$\n- B. $f(x)\\geqslant 0$ pour tout $x$ de $I$\n- C. $f'(x)\\geqslant 0$ pour tout $x$ de $I$\n- D. $f''(x)\\geqslant 0$ pour tout $x$ de $I$",
+					"reponse": ["D. $f''(x)\\geqslant 0$ pour tout $x$ de $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n- A. $f(x)\\geqslant 0$ pour tout $x$ de $I$\n- B. $f''$ est croissante sur $I$\n- C. $f''(x)\\geqslant 0$ pour tout $x$ de $I$\n- D. $f'(x)\\geqslant 0$ pour tout $x$ de $I$",
+					"reponse": ["C. $f''(x)\\geqslant 0$ pour tout $x$ de $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n- A. $f(x)\\geqslant 0$ pour tout $x$ de $I$\n- B. $f''$ est croissante sur $I$\n- C. $f'(x)\\geqslant 0$ pour tout $x$ de $I$\n- D. $f''(x)\\geqslant 0$ pour tout $x$ de $I$",
+					"reponse": ["D. $f''(x)\\geqslant 0$ pour tout $x$ de $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n- A. $f''$ est croissante sur $I$\n- B. $f(x)\\geqslant 0$ pour tout $x$ de $I$\n- C. $f''(x)\\geqslant 0$ pour tout $x$ de $I$\n- D. $f'(x)\\geqslant 0$ pour tout $x$ de $I$",
+					"reponse": ["C. $f''(x)\\geqslant 0$ pour tout $x$ de $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n- A. $f(x)\\geqslant 0$ pour tout $x$ de $I$\n- B. $f'(x)\\geqslant 0$ pour tout $x$ de $I$\n- C. $f''(x)\\geqslant 0$ pour tout $x$ de $I$\n- D. $f''$ est croissante sur $I$",
+					"reponse": ["C. $f''(x)\\geqslant 0$ pour tout $x$ de $I$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ une fonction dérivable sur un intervalle $I$.\n\n$f$ est **convexe** sur $I$ si et seulement si :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f'$ est croissante sur $I$"
+					},
+					{
+						"content": "$f$ est croissante sur $I$"
+					},
+					{
+						"content": "$f'$ est positive sur $I$"
+					},
+					{
+						"content": "$f'$ est décroissante sur $I$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f'$ est croissante sur $I"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ une fonction dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n- A. $f'$ est décroissante sur $I$\n- B. $f'$ est positive sur $I$\n- C. $f$ est croissante sur $I$\n- D. $f'$ est croissante sur $I$",
+					"reponse": ["D. $f'$ est croissante sur $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ une fonction dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n- A. $f'$ est positive sur $I$\n- B. $f'$ est décroissante sur $I$\n- C. $f'$ est croissante sur $I$\n- D. $f$ est croissante sur $I$",
+					"reponse": ["C. $f'$ est croissante sur $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ une fonction dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n- A. $f'$ est positive sur $I$\n- B. $f'$ est décroissante sur $I$\n- C. $f$ est croissante sur $I$\n- D. $f'$ est croissante sur $I$",
+					"reponse": ["D. $f'$ est croissante sur $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ une fonction dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n- A. $f'$ est décroissante sur $I$\n- B. $f'$ est positive sur $I$\n- C. $f'$ est croissante sur $I$\n- D. $f$ est croissante sur $I$",
+					"reponse": ["C. $f'$ est croissante sur $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ une fonction dérivable sur un intervalle $I$.\n\n$f$ est convexe sur $I$ si et seulement si :\n\n- A. $f'$ est positive sur $I$\n- B. $f$ est croissante sur $I$\n- C. $f'$ est croissante sur $I$\n- D. $f'$ est décroissante sur $I$",
+					"reponse": ["C. $f'$ est croissante sur $I$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ une fonction dérivable et **convexe** sur un intervalle $I$, de courbe $\\mathcal{C}_f$.\n\nSur $I$, la courbe $\\mathcal{C}_f$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "au-dessus de chacune de ses tangentes"
+					},
+					{
+						"content": "en dessous de chacune de ses tangentes"
+					},
+					{
+						"content": "au-dessus de chacune de ses sécantes, entre les deux points d'intersection"
+					},
+					{
+						"content": "au-dessus de l'axe des abscisses"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["au-dessus de chacune de ses tangentes"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 47,
+					"max": 47
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ une fonction dérivable et convexe sur un intervalle $I$, de courbe $\\mathcal{C}_f$.\n\nSur $I$, la courbe $\\mathcal{C}_f$ est :\n\n- A. au-dessus de l'axe des abscisses\n- B. au-dessus de chacune de ses sécantes, entre les deux points d'intersection\n- C. en dessous de chacune de ses tangentes\n- D. au-dessus de chacune de ses tangentes",
+					"reponse": ["D. au-dessus de chacune de ses tangentes"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ une fonction dérivable et convexe sur un intervalle $I$, de courbe $\\mathcal{C}_f$.\n\nSur $I$, la courbe $\\mathcal{C}_f$ est :\n\n- A. au-dessus de chacune de ses sécantes, entre les deux points d'intersection\n- B. au-dessus de l'axe des abscisses\n- C. au-dessus de chacune de ses tangentes\n- D. en dessous de chacune de ses tangentes",
+					"reponse": ["C. au-dessus de chacune de ses tangentes"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ une fonction dérivable et convexe sur un intervalle $I$, de courbe $\\mathcal{C}_f$.\n\nSur $I$, la courbe $\\mathcal{C}_f$ est :\n\n- A. au-dessus de chacune de ses sécantes, entre les deux points d'intersection\n- B. au-dessus de l'axe des abscisses\n- C. en dessous de chacune de ses tangentes\n- D. au-dessus de chacune de ses tangentes",
+					"reponse": ["D. au-dessus de chacune de ses tangentes"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ une fonction dérivable et convexe sur un intervalle $I$, de courbe $\\mathcal{C}_f$.\n\nSur $I$, la courbe $\\mathcal{C}_f$ est :\n\n- A. au-dessus de l'axe des abscisses\n- B. au-dessus de chacune de ses sécantes, entre les deux points d'intersection\n- C. au-dessus de chacune de ses tangentes\n- D. en dessous de chacune de ses tangentes",
+					"reponse": ["C. au-dessus de chacune de ses tangentes"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ une fonction dérivable et convexe sur un intervalle $I$, de courbe $\\mathcal{C}_f$.\n\nSur $I$, la courbe $\\mathcal{C}_f$ est :\n\n- A. au-dessus de chacune de ses sécantes, entre les deux points d'intersection\n- B. en dessous de chacune de ses tangentes\n- C. au-dessus de chacune de ses tangentes\n- D. au-dessus de l'axe des abscisses",
+					"reponse": ["C. au-dessus de chacune de ses tangentes"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$ et $a$ un réel de $I$.\n\nLe point $A(a\\,;f(a))$ est un **point d'inflexion** de la courbe $\\mathcal{C}_f$ lorsque :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$"
+					},
+					{
+						"content": "$f'(a)=0$"
+					},
+					{
+						"content": "$f$ admet un extremum en $a$"
+					},
+					{
+						"content": "$f''(a)=0$, sans autre condition"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["la courbe $\\mathcal{C}_f$ traverse sa tangente en $A"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$ et $a$ un réel de $I$.\n\nLe point $A(a\\,;f(a))$ est un point d'inflexion de la courbe $\\mathcal{C}_f$ lorsque :\n\n- A. $f''(a)=0$, sans autre condition\n- B. $f$ admet un extremum en $a$\n- C. $f'(a)=0$\n- D. la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$",
+					"reponse": ["D. la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$ et $a$ un réel de $I$.\n\nLe point $A(a\\,;f(a))$ est un point d'inflexion de la courbe $\\mathcal{C}_f$ lorsque :\n\n- A. $f$ admet un extremum en $a$\n- B. $f''(a)=0$, sans autre condition\n- C. la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$\n- D. $f'(a)=0$",
+					"reponse": ["C. la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$ et $a$ un réel de $I$.\n\nLe point $A(a\\,;f(a))$ est un point d'inflexion de la courbe $\\mathcal{C}_f$ lorsque :\n\n- A. $f$ admet un extremum en $a$\n- B. $f''(a)=0$, sans autre condition\n- C. $f'(a)=0$\n- D. la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$",
+					"reponse": ["D. la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$ et $a$ un réel de $I$.\n\nLe point $A(a\\,;f(a))$ est un point d'inflexion de la courbe $\\mathcal{C}_f$ lorsque :\n\n- A. $f''(a)=0$, sans autre condition\n- B. $f$ admet un extremum en $a$\n- C. la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$\n- D. $f'(a)=0$",
+					"reponse": ["C. la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$ et $a$ un réel de $I$.\n\nLe point $A(a\\,;f(a))$ est un point d'inflexion de la courbe $\\mathcal{C}_f$ lorsque :\n\n- A. $f$ admet un extremum en $a$\n- B. $f'(a)=0$\n- C. la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$\n- D. $f''(a)=0$, sans autre condition",
+					"reponse": ["C. la courbe $\\mathcal{C}_f$ traverse sa tangente en $A$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est **concave** sur $I$ si et seulement si :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f''(x)\\leqslant 0$ pour tout $x$ de $I$"
+					},
+					{
+						"content": "$f'$ est croissante sur $I$"
+					},
+					{
+						"content": "$f(x)\\leqslant 0$ pour tout $x$ de $I$"
+					},
+					{
+						"content": "$\\mathcal{C}_f$ est au-dessus de chacune de ses tangentes"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["f''(x)\\leqslant 0$ pour tout $x$ de $I"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 0,
+							"nb_distinctes": 1,
+							"valeurs": [0],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 33,
+					"max": 33
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est concave sur $I$ si et seulement si :\n\n- A. $\\mathcal{C}_f$ est au-dessus de chacune de ses tangentes\n- B. $f(x)\\leqslant 0$ pour tout $x$ de $I$\n- C. $f'$ est croissante sur $I$\n- D. $f''(x)\\leqslant 0$ pour tout $x$ de $I$",
+					"reponse": ["D. $f''(x)\\leqslant 0$ pour tout $x$ de $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est concave sur $I$ si et seulement si :\n\n- A. $f(x)\\leqslant 0$ pour tout $x$ de $I$\n- B. $\\mathcal{C}_f$ est au-dessus de chacune de ses tangentes\n- C. $f''(x)\\leqslant 0$ pour tout $x$ de $I$\n- D. $f'$ est croissante sur $I$",
+					"reponse": ["C. $f''(x)\\leqslant 0$ pour tout $x$ de $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est concave sur $I$ si et seulement si :\n\n- A. $f(x)\\leqslant 0$ pour tout $x$ de $I$\n- B. $\\mathcal{C}_f$ est au-dessus de chacune de ses tangentes\n- C. $f'$ est croissante sur $I$\n- D. $f''(x)\\leqslant 0$ pour tout $x$ de $I$",
+					"reponse": ["D. $f''(x)\\leqslant 0$ pour tout $x$ de $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est concave sur $I$ si et seulement si :\n\n- A. $\\mathcal{C}_f$ est au-dessus de chacune de ses tangentes\n- B. $f(x)\\leqslant 0$ pour tout $x$ de $I$\n- C. $f''(x)\\leqslant 0$ pour tout $x$ de $I$\n- D. $f'$ est croissante sur $I$",
+					"reponse": ["C. $f''(x)\\leqslant 0$ pour tout $x$ de $I$"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ une fonction deux fois dérivable sur un intervalle $I$.\n\n$f$ est concave sur $I$ si et seulement si :\n\n- A. $f(x)\\leqslant 0$ pour tout $x$ de $I$\n- B. $f'$ est croissante sur $I$\n- C. $f''(x)\\leqslant 0$ pour tout $x$ de $I$\n- D. $\\mathcal{C}_f$ est au-dessus de chacune de ses tangentes",
+					"reponse": ["C. $f''(x)\\leqslant 0$ pour tout $x$ de $I$"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

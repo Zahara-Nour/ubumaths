@@ -1,0 +1,1121 @@
+{
+	"template_id": "a6f0ca3f-e981-479d-80f4-3ce032c93b80",
+	"titre": "Ensemble des points M tels que MA·MB = k",
+	"sous_titre": "Utiliser le milieu I de [AB] pour transformer MA·MB = k en MI² = k + AB²/4 et reconnaître un cercle",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Lieux de points",
+	"mis_a_jour": "2026-10-04T23:06:22.84511+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-317",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "xa",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ya",
+						"expression": "-5..5"
+					},
+					{
+						"name": "p",
+						"expression": "-3..3!0"
+					},
+					{
+						"name": "q",
+						"expression": "-3..3!0"
+					},
+					{
+						"name": "xb",
+						"expression": "{{eval:xa+2*p}}"
+					},
+					{
+						"name": "yb",
+						"expression": "{{eval:ya+2*q}}"
+					},
+					{
+						"name": "S",
+						"expression": "{{eval:p^2+q^2}}"
+					},
+					{
+						"name": "k",
+						"expression": "1..20"
+					},
+					{
+						"name": "Q",
+						"expression": "{{eval:k+S}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:sqrt(Q)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$ et $B({{xb}}\\,;{{yb}})$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}={{k}}$.\n\nEn introduisant le milieu $I$ de $[AB]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I=?$\n\n$y_I=?$\n\n$r=?$",
+				"reponses_brutes": ["{{eval:(xa+xb)/2}}", "{{eval:(ya+yb)/2}}", "{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "xa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ya",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "xb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				},
+				{
+					"nom": "yb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				},
+				{
+					"nom": "S",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 5, 8, 10, 13, 18]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "Q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 38,
+						"negatif_possible": false,
+						"nb_distinctes": 32
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.11333333333333333,
+						"nb_distinctes": 32,
+						"exemples": [
+							"2 \\sqrt{6}",
+							"2 \\sqrt{5}",
+							"\\sqrt{23}",
+							"\\sqrt{22}",
+							"\\sqrt{14}",
+							"2 \\sqrt{3}",
+							"\\sqrt{11}",
+							"\\sqrt{10}",
+							"4",
+							"\\sqrt{19}",
+							"\\sqrt{3}",
+							"\\sqrt{29}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 38,
+							"nb_distinctes": 23,
+							"valeurs": [
+								2, 3, 4, 5, 6, 7, 10, 11, 13, 14, 15, 17, 19, 21, 22, 23, 26, 29, 30, 31, 33, 35, 38
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.11333333333333333,
+						"nb_distinctes": 32,
+						"exemples": [
+							"2 \\sqrt{6}",
+							"2 \\sqrt{5}",
+							"\\sqrt{23}",
+							"\\sqrt{22}",
+							"\\sqrt{14}",
+							"2 \\sqrt{3}",
+							"\\sqrt{11}",
+							"\\sqrt{10}",
+							"4",
+							"\\sqrt{19}",
+							"\\sqrt{3}",
+							"\\sqrt{29}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 38,
+							"nb_distinctes": 23,
+							"valeurs": [
+								2, 3, 4, 5, 6, 7, 10, 11, 13, 14, 15, 17, 19, 21, 22, 23, 26, 29, 30, 31, 33, 35, 38
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -11,
+				"max": 20,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -8,
+				"max": 38,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -11,
+				"max": 38,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 50,
+					"max": 50
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (38)",
+					"graine": 50,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-4\\,;-2)$ et $B(-10\\,;-8)$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=20$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-7", "-5", "\\sqrt{38}"],
+					"variables": {
+						"xa": "-4",
+						"ya": "-2",
+						"p": "-3",
+						"q": "-3",
+						"xb": "-10",
+						"yb": "-8",
+						"S": "18",
+						"k": "20",
+						"Q": "38",
+						"R": "\\sqrt{38}"
+					}
+				},
+				{
+					"role": "plus petite valeur (-11)",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-5\\,;0)$ et $B(-11\\,;4)$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=10$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-8", "2", "\\sqrt{23}"],
+					"variables": {
+						"xa": "-5",
+						"ya": "0",
+						"p": "-3",
+						"q": "2",
+						"xb": "-11",
+						"yb": "4",
+						"S": "13",
+						"k": "10",
+						"Q": "23",
+						"R": "\\sqrt{23}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-5\\,;0)$ et $B(1\\,;6)$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=6$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-2", "3", "2 \\sqrt{6}"],
+					"variables": {
+						"xa": "-5",
+						"ya": "0",
+						"p": "3",
+						"q": "3",
+						"xb": "1",
+						"yb": "6",
+						"S": "18",
+						"k": "6",
+						"Q": "24",
+						"R": "2 \\sqrt{6}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-2)$ et $B(4\\,;0)$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=10$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["1", "-1", "2 \\sqrt{5}"],
+					"variables": {
+						"xa": "-2",
+						"ya": "-2",
+						"p": "3",
+						"q": "1",
+						"xb": "4",
+						"yb": "0",
+						"S": "10",
+						"k": "10",
+						"Q": "20",
+						"R": "2 \\sqrt{5}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-3)$ et $B(-8\\,;-7)$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=11$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-5", "-5", "2 \\sqrt{6}"],
+					"variables": {
+						"xa": "-2",
+						"ya": "-3",
+						"p": "-3",
+						"q": "-2",
+						"xb": "-8",
+						"yb": "-7",
+						"S": "13",
+						"k": "11",
+						"Q": "24",
+						"R": "2 \\sqrt{6}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "xa",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ya",
+						"expression": "-5..5"
+					},
+					{
+						"name": "p",
+						"expression": "-3..3!0"
+					},
+					{
+						"name": "q",
+						"expression": "-3..3!0"
+					},
+					{
+						"name": "xb",
+						"expression": "{{eval:xa+2*p}}"
+					},
+					{
+						"name": "yb",
+						"expression": "{{eval:ya+2*q}}"
+					},
+					{
+						"name": "S",
+						"expression": "{{eval:p^2+q^2}}"
+					},
+					{
+						"name": "k",
+						"expression": "{{eval:1-S}}..-1"
+					},
+					{
+						"name": "Q",
+						"expression": "{{eval:k+S}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:sqrt(Q)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$ et $B({{xb}}\\,;{{yb}})$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}={{k}}$.\n\nEn introduisant le milieu $I$ de $[AB]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I=?$\n\n$y_I=?$\n\n$r=?$",
+				"reponses_brutes": ["{{eval:(xa+xb)/2}}", "{{eval:(ya+yb)/2}}", "{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "xa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ya",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "xb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				},
+				{
+					"nom": "yb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				},
+				{
+					"nom": "S",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 5, 8, 10, 13, 18]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -17,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "Q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 17,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.38,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"1",
+							"2",
+							"2 \\sqrt{2}",
+							"2 \\sqrt{3}",
+							"3",
+							"\\sqrt{10}",
+							"\\sqrt{11}",
+							"\\sqrt{13}",
+							"\\sqrt{14}",
+							"\\sqrt{15}",
+							"\\sqrt{17}",
+							"\\sqrt{2}",
+							"\\sqrt{3}",
+							"\\sqrt{5}",
+							"\\sqrt{6}",
+							"\\sqrt{7}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 17,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 3, 5, 6, 7, 10, 11, 13, 14, 15, 17],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.38,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"1",
+							"2",
+							"2 \\sqrt{2}",
+							"2 \\sqrt{3}",
+							"3",
+							"\\sqrt{10}",
+							"\\sqrt{11}",
+							"\\sqrt{13}",
+							"\\sqrt{14}",
+							"\\sqrt{15}",
+							"\\sqrt{17}",
+							"\\sqrt{2}",
+							"\\sqrt{3}",
+							"\\sqrt{5}",
+							"\\sqrt{6}",
+							"\\sqrt{7}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 17,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 3, 5, 6, 7, 10, 11, 13, 14, 15, 17],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -17,
+				"max": 11,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4,
+					5, 6, 7, 8, 9, 10, 11
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -8,
+				"max": 17,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 13, 14, 15, 17
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -17,
+				"max": 17,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 50,
+					"max": 50
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (17)",
+					"graine": 50,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-4\\,;-2)$ et $B(-10\\,;-8)$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=-1$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-7", "-5", "\\sqrt{17}"],
+					"variables": {
+						"xa": "-4",
+						"ya": "-2",
+						"p": "-3",
+						"q": "-3",
+						"xb": "-10",
+						"yb": "-8",
+						"S": "18",
+						"k": "-1",
+						"Q": "17",
+						"R": "\\sqrt{17}"
+					}
+				},
+				{
+					"role": "plus petite valeur (-17)",
+					"graine": 13,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-5)$ et $B(-8\\,;-11)$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=-17$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-5", "-8", "1"],
+					"variables": {
+						"xa": "-2",
+						"ya": "-5",
+						"p": "-3",
+						"q": "-3",
+						"xb": "-8",
+						"yb": "-11",
+						"S": "18",
+						"k": "-17",
+						"Q": "1",
+						"R": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-5\\,;0)$ et $B(1\\,;6)$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=-13$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-2", "3", "\\sqrt{5}"],
+					"variables": {
+						"xa": "-5",
+						"ya": "0",
+						"p": "3",
+						"q": "3",
+						"xb": "1",
+						"yb": "6",
+						"S": "18",
+						"k": "-13",
+						"Q": "5",
+						"R": "\\sqrt{5}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-2)$ et $B(4\\,;0)$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=-5$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["1", "-1", "\\sqrt{5}"],
+					"variables": {
+						"xa": "-2",
+						"ya": "-2",
+						"p": "3",
+						"q": "1",
+						"xb": "4",
+						"yb": "0",
+						"S": "10",
+						"k": "-5",
+						"Q": "5",
+						"R": "\\sqrt{5}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-5\\,;0)$ et $B(-11\\,;4)$, et l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=-7$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle, puis détermine les coordonnées $(x_I\\,;y_I)$ de son centre et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-8", "2", "\\sqrt{6}"],
+					"variables": {
+						"xa": "-5",
+						"ya": "0",
+						"p": "-3",
+						"q": "2",
+						"xb": "-11",
+						"yb": "4",
+						"S": "13",
+						"k": "-7",
+						"Q": "6",
+						"R": "\\sqrt{6}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "h",
+						"expression": "2..6"
+					},
+					{
+						"name": "L",
+						"expression": "{{eval:2*h}}"
+					},
+					{
+						"name": "k",
+						"expression": "{{eval:1-h^2}}..15!0"
+					},
+					{
+						"name": "Q",
+						"expression": "{{eval:k+h^2}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:sqrt(Q)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $[AB]$ un segment de longueur $AB={{L}}$. On considère l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}={{k}}$.\n\nEn introduisant le milieu $I$ de $[AB]$, montre que cet ensemble est un cercle de centre $I$, puis détermine son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$r=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 129,
+			"variables": [
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "L",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [4, 6, 8, 10, 12]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -35,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 45
+					}
+				},
+				{
+					"nom": "Q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 51,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.11,
+						"nb_distinctes": 46,
+						"exemples": [
+							"\\sqrt{11}",
+							"\\sqrt{7}",
+							"3",
+							"\\sqrt{6}",
+							"\\sqrt{13}",
+							"\\sqrt{19}",
+							"2 \\sqrt{2}",
+							"\\sqrt{41}",
+							"2 \\sqrt{3}",
+							"\\sqrt{2}",
+							"\\sqrt{15}",
+							"\\sqrt{22}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 51,
+							"nb_distinctes": 31,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.11,
+						"nb_distinctes": 46,
+						"exemples": [
+							"\\sqrt{11}",
+							"\\sqrt{7}",
+							"3",
+							"\\sqrt{6}",
+							"\\sqrt{13}",
+							"\\sqrt{19}",
+							"2 \\sqrt{2}",
+							"\\sqrt{41}",
+							"2 \\sqrt{3}",
+							"\\sqrt{2}",
+							"\\sqrt{15}",
+							"\\sqrt{22}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 51,
+							"nb_distinctes": 31,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -35,
+				"max": 15,
+				"nb_distinctes": 45,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 51,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -35,
+				"max": 51,
+				"nb_distinctes": 64,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 40,
+					"max": 40
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (51)",
+					"graine": 73,
+					"enonce": "Soit $\\left[ AB \\right]$ un segment de longueur $AB = 12$. On considère l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=15$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle de centre $I$, puis détermine son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$r = [?]$",
+					"reponse": ["\\sqrt{51}"],
+					"variables": {
+						"h": "6",
+						"L": "12",
+						"k": "15",
+						"Q": "51",
+						"R": "\\sqrt{51}"
+					}
+				},
+				{
+					"role": "plus petite valeur (-35)",
+					"graine": 266,
+					"enonce": "Soit $\\left[ AB \\right]$ un segment de longueur $AB = 12$. On considère l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=-35$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle de centre $I$, puis détermine son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$r = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"h": "6",
+						"L": "12",
+						"k": "-35",
+						"Q": "1",
+						"R": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $\\left[ AB \\right]$ un segment de longueur $AB = 4$. On considère l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=7$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle de centre $I$, puis détermine son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$r = [?]$",
+					"reponse": ["\\sqrt{11}"],
+					"variables": {
+						"h": "2",
+						"L": "4",
+						"k": "7",
+						"Q": "11",
+						"R": "\\sqrt{11}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $\\left[ AB \\right]$ un segment de longueur $AB = 6$. On considère l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=-2$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle de centre $I$, puis détermine son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$r = [?]$",
+					"reponse": ["\\sqrt{7}"],
+					"variables": {
+						"h": "3",
+						"L": "6",
+						"k": "-2",
+						"Q": "7",
+						"R": "\\sqrt{7}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $\\left[ AB \\right]$ un segment de longueur $AB = 4$. On considère l'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=5$.\n\nEn introduisant le milieu $I$ de $\\left[ AB \\right]$, montre que cet ensemble est un cercle de centre $I$, puis détermine son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$r = [?]$",
+					"reponse": ["3"],
+					"variables": {
+						"h": "2",
+						"L": "4",
+						"k": "5",
+						"Q": "9",
+						"R": "3"
+					}
+				}
+			]
+		}
+	]
+}

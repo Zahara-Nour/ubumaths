@@ -1,0 +1,2825 @@
+{
+	"template_id": "09f0c9ec-70ea-4b90-a949-7c6154e91104",
+	"titre": "Déterminer le coefficient directeur",
+	"sous_titre": "Graphiquement",
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions affines > Apprivoiser",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-347",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 30,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-0-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-3"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": -3,
+						"negatif_possible": true,
+						"nb_distinctes": 1,
+						"valeurs": [-3]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -3,
+				"max": -3,
+				"nb_distinctes": 1,
+				"valeurs": [-3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": -3,
+				"nb_distinctes": 1,
+				"valeurs": [-3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-0-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-3"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-1-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["3"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [3]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-1-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["3"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-2-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-2"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 1,
+						"valeurs": [-2]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -2,
+				"max": -2,
+				"nb_distinctes": 1,
+				"valeurs": [-2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -2,
+				"max": -2,
+				"nb_distinctes": 1,
+				"valeurs": [-2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-2)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-2-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-2"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-3-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-2"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 1,
+						"valeurs": [-2]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -2,
+				"max": -2,
+				"nb_distinctes": 1,
+				"valeurs": [-2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -2,
+				"max": -2,
+				"nb_distinctes": 1,
+				"valeurs": [-2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-2)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-3-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-2"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-4-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-4"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": -4,
+						"negatif_possible": true,
+						"nb_distinctes": 1,
+						"valeurs": [-4]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -4,
+				"max": -4,
+				"nb_distinctes": 1,
+				"valeurs": [-4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": -4,
+				"nb_distinctes": 1,
+				"valeurs": [-4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-4)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-4-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-4"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-5-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["2"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-5-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["2"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-6-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["4"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 4,
+				"max": 4,
+				"nb_distinctes": 1,
+				"valeurs": [4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 4,
+				"max": 4,
+				"nb_distinctes": 1,
+				"valeurs": [4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-6-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["4"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 8,
+			"graines": "1..300 (modèle réduit à la variation 8)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-7-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["4"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 4,
+				"max": 4,
+				"nb_distinctes": 1,
+				"valeurs": [4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 4,
+				"max": 4,
+				"nb_distinctes": 1,
+				"valeurs": [4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-7-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["4"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 9,
+			"graines": "1..300 (modèle réduit à la variation 9)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-8-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-4"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": -4,
+						"negatif_possible": true,
+						"nb_distinctes": 1,
+						"valeurs": [-4]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -4,
+				"max": -4,
+				"nb_distinctes": 1,
+				"valeurs": [-4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": -4,
+				"nb_distinctes": 1,
+				"valeurs": [-4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-4)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-8-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-4"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 10,
+			"graines": "1..300 (modèle réduit à la variation 10)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-9-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["2"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-9-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["2"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 11,
+			"graines": "1..300 (modèle réduit à la variation 11)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-10-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-1"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 1,
+						"valeurs": [-1]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -1,
+				"max": -1,
+				"nb_distinctes": 1,
+				"valeurs": [-1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": -1,
+				"nb_distinctes": 1,
+				"valeurs": [-1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-1)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-10-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-1"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 12,
+			"graines": "1..300 (modèle réduit à la variation 12)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-11-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["3"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [3]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-11-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["3"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 13,
+			"graines": "1..300 (modèle réduit à la variation 13)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-12-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["2"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-12-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["2"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 14,
+			"graines": "1..300 (modèle réduit à la variation 14)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-13-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-2"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 1,
+						"valeurs": [-2]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -2,
+				"max": -2,
+				"nb_distinctes": 1,
+				"valeurs": [-2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -2,
+				"max": -2,
+				"nb_distinctes": 1,
+				"valeurs": [-2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-2)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-13-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-2"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 15,
+			"graines": "1..300 (modèle réduit à la variation 15)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-14-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-3"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": -3,
+						"negatif_possible": true,
+						"nb_distinctes": 1,
+						"valeurs": [-3]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -3,
+				"max": -3,
+				"nb_distinctes": 1,
+				"valeurs": [-3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": -3,
+				"nb_distinctes": 1,
+				"valeurs": [-3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-14-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-3"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 16,
+			"graines": "1..300 (modèle réduit à la variation 16)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-15-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["\\frac{1}{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.5,
+						"max": 0.5,
+						"negatif_possible": false,
+						"denominateurs": [2],
+						"denominateur_min": 2,
+						"denominateur_max": 2,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{1}{2}"]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-15-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["\\frac{1}{2}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 17,
+			"graines": "1..300 (modèle réduit à la variation 17)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-16-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-\\frac{3}{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{3}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 3,
+							"nb_distinctes": 2,
+							"valeurs": [2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 3,
+				"numerateur_max": 3,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-16-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-\\frac{3}{2}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 18,
+			"graines": "1..300 (modèle réduit à la variation 18)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-17-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-\\frac{4}{3}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{4}{3}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 4,
+							"nb_distinctes": 2,
+							"valeurs": [3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3],
+				"denominateur_min": 3,
+				"denominateur_max": 3,
+				"numerateur_min": 4,
+				"numerateur_max": 4,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-17-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-\\frac{4}{3}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 19,
+			"graines": "1..300 (modèle réduit à la variation 19)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-18-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["\\frac{4}{3}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 1.3333333333333333,
+						"max": 1.3333333333333333,
+						"negatif_possible": false,
+						"denominateurs": [3],
+						"denominateur_min": 3,
+						"denominateur_max": 3,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{4}{3}"]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3],
+				"denominateur_min": 3,
+				"denominateur_max": 3,
+				"numerateur_min": 4,
+				"numerateur_max": 4,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-18-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["\\frac{4}{3}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 20,
+			"graines": "1..300 (modèle réduit à la variation 20)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-19-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["\\frac{2}{3}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.6666666666666666,
+						"max": 0.6666666666666666,
+						"negatif_possible": false,
+						"denominateurs": [3],
+						"denominateur_min": 3,
+						"denominateur_max": 3,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{2}{3}"]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3],
+				"denominateur_min": 3,
+				"denominateur_max": 3,
+				"numerateur_min": 2,
+				"numerateur_max": 2,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-19-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["\\frac{2}{3}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 21,
+			"graines": "1..300 (modèle réduit à la variation 21)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-20-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-\\frac{4}{3}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{4}{3}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 4,
+							"nb_distinctes": 2,
+							"valeurs": [3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3],
+				"denominateur_min": 3,
+				"denominateur_max": 3,
+				"numerateur_min": 4,
+				"numerateur_max": 4,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-20-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-\\frac{4}{3}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 22,
+			"graines": "1..300 (modèle réduit à la variation 22)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-21-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-\\frac{2}{3}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{2}{3}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 3,
+							"nb_distinctes": 2,
+							"valeurs": [2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3],
+				"denominateur_min": 3,
+				"denominateur_max": 3,
+				"numerateur_min": 2,
+				"numerateur_max": 2,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-21-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-\\frac{2}{3}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 23,
+			"graines": "1..300 (modèle réduit à la variation 23)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-22-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["\\frac{2}{3}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.6666666666666666,
+						"max": 0.6666666666666666,
+						"negatif_possible": false,
+						"denominateurs": [3],
+						"denominateur_min": 3,
+						"denominateur_max": 3,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{2}{3}"]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3],
+				"denominateur_min": 3,
+				"denominateur_max": 3,
+				"numerateur_min": 2,
+				"numerateur_max": 2,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-22-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["\\frac{2}{3}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 24,
+			"graines": "1..300 (modèle réduit à la variation 24)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-23-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-\\frac{3}{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{3}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 3,
+							"nb_distinctes": 2,
+							"valeurs": [2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 3,
+				"numerateur_max": 3,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-23-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-\\frac{3}{2}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 25,
+			"graines": "1..300 (modèle réduit à la variation 25)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-24-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-\\frac{1}{3}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{1}{3}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 2,
+							"valeurs": [1, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [1, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [1, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3],
+				"denominateur_min": 3,
+				"denominateur_max": 3,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-24-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-\\frac{1}{3}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 26,
+			"graines": "1..300 (modèle réduit à la variation 26)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-25-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-\\frac{1}{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{1}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-25-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-\\frac{1}{2}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 27,
+			"graines": "1..300 (modèle réduit à la variation 27)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-26-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-\\frac{1}{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{1}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-26-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-\\frac{1}{2}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 28,
+			"graines": "1..300 (modèle réduit à la variation 28)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-27-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["\\frac{3}{4}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.75,
+						"max": 0.75,
+						"negatif_possible": false,
+						"denominateurs": [4],
+						"denominateur_min": 4,
+						"denominateur_max": 4,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{3}{4}"]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [4],
+				"denominateur_min": 4,
+				"denominateur_max": 4,
+				"numerateur_min": 3,
+				"numerateur_max": 3,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-27-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["\\frac{3}{4}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 29,
+			"graines": "1..300 (modèle réduit à la variation 29)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-28-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["-\\frac{3}{4}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{3}{4}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 4,
+							"nb_distinctes": 2,
+							"valeurs": [3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [4],
+				"denominateur_min": 4,
+				"denominateur_max": 4,
+				"numerateur_min": 3,
+				"numerateur_max": 3,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-28-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["-\\frac{3}{4}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 30,
+			"graines": "1..300 (modèle réduit à la variation 30)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le coefficient directeur de cette fonction affine ?\n\n![Question image](fonctions-affines/exemples/fonction_affine-29-600.png)\n\nLe coefficient directeur est $?$.",
+				"reponses_brutes": ["\\frac{2}{3}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.6666666666666666,
+						"max": 0.6666666666666666,
+						"negatif_possible": false,
+						"denominateurs": [3],
+						"denominateur_min": 3,
+						"denominateur_max": 3,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{2}{3}"]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3],
+				"denominateur_min": 3,
+				"denominateur_max": 3,
+				"numerateur_min": 2,
+				"numerateur_max": 2,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"image": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Quel est le coefficient directeur de cette fonction affine ?\n\n[image fonctions-affines/exemples/fonction_affine-29-600.png]\n\nLe coefficient directeur est $[?]$.",
+					"reponse": ["\\frac{2}{3}"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

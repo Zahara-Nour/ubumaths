@@ -1,0 +1,912 @@
+{
+	"template_id": "6ed907d7-03b3-43b2-b737-37bf7c633f16",
+	"titre": "Intégrale d'une fonction positive : aire d'une figure simple",
+	"sous_titre": "∫ₐᵇ f(x) dx = aire sous la courbe, en unités d'aire : rectangle, triangle, trapèze, figure composée (pièges : oubli du ½, produit des bases)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Intégration > Intégrale et aire > Lecture graphique",
+	"mis_a_jour": "2026-10-04T15:23:38.884749+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-274",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-485",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-3..0"
+					},
+					{
+						"name": "b",
+						"expression": "1..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La fonction $f$ est constante sur $\\left[{{a}}\\,;{{b}}\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n```courbe\nx: {{eval:a-1}} ; {{eval:b+1}}\ny: -1 ; {{eval:c+2}}\ngrille: 1 ; 1\nf(x) = {{c}} sur [{{a}} ; {{b}}]   bleu   nom=C_f\naire: f ; {{a}} ; {{b}}\ntaille: moyenne\ndescription: Segment horizontal à hauteur constante, aire du rectangle sous la courbe coloriée.\n```\n\nCalcule $\\displaystyle\\int_{{{a}}}^{{{b}}}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$?$",
+				"reponses_brutes": ["{{eval:c*(b-a)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 0,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -2, -1, 0]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 28,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 28]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -3,
+				"max": 4,
+				"nb_distinctes": 8,
+				"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 28,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 28],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": 28,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 28
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (28)",
+					"graine": 89,
+					"enonce": "La fonction $f$ est constante sur $\\left[-3\\,;4\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-3}^{4}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["28"],
+					"variables": {
+						"a": "-3",
+						"b": "4",
+						"c": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-3)",
+					"graine": 1,
+					"enonce": "La fonction $f$ est constante sur $\\left[-3\\,;3\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-3}^{3}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["24"],
+					"variables": {
+						"a": "-3",
+						"b": "3",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La fonction $f$ est constante sur $\\left[-2\\,;2\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-2}^{2}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["12"],
+					"variables": {
+						"a": "-2",
+						"b": "2",
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La fonction $f$ est constante sur $\\left[-3\\,;2\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-3}^{2}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "-3",
+						"b": "2",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La fonction $f$ est constante sur $\\left[-2\\,;1\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-2}^{1}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "-2",
+						"b": "1",
+						"c": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-2..1"
+					},
+					{
+						"name": "L",
+						"expression": "2..4"
+					},
+					{
+						"name": "m",
+						"expression": "1|2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La fonction $f$ est affine sur $\\left[{{a}}\\,;{{eval:a+L}}\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n```courbe\nx: {{eval:a-1}} ; {{eval:a+L+1}}\ny: -1 ; {{eval:m*L+1}}\ngrille: 1 ; 1\nf(x) = {{m}}*(x-{{a}}) sur [{{a}} ; {{eval:a+L}}]   bleu   nom=C_f\naire: f ; {{a}} ; {{eval:a+L}}\ntaille: moyenne\ndescription: Segment qui part de l'axe des abscisses, aire du triangle sous la courbe coloriée.\n```\n\nCalcule $\\displaystyle\\int_{{{a}}}^{{{eval:a+L}}}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$?$",
+				"reponses_brutes": ["{{eval:m*L^2/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 0, 1]
+					}
+				},
+				{
+					"nom": "L",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.83,
+						"nb_distinctes": 6,
+						"valeurs": ["16", "2", "4", "8", "9", "\\dfrac{9}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 16,
+							"nb_distinctes": 5,
+							"valeurs": [2, 4, 8, 9, 16],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -2,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 16,
+				"nb_distinctes": 5,
+				"valeurs": [2, 4, 8, 9, 16],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -2,
+				"max": 16,
+				"nb_distinctes": 11,
+				"valeurs": [-2, -1, 0, 1, 2, 3, 4, 5, 8, 9, 16],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 51,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 9,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (16)",
+					"graine": 7,
+					"enonce": "La fonction $f$ est affine sur $\\left[-2\\,;2\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-2}^{2}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["16"],
+					"variables": {
+						"a": "-2",
+						"L": "4",
+						"m": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-2)",
+					"graine": 1,
+					"enonce": "La fonction $f$ est affine sur $\\left[-2\\,;1\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-2}^{1}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["9"],
+					"variables": {
+						"a": "-2",
+						"L": "3",
+						"m": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La fonction $f$ est affine sur $\\left[-1\\,;1\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-1}^{1}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "-1",
+						"L": "2",
+						"m": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La fonction $f$ est affine sur $\\left[1\\,;3\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{1}^{3}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "1",
+						"L": "2",
+						"m": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "La fonction $f$ est affine sur $\\left[0\\,;2\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{2}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "0",
+						"L": "2",
+						"m": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-2..1"
+					},
+					{
+						"name": "L",
+						"expression": "2..4"
+					},
+					{
+						"name": "p",
+						"expression": "1..5"
+					},
+					{
+						"name": "q",
+						"expression": "1..5"
+					}
+				],
+				"conditions": ["p != q"],
+				"enonce_brut": "La fonction $f$ est affine sur $\\left[{{a}}\\,;{{eval:a+L}}\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n```courbe\nx: {{eval:a-1}} ; {{eval:a+L+1}}\ny: -1 ; 6\ngrille: 1 ; 1\nf(x) = {{p}}+({{q}}-{{p}})*(x-{{a}})/{{L}} sur [{{a}} ; {{eval:a+L}}]   bleu   nom=C_f\naire: f ; {{a}} ; {{eval:a+L}}\ntaille: moyenne\ndescription: Segment oblique au-dessus de l'axe des abscisses, aire du trapèze sous la courbe coloriée.\n```\n\nCalcule $\\displaystyle\\int_{{{a}}}^{{{eval:a+L}}}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$?$",
+				"reponses_brutes": ["{{eval:(p+q)*L/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 0, 1]
+					}
+				},
+				{
+					"nom": "L",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.82,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"10",
+							"12",
+							"14",
+							"16",
+							"18",
+							"3",
+							"4",
+							"5",
+							"6",
+							"7",
+							"8",
+							"9",
+							"\\dfrac{15}{2}",
+							"\\dfrac{21}{2}",
+							"\\dfrac{27}{2}",
+							"\\dfrac{9}{2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 27,
+							"nb_distinctes": 16,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 21, 27],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -2,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 27,
+				"nb_distinctes": 16,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 21, 27],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -2,
+				"max": 27,
+				"nb_distinctes": 20,
+				"valeurs": [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 21, 27],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 54,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 9,
+				"numerateur_max": 27,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (27)",
+					"graine": 19,
+					"enonce": "La fonction $f$ est affine sur $\\left[-1\\,;2\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-1}^{2}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["\\dfrac{27}{2}"],
+					"variables": {
+						"a": "-1",
+						"L": "3",
+						"p": "4",
+						"q": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-2)",
+					"graine": 3,
+					"enonce": "La fonction $f$ est affine sur $\\left[-2\\,;1\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-2}^{1}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["\\dfrac{15}{2}"],
+					"variables": {
+						"a": "-2",
+						"L": "3",
+						"p": "1",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La fonction $f$ est affine sur $\\left[-1\\,;1\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-1}^{1}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["8"],
+					"variables": {
+						"a": "-1",
+						"L": "2",
+						"p": "3",
+						"q": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La fonction $f$ est affine sur $\\left[1\\,;3\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{1}^{3}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "1",
+						"L": "2",
+						"p": "4",
+						"q": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "La fonction $f$ est affine sur $\\left[-2\\,;2\\right]$, de courbe $\\mathcal{C}_f$ ci-dessous (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{-2}^{2}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["14"],
+					"variables": {
+						"a": "-2",
+						"L": "4",
+						"p": "4",
+						"q": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "h",
+						"expression": "1..3"
+					},
+					{
+						"name": "L1",
+						"expression": "1..3"
+					},
+					{
+						"name": "L2",
+						"expression": "2..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ continue et positive sur $\\left[0\\,;{{eval:L1+L2}}\\right]$ est formée de deux segments (repère orthonormé).\n\n```courbe\nx: -1 ; {{eval:L1+L2+1}}\ny: -1 ; {{eval:h+2}}\ngrille: 1 ; 1\nf(x) = {{h}} sur [0 ; {{L1}}]   bleu   nom=C_f\ng(x) = {{h}}-{{h}}*(x-{{L1}})/{{L2}} sur [{{L1}} ; {{eval:L1+L2}}]   bleu\naire: f ; 0 ; {{L1}}\naire: g ; {{L1}} ; {{eval:L1+L2}}\ntaille: moyenne\ndescription: Un palier horizontal puis une descente jusqu'à l'axe des abscisses ; l'aire sous la courbe est coloriée.\n```\n\nCalcule $\\displaystyle\\int_{0}^{{{eval:L1+L2}}}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$?$",
+				"reponses_brutes": ["{{eval:h*L1+h*L2/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "L1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "L2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.8033333333333333,
+						"nb_distinctes": 17,
+						"valeurs": [
+							"10",
+							"12",
+							"15",
+							"2",
+							"3",
+							"4",
+							"5",
+							"6",
+							"7",
+							"8",
+							"9",
+							"\\dfrac{15}{2}",
+							"\\dfrac{21}{2}",
+							"\\dfrac{27}{2}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{9}{2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 27,
+							"nb_distinctes": 13,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 21, 27],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 7,
+				"nb_distinctes": 6,
+				"valeurs": [0, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 27,
+				"nb_distinctes": 13,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 21, 27],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 27,
+				"nb_distinctes": 14,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 21, 27],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 59,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 5,
+				"numerateur_max": 27,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (27)",
+					"graine": 45,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ continue et positive sur $\\left[0\\,;6\\right]$ est formée de deux segments (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{6}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["\\dfrac{27}{2}"],
+					"variables": {
+						"h": "3",
+						"L1": "3",
+						"L2": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ continue et positive sur $\\left[0\\,;6\\right]$ est formée de deux segments (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{6}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"h": "1",
+						"L1": "2",
+						"L2": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ continue et positive sur $\\left[0\\,;4\\right]$ est formée de deux segments (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{4}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["\\dfrac{5}{2}"],
+					"variables": {
+						"h": "1",
+						"L1": "1",
+						"L2": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ continue et positive sur $\\left[0\\,;3\\right]$ est formée de deux segments (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{3}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"h": "1",
+						"L1": "1",
+						"L2": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ continue et positive sur $\\left[0\\,;7\\right]$ est formée de deux segments (repère orthonormé).\n\n[courbe]\n\nCalcule $\\displaystyle\\int_{0}^{7}f(x)\\,\\mathrm{d}x$ (en unités d'aire).\n\n$[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"h": "1",
+						"L1": "3",
+						"L2": "4"
+					}
+				}
+			]
+		}
+	]
+}

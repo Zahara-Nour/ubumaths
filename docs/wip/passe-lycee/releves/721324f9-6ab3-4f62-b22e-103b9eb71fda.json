@@ -1,0 +1,1531 @@
+{
+	"template_id": "721324f9-6ab3-4f62-b22e-103b9eb71fda",
+	"titre": "Al-Kashi : calculer une longueur",
+	"sous_titre": "Calculer la longueur d'un côté d'un triangle connaissant deux côtés et l'angle compris, avec la formule d'Al-Kashi",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Angles et longueurs",
+	"mis_a_jour": "2026-10-20T20:27:04.57097+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-320",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "3..9"
+					},
+					{
+						"name": "c",
+						"expression": "3..9"
+					},
+					{
+						"name": "al",
+						"expression": "60"
+					},
+					{
+						"name": "Xc",
+						"expression": "{{eval:round(1000*b*cos(al*\\pi/180))/1000}}"
+					},
+					{
+						"name": "Yc",
+						"expression": "{{eval:round(1000*b*sin(al*\\pi/180))/1000}}"
+					},
+					{
+						"name": "Hb",
+						"expression": "{{eval:round(2*b*c*cos(al*\\pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:b^2+c^2-b*c}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:sqrt(N)}}"
+					}
+				],
+				"conditions": ["sqrt(N) != round(sqrt(N))", "b <= 2*c", "c <= 2*b", "Hb >= 70"],
+				"enonce_brut": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $\\widehat{BAC}=60^\\circ$.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(b,c)))/100;d}} ; {{eval:round(100*(max(c,Xc)+0.3*max(b,c)))/100;d}} ; {{eval:round(100*(-0.25*max(b,c)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(b,c)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC : les côtés AB et AC et l'angle en A sont indiqués, la longueur BC est cherchée.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:round(100*(c))/100;d}}, 0, etiquette=\"bas-droite\")\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}}, etiquette=\"haut\")\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*(((c)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(0)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-1))))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/(b)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Xc)/(b)))))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((((c)+(Xc))/2)+(14+5.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+5.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, \"?\")\ntexte({{eval:round(100*((0)+(36+20.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(cos(al*\\pi/360))))/100;d}}, {{eval:round(100*((0)+(36+20.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(sin(al*\\pi/360))))/100;d}}, \"{{al}}°\")\n```\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC=?$ cm",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 32,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "al",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 60,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [60]
+					}
+				},
+				{
+					"nom": "Xc",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.46,
+						"nb_distinctes": 7,
+						"valeurs": [
+							"2",
+							"3",
+							"4",
+							"\\dfrac{3}{2}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{9}{2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 6,
+							"valeurs": [2, 3, 4, 5, 7, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "Yc",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 2.598,
+						"max": 7.794,
+						"negatif_possible": false,
+						"denominateurs": [100, 125, 250, 500],
+						"denominateur_min": 100,
+						"denominateur_max": 500,
+						"nb_distinctes": 7,
+						"valeurs": [
+							"\\dfrac{1299}{250}",
+							"\\dfrac{1299}{500}",
+							"\\dfrac{3031}{500}",
+							"\\dfrac{3897}{500}",
+							"\\dfrac{433}{100}",
+							"\\dfrac{433}{125}",
+							"\\dfrac{866}{125}"
+						]
+					}
+				},
+				{
+					"nom": "Hb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 144,
+						"max": 220,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							144, 155, 157, 162, 173, 180, 186, 189, 192, 197, 200, 202, 204, 210, 214, 215, 217,
+							219, 220
+						]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 13,
+						"max": 73,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [13, 19, 21, 27, 28, 31, 37, 39, 43, 48, 52, 57, 61, 63, 67, 73]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"2 \\sqrt{13}",
+							"2 \\sqrt{7}",
+							"3 \\sqrt{3}",
+							"3 \\sqrt{7}",
+							"4 \\sqrt{3}",
+							"\\sqrt{13}",
+							"\\sqrt{19}",
+							"\\sqrt{21}",
+							"\\sqrt{31}",
+							"\\sqrt{37}",
+							"\\sqrt{39}",
+							"\\sqrt{43}",
+							"\\sqrt{57}",
+							"\\sqrt{61}",
+							"\\sqrt{67}",
+							"\\sqrt{73}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 73,
+							"nb_distinctes": 15,
+							"valeurs": [2, 3, 4, 7, 13, 19, 21, 31, 37, 39, 43, 57, 61, 67, 73],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"2 \\sqrt{13}",
+							"2 \\sqrt{7}",
+							"3 \\sqrt{3}",
+							"3 \\sqrt{7}",
+							"4 \\sqrt{3}",
+							"\\sqrt{13}",
+							"\\sqrt{19}",
+							"\\sqrt{21}",
+							"\\sqrt{31}",
+							"\\sqrt{37}",
+							"\\sqrt{39}",
+							"\\sqrt{43}",
+							"\\sqrt{57}",
+							"\\sqrt{61}",
+							"\\sqrt{67}",
+							"\\sqrt{73}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 73,
+							"nb_distinctes": 15,
+							"valeurs": [2, 3, 4, 7, 13, 19, 21, 31, 37, 39, 43, 57, 61, 67, 73],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 60,
+				"nb_distinctes": 8,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 60],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 73,
+				"nb_distinctes": 15,
+				"valeurs": [2, 3, 4, 7, 13, 19, 21, 31, 37, 39, 43, 57, 61, 67, 73],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 73,
+				"nb_distinctes": 20,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 13, 19, 21, 31, 37, 39, 43, 57, 60, 61, 67, 73],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (73)",
+					"graine": 45,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 8$ cm, $AC = 9$ cm et $\\widehat{BAC}=60^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC = [?]$ cm",
+					"reponse": ["\\sqrt{73}"],
+					"variables": {
+						"b": "9",
+						"c": "8",
+						"al": "60",
+						"Xc": "\\dfrac{9}{2}",
+						"Yc": "\\dfrac{3897}{500}",
+						"Hb": "219",
+						"N": "73",
+						"R": "\\sqrt{73}"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 6,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 6$ cm, $AC = 4$ cm et $\\widehat{BAC}=60^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC = [?]$ cm",
+					"reponse": ["2 \\sqrt{7}"],
+					"variables": {
+						"b": "4",
+						"c": "6",
+						"al": "60",
+						"Xc": "2",
+						"Yc": "\\dfrac{433}{125}",
+						"Hb": "173",
+						"N": "28",
+						"R": "2 \\sqrt{7}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 6$ cm, $AC = 3$ cm et $\\widehat{BAC}=60^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC = [?]$ cm",
+					"reponse": ["3 \\sqrt{3}"],
+					"variables": {
+						"b": "3",
+						"c": "6",
+						"al": "60",
+						"Xc": "\\dfrac{3}{2}",
+						"Yc": "\\dfrac{1299}{500}",
+						"Hb": "144",
+						"N": "27",
+						"R": "3 \\sqrt{3}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 4$ cm, $AC = 5$ cm et $\\widehat{BAC}=60^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC = [?]$ cm",
+					"reponse": ["\\sqrt{21}"],
+					"variables": {
+						"b": "5",
+						"c": "4",
+						"al": "60",
+						"Xc": "\\dfrac{5}{2}",
+						"Yc": "\\dfrac{433}{100}",
+						"Hb": "220",
+						"N": "21",
+						"R": "\\sqrt{21}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 4$ cm, $AC = 8$ cm et $\\widehat{BAC}=60^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC = [?]$ cm",
+					"reponse": ["4 \\sqrt{3}"],
+					"variables": {
+						"b": "8",
+						"c": "4",
+						"al": "60",
+						"Xc": "4",
+						"Yc": "\\dfrac{866}{125}",
+						"Hb": "210",
+						"N": "48",
+						"R": "4 \\sqrt{3}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "2..7"
+					},
+					{
+						"name": "c",
+						"expression": "2..7"
+					},
+					{
+						"name": "al",
+						"expression": "120"
+					},
+					{
+						"name": "Xc",
+						"expression": "{{eval:round(1000*b*cos(al*\\pi/180))/1000}}"
+					},
+					{
+						"name": "Yc",
+						"expression": "{{eval:round(1000*b*sin(al*\\pi/180))/1000}}"
+					},
+					{
+						"name": "Hb",
+						"expression": "{{eval:round(2*b*c*cos(al*\\pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:b^2+c^2+b*c}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:sqrt(N)}}"
+					}
+				],
+				"conditions": ["sqrt(N) != round(sqrt(N))", "b <= 2*c", "c <= 2*b", "Hb >= 70"],
+				"enonce_brut": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $\\widehat{BAC}=120^\\circ$.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(b,c)))/100;d}} ; {{eval:round(100*(max(c,Xc)+0.3*max(b,c)))/100;d}} ; {{eval:round(100*(-0.25*max(b,c)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(b,c)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC : les côtés AB et AC et l'angle en A sont indiqués, la longueur BC est cherchée.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:round(100*(c))/100;d}}, 0, etiquette=\"bas-droite\")\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}}, etiquette=\"haut\")\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*(((c)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(0)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-1))))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/(b)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Xc)/(b)))))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((((c)+(Xc))/2)+(14+5.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+5.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, \"?\")\ntexte({{eval:round(100*((0)+(36+20.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(cos(al*\\pi/360))))/100;d}}, {{eval:round(100*((0)+(36+20.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(sin(al*\\pi/360))))/100;d}}, \"{{al}}°\")\n```\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC=?$ cm",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 26,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "al",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 120,
+						"max": 120,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [120]
+					}
+				},
+				{
+					"nom": "Xc",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.5666666666666667,
+						"nb_distinctes": 6,
+						"valeurs": ["-1", "-2", "-3", "-\\dfrac{3}{2}", "-\\dfrac{5}{2}", "-\\dfrac{7}{2}"],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 7,
+							"nb_distinctes": 7,
+							"valeurs": [-3, -2, -1, 2, 3, 5, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "Yc",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 1.732,
+						"max": 6.062,
+						"negatif_possible": false,
+						"denominateurs": [100, 125, 250, 500],
+						"denominateur_min": 100,
+						"denominateur_max": 500,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"\\dfrac{1299}{250}",
+							"\\dfrac{1299}{500}",
+							"\\dfrac{3031}{500}",
+							"\\dfrac{433}{100}",
+							"\\dfrac{433}{125}",
+							"\\dfrac{433}{250}"
+						]
+					}
+				},
+				{
+					"nom": "Hb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 72,
+						"max": 95,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [72, 77, 83, 85, 87, 89, 90, 91, 92, 93, 94, 95]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 12,
+						"max": 147,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [12, 19, 27, 28, 37, 48, 61, 63, 75, 76, 91, 93, 108, 109, 127, 147]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"2 \\sqrt{19}",
+							"2 \\sqrt{3}",
+							"2 \\sqrt{7}",
+							"3 \\sqrt{3}",
+							"3 \\sqrt{7}",
+							"4 \\sqrt{3}",
+							"5 \\sqrt{3}",
+							"6 \\sqrt{3}",
+							"7 \\sqrt{3}",
+							"\\sqrt{109}",
+							"\\sqrt{127}",
+							"\\sqrt{19}",
+							"\\sqrt{37}",
+							"\\sqrt{61}",
+							"\\sqrt{91}",
+							"\\sqrt{93}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 127,
+							"nb_distinctes": 13,
+							"valeurs": [2, 3, 4, 5, 6, 7, 19, 37, 61, 91, 93, 109, 127],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"2 \\sqrt{19}",
+							"2 \\sqrt{3}",
+							"2 \\sqrt{7}",
+							"3 \\sqrt{3}",
+							"3 \\sqrt{7}",
+							"4 \\sqrt{3}",
+							"5 \\sqrt{3}",
+							"6 \\sqrt{3}",
+							"7 \\sqrt{3}",
+							"\\sqrt{109}",
+							"\\sqrt{127}",
+							"\\sqrt{19}",
+							"\\sqrt{37}",
+							"\\sqrt{61}",
+							"\\sqrt{91}",
+							"\\sqrt{93}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 127,
+							"nb_distinctes": 13,
+							"valeurs": [2, 3, 4, 5, 6, 7, 19, 37, 61, 91, 93, 109, 127],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 120,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 120],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 127,
+				"nb_distinctes": 13,
+				"valeurs": [2, 3, 4, 5, 6, 7, 19, 37, 61, 91, 93, 109, 127],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 127,
+				"nb_distinctes": 14,
+				"valeurs": [2, 3, 4, 5, 6, 7, 19, 37, 61, 91, 93, 109, 120, 127],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (127)",
+					"graine": 10,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 6$ cm, $AC = 7$ cm et $\\widehat{BAC}=120^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC = [?]$ cm",
+					"reponse": ["\\sqrt{127}"],
+					"variables": {
+						"b": "7",
+						"c": "6",
+						"al": "120",
+						"Xc": "-\\dfrac{7}{2}",
+						"Yc": "\\dfrac{3031}{500}",
+						"Hb": "94",
+						"N": "127",
+						"R": "\\sqrt{127}"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 3,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 4$ cm, $AC = 2$ cm et $\\widehat{BAC}=120^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC = [?]$ cm",
+					"reponse": ["2 \\sqrt{7}"],
+					"variables": {
+						"b": "2",
+						"c": "4",
+						"al": "120",
+						"Xc": "-1",
+						"Yc": "\\dfrac{433}{250}",
+						"Hb": "72",
+						"N": "28",
+						"R": "2 \\sqrt{7}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 7$ cm, $AC = 7$ cm et $\\widehat{BAC}=120^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC = [?]$ cm",
+					"reponse": ["7 \\sqrt{3}"],
+					"variables": {
+						"b": "7",
+						"c": "7",
+						"al": "120",
+						"Xc": "-\\dfrac{7}{2}",
+						"Yc": "\\dfrac{3031}{500}",
+						"Hb": "95",
+						"N": "147",
+						"R": "7 \\sqrt{3}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 3$ cm, $AC = 3$ cm et $\\widehat{BAC}=120^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC = [?]$ cm",
+					"reponse": ["3 \\sqrt{3}"],
+					"variables": {
+						"b": "3",
+						"c": "3",
+						"al": "120",
+						"Xc": "-\\dfrac{3}{2}",
+						"Yc": "\\dfrac{1299}{500}",
+						"Hb": "95",
+						"N": "27",
+						"R": "3 \\sqrt{3}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 3$ cm, $AC = 6$ cm et $\\widehat{BAC}=120^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$BC = [?]$ cm",
+					"reponse": ["3 \\sqrt{7}"],
+					"variables": {
+						"b": "6",
+						"c": "3",
+						"al": "120",
+						"Xc": "-3",
+						"Yc": "\\dfrac{1299}{250}",
+						"Hb": "83",
+						"N": "63",
+						"R": "3 \\sqrt{7}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "3..9"
+					},
+					{
+						"name": "c",
+						"expression": "3..9"
+					},
+					{
+						"name": "n",
+						"expression": "7..29!12,18,24"
+					},
+					{
+						"name": "al",
+						"expression": "{{eval:5*n}}"
+					},
+					{
+						"name": "Xc",
+						"expression": "{{eval:round(1000*b*cos(al*\\pi/180))/1000}}"
+					},
+					{
+						"name": "Yc",
+						"expression": "{{eval:round(1000*b*sin(al*\\pi/180))/1000}}"
+					},
+					{
+						"name": "Hb",
+						"expression": "{{eval:round(2*b*c*cos(al*\\pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:b^2+c^2}}"
+					},
+					{
+						"name": "P",
+						"expression": "{{eval:2*b*c}}"
+					},
+					{
+						"name": "L",
+						"expression": "{{eval:sqrt(b^2+c^2-2*b*c*cos(al*\\pi/180))}}"
+					}
+				],
+				"conditions": ["abs(abs(10*L-round(10*L))-0.5) > 0.1", "b <= 2*c", "c <= 2*b", "Hb >= 70"],
+				"enonce_brut": "Dans le triangle $ABC$ ci-dessous, $AB={{c}}$ cm, $AC={{b}}$ cm et $\\widehat{BAC}={{al}}^\\circ$.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(b,c)))/100;d}} ; {{eval:round(100*(max(c,Xc)+0.3*max(b,c)))/100;d}} ; {{eval:round(100*(-0.25*max(b,c)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(b,c)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC : les côtés AB et AC et l'angle en A sont indiqués, la longueur BC est cherchée.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:round(100*(c))/100;d}}, 0, etiquette=\"bas-droite\")\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}}, etiquette=\"haut\")\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*(((c)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(0)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-1))))/100;d}}, \"{{c}} cm\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/(b)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Xc)/(b)))))/100;d}}, \"{{b}} cm\")\ntexte({{eval:round(100*((((c)+(Xc))/2)+(14+5.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+5.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, \"?\")\ntexte({{eval:round(100*((0)+(36+20.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(cos(al*\\pi/360))))/100;d}}, {{eval:round(100*((0)+(36+20.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(sin(al*\\pi/360))))/100;d}}, \"{{al}}°\")\n```\n\nCalcule la longueur $BC$, arrondie au dixième de centimètre.\n\n$BC\\approx ?$ cm",
+				"reponses_brutes": ["{{eval:round(10*L)/10;d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 231,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 26,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 25, 26]
+					}
+				},
+				{
+					"nom": "al",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 35,
+						"max": 130,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [35, 40, 45, 50, 55, 65, 70, 75, 80, 85, 95, 100, 105, 110, 115, 125, 130]
+					}
+				},
+				{
+					"nom": "Xc",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 103,
+						"exemples": [
+							"\\dfrac{3857}{1000}",
+							"-\\dfrac{109}{250}",
+							"\\dfrac{1149}{500}",
+							"\\dfrac{383}{100}",
+							"-\\dfrac{2071}{1000}",
+							"\\dfrac{983}{200}",
+							"\\dfrac{523}{1000}",
+							"-\\dfrac{1479}{500}",
+							"\\dfrac{3381}{1000}",
+							"-\\dfrac{2581}{500}",
+							"-\\dfrac{521}{500}",
+							"-\\dfrac{169}{100}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 6553,
+							"nb_distinctes": 67,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				},
+				{
+					"nom": "Yc",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 1.928,
+						"max": 8.966,
+						"negatif_possible": false,
+						"denominateurs": [2, 4, 8, 20, 100, 125, 200, 250, 500, 1000],
+						"denominateur_min": 2,
+						"denominateur_max": 1000,
+						"nb_distinctes": 65
+					}
+				},
+				{
+					"nom": "Hb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 70,
+						"max": 241,
+						"negatif_possible": false,
+						"nb_distinctes": 112
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 18,
+						"max": 162,
+						"negatif_possible": false,
+						"nb_distinctes": 24,
+						"valeurs": [
+							18, 25, 32, 34, 41, 45, 50, 52, 61, 65, 72, 74, 80, 85, 89, 98, 100, 106, 113, 117,
+							128, 130, 145, 162
+						]
+					}
+				},
+				{
+					"nom": "P",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 18,
+						"max": 162,
+						"negatif_possible": false,
+						"nb_distinctes": 24,
+						"valeurs": [
+							18, 24, 30, 32, 36, 40, 48, 50, 56, 60, 64, 70, 72, 80, 84, 90, 96, 98, 108, 112, 126,
+							128, 144, 162
+						]
+					}
+				},
+				{
+					"nom": "L",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 190,
+						"exemples": [
+							"\\sqrt{-72 \\cos\\left( \\dfrac{5}{18} \\pi \\right) + 72}",
+							"\\sqrt{-40 \\cos\\left( \\dfrac{19}{36} \\pi \\right) + 41}",
+							"\\sqrt{-36 \\cos\\left( \\dfrac{2}{9} \\pi \\right) + 45}",
+							"\\sqrt{-40 \\cos\\left( \\dfrac{2}{9} \\pi \\right) + 41}",
+							"\\sqrt{-64 \\cos\\left( \\dfrac{7}{12} \\pi \\right) + 80}",
+							"\\sqrt{-36 \\cos\\left( \\dfrac{7}{36} \\pi \\right) + 45}",
+							"\\sqrt{-60 \\cos\\left( \\dfrac{17}{36} \\pi \\right) + 61}",
+							"\\sqrt{-70 \\cos\\left( \\dfrac{23}{36} \\pi \\right) + 74}",
+							"\\sqrt{-112 \\cos\\left( \\dfrac{13}{36} \\pi \\right) + 113}",
+							"\\sqrt{-126 \\cos\\left( \\dfrac{25}{36} \\pi \\right) + 130}",
+							"\\sqrt{-84 \\cos\\left( \\dfrac{5}{9} \\pi \\right) + 85}",
+							"\\sqrt{-24 \\cos\\left( \\dfrac{23}{36} \\pi \\right) + 25}"
+						],
+						"nombres_contenus": {
+							"min": -162,
+							"max": 162,
+							"nb_distinctes": 69,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 2.5,
+						"max": 16.3,
+						"negatif_possible": false,
+						"nb_distinctes": 95
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 130,
+				"nb_distinctes": 24,
+				"valeurs": [
+					3, 4, 5, 6, 7, 8, 9, 35, 40, 45, 50, 55, 65, 70, 75, 80, 85, 95, 100, 105, 110, 115, 125,
+					130
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2.5,
+				"max": 16.3,
+				"nb_distinctes": 95,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2.5,
+				"max": 130,
+				"nb_distinctes": 114,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≈": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (130)",
+					"graine": 60,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 8$ cm, $AC = 7$ cm et $\\widehat{BAC}=130^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$, arrondie au dixième de centimètre.\n\n$BC\\approx [?]$ cm",
+					"reponse": ["13.6"],
+					"variables": {
+						"b": "7",
+						"c": "8",
+						"n": "26",
+						"al": "130",
+						"Xc": "-\\dfrac{9}{2}",
+						"Yc": "\\dfrac{2681}{500}",
+						"Hb": "73",
+						"N": "113",
+						"P": "112",
+						"L": "\\sqrt{-112 \\cos\\left( \\dfrac{13}{18} \\pi \\right) + 113}"
+					}
+				},
+				{
+					"role": "plus petite valeur (2.5)",
+					"graine": 27,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 3$ cm, $AC = 3$ cm et $\\widehat{BAC}=50^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$, arrondie au dixième de centimètre.\n\n$BC\\approx [?]$ cm",
+					"reponse": ["2.5"],
+					"variables": {
+						"b": "3",
+						"c": "3",
+						"n": "10",
+						"al": "50",
+						"Xc": "\\dfrac{241}{125}",
+						"Yc": "\\dfrac{1149}{500}",
+						"Hb": "227",
+						"N": "18",
+						"P": "18",
+						"L": "\\sqrt{-18 \\cos\\left( \\dfrac{5}{18} \\pi \\right) + 18}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 6$ cm, $AC = 6$ cm et $\\widehat{BAC}=50^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$, arrondie au dixième de centimètre.\n\n$BC\\approx [?]$ cm",
+					"reponse": ["5.1"],
+					"variables": {
+						"b": "6",
+						"c": "6",
+						"n": "10",
+						"al": "50",
+						"Xc": "\\dfrac{3857}{1000}",
+						"Yc": "\\dfrac{1149}{250}",
+						"Hb": "227",
+						"N": "72",
+						"P": "72",
+						"L": "\\sqrt{-72 \\cos\\left( \\dfrac{5}{18} \\pi \\right) + 72}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 4$ cm, $AC = 5$ cm et $\\widehat{BAC}=95^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$, arrondie au dixième de centimètre.\n\n$BC\\approx [?]$ cm",
+					"reponse": ["6.7"],
+					"variables": {
+						"b": "5",
+						"c": "4",
+						"n": "19",
+						"al": "95",
+						"Xc": "-\\dfrac{109}{250}",
+						"Yc": "\\dfrac{4981}{1000}",
+						"Hb": "162",
+						"N": "41",
+						"P": "40",
+						"L": "\\sqrt{-40 \\cos\\left( \\dfrac{19}{36} \\pi \\right) + 41}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le triangle $ABC$ ci-dessous, $AB = 6$ cm, $AC = 3$ cm et $\\widehat{BAC}=40^\\circ$.\n\n[figure]\n\nCalcule la longueur $BC$, arrondie au dixième de centimètre.\n\n$BC\\approx [?]$ cm",
+					"reponse": ["4.2"],
+					"variables": {
+						"b": "3",
+						"c": "6",
+						"n": "8",
+						"al": "40",
+						"Xc": "\\dfrac{1149}{500}",
+						"Yc": "\\dfrac{241}{125}",
+						"Hb": "157",
+						"N": "45",
+						"P": "36",
+						"L": "\\sqrt{-36 \\cos\\left( \\dfrac{2}{9} \\pi \\right) + 45}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "20..90"
+					},
+					{
+						"name": "c",
+						"expression": "20..90"
+					},
+					{
+						"name": "n",
+						"expression": "7..29!12,18,24"
+					},
+					{
+						"name": "al",
+						"expression": "{{eval:5*n}}"
+					},
+					{
+						"name": "Xc",
+						"expression": "{{eval:round(1000*b*cos(al*\\pi/180))/1000}}"
+					},
+					{
+						"name": "Yc",
+						"expression": "{{eval:round(1000*b*sin(al*\\pi/180))/1000}}"
+					},
+					{
+						"name": "Hb",
+						"expression": "{{eval:round(2*b*c*cos(al*\\pi/360)/(b+c)*400/(max(c,Xc)-min(0,Xc)+0.6*max(b,c)))}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:b^2+c^2}}"
+					},
+					{
+						"name": "P",
+						"expression": "{{eval:2*b*c}}"
+					},
+					{
+						"name": "L",
+						"expression": "{{eval:sqrt(b^2+c^2-2*b*c*cos(al*\\pi/180))}}"
+					}
+				],
+				"conditions": [
+					"abs(abs(10*L-round(10*L))-0.5) > 0.1",
+					"abs(b-c) >= 5",
+					"b <= 2*c",
+					"c <= 2*b",
+					"Hb >= 70"
+				],
+				"enonce_brut": "Deux randonneurs partent du même point $A$. Le premier marche en ligne droite jusqu'au point $B$, à ${{c}}$ m de $A$ ; le second marche en ligne droite jusqu'au point $C$, à ${{b}}$ m de $A$. Les deux directions forment un angle $\\widehat{BAC}={{al}}^\\circ$.\n\n```figure\nfenetre: {{eval:round(100*(min(0,Xc)-0.3*max(b,c)))/100;d}} ; {{eval:round(100*(max(c,Xc)+0.3*max(b,c)))/100;d}} ; {{eval:round(100*(-0.25*max(b,c)))/100;d}} ; {{eval:round(100*(Yc+0.25*max(b,c)))/100;d}}\ntaille: moyenne\ndescription: Triangle ABC : AB, AC et l'angle en A sont indiqués, la distance BC est cherchée.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{eval:round(100*(c))/100;d}}, 0, etiquette=\"bas-droite\")\nC = point({{eval:round(100*(Xc))/100;d}}, {{eval:round(100*(Yc))/100;d}}, etiquette=\"haut\")\nt = polygone(A, B, C)\nangle(B, A, C)\ntexte({{eval:round(100*(((c)/2)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(0)))/100;d}}, {{eval:round(100*((0)+(14+25.0*abs(0)+7.0*abs((-1)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-1))))/100;d}}, \"{{c}} m\")\ntexte({{eval:round(100*(((Xc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((-(Yc)/(b)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+25.0*abs((-(Yc)/(b)))+7.0*abs(((Xc)/(b))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Xc)/(b)))))/100;d}}, \"{{b}} m\")\ntexte({{eval:round(100*((((c)+(Xc))/2)+(14+5.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, {{eval:round(100*(((Yc)/2)+(14+5.0*abs(((Yc)/sqrt(((Xc)-(c))^2+(Yc)^2)))+7.0*abs((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2))))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*((((c)-(Xc))/sqrt(((Xc)-(c))^2+(Yc)^2)))))/100;d}}, \"?\")\ntexte({{eval:round(100*((0)+(36+20.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(cos(al*\\pi/360))))/100;d}}, {{eval:round(100*((0)+(36+20.0*abs(cos(al*\\pi/360))+7.0*abs(sin(al*\\pi/360)))*((max(c,Xc)-min(0,Xc)+0.6*max(b,c))/400)*(sin(al*\\pi/360))))/100;d}}, \"{{al}}°\")\n```\n\nCalcule la distance $BC$ qui sépare les deux randonneurs, arrondie au dixième de mètre.\n\n$BC\\approx ?$ m",
+				"reponses_brutes": ["{{eval:round(10*L)/10;d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 70
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 26,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 25, 26]
+					}
+				},
+				{
+					"nom": "al",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 35,
+						"max": 130,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [35, 40, 45, 50, 55, 65, 70, 75, 80, 85, 95, 100, 105, 110, 115, 125, 130]
+					}
+				},
+				{
+					"nom": "Xc",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 263,
+						"exemples": [
+							"\\dfrac{15427}{500}",
+							"\\dfrac{21223}{1000}",
+							"\\dfrac{5449}{250}",
+							"\\dfrac{1647}{50}",
+							"-\\dfrac{3557}{200}",
+							"\\dfrac{70447}{1000}",
+							"-\\dfrac{15637}{1000}",
+							"-\\dfrac{3381}{125}",
+							"\\dfrac{29161}{1000}",
+							"-\\dfrac{24377}{500}",
+							"-\\dfrac{4949}{500}",
+							"-\\dfrac{12679}{1000}"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 70447,
+							"nb_distinctes": 239,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 5
+						}
+					}
+				},
+				{
+					"nom": "Yc",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 14.913,
+						"max": 89.658,
+						"negatif_possible": false,
+						"denominateurs": [5, 25, 40, 50, 100, 125, 200, 250, 500, 1000],
+						"denominateur_min": 5,
+						"denominateur_max": 1000,
+						"nb_distinctes": 242
+					}
+				},
+				{
+					"nom": "Hb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 71,
+						"max": 242,
+						"negatif_possible": false,
+						"nb_distinctes": 128
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1213,
+						"max": 14989,
+						"negatif_possible": false,
+						"nb_distinctes": 271
+					}
+				},
+				{
+					"nom": "P",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1188,
+						"max": 14940,
+						"negatif_possible": false,
+						"nb_distinctes": 266
+					}
+				},
+				{
+					"nom": "L",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 298,
+						"exemples": [
+							"\\sqrt{-3552 \\cos\\left( \\dfrac{5}{18} \\pi \\right) + 3673}",
+							"\\sqrt{-10496 \\cos\\left( \\dfrac{5}{12} \\pi \\right) + 10820}",
+							"\\sqrt{-4484 \\cos\\left( \\dfrac{11}{36} \\pi \\right) + 4925}",
+							"\\sqrt{-3010 \\cos\\left( \\dfrac{2}{9} \\pi \\right) + 3074}",
+							"\\sqrt{-8736 \\cos\\left( \\dfrac{11}{18} \\pi \\right) + 9760}",
+							"\\sqrt{-8084 \\cos\\left( \\dfrac{7}{36} \\pi \\right) + 9605}",
+							"\\sqrt{-4366 \\cos\\left( \\dfrac{23}{36} \\pi \\right) + 4850}",
+							"\\sqrt{-5248 \\cos\\left( \\dfrac{23}{36} \\pi \\right) + 5777}",
+							"\\sqrt{-8418 \\cos\\left( \\dfrac{13}{36} \\pi \\right) + 8482}",
+							"\\sqrt{-11730 \\cos\\left( \\dfrac{25}{36} \\pi \\right) + 11986}",
+							"\\sqrt{-7182 \\cos\\left( \\dfrac{5}{9} \\pi \\right) + 7218}",
+							"\\sqrt{-1200 \\cos\\left( \\dfrac{23}{36} \\pi \\right) + 1300}"
+						],
+						"nombres_contenus": {
+							"min": -14940,
+							"max": 14989,
+							"nb_distinctes": 552,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 5
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 22.4,
+						"max": 152.6,
+						"negatif_possible": false,
+						"nb_distinctes": 254
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 20,
+				"max": 130,
+				"nb_distinctes": 78,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 22.4,
+				"max": 152.6,
+				"nb_distinctes": 254,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 20,
+				"max": 152.6,
+				"nb_distinctes": 310,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≈": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 44,
+					"max": 44
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (152.6)",
+					"graine": 127,
+					"enonce": "Deux randonneurs partent du même point $A$. Le premier marche en ligne droite jusqu'au point $B$, à $82$ m de $A$ ; le second marche en ligne droite jusqu'au point $C$, à $90$ m de $A$. Les deux directions forment un angle $\\widehat{BAC}=125^\\circ$.\n\n[figure]\n\nCalcule la distance $BC$ qui sépare les deux randonneurs, arrondie au dixième de mètre.\n\n$BC\\approx [?]$ m",
+					"reponse": ["152.6"],
+					"variables": {
+						"b": "90",
+						"c": "82",
+						"n": "25",
+						"al": "125",
+						"Xc": "-\\dfrac{25811}{500}",
+						"Yc": "\\dfrac{18431}{250}",
+						"Hb": "84",
+						"N": "14824",
+						"P": "14760",
+						"L": "\\sqrt{-14760 \\cos\\left( \\dfrac{25}{36} \\pi \\right) + 14824}"
+					}
+				},
+				{
+					"role": "plus petite valeur (20)",
+					"graine": 12,
+					"enonce": "Deux randonneurs partent du même point $A$. Le premier marche en ligne droite jusqu'au point $B$, à $20$ m de $A$ ; le second marche en ligne droite jusqu'au point $C$, à $30$ m de $A$. Les deux directions forment un angle $\\widehat{BAC}=115^\\circ$.\n\n[figure]\n\nCalcule la distance $BC$ qui sépare les deux randonneurs, arrondie au dixième de mètre.\n\n$BC\\approx [?]$ m",
+					"reponse": ["42.5"],
+					"variables": {
+						"b": "30",
+						"c": "20",
+						"n": "23",
+						"al": "115",
+						"Xc": "-\\dfrac{12679}{1000}",
+						"Yc": "\\dfrac{27189}{1000}",
+						"Hb": "102",
+						"N": "1300",
+						"P": "1200",
+						"L": "\\sqrt{-1200 \\cos\\left( \\dfrac{23}{36} \\pi \\right) + 1300}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Deux randonneurs partent du même point $A$. Le premier marche en ligne droite jusqu'au point $B$, à $37$ m de $A$ ; le second marche en ligne droite jusqu'au point $C$, à $48$ m de $A$. Les deux directions forment un angle $\\widehat{BAC}=50^\\circ$.\n\n[figure]\n\nCalcule la distance $BC$ qui sépare les deux randonneurs, arrondie au dixième de mètre.\n\n$BC\\approx [?]$ m",
+					"reponse": ["37.3"],
+					"variables": {
+						"b": "48",
+						"c": "37",
+						"n": "10",
+						"al": "50",
+						"Xc": "\\dfrac{15427}{500}",
+						"Yc": "\\dfrac{3677}{100}",
+						"Hb": "230",
+						"N": "3673",
+						"P": "3552",
+						"L": "\\sqrt{-3552 \\cos\\left( \\dfrac{5}{18} \\pi \\right) + 3673}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Deux randonneurs partent du même point $A$. Le premier marche en ligne droite jusqu'au point $B$, à $64$ m de $A$ ; le second marche en ligne droite jusqu'au point $C$, à $82$ m de $A$. Les deux directions forment un angle $\\widehat{BAC}=75^\\circ$.\n\n[figure]\n\nCalcule la distance $BC$ qui sépare les deux randonneurs, arrondie au dixième de mètre.\n\n$BC\\approx [?]$ m",
+					"reponse": ["90"],
+					"variables": {
+						"b": "82",
+						"c": "64",
+						"n": "15",
+						"al": "75",
+						"Xc": "\\dfrac{21223}{1000}",
+						"Yc": "\\dfrac{39603}{500}",
+						"Hb": "202",
+						"N": "10820",
+						"P": "10496",
+						"L": "\\sqrt{-10496 \\cos\\left( \\dfrac{5}{12} \\pi \\right) + 10820}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Deux randonneurs partent du même point $A$. Le premier marche en ligne droite jusqu'au point $B$, à $59$ m de $A$ ; le second marche en ligne droite jusqu'au point $C$, à $38$ m de $A$. Les deux directions forment un angle $\\widehat{BAC}=55^\\circ$.\n\n[figure]\n\nCalcule la distance $BC$ qui sépare les deux randonneurs, arrondie au dixième de mètre.\n\n$BC\\approx [?]$ m",
+					"reponse": ["48.5"],
+					"variables": {
+						"b": "38",
+						"c": "59",
+						"n": "11",
+						"al": "55",
+						"Xc": "\\dfrac{5449}{250}",
+						"Yc": "\\dfrac{3891}{125}",
+						"Hb": "174",
+						"N": "4925",
+						"P": "4484",
+						"L": "\\sqrt{-4484 \\cos\\left( \\dfrac{11}{36} \\pi \\right) + 4925}"
+					}
+				}
+			]
+		}
+	]
+}

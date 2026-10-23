@@ -1,0 +1,1636 @@
+{
+	"template_id": "d6938108-2f87-430c-bc69-c2b148356087",
+	"titre": "Espace : coordonnées de vecteurs et de points",
+	"sous_titre": "Coordonnées de AB, d'une combinaison linéaire, du milieu, de l'image par une translation, du 4e sommet d'un parallélogramme (pièges : A − B, z oublié, signe)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Vecteurs, droites et plans de l'espace > Coordonnées dans l'espace",
+	"mis_a_jour": "2026-10-04T21:39:26.104536+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-332",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "ax",
+						"expression": "-6..6"
+					},
+					{
+						"name": "ay",
+						"expression": "-6..6"
+					},
+					{
+						"name": "az",
+						"expression": "-6..6"
+					},
+					{
+						"name": "bx",
+						"expression": "-6..6"
+					},
+					{
+						"name": "by",
+						"expression": "-6..6"
+					},
+					{
+						"name": "bz",
+						"expression": "-6..6"
+					}
+				],
+				"conditions": ["abs(bx-ax)+abs(by-ay)+abs(bz-az) > 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$ : $?$",
+				"reponses_brutes": ["({{eval:bx-ax}};{{eval:by-ay}};{{eval:bz-az}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "bx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "by",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "bz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 290,
+						"exemples": [
+							"(12;-3;-5)",
+							"(7;5;0)",
+							"(9;1;6)",
+							"(-1;4;0)",
+							"(-9;5;1)",
+							"(7;-8;-2)",
+							"(6;-7;-3)",
+							"(-1;2;1)",
+							"(-2;7;-7)",
+							"(-6;-3;-8)",
+							"(5;-1;-6)",
+							"(1;-7;-3)"
+						],
+						"nombres_contenus": {
+							"min": -12,
+							"max": 12,
+							"nb_distinctes": 25,
+							"valeurs": [
+								-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+								11, 12
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 25,
+				"valeurs": [
+					-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+					12
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 25,
+				"valeurs": [
+					-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+					12
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["vecteur"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-6\\,;\\,0\\,;\\,6)$ et $B(6\\,;\\,-3\\,;\\,1)$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$ : $[?]$",
+					"reponse": ["(12;-3;-5)"],
+					"variables": {
+						"ax": "-6",
+						"ay": "0",
+						"az": "6",
+						"bx": "6",
+						"by": "-3",
+						"bz": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-12)",
+					"graine": 175,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(6\\,;\\,-1\\,;\\,-5)$ et $B(-6\\,;\\,-3\\,;\\,0)$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$ : $[?]$",
+					"reponse": ["(-12;-2;5)"],
+					"variables": {
+						"ax": "6",
+						"ay": "-1",
+						"az": "-5",
+						"bx": "-6",
+						"by": "-3",
+						"bz": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-2\\,;\\,-3\\,;\\,0)$ et $B(5\\,;\\,2\\,;\\,0)$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$ : $[?]$",
+					"reponse": ["(7;5;0)"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-3",
+						"az": "0",
+						"bx": "5",
+						"by": "2",
+						"bz": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-6\\,;\\,-1\\,;\\,-6)$ et $B(3\\,;\\,0\\,;\\,0)$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$ : $[?]$",
+					"reponse": ["(9;1;6)"],
+					"variables": {
+						"ax": "-6",
+						"ay": "-1",
+						"az": "-6",
+						"bx": "3",
+						"by": "0",
+						"bz": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-2\\,;\\,-4\\,;\\,-5)$ et $B(-3\\,;\\,0\\,;\\,-5)$.\n\nDonne les coordonnées du vecteur $\\overrightarrow{AB}$ : $[?]$",
+					"reponse": ["(-1;4;0)"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-4",
+						"az": "-5",
+						"bx": "-3",
+						"by": "0",
+						"bz": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "u1",
+						"expression": "-5..5"
+					},
+					{
+						"name": "u2",
+						"expression": "-5..5"
+					},
+					{
+						"name": "u3",
+						"expression": "-5..5"
+					},
+					{
+						"name": "v1",
+						"expression": "-5..5"
+					},
+					{
+						"name": "v2",
+						"expression": "-5..5"
+					},
+					{
+						"name": "v3",
+						"expression": "-5..5"
+					},
+					{
+						"name": "p",
+						"expression": "2..4"
+					},
+					{
+						"name": "q",
+						"expression": "2..4;±"
+					}
+				],
+				"conditions": ["abs(u1)+abs(u2)+abs(u3) > 0", "abs(v1)+abs(v2)+abs(v3) > 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\\\{{v3}}\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{w}={{p}}\\vec{u}{{q;+}}\\vec{v}$ : $?$",
+				"reponses_brutes": ["({{eval:p*u1+q*v1}};{{eval:p*u2+q*v2}};{{eval:p*u3+q*v3}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "v1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "v2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "v3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-4, -3, -2, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 300,
+						"exemples": [
+							"(-30;4;18)",
+							"(6;-3;0)",
+							"(-19;0;-10)",
+							"(-14;-12;-30)",
+							"(-11;-5;11)",
+							"(-20;-12;-32)",
+							"(-10;8;4)",
+							"(4;-6;12)",
+							"(8;-24;28)",
+							"(10;8;18)",
+							"(8;3;-7)",
+							"(-23;-7;19)"
+						],
+						"nombres_contenus": {
+							"min": -32,
+							"max": 40,
+							"nb_distinctes": 66,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 5,
+				"nb_distinctes": 6,
+				"valeurs": [0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -32,
+				"max": 40,
+				"nb_distinctes": 66,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -32,
+				"max": 40,
+				"nb_distinctes": 66,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["vecteur"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "262/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "152/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (40)",
+					"graine": 75,
+					"enonce": "Dans l'espace muni d'un repère, on considère les vecteurs $\\vec{u}\\begin{pmatrix}-5\\\\4\\\\-5\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-1\\\\1\\\\5\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{w}=4\\vec{u}-4\\vec{v}$ : $[?]$",
+					"reponse": ["(-16;12;-40)"],
+					"variables": {
+						"u1": "-5",
+						"u2": "4",
+						"u3": "-5",
+						"v1": "-1",
+						"v2": "1",
+						"v3": "5",
+						"p": "4",
+						"q": "-4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-32)",
+					"graine": 232,
+					"enonce": "Dans l'espace muni d'un repère, on considère les vecteurs $\\vec{u}\\begin{pmatrix}-4\\\\-3\\\\-4\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}4\\\\5\\\\0\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{w}=4\\vec{u}-4\\vec{v}$ : $[?]$",
+					"reponse": ["(-32;-32;-16)"],
+					"variables": {
+						"u1": "-4",
+						"u2": "-3",
+						"u3": "-4",
+						"v1": "4",
+						"v2": "5",
+						"v3": "0",
+						"p": "4",
+						"q": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère, on considère les vecteurs $\\vec{u}\\begin{pmatrix}-5\\\\0\\\\5\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}5\\\\-2\\\\1\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{w}=4\\vec{u}-2\\vec{v}$ : $[?]$",
+					"reponse": ["(-30;4;18)"],
+					"variables": {
+						"u1": "-5",
+						"u2": "0",
+						"u3": "5",
+						"v1": "5",
+						"v2": "-2",
+						"v3": "1",
+						"p": "4",
+						"q": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère, on considère les vecteurs $\\vec{u}\\begin{pmatrix}-2\\\\-2\\\\0\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}4\\\\1\\\\0\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{w}=3\\vec{u}+3\\vec{v}$ : $[?]$",
+					"reponse": ["(6;-3;0)"],
+					"variables": {
+						"u1": "-2",
+						"u2": "-2",
+						"u3": "0",
+						"v1": "4",
+						"v2": "1",
+						"v3": "0",
+						"p": "3",
+						"q": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère, on considère les vecteurs $\\vec{u}\\begin{pmatrix}-5\\\\0\\\\-5\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}3\\\\0\\\\0\\end{pmatrix}$.\n\nDonne les coordonnées du vecteur $\\vec{w}=2\\vec{u}-3\\vec{v}$ : $[?]$",
+					"reponse": ["(-19;0;-10)"],
+					"variables": {
+						"u1": "-5",
+						"u2": "0",
+						"u3": "-5",
+						"v1": "3",
+						"v2": "0",
+						"v3": "0",
+						"p": "2",
+						"q": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "ax",
+						"expression": "-6..6"
+					},
+					{
+						"name": "ay",
+						"expression": "-6..6"
+					},
+					{
+						"name": "az",
+						"expression": "-6..6"
+					},
+					{
+						"name": "bx",
+						"expression": "-6..6"
+					},
+					{
+						"name": "by",
+						"expression": "-6..6"
+					},
+					{
+						"name": "bz",
+						"expression": "-6..6"
+					}
+				],
+				"conditions": ["abs(bx-ax)+abs(by-ay)+abs(bz-az) > 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nDonne les coordonnées du milieu $I$ du segment $[AB]$.\n\n$I(?\\,;\\,?\\,;\\,?)$",
+				"reponses_brutes": ["{{eval:(ax+bx)/2}}", "{{eval:(ay+by)/2}}", "{{eval:(az+bz)/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "bx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "by",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "bz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.46,
+						"nb_distinctes": 24,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-3",
+							"-4",
+							"-5",
+							"-\\dfrac{11}{2}",
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"-\\dfrac{7}{2}",
+							"-\\dfrac{9}{2}",
+							"0",
+							"1",
+							"2",
+							"3",
+							"4",
+							"5",
+							"6",
+							"\\dfrac{11}{2}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{9}{2}"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 11,
+							"nb_distinctes": 15,
+							"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 9, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.5033333333333333,
+						"nb_distinctes": 24,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-3",
+							"-4",
+							"-5",
+							"-6",
+							"-\\dfrac{11}{2}",
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"-\\dfrac{7}{2}",
+							"-\\dfrac{9}{2}",
+							"0",
+							"1",
+							"2",
+							"3",
+							"4",
+							"5",
+							"\\dfrac{11}{2}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{9}{2}"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 11,
+							"nb_distinctes": 15,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 7, 9, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.44,
+						"nb_distinctes": 23,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-3",
+							"-4",
+							"-5",
+							"-6",
+							"-\\dfrac{11}{2}",
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"-\\dfrac{7}{2}",
+							"-\\dfrac{9}{2}",
+							"0",
+							"1",
+							"2",
+							"3",
+							"4",
+							"\\dfrac{11}{2}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{9}{2}"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 11,
+							"nb_distinctes": 15,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 7, 9, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 11,
+				"nb_distinctes": 16,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 9, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 11,
+				"nb_distinctes": 16,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 9, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 479,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 11,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (11)",
+					"graine": 12,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-6\\,;\\,1\\,;\\,6)$ et $B(-5\\,;\\,-6\\,;\\,3)$.\n\nDonne les coordonnées du milieu $I$ du segment $\\left[ AB \\right]$.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-\\dfrac{11}{2}", "-\\dfrac{5}{2}", "\\dfrac{9}{2}"],
+					"variables": {
+						"ax": "-6",
+						"ay": "1",
+						"az": "6",
+						"bx": "-5",
+						"by": "-6",
+						"bz": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-6\\,;\\,0\\,;\\,6)$ et $B(6\\,;\\,-3\\,;\\,1)$.\n\nDonne les coordonnées du milieu $I$ du segment $\\left[ AB \\right]$.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["0", "-\\dfrac{3}{2}", "\\dfrac{7}{2}"],
+					"variables": {
+						"ax": "-6",
+						"ay": "0",
+						"az": "6",
+						"bx": "6",
+						"by": "-3",
+						"bz": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-2\\,;\\,-3\\,;\\,0)$ et $B(5\\,;\\,2\\,;\\,0)$.\n\nDonne les coordonnées du milieu $I$ du segment $\\left[ AB \\right]$.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["\\dfrac{3}{2}", "-\\dfrac{1}{2}", "0"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-3",
+						"az": "0",
+						"bx": "5",
+						"by": "2",
+						"bz": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-6\\,;\\,-1\\,;\\,-6)$ et $B(3\\,;\\,0\\,;\\,0)$.\n\nDonne les coordonnées du milieu $I$ du segment $\\left[ AB \\right]$.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-\\dfrac{3}{2}", "-\\dfrac{1}{2}", "-3"],
+					"variables": {
+						"ax": "-6",
+						"ay": "-1",
+						"az": "-6",
+						"bx": "3",
+						"by": "0",
+						"bz": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-2\\,;\\,-4\\,;\\,-5)$ et $B(-3\\,;\\,0\\,;\\,-5)$.\n\nDonne les coordonnées du milieu $I$ du segment $\\left[ AB \\right]$.\n\n$I([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-\\dfrac{5}{2}", "-2", "-5"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-4",
+						"az": "-5",
+						"bx": "-3",
+						"by": "0",
+						"bz": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "ax",
+						"expression": "-6..6"
+					},
+					{
+						"name": "ay",
+						"expression": "-6..6"
+					},
+					{
+						"name": "az",
+						"expression": "-6..6"
+					},
+					{
+						"name": "u1",
+						"expression": "-5..5"
+					},
+					{
+						"name": "u2",
+						"expression": "-5..5"
+					},
+					{
+						"name": "u3",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": ["abs(u1)+abs(u2)+abs(u3) > 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le vecteur $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$.\n\nLe point $C$ est l'image de $A$ par la translation de vecteur $\\vec{u}$. Donne ses coordonnées.\n\n$C(?\\,;\\,?\\,;\\,?)$",
+				"reponses_brutes": ["{{eval:ax+u1}}", "{{eval:ay+u2}}", "{{eval:az+u3}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 22,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+						]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 22,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -11,
+				"max": 11,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -11,
+				"max": 11,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "136/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 25,
+					"max": 25
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (11)",
+					"graine": 79,
+					"enonce": "Dans l'espace muni d'un repère, on considère le point $A(6\\,;\\,3\\,;\\,-1)$ et le vecteur $\\vec{u}\\begin{pmatrix}5\\\\-3\\\\-5\\end{pmatrix}$.\n\nLe point $C$ est l'image de $A$ par la translation de vecteur $\\vec{u}$. Donne ses coordonnées.\n\n$C([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["11", "0", "-6"],
+					"variables": {
+						"ax": "6",
+						"ay": "3",
+						"az": "-1",
+						"u1": "5",
+						"u2": "-3",
+						"u3": "-5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-11)",
+					"graine": 13,
+					"enonce": "Dans l'espace muni d'un repère, on considère le point $A(-2\\,;\\,-6\\,;\\,-6)$ et le vecteur $\\vec{u}\\begin{pmatrix}-5\\\\-5\\\\-4\\end{pmatrix}$.\n\nLe point $C$ est l'image de $A$ par la translation de vecteur $\\vec{u}$. Donne ses coordonnées.\n\n$C([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-7", "-11", "-10"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-6",
+						"az": "-6",
+						"u1": "-5",
+						"u2": "-5",
+						"u3": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère, on considère le point $A(-6\\,;\\,0\\,;\\,6)$ et le vecteur $\\vec{u}\\begin{pmatrix}5\\\\-2\\\\1\\end{pmatrix}$.\n\nLe point $C$ est l'image de $A$ par la translation de vecteur $\\vec{u}$. Donne ses coordonnées.\n\n$C([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-1", "-2", "7"],
+					"variables": {
+						"ax": "-6",
+						"ay": "0",
+						"az": "6",
+						"u1": "5",
+						"u2": "-2",
+						"u3": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère, on considère le point $A(-2\\,;\\,-3\\,;\\,0)$ et le vecteur $\\vec{u}\\begin{pmatrix}4\\\\1\\\\0\\end{pmatrix}$.\n\nLe point $C$ est l'image de $A$ par la translation de vecteur $\\vec{u}$. Donne ses coordonnées.\n\n$C([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["2", "-2", "0"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-3",
+						"az": "0",
+						"u1": "4",
+						"u2": "1",
+						"u3": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère, on considère le point $A(-6\\,;\\,-1\\,;\\,-6)$ et le vecteur $\\vec{u}\\begin{pmatrix}3\\\\0\\\\0\\end{pmatrix}$.\n\nLe point $C$ est l'image de $A$ par la translation de vecteur $\\vec{u}$. Donne ses coordonnées.\n\n$C([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-3", "-1", "-6"],
+					"variables": {
+						"ax": "-6",
+						"ay": "-1",
+						"az": "-6",
+						"u1": "3",
+						"u2": "0",
+						"u3": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "ax",
+						"expression": "-6..6"
+					},
+					{
+						"name": "ay",
+						"expression": "-6..6"
+					},
+					{
+						"name": "az",
+						"expression": "-6..6"
+					},
+					{
+						"name": "bx",
+						"expression": "-6..6"
+					},
+					{
+						"name": "by",
+						"expression": "-6..6"
+					},
+					{
+						"name": "bz",
+						"expression": "-6..6"
+					},
+					{
+						"name": "cx",
+						"expression": "-6..6"
+					},
+					{
+						"name": "cy",
+						"expression": "-6..6"
+					},
+					{
+						"name": "cz",
+						"expression": "-6..6"
+					}
+				],
+				"conditions": [
+					"(by-ay)*(cz-az)-(bz-az)*(cy-ay) != 0 || (bz-az)*(cx-ax)-(bx-ax)*(cz-az) != 0 || (bx-ax)*(cy-ay)-(by-ay)*(cx-ax) != 0"
+				],
+				"enonce_brut": "Dans l'espace muni d'un repère, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$.\n\nDonne les coordonnées du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$D(?\\,;\\,?\\,;\\,?)$",
+				"reponses_brutes": ["{{eval:ax+cx-bx}}", "{{eval:ay+cy-by}}", "{{eval:az+cz-bz}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "bx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "by",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "bz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "cx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "cy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "cz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 16,
+						"negatif_possible": true,
+						"nb_distinctes": 31
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -16,
+						"max": 18,
+						"negatif_possible": true,
+						"nb_distinctes": 33
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -17,
+						"max": 18,
+						"negatif_possible": true,
+						"nb_distinctes": 36
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -17,
+				"max": 18,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -17,
+				"max": 18,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 53,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(4\\,;\\,-6\\,;\\,6)$, $B(-5\\,;\\,0\\,;\\,-6)$ et $C(4\\,;\\,0\\,;\\,6)$.\n\nDonne les coordonnées du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$D([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["13", "-6", "18"],
+					"variables": {
+						"ax": "4",
+						"ay": "-6",
+						"az": "6",
+						"bx": "-5",
+						"by": "0",
+						"bz": "-6",
+						"cx": "4",
+						"cy": "0",
+						"cz": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-17)",
+					"graine": 75,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-6\\,;\\,5\\,;\\,-6)$, $B(-1\\,;\\,1\\,;\\,6)$ et $C(6\\,;\\,-6\\,;\\,-5)$.\n\nDonne les coordonnées du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$D([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["1", "-2", "-17"],
+					"variables": {
+						"ax": "-6",
+						"ay": "5",
+						"az": "-6",
+						"bx": "-1",
+						"by": "1",
+						"bz": "6",
+						"cx": "6",
+						"cy": "-6",
+						"cz": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-6\\,;\\,0\\,;\\,6)$, $B(6\\,;\\,-3\\,;\\,1)$ et $C(3\\,;\\,-1\\,;\\,6)$.\n\nDonne les coordonnées du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$D([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-9", "2", "11"],
+					"variables": {
+						"ax": "-6",
+						"ay": "0",
+						"az": "6",
+						"bx": "6",
+						"by": "-3",
+						"bz": "1",
+						"cx": "3",
+						"cy": "-1",
+						"cz": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-2\\,;\\,-3\\,;\\,0)$, $B(5\\,;\\,2\\,;\\,0)$ et $C(-2\\,;\\,4\\,;\\,-5)$.\n\nDonne les coordonnées du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$D([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-9", "-1", "-5"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-3",
+						"az": "0",
+						"bx": "5",
+						"by": "2",
+						"bz": "0",
+						"cx": "-2",
+						"cy": "4",
+						"cz": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère, on considère les points $A(-6\\,;\\,-1\\,;\\,-6)$, $B(3\\,;\\,0\\,;\\,0)$ et $C(-4\\,;\\,-3\\,;\\,1)$.\n\nDonne les coordonnées du point $D$ tel que $ABCD$ soit un parallélogramme.\n\n$D([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-13", "-4", "-5"],
+					"variables": {
+						"ax": "-6",
+						"ay": "-1",
+						"az": "-6",
+						"bx": "3",
+						"by": "0",
+						"bz": "0",
+						"cx": "-4",
+						"cy": "-3",
+						"cz": "1"
+					}
+				}
+			]
+		}
+	]
+}

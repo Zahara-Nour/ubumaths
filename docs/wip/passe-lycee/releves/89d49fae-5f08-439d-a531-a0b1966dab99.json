@@ -1,0 +1,510 @@
+{
+	"template_id": "89d49fae-5f08-439d-a531-a0b1966dab99",
+	"titre": "Principe additif : « ou », sans compter deux fois",
+	"sous_titre": "Cardinal d'une réunion d'ensembles deux à deux disjoints : sorties, codes de 3 ou 4 chiffres, cartes « cœur ou figure » (pièges : multiplier au lieu d'additionner, compter deux fois l'intersection)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > Principes additif et multiplicatif",
+	"mis_a_jour": "2026-10-05T06:04:00.70766+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-305",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "5..12"
+					},
+					{
+						"name": "t",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Pour sa soirée, Inès hésite entre le cinéma, où ${{c}}$ films sont à l'affiche, et le théâtre, où ${{t}}$ pièces sont jouées. Elle ne fera qu'**une seule** sortie.\n\nCombien de choix a-t-elle ?\n\n$?$",
+				"reponses_brutes": ["{{eval:c+t}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 40,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 7,
+				"max": 18,
+				"nb_distinctes": 12,
+				"valeurs": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 18,
+				"nb_distinctes": 17,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 29,
+					"max": 29
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 73,
+					"enonce": "Pour sa soirée, Inès hésite entre le cinéma, où $12$ films sont à l'affiche, et le théâtre, où $6$ pièces sont jouées. Elle ne fera qu'une seule sortie.\n\nCombien de choix a-t-elle ?\n\n$[?]$",
+					"reponse": ["18"],
+					"variables": {
+						"c": "12",
+						"t": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 9,
+					"enonce": "Pour sa soirée, Inès hésite entre le cinéma, où $11$ films sont à l'affiche, et le théâtre, où $2$ pièces sont jouées. Elle ne fera qu'une seule sortie.\n\nCombien de choix a-t-elle ?\n\n$[?]$",
+					"reponse": ["13"],
+					"variables": {
+						"c": "11",
+						"t": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Pour sa soirée, Inès hésite entre le cinéma, où $5$ films sont à l'affiche, et le théâtre, où $4$ pièces sont jouées. Elle ne fera qu'une seule sortie.\n\nCombien de choix a-t-elle ?\n\n$[?]$",
+					"reponse": ["9"],
+					"variables": {
+						"c": "5",
+						"t": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Pour sa soirée, Inès hésite entre le cinéma, où $7$ films sont à l'affiche, et le théâtre, où $3$ pièces sont jouées. Elle ne fera qu'une seule sortie.\n\nCombien de choix a-t-elle ?\n\n$[?]$",
+					"reponse": ["10"],
+					"variables": {
+						"c": "7",
+						"t": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Pour sa soirée, Inès hésite entre le cinéma, où $11$ films sont à l'affiche, et le théâtre, où $3$ pièces sont jouées. Elle ne fera qu'une seule sortie.\n\nCombien de choix a-t-elle ?\n\n$[?]$",
+					"reponse": ["14"],
+					"variables": {
+						"c": "11",
+						"t": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "3..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un code d'accès est formé soit de ${{k}}$ chiffres, soit de ${{eval:k+1}}$ chiffres (de $0$ à $9$, un chiffre pouvant être répété).\n\nCombien de codes différents existe-t-il ?\n\n$?$",
+				"reponses_brutes": ["{{eval:10^k+10^(k+1)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11000,
+						"max": 1100000,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [11000, 110000, 1100000]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 6,
+				"valeurs": [0, 3, 4, 5, 6, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 11000,
+				"max": 1100000,
+				"nb_distinctes": 3,
+				"valeurs": [11000, 110000, 1100000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 1100000,
+				"nb_distinctes": 9,
+				"valeurs": [0, 3, 4, 5, 6, 9, 11000, 110000, 1100000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1100000)",
+					"graine": 5,
+					"enonce": "Un code d'accès est formé soit de $5$ chiffres, soit de $6$ chiffres (de $0$ à $9$, un chiffre pouvant être répété).\n\nCombien de codes différents existe-t-il ?\n\n$[?]$",
+					"reponse": ["1100000"],
+					"variables": {
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Un code d'accès est formé soit de $3$ chiffres, soit de $4$ chiffres (de $0$ à $9$, un chiffre pouvant être répété).\n\nCombien de codes différents existe-t-il ?\n\n$[?]$",
+					"reponse": ["11000"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Un code d'accès est formé soit de $4$ chiffres, soit de $5$ chiffres (de $0$ à $9$, un chiffre pouvant être répété).\n\nCombien de codes différents existe-t-il ?\n\n$[?]$",
+					"reponse": ["110000"],
+					"variables": {
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On considère un jeu de $32$ cartes (as, roi, dame, valet, $10$, $9$, $8$, $7$ dans chacune des quatre couleurs).\n\nCombien de cartes sont un cœur **ou** une figure (roi, dame, valet) ?\n\n$?$",
+				"reponses_brutes": ["17"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 17,
+						"max": 17,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [17]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 7,
+				"max": 32,
+				"nb_distinctes": 5,
+				"valeurs": [7, 8, 9, 10, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 17,
+				"max": 17,
+				"nb_distinctes": 1,
+				"valeurs": [17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 7,
+				"max": 32,
+				"nb_distinctes": 6,
+				"valeurs": [7, 8, 9, 10, 17, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (32)",
+					"graine": 1,
+					"enonce": "On considère un jeu de $32$ cartes (as, roi, dame, valet, $10$, $9$, $8$, $7$ dans chacune des quatre couleurs).\n\nCombien de cartes sont un cœur ou une figure (roi, dame, valet) ?\n\n$[?]$",
+					"reponse": ["17"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "On considère un jeu de $52$ cartes ($13$ cartes dans chacune des quatre couleurs, dont un as par couleur).\n\nCombien de cartes sont un pique **ou** un as ?\n\n$?$",
+				"reponses_brutes": ["16"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 16,
+						"max": 16,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [16]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 13,
+				"max": 52,
+				"nb_distinctes": 2,
+				"valeurs": [13, 52],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 16,
+				"max": 16,
+				"nb_distinctes": 1,
+				"valeurs": [16],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 13,
+				"max": 52,
+				"nb_distinctes": 3,
+				"valeurs": [13, 16, 52],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (52)",
+					"graine": 1,
+					"enonce": "On considère un jeu de $52$ cartes ($13$ cartes dans chacune des quatre couleurs, dont un as par couleur).\n\nCombien de cartes sont un pique ou un as ?\n\n$[?]$",
+					"reponse": ["16"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

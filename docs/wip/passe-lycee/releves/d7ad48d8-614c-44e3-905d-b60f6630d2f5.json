@@ -1,0 +1,816 @@
+{
+	"template_id": "d7ad48d8-614c-44e3-905d-b60f6630d2f5",
+	"titre": "Est-ce l’équation d’un cercle ?",
+	"sous_titre": "Compléter les carrés dans x² + y² + αx + βy + γ = 0 : cercle, point ou ensemble vide selon le signe du second membre",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Géométrie > Géométrie repérée > Équation de cercle",
+	"mis_a_jour": "2026-10-03T14:03:48.960781+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-333",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "b",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "t",
+						"expression": "-1..1"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "S",
+						"expression": "{{eval:t*k^2}}"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a^2+b^2-S}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$\\mathcal{E}$ est un cercle."
+					},
+					{
+						"content": "$\\mathcal{E}$ est réduit à un point."
+					},
+					{
+						"content": "$\\mathcal{E}$ est l'ensemble vide."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 244,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "S",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -25,
+						"max": 25,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-25, -16, -9, -4, -1, 0, 1, 4, 9, 16, 25]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -23,
+						"max": 75,
+						"negatif_possible": true,
+						"nb_distinctes": 63
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"\\mathcal{E}$ est l'ensemble vide.",
+							"\\mathcal{E}$ est réduit à un point.",
+							"\\mathcal{E}$ est un cercle."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 75,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 75,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "151/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (75)",
+					"graine": 27,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $x^2 + y^2 + 10 x + 10 y + 75 = 0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n- A. $\\mathcal{E}$ est un cercle.\n- B. $\\mathcal{E}$ est réduit à un point.\n- C. $\\mathcal{E}$ est l'ensemble vide.",
+					"reponse": ["C. $\\mathcal{E}$ est l'ensemble vide."],
+					"variables": {
+						"a": "-5",
+						"b": "-5",
+						"t": "-1",
+						"k": "5",
+						"S": "-25",
+						"c": "75"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $x^2 + y^2 + 10 x - 10 y + 46 = 0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n- A. $\\mathcal{E}$ est un cercle.\n- B. $\\mathcal{E}$ est réduit à un point.\n- C. $\\mathcal{E}$ est l'ensemble vide.",
+					"reponse": ["A. $\\mathcal{E}$ est un cercle."],
+					"variables": {
+						"a": "-5",
+						"b": "5",
+						"t": "1",
+						"k": "2",
+						"S": "4",
+						"c": "46"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $x^2 + y^2 + 4 x + 4 y + 8 = 0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n- A. $\\mathcal{E}$ est un cercle.\n- B. $\\mathcal{E}$ est réduit à un point.\n- C. $\\mathcal{E}$ est l'ensemble vide.",
+					"reponse": ["B. $\\mathcal{E}$ est réduit à un point."],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"t": "0",
+						"k": "5",
+						"S": "0",
+						"c": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $x^2 + y^2 + 10 x + 10 y + 41 = 0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n- A. $\\mathcal{E}$ est un cercle.\n- B. $\\mathcal{E}$ est réduit à un point.\n- C. $\\mathcal{E}$ est l'ensemble vide.",
+					"reponse": ["A. $\\mathcal{E}$ est un cercle."],
+					"variables": {
+						"a": "-5",
+						"b": "-5",
+						"t": "1",
+						"k": "3",
+						"S": "9",
+						"c": "41"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $x^2 + y^2 + 4 x + 6 y + 17 = 0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n- A. $\\mathcal{E}$ est un cercle.\n- B. $\\mathcal{E}$ est réduit à un point.\n- C. $\\mathcal{E}$ est l'ensemble vide.",
+					"reponse": ["C. $\\mathcal{E}$ est l'ensemble vide."],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"t": "-1",
+						"k": "2",
+						"S": "-4",
+						"c": "17"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "b",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "t",
+						"expression": "-1..1"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "S",
+						"expression": "{{eval:t*k^2}}"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a^2+b^2-S}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. L'équation $x^2+y^2{{eval:-2*a;+}}x{{eval:-2*b;+}}y{{c;+}}=0$ est-elle l'équation d'un cercle ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui, c'est l'équation d'un cercle."
+					},
+					{
+						"content": "Non, ce n'est pas l'équation d'un cercle."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 244,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "S",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -25,
+						"max": 25,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-25, -16, -9, -4, -1, 0, 1, 4, 9, 16, 25]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -23,
+						"max": 75,
+						"negatif_possible": true,
+						"nb_distinctes": 63
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": [
+							"Non, ce n'est pas l'équation d'un cercle.",
+							"Oui, c'est l'équation d'un cercle."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 75,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 75,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "151/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 25,
+					"max": 25
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (75)",
+					"graine": 27,
+					"enonce": "Le plan est muni d'un repère orthonormé. L'équation $x^2 + y^2 + 10 x + 10 y + 75 = 0$ est-elle l'équation d'un cercle ?\n\n- A. Oui, c'est l'équation d'un cercle.\n- B. Non, ce n'est pas l'équation d'un cercle.",
+					"reponse": ["B. Non, ce n'est pas l'équation d'un cercle."],
+					"variables": {
+						"a": "-5",
+						"b": "-5",
+						"t": "-1",
+						"k": "5",
+						"S": "-25",
+						"c": "75"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. L'équation $x^2 + y^2 + 10 x - 10 y + 46 = 0$ est-elle l'équation d'un cercle ?\n\n- A. Oui, c'est l'équation d'un cercle.\n- B. Non, ce n'est pas l'équation d'un cercle.",
+					"reponse": ["A. Oui, c'est l'équation d'un cercle."],
+					"variables": {
+						"a": "-5",
+						"b": "5",
+						"t": "1",
+						"k": "2",
+						"S": "4",
+						"c": "46"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. L'équation $x^2 + y^2 + 4 x + 4 y + 8 = 0$ est-elle l'équation d'un cercle ?\n\n- A. Oui, c'est l'équation d'un cercle.\n- B. Non, ce n'est pas l'équation d'un cercle.",
+					"reponse": ["B. Non, ce n'est pas l'équation d'un cercle."],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"t": "0",
+						"k": "5",
+						"S": "0",
+						"c": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. L'équation $x^2 + y^2 + 10 x + 10 y + 41 = 0$ est-elle l'équation d'un cercle ?\n\n- A. Oui, c'est l'équation d'un cercle.\n- B. Non, ce n'est pas l'équation d'un cercle.",
+					"reponse": ["A. Oui, c'est l'équation d'un cercle."],
+					"variables": {
+						"a": "-5",
+						"b": "-5",
+						"t": "1",
+						"k": "3",
+						"S": "9",
+						"c": "41"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. L'équation $x^2 + y^2 + 4 x + 6 y + 17 = 0$ est-elle l'équation d'un cercle ?\n\n- A. Oui, c'est l'équation d'un cercle.\n- B. Non, ce n'est pas l'équation d'un cercle.",
+					"reponse": ["B. Non, ce n'est pas l'équation d'un cercle."],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"t": "-1",
+						"k": "2",
+						"S": "-4",
+						"c": "17"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "2..3"
+					},
+					{
+						"name": "a",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "b",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "t",
+						"expression": "-1..1"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "S",
+						"expression": "{{eval:t*k^2}}"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a^2+b^2-S}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que ${{m}}x^2+{{m}}y^2{{eval:-2*m*a;+}}x{{eval:-2*m*b;+}}y{{eval:m*c;+}}=0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$\\mathcal{E}$ est un cercle."
+					},
+					{
+						"content": "$\\mathcal{E}$ est réduit à un point."
+					},
+					{
+						"content": "$\\mathcal{E}$ est l'ensemble vide."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 264,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "S",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -25,
+						"max": 25,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-25, -16, -9, -4, -1, 0, 1, 4, 9, 16, 25]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -23,
+						"max": 66,
+						"negatif_possible": true,
+						"nb_distinctes": 59
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"\\mathcal{E}$ est l'ensemble vide.",
+							"\\mathcal{E}$ est réduit à un point.",
+							"\\mathcal{E}$ est un cercle."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 198,
+				"nb_distinctes": 75,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 198,
+				"nb_distinctes": 75,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "159/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (198)",
+					"graine": 131,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $3 x^2 + 3 y^2 + 24 x + 30 y + 198 = 0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n- A. $\\mathcal{E}$ est un cercle.\n- B. $\\mathcal{E}$ est réduit à un point.\n- C. $\\mathcal{E}$ est l'ensemble vide.",
+					"reponse": ["C. $\\mathcal{E}$ est l'ensemble vide."],
+					"variables": {
+						"m": "3",
+						"a": "-4",
+						"b": "-5",
+						"t": "-1",
+						"k": "5",
+						"S": "-25",
+						"c": "66"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $2 x^2 + 2 y^2 - 20 x - 20 y + 132 = 0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n- A. $\\mathcal{E}$ est un cercle.\n- B. $\\mathcal{E}$ est réduit à un point.\n- C. $\\mathcal{E}$ est l'ensemble vide.",
+					"reponse": ["C. $\\mathcal{E}$ est l'ensemble vide."],
+					"variables": {
+						"m": "2",
+						"a": "5",
+						"b": "5",
+						"t": "-1",
+						"k": "4",
+						"S": "-16",
+						"c": "66"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $2 x^2 + 2 y^2 + 8 x - 16 y + 40 = 0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n- A. $\\mathcal{E}$ est un cercle.\n- B. $\\mathcal{E}$ est réduit à un point.\n- C. $\\mathcal{E}$ est l'ensemble vide.",
+					"reponse": ["B. $\\mathcal{E}$ est réduit à un point."],
+					"variables": {
+						"m": "2",
+						"a": "-2",
+						"b": "4",
+						"t": "0",
+						"k": "3",
+						"S": "0",
+						"c": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $2 x^2 + 2 y^2 + 20 x - 12 y + 68 = 0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n- A. $\\mathcal{E}$ est un cercle.\n- B. $\\mathcal{E}$ est réduit à un point.\n- C. $\\mathcal{E}$ est l'ensemble vide.",
+					"reponse": ["B. $\\mathcal{E}$ est réduit à un point."],
+					"variables": {
+						"m": "2",
+						"a": "-5",
+						"b": "3",
+						"t": "0",
+						"k": "3",
+						"S": "0",
+						"c": "34"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère l'ensemble $\\mathcal{E}$ des points $M(x\\,;y)$ du plan tels que $2 x^2 + 2 y^2 + 12 x + 20 y + 86 = 0$.\n\nQuelle est la nature de $\\mathcal{E}$ ?\n\n- A. $\\mathcal{E}$ est un cercle.\n- B. $\\mathcal{E}$ est réduit à un point.\n- C. $\\mathcal{E}$ est l'ensemble vide.",
+					"reponse": ["C. $\\mathcal{E}$ est l'ensemble vide."],
+					"variables": {
+						"m": "2",
+						"a": "-3",
+						"b": "-5",
+						"t": "-1",
+						"k": "3",
+						"S": "-9",
+						"c": "43"
+					}
+				}
+			]
+		}
+	]
+}

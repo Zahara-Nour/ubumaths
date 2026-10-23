@@ -1,0 +1,602 @@
+{
+	"template_id": "34e569e7-7834-456f-8e48-65b2a1183030",
+	"titre": "Opposé d'une expression",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Valeur absolue > Apprivoiser",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-262",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est l'opposé de l'expression :\n\n$${{eval:ax}}$$\n\nL'opposé est $?$.",
+				"reponses_brutes": ["{{eval:-(a)x}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["-2x", "-x", "2x", "x"],
+						"nombres_contenus": {
+							"min": -2,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [-2, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -2,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [-2, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -2,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [-2, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$-2 x$$\n\nL'opposé est $[?]$.",
+					"reponse": ["2x"],
+					"variables": {
+						"a": "-2",
+						"b": "1",
+						"x": "x"
+					}
+				},
+				{
+					"role": "plus petite valeur (-2)",
+					"graine": 5,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$2 x$$\n\nL'opposé est $[?]$.",
+					"reponse": ["-2x"],
+					"variables": {
+						"a": "2",
+						"b": "-6",
+						"x": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$-x$$\n\nL'opposé est $[?]$.",
+					"reponse": ["x"],
+					"variables": {
+						"a": "-1",
+						"b": "-4",
+						"x": "x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$x$$\n\nL'opposé est $[?]$.",
+					"reponse": ["-x"],
+					"variables": {
+						"a": "1",
+						"b": "-4",
+						"x": "x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est l'opposé de l'expression :\n\n$$x{{eval:b;+}}$$\n\nL'opposé est $?$.",
+				"reponses_brutes": ["-x{{eval:-(b);+}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 18,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 18,
+						"valeurs": [
+							"-x+1",
+							"-x+2",
+							"-x+3",
+							"-x+4",
+							"-x+5",
+							"-x+6",
+							"-x+7",
+							"-x+8",
+							"-x+9",
+							"-x-1",
+							"-x-2",
+							"-x-3",
+							"-x-4",
+							"-x-5",
+							"-x-6",
+							"-x-7",
+							"-x-8",
+							"-x-9"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "169/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$x + 9$$\n\nL'opposé est $[?]$.",
+					"reponse": ["-x-9"],
+					"variables": {
+						"a": "-2",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$x + 1$$\n\nL'opposé est $[?]$.",
+					"reponse": ["-x-1"],
+					"variables": {
+						"a": "-2",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$x - 4$$\n\nL'opposé est $[?]$.",
+					"reponse": ["-x+4"],
+					"variables": {
+						"a": "-1",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$x - 1$$\n\nL'opposé est $[?]$.",
+					"reponse": ["-x+1"],
+					"variables": {
+						"a": "-2",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$x - 6$$\n\nL'opposé est $[?]$.",
+					"reponse": ["-x+6"],
+					"variables": {
+						"a": "-1",
+						"b": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est l'opposé de l'expression :\n\n$${{b}}-x$$\n\nL'opposé est $?$.",
+				"reponses_brutes": ["{{eval:-(b)}}+x"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 18,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 18,
+						"valeurs": [
+							"-1+x",
+							"-2+x",
+							"-3+x",
+							"-4+x",
+							"-5+x",
+							"-6+x",
+							"-7+x",
+							"-8+x",
+							"-9+x",
+							"1+x",
+							"2+x",
+							"3+x",
+							"4+x",
+							"5+x",
+							"6+x",
+							"7+x",
+							"8+x",
+							"9+x"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 18,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$9 - x$$\n\nL'opposé est $[?]$.",
+					"reponse": ["-9+x"],
+					"variables": {
+						"a": "-2",
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$1 - x$$\n\nL'opposé est $[?]$.",
+					"reponse": ["-1+x"],
+					"variables": {
+						"a": "-2",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$-4 - x$$\n\nL'opposé est $[?]$.",
+					"reponse": ["4+x"],
+					"variables": {
+						"a": "-1",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$-1 - x$$\n\nL'opposé est $[?]$.",
+					"reponse": ["1+x"],
+					"variables": {
+						"a": "-2",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est l'opposé de l'expression :\n\n$$-6 - x$$\n\nL'opposé est $[?]$.",
+					"reponse": ["6+x"],
+					"variables": {
+						"a": "-1",
+						"b": "-6"
+					}
+				}
+			]
+		}
+	]
+}

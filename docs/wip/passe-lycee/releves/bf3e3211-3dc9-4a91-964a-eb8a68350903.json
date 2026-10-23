@@ -1,0 +1,750 @@
+{
+	"template_id": "bf3e3211-3dc9-4a91-964a-eb8a68350903",
+	"titre": "Conjecturer le sens de variation d'une suite sur un nuage de points",
+	"sous_titre": "Points qui montent, qui descendent, ou ni l'un ni l'autre",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Sens de variation > Lecture graphique",
+	"mis_a_jour": "2026-10-01T20:22:23.548614+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-219",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-4..2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{9}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 10\ny: {{eval:a-2}} ; 6\nu(0) = {{a}} ; u(n+1) = 0.5*u(n)+2 pour n de 0 à 9   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 2,
+				"valeurs": [0, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 2,
+				"valeurs": [0, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Les premiers termes d'une suite $\\left( u_n \\right)$, de $u_0$ à $u_9$, sont représentés ci-dessous.\n\n[courbe]\n\nAu vu du graphique, quel semble être le sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"a": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "6..12"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{9}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 10\ny: -1 ; {{eval:a+2}}\nu(0) = {{a}} ; u(n+1) = 0.5*u(n)+2 pour n de 0 à 9   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 2,
+				"valeurs": [0, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 2,
+				"valeurs": [0, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Les premiers termes d'une suite $\\left( u_n \\right)$, de $u_0$ à $u_9$, sont représentés ci-dessous.\n\n[courbe]\n\nAu vu du graphique, quel semble être le sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"a": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "-14..-8"
+					},
+					{
+						"name": "r",
+						"expression": "0.5|1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{8}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 9\ny: {{eval:b-2}} ; {{eval:b+8*r+2}}\nu(n) = {{b}}+{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -14,
+						"max": -8,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-14, -13, -12, -11, -10, -9, -8]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 0.5,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0.5, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 8,
+				"nb_distinctes": 2,
+				"valeurs": [0, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 8,
+				"nb_distinctes": 2,
+				"valeurs": [0, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 1,
+					"enonce": "Les premiers termes d'une suite $\\left( u_n \\right)$, de $u_0$ à $u_8$, sont représentés ci-dessous.\n\n[courbe]\n\nAu vu du graphique, quel semble être le sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"b": "-14",
+						"r": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "4..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{8}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 9\ny: -1 ; {{eval:a+2}}\nu(n) = {{a}}/(n+1) pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 8,
+				"nb_distinctes": 2,
+				"valeurs": [0, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 8,
+				"nb_distinctes": 2,
+				"valeurs": [0, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 1,
+					"enonce": "Les premiers termes d'une suite $\\left( u_n \\right)$, de $u_0$ à $u_8$, sont représentés ci-dessous.\n\n[courbe]\n\nAu vu du graphique, quel semble être le sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"a": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "3..5"
+					},
+					{
+						"name": "h",
+						"expression": "10..16"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{8}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 9\ny: {{eval:h-27}} ; {{eval:h+2}}\nu(n) = {{h}}-(n-{{c}})^2 pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 16,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [10, 11, 12, 13, 14, 15, 16]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni croissante, ni décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 8,
+				"nb_distinctes": 2,
+				"valeurs": [0, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 8,
+				"nb_distinctes": 2,
+				"valeurs": [0, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 1,
+					"enonce": "Les premiers termes d'une suite $\\left( u_n \\right)$, de $u_0$ à $u_8$, sont représentés ci-dessous.\n\n[courbe]\n\nAu vu du graphique, quel semble être le sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"c": "3",
+						"h": "13"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "6..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{9}$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; 10\ny: -5 ; 10\nu(0) = {{a}} ; u(n+1) = -0.5*u(n)+3 pour n de 0 à 9   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, quel semble être le sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni croissante, ni décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 2,
+				"valeurs": [0, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 2,
+				"valeurs": [0, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Les premiers termes d'une suite $\\left( u_n \\right)$, de $u_0$ à $u_9$, sont représentés ci-dessous.\n\n[courbe]\n\nAu vu du graphique, quel semble être le sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"a": "6"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,1259 @@
+{
+	"template_id": "33be404b-d498-4243-8653-dbb819ea7542",
+	"titre": "Espace : lire une représentation paramétrique de droite",
+	"sous_titre": "Vecteur directeur, point de paramètre donné, paramètre d'un point, coordonnées manquantes d'un point de la droite (pièges : point pris pour vecteur, t mal reporté)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Représentations paramétriques et équations cartésiennes > Représentation paramétrique d'une droite",
+	"mis_a_jour": "2026-10-04T21:39:28.407379+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-366",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "z0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "u1",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u2",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u3",
+						"expression": "1..4;±"
+					}
+				],
+				"conditions": ["u1 != 0 || u2 != 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne un vecteur directeur de la droite $d$ : $?$",
+				"reponses_brutes": ["({{u1}};{{u2}};{{u3}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "z0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 247,
+						"exemples": [
+							"(4;-2;1)",
+							"(3;1;-1)",
+							"(2;0;-1)",
+							"(-2;0;-4)",
+							"(-4;1;2)",
+							"(0;-4;-4)",
+							"(0;-1;-1)",
+							"(1;0;3)",
+							"(2;2;-2)",
+							"(4;-3;-1)",
+							"(3;0;-4)",
+							"(-3;-4;2)"
+						],
+						"nombres_contenus": {
+							"min": -4,
+							"max": 4,
+							"nb_distinctes": 9,
+							"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -4,
+				"max": 4,
+				"nb_distinctes": 9,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["vecteur"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "233/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "207/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-5+4t\\\\y=-2t\\\\z=5+t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne un vecteur directeur de la droite $d$ : $[?]$",
+					"reponse": ["(4;-2;1)"],
+					"variables": {
+						"x0": "-5",
+						"y0": "0",
+						"z0": "5",
+						"u1": "4",
+						"u2": "-2",
+						"u3": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2+3t\\\\y=-2+t\\\\z=-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne un vecteur directeur de la droite $d$ : $[?]$",
+					"reponse": ["(3;1;-1)"],
+					"variables": {
+						"x0": "-2",
+						"y0": "-2",
+						"z0": "0",
+						"u1": "3",
+						"u2": "1",
+						"u3": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-5+2t\\\\y=0\\\\z=-5-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne un vecteur directeur de la droite $d$ : $[?]$",
+					"reponse": ["(2;0;-1)"],
+					"variables": {
+						"x0": "-5",
+						"y0": "0",
+						"z0": "-5",
+						"u1": "2",
+						"u2": "0",
+						"u3": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2-2t\\\\y=-3\\\\z=-5-4t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne un vecteur directeur de la droite $d$ : $[?]$",
+					"reponse": ["(-2;0;-4)"],
+					"variables": {
+						"x0": "-2",
+						"y0": "-3",
+						"z0": "-5",
+						"u1": "-2",
+						"u2": "0",
+						"u3": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=3-4t\\\\y=-3+t\\\\z=1+2t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne un vecteur directeur de la droite $d$ : $[?]$",
+					"reponse": ["(-4;1;2)"],
+					"variables": {
+						"x0": "3",
+						"y0": "-3",
+						"z0": "1",
+						"u1": "-4",
+						"u2": "1",
+						"u3": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "z0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "u1",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u2",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u3",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "k",
+						"expression": "2..3;±"
+					}
+				],
+				"conditions": ["u1 != 0 || u2 != 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne les coordonnées du point $B$ de $d$ de paramètre $t={{k}}$.\n\n$B(?\\,;\\,?\\,;\\,?)$",
+				"reponses_brutes": ["{{eval:x0+k*u1}}", "{{eval:y0+k*u2}}", "{{eval:z0+k*u3}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "z0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -2, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -16,
+						"max": 17,
+						"negatif_possible": true,
+						"nb_distinctes": 33
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 17,
+						"negatif_possible": true,
+						"nb_distinctes": 33
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -17,
+						"max": 16,
+						"negatif_possible": true,
+						"nb_distinctes": 33
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -17,
+				"max": 17,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -17,
+				"max": 17,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "232/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "208/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (17)",
+					"graine": 73,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=4+3t\\\\y=5-4t\\\\z=-3-3t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne les coordonnées du point $B$ de $d$ de paramètre $t = -3$.\n\n$B([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-5", "17", "6"],
+					"variables": {
+						"x0": "4",
+						"y0": "5",
+						"z0": "-3",
+						"u1": "3",
+						"u2": "-4",
+						"u3": "-3",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-17)",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2-2t\\\\y=-3\\\\z=-5-4t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne les coordonnées du point $B$ de $d$ de paramètre $t = 3$.\n\n$B([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-8", "-3", "-17"],
+					"variables": {
+						"x0": "-2",
+						"y0": "-3",
+						"z0": "-5",
+						"u1": "-2",
+						"u2": "0",
+						"u3": "-4",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-5+4t\\\\y=-2t\\\\z=5+t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne les coordonnées du point $B$ de $d$ de paramètre $t = 2$.\n\n$B([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["3", "-4", "7"],
+					"variables": {
+						"x0": "-5",
+						"y0": "0",
+						"z0": "5",
+						"u1": "4",
+						"u2": "-2",
+						"u3": "1",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2+3t\\\\y=-2+t\\\\z=-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne les coordonnées du point $B$ de $d$ de paramètre $t = -2$.\n\n$B([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-8", "-4", "2"],
+					"variables": {
+						"x0": "-2",
+						"y0": "-2",
+						"z0": "0",
+						"u1": "3",
+						"u2": "1",
+						"u3": "-1",
+						"k": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-5+2t\\\\y=0\\\\z=-5-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nDonne les coordonnées du point $B$ de $d$ de paramètre $t = -3$.\n\n$B([?]\\,;\\,[?]\\,;\\,[?])$",
+					"reponse": ["-11", "0", "-2"],
+					"variables": {
+						"x0": "-5",
+						"y0": "0",
+						"z0": "-5",
+						"u1": "2",
+						"u2": "0",
+						"u3": "-1",
+						"k": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "z0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "u1",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u2",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u3",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "k",
+						"expression": "-3..3!0"
+					},
+					{
+						"name": "mx",
+						"expression": "{{eval:x0+k*u1}}"
+					},
+					{
+						"name": "my",
+						"expression": "{{eval:y0+k*u2}}"
+					},
+					{
+						"name": "mz",
+						"expression": "{{eval:z0+k*u3}}"
+					}
+				],
+				"conditions": ["u1 != 0 || u2 != 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M({{mx}}\\,;\\,{{my}}\\,;\\,{{mz}})$ appartient à $d$. Détermine son paramètre $t$.\n\n$t=?$",
+				"reponses_brutes": ["{{k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "z0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "mx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -16,
+						"max": 17,
+						"negatif_possible": true,
+						"nb_distinctes": 33
+					}
+				},
+				{
+					"nom": "my",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -14,
+						"max": 17,
+						"negatif_possible": true,
+						"nb_distinctes": 30,
+						"valeurs": [
+							-14, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 14, 15, 16, 17
+						]
+					}
+				},
+				{
+					"nom": "mz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -17,
+						"max": 16,
+						"negatif_possible": true,
+						"nb_distinctes": 33
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -17,
+				"max": 17,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -3,
+				"max": 3,
+				"nb_distinctes": 6,
+				"valeurs": [-3, -2, -1, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -17,
+				"max": 17,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "232/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "208/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (17)",
+					"graine": 73,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=4+3t\\\\y=5-4t\\\\z=-3-3t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M(-5\\,;\\,17\\,;\\,6)$ appartient à $d$. Détermine son paramètre $t$.\n\n$t = [?]$",
+					"reponse": ["-3"],
+					"variables": {
+						"x0": "4",
+						"y0": "5",
+						"z0": "-3",
+						"u1": "3",
+						"u2": "-4",
+						"u3": "-3",
+						"k": "-3",
+						"mx": "-5",
+						"my": "17",
+						"mz": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-17)",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2-2t\\\\y=-3\\\\z=-5-4t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M(-8\\,;\\,-3\\,;\\,-17)$ appartient à $d$. Détermine son paramètre $t$.\n\n$t = [?]$",
+					"reponse": ["3"],
+					"variables": {
+						"x0": "-2",
+						"y0": "-3",
+						"z0": "-5",
+						"u1": "-2",
+						"u2": "0",
+						"u3": "-4",
+						"k": "3",
+						"mx": "-8",
+						"my": "-3",
+						"mz": "-17"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-5+4t\\\\y=-2t\\\\z=5+t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M(3\\,;\\,-4\\,;\\,7)$ appartient à $d$. Détermine son paramètre $t$.\n\n$t = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"x0": "-5",
+						"y0": "0",
+						"z0": "5",
+						"u1": "4",
+						"u2": "-2",
+						"u3": "1",
+						"k": "2",
+						"mx": "3",
+						"my": "-4",
+						"mz": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2+3t\\\\y=-2+t\\\\z=-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M(-5\\,;\\,-3\\,;\\,1)$ appartient à $d$. Détermine son paramètre $t$.\n\n$t = [?]$",
+					"reponse": ["-1"],
+					"variables": {
+						"x0": "-2",
+						"y0": "-2",
+						"z0": "0",
+						"u1": "3",
+						"u2": "1",
+						"u3": "-1",
+						"k": "-1",
+						"mx": "-5",
+						"my": "-3",
+						"mz": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-5+2t\\\\y=0\\\\z=-5-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M(-9\\,;\\,0\\,;\\,-3)$ appartient à $d$. Détermine son paramètre $t$.\n\n$t = [?]$",
+					"reponse": ["-2"],
+					"variables": {
+						"x0": "-5",
+						"y0": "0",
+						"z0": "-5",
+						"u1": "2",
+						"u2": "0",
+						"u3": "-1",
+						"k": "-2",
+						"mx": "-9",
+						"my": "0",
+						"mz": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "z0",
+						"expression": "-5..5"
+					},
+					{
+						"name": "u1",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "u2",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u3",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "k",
+						"expression": "-3..3!0"
+					},
+					{
+						"name": "mx",
+						"expression": "{{eval:x0+k*u1}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M({{mx}}\\,;\\,m\\,;\\,n)$ appartient à $d$. Détermine $m$ et $n$.\n\n$m=?$ et $n=?$",
+				"reponses_brutes": ["{{eval:y0+k*u2}}", "{{eval:z0+k*u3}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "z0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "mx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -14,
+						"max": 14,
+						"negatif_possible": true,
+						"nb_distinctes": 29,
+						"valeurs": [
+							-14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7,
+							8, 9, 10, 11, 12, 13, 14
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -14,
+						"max": 17,
+						"negatif_possible": true,
+						"nb_distinctes": 30,
+						"valeurs": [
+							-14, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 14, 15, 16, 17
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -17,
+						"max": 16,
+						"negatif_possible": true,
+						"nb_distinctes": 33
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -14,
+				"max": 14,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+					10, 11, 12, 13, 14
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -17,
+				"max": 17,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -17,
+				"max": 17,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "240/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "207/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (17)",
+					"graine": 73,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=4+3t\\\\y=5-4t\\\\z=-3-3t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M(-5\\,;\\,m\\,;\\,n)$ appartient à $d$. Détermine $m$ et $n$.\n\n$m = [?]$ et $n = [?]$",
+					"reponse": ["17", "6"],
+					"variables": {
+						"x0": "4",
+						"y0": "5",
+						"z0": "-3",
+						"u1": "3",
+						"u2": "-4",
+						"u3": "-3",
+						"k": "-3",
+						"mx": "-5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-17)",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2-2t\\\\y=-3\\\\z=-5-4t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M(-8\\,;\\,m\\,;\\,n)$ appartient à $d$. Détermine $m$ et $n$.\n\n$m = [?]$ et $n = [?]$",
+					"reponse": ["-3", "-17"],
+					"variables": {
+						"x0": "-2",
+						"y0": "-3",
+						"z0": "-5",
+						"u1": "-2",
+						"u2": "0",
+						"u3": "-4",
+						"k": "3",
+						"mx": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-5+3t\\\\y=-2t\\\\z=5+t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M(1\\,;\\,m\\,;\\,n)$ appartient à $d$. Détermine $m$ et $n$.\n\n$m = [?]$ et $n = [?]$",
+					"reponse": ["-4", "7"],
+					"variables": {
+						"x0": "-5",
+						"y0": "0",
+						"z0": "5",
+						"u1": "3",
+						"u2": "-2",
+						"u3": "1",
+						"k": "2",
+						"mx": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-2+3t\\\\y=-2+t\\\\z=-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M(-5\\,;\\,m\\,;\\,n)$ appartient à $d$. Détermine $m$ et $n$.\n\n$m = [?]$ et $n = [?]$",
+					"reponse": ["-3", "1"],
+					"variables": {
+						"x0": "-2",
+						"y0": "-2",
+						"z0": "0",
+						"u1": "3",
+						"u2": "1",
+						"u3": "-1",
+						"k": "-1",
+						"mx": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique\n\n$$\\begin{cases}x=-5+2t\\\\y=0\\\\z=-5-t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLe point $M(-9\\,;\\,m\\,;\\,n)$ appartient à $d$. Détermine $m$ et $n$.\n\n$m = [?]$ et $n = [?]$",
+					"reponse": ["0", "-3"],
+					"variables": {
+						"x0": "-5",
+						"y0": "0",
+						"z0": "-5",
+						"u1": "2",
+						"u2": "0",
+						"u3": "-1",
+						"k": "-2",
+						"mx": "-9"
+					}
+				}
+			]
+		}
+	]
+}

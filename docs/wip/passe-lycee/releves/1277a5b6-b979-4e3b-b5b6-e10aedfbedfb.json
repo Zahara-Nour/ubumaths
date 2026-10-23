@@ -1,0 +1,817 @@
+{
+	"template_id": "1277a5b6-b979-4e3b-b5b6-e10aedfbedfb",
+	"titre": "Espace : calculer un produit scalaire",
+	"sous_titre": "Produit scalaire en repère orthonormé (coordonnées, AB·AC) et par polarisation (pièges : z oublié, OB·OC, division par 2 oubliée)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Orthogonalité et distances dans l'espace > Produit scalaire",
+	"mis_a_jour": "2026-10-04T21:39:26.916631+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-345",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "u1",
+						"expression": "-6..6"
+					},
+					{
+						"name": "u2",
+						"expression": "-6..6"
+					},
+					{
+						"name": "u3",
+						"expression": "-6..6"
+					},
+					{
+						"name": "v1",
+						"expression": "-6..6"
+					},
+					{
+						"name": "v2",
+						"expression": "-6..6"
+					},
+					{
+						"name": "v3",
+						"expression": "-6..6"
+					}
+				],
+				"conditions": ["u3 != 0", "v3 != 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère les vecteurs $\\vec{u}\\begin{pmatrix}{{u1}}\\\\{{u2}}\\\\{{u3}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{v1}}\\\\{{v2}}\\\\{{v3}}\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["{{eval:u1*v1+u2*v2+u3*v3}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "v1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "v2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "v3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -64,
+						"max": 78,
+						"negatif_possible": true,
+						"nb_distinctes": 97
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -64,
+				"max": 78,
+				"nb_distinctes": 97,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -64,
+				"max": 78,
+				"nb_distinctes": 97,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "219/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (78)",
+					"graine": 13,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les vecteurs $\\vec{u}\\begin{pmatrix}-2\\\\-6\\\\-6\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-6\\\\-6\\\\-5\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["78"],
+					"variables": {
+						"u1": "-2",
+						"u2": "-6",
+						"u3": "-6",
+						"v1": "-6",
+						"v2": "-6",
+						"v3": "-5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-64)",
+					"graine": 173,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les vecteurs $\\vec{u}\\begin{pmatrix}5\\\\-4\\\\3\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-6\\\\4\\\\-6\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-64"],
+					"variables": {
+						"u1": "5",
+						"u2": "-4",
+						"u3": "3",
+						"v1": "-6",
+						"v2": "4",
+						"v3": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les vecteurs $\\vec{u}\\begin{pmatrix}-6\\\\0\\\\6\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}6\\\\-3\\\\1\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-30"],
+					"variables": {
+						"u1": "-6",
+						"u2": "0",
+						"u3": "6",
+						"v1": "6",
+						"v2": "-3",
+						"v3": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les vecteurs $\\vec{u}\\begin{pmatrix}-2\\\\4\\\\-5\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}4\\\\-4\\\\-1\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-19"],
+					"variables": {
+						"u1": "-2",
+						"u2": "4",
+						"u3": "-5",
+						"v1": "4",
+						"v2": "-4",
+						"v3": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les vecteurs $\\vec{u}\\begin{pmatrix}-4\\\\-3\\\\1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-4\\\\-5\\\\3\\end{pmatrix}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["34"],
+					"variables": {
+						"u1": "-4",
+						"u2": "-3",
+						"u3": "1",
+						"v1": "-4",
+						"v2": "-5",
+						"v3": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "ax",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ay",
+						"expression": "-5..5"
+					},
+					{
+						"name": "az",
+						"expression": "-5..5"
+					},
+					{
+						"name": "bx",
+						"expression": "-5..5"
+					},
+					{
+						"name": "by",
+						"expression": "-5..5"
+					},
+					{
+						"name": "bz",
+						"expression": "-5..5"
+					},
+					{
+						"name": "cx",
+						"expression": "-5..5"
+					},
+					{
+						"name": "cy",
+						"expression": "-5..5"
+					},
+					{
+						"name": "cz",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": [
+					"abs(bx-ax)+abs(by-ay)+abs(bz-az) > 0",
+					"abs(cx-ax)+abs(cy-ay)+abs(cz-az) > 0",
+					"az != 0"
+				],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$, $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$ et $C({{cx}}\\,;\\,{{cy}}\\,;\\,{{cz}})$.\n\nCalcule $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+				"reponses_brutes": ["{{eval:(bx-ax)*(cx-ax)+(by-ay)*(cy-ay)+(bz-az)*(cz-az)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "bx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "by",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "bz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "cx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "cy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "cz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 154,
+						"negatif_possible": true,
+						"nb_distinctes": 112
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -30,
+				"max": 154,
+				"nb_distinctes": 112,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -30,
+				"max": 154,
+				"nb_distinctes": 112,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (154)",
+					"graine": 246,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(2\\,;\\,5\\,;\\,4)$, $B(-5\\,;\\,1\\,;\\,-5)$ et $C(-4\\,;\\,-5\\,;\\,-4)$.\n\nCalcule $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$",
+					"reponse": ["154"],
+					"variables": {
+						"ax": "2",
+						"ay": "5",
+						"az": "4",
+						"bx": "-5",
+						"by": "1",
+						"bz": "-5",
+						"cx": "-4",
+						"cy": "-5",
+						"cz": "-4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-30)",
+					"graine": 81,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-2\\,;\\,-1\\,;\\,1)$, $B(-5\\,;\\,-3\\,;\\,5)$ et $C(4\\,;\\,-3\\,;\\,-3)$.\n\nCalcule $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$",
+					"reponse": ["-30"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-1",
+						"az": "1",
+						"bx": "-5",
+						"by": "-3",
+						"bz": "5",
+						"cx": "4",
+						"cy": "-3",
+						"cz": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-5\\,;\\,0\\,;\\,5)$, $B(5\\,;\\,-2\\,;\\,1)$ et $C(2\\,;\\,-1\\,;\\,5)$.\n\nCalcule $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$",
+					"reponse": ["72"],
+					"variables": {
+						"ax": "-5",
+						"ay": "0",
+						"az": "5",
+						"bx": "5",
+						"by": "-2",
+						"bz": "1",
+						"cx": "2",
+						"cy": "-1",
+						"cz": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(3\\,;\\,-3\\,;\\,-1)$, $B(4\\,;\\,1\\,;\\,-4)$ et $C(2\\,;\\,-1\\,;\\,5)$.\n\nCalcule $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$",
+					"reponse": ["-11"],
+					"variables": {
+						"ax": "3",
+						"ay": "-3",
+						"az": "-1",
+						"bx": "4",
+						"by": "1",
+						"bz": "-4",
+						"cx": "2",
+						"cy": "-1",
+						"cz": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-5\\,;\\,0\\,;\\,-5)$, $B(3\\,;\\,0\\,;\\,0)$ et $C(-4\\,;\\,-3\\,;\\,1)$.\n\nCalcule $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$",
+					"reponse": ["38"],
+					"variables": {
+						"ax": "-5",
+						"ay": "0",
+						"az": "-5",
+						"bx": "3",
+						"by": "0",
+						"bz": "0",
+						"cx": "-4",
+						"cy": "-3",
+						"cz": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "c",
+						"expression": "2..12"
+					}
+				],
+				"conditions": ["c < a+b", "c > abs(a-b)", "c*c != a*a+b*b"],
+				"enonce_brut": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\|\\vec{u}+\\vec{v}\\|={{c}}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["{{eval:(c^2-a^2-b^2)/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 192,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.42,
+						"nb_distinctes": 96,
+						"exemples": [
+							"-\\dfrac{9}{2}",
+							"-\\dfrac{51}{2}",
+							"-\\dfrac{25}{2}",
+							"-\\dfrac{21}{2}",
+							"3",
+							"-56",
+							"\\dfrac{13}{2}",
+							"\\dfrac{29}{2}",
+							"-\\dfrac{69}{2}",
+							"-17",
+							"\\dfrac{3}{2}",
+							"\\dfrac{39}{2}"
+						],
+						"nombres_contenus": {
+							"min": -62,
+							"max": 109,
+							"nb_distinctes": 76,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -62,
+				"max": 109,
+				"nb_distinctes": 76,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -62,
+				"max": 109,
+				"nb_distinctes": 77,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 174,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 109,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (109)",
+					"graine": 70,
+					"enonce": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|=8$, $\\|\\vec{v}\\|=7$ et $\\|\\vec{u}+\\vec{v}\\|=2$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-\\dfrac{109}{2}"],
+					"variables": {
+						"a": "8",
+						"b": "7",
+						"c": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-62)",
+					"graine": 184,
+					"enonce": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|=8$, $\\|\\vec{v}\\|=8$ et $\\|\\vec{u}+\\vec{v}\\|=2$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-62"],
+					"variables": {
+						"a": "8",
+						"b": "8",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|=8$, $\\|\\vec{v}\\|=3$ et $\\|\\vec{u}+\\vec{v}\\|=8$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-\\dfrac{9}{2}"],
+					"variables": {
+						"a": "8",
+						"b": "3",
+						"c": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|=8$, $\\|\\vec{v}\\|=6$ et $\\|\\vec{u}+\\vec{v}\\|=7$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-\\dfrac{51}{2}"],
+					"variables": {
+						"a": "8",
+						"b": "6",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace, $\\vec{u}$ et $\\vec{v}$ sont deux vecteurs tels que $\\|\\vec{u}\\|=7$, $\\|\\vec{v}\\|=5$ et $\\|\\vec{u}+\\vec{v}\\|=7$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-\\dfrac{25}{2}"],
+					"variables": {
+						"a": "7",
+						"b": "5",
+						"c": "7"
+					}
+				}
+			]
+		}
+	]
+}

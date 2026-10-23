@@ -1,0 +1,894 @@
+{
+	"template_id": "17f64f63-9af0-48ea-96b1-a74e0bef16f4",
+	"titre": "Du signe de f′ au sens de variation de f",
+	"sous_titre": "Lire un tableau de signes de f′ et en déduire les variations de f (QCM)",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Dérivation > Variations",
+	"mis_a_jour": "2026-10-02T11:08:51.657997+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-281",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "-6..2"
+					},
+					{
+						"name": "d",
+						"expression": "1..5"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p+d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: -\n  {{q}}: z\n  {{q}},+inf: +\n```\n\nQuelle affirmation est vraie ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
+					},
+					{
+						"content": "$f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
+					},
+					{
+						"content": "$f$ est croissante sur $\\left]-\\infty\\,;{{q}}\\right]$"
+					},
+					{
+						"content": "$f$ admet un maximum local en $x={{q}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 264,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 45,
+						"exemples": [
+							"f$ est décroissante sur $\\left[-6\\,;-3\\right]",
+							"f$ est décroissante sur $\\left[-4\\,;-2\\right]",
+							"f$ est décroissante sur $\\left[0\\,;2\\right]",
+							"f$ est décroissante sur $\\left[-6\\,;-2\\right]",
+							"f$ est décroissante sur $\\left[-6\\,;-1\\right]",
+							"f$ est décroissante sur $\\left[-1\\,;1\\right]",
+							"f$ est décroissante sur $\\left[1\\,;2\\right]",
+							"f$ est décroissante sur $\\left[2\\,;6\\right]",
+							"f$ est décroissante sur $\\left[-2\\,;2\\right]",
+							"f$ est décroissante sur $\\left[-3\\,;-2\\right]",
+							"f$ est décroissante sur $\\left[-3\\,;0\\right]",
+							"f$ est décroissante sur $\\left[-5\\,;-1\\right]"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 7,
+							"nb_distinctes": 14,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -6,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": -6,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -6,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"variation-table": 300
+				},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 115,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est décroissante sur $\\left[2\\,;7\\right]$\n- B. $f$ est croissante sur $\\left]-\\infty\\,;7\\right]$\n- C. $f$ admet un maximum local en $x = 7$\n- D. $f$ est croissante sur $\\left[2\\,;7\\right]$",
+					"reponse": ["A. $f$ est décroissante sur $\\left[2\\,;7\\right]$"],
+					"variables": {
+						"p": "2",
+						"d": "5",
+						"q": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 1,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est croissante sur $\\left[-6\\,;-3\\right]$\n- B. $f$ est décroissante sur $\\left[-6\\,;-3\\right]$\n- C. $f$ est croissante sur $\\left]-\\infty\\,;-3\\right]$\n- D. $f$ admet un maximum local en $x = -3$",
+					"reponse": ["B. $f$ est décroissante sur $\\left[-6\\,;-3\\right]$"],
+					"variables": {
+						"p": "-6",
+						"d": "3",
+						"q": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est décroissante sur $\\left[-4\\,;-2\\right]$\n- B. $f$ est croissante sur $\\left[-4\\,;-2\\right]$\n- C. $f$ admet un maximum local en $x = -2$\n- D. $f$ est croissante sur $\\left]-\\infty\\,;-2\\right]$",
+					"reponse": ["A. $f$ est décroissante sur $\\left[-4\\,;-2\\right]$"],
+					"variables": {
+						"p": "-4",
+						"d": "2",
+						"q": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est croissante sur $\\left[-6\\,;-3\\right]$\n- B. $f$ admet un maximum local en $x = -3$\n- C. $f$ est croissante sur $\\left]-\\infty\\,;-3\\right]$\n- D. $f$ est décroissante sur $\\left[-6\\,;-3\\right]$",
+					"reponse": ["D. $f$ est décroissante sur $\\left[-6\\,;-3\\right]$"],
+					"variables": {
+						"p": "-6",
+						"d": "3",
+						"q": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est croissante sur $\\left]-\\infty\\,;-2\\right]$\n- B. $f$ est croissante sur $\\left[-4\\,;-2\\right]$\n- C. $f$ admet un maximum local en $x = -2$\n- D. $f$ est décroissante sur $\\left[-4\\,;-2\\right]$",
+					"reponse": ["D. $f$ est décroissante sur $\\left[-4\\,;-2\\right]$"],
+					"variables": {
+						"p": "-4",
+						"d": "2",
+						"q": "-2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "-6..2"
+					},
+					{
+						"name": "d",
+						"expression": "1..5"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p+d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: -\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n```\n\nQuelle affirmation est vraie ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f$ est croissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
+					},
+					{
+						"content": "$f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
+					},
+					{
+						"content": "$f$ est décroissante sur $\\left]-\\infty\\,;{{q}}\\right]$"
+					},
+					{
+						"content": "$f$ admet un minimum local en $x={{q}}$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 264,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 45,
+						"exemples": [
+							"f$ est croissante sur $\\left[-6\\,;-3\\right]",
+							"f$ est croissante sur $\\left[-4\\,;-2\\right]",
+							"f$ est croissante sur $\\left[0\\,;2\\right]",
+							"f$ est croissante sur $\\left[-6\\,;-2\\right]",
+							"f$ est croissante sur $\\left[-6\\,;-1\\right]",
+							"f$ est croissante sur $\\left[-1\\,;1\\right]",
+							"f$ est croissante sur $\\left[1\\,;2\\right]",
+							"f$ est croissante sur $\\left[2\\,;6\\right]",
+							"f$ est croissante sur $\\left[-2\\,;2\\right]",
+							"f$ est croissante sur $\\left[-3\\,;-2\\right]",
+							"f$ est croissante sur $\\left[-3\\,;0\\right]",
+							"f$ est croissante sur $\\left[-5\\,;-1\\right]"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 7,
+							"nb_distinctes": 14,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -6,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": -6,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -6,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"variation-table": 300
+				},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 115,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est croissante sur $\\left[2\\,;7\\right]$\n- B. $f$ est décroissante sur $\\left]-\\infty\\,;7\\right]$\n- C. $f$ admet un minimum local en $x = 7$\n- D. $f$ est décroissante sur $\\left[2\\,;7\\right]$",
+					"reponse": ["A. $f$ est croissante sur $\\left[2\\,;7\\right]$"],
+					"variables": {
+						"p": "2",
+						"d": "5",
+						"q": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 1,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est décroissante sur $\\left[-6\\,;-3\\right]$\n- B. $f$ est croissante sur $\\left[-6\\,;-3\\right]$\n- C. $f$ est décroissante sur $\\left]-\\infty\\,;-3\\right]$\n- D. $f$ admet un minimum local en $x = -3$",
+					"reponse": ["B. $f$ est croissante sur $\\left[-6\\,;-3\\right]$"],
+					"variables": {
+						"p": "-6",
+						"d": "3",
+						"q": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est croissante sur $\\left[-4\\,;-2\\right]$\n- B. $f$ est décroissante sur $\\left[-4\\,;-2\\right]$\n- C. $f$ admet un minimum local en $x = -2$\n- D. $f$ est décroissante sur $\\left]-\\infty\\,;-2\\right]$",
+					"reponse": ["A. $f$ est croissante sur $\\left[-4\\,;-2\\right]$"],
+					"variables": {
+						"p": "-4",
+						"d": "2",
+						"q": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est décroissante sur $\\left[-6\\,;-3\\right]$\n- B. $f$ admet un minimum local en $x = -3$\n- C. $f$ est décroissante sur $\\left]-\\infty\\,;-3\\right]$\n- D. $f$ est croissante sur $\\left[-6\\,;-3\\right]$",
+					"reponse": ["D. $f$ est croissante sur $\\left[-6\\,;-3\\right]$"],
+					"variables": {
+						"p": "-6",
+						"d": "3",
+						"q": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est décroissante sur $\\left]-\\infty\\,;-2\\right]$\n- B. $f$ est décroissante sur $\\left[-4\\,;-2\\right]$\n- C. $f$ admet un minimum local en $x = -2$\n- D. $f$ est croissante sur $\\left[-4\\,;-2\\right]$",
+					"reponse": ["D. $f$ est croissante sur $\\left[-4\\,;-2\\right]$"],
+					"variables": {
+						"p": "-4",
+						"d": "2",
+						"q": "-2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "-6..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{r}}, +inf\n\nsign: f'(x)\n  -inf,{{r}}: -\n  {{r}}: z\n  {{r}},+inf: +\n```\n\nQuelle affirmation est vraie ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f$ admet un minimum en $x={{r}}$"
+					},
+					{
+						"content": "$f$ admet un maximum en $x={{r}}$"
+					},
+					{
+						"content": "$f$ est croissante sur $\\mathbb{R}$"
+					},
+					{
+						"content": "$f$ est décroissante sur $\\left[{{r}}\\,;+\\infty\\right[$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 197,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 13,
+						"valeurs": [
+							"f$ admet un minimum en $x = -1",
+							"f$ admet un minimum en $x = -2",
+							"f$ admet un minimum en $x = -3",
+							"f$ admet un minimum en $x = -4",
+							"f$ admet un minimum en $x = -5",
+							"f$ admet un minimum en $x = -6",
+							"f$ admet un minimum en $x = 0",
+							"f$ admet un minimum en $x = 1",
+							"f$ admet un minimum en $x = 2",
+							"f$ admet un minimum en $x = 3",
+							"f$ admet un minimum en $x = 4",
+							"f$ admet un minimum en $x = 5",
+							"f$ admet un minimum en $x = 6"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 6,
+							"nb_distinctes": 13,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"variation-table": 300
+				},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 24,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est croissante sur $\\mathbb{R}$\n- B. $f$ est décroissante sur $\\left[6\\,;+\\infty\\right[$\n- C. $f$ admet un minimum en $x = 6$\n- D. $f$ admet un maximum en $x = 6$",
+					"reponse": ["C. $f$ admet un minimum en $x = 6$"],
+					"variables": {
+						"r": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 1,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ admet un minimum en $x = -6$\n- B. $f$ admet un maximum en $x = -6$\n- C. $f$ est décroissante sur $\\left[-6\\,;+\\infty\\right[$\n- D. $f$ est croissante sur $\\mathbb{R}$",
+					"reponse": ["A. $f$ admet un minimum en $x = -6$"],
+					"variables": {
+						"r": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ admet un minimum en $x = -2$\n- B. $f$ est croissante sur $\\mathbb{R}$\n- C. $f$ est décroissante sur $\\left[-2\\,;+\\infty\\right[$\n- D. $f$ admet un maximum en $x = -2$",
+					"reponse": ["A. $f$ admet un minimum en $x = -2$"],
+					"variables": {
+						"r": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est croissante sur $\\mathbb{R}$\n- B. $f$ est décroissante sur $\\left[-6\\,;+\\infty\\right[$\n- C. $f$ admet un minimum en $x = -6$\n- D. $f$ admet un maximum en $x = -6$",
+					"reponse": ["C. $f$ admet un minimum en $x = -6$"],
+					"variables": {
+						"r": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ admet un maximum en $x = -2$\n- B. $f$ est croissante sur $\\mathbb{R}$\n- C. $f$ est décroissante sur $\\left[-2\\,;+\\infty\\right[$\n- D. $f$ admet un minimum en $x = -2$",
+					"reponse": ["D. $f$ admet un minimum en $x = -2$"],
+					"variables": {
+						"r": "-2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "-6..2"
+					},
+					{
+						"name": "d",
+						"expression": "1..5"
+					},
+					{
+						"name": "q",
+						"expression": "eval:p+d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{p}}, {{q}}, +inf\n\nsign: f'(x)\n  -inf,{{p}}: +\n  {{p}}: z\n  {{p}},{{q}}: +\n  {{q}}: z\n  {{q}},+inf: -\n```\n\nQuelle affirmation est vraie ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$f$ est croissante sur $\\left]-\\infty\\,;{{q}}\\right]$"
+					},
+					{
+						"content": "$f$ admet un maximum local en $x={{p}}$"
+					},
+					{
+						"content": "$f$ est décroissante sur $\\left[{{p}}\\,;{{q}}\\right]$"
+					},
+					{
+						"content": "$f$ est croissante sur $\\left[{{q}}\\,;+\\infty\\right[$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 264,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 13,
+						"valeurs": [
+							"f$ est croissante sur $\\left]-\\infty\\,;-1\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;-2\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;-3\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;-4\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;-5\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;0\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;1\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;2\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;3\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;4\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;5\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;6\\right]",
+							"f$ est croissante sur $\\left]-\\infty\\,;7\\right]"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 7,
+							"nb_distinctes": 8,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 0,
+				"max": 7,
+				"nb_distinctes": 8,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": -6,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -6,
+				"max": 7,
+				"nb_distinctes": 14,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"variation-table": 300
+				},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 115,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est croissante sur $\\left]-\\infty\\,;7\\right]$\n- B. $f$ est décroissante sur $\\left[2\\,;7\\right]$\n- C. $f$ est croissante sur $\\left[7\\,;+\\infty\\right[$\n- D. $f$ admet un maximum local en $x = 2$",
+					"reponse": ["A. $f$ est croissante sur $\\left]-\\infty\\,;7\\right]$"],
+					"variables": {
+						"p": "2",
+						"d": "5",
+						"q": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 1,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ admet un maximum local en $x = -6$\n- B. $f$ est croissante sur $\\left]-\\infty\\,;-3\\right]$\n- C. $f$ est décroissante sur $\\left[-6\\,;-3\\right]$\n- D. $f$ est croissante sur $\\left[-3\\,;+\\infty\\right[$",
+					"reponse": ["B. $f$ est croissante sur $\\left]-\\infty\\,;-3\\right]$"],
+					"variables": {
+						"p": "-6",
+						"d": "3",
+						"q": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est croissante sur $\\left]-\\infty\\,;-2\\right]$\n- B. $f$ admet un maximum local en $x = -4$\n- C. $f$ est croissante sur $\\left[-2\\,;+\\infty\\right[$\n- D. $f$ est décroissante sur $\\left[-4\\,;-2\\right]$",
+					"reponse": ["A. $f$ est croissante sur $\\left]-\\infty\\,;-2\\right]$"],
+					"variables": {
+						"p": "-4",
+						"d": "2",
+						"q": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ admet un maximum local en $x = -6$\n- B. $f$ est croissante sur $\\left[-3\\,;+\\infty\\right[$\n- C. $f$ est décroissante sur $\\left[-6\\,;-3\\right]$\n- D. $f$ est croissante sur $\\left]-\\infty\\,;-3\\right]$",
+					"reponse": ["D. $f$ est croissante sur $\\left]-\\infty\\,;-3\\right]$"],
+					"variables": {
+						"p": "-6",
+						"d": "3",
+						"q": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée $f'$ d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle affirmation est vraie ?\n\n- A. $f$ est décroissante sur $\\left[-4\\,;-2\\right]$\n- B. $f$ admet un maximum local en $x = -4$\n- C. $f$ est croissante sur $\\left[-2\\,;+\\infty\\right[$\n- D. $f$ est croissante sur $\\left]-\\infty\\,;-2\\right]$",
+					"reponse": ["D. $f$ est croissante sur $\\left]-\\infty\\,;-2\\right]$"],
+					"variables": {
+						"p": "-4",
+						"d": "2",
+						"q": "-2"
+					}
+				}
+			]
+		}
+	]
+}

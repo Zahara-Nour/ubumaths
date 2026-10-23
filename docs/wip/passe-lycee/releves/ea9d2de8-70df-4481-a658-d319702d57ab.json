@@ -1,0 +1,675 @@
+{
+	"template_id": "ea9d2de8-70df-4481-a658-d319702d57ab",
+	"titre": "Limite de qⁿ pour une raison négative",
+	"sous_titre": "QCM : (−q)ⁿ sans limite pour q ≥ 1, (q)ⁿ → 0 pour −1 < q < 0, et le piège −qⁿ = −(qⁿ) → −∞",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Limites de suites > Suites géométriques",
+	"mis_a_jour": "2026-10-04T16:56:21.847458+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-383",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "q",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-{{q}}\\right)^{n}$.\n\nQuelle est la limite de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$0$"
+					},
+					{
+						"content": "$+\\infty$"
+					},
+					{
+						"content": "$-\\infty$"
+					},
+					{
+						"content": "$1$"
+					},
+					{
+						"content": "La suite $(u_n)$ n'a pas de limite"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 230,
+			"variables": [
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["La suite $(u_n)$ n'a pas de limite"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": -2,
+				"nb_distinctes": 4,
+				"valeurs": [-5, -4, -3, -2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -5,
+				"max": 1,
+				"nb_distinctes": 6,
+				"valeurs": [-5, -4, -3, -2, 0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-2\\right)^{n}$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $+\\infty$\n- B. $0$\n- C. La suite $(u_n)$ n'a pas de limite\n- D. $1$\n- E. $-\\infty$",
+					"reponse": ["C. La suite $(u_n)$ n'a pas de limite"],
+					"variables": {
+						"q": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 5,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-5\\right)^{n}$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $1$\n- B. La suite $(u_n)$ n'a pas de limite\n- C. $0$\n- D. $-\\infty$\n- E. $+\\infty$",
+					"reponse": ["B. La suite $(u_n)$ n'a pas de limite"],
+					"variables": {
+						"q": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-3\\right)^{n}$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $0$\n- B. La suite $(u_n)$ n'a pas de limite\n- C. $1$\n- D. $-\\infty$\n- E. $+\\infty$",
+					"reponse": ["B. La suite $(u_n)$ n'a pas de limite"],
+					"variables": {
+						"q": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-2\\right)^{n}$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $+\\infty$\n- B. $1$\n- C. La suite $(u_n)$ n'a pas de limite\n- D. $0$\n- E. $-\\infty$",
+					"reponse": ["C. La suite $(u_n)$ n'a pas de limite"],
+					"variables": {
+						"q": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-3\\right)^{n}$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $-\\infty$\n- B. La suite $(u_n)$ n'a pas de limite\n- C. $1$\n- D. $0$\n- E. $+\\infty$",
+					"reponse": ["B. La suite $(u_n)$ n'a pas de limite"],
+					"variables": {
+						"q": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n=(-1)^{n}$.\n\nQuelle est la limite de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$0$"
+					},
+					{
+						"content": "$+\\infty$"
+					},
+					{
+						"content": "$-\\infty$"
+					},
+					{
+						"content": "$1$"
+					},
+					{
+						"content": "La suite $(u_n)$ n'a pas de limite"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 113,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["La suite $(u_n)$ n'a pas de limite"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -1,
+				"max": -1,
+				"nb_distinctes": 1,
+				"valeurs": [-1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -1,
+				"max": 1,
+				"nb_distinctes": 3,
+				"valeurs": [-1, 0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n = \\left( -1 \\right)^n$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. La suite $(u_n)$ n'a pas de limite\n- B. $+\\infty$\n- C. $1$\n- D. $-\\infty$\n- E. $0$",
+					"reponse": ["A. La suite $(u_n)$ n'a pas de limite"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n = \\left( -1 \\right)^n$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $0$\n- B. $-\\infty$\n- C. $1$\n- D. La suite $(u_n)$ n'a pas de limite\n- E. $+\\infty$",
+					"reponse": ["D. La suite $(u_n)$ n'a pas de limite"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n = \\left( -1 \\right)^n$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $-\\infty$\n- B. $1$\n- C. La suite $(u_n)$ n'a pas de limite\n- D. $+\\infty$\n- E. $0$",
+					"reponse": ["C. La suite $(u_n)$ n'a pas de limite"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n = \\left( -1 \\right)^n$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. La suite $(u_n)$ n'a pas de limite\n- B. $-\\infty$\n- C. $1$\n- D. $0$\n- E. $+\\infty$",
+					"reponse": ["A. La suite $(u_n)$ n'a pas de limite"],
+					"variables": {}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n = \\left( -1 \\right)^n$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $-\\infty$\n- B. La suite $(u_n)$ n'a pas de limite\n- C. $+\\infty$\n- D. $0$\n- E. $1$",
+					"reponse": ["B. La suite $(u_n)$ n'a pas de limite"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-{{eval:k/10;d}}\\right)^{n}$.\n\nQuelle est la limite de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$0$"
+					},
+					{
+						"content": "$+\\infty$"
+					},
+					{
+						"content": "$-\\infty$"
+					},
+					{
+						"content": "$1$"
+					},
+					{
+						"content": "La suite $(u_n)$ n'a pas de limite"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 264,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -0.9,
+				"max": -0.1,
+				"nb_distinctes": 9,
+				"valeurs": [-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -0.9,
+				"max": 1,
+				"nb_distinctes": 11,
+				"valeurs": [-0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0, 1],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-0{,}1\\right)^{n}$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $+\\infty$\n- B. $0$\n- C. La suite $(u_n)$ n'a pas de limite\n- D. $1$\n- E. $-\\infty$",
+					"reponse": ["B. $0$"],
+					"variables": {
+						"k": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-0.9)",
+					"graine": 10,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-0{,}9\\right)^{n}$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $-\\infty$\n- B. $0$\n- C. $+\\infty$\n- D. La suite $(u_n)$ n'a pas de limite\n- E. $1$",
+					"reponse": ["B. $0$"],
+					"variables": {
+						"k": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-0{,}3\\right)^{n}$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $0$\n- B. La suite $(u_n)$ n'a pas de limite\n- C. $1$\n- D. $-\\infty$\n- E. $+\\infty$",
+					"reponse": ["A. $0$"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-0{,}1\\right)^{n}$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $+\\infty$\n- B. $1$\n- C. La suite $(u_n)$ n'a pas de limite\n- D. $0$\n- E. $-\\infty$",
+					"reponse": ["D. $0$"],
+					"variables": {
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n=\\left(-0{,}3\\right)^{n}$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $-\\infty$\n- B. La suite $(u_n)$ n'a pas de limite\n- C. $1$\n- D. $0$\n- E. $+\\infty$",
+					"reponse": ["D. $0$"],
+					"variables": {
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "q",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $(u_n)$ la suite définie pour tout entier naturel $n$ par $u_n=-{{q}}^{n}$.\n\nQuelle est la limite de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$0$"
+					},
+					{
+						"content": "$+\\infty$"
+					},
+					{
+						"content": "$-\\infty$"
+					},
+					{
+						"content": "$1$"
+					},
+					{
+						"content": "La suite $(u_n)$ n'a pas de limite"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 230,
+			"variables": [
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": -2,
+				"nb_distinctes": 4,
+				"valeurs": [-5, -4, -3, -2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -5,
+				"max": 1,
+				"nb_distinctes": 6,
+				"valeurs": [-5, -4, -3, -2, 0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 5,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n = -2^n$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $+\\infty$\n- B. $0$\n- C. La suite $(u_n)$ n'a pas de limite\n- D. $1$\n- E. $-\\infty$",
+					"reponse": ["E. $-\\infty$"],
+					"variables": {
+						"q": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 5,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n = -5^n$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $1$\n- B. La suite $(u_n)$ n'a pas de limite\n- C. $0$\n- D. $-\\infty$\n- E. $+\\infty$",
+					"reponse": ["D. $-\\infty$"],
+					"variables": {
+						"q": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n = -3^n$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $0$\n- B. La suite $(u_n)$ n'a pas de limite\n- C. $1$\n- D. $-\\infty$\n- E. $+\\infty$",
+					"reponse": ["D. $-\\infty$"],
+					"variables": {
+						"q": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n = -2^n$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $+\\infty$\n- B. $1$\n- C. La suite $(u_n)$ n'a pas de limite\n- D. $0$\n- E. $-\\infty$",
+					"reponse": ["E. $-\\infty$"],
+					"variables": {
+						"q": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $\\left( u_n \\right)$ la suite définie pour tout entier naturel $n$ par $u_n = -3^n$.\n\nQuelle est la limite de la suite $\\left( u_n \\right)$ ?\n\n- A. $-\\infty$\n- B. La suite $(u_n)$ n'a pas de limite\n- C. $1$\n- D. $0$\n- E. $+\\infty$",
+					"reponse": ["A. $-\\infty$"],
+					"variables": {
+						"q": "3"
+					}
+				}
+			]
+		}
+	]
+}

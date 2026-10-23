@@ -1,0 +1,855 @@
+{
+	"template_id": "e5205176-140d-4376-9761-8172ca8bf10a",
+	"titre": "Condition nécessaire, condition suffisante",
+	"sous_titre": "Décider si une condition est nécessaire, suffisante, nécessaire et suffisante, ou ni l'une ni l'autre",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Logique > Logique et raisonnement > Implication et équivalence",
+	"mis_a_jour": "2026-10-03T10:09:19.892231+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-201",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..9"
+					},
+					{
+						"name": "b",
+						"expression": "-9..9"
+					},
+					{
+						"name": "dq",
+						"expression": "0..1"
+					},
+					{
+						"name": "o3",
+						"expression": "0..2"
+					},
+					{
+						"name": "o",
+						"expression": "{{eval:o3*(o3-1)/2}}"
+					},
+					{
+						"name": "dp",
+						"expression": "{{eval:dq+o*(1-2*dq)}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{eval:(1+sign((a-b)*(1-2*dq)))/2}}"
+					},
+					{
+						"name": "w",
+						"expression": "{{eval:(1-o)*g+3*o}}"
+					},
+					{
+						"name": "M",
+						"expression": "{{eval:max(a,b)+1}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:min(a,b)-1}}"
+					},
+					{
+						"name": "h",
+						"expression": "{{eval:(a+b)/2}}"
+					}
+				],
+				"conditions": ["a != b"],
+				"enonce_brut": "Soit $x$ un nombre réel. On note $P$ la condition « $x{{if:dp=1|<|>}}{{a}}$ » et $Q$ la condition « $x{{if:dq=1|<|>}}{{b}}$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Nécessaire, mais pas suffisante."
+					},
+					{
+						"content": "Suffisante, mais pas nécessaire."
+					},
+					{
+						"content": "Nécessaire et suffisante."
+					},
+					{
+						"content": "Ni nécessaire, ni suffisante."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 269,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "dq",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "o3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				},
+				{
+					"nom": "o",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "dp",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 3]
+					}
+				},
+				{
+					"nom": "M",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 10,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -10,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.49,
+						"nb_distinctes": 34,
+						"exemples": [
+							"-4",
+							"-\\dfrac{7}{2}",
+							"-5",
+							"0",
+							"-3",
+							"\\dfrac{1}{2}",
+							"-1",
+							"6",
+							"\\dfrac{3}{2}",
+							"-\\dfrac{11}{2}",
+							"-\\dfrac{1}{2}",
+							"\\dfrac{11}{2}"
+						],
+						"nombres_contenus": {
+							"min": -7,
+							"max": 17,
+							"nb_distinctes": 21,
+							"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15, 17],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"Ni nécessaire, ni suffisante.",
+							"Nécessaire, mais pas suffisante.",
+							"Suffisante, mais pas nécessaire."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"<": "205/300",
+					">": "190/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 33,
+					"max": 33
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Soit $x$ un nombre réel. On note $P$ la condition « $x > -9$ » et $Q$ la condition « $x < 1$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["D. Ni nécessaire, ni suffisante."],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"dq": "1",
+						"o3": "2",
+						"o": "1",
+						"dp": "0",
+						"g": "1",
+						"w": "3",
+						"M": "2",
+						"N": "-10",
+						"h": "-4"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 14,
+					"enonce": "Soit $x$ un nombre réel. On note $P$ la condition « $x > -1$ » et $Q$ la condition « $x > 0$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["A. Nécessaire, mais pas suffisante."],
+					"variables": {
+						"a": "-1",
+						"b": "0",
+						"dq": "0",
+						"o3": "0",
+						"o": "0",
+						"dp": "0",
+						"g": "0",
+						"w": "0",
+						"M": "1",
+						"N": "-2",
+						"h": "-\\dfrac{1}{2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $x$ un nombre réel. On note $P$ la condition « $x > -3$ » et $Q$ la condition « $x<-4$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["D. Ni nécessaire, ni suffisante."],
+					"variables": {
+						"a": "-3",
+						"b": "-4",
+						"dq": "1",
+						"o3": "2",
+						"o": "1",
+						"dp": "0",
+						"g": "0",
+						"w": "3",
+						"M": "-2",
+						"N": "-5",
+						"h": "-\\dfrac{7}{2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $x$ un nombre réel. On note $P$ la condition « $x<-9$ » et $Q$ la condition « $x > -1$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["D. Ni nécessaire, ni suffisante."],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"dq": "0",
+						"o3": "2",
+						"o": "1",
+						"dp": "1",
+						"g": "0",
+						"w": "3",
+						"M": "0",
+						"N": "-10",
+						"h": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $x$ un nombre réel. On note $P$ la condition « $x > -3$ » et $Q$ la condition « $x > -5$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["B. Suffisante, mais pas nécessaire."],
+					"variables": {
+						"a": "-3",
+						"b": "-5",
+						"dq": "0",
+						"o3": "0",
+						"o": "0",
+						"dp": "0",
+						"g": "1",
+						"w": "1",
+						"M": "-2",
+						"N": "-6",
+						"h": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "0..6"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $x$ un nombre réel. On note $P$ la condition « {{if:k=0|$x^2={{eval:a^2}}$}}{{if:k=1|$x={{a}}$}}{{if:k=2|$x^2={{eval:a^2}}$}}{{if:k=3|$x>0$}}{{if:k=4|$x^2>{{eval:a^2}}$}}{{if:k=5|$x>{{a}}$}}{{if:k=6|$x^2\\leqslant{{eval:a^2}}$}} » et $Q$ la condition « {{if:k=0|$x={{a}}$}}{{if:k=1|$x^2={{eval:a^2}}$}}{{if:k=2|$x={{a}}$ ou $x=-{{a}}$}}{{if:k=3|$x^2>{{eval:a^2}}$}}{{if:k=4|$x>{{a}}$}}{{if:k=5|$x^2>{{eval:a^2}}$}}{{if:k=6|$-{{a}}\\leqslant x\\leqslant{{a}}$}} ».\n\nPour que $Q$ soit vraie, la condition $P$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Nécessaire, mais pas suffisante."
+					},
+					{
+						"content": "Suffisante, mais pas nécessaire."
+					},
+					{
+						"content": "Nécessaire et suffisante."
+					},
+					{
+						"content": "Ni nécessaire, ni suffisante."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 63,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"Ni nécessaire, ni suffisante.",
+							"Nécessaire et suffisante.",
+							"Nécessaire, mais pas suffisante.",
+							"Suffisante, mais pas nécessaire."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 81,
+				"nb_distinctes": 25,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 25, 36, 49, 64, 81
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 81,
+				"nb_distinctes": 25,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 25, 36, 49, 64, 81
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "127/300",
+					"puissance": "300/300",
+					"lettre dans les maths": "300/300",
+					">": "124/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 33,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 7,
+					"enonce": "Soit $x$ un nombre réel. On note $P$ la condition « $x^2 = 81$ » et $Q$ la condition « $x = 9$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["A. Nécessaire, mais pas suffisante."],
+					"variables": {
+						"k": "0",
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 105,
+					"enonce": "Soit $x$ un nombre réel. On note $P$ la condition « $x^2 = 81$ » et $Q$ la condition « $x = 9$ ou $x = -9$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["C. Nécessaire et suffisante."],
+					"variables": {
+						"k": "2",
+						"a": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $x$ un nombre réel. On note $P$ la condition « $x^2 = 25$ » et $Q$ la condition « $x = 5$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["A. Nécessaire, mais pas suffisante."],
+					"variables": {
+						"k": "0",
+						"a": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $x$ un nombre réel. On note $P$ la condition « $x^2 = 9$ » et $Q$ la condition « $x = 3$ ou $x = -3$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["C. Nécessaire et suffisante."],
+					"variables": {
+						"k": "2",
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $x$ un nombre réel. On note $P$ la condition « $x^2 = 4$ » et $Q$ la condition « $x = 2$ ou $x = -2$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["C. Nécessaire et suffisante."],
+					"variables": {
+						"k": "2",
+						"a": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "j",
+						"expression": "0..3"
+					},
+					{
+						"name": "m",
+						"expression": "2..6"
+					},
+					{
+						"name": "c",
+						"expression": "2..4"
+					},
+					{
+						"name": "u",
+						"expression": "2..12"
+					},
+					{
+						"name": "p",
+						"expression": "2..5"
+					},
+					{
+						"name": "q",
+						"expression": "3..7"
+					}
+				],
+				"conditions": ["u % m != 0", "m % u != 0", "gcd(p, q) = 1", "p < q"],
+				"enonce_brut": "Soit $n$ un entier naturel. On note $P$ la condition « {{if:j=0|$n$ est un multiple de ${{m}}$}}{{if:j=1|$n$ est un multiple de ${{eval:m*c}}$}}{{if:j=2|$n$ est à la fois un multiple de ${{p}}$ et de ${{q}}$}}{{if:j=3|$n$ est un multiple de ${{m}}$}} » et $Q$ la condition « {{if:j=0|$n$ est un multiple de ${{eval:m*c}}$}}{{if:j=1|$n$ est un multiple de ${{m}}$}}{{if:j=2|$n$ est un multiple de ${{eval:p*q}}$}}{{if:j=3|$n$ est un multiple de ${{u}}$}} ».\n\nPour que $Q$ soit vraie, la condition $P$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Nécessaire, mais pas suffisante."
+					},
+					{
+						"content": "Suffisante, mais pas nécessaire."
+					},
+					{
+						"content": "Nécessaire et suffisante."
+					},
+					{
+						"content": "Ni nécessaire, ni suffisante."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 69,
+			"variables": [
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"Ni nécessaire, ni suffisante.",
+							"Nécessaire et suffisante.",
+							"Nécessaire, mais pas suffisante.",
+							"Suffisante, mais pas nécessaire."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 35,
+				"nb_distinctes": 21,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 18, 20, 21, 24, 28, 30, 35],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 35,
+				"nb_distinctes": 21,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 18, 20, 21, 24, 28, 30, 35],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 41,
+					"max": 45
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (35)",
+					"graine": 12,
+					"enonce": "Soit $n$ un entier naturel. On note $P$ la condition « $n$ est à la fois un multiple de $5$ et de $7$ » et $Q$ la condition « $n$ est un multiple de $35$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["C. Nécessaire et suffisante."],
+					"variables": {
+						"j": "2",
+						"m": "5",
+						"c": "3",
+						"u": "7",
+						"p": "5",
+						"q": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $n$ un entier naturel. On note $P$ la condition « $n$ est un multiple de $3$ » et $Q$ la condition « $n$ est un multiple de $2$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["D. Ni nécessaire, ni suffisante."],
+					"variables": {
+						"j": "3",
+						"m": "3",
+						"c": "2",
+						"u": "2",
+						"p": "3",
+						"q": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $n$ un entier naturel. On note $P$ la condition « $n$ est un multiple de $9$ » et $Q$ la condition « $n$ est un multiple de $3$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["B. Suffisante, mais pas nécessaire."],
+					"variables": {
+						"j": "1",
+						"m": "3",
+						"c": "3",
+						"u": "11",
+						"p": "4",
+						"q": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $n$ un entier naturel. On note $P$ la condition « $n$ est un multiple de $4$ » et $Q$ la condition « $n$ est un multiple de $8$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["A. Nécessaire, mais pas suffisante."],
+					"variables": {
+						"j": "0",
+						"m": "4",
+						"c": "2",
+						"u": "10",
+						"p": "3",
+						"q": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $n$ un entier naturel. On note $P$ la condition « $n$ est un multiple de $4$ » et $Q$ la condition « $n$ est un multiple de $7$ ».\n\nPour que $Q$ soit vraie, la condition $P$ est :\n\n- A. Nécessaire, mais pas suffisante.\n- B. Suffisante, mais pas nécessaire.\n- C. Nécessaire et suffisante.\n- D. Ni nécessaire, ni suffisante.",
+					"reponse": ["D. Ni nécessaire, ni suffisante."],
+					"variables": {
+						"j": "3",
+						"m": "4",
+						"c": "3",
+						"u": "7",
+						"p": "2",
+						"q": "5"
+					}
+				}
+			]
+		}
+	]
+}

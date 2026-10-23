@@ -1,0 +1,1025 @@
+{
+	"template_id": "219c9470-ffe0-48a6-bebf-39fb814ad613",
+	"titre": "« Et » et « ou » : vrai ou faux ?",
+	"sous_titre": "Décider si une proposition composée avec « et » ou « ou » est vraie pour une valeur donnée de la variable",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Logique > Logique et raisonnement > Connecteurs et contre-exemples",
+	"mis_a_jour": "2026-10-03T10:09:19.324575+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-210",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-6..6"
+					},
+					{
+						"name": "d",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+d}}"
+					},
+					{
+						"name": "t",
+						"expression": "-2..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a+t}}"
+					},
+					{
+						"name": "s1",
+						"expression": "0..1"
+					},
+					{
+						"name": "s2",
+						"expression": "0..1"
+					},
+					{
+						"name": "T1",
+						"expression": "{{eval:(1+sign(c-a+s1-0.5))/2}}"
+					},
+					{
+						"name": "T2",
+						"expression": "{{eval:(1+sign(b-c+s2-0.5))/2}}"
+					},
+					{
+						"name": "u1",
+						"expression": "{{eval:2*T1+s1}}"
+					},
+					{
+						"name": "u2",
+						"expression": "{{eval:2*T2+s2}}"
+					}
+				],
+				"conditions": ["t <= d+2"],
+				"enonce_brut": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x{{if:s1=1|\\geqslant|>}}{{a}}$ et $x{{if:s2=1|\\leqslant|<}}{{b}}$ ».\n\nPour $x={{c}}$, la proposition $P$ est-elle vraie ou fausse ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Vrai"
+					},
+					{
+						"content": "Faux"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 285,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 22,
+						"valeurs": [
+							-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "s1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "s2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "T1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "T2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["Faux", "Vrai"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -8,
+				"max": 13,
+				"nb_distinctes": 22,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -8,
+				"max": 13,
+				"nb_distinctes": 22,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "148/300",
+					"lettre dans les maths": "300/300",
+					">": "146/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (13)",
+					"graine": 86,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x > 6$ et $x < 11$ ».\n\nPour $x = 13$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "6",
+						"d": "5",
+						"b": "11",
+						"t": "7",
+						"c": "13",
+						"s1": "0",
+						"s2": "0",
+						"T1": "1",
+						"T2": "0",
+						"u1": "2",
+						"u2": "0"
+					}
+				},
+				{
+					"role": "plus petite valeur (-8)",
+					"graine": 3,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\geqslant-6$ et $x<-2$ ».\n\nPour $x = -8$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "-6",
+						"d": "4",
+						"b": "-2",
+						"t": "-2",
+						"c": "-8",
+						"s1": "1",
+						"s2": "0",
+						"T1": "0",
+						"T2": "1",
+						"u1": "1",
+						"u2": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\geqslant1$ et $x < 6$ ».\n\nPour $x = 3$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "1",
+						"d": "5",
+						"b": "6",
+						"t": "2",
+						"c": "3",
+						"s1": "1",
+						"s2": "0",
+						"T1": "1",
+						"T2": "1",
+						"u1": "3",
+						"u2": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\geqslant-2$ et $x\\leqslant1$ ».\n\nPour $x = 1$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "-2",
+						"d": "3",
+						"b": "1",
+						"t": "3",
+						"c": "1",
+						"s1": "1",
+						"s2": "1",
+						"T1": "1",
+						"T2": "1",
+						"u1": "3",
+						"u2": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x > -2$ et $x\\leqslant1$ ».\n\nPour $x = -4$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "-2",
+						"d": "3",
+						"b": "1",
+						"t": "-2",
+						"c": "-4",
+						"s1": "0",
+						"s2": "1",
+						"T1": "0",
+						"T2": "1",
+						"u1": "0",
+						"u2": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-6..6"
+					},
+					{
+						"name": "d",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+d}}"
+					},
+					{
+						"name": "t",
+						"expression": "-2..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a+t}}"
+					},
+					{
+						"name": "s1",
+						"expression": "0..1"
+					},
+					{
+						"name": "s2",
+						"expression": "0..1"
+					},
+					{
+						"name": "T1",
+						"expression": "{{eval:(1+sign(a-c+s1-0.5))/2}}"
+					},
+					{
+						"name": "T2",
+						"expression": "{{eval:(1+sign(c-b+s2-0.5))/2}}"
+					},
+					{
+						"name": "u1",
+						"expression": "{{eval:2*T1+s1}}"
+					},
+					{
+						"name": "u2",
+						"expression": "{{eval:2*T2+s2}}"
+					}
+				],
+				"conditions": ["t <= d+2"],
+				"enonce_brut": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x{{if:s1=1|\\leqslant|<}}{{a}}$ ou $x{{if:s2=1|\\geqslant|>}}{{b}}$ ».\n\nPour $x={{c}}$, la proposition $P$ est-elle vraie ou fausse ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Vrai"
+					},
+					{
+						"content": "Faux"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 285,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 22,
+						"valeurs": [
+							-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "s1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "s2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "T1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "T2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["Faux", "Vrai"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -8,
+				"max": 13,
+				"nb_distinctes": 22,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -8,
+				"max": 13,
+				"nb_distinctes": 22,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "148/300",
+					"lettre dans les maths": "300/300",
+					"<": "146/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (13)",
+					"graine": 86,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x < 6$ ou $x > 11$ ».\n\nPour $x = 13$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "6",
+						"d": "5",
+						"b": "11",
+						"t": "7",
+						"c": "13",
+						"s1": "0",
+						"s2": "0",
+						"T1": "0",
+						"T2": "1",
+						"u1": "0",
+						"u2": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-8)",
+					"graine": 3,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\leqslant-6$ ou $x > -2$ ».\n\nPour $x = -8$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "-6",
+						"d": "4",
+						"b": "-2",
+						"t": "-2",
+						"c": "-8",
+						"s1": "1",
+						"s2": "0",
+						"T1": "1",
+						"T2": "0",
+						"u1": "3",
+						"u2": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\leqslant1$ ou $x > 6$ ».\n\nPour $x = 3$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "1",
+						"d": "5",
+						"b": "6",
+						"t": "2",
+						"c": "3",
+						"s1": "1",
+						"s2": "0",
+						"T1": "0",
+						"T2": "0",
+						"u1": "1",
+						"u2": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x\\leqslant-2$ ou $x\\geqslant1$ ».\n\nPour $x = 1$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "-2",
+						"d": "3",
+						"b": "1",
+						"t": "3",
+						"c": "1",
+						"s1": "1",
+						"s2": "1",
+						"T1": "0",
+						"T2": "1",
+						"u1": "1",
+						"u2": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $x$ un nombre réel. On considère la proposition $P$ : « $x<-2$ ou $x\\geqslant1$ ».\n\nPour $x = -4$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "-2",
+						"d": "3",
+						"b": "1",
+						"t": "-2",
+						"c": "-4",
+						"s1": "0",
+						"s2": "1",
+						"T1": "1",
+						"T2": "0",
+						"u1": "2",
+						"u2": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "2..5"
+					},
+					{
+						"name": "a",
+						"expression": "3..20"
+					},
+					{
+						"name": "n",
+						"expression": "0..30"
+					},
+					{
+						"name": "k",
+						"expression": "0..1"
+					},
+					{
+						"name": "T1",
+						"expression": "{{eval:1-sign(mod(n,m))}}"
+					},
+					{
+						"name": "T2",
+						"expression": "{{eval:(1+sign(n-a-0.5))/2}}"
+					},
+					{
+						"name": "T",
+						"expression": "{{eval:T1*T2+k*(T1+T2-2*T1*T2)}}"
+					}
+				],
+				"conditions": ["abs(n-a) <= 8"],
+				"enonce_brut": "Soit $n$ un entier naturel. On considère la proposition $P$ : « $n$ est un multiple de ${{m}}$ {{if:k=1|ou|et}} $n>{{a}}$ ».\n\nPour $n={{n}}$, la proposition $P$ est-elle vraie ou fausse ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Vrai"
+					},
+					{
+						"content": "Faux"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 278,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 18,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 28,
+						"negatif_possible": false,
+						"nb_distinctes": 29,
+						"valeurs": [
+							0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+							24, 25, 26, 27, 28
+						]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "T1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "T2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "T",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["Faux", "Vrai"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 28,
+				"nb_distinctes": 29,
+				"valeurs": [
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+					25, 26, 27, 28
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 28,
+				"nb_distinctes": 29,
+				"valeurs": [
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+					25, 26, 27, 28
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (28)",
+					"graine": 75,
+					"enonce": "Soit $n$ un entier naturel. On considère la proposition $P$ : « $n$ est un multiple de $4$ et $n > 20$ ».\n\nPour $n = 28$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"m": "4",
+						"a": "20",
+						"n": "28",
+						"k": "0",
+						"T1": "1",
+						"T2": "1",
+						"T": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 66,
+					"enonce": "Soit $n$ un entier naturel. On considère la proposition $P$ : « $n$ est un multiple de $5$ ou $n > 3$ ».\n\nPour $n = 0$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"m": "5",
+						"a": "3",
+						"n": "0",
+						"k": "1",
+						"T1": "1",
+						"T2": "0",
+						"T": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $n$ un entier naturel. On considère la proposition $P$ : « $n$ est un multiple de $3$ et $n > 14$ ».\n\nPour $n = 22$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"m": "3",
+						"a": "14",
+						"n": "22",
+						"k": "0",
+						"T1": "0",
+						"T2": "1",
+						"T": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $n$ un entier naturel. On considère la proposition $P$ : « $n$ est un multiple de $3$ ou $n > 8$ ».\n\nPour $n = 16$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"m": "3",
+						"a": "8",
+						"n": "16",
+						"k": "1",
+						"T1": "0",
+						"T2": "1",
+						"T": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $n$ un entier naturel. On considère la proposition $P$ : « $n$ est un multiple de $3$ et $n > 11$ ».\n\nPour $n = 5$, la proposition $P$ est-elle vraie ou fausse ?\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"m": "3",
+						"a": "11",
+						"n": "5",
+						"k": "0",
+						"T1": "0",
+						"T2": "0",
+						"T": "0"
+					}
+				}
+			]
+		}
+	]
+}

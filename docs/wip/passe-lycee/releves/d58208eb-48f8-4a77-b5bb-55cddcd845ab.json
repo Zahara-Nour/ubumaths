@@ -1,0 +1,469 @@
+{
+	"template_id": "d58208eb-48f8-4a77-b5bb-55cddcd845ab",
+	"titre": "Lire un nombre dérivé sur un graphique",
+	"sous_titre": "Lecture de f′(a), coefficient directeur de la tangente tracée au point d'abscisse a (entier ou demi-entier)",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Nombre dérivé",
+	"mis_a_jour": "2026-10-02T11:08:50.314007+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-270",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-2..2"
+					},
+					{
+						"name": "b",
+						"expression": "-2..2"
+					},
+					{
+						"name": "s",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "k",
+						"expression": "1..2;±"
+					}
+				],
+				"conditions": ["s != b", "s != a", "abs(b+s) <= 4"],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse ${{a}}$ (en pointillés) sont tracées ci-dessous.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{s}})*(x-({{a}}))+({{b}})   bleu\ng(x) = ({{s}})*(x-({{a}}))+({{b}})   rouge   pointillé\npoints: A({{a}} ; f({{a}}))\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente T, en pointillés, au point A.\n```\n\nLis $f'({{a}})$.\n\n$f'({{a}})=?$",
+				"reponses_brutes": ["{{s}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -2,
+				"max": 2,
+				"nb_distinctes": 5,
+				"valeurs": [-2, -1, 0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -3,
+				"max": 3,
+				"nb_distinctes": 6,
+				"valeurs": [-3, -2, -1, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": 3,
+				"nb_distinctes": 7,
+				"valeurs": [-3, -2, -1, 0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse $-2$ (en pointillés) sont tracées ci-dessous.\n\n[courbe]\n\nLis $f'\\left( -2 \\right)$.\n\n$f'\\left( -2 \\right) = [?]$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "-2",
+						"b": "0",
+						"s": "3",
+						"k": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-3)",
+					"graine": 3,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse $-2$ (en pointillés) sont tracées ci-dessous.\n\n[courbe]\n\nLis $f'\\left( -2 \\right)$.\n\n$f'\\left( -2 \\right) = [?]$",
+					"reponse": ["-3"],
+					"variables": {
+						"a": "-2",
+						"b": "0",
+						"s": "-3",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse $-1$ (en pointillés) sont tracées ci-dessous.\n\n[courbe]\n\nLis $f'\\left( -1 \\right)$.\n\n$f'\\left( -1 \\right) = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "-1",
+						"b": "-1",
+						"s": "1",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse $0$ (en pointillés) sont tracées ci-dessous.\n\n[courbe]\n\nLis $f'\\left( 0 \\right)$.\n\n$f'\\left( 0 \\right) = [?]$",
+					"reponse": ["-1"],
+					"variables": {
+						"a": "0",
+						"b": "1",
+						"s": "-1",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse $1$ (en pointillés) sont tracées ci-dessous.\n\n[courbe]\n\nLis $f'\\left( 1 \\right)$.\n\n$f'\\left( 1 \\right) = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "1",
+						"b": "-1",
+						"s": "2",
+						"k": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-3..2"
+					},
+					{
+						"name": "b",
+						"expression": "-3..3"
+					},
+					{
+						"name": "t",
+						"expression": "1|3|-1|-3"
+					},
+					{
+						"name": "k",
+						"expression": "1..2;±"
+					}
+				],
+				"conditions": ["abs(b+t) <= 4", "abs(b-t) <= 4"],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse ${{a}}$ (en pointillés) sont tracées ci-dessous.\n\n```courbe\nx: -5 ; 5\ny: -5 ; 5\ngrille: 1 ; 1\nf(x) = {{k}}/2*(x-({{a}}))^2+({{t}})/2*(x-({{a}}))+({{b}})   bleu\ng(x) = ({{t}})/2*(x-({{a}}))+({{b}})   rouge   pointillé\npoints: A({{a}} ; f({{a}}))\ntaille: moyenne\ndescription: Courbe d'une fonction et sa tangente T, en pointillés, au point A.\n```\n\nLis $f'({{a}})$.\n\n$f'({{a}})=?$",
+				"reponses_brutes": ["{{eval:t/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -1, 1, 3]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["-\\dfrac{1}{2}", "-\\dfrac{3}{2}", "\\dfrac{1}{2}", "\\dfrac{3}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -3,
+				"max": 3,
+				"nb_distinctes": 7,
+				"valeurs": [-3, -2, -1, 0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": 3,
+				"nb_distinctes": 7,
+				"valeurs": [-3, -2, -1, 0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 3,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse $-3$ (en pointillés) sont tracées ci-dessous.\n\n[courbe]\n\nLis $f'\\left( -3 \\right)$.\n\n$f'\\left( -3 \\right) = [?]$",
+					"reponse": ["-\\dfrac{3}{2}"],
+					"variables": {
+						"a": "-3",
+						"b": "0",
+						"t": "-3",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse $-2$ (en pointillés) sont tracées ci-dessous.\n\n[courbe]\n\nLis $f'\\left( -2 \\right)$.\n\n$f'\\left( -2 \\right) = [?]$",
+					"reponse": ["-\\dfrac{1}{2}"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"t": "-1",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse $1$ (en pointillés) sont tracées ci-dessous.\n\n[courbe]\n\nLis $f'\\left( 1 \\right)$.\n\n$f'\\left( 1 \\right) = [?]$",
+					"reponse": ["-\\dfrac{1}{2}"],
+					"variables": {
+						"a": "1",
+						"b": "-2",
+						"t": "-1",
+						"k": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse $0$ (en pointillés) sont tracées ci-dessous.\n\n[courbe]\n\nLis $f'\\left( 0 \\right)$.\n\n$f'\\left( 0 \\right) = [?]$",
+					"reponse": ["-\\dfrac{1}{2}"],
+					"variables": {
+						"a": "0",
+						"b": "-1",
+						"t": "-1",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 10,
+					"enonce": "La courbe $\\mathcal{C}_f$ d'une fonction $f$ (trait plein) et sa tangente $T$ au point $A$ d'abscisse $2$ (en pointillés) sont tracées ci-dessous.\n\n[courbe]\n\nLis $f'\\left( 2 \\right)$.\n\n$f'\\left( 2 \\right) = [?]$",
+					"reponse": ["-\\dfrac{3}{2}"],
+					"variables": {
+						"a": "2",
+						"b": "1",
+						"t": "-3",
+						"k": "-1"
+					}
+				}
+			]
+		}
+	]
+}

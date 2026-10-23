@@ -1,0 +1,692 @@
+{
+	"template_id": "0140fdfa-1066-4885-b0ab-c597ff503283",
+	"titre": "Dériver l'inverse d'une fonction",
+	"sous_titre": "Dérivée de 1/v et de k/v, v affine ou du second degré",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Fonctions dérivées",
+	"mis_a_jour": "2026-10-03T14:03:47.243494+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-274",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..6"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["gcd(a,b) = 1"],
+				"enonce_brut": "Soit $f$ la fonction définie pour $x\\neq{{eval:-b/a}}$ par $f(x)={1}/{ {{a}}x{{eval:b;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["-\\frac{ {{a}} }{({{eval:a*x+b}})^2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 72,
+						"exemples": [
+							"-\\frac{ 4 }{(4x+9)^2}",
+							"-\\frac{ 2 }{(2x+1)^2}",
+							"-\\frac{ 3 }{(3x-8)^2}",
+							"-\\frac{ 3 }{(3x+5)^2}",
+							"-\\frac{ 2 }{(2x+3)^2}",
+							"-\\frac{ 1 }{(x-9)^2}",
+							"-\\frac{ 3 }{(3x-1)^2}",
+							"-\\frac{ 1 }{(x+2)^2}",
+							"-\\frac{ 1 }{(x+6)^2}",
+							"-\\frac{ 5 }{(5x+6)^2}",
+							"-\\frac{ 4 }{(4x-1)^2}",
+							"-\\frac{ 1 }{(x+4)^2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 244,
+				"denominateurs": [2, 3, 4, 5, 6],
+				"denominateur_min": 2,
+				"denominateur_max": 6,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≠": "277/300",
+					"+": "153/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie pour $x\\neq-\\dfrac{9}{4}$ par $f\\left( x \\right) = \\dfrac{1}{4 x + 9}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 4 }{(4x+9)^2}"],
+					"variables": {
+						"x": "x",
+						"a": "4",
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie pour $x\\neq-\\dfrac{1}{2}$ par $f\\left( x \\right) = \\dfrac{1}{2 x + 1}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 2 }{(2x+1)^2}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie pour $x\\neq\\dfrac{8}{3}$ par $f\\left( x \\right) = \\dfrac{1}{3 x - 8}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 3 }{(3x-8)^2}"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"b": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie pour $x\\neq-\\dfrac{5}{3}$ par $f\\left( x \\right) = \\dfrac{1}{3 x + 5}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 3 }{(3x+5)^2}"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie pour $x\\neq-\\dfrac{3}{2}$ par $f\\left( x \\right) = \\dfrac{1}{2 x + 3}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 2 }{(2x+3)^2}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"b": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "k",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["gcd(a,b) = 1"],
+				"enonce_brut": "Soit $f$ la fonction définie pour $x\\neq{{eval:-b/a}}$ par $f(x)={ {{k}} }/{ {{a}}x{{eval:b;+}} }$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["-\\frac{ {{eval:k*a}} }{({{eval:a*x+b}})^2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 226,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 226,
+						"exemples": [
+							"-\\frac{ 30 }{(5x+9)^2}",
+							"-\\frac{ 12 }{(3x+7)^2}",
+							"-\\frac{ 5 }{(x+5)^2}",
+							"-\\frac{ 3 }{(x-5)^2}",
+							"-\\frac{ 21 }{(3x+8)^2}",
+							"-\\frac{ 14 }{(2x+1)^2}",
+							"-\\frac{ 36 }{(4x+1)^2}",
+							"-\\frac{ 16 }{(2x+1)^2}",
+							"-\\frac{ 20 }{(5x-7)^2}",
+							"-\\frac{ 35 }{(5x-1)^2}",
+							"-\\frac{ 18 }{(3x+7)^2}",
+							"-\\frac{ 30 }{(5x-7)^2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 45,
+							"nb_distinctes": 27,
+							"valeurs": [
+								1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 27, 28, 30, 32,
+								35, 36, 40, 45
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 45,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 27, 28, 30, 32, 35, 36,
+					40, 45
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 45,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 27, 28, 30, 32, 35, 36,
+					40, 45
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 212,
+				"denominateurs": [2, 3, 4, 5],
+				"denominateur_min": 2,
+				"denominateur_max": 5,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≠": "259/300",
+					"+": "145/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (45)",
+					"graine": 92,
+					"enonce": "Soit $f$ la fonction définie pour $x\\neq-\\dfrac{1}{5}$ par $f\\left( x \\right) = \\dfrac{9}{5 x + 1}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 45 }{(5x+1)^2}"],
+					"variables": {
+						"x": "x",
+						"k": "9",
+						"a": "5",
+						"b": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 6,
+					"enonce": "Soit $f$ la fonction définie pour $x\\neq-\\dfrac{1}{2}$ par $f\\left( x \\right) = \\dfrac{7}{2 x + 1}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 14 }{(2x+1)^2}"],
+					"variables": {
+						"x": "x",
+						"k": "7",
+						"a": "2",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie pour $x\\neq-\\dfrac{9}{5}$ par $f\\left( x \\right) = \\dfrac{6}{5 x + 9}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 30 }{(5x+9)^2}"],
+					"variables": {
+						"x": "x",
+						"k": "6",
+						"a": "5",
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie pour $x\\neq-\\dfrac{7}{3}$ par $f\\left( x \\right) = \\dfrac{4}{3 x + 7}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 12 }{(3x+7)^2}"],
+					"variables": {
+						"x": "x",
+						"k": "4",
+						"a": "3",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie pour $x\\neq-5$ par $f\\left( x \\right) = \\dfrac{5}{x + 5}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 5 }{(x+5)^2}"],
+					"variables": {
+						"x": "x",
+						"k": "5",
+						"a": "1",
+						"b": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2..6"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\frac{ {{k}} }{x^2+{{c}}}$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["-\\frac{ {{eval:2*k}}x}{(x^2+{{c}})^2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 45,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 45,
+						"exemples": [
+							"-\\frac{ 4x}{(x^2+5)^2}",
+							"-\\frac{ 6x}{(x^2+3)^2}",
+							"-\\frac{ 6x}{(x^2+2)^2}",
+							"-\\frac{ 10x}{(x^2+2)^2}",
+							"-\\frac{ 4x}{(x^2+6)^2}",
+							"-\\frac{ 4x}{(x^2+9)^2}",
+							"-\\frac{ 10x}{(x^2+3)^2}",
+							"-\\frac{ 12x}{(x^2+2)^2}",
+							"-\\frac{ 12x}{(x^2+7)^2}",
+							"-\\frac{ 8x}{(x^2+6)^2}",
+							"-\\frac{ 6x}{(x^2+1)^2}",
+							"-\\frac{ 8x}{(x^2+5)^2}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 12,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 9,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\frac{ 6 }{x^2+2}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 12x}{(x^2+2)^2}"],
+					"variables": {
+						"k": "6",
+						"c": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\frac{ 3 }{x^2+1}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 6x}{(x^2+1)^2}"],
+					"variables": {
+						"k": "3",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\frac{ 2 }{x^2+5}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 4x}{(x^2+5)^2}"],
+					"variables": {
+						"k": "2",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\frac{ 3 }{x^2+3}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 6x}{(x^2+3)^2}"],
+					"variables": {
+						"k": "3",
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\frac{ 3 }{x^2+2}$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{ 6x}{(x^2+2)^2}"],
+					"variables": {
+						"k": "3",
+						"c": "2"
+					}
+				}
+			]
+		}
+	]
+}

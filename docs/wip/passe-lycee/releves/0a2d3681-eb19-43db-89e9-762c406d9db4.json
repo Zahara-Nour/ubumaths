@@ -1,0 +1,667 @@
+{
+	"template_id": "0a2d3681-eb19-43db-89e9-762c406d9db4",
+	"titre": "Dériver une fonction construite avec cos et sin",
+	"sous_titre": "a sin x + b cos x, ax + b cos x, ax sin x, x² cos x (pièges : cos′ = sin, sin′ = −cos, produit des dérivées)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions trigonométriques > Dérivées et variations",
+	"mis_a_jour": "2026-10-05T09:32:00.464979+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-454",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}\\sin x{{b;+}}\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{a}}\\cos x{{eval:-b;+}}\\sin x"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 50,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 50,
+						"exemples": [
+							"2\\cos x-2\\sin x",
+							"3\\cos x+4\\sin x",
+							"2\\cos x+2\\sin x",
+							"5\\cos x+4\\sin x",
+							"2\\cos x-3\\sin x",
+							"2\\cos x-6\\sin x",
+							"5\\cos x+3\\sin x",
+							"6\\cos x+5\\sin x",
+							"6\\cos x-3\\sin x",
+							"4\\cos x-3\\sin x",
+							"3\\cos x+6\\sin x",
+							"4\\cos x-2\\sin x"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 6,
+							"nb_distinctes": 5,
+							"valeurs": [2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\sin x+6\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2\\cos x-6\\sin x"],
+					"variables": {
+						"a": "2",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\sin x+2\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2\\cos x-2\\sin x"],
+					"variables": {
+						"a": "2",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3\\sin x-4\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["3\\cos x+4\\sin x"],
+					"variables": {
+						"a": "3",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\sin x-2\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2\\cos x+2\\sin x"],
+					"variables": {
+						"a": "2",
+						"b": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=5\\sin x-4\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["5\\cos x+4\\sin x"],
+					"variables": {
+						"a": "5",
+						"b": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x{{b;+}}\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{a}}{{eval:-b;+}}\\sin x"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 50,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 50,
+						"exemples": [
+							"2-2\\sin x",
+							"3+4\\sin x",
+							"2+2\\sin x",
+							"5+4\\sin x",
+							"2-3\\sin x",
+							"2-6\\sin x",
+							"5+3\\sin x",
+							"6+5\\sin x",
+							"6-3\\sin x",
+							"4-3\\sin x",
+							"3+6\\sin x",
+							"4-2\\sin x"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 6,
+							"nb_distinctes": 5,
+							"valeurs": [2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2x+6\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2-6\\sin x"],
+					"variables": {
+						"a": "2",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2x+2\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2-2\\sin x"],
+					"variables": {
+						"a": "2",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3x-4\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["3+4\\sin x"],
+					"variables": {
+						"a": "3",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2x-2\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2+2\\sin x"],
+					"variables": {
+						"a": "2",
+						"b": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=5x-4\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["5+4\\sin x"],
+					"variables": {
+						"a": "5",
+						"b": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{a}}x\\sin x$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{a}}\\sin x+{{a}}x\\cos x"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"2\\sin x+2x\\cos x",
+							"3\\sin x+3x\\cos x",
+							"4\\sin x+4x\\cos x",
+							"5\\sin x+5x\\cos x"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 5,
+							"nb_distinctes": 4,
+							"valeurs": [2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=5x\\sin x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["5\\sin x+5x\\cos x"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2x\\sin x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2\\sin x+2x\\cos x"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3x\\sin x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["3\\sin x+3x\\cos x"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=4x\\sin x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["4\\sin x+4x\\cos x"],
+					"variables": {
+						"a": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{2}\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'(x)=?$",
+				"reponses_brutes": ["2x\\cos x-x^{2}\\sin x"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["2x\\cos x-x^{2}\\sin x"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2,
+							"nb_distinctes": 1,
+							"valeurs": [2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=x^{2}\\cos x$.\n\nDétermine sa fonction dérivée.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["2x\\cos x-x^{2}\\sin x"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

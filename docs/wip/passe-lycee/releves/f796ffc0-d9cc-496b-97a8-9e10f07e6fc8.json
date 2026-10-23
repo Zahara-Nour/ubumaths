@@ -1,0 +1,908 @@
+{
+	"template_id": "f796ffc0-d9cc-496b-97a8-9e10f07e6fc8",
+	"titre": "Quel modèle ? k-uplet, k-uplet d'éléments distincts ou combinaison",
+	"sous_titre": "Reconnaître l'objet à dénombrer selon que l'ordre compte et que la répétition est permise : mot de passe, tiercé, copies tirées au sort, desserts de la semaine (pièges : kⁿ au lieu de nᵏ, combinaison quand l'ordre compte)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Probabilités > Dénombrement > Reconnaître le modèle",
+	"mis_a_jour": "2026-10-05T06:04:01.841854+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-318",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "20..40"
+					},
+					{
+						"name": "k",
+						"expression": "4..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un mot de passe est formé de ${{k}}$ caractères choisis parmi ${{n}}$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "${{n}}^{ {{k}} }$"
+					},
+					{
+						"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+					},
+					{
+						"content": "$\\binom{ {{n}} }{ {{k}} }$"
+					},
+					{
+						"content": "${{k}}^{ {{n}} }$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 270,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 40,
+						"negatif_possible": false,
+						"nb_distinctes": 21,
+						"valeurs": [
+							20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40
+						]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 63,
+						"exemples": [
+							"20^5",
+							"26^4",
+							"36^4",
+							"21^6",
+							"33^4",
+							"37^4",
+							"39^6",
+							"31^5",
+							"21^5",
+							"27^4",
+							"28^5",
+							"23^6"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 40,
+							"nb_distinctes": 24,
+							"valeurs": [
+								4, 5, 6, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+								39, 40
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 40,
+				"nb_distinctes": 24,
+				"valeurs": [
+					4, 5, 6, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+					40
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 40,
+				"nb_distinctes": 24,
+				"valeurs": [
+					4, 5, 6, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+					40
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 4,
+				"max": 40,
+				"nb_distinctes": 30,
+				"valeurs": [
+					4, 5, 6, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+					34, 35, 36, 37, 38, 39, 40
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 4,
+				"max": 40,
+				"nb_distinctes": 30,
+				"valeurs": [
+					4, 5, 6, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+					34, 35, 36, 37, 38, 39, 40
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (40)",
+					"graine": 24,
+					"enonce": "Un mot de passe est formé de $4$ caractères choisis parmi $40$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?\n\n- A. $\\binom{ 40 }{ 4 }$\n- B. $4^{40}$\n- C. $\\dfrac{ 40! }{ 36! }$\n- D. $40^4$",
+					"reponse": ["D. $40^4$"],
+					"variables": {
+						"n": "40",
+						"k": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (4)",
+					"graine": 2,
+					"enonce": "Un mot de passe est formé de $4$ caractères choisis parmi $26$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?\n\n- A. $26^4$\n- B. $\\dfrac{ 26! }{ 22! }$\n- C. $4^{26}$\n- D. $\\binom{ 26 }{ 4 }$",
+					"reponse": ["A. $26^4$"],
+					"variables": {
+						"n": "26",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Un mot de passe est formé de $5$ caractères choisis parmi $20$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?\n\n- A. $\\dfrac{ 20! }{ 15! }$\n- B. $20^5$\n- C. $\\binom{ 20 }{ 5 }$\n- D. $5^{20}$",
+					"reponse": ["B. $20^5$"],
+					"variables": {
+						"n": "20",
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un mot de passe est formé de $5$ caractères choisis parmi $20$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?\n\n- A. $\\dfrac{ 20! }{ 15! }$\n- B. $5^{20}$\n- C. $\\binom{ 20 }{ 5 }$\n- D. $20^5$",
+					"reponse": ["D. $20^5$"],
+					"variables": {
+						"n": "20",
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Un mot de passe est formé de $4$ caractères choisis parmi $26$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?\n\n- A. $\\binom{ 26 }{ 4 }$\n- B. $\\dfrac{ 26! }{ 22! }$\n- C. $4^{26}$\n- D. $26^4$",
+					"reponse": ["D. $26^4$"],
+					"variables": {
+						"n": "26",
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "10..18"
+					},
+					{
+						"name": "k",
+						"expression": "3..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "${{n}}$ chevaux prennent le départ d'une course. Un parieur doit donner les ${{k}}$ premiers chevaux **dans l'ordre d'arrivée**.\n\nQuel est le nombre de pronostics possibles ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+					},
+					{
+						"content": "$\\binom{ {{n}} }{ {{k}} }$"
+					},
+					{
+						"content": "${{n}}^{ {{k}} }$"
+					},
+					{
+						"content": "${{k}}^{ {{n}} }$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 212,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 18,
+						"valeurs": [
+							"\\dfrac{ 10! }{ 6! }",
+							"\\dfrac{ 10! }{ 7! }",
+							"\\dfrac{ 11! }{ 7! }",
+							"\\dfrac{ 11! }{ 8! }",
+							"\\dfrac{ 12! }{ 8! }",
+							"\\dfrac{ 12! }{ 9! }",
+							"\\dfrac{ 13! }{ 10! }",
+							"\\dfrac{ 13! }{ 9! }",
+							"\\dfrac{ 14! }{ 10! }",
+							"\\dfrac{ 14! }{ 11! }",
+							"\\dfrac{ 15! }{ 11! }",
+							"\\dfrac{ 15! }{ 12! }",
+							"\\dfrac{ 16! }{ 12! }",
+							"\\dfrac{ 16! }{ 13! }",
+							"\\dfrac{ 17! }{ 13! }",
+							"\\dfrac{ 17! }{ 14! }",
+							"\\dfrac{ 18! }{ 14! }",
+							"\\dfrac{ 18! }{ 15! }"
+						],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 18,
+							"nb_distinctes": 13,
+							"valeurs": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 18,
+				"nb_distinctes": 11,
+				"valeurs": [3, 4, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 18,
+				"nb_distinctes": 13,
+				"valeurs": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 3,
+				"max": 18,
+				"nb_distinctes": 15,
+				"valeurs": [3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 3,
+				"max": 18,
+				"nb_distinctes": 15,
+				"valeurs": [3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 10,
+					"enonce": "$18$ chevaux prennent le départ d'une course. Un parieur doit donner les $4$ premiers chevaux dans l'ordre d'arrivée.\n\nQuel est le nombre de pronostics possibles ?\n\n- A. $18^4$\n- B. $\\dfrac{ 18! }{ 14! }$\n- C. $\\binom{ 18 }{ 4 }$\n- D. $4^{18}$",
+					"reponse": ["B. $\\dfrac{ 18! }{ 14! }$"],
+					"variables": {
+						"n": "18",
+						"k": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 2,
+					"enonce": "$12$ chevaux prennent le départ d'une course. Un parieur doit donner les $3$ premiers chevaux dans l'ordre d'arrivée.\n\nQuel est le nombre de pronostics possibles ?\n\n- A. $\\dfrac{ 12! }{ 9! }$\n- B. $\\binom{ 12 }{ 3 }$\n- C. $3^{12}$\n- D. $12^3$",
+					"reponse": ["A. $\\dfrac{ 12! }{ 9! }$"],
+					"variables": {
+						"n": "12",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$10$ chevaux prennent le départ d'une course. Un parieur doit donner les $4$ premiers chevaux dans l'ordre d'arrivée.\n\nQuel est le nombre de pronostics possibles ?\n\n- A. $\\binom{ 10 }{ 4 }$\n- B. $\\dfrac{ 10! }{ 6! }$\n- C. $10^4$\n- D. $4^{10}$",
+					"reponse": ["B. $\\dfrac{ 10! }{ 6! }$"],
+					"variables": {
+						"n": "10",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$10$ chevaux prennent le départ d'une course. Un parieur doit donner les $3$ premiers chevaux dans l'ordre d'arrivée.\n\nQuel est le nombre de pronostics possibles ?\n\n- A. $\\binom{ 10 }{ 3 }$\n- B. $3^{10}$\n- C. $10^3$\n- D. $\\dfrac{ 10! }{ 7! }$",
+					"reponse": ["D. $\\dfrac{ 10! }{ 7! }$"],
+					"variables": {
+						"n": "10",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$12$ chevaux prennent le départ d'une course. Un parieur doit donner les $3$ premiers chevaux dans l'ordre d'arrivée.\n\nQuel est le nombre de pronostics possibles ?\n\n- A. $12^3$\n- B. $\\binom{ 12 }{ 3 }$\n- C. $3^{12}$\n- D. $\\dfrac{ 12! }{ 9! }$",
+					"reponse": ["D. $\\dfrac{ 12! }{ 9! }$"],
+					"variables": {
+						"n": "12",
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "20..35"
+					},
+					{
+						"name": "k",
+						"expression": "3..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un professeur tire au sort ${{k}}$ copies parmi ${{n}}$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$\\binom{ {{n}} }{ {{k}} }$"
+					},
+					{
+						"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+					},
+					{
+						"content": "${{n}}^{ {{k}} }$"
+					},
+					{
+						"content": "${{k}}^{ {{n}} }$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 260,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 35,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 48,
+						"exemples": [
+							"\\binom{ 20 }{ 4 }",
+							"\\binom{ 25 }{ 3 }",
+							"\\binom{ 32 }{ 3 }",
+							"\\binom{ 20 }{ 5 }",
+							"\\binom{ 30 }{ 3 }",
+							"\\binom{ 33 }{ 3 }",
+							"\\binom{ 34 }{ 5 }",
+							"\\binom{ 28 }{ 4 }",
+							"\\binom{ 21 }{ 4 }",
+							"\\binom{ 26 }{ 4 }",
+							"\\binom{ 22 }{ 5 }",
+							"\\binom{ 23 }{ 4 }"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 35,
+							"nb_distinctes": 19,
+							"valeurs": [3, 4, 5, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 35,
+				"nb_distinctes": 19,
+				"valeurs": [3, 4, 5, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 35,
+				"nb_distinctes": 19,
+				"valeurs": [3, 4, 5, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 3,
+				"max": 35,
+				"nb_distinctes": 24,
+				"valeurs": [
+					3, 4, 5, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
+					35
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 3,
+				"max": 35,
+				"nb_distinctes": 24,
+				"valeurs": [
+					3, 4, 5, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
+					35
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (35)",
+					"graine": 24,
+					"enonce": "Un professeur tire au sort $3$ copies parmi $35$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?\n\n- A. $35^3$\n- B. $3^{35}$\n- C. $\\dfrac{ 35! }{ 32! }$\n- D. $\\binom{ 35 }{ 3 }$",
+					"reponse": ["D. $\\binom{ 35 }{ 3 }$"],
+					"variables": {
+						"n": "35",
+						"k": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 2,
+					"enonce": "Un professeur tire au sort $3$ copies parmi $25$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?\n\n- A. $\\binom{ 25 }{ 3 }$\n- B. $\\dfrac{ 25! }{ 22! }$\n- C. $3^{25}$\n- D. $25^3$",
+					"reponse": ["A. $\\binom{ 25 }{ 3 }$"],
+					"variables": {
+						"n": "25",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Un professeur tire au sort $4$ copies parmi $20$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?\n\n- A. $\\dfrac{ 20! }{ 16! }$\n- B. $\\binom{ 20 }{ 4 }$\n- C. $20^4$\n- D. $4^{20}$",
+					"reponse": ["B. $\\binom{ 20 }{ 4 }$"],
+					"variables": {
+						"n": "20",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un professeur tire au sort $4$ copies parmi $20$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?\n\n- A. $\\dfrac{ 20! }{ 16! }$\n- B. $4^{20}$\n- C. $20^4$\n- D. $\\binom{ 20 }{ 4 }$",
+					"reponse": ["D. $\\binom{ 20 }{ 4 }$"],
+					"variables": {
+						"n": "20",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Un professeur tire au sort $3$ copies parmi $25$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?\n\n- A. $25^3$\n- B. $\\dfrac{ 25! }{ 22! }$\n- C. $3^{25}$\n- D. $\\binom{ 25 }{ 3 }$",
+					"reponse": ["D. $\\binom{ 25 }{ 3 }$"],
+					"variables": {
+						"n": "25",
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..9"
+					},
+					{
+						"name": "k",
+						"expression": "3..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Chaque jour d'une période de ${{k}}$ jours, la cantine sert un dessert choisi parmi ${{n}}$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "${{n}}^{ {{k}} }$"
+					},
+					{
+						"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+					},
+					{
+						"content": "$\\binom{ {{n}} }{ {{k}} }$"
+					},
+					{
+						"content": "${{k}}^{ {{n}} }$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 195,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 15,
+						"valeurs": [
+							"5^3",
+							"5^4",
+							"5^5",
+							"6^3",
+							"6^4",
+							"6^5",
+							"7^3",
+							"7^4",
+							"7^5",
+							"8^3",
+							"8^4",
+							"8^5",
+							"9^3",
+							"9^4",
+							"9^5"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 9,
+							"nb_distinctes": 7,
+							"valeurs": [3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 9,
+				"nb_distinctes": 7,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 9,
+				"nb_distinctes": 7,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 9,
+					"enonce": "Chaque jour d'une période de $3$ jours, la cantine sert un dessert choisi parmi $9$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?\n\n- A. $9^3$\n- B. $\\dfrac{ 9! }{ 6! }$\n- C. $\\binom{ 9 }{ 3 }$\n- D. $3^9$",
+					"reponse": ["A. $9^3$"],
+					"variables": {
+						"n": "9",
+						"k": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 7,
+					"enonce": "Chaque jour d'une période de $5$ jours, la cantine sert un dessert choisi parmi $5$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?\n\n- A. $5^5$\n- B. $5^5$\n- C. $\\dfrac{ 5! }{ 0! }$\n- D. $\\binom{ 5 }{ 5 }$",
+					"reponse": ["B. $5^5$"],
+					"variables": {
+						"n": "5",
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Chaque jour d'une période de $4$ jours, la cantine sert un dessert choisi parmi $5$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?\n\n- A. $\\dfrac{ 5! }{ 1! }$\n- B. $5^4$\n- C. $\\binom{ 5 }{ 4 }$\n- D. $4^5$",
+					"reponse": ["B. $5^4$"],
+					"variables": {
+						"n": "5",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Chaque jour d'une période de $3$ jours, la cantine sert un dessert choisi parmi $6$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?\n\n- A. $6^3$\n- B. $\\dfrac{ 6! }{ 3! }$\n- C. $3^6$\n- D. $\\binom{ 6 }{ 3 }$",
+					"reponse": ["A. $6^3$"],
+					"variables": {
+						"n": "6",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Chaque jour d'une période de $4$ jours, la cantine sert un dessert choisi parmi $5$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?\n\n- A. $\\dfrac{ 5! }{ 1! }$\n- B. $4^5$\n- C. $\\binom{ 5 }{ 4 }$\n- D. $5^4$",
+					"reponse": ["D. $5^4$"],
+					"variables": {
+						"n": "5",
+						"k": "4"
+					}
+				}
+			]
+		}
+	]
+}

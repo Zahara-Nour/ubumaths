@@ -1,0 +1,439 @@
+{
+	"template_id": "0d2edda7-1d90-46ee-b07d-792ebbd43849",
+	"titre": "Vrai ou Faux : racines et opérations",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["2"],
+	"type": "multiple_choice",
+	"theme": "Racines carrées > Manipuler > Propriétés",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-261",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "sqrt({{a}})+sqrt({{b}})=sqrt({{eval:a+b}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Vrai ou Faux ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Vrai"
+					},
+					{
+						"content": "Faux"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 62,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 62,
+						"exemples": [
+							"sqrt(2)+sqrt(6)=sqrt(8)",
+							"sqrt(4)+sqrt(4)=sqrt(8)",
+							"sqrt(2)+sqrt(5)=sqrt(7)",
+							"sqrt(4)+sqrt(3)=sqrt(7)",
+							"sqrt(8)+sqrt(3)=sqrt(11)",
+							"sqrt(2)+sqrt(7)=sqrt(9)",
+							"sqrt(2)+sqrt(9)=sqrt(11)",
+							"sqrt(7)+sqrt(4)=sqrt(11)",
+							"sqrt(9)+sqrt(7)=sqrt(16)",
+							"sqrt(6)+sqrt(6)=sqrt(12)",
+							"sqrt(4)+sqrt(2)=sqrt(6)",
+							"sqrt(5)+sqrt(6)=sqrt(11)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 18,
+							"nb_distinctes": 17,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Faux"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 18,
+				"nb_distinctes": 17,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 18,
+				"nb_distinctes": 17,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 73,
+					"enonce": "Vrai ou Faux ?\n\n$$\\sqrt{9} + \\sqrt{9} = \\sqrt{18}$$\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"expression1": "sqrt(9)+sqrt(9)=sqrt(18)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Vrai ou Faux ?\n\n$$\\sqrt{2} + \\sqrt{6} = \\sqrt{8}$$\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"expression1": "sqrt(2)+sqrt(6)=sqrt(8)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Vrai ou Faux ?\n\n$$\\sqrt{4} + \\sqrt{4} = \\sqrt{8}$$\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "4",
+						"b": "4",
+						"expression1": "sqrt(4)+sqrt(4)=sqrt(8)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Vrai ou Faux ?\n\n$$\\sqrt{2} + \\sqrt{5} = \\sqrt{7}$$\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"expression1": "sqrt(2)+sqrt(5)=sqrt(7)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Vrai ou Faux ?\n\n$$\\sqrt{4} + \\sqrt{3} = \\sqrt{7}$$\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"expression1": "sqrt(4)+sqrt(3)=sqrt(7)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "sqrt({{a}})*sqrt({{b}})=sqrt({{eval:a*b}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Vrai ou Faux ?\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Vrai"
+					},
+					{
+						"content": "Faux"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 62,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 62,
+						"exemples": [
+							"sqrt(2)*sqrt(6)=sqrt(12)",
+							"sqrt(4)*sqrt(4)=sqrt(16)",
+							"sqrt(2)*sqrt(5)=sqrt(10)",
+							"sqrt(4)*sqrt(3)=sqrt(12)",
+							"sqrt(8)*sqrt(3)=sqrt(24)",
+							"sqrt(2)*sqrt(7)=sqrt(14)",
+							"sqrt(2)*sqrt(9)=sqrt(18)",
+							"sqrt(7)*sqrt(4)=sqrt(28)",
+							"sqrt(9)*sqrt(7)=sqrt(63)",
+							"sqrt(6)*sqrt(6)=sqrt(36)",
+							"sqrt(4)*sqrt(2)=sqrt(8)",
+							"sqrt(5)*sqrt(6)=sqrt(30)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Vrai"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"racine": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 73,
+					"enonce": "Vrai ou Faux ?\n\n$$\\sqrt{9} \\times \\sqrt{9} = \\sqrt{81}$$\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"expression2": "sqrt(9)*sqrt(9)=sqrt(81)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Vrai ou Faux ?\n\n$$\\sqrt{2} \\times \\sqrt{6} = \\sqrt{12}$$\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"expression2": "sqrt(2)*sqrt(6)=sqrt(12)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Vrai ou Faux ?\n\n$$\\sqrt{4} \\times \\sqrt{4} = \\sqrt{16}$$\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "4",
+						"b": "4",
+						"expression2": "sqrt(4)*sqrt(4)=sqrt(16)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Vrai ou Faux ?\n\n$$\\sqrt{2} \\times \\sqrt{5} = \\sqrt{10}$$\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"expression2": "sqrt(2)*sqrt(5)=sqrt(10)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Vrai ou Faux ?\n\n$$\\sqrt{4} \\times \\sqrt{3} = \\sqrt{12}$$\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"expression2": "sqrt(4)*sqrt(3)=sqrt(12)"
+					}
+				}
+			]
+		}
+	]
+}

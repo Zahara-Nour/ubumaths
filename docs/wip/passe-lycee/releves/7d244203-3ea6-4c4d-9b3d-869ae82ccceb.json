@@ -1,0 +1,671 @@
+{
+	"template_id": "7d244203-3ea6-4c4d-9b3d-869ae82ccceb",
+	"titre": "Théorème de Bézout : trouver des coefficients u et v",
+	"sous_titre": "Compléter une égalité de Bézout au + bv = 1 ou au + bv = PGCD(a, b), donner un coefficient u qui convient parmi une infinité (pièges : u et v inversés, signe du coefficient négatif, au + bv = 1 alors que PGCD ≠ 1)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Arithmétique > PGCD, Bézout et Gauss > PGCD, Bézout et Gauss",
+	"mis_a_jour": "2026-10-05T16:06:49.94953+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-278",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "5|7|11|13"
+					},
+					{
+						"name": "a",
+						"expression": "14..60"
+					},
+					{
+						"name": "s",
+						"expression": "eval:mod(mod(a,b)^(b-2),b)"
+					},
+					{
+						"name": "t",
+						"expression": "eval:(1-a*s)/b"
+					}
+				],
+				"conditions": ["mod(a,b) != 0"],
+				"enonce_brut": "${{a}}$ et ${{b}}$ sont premiers entre eux. Complète l'égalité de Bézout :\n\n${{a}} \\times {{s}} + {{b}} \\times ? = 1$",
+				"reponses_brutes": ["{{t}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 136,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [5, 7, 11, 13]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 14,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 47
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -49,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 42
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -49,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 42
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 60,
+				"nb_distinctes": 60,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -49,
+				"max": -1,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -49,
+				"max": 60,
+				"nb_distinctes": 102,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (60)",
+					"graine": 19,
+					"enonce": "$60$ et $13$ sont premiers entre eux. Complète l'égalité de Bézout :\n\n$60 \\times 5 + 13 \\times [?] = 1$",
+					"reponse": ["-23"],
+					"variables": {
+						"b": "13",
+						"a": "60",
+						"s": "5",
+						"t": "-23"
+					}
+				},
+				{
+					"role": "plus petite valeur (-49)",
+					"graine": 74,
+					"enonce": "$60$ et $11$ sont premiers entre eux. Complète l'égalité de Bézout :\n\n$60 \\times 9 + 11 \\times [?] = 1$",
+					"reponse": ["-49"],
+					"variables": {
+						"b": "11",
+						"a": "60",
+						"s": "9",
+						"t": "-49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$38$ et $5$ sont premiers entre eux. Complète l'égalité de Bézout :\n\n$38 \\times 2 + 5 \\times [?] = 1$",
+					"reponse": ["-15"],
+					"variables": {
+						"b": "5",
+						"a": "38",
+						"s": "2",
+						"t": "-15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$27$ et $7$ sont premiers entre eux. Complète l'égalité de Bézout :\n\n$27 \\times 6 + 7 \\times [?] = 1$",
+					"reponse": ["-23"],
+					"variables": {
+						"b": "7",
+						"a": "27",
+						"s": "6",
+						"t": "-23"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$49$ et $5$ sont premiers entre eux. Complète l'égalité de Bézout :\n\n$49 \\times 4 + 5 \\times [?] = 1$",
+					"reponse": ["-39"],
+					"variables": {
+						"b": "5",
+						"a": "49",
+						"s": "4",
+						"t": "-39"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "5|7|11|13"
+					},
+					{
+						"name": "a",
+						"expression": "14..60"
+					},
+					{
+						"name": "s",
+						"expression": "eval:mod(mod(a,b)^(b-2),b)"
+					},
+					{
+						"name": "t",
+						"expression": "eval:(1-a*s)/b"
+					}
+				],
+				"conditions": ["mod(a,b) != 0"],
+				"enonce_brut": "Donne un entier $u$ pour lequel il existe un entier $v$ tel que ${{a}}u + {{b}}v = 1$.\n\n$u=?$",
+				"reponses_brutes": ["{{s}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 136,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [5, 7, 11, 13]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 14,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 47
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -49,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 42
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 60,
+				"nb_distinctes": 52,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 60,
+				"nb_distinctes": 60,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (60)",
+					"graine": 19,
+					"enonce": "Donne un entier $u$ pour lequel il existe un entier $v$ tel que $60 u + 13 v = 1$.\n\n$u = [?]$",
+					"reponse": ["5"],
+					"variables": {
+						"b": "13",
+						"a": "60",
+						"s": "5",
+						"t": "-23"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Donne un entier $u$ pour lequel il existe un entier $v$ tel que $38 u + 5 v = 1$.\n\n$u = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"b": "5",
+						"a": "38",
+						"s": "2",
+						"t": "-15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Donne un entier $u$ pour lequel il existe un entier $v$ tel que $27 u + 7 v = 1$.\n\n$u = [?]$",
+					"reponse": ["6"],
+					"variables": {
+						"b": "7",
+						"a": "27",
+						"s": "6",
+						"t": "-23"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Donne un entier $u$ pour lequel il existe un entier $v$ tel que $49 u + 5 v = 1$.\n\n$u = [?]$",
+					"reponse": ["4"],
+					"variables": {
+						"b": "5",
+						"a": "49",
+						"s": "4",
+						"t": "-39"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Donne un entier $u$ pour lequel il existe un entier $v$ tel que $24 u + 7 v = 1$.\n\n$u = [?]$",
+					"reponse": ["5"],
+					"variables": {
+						"b": "7",
+						"a": "24",
+						"s": "5",
+						"t": "-17"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "5|7|11|13"
+					},
+					{
+						"name": "a",
+						"expression": "14..60"
+					},
+					{
+						"name": "s",
+						"expression": "eval:mod(mod(a,b)^(b-2),b)"
+					},
+					{
+						"name": "t",
+						"expression": "eval:(1-a*s)/b"
+					},
+					{
+						"name": "k",
+						"expression": "2..6"
+					}
+				],
+				"conditions": ["mod(a,b) != 0"],
+				"enonce_brut": "$\\mathrm{PGCD}({{eval:k*a}} \\,;\\, {{eval:k*b}}) = {{k}}$. Complète l'égalité de Bézout :\n\n${{eval:k*a}} \\times {{s}} + {{eval:k*b}} \\times ? = {{k}}$",
+				"reponses_brutes": ["{{t}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 246,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [5, 7, 11, 13]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 14,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 47
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -49,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 42
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -49,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 42
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 360,
+				"nb_distinctes": 151,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": -49,
+				"max": -1,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -49,
+				"max": 360,
+				"nb_distinctes": 193,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (360)",
+					"graine": 178,
+					"enonce": "$\\mathrm{PGCD}(360 \\,;\\, 42) = 6$. Complète l'égalité de Bézout :\n\n$360 \\times 2 + 42 \\times [?] = 6$",
+					"reponse": ["-17"],
+					"variables": {
+						"b": "7",
+						"a": "60",
+						"s": "2",
+						"t": "-17",
+						"k": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-49)",
+					"graine": 74,
+					"enonce": "$\\mathrm{PGCD}(240 \\,;\\, 44) = 4$. Complète l'égalité de Bézout :\n\n$240 \\times 9 + 44 \\times [?] = 4$",
+					"reponse": ["-49"],
+					"variables": {
+						"b": "11",
+						"a": "60",
+						"s": "9",
+						"t": "-49",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$\\mathrm{PGCD}(228 \\,;\\, 30) = 6$. Complète l'égalité de Bézout :\n\n$228 \\times 2 + 30 \\times [?] = 6$",
+					"reponse": ["-15"],
+					"variables": {
+						"b": "5",
+						"a": "38",
+						"s": "2",
+						"t": "-15",
+						"k": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$\\mathrm{PGCD}(108 \\,;\\, 28) = 4$. Complète l'égalité de Bézout :\n\n$108 \\times 6 + 28 \\times [?] = 4$",
+					"reponse": ["-23"],
+					"variables": {
+						"b": "7",
+						"a": "27",
+						"s": "6",
+						"t": "-23",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$\\mathrm{PGCD}(144 \\,;\\, 52) = 4$. Complète l'égalité de Bézout :\n\n$144 \\times 4 + 52 \\times [?] = 4$",
+					"reponse": ["-11"],
+					"variables": {
+						"b": "13",
+						"a": "36",
+						"s": "4",
+						"t": "-11",
+						"k": "4"
+					}
+				}
+			]
+		}
+	]
+}

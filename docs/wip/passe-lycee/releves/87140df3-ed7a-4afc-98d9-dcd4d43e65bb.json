@@ -1,0 +1,558 @@
+{
+	"template_id": "87140df3-ed7a-4afc-98d9-dcd4d43e65bb",
+	"titre": "Déterminer la forme canonique.",
+	"sous_titre": "Graphiquement",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Polynôme du second degré > Apprivoiser",
+	"mis_a_jour": "2026-10-01T11:45:07.505631+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-246",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "s",
+						"expression": "-1|1"
+					},
+					{
+						"name": "n",
+						"expression": "1|2"
+					},
+					{
+						"name": "u",
+						"expression": "-3..3"
+					},
+					{
+						"name": "v",
+						"expression": "-3..3"
+					},
+					{
+						"name": "t",
+						"expression": "-1|1"
+					},
+					{
+						"name": "c",
+						"expression": "eval:u+2*t"
+					},
+					{
+						"name": "d",
+						"expression": "eval:v+s*n"
+					}
+				],
+				"conditions": ["u != 0", "v != 0"],
+				"enonce_brut": "Détermine la forme canonique du polynôme représenté par cette parabole, qui passe par le point $A$.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{s}}*{{n}}/4*(x-{{u}})^2+{{v}}   bleu   nom=C_f\npoints: A({{c}} ; {{d}})\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\nLa forme canonique est $?$.",
+				"reponses_brutes": ["{{eval:s*n/4}}(x{{eval:-u;+}})^2{{eval:v;+}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-5, -4, -3, -1, 0, 1, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 128,
+						"exemples": [
+							"\\dfrac{1}{2}(x-3)^2-2",
+							"-\\dfrac{1}{2}(x-3)^2+1",
+							"-\\dfrac{1}{2}(x+2)^2-3",
+							"\\dfrac{1}{2}(x-2)^2-1",
+							"-\\dfrac{1}{2}(x+3)^2+1",
+							"\\dfrac{1}{4}(x-3)^2-1",
+							"\\dfrac{1}{2}(x+2)^2-2",
+							"-\\dfrac{1}{2}(x-1)^2-3",
+							"-\\dfrac{1}{2}(x-2)^2+1",
+							"-\\dfrac{1}{2}(x-3)^2-3",
+							"\\dfrac{1}{4}(x+2)^2-2",
+							"\\dfrac{1}{2}(x+2)^2-3"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 4,
+							"nb_distinctes": 4,
+							"valeurs": [1, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1,
+				"max": 4,
+				"nb_distinctes": 4,
+				"valeurs": [1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 4,
+				"nb_distinctes": 4,
+				"valeurs": [1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 4],
+				"denominateur_min": 2,
+				"denominateur_max": 4,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [
+					{
+						"pattern": "u*($x+v)^2+w",
+						"acceptable": "u*($x-(-v))^2+w"
+					}
+				],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 6,
+					"enonce": "Détermine la forme canonique du polynôme représenté par cette parabole, qui passe par le point $A$.\n\n[courbe]\n\nLa forme canonique est $[?]$.",
+					"reponse": ["\\dfrac{1}{4}(x-3)^2-1"],
+					"variables": {
+						"x": "x",
+						"s": "1",
+						"n": "1",
+						"u": "3",
+						"v": "-1",
+						"t": "-1",
+						"c": "1",
+						"d": "0"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Détermine la forme canonique du polynôme représenté par cette parabole, qui passe par le point $A$.\n\n[courbe]\n\nLa forme canonique est $[?]$.",
+					"reponse": ["\\dfrac{1}{2}(x-3)^2-2"],
+					"variables": {
+						"x": "x",
+						"s": "1",
+						"n": "2",
+						"u": "3",
+						"v": "-2",
+						"t": "1",
+						"c": "5",
+						"d": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "s",
+						"expression": "-1|1"
+					},
+					{
+						"name": "m",
+						"expression": "1|2|3"
+					},
+					{
+						"name": "u",
+						"expression": "-3..3"
+					},
+					{
+						"name": "v",
+						"expression": "-3..3"
+					},
+					{
+						"name": "t",
+						"expression": "-1|1"
+					},
+					{
+						"name": "c",
+						"expression": "eval:u+t"
+					},
+					{
+						"name": "d",
+						"expression": "eval:v+s*m"
+					}
+				],
+				"conditions": ["u != 0", "v != 0"],
+				"enonce_brut": "Détermine la forme canonique du polynôme représenté par cette parabole, qui passe par le point $A$.\n\n```courbe\nx: -6 ; 6\ny: -7 ; 7\ngrille: 1 ; 1\nf(x) = {{s}}*{{m}}*(x-{{u}})^2+{{v}}   bleu   nom=C_f\npoints: A({{c}} ; {{d}})\ntaille: moyenne\ndescription: Parabole représentant un polynôme du second degré, tracée dans un repère pour x de −6 à 6.\n```\n\nLa forme canonique est $?$.",
+				"reponses_brutes": ["{{eval:s*m*(x-u)^2+v}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 163,
+						"exemples": [
+							"3(x-3)^2-2",
+							"1-2(x-3)^2",
+							"-3-2(x+2)^2",
+							"3(x-2)^2-1",
+							"1-2(x+3)^2",
+							"(x-3)^2-1",
+							"3(x+2)^2-2",
+							"-3-3(x-1)^2",
+							"1-3(x-2)^2",
+							"-3-3(x-3)^2",
+							"(x+2)^2-2",
+							"3(x+2)^2-3"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 3,
+							"nb_distinctes": 6,
+							"valeurs": [-3, -2, -1, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": -3,
+				"max": 3,
+				"nb_distinctes": 6,
+				"valeurs": [-3, -2, -1, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": 3,
+				"nb_distinctes": 6,
+				"valeurs": [-3, -2, -1, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [
+					{
+						"pattern": "u*($x+v)^2+w",
+						"acceptable": "u*($x-(-v))^2+w"
+					}
+				],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Détermine la forme canonique du polynôme représenté par cette parabole, qui passe par le point $A$.\n\n[courbe]\n\nLa forme canonique est $[?]$.",
+					"reponse": ["3(x-3)^2-2"],
+					"variables": {
+						"x": "x",
+						"s": "1",
+						"m": "3",
+						"u": "3",
+						"v": "-2",
+						"t": "1",
+						"c": "4",
+						"d": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-3)",
+					"graine": 3,
+					"enonce": "Détermine la forme canonique du polynôme représenté par cette parabole, qui passe par le point $A$.\n\n[courbe]\n\nLa forme canonique est $[?]$.",
+					"reponse": ["-3-2(x+2)^2"],
+					"variables": {
+						"x": "x",
+						"s": "-1",
+						"m": "2",
+						"u": "-2",
+						"v": "-3",
+						"t": "1",
+						"c": "-1",
+						"d": "-5"
+					}
+				}
+			]
+		}
+	]
+}

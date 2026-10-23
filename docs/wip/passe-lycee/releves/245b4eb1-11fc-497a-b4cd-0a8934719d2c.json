@@ -1,0 +1,554 @@
+{
+	"template_id": "245b4eb1-11fc-497a-b4cd-0a8934719d2c",
+	"titre": "Décroissance exponentielle",
+	"sous_titre": "Modèle de décroissance : valeur initiale, sens de variation, valeur approchée de N(t₀) arrondie à l'unité",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonction exponentielle > Suites et modélisation",
+	"mis_a_jour": "2026-10-03T06:50:36.564471+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-297",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "N",
+						"expression": "200|400|500|800|1000|1500|2000"
+					},
+					{
+						"name": "k",
+						"expression": "0.05|0.1|0.2|0.3|0.5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)={{N}}\\,e^{-{{k}}t}\\qquad(t\\geqslant0).$$\n\nCombien y a-t-il de bactéries au début du traitement ?\n\n$N(0)=?$",
+				"reponses_brutes": ["{{N}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 35,
+			"variables": [
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 200,
+						"max": 2000,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [200, 400, 500, 800, 1000, 1500, 2000]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.05,
+						"max": 0.5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [0.05, 0.1, 0.2, 0.3, 0.5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 200,
+						"max": 2000,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [200, 400, 500, 800, 1000, 1500, 2000]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -0.5,
+				"max": 2000,
+				"nb_distinctes": 13,
+				"valeurs": [-0.5, -0.3, -0.2, -0.1, -0.05, 0, 200, 400, 500, 800, 1000, 1500, 2000],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 200,
+				"max": 2000,
+				"nb_distinctes": 7,
+				"valeurs": [200, 400, 500, 800, 1000, 1500, 2000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -0.5,
+				"max": 2000,
+				"nb_distinctes": 13,
+				"valeurs": [-0.5, -0.3, -0.2, -0.1, -0.05, 0, 200, 400, 500, 800, 1000, 1500, 2000],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2000)",
+					"graine": 10,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=2\\,000\\,e^{-0{,}3t}\\qquad(t\\geqslant0).$$\n\nCombien y a-t-il de bactéries au début du traitement ?\n\n$N \\left( 0 \\right) = [?]$",
+					"reponse": ["2000"],
+					"variables": {
+						"N": "2000",
+						"k": "0.3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-0.5)",
+					"graine": 7,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=200\\,e^{-0{,}5t}\\qquad(t\\geqslant0).$$\n\nCombien y a-t-il de bactéries au début du traitement ?\n\n$N \\left( 0 \\right) = [?]$",
+					"reponse": ["200"],
+					"variables": {
+						"N": "200",
+						"k": "0.5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=200\\,e^{-0{,}2t}\\qquad(t\\geqslant0).$$\n\nCombien y a-t-il de bactéries au début du traitement ?\n\n$N \\left( 0 \\right) = [?]$",
+					"reponse": ["200"],
+					"variables": {
+						"N": "200",
+						"k": "0.2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=500\\,e^{-0{,}1t}\\qquad(t\\geqslant0).$$\n\nCombien y a-t-il de bactéries au début du traitement ?\n\n$N \\left( 0 \\right) = [?]$",
+					"reponse": ["500"],
+					"variables": {
+						"N": "500",
+						"k": "0.1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=1\\,500\\,e^{-0{,}1t}\\qquad(t\\geqslant0).$$\n\nCombien y a-t-il de bactéries au début du traitement ?\n\n$N \\left( 0 \\right) = [?]$",
+					"reponse": ["1500"],
+					"variables": {
+						"N": "1500",
+						"k": "0.1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "N",
+						"expression": "200|400|500|800|1000|1500|2000"
+					},
+					{
+						"name": "k",
+						"expression": "0.05|0.1|0.2|0.3|0.5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)={{N}}\\,e^{-{{k}}t}\\qquad(t\\geqslant0).$$\n\nComplète : sur $[0\\,;+\\infty[$, la fonction $N$ est [_].",
+				"reponses_brutes": ["décroissante"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 35,
+			"variables": [
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 200,
+						"max": 2000,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [200, 400, 500, 800, 1000, 1500, 2000]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.05,
+						"max": 0.5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [0.05, 0.1, 0.2, 0.3, 0.5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -0.5,
+				"max": 2000,
+				"nb_distinctes": 13,
+				"valeurs": [-0.5, -0.3, -0.2, -0.1, -0.05, 0, 200, 400, 500, 800, 1000, 1500, 2000],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -0.5,
+				"max": 2000,
+				"nb_distinctes": 13,
+				"valeurs": [-0.5, -0.3, -0.2, -0.1, -0.05, 0, 200, 400, 500, 800, 1000, 1500, 2000],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (text)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case texte [_]": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2000)",
+					"graine": 10,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=2\\,000\\,e^{-0{,}3t}\\qquad(t\\geqslant0).$$\n\nComplète : sur $[0\\,;+\\infty[$, la fonction $N$ est [_].",
+					"reponse": ["décroissante"],
+					"variables": {
+						"N": "2000",
+						"k": "0.3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-0.5)",
+					"graine": 7,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=200\\,e^{-0{,}5t}\\qquad(t\\geqslant0).$$\n\nComplète : sur $[0\\,;+\\infty[$, la fonction $N$ est [_].",
+					"reponse": ["décroissante"],
+					"variables": {
+						"N": "200",
+						"k": "0.5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=200\\,e^{-0{,}2t}\\qquad(t\\geqslant0).$$\n\nComplète : sur $[0\\,;+\\infty[$, la fonction $N$ est [_].",
+					"reponse": ["décroissante"],
+					"variables": {
+						"N": "200",
+						"k": "0.2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=500\\,e^{-0{,}1t}\\qquad(t\\geqslant0).$$\n\nComplète : sur $[0\\,;+\\infty[$, la fonction $N$ est [_].",
+					"reponse": ["décroissante"],
+					"variables": {
+						"N": "500",
+						"k": "0.1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=1\\,500\\,e^{-0{,}1t}\\qquad(t\\geqslant0).$$\n\nComplète : sur $[0\\,;+\\infty[$, la fonction $N$ est [_].",
+					"reponse": ["décroissante"],
+					"variables": {
+						"N": "1500",
+						"k": "0.1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "N",
+						"expression": "200|400|500|800|1000|1500|2000"
+					},
+					{
+						"name": "k",
+						"expression": "0.05|0.1|0.2|0.3|0.5"
+					},
+					{
+						"name": "t",
+						"expression": "2..10"
+					}
+				],
+				"conditions": ["abs(N*exp(-k*t)-round(N*exp(-k*t))) <= 0.4", "k*t >= 0.2", "k*t <= 2"],
+				"enonce_brut": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)={{N}}\\,e^{-{{k}}t}\\qquad(t\\geqslant0).$$\n\nCombien reste-t-il de bactéries au bout de ${{t}}$ heures ? Arrondis à l'unité.\n\n$N({{t}})\\approx ?$",
+				"reponses_brutes": ["{{eval:round(N*exp(-k*t))}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 146,
+			"variables": [
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 200,
+						"max": 2000,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [200, 400, 500, 800, 1000, 1500, 2000]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.05,
+						"max": 0.5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [0.05, 0.1, 0.2, 0.3, 0.5]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 27,
+						"max": 1482,
+						"negatif_possible": false,
+						"nb_distinctes": 86
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -0.5,
+				"max": 2000,
+				"nb_distinctes": 22,
+				"valeurs": [
+					-0.5, -0.3, -0.2, -0.1, -0.05, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 200, 400, 500, 800, 1000,
+					1500, 2000
+				],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 27,
+				"max": 1482,
+				"nb_distinctes": 86,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -0.5,
+				"max": 2000,
+				"nb_distinctes": 108,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"≈": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2000)",
+					"graine": 30,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=2\\,000\\,e^{-0{,}2t}\\qquad(t\\geqslant0).$$\n\nCombien reste-t-il de bactéries au bout de $3$ heures ? Arrondis à l'unité.\n\n$N(3)\\approx [?]$",
+					"reponse": ["1098"],
+					"variables": {
+						"N": "2000",
+						"k": "0.2",
+						"t": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-0.5)",
+					"graine": 64,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=1\\,000\\,e^{-0{,}5t}\\qquad(t\\geqslant0).$$\n\nCombien reste-t-il de bactéries au bout de $2$ heures ? Arrondis à l'unité.\n\n$N(2)\\approx [?]$",
+					"reponse": ["368"],
+					"variables": {
+						"N": "1000",
+						"k": "0.5",
+						"t": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=200\\,e^{-0{,}2t}\\qquad(t\\geqslant0).$$\n\nCombien reste-t-il de bactéries au bout de $10$ heures ? Arrondis à l'unité.\n\n$N(10)\\approx [?]$",
+					"reponse": ["27"],
+					"variables": {
+						"N": "200",
+						"k": "0.2",
+						"t": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=500\\,e^{-0{,}3t}\\qquad(t\\geqslant0).$$\n\nCombien reste-t-il de bactéries au bout de $3$ heures ? Arrondis à l'unité.\n\n$N(3)\\approx [?]$",
+					"reponse": ["203"],
+					"variables": {
+						"N": "500",
+						"k": "0.3",
+						"t": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le nombre de bactéries d'une culture, $t$ heures après le début d'un traitement, est modélisé par\n\n$$N(t)=200\\,e^{-0{,}2t}\\qquad(t\\geqslant0).$$\n\nCombien reste-t-il de bactéries au bout de $2$ heures ? Arrondis à l'unité.\n\n$N(2)\\approx [?]$",
+					"reponse": ["134"],
+					"variables": {
+						"N": "200",
+						"k": "0.2",
+						"t": "2"
+					}
+				}
+			]
+		}
+	]
+}

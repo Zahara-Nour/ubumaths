@@ -1,0 +1,1192 @@
+{
+	"template_id": "ecba8a9e-bedb-478d-a324-a4f3fbdb3967",
+	"titre": "Sens de variation à partir du signe de u(n+1) − u(n)",
+	"sous_titre": "La différence de deux termes consécutifs est donnée : en déduire le sens de variation",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Sens de variation > Différence de deux termes",
+	"mis_a_jour": "2026-10-01T20:22:23.46619+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-219",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 7,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n={{eval:a*n+b}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 79,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = 5 n + 9$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"n": "n",
+						"a": "5",
+						"b": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = 3 n + 5$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"n": "n",
+						"a": "3",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = 5 n + 1$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"n": "n",
+						"a": "5",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = 2 n + 1$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"n": "n",
+						"a": "2",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = 2 n + 6$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"n": "n",
+						"a": "2",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=-{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 1,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 1,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = -1$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"c": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 10,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = -9$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = -3$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = -7$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = -6$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"c": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=-n^2-{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = -n^2 - 9$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"c": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = -n^2 - 1$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = -n^2 - 3$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = -n^2 - 7$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = -n^2 - 6$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["B. décroissante"],
+					"variables": {
+						"c": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "1..6"
+					},
+					{
+						"name": "c",
+						"expression": "1..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=(n-{{k}})^2+{{c}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 30,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 9,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = \\left( n - 6 \\right)^2 + 1$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"k": "6",
+						"c": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = \\left( n - 1 \\right)^2 + 3$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"k": "1",
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = \\left( n - 2 \\right)^2 + 2$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"k": "2",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = \\left( n - 5 \\right)^2 + 2$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"k": "5",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = \\left( n - 1 \\right)^2 + 4$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"k": "1",
+						"c": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=\\dfrac{ {{k}} }{n+1}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["croissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=\\dfrac{ 9 }{n+1}$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"k": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=\\dfrac{ 1 }{n+1}$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=\\dfrac{ 3 }{n+1}$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=\\dfrac{ 7 }{n+1}$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"k": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=\\dfrac{ 6 }{n+1}$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["A. croissante"],
+					"variables": {
+						"k": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2..6"
+					},
+					{
+						"name": "k1",
+						"expression": "eval:k+1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n=n-{{k}}$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni croissante, ni décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 9,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = n - 6$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"k": "6",
+						"k1": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = n - 2$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"k": "2",
+						"k1": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = n - 3$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"k": "3",
+						"k1": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = n - 5$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"k": "5",
+						"k1": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = n - 4$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"k": "4",
+						"k1": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "1..9"
+					},
+					{
+						"name": "m",
+						"expression": "eval:k"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une suite $(u_n)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n+1}-u_n={{k}}-2n$$\n\nQue peut-on dire du sens de variation de la suite $(u_n)$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "croissante"
+					},
+					{
+						"content": "décroissante"
+					},
+					{
+						"content": "ni croissante, ni décroissante"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni croissante, ni décroissante"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = 9 - 2 n$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"k": "9",
+						"m": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = 1 - 2 n$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"k": "1",
+						"m": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = 3 - 2 n$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"k": "3",
+						"m": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = 7 - 2 n$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"k": "7",
+						"m": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une suite $\\left( u_n \\right)$ vérifie, pour tout entier naturel $n$ :\n\n$$u_{n + 1} - u_n = 6 - 2 n$$\n\nQue peut-on dire du sens de variation de la suite $\\left( u_n \\right)$ ?\n\n- A. croissante\n- B. décroissante\n- C. ni croissante, ni décroissante",
+					"reponse": ["C. ni croissante, ni décroissante"],
+					"variables": {
+						"k": "6",
+						"m": "6"
+					}
+				}
+			]
+		}
+	]
+}

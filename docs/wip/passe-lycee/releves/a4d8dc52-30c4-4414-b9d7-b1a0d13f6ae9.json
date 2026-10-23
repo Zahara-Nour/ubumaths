@@ -1,0 +1,855 @@
+{
+	"template_id": "a4d8dc52-30c4-4414-b9d7-b1a0d13f6ae9",
+	"titre": "Asymptote parallèle à un axe : équation à partir d'une limite",
+	"sous_titre": "Lien limite ↔ asymptote : limite finie en ±∞ → y = b ; limite infinie en a → x = a ; lecture sur f(x) = b + k/(x−a) (pièges : x et y échangés, limite de la fraction seule)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Limites de fonctions > Asymptotes",
+	"mis_a_jour": "2026-10-04T17:40:56.332028+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-219",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-404",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "s",
+						"expression": "+|-"
+					},
+					{
+						"name": "b",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ une fonction définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to {{s}}\\infty}f(x)={{b}}$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$?$",
+				"reponses_brutes": ["y={{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 38,
+			"variables": [
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["+", "-"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"y=-1",
+							"y=-2",
+							"y=-3",
+							"y=-4",
+							"y=-5",
+							"y=-6",
+							"y=-7",
+							"y=-8",
+							"y=-9",
+							"y=0",
+							"y=1",
+							"y=2",
+							"y=3",
+							"y=4",
+							"y=5",
+							"y=6",
+							"y=7",
+							"y=8",
+							"y=9"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 19,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["equation"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "152/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ une fonction définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to +\\infty}f(x)=9$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$[?]$",
+					"reponse": ["y=9"],
+					"variables": {
+						"s": "+",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 27,
+					"enonce": "Soit $f$ une fonction définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to +\\infty}f(x)=-9$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$[?]$",
+					"reponse": ["y=-9"],
+					"variables": {
+						"s": "+",
+						"b": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ une fonction définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to +\\infty}f(x)=1$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$[?]$",
+					"reponse": ["y=1"],
+					"variables": {
+						"s": "+",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ une fonction définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to +\\infty}f(x)=-4$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$[?]$",
+					"reponse": ["y=-4"],
+					"variables": {
+						"s": "+",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ une fonction définie sur $\\mathbb{R}$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to +\\infty}f(x)=-1$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$[?]$",
+					"reponse": ["y=-1"],
+					"variables": {
+						"s": "+",
+						"b": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "s",
+						"expression": "+|-"
+					},
+					{
+						"name": "a",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ une fonction définie sur $\\left]{{a}}\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to {{a}}}f(x)={{s}}\\infty$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$?$",
+				"reponses_brutes": ["x={{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 38,
+			"variables": [
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["+", "-"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"x=-1",
+							"x=-2",
+							"x=-3",
+							"x=-4",
+							"x=-5",
+							"x=-6",
+							"x=-7",
+							"x=-8",
+							"x=-9",
+							"x=0",
+							"x=1",
+							"x=2",
+							"x=3",
+							"x=4",
+							"x=5",
+							"x=6",
+							"x=7",
+							"x=8",
+							"x=9"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 19,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["equation"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ une fonction définie sur $\\left]9\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to 9}f(x)=+\\infty$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$[?]$",
+					"reponse": ["x=9"],
+					"variables": {
+						"s": "+",
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 27,
+					"enonce": "Soit $f$ une fonction définie sur $\\left]-9\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to -9}f(x)=+\\infty$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$[?]$",
+					"reponse": ["x=-9"],
+					"variables": {
+						"s": "+",
+						"a": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ une fonction définie sur $\\left]1\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to 1}f(x)=+\\infty$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$[?]$",
+					"reponse": ["x=1"],
+					"variables": {
+						"s": "+",
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ une fonction définie sur $\\left]-4\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to -4}f(x)=+\\infty$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$[?]$",
+					"reponse": ["x=-4"],
+					"variables": {
+						"s": "+",
+						"a": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ une fonction définie sur $\\left]-1\\,;+\\infty\\right[$, de courbe $\\mathcal{C}_f$, telle que $\\displaystyle\\lim_{x\\to -1}f(x)=+\\infty$.\n\nDonne une équation de l'asymptote à $\\mathcal{C}_f$ que l'on en déduit.\n\n$[?]$",
+					"reponse": ["x=-1"],
+					"variables": {
+						"s": "+",
+						"a": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-6..6"
+					},
+					{
+						"name": "b",
+						"expression": "-6..6"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["a != 0", "b != 0", "a != b"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{b}}+\\dfrac{ {{k}} }{x{{eval:-a;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote **horizontale** à $\\mathcal{C}_f$ en $+\\infty$.\n\n$?$",
+				"reponses_brutes": ["y={{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 258,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"y=-1",
+							"y=-2",
+							"y=-3",
+							"y=-4",
+							"y=-5",
+							"y=-6",
+							"y=1",
+							"y=2",
+							"y=3",
+							"y=4",
+							"y=5",
+							"y=6"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 6,
+							"nb_distinctes": 12,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 9,
+				"nb_distinctes": 15,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 9,
+				"nb_distinctes": 15,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["equation"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 12,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -6 \\right\\}$ par $f(x)=1+\\dfrac{ 9 }{x+6}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote horizontale à $\\mathcal{C}_f$ en $+\\infty$.\n\n$[?]$",
+					"reponse": ["y=1"],
+					"variables": {
+						"a": "-6",
+						"b": "1",
+						"k": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -6 \\right\\}$ par $f(x)=-1+\\dfrac{ 1 }{x+6}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote horizontale à $\\mathcal{C}_f$ en $+\\infty$.\n\n$[?]$",
+					"reponse": ["y=-1"],
+					"variables": {
+						"a": "-6",
+						"b": "-1",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ 6 \\right\\}$ par $f(x)=-3+\\dfrac{ 6 }{x-6}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote horizontale à $\\mathcal{C}_f$ en $+\\infty$.\n\n$[?]$",
+					"reponse": ["y=-3"],
+					"variables": {
+						"a": "6",
+						"b": "-3",
+						"k": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=-3+\\dfrac{ 5 }{x+2}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote horizontale à $\\mathcal{C}_f$ en $+\\infty$.\n\n$[?]$",
+					"reponse": ["y=-3"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=-4+\\dfrac{ 1 }{x+2}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote horizontale à $\\mathcal{C}_f$ en $+\\infty$.\n\n$[?]$",
+					"reponse": ["y=-4"],
+					"variables": {
+						"a": "-2",
+						"b": "-4",
+						"k": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-6..6"
+					},
+					{
+						"name": "b",
+						"expression": "-6..6"
+					},
+					{
+						"name": "k",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["a != 0", "b != 0", "a != b"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{b}}+\\dfrac{ {{k}} }{x{{eval:-a;+}}}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote **verticale** à $\\mathcal{C}_f$.\n\n$?$",
+				"reponses_brutes": ["x={{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 258,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"x=-1",
+							"x=-2",
+							"x=-3",
+							"x=-4",
+							"x=-5",
+							"x=-6",
+							"x=1",
+							"x=2",
+							"x=3",
+							"x=4",
+							"x=5",
+							"x=6"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 6,
+							"nb_distinctes": 12,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 9,
+				"nb_distinctes": 15,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 9,
+				"nb_distinctes": 15,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["equation"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 12,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -6 \\right\\}$ par $f(x)=1+\\dfrac{ 9 }{x+6}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote verticale à $\\mathcal{C}_f$.\n\n$[?]$",
+					"reponse": ["x=-6"],
+					"variables": {
+						"a": "-6",
+						"b": "1",
+						"k": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -6 \\right\\}$ par $f(x)=-1+\\dfrac{ 1 }{x+6}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote verticale à $\\mathcal{C}_f$.\n\n$[?]$",
+					"reponse": ["x=-6"],
+					"variables": {
+						"a": "-6",
+						"b": "-1",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ 6 \\right\\}$ par $f(x)=-3+\\dfrac{ 6 }{x-6}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote verticale à $\\mathcal{C}_f$.\n\n$[?]$",
+					"reponse": ["x=6"],
+					"variables": {
+						"a": "6",
+						"b": "-3",
+						"k": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=-3+\\dfrac{ 5 }{x+2}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote verticale à $\\mathcal{C}_f$.\n\n$[?]$",
+					"reponse": ["x=-2"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=-4+\\dfrac{ 1 }{x+2}$, de courbe $\\mathcal{C}_f$.\n\nDonne une équation de l'asymptote verticale à $\\mathcal{C}_f$.\n\n$[?]$",
+					"reponse": ["x=-2"],
+					"variables": {
+						"a": "-2",
+						"b": "-4",
+						"k": "1"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,410 @@
+{
+	"template_id": "279cf28f-a9e9-4c15-bd00-adbb9442c9bd",
+	"titre": "Calculer un terme d'une suite géométrique",
+	"sous_titre": "Calculer le terme précédent",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Suites géométriques > Calculer un terme",
+	"mis_a_jour": "2026-10-01T20:22:21.471073+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-216",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "q",
+						"expression": "2..3;±"
+					},
+					{
+						"name": "k",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "t",
+						"expression": "eval:k*(q)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une suite géométrique a pour raison ${{q}}$. L'un de ses termes vaut ${{t}}$ : calcule le terme précédent.\n\nLe terme précédent est $?$.",
+				"reponses_brutes": ["{{k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 64,
+			"variables": [
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -2, 2, 3]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -27,
+						"max": 27,
+						"negatif_possible": true,
+						"nb_distinctes": 26,
+						"valeurs": [
+							-27, -24, -21, -18, -16, -15, -14, -12, -10, -9, -8, -6, -4, 4, 6, 8, 9, 10, 12, 14,
+							15, 16, 18, 21, 24, 27
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 27,
+				"nb_distinctes": 15,
+				"valeurs": [2, 3, 4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 21, 24, 27],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 27,
+				"nb_distinctes": 25,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 21, 24, 27
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (27)",
+					"graine": 7,
+					"enonce": "Une suite géométrique a pour raison $-3$. L'un de ses termes vaut $-27$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["9"],
+					"variables": {
+						"q": "-3",
+						"k": "9",
+						"t": "-27"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 27,
+					"enonce": "Une suite géométrique a pour raison $-3$. L'un de ses termes vaut $27$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["-9"],
+					"variables": {
+						"q": "-3",
+						"k": "-9",
+						"t": "27"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une suite géométrique a pour raison $-3$. L'un de ses termes vaut $-6$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"q": "-3",
+						"k": "2",
+						"t": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une suite géométrique a pour raison $-2$. L'un de ses termes vaut $10$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["-5"],
+					"variables": {
+						"q": "-2",
+						"k": "-5",
+						"t": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une suite géométrique a pour raison $-3$. L'un de ses termes vaut $6$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["-2"],
+					"variables": {
+						"q": "-3",
+						"k": "-2",
+						"t": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "qd",
+						"expression": "\\frac{1}{2}|0{,}5"
+					},
+					{
+						"name": "t",
+						"expression": "2..15;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une suite géométrique a pour raison ${{qd}}$. L'un de ses termes vaut ${{t}}$ : calcule le terme précédent.\n\nLe terme précédent est $?$.",
+				"reponses_brutes": ["{{eval:2*t}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 56,
+			"variables": [
+				{
+					"nom": "qd",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.49333333333333335,
+						"nb_distinctes": 2,
+						"valeurs": ["0.5", "\\frac{1}{2}"],
+						"nombres_contenus": {
+							"min": 0.5,
+							"max": 2,
+							"nb_distinctes": 3,
+							"valeurs": [0.5, 1, 2],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -15,
+						"max": 15,
+						"negatif_possible": true,
+						"nb_distinctes": 28,
+						"valeurs": [
+							-15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13, 14, 15
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 28,
+						"valeurs": [
+							-30, -28, -26, -24, -22, -20, -18, -16, -14, -12, -10, -8, -6, -4, 4, 6, 8, 10, 12,
+							14, 16, 18, 20, 22, 24, 26, 28, 30
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.5,
+				"max": 15,
+				"nb_distinctes": 16,
+				"valeurs": [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -30,
+				"max": 30,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-30, -28, -26, -24, -22, -20, -18, -16, -14, -12, -10, -8, -6, -4, 4, 6, 8, 10, 12, 14,
+					16, 18, 20, 22, 24, 26, 28, 30
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -30,
+				"max": 30,
+				"nb_distinctes": 38,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 152,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "152/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30)",
+					"graine": 7,
+					"enonce": "Une suite géométrique a pour raison $\\frac{1}{2}$. L'un de ses termes vaut $15$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["30"],
+					"variables": {
+						"qd": "\\frac{1}{2}",
+						"t": "15"
+					}
+				},
+				{
+					"role": "plus petite valeur (-30)",
+					"graine": 27,
+					"enonce": "Une suite géométrique a pour raison $\\frac{1}{2}$. L'un de ses termes vaut $-15$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["-30"],
+					"variables": {
+						"qd": "\\frac{1}{2}",
+						"t": "-15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une suite géométrique a pour raison $\\frac{1}{2}$. L'un de ses termes vaut $2$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"qd": "\\frac{1}{2}",
+						"t": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une suite géométrique a pour raison $\\frac{1}{2}$. L'un de ses termes vaut $-8$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["-16"],
+					"variables": {
+						"qd": "\\frac{1}{2}",
+						"t": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une suite géométrique a pour raison $\\frac{1}{2}$. L'un de ses termes vaut $-3$ : calcule le terme précédent.\n\nLe terme précédent est $[?]$.",
+					"reponse": ["-6"],
+					"variables": {
+						"qd": "\\frac{1}{2}",
+						"t": "-3"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,652 @@
+{
+	"template_id": "05387201-2403-409a-8ebe-5898b6e77e3c",
+	"titre": "Équation de la tangente à un polynôme",
+	"sous_titre": "Calcul de f(a), de f′(a) puis de l'équation réduite de la tangente au point d'abscisse a, pour un polynôme de degré 2 ou 3",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Tangente",
+	"mis_a_jour": "2026-10-03T14:03:46.41832+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-272",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "m",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "n",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "fa",
+						"expression": "eval:m*a^2+n*a+c"
+					},
+					{
+						"name": "fpa",
+						"expression": "eval:2*m*a+n"
+					}
+				],
+				"conditions": ["fpa != 0", "fpa != fa"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:m*x^2+n*x+c}}$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f({{a}})$ et $f'({{a}})$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$.\n\n$f({{a}})=?$\n\n$f'({{a}})=?$\n\n$y=?$",
+				"reponses_brutes": ["{{fa}}", "{{fpa}}", "{{eval:fpa*x+fa-fpa*a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "fa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -50,
+						"max": 48,
+						"negatif_possible": true,
+						"nb_distinctes": 74
+					}
+				},
+				{
+					"nom": "fpa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -24,
+						"max": 23,
+						"negatif_possible": true,
+						"nb_distinctes": 42
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -50,
+						"max": 48,
+						"negatif_possible": true,
+						"nb_distinctes": 74
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -24,
+						"max": 23,
+						"negatif_possible": true,
+						"nb_distinctes": 42
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 260,
+						"exemples": [
+							"2x+5",
+							"9-3x",
+							"6-4x",
+							"-10x-3",
+							"-2x-6",
+							"-10x-8",
+							"-3x-2",
+							"7x+4",
+							"17-8x",
+							"36-24x",
+							"4x+6",
+							"-5x-4"
+						],
+						"nombres_contenus": {
+							"min": -23,
+							"max": 36,
+							"nb_distinctes": 53,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -3,
+				"max": 9,
+				"nb_distinctes": 12,
+				"valeurs": [-3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -50,
+				"max": 48,
+				"nb_distinctes": 78,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -50,
+				"max": 48,
+				"nb_distinctes": 78,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "224/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "120/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (48)",
+					"graine": 294,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 3 x^2 - 5 x + 6$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f\\left( -3 \\right)$ et $f'\\left( -3 \\right)$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse $-3$.\n\n$f\\left( -3 \\right) = [?]$\n\n$f'\\left( -3 \\right) = [?]$\n\n$y = [?]$",
+					"reponse": ["48", "-23", "-23x-21"],
+					"variables": {
+						"x": "x",
+						"m": "3",
+						"n": "-5",
+						"c": "6",
+						"a": "-3",
+						"fa": "48",
+						"fpa": "-23"
+					}
+				},
+				{
+					"role": "plus petite valeur (-50)",
+					"graine": 131,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -3 x^2 - 6 x - 5$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f\\left( 3 \\right)$ et $f'\\left( 3 \\right)$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse $3$.\n\n$f\\left( 3 \\right) = [?]$\n\n$f'\\left( 3 \\right) = [?]$\n\n$y = [?]$",
+					"reponse": ["-50", "-24", "22-24x"],
+					"variables": {
+						"x": "x",
+						"m": "-3",
+						"n": "-6",
+						"c": "-5",
+						"a": "3",
+						"fa": "-50",
+						"fpa": "-24"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^2 + 6 x + 9$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f\\left( -2 \\right)$ et $f'\\left( -2 \\right)$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse $-2$.\n\n$f\\left( -2 \\right) = [?]$\n\n$f'\\left( -2 \\right) = [?]$\n\n$y = [?]$",
+					"reponse": ["1", "2", "2x+5"],
+					"variables": {
+						"x": "x",
+						"m": "1",
+						"n": "6",
+						"c": "9",
+						"a": "-2",
+						"fa": "1",
+						"fpa": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -2 x^2 + x + 7$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f\\left( 1 \\right)$ et $f'\\left( 1 \\right)$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse $1$.\n\n$f\\left( 1 \\right) = [?]$\n\n$f'\\left( 1 \\right) = [?]$\n\n$y = [?]$",
+					"reponse": ["6", "-3", "9-3x"],
+					"variables": {
+						"x": "x",
+						"m": "-2",
+						"n": "1",
+						"c": "7",
+						"a": "1",
+						"fa": "6",
+						"fpa": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^2 - 6 x + 5$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f\\left( -1 \\right)$ et $f'\\left( -1 \\right)$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse $-1$.\n\n$f\\left( -1 \\right) = [?]$\n\n$f'\\left( -1 \\right) = [?]$\n\n$y = [?]$",
+					"reponse": ["10", "-4", "6-4x"],
+					"variables": {
+						"x": "x",
+						"m": "-1",
+						"n": "-6",
+						"c": "5",
+						"a": "-1",
+						"fa": "10",
+						"fpa": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "m",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "a",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "fa",
+						"expression": "eval:m*a^3+q*a+c"
+					},
+					{
+						"name": "fpa",
+						"expression": "eval:3*m*a^2+q"
+					}
+				],
+				"conditions": ["fpa != 0", "fpa != fa"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{eval:m*x^3+q*x+c}}$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f({{a}})$ et $f'({{a}})$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse ${{a}}$.\n\n$f({{a}})=?$\n\n$f'({{a}})=?$\n\n$y=?$",
+				"reponses_brutes": ["{{fa}}", "{{fpa}}", "{{eval:fpa*x+fa-fpa*a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 286,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "fa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -37,
+						"max": 31,
+						"negatif_possible": true,
+						"nb_distinctes": 58
+					}
+				},
+				{
+					"nom": "fpa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 55
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -37,
+						"max": 31,
+						"negatif_possible": true,
+						"nb_distinctes": 58
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 55
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 274,
+						"exemples": [
+							"9x+11",
+							"9-2x",
+							"3-9x",
+							"-12x-1",
+							"-4x-4",
+							"8x+17",
+							"9x+5",
+							"-5x-4",
+							"7x+1",
+							"5x+5",
+							"18x+9",
+							"-30x-41"
+						],
+						"nombres_contenus": {
+							"min": -30,
+							"max": 41,
+							"nb_distinctes": 60,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -2,
+				"max": 9,
+				"nb_distinctes": 11,
+				"valeurs": [-2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -37,
+				"max": 41,
+				"nb_distinctes": 73,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -37,
+				"max": 41,
+				"nb_distinctes": 73,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "225/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "116/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (41)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -2 x^3 - 6 x - 9$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f\\left( -2 \\right)$ et $f'\\left( -2 \\right)$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse $-2$.\n\n$f\\left( -2 \\right) = [?]$\n\n$f'\\left( -2 \\right) = [?]$\n\n$y = [?]$",
+					"reponse": ["19", "-30", "-30x-41"],
+					"variables": {
+						"x": "x",
+						"m": "-2",
+						"q": "-6",
+						"c": "-9",
+						"a": "-2",
+						"fa": "19",
+						"fpa": "-30"
+					}
+				},
+				{
+					"role": "plus petite valeur (-37)",
+					"graine": 214,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x^3 + 6 x - 9$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f\\left( -2 \\right)$ et $f'\\left( -2 \\right)$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse $-2$.\n\n$f\\left( -2 \\right) = [?]$\n\n$f'\\left( -2 \\right) = [?]$\n\n$y = [?]$",
+					"reponse": ["-37", "30", "30x+23"],
+					"variables": {
+						"x": "x",
+						"m": "2",
+						"q": "6",
+						"c": "-9",
+						"a": "-2",
+						"fa": "-37",
+						"fpa": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = x^3 + 6 x + 9$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f\\left( -1 \\right)$ et $f'\\left( -1 \\right)$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse $-1$.\n\n$f\\left( -1 \\right) = [?]$\n\n$f'\\left( -1 \\right) = [?]$\n\n$y = [?]$",
+					"reponse": ["2", "9", "9x+11"],
+					"variables": {
+						"x": "x",
+						"m": "1",
+						"q": "6",
+						"c": "9",
+						"a": "-1",
+						"fa": "2",
+						"fpa": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^3 + x + 7$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f\\left( 1 \\right)$ et $f'\\left( 1 \\right)$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse $1$.\n\n$f\\left( 1 \\right) = [?]$\n\n$f'\\left( 1 \\right) = [?]$\n\n$y = [?]$",
+					"reponse": ["7", "-2", "9-2x"],
+					"variables": {
+						"x": "x",
+						"m": "-1",
+						"q": "1",
+						"c": "7",
+						"a": "1",
+						"fa": "7",
+						"fpa": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -x^3 - 6 x + 5$, de courbe $\\mathcal{C}_f$.\n\nCalcule $f\\left( -1 \\right)$ et $f'\\left( -1 \\right)$, puis donne l'équation réduite de la tangente $T$ à $\\mathcal{C}_f$ au point d'abscisse $-1$.\n\n$f\\left( -1 \\right) = [?]$\n\n$f'\\left( -1 \\right) = [?]$\n\n$y = [?]$",
+					"reponse": ["12", "-9", "3-9x"],
+					"variables": {
+						"x": "x",
+						"m": "-1",
+						"q": "-6",
+						"c": "5",
+						"a": "-1",
+						"fa": "12",
+						"fpa": "-9"
+					}
+				}
+			]
+		}
+	]
+}

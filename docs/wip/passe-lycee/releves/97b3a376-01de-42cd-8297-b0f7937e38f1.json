@@ -1,0 +1,1194 @@
+{
+	"template_id": "97b3a376-01de-42cd-8297-b0f7937e38f1",
+	"titre": "Probabilité d'une valeur de X à partir d'un énoncé",
+	"sous_titre": "Urne, dé ou deux dés : traduire une valeur de la variable aléatoire en événement, puis calculer sa probabilité (équiprobabilité)",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Variables aléatoires > Loi d'une variable aléatoire",
+	"mis_a_jour": "2026-10-02T21:39:26.614723+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-353",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "2..8"
+					},
+					{
+						"name": "q",
+						"expression": "2..8"
+					},
+					{
+						"name": "n",
+						"expression": "2..8"
+					},
+					{
+						"name": "g",
+						"expression": "2..10"
+					},
+					{
+						"name": "h",
+						"expression": "1..5"
+					},
+					{
+						"name": "m",
+						"expression": "2..6"
+					}
+				],
+				"conditions": ["g > h", "r != q"],
+				"enonce_brut": "Une urne contient ${{r}}$ boules rouges, ${{q}}$ boules bleues et ${{n}}$ boules vertes, indiscernables au toucher. Un joueur tire une boule au hasard. Il gagne ${{g}}$ euros si elle est rouge, ${{h}}$ euros si elle est bleue, et il perd ${{m}}$ euros si elle est verte. On note $X$ le gain algébrique du joueur, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X=-{{m}})=?$\n\n$P(X>0)=?$",
+				"reponses_brutes": ["{{eval:n/(r+q+n)}}", "{{eval:(r+q)/(r+q+n)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.11764705882352941,
+						"max": 0.6153846153846154,
+						"negatif_possible": false,
+						"denominateurs": [
+							2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+						],
+						"denominateur_min": 2,
+						"denominateur_max": 23,
+						"nb_distinctes": 54
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.38461538461538464,
+						"max": 0.8823529411764706,
+						"negatif_possible": false,
+						"denominateurs": [
+							2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+						],
+						"denominateur_min": 2,
+						"denominateur_max": 23,
+						"nb_distinctes": 54
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 10,
+				"nb_distinctes": 16,
+				"valeurs": [-6, -5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 23,
+				"nb_distinctes": 23,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 23,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-6, -5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+					20, 21, 22, 23
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [
+					2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+				],
+				"denominateur_min": 2,
+				"denominateur_max": 23,
+				"numerateur_min": 1,
+				"numerateur_max": 15,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 60,
+					"max": 60
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (23)",
+					"graine": 157,
+					"enonce": "Une urne contient $8$ boules rouges, $7$ boules bleues et $8$ boules vertes, indiscernables au toucher. Un joueur tire une boule au hasard. Il gagne $5$ euros si elle est rouge, $3$ euros si elle est bleue, et il perd $5$ euros si elle est verte. On note $X$ le gain algébrique du joueur, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = -5 \\right) = [?]$\n\n$P \\left( X > 0 \\right) = [?]$",
+					"reponse": ["\\dfrac{8}{23}", "\\dfrac{15}{23}"],
+					"variables": {
+						"r": "8",
+						"q": "7",
+						"n": "8",
+						"g": "5",
+						"h": "3",
+						"m": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 8,
+					"enonce": "Une urne contient $6$ boules rouges, $4$ boules bleues et $6$ boules vertes, indiscernables au toucher. Un joueur tire une boule au hasard. Il gagne $7$ euros si elle est rouge, $3$ euros si elle est bleue, et il perd $6$ euros si elle est verte. On note $X$ le gain algébrique du joueur, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = -6 \\right) = [?]$\n\n$P \\left( X > 0 \\right) = [?]$",
+					"reponse": ["\\dfrac{3}{8}", "\\dfrac{5}{8}"],
+					"variables": {
+						"r": "6",
+						"q": "4",
+						"n": "6",
+						"g": "7",
+						"h": "3",
+						"m": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une urne contient $2$ boules rouges, $5$ boules bleues et $8$ boules vertes, indiscernables au toucher. Un joueur tire une boule au hasard. Il gagne $10$ euros si elle est rouge, $2$ euros si elle est bleue, et il perd $5$ euros si elle est verte. On note $X$ le gain algébrique du joueur, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = -5 \\right) = [?]$\n\n$P \\left( X > 0 \\right) = [?]$",
+					"reponse": ["\\dfrac{8}{15}", "\\dfrac{7}{15}"],
+					"variables": {
+						"r": "2",
+						"q": "5",
+						"n": "8",
+						"g": "10",
+						"h": "2",
+						"m": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une urne contient $4$ boules rouges, $3$ boules bleues et $5$ boules vertes, indiscernables au toucher. Un joueur tire une boule au hasard. Il gagne $9$ euros si elle est rouge, $4$ euros si elle est bleue, et il perd $4$ euros si elle est verte. On note $X$ le gain algébrique du joueur, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = -4 \\right) = [?]$\n\n$P \\left( X > 0 \\right) = [?]$",
+					"reponse": ["\\dfrac{5}{12}", "\\dfrac{7}{12}"],
+					"variables": {
+						"r": "4",
+						"q": "3",
+						"n": "5",
+						"g": "9",
+						"h": "4",
+						"m": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une urne contient $2$ boules rouges, $5$ boules bleues et $2$ boules vertes, indiscernables au toucher. Un joueur tire une boule au hasard. Il gagne $8$ euros si elle est rouge, $3$ euros si elle est bleue, et il perd $4$ euros si elle est verte. On note $X$ le gain algébrique du joueur, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = -4 \\right) = [?]$\n\n$P \\left( X > 0 \\right) = [?]$",
+					"reponse": ["\\dfrac{2}{9}", "\\dfrac{7}{9}"],
+					"variables": {
+						"r": "2",
+						"q": "5",
+						"n": "2",
+						"g": "8",
+						"h": "3",
+						"m": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "f",
+						"expression": "8|10|12|20"
+					},
+					{
+						"name": "k",
+						"expression": "2..18"
+					},
+					{
+						"name": "g",
+						"expression": "2..10"
+					},
+					{
+						"name": "m",
+						"expression": "2..5"
+					}
+				],
+				"conditions": ["k <= f-2", "2*k != f"],
+				"enonce_brut": "On lance un dé équilibré à ${{f}}$ faces, numérotées de $1$ à ${{f}}$. Si le numéro obtenu est inférieur ou égal à ${{k}}$, on gagne ${{g}}$ euros ; sinon, on perd ${{m}}$ euros. On note $X$ le gain algébrique, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X={{g}})=?$\n\n$P(X=-{{m}})=?$",
+				"reponses_brutes": ["{{eval:k/f}}", "{{eval:(f-k)/f}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 275,
+			"variables": [
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [8, 10, 12, 20]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [3, 4, 5, 6, 8, 10, 12, 20],
+						"denominateur_min": 3,
+						"denominateur_max": 20,
+						"nb_distinctes": 24,
+						"valeurs": [
+							"\\dfrac{11}{20}",
+							"\\dfrac{13}{20}",
+							"\\dfrac{17}{20}",
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{1}{6}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{20}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{3}{8}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{5}{12}",
+							"\\dfrac{5}{6}",
+							"\\dfrac{5}{8}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{7}{12}",
+							"\\dfrac{7}{20}",
+							"\\dfrac{9}{10}",
+							"\\dfrac{9}{20}"
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [3, 4, 5, 6, 8, 10, 12, 20],
+						"denominateur_min": 3,
+						"denominateur_max": 20,
+						"nb_distinctes": 24,
+						"valeurs": [
+							"\\dfrac{11}{20}",
+							"\\dfrac{13}{20}",
+							"\\dfrac{17}{20}",
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{1}{6}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{20}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{3}{8}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{5}{12}",
+							"\\dfrac{5}{6}",
+							"\\dfrac{5}{8}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{7}{12}",
+							"\\dfrac{7}{20}",
+							"\\dfrac{9}{10}",
+							"\\dfrac{9}{20}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 20,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 15,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 17, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 20,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [3, 4, 5, 6, 8, 10, 12, 20],
+				"denominateur_min": 3,
+				"denominateur_max": 20,
+				"numerateur_min": 1,
+				"numerateur_max": 17,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 41,
+					"max": 41
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 1,
+					"enonce": "On lance un dé équilibré à $20$ faces, numérotées de $1$ à $20$. Si le numéro obtenu est inférieur ou égal à $9$, on gagne $6$ euros ; sinon, on perd $2$ euros. On note $X$ le gain algébrique, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 6 \\right) = [?]$\n\n$P \\left( X = -2 \\right) = [?]$",
+					"reponse": ["\\dfrac{9}{20}", "\\dfrac{11}{20}"],
+					"variables": {
+						"f": "20",
+						"k": "9",
+						"g": "6",
+						"m": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 2,
+					"enonce": "On lance un dé équilibré à $10$ faces, numérotées de $1$ à $10$. Si le numéro obtenu est inférieur ou égal à $6$, on gagne $6$ euros ; sinon, on perd $5$ euros. On note $X$ le gain algébrique, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 6 \\right) = [?]$\n\n$P \\left( X = -5 \\right) = [?]$",
+					"reponse": ["\\dfrac{3}{5}", "\\dfrac{2}{5}"],
+					"variables": {
+						"f": "10",
+						"k": "6",
+						"g": "6",
+						"m": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On lance un dé équilibré à $12$ faces, numérotées de $1$ à $12$. Si le numéro obtenu est inférieur ou égal à $5$, on gagne $2$ euros ; sinon, on perd $4$ euros. On note $X$ le gain algébrique, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 2 \\right) = [?]$\n\n$P \\left( X = -4 \\right) = [?]$",
+					"reponse": ["\\dfrac{5}{12}", "\\dfrac{7}{12}"],
+					"variables": {
+						"f": "12",
+						"k": "5",
+						"g": "2",
+						"m": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On lance un dé équilibré à $12$ faces, numérotées de $1$ à $12$. Si le numéro obtenu est inférieur ou égal à $3$, on gagne $10$ euros ; sinon, on perd $4$ euros. On note $X$ le gain algébrique, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 10 \\right) = [?]$\n\n$P \\left( X = -4 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{4}", "\\dfrac{3}{4}"],
+					"variables": {
+						"f": "12",
+						"k": "3",
+						"g": "10",
+						"m": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On lance un dé équilibré à $20$ faces, numérotées de $1$ à $20$. Si le numéro obtenu est inférieur ou égal à $5$, on gagne $7$ euros ; sinon, on perd $2$ euros. On note $X$ le gain algébrique, en euros.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 7 \\right) = [?]$\n\n$P \\left( X = -2 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{4}", "\\dfrac{3}{4}"],
+					"variables": {
+						"f": "20",
+						"k": "5",
+						"g": "7",
+						"m": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "t",
+						"expression": "1|2|3|4|4|5|6"
+					},
+					{
+						"name": "k",
+						"expression": "3..11"
+					},
+					{
+						"name": "d",
+						"expression": "1..8"
+					},
+					{
+						"name": "lo",
+						"expression": "eval:2+(k-2)*(max(0,1-abs(t-1))+max(0,1-abs(t-3))+max(0,1-abs(t-4)))+(k-1)*max(0,1-abs(t-6))"
+					},
+					{
+						"name": "hi",
+						"expression": "eval:k*(max(0,1-abs(t-1))+max(0,1-abs(t-2))+max(0,1-abs(t-4)))+(k-1)*max(0,1-abs(t-5))+12*(max(0,1-abs(t-3))+max(0,1-abs(t-6)))+d*max(0,1-abs(t-4))"
+					},
+					{
+						"name": "nb",
+						"expression": "eval:(min(6,max(0,hi-1))+min(6,max(0,hi-2))+min(6,max(0,hi-3))+min(6,max(0,hi-4))+min(6,max(0,hi-5))+min(6,max(0,hi-6)))-(min(6,max(0,lo-1-1))+min(6,max(0,lo-1-2))+min(6,max(0,lo-1-3))+min(6,max(0,lo-1-4))+min(6,max(0,lo-1-5))+min(6,max(0,lo-1-6)))"
+					}
+				],
+				"conditions": ["t != 4 or hi <= 11"],
+				"enonce_brut": "On lance deux dés équilibrés à six faces et on note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $36$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P({{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}}{{if:t == 5|X<{{k}}}}{{if:t == 6|X>{{k}}}})=?$",
+				"reponses_brutes": ["{{eval:nb/36}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 68,
+			"variables": [
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "lo",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "hi",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "nb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 35,
+						"negatif_possible": false,
+						"nb_distinctes": 26,
+						"valeurs": [
+							1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 18, 20, 21, 24, 25, 26, 27, 29, 30,
+							32, 33, 35
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.027777777777777776,
+						"max": 0.9722222222222222,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 6, 9, 12, 18, 36],
+						"denominateur_min": 2,
+						"denominateur_max": 36,
+						"nb_distinctes": 26,
+						"valeurs": [
+							"\\dfrac{11}{12}",
+							"\\dfrac{11}{36}",
+							"\\dfrac{13}{18}",
+							"\\dfrac{1}{12}",
+							"\\dfrac{1}{18}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{36}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{6}",
+							"\\dfrac{1}{9}",
+							"\\dfrac{25}{36}",
+							"\\dfrac{29}{36}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{35}{36}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{4}{9}",
+							"\\dfrac{5}{12}",
+							"\\dfrac{5}{18}",
+							"\\dfrac{5}{36}",
+							"\\dfrac{5}{6}",
+							"\\dfrac{5}{9}",
+							"\\dfrac{7}{12}",
+							"\\dfrac{7}{18}",
+							"\\dfrac{7}{36}",
+							"\\dfrac{8}{9}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 36,
+				"nb_distinctes": 10,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 17,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 18, 25, 29, 35, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 36,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 18, 25, 29, 35, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 6, 9, 12, 18, 36],
+				"denominateur_min": 2,
+				"denominateur_max": 36,
+				"numerateur_min": 1,
+				"numerateur_max": 35,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"<": "56/300",
+					">": "57/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 35,
+					"max": 35
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (36)",
+					"graine": 1,
+					"enonce": "On lance deux dés équilibrés à six faces et on note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $36$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 7 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{6}"],
+					"variables": {
+						"t": "1",
+						"k": "7",
+						"d": "8",
+						"lo": "7",
+						"hi": "7",
+						"nb": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On lance deux dés équilibrés à six faces et on note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $36$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X\\geqslant 5)=[?]$",
+					"reponse": ["\\dfrac{5}{6}"],
+					"variables": {
+						"t": "3",
+						"k": "5",
+						"d": "5",
+						"lo": "5",
+						"hi": "12",
+						"nb": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On lance deux dés équilibrés à six faces et on note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $36$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X\\geqslant 4)=[?]$",
+					"reponse": ["\\dfrac{11}{12}"],
+					"variables": {
+						"t": "3",
+						"k": "4",
+						"d": "1",
+						"lo": "4",
+						"hi": "12",
+						"nb": "33"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On lance deux dés équilibrés à six faces et on note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $36$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X < 4 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{12}"],
+					"variables": {
+						"t": "5",
+						"k": "4",
+						"d": "5",
+						"lo": "2",
+						"hi": "3",
+						"nb": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "On lance deux dés équilibrés à six faces et on note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $36$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 8 \\right) = [?]$",
+					"reponse": ["\\dfrac{5}{36}"],
+					"variables": {
+						"t": "1",
+						"k": "8",
+						"d": "2",
+						"lo": "8",
+						"hi": "8",
+						"nb": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "t",
+						"expression": "1|2|3|4|4|5|6"
+					},
+					{
+						"name": "k",
+						"expression": "3..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..6"
+					},
+					{
+						"name": "lo",
+						"expression": "eval:2+(k-2)*(max(0,1-abs(t-1))+max(0,1-abs(t-3))+max(0,1-abs(t-4)))+(k-1)*max(0,1-abs(t-6))"
+					},
+					{
+						"name": "hi",
+						"expression": "eval:k*(max(0,1-abs(t-1))+max(0,1-abs(t-2))+max(0,1-abs(t-4)))+(k-1)*max(0,1-abs(t-5))+10*(max(0,1-abs(t-3))+max(0,1-abs(t-6)))+d*max(0,1-abs(t-4))"
+					},
+					{
+						"name": "nb",
+						"expression": "eval:(min(6,max(0,hi-1))+min(6,max(0,hi-2))+min(6,max(0,hi-3))+min(6,max(0,hi-4)))-(min(6,max(0,lo-1-1))+min(6,max(0,lo-1-2))+min(6,max(0,lo-1-3))+min(6,max(0,lo-1-4)))"
+					}
+				],
+				"conditions": ["t != 4 or hi <= 9"],
+				"enonce_brut": "On lance un dé tétraédrique équilibré, dont les faces sont numérotées de $1$ à $4$, et un dé cubique équilibré, numéroté de $1$ à $6$. On note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $24$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P({{if:t == 1|X={{lo}}}}{{if:t == 2|X\\leqslant {{hi}}}}{{if:t == 3|X\\geqslant {{lo}}}}{{if:t == 4|{{lo}}\\leqslant X\\leqslant {{hi}}}}{{if:t == 5|X<{{k}}}}{{if:t == 6|X>{{k}}}})=?$",
+				"reponses_brutes": ["{{eval:nb/24}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "lo",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "hi",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "nb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 23,
+						"negatif_possible": false,
+						"nb_distinctes": 21,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 20, 21, 22, 23]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.041666666666666664,
+						"max": 0.9583333333333334,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 6, 8, 12, 24],
+						"denominateur_min": 2,
+						"denominateur_max": 24,
+						"nb_distinctes": 21,
+						"valeurs": [
+							"\\dfrac{11}{12}",
+							"\\dfrac{11}{24}",
+							"\\dfrac{13}{24}",
+							"\\dfrac{17}{24}",
+							"\\dfrac{1}{12}",
+							"\\dfrac{1}{24}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{6}",
+							"\\dfrac{1}{8}",
+							"\\dfrac{23}{24}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{3}{8}",
+							"\\dfrac{5}{12}",
+							"\\dfrac{5}{24}",
+							"\\dfrac{5}{6}",
+							"\\dfrac{5}{8}",
+							"\\dfrac{7}{12}",
+							"\\dfrac{7}{24}",
+							"\\dfrac{7}{8}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 24,
+				"nb_distinctes": 9,
+				"valeurs": [1, 3, 4, 5, 6, 7, 8, 9, 24],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 24,
+				"nb_distinctes": 14,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 17, 23, 24],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 24,
+				"nb_distinctes": 15,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 17, 23, 24],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 6, 8, 12, 24],
+				"denominateur_min": 2,
+				"denominateur_max": 24,
+				"numerateur_min": 1,
+				"numerateur_max": 23,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"<": "56/300",
+					">": "57/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 46,
+					"max": 46
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (24)",
+					"graine": 1,
+					"enonce": "On lance un dé tétraédrique équilibré, dont les faces sont numérotées de $1$ à $4$, et un dé cubique équilibré, numéroté de $1$ à $6$. On note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $24$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 6 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{6}"],
+					"variables": {
+						"t": "1",
+						"k": "6",
+						"d": "6",
+						"lo": "6",
+						"hi": "6",
+						"nb": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On lance un dé tétraédrique équilibré, dont les faces sont numérotées de $1$ à $4$, et un dé cubique équilibré, numéroté de $1$ à $6$. On note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $24$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(X\\geqslant 4)=[?]$",
+					"reponse": ["\\dfrac{7}{8}"],
+					"variables": {
+						"t": "3",
+						"k": "4",
+						"d": "4",
+						"lo": "4",
+						"hi": "10",
+						"nb": "21"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On lance un dé tétraédrique équilibré, dont les faces sont numérotées de $1$ à $4$, et un dé cubique équilibré, numéroté de $1$ à $6$. On note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $24$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X < 4 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{8}"],
+					"variables": {
+						"t": "5",
+						"k": "4",
+						"d": "4",
+						"lo": "2",
+						"hi": "3",
+						"nb": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "On lance un dé tétraédrique équilibré, dont les faces sont numérotées de $1$ à $4$, et un dé cubique équilibré, numéroté de $1$ à $6$. On note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $24$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 7 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{6}"],
+					"variables": {
+						"t": "1",
+						"k": "7",
+						"d": "2",
+						"lo": "7",
+						"hi": "7",
+						"nb": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "On lance un dé tétraédrique équilibré, dont les faces sont numérotées de $1$ à $4$, et un dé cubique équilibré, numéroté de $1$ à $6$. On note $X$ la somme des deux numéros obtenus. Un tableau à double entrée des $24$ issues peut aider.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P \\left( X = 9 \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{12}"],
+					"variables": {
+						"t": "1",
+						"k": "9",
+						"d": "5",
+						"lo": "9",
+						"hi": "9",
+						"nb": "2"
+					}
+				}
+			]
+		}
+	]
+}

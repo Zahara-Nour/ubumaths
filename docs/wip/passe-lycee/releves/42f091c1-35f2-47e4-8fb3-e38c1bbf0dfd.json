@@ -1,0 +1,670 @@
+{
+	"template_id": "42f091c1-35f2-47e4-8fb3-e38c1bbf0dfd",
+	"titre": "Résoudre cos(2x) = a ou sin(2x) = a sur un intervalle",
+	"sous_titre": "Changement X = 2x, solutions ±h + kπ (ou h + kπ et π/2 − h + kπ) puis sélection dans ]−π ; π] ou [0 ; 2π[ ; réponse : ensemble fini (pièges : deux solutions au lieu de quatre, 2x oublié, solution hors intervalle)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions trigonométriques > Équations et inéquations",
+	"mis_a_jour": "2026-10-20T20:27:04.126305+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-457",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "h",
+						"expression": "\\frac{\\pi}{12}|\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{5\\pi}{12}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*h/\\pi"
+					},
+					{
+						"name": "u",
+						"expression": "eval:(12-n)/gcd(12-n,12)"
+					},
+					{
+						"name": "w",
+						"expression": "eval:12/gcd(12-n,12)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)={{eval:cos(n*\\pi/6)}}$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": [
+					"\\{-{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}};-{{h}};{{h}};{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}\\}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"\\frac{5\\pi}{12}",
+							"\\frac{\\pi}{12}",
+							"\\frac{\\pi}{3}",
+							"\\frac{\\pi}{4}",
+							"\\frac{\\pi}{6}"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 12,
+							"nb_distinctes": 5,
+							"valeurs": [3, 4, 5, 6, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 5, 7, 11]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [3, 4, 6, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"\\{-\\frac{ 11\\pi}{ 12 };-\\frac{\\pi}{12};\\frac{\\pi}{12};\\frac{ 11\\pi}{ 12 }\\}",
+							"\\{-\\frac{ 2\\pi}{ 3 };-\\frac{\\pi}{3};\\frac{\\pi}{3};\\frac{ 2\\pi}{ 3 }\\}",
+							"\\{-\\frac{ 3\\pi}{ 4 };-\\frac{\\pi}{4};\\frac{\\pi}{4};\\frac{ 3\\pi}{ 4 }\\}",
+							"\\{-\\frac{ 5\\pi}{ 6 };-\\frac{\\pi}{6};\\frac{\\pi}{6};\\frac{ 5\\pi}{ 6 }\\}",
+							"\\{-\\frac{ 7\\pi}{ 12 };-\\frac{5\\pi}{12};\\frac{5\\pi}{12};\\frac{ 7\\pi}{ 12 }\\}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 12,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 11, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 4,
+				"valeurs": [0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 12,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 12,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 124,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "243/300",
+					"racine": "119/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)=\\dfrac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": [
+						"\\{-\\frac{ 11\\pi}{ 12 };-\\frac{\\pi}{12};\\frac{\\pi}{12};\\frac{ 11\\pi}{ 12 }\\}"
+					],
+					"variables": {
+						"h": "\\frac{\\pi}{12}",
+						"n": "1",
+						"u": "11",
+						"w": "12"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 11,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)=0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": [
+						"\\{-\\frac{ 3\\pi}{ 4 };-\\frac{\\pi}{4};\\frac{\\pi}{4};\\frac{ 3\\pi}{ 4 }\\}"
+					],
+					"variables": {
+						"h": "\\frac{\\pi}{4}",
+						"n": "3",
+						"u": "3",
+						"w": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)=\\dfrac{1}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": [
+						"\\{-\\frac{ 5\\pi}{ 6 };-\\frac{\\pi}{6};\\frac{\\pi}{6};\\frac{ 5\\pi}{ 6 }\\}"
+					],
+					"variables": {
+						"h": "\\frac{\\pi}{6}",
+						"n": "2",
+						"u": "5",
+						"w": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)=-\\dfrac{1}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": [
+						"\\{-\\frac{ 2\\pi}{ 3 };-\\frac{\\pi}{3};\\frac{\\pi}{3};\\frac{ 2\\pi}{ 3 }\\}"
+					],
+					"variables": {
+						"h": "\\frac{\\pi}{3}",
+						"n": "4",
+						"u": "2",
+						"w": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)=-\\dfrac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": [
+						"\\{-\\frac{ 7\\pi}{ 12 };-\\frac{5\\pi}{12};\\frac{5\\pi}{12};\\frac{ 7\\pi}{ 12 }\\}"
+					],
+					"variables": {
+						"h": "\\frac{5\\pi}{12}",
+						"n": "5",
+						"u": "7",
+						"w": "12"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "h",
+						"expression": "\\frac{\\pi}{12}|\\frac{\\pi}{6}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*h/\\pi"
+					},
+					{
+						"name": "p",
+						"expression": "eval:(6-n)/gcd(6-n,12)"
+					},
+					{
+						"name": "q",
+						"expression": "eval:12/gcd(6-n,12)"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(12+n)/gcd(12+n,12)"
+					},
+					{
+						"name": "s",
+						"expression": "eval:12/gcd(12+n,12)"
+					},
+					{
+						"name": "t",
+						"expression": "eval:(18-n)/gcd(18-n,12)"
+					},
+					{
+						"name": "z",
+						"expression": "eval:12/gcd(18-n,12)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin(2x)={{eval:sin(n*\\pi/6)}}$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": [
+					"\\{{{h}};{{if:p==1|\\frac{\\pi}{ {{q}} }|\\frac{ {{p}}\\pi}{ {{q}} }}};{{if:r==1|\\frac{\\pi}{ {{s}} }|\\frac{ {{r}}\\pi}{ {{s}} }}};{{if:t==1|\\frac{\\pi}{ {{z}} }|\\frac{ {{t}}\\pi}{ {{z}} }}}\\}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["\\frac{\\pi}{12}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 12,
+							"nb_distinctes": 2,
+							"valeurs": [6, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3, 12]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [7, 13]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [6, 12]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 17,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [4, 17]
+					}
+				},
+				{
+					"nom": "z",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": [
+							"\\{\\frac{\\pi}{12};\\frac{ 5\\pi}{ 12 };\\frac{ 13\\pi}{ 12 };\\frac{ 17\\pi}{ 12 }\\}",
+							"\\{\\frac{\\pi}{6};\\frac{\\pi}{ 3 };\\frac{ 7\\pi}{ 6 };\\frac{ 4\\pi}{ 3 }\\}"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 17,
+							"nb_distinctes": 8,
+							"valeurs": [3, 4, 5, 6, 7, 12, 13, 17],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 4,
+				"valeurs": [0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 17,
+				"nb_distinctes": 8,
+				"valeurs": [3, 4, 5, 6, 7, 12, 13, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 17,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 12, 13, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 152,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"racine": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (17)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin(2x)=\\dfrac{1}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": [
+						"\\{\\frac{\\pi}{12};\\frac{ 5\\pi}{ 12 };\\frac{ 13\\pi}{ 12 };\\frac{ 17\\pi}{ 12 }\\}"
+					],
+					"variables": {
+						"h": "\\frac{\\pi}{12}",
+						"n": "1",
+						"p": "5",
+						"q": "12",
+						"r": "13",
+						"s": "12",
+						"t": "17",
+						"z": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'équation $\\sin(2x)=\\dfrac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": [
+						"\\{\\frac{\\pi}{6};\\frac{\\pi}{ 3 };\\frac{ 7\\pi}{ 6 };\\frac{ 4\\pi}{ 3 }\\}"
+					],
+					"variables": {
+						"h": "\\frac{\\pi}{6}",
+						"n": "2",
+						"p": "1",
+						"q": "3",
+						"r": "7",
+						"s": "6",
+						"t": "4",
+						"z": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)=-1$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["\\{-\\frac{\\pi}{2};\\frac{\\pi}{2}\\}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\{-\\frac{\\pi}{2};\\frac{\\pi}{2}\\}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2,
+							"nb_distinctes": 1,
+							"valeurs": [2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [-1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [-1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left]-\\pi\\,;\\pi\\right]$ l'équation $\\cos(2x)=-1$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{-\\frac{\\pi}{2};\\frac{\\pi}{2}\\}"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

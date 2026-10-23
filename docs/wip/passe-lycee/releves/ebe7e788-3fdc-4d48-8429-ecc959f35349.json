@@ -1,0 +1,554 @@
+{
+	"template_id": "ebe7e788-3fdc-4d48-8429-ecc959f35349",
+	"titre": "Tester l'indépendance de deux événements",
+	"sous_titre": "Comparer P(A∩B) et P(A)×P(B) pour décider si deux événements sont indépendants",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Probabilités > Probabilités conditionnelles > Indépendance",
+	"mis_a_jour": "2026-10-02T13:25:38.424988+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-341",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					}
+				],
+				"conditions": ["mod(a*b,10) != 0"],
+				"enonce_brut": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)={{eval:a*b/100;d}}$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui, $A$ et $B$ sont indépendants."
+					},
+					{
+						"content": "Non, $A$ et $B$ ne sont pas indépendants."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 81,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui, $A$ et $B$ sont indépendants."],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.04,
+				"max": 0.8,
+				"nb_distinctes": 28,
+				"valeurs": [
+					0.04, 0.06, 0.08, 0.09, 0.12, 0.14, 0.15, 0.16, 0.18, 0.2, 0.21, 0.24, 0.25, 0.28, 0.3,
+					0.32, 0.35, 0.36, 0.4, 0.42, 0.48, 0.49, 0.5, 0.56, 0.6, 0.64, 0.7, 0.8
+				],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.04,
+				"max": 0.8,
+				"nb_distinctes": 28,
+				"valeurs": [
+					0.04, 0.06, 0.08, 0.09, 0.12, 0.14, 0.15, 0.16, 0.18, 0.2, 0.21, 0.24, 0.25, 0.28, 0.3,
+					0.32, 0.35, 0.36, 0.4, 0.42, 0.48, 0.49, 0.5, 0.56, 0.6, 0.64, 0.7, 0.8
+				],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0.8)",
+					"graine": 1,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}8$, $P \\left( B \\right) = 0{,}8$ et $P(A\\cap B)=0{,}64$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["B. Oui, $A$ et $B$ sont indépendants."],
+					"variables": {
+						"a": "8",
+						"b": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.04)",
+					"graine": 27,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}2$, $P \\left( B \\right) = 0{,}2$ et $P(A\\cap B)=0{,}04$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["B. Oui, $A$ et $B$ sont indépendants."],
+					"variables": {
+						"a": "2",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}4$, $P \\left( B \\right) = 0{,}3$ et $P(A\\cap B)=0{,}12$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Oui, $A$ et $B$ sont indépendants.\n- B. Non, $A$ et $B$ ne sont pas indépendants.",
+					"reponse": ["A. Oui, $A$ et $B$ sont indépendants."],
+					"variables": {
+						"a": "4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}2$, $P \\left( B \\right) = 0{,}7$ et $P(A\\cap B)=0{,}14$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["B. Oui, $A$ et $B$ sont indépendants."],
+					"variables": {
+						"a": "2",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}4$, $P \\left( B \\right) = 0{,}3$ et $P(A\\cap B)=0{,}12$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["B. Oui, $A$ et $B$ sont indépendants."],
+					"variables": {
+						"a": "4",
+						"b": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "m",
+						"expression": "1..7"
+					}
+				],
+				"conditions": ["m < a", "m < b", "m > a+b-10", "10*m != a*b"],
+				"enonce_brut": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)={{eval:m/10;d}}$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui, $A$ et $B$ sont indépendants."
+					},
+					{
+						"content": "Non, $A$ et $B$ ne sont pas indépendants."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 131,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non, $A$ et $B$ ne sont pas indépendants."],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.1,
+				"max": 0.8,
+				"nb_distinctes": 8,
+				"valeurs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.1,
+				"max": 0.8,
+				"nb_distinctes": 8,
+				"valeurs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0.8)",
+					"graine": 2,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}2$, $P \\left( B \\right) = 0{,}8$ et $P(A\\cap B)=0{,}1$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["A. Non, $A$ et $B$ ne sont pas indépendants."],
+					"variables": {
+						"a": "2",
+						"b": "8",
+						"m": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.1)",
+					"graine": 1,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}5$, $P \\left( B \\right) = 0{,}5$ et $P(A\\cap B)=0{,}1$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["A. Non, $A$ et $B$ ne sont pas indépendants."],
+					"variables": {
+						"a": "5",
+						"b": "5",
+						"m": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}7$, $P \\left( B \\right) = 0{,}5$ et $P(A\\cap B)=0{,}4$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["A. Non, $A$ et $B$ ne sont pas indépendants."],
+					"variables": {
+						"a": "7",
+						"b": "5",
+						"m": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}4$, $P \\left( B \\right) = 0{,}3$ et $P(A\\cap B)=0{,}1$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["A. Non, $A$ et $B$ ne sont pas indépendants."],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"m": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}7$, $P \\left( B \\right) = 0{,}7$ et $P(A\\cap B)=0{,}5$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["A. Non, $A$ et $B$ ne sont pas indépendants."],
+					"variables": {
+						"a": "7",
+						"b": "7",
+						"m": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					}
+				],
+				"conditions": ["a+b < 10"],
+				"enonce_brut": "On considère deux événements $A$ et $B$ tels que $P(A)={{eval:a/10;d}}$, $P(B)={{eval:b/10;d}}$ et $P(A\\cap B)=0$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui, $A$ et $B$ sont indépendants."
+					},
+					{
+						"content": "Non, $A$ et $B$ ne sont pas indépendants."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 42,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non, $A$ et $B$ ne sont pas indépendants."],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0.7,
+				"nb_distinctes": 7,
+				"valeurs": [0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 0.7,
+				"nb_distinctes": 7,
+				"valeurs": [0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0.7)",
+					"graine": 9,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}7$, $P \\left( B \\right) = 0{,}2$ et $P(A\\cap B)=0$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Oui, $A$ et $B$ sont indépendants.\n- B. Non, $A$ et $B$ ne sont pas indépendants.",
+					"reponse": ["B. Non, $A$ et $B$ ne sont pas indépendants."],
+					"variables": {
+						"a": "7",
+						"b": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}2$, $P \\left( B \\right) = 0{,}5$ et $P(A\\cap B)=0$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Oui, $A$ et $B$ sont indépendants.\n- B. Non, $A$ et $B$ ne sont pas indépendants.",
+					"reponse": ["B. Non, $A$ et $B$ ne sont pas indépendants."],
+					"variables": {
+						"a": "2",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}4$, $P \\left( B \\right) = 0{,}3$ et $P(A\\cap B)=0$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Oui, $A$ et $B$ sont indépendants.\n- B. Non, $A$ et $B$ ne sont pas indépendants.",
+					"reponse": ["B. Non, $A$ et $B$ ne sont pas indépendants."],
+					"variables": {
+						"a": "4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}2$, $P \\left( B \\right) = 0{,}5$ et $P(A\\cap B)=0$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["A. Non, $A$ et $B$ ne sont pas indépendants."],
+					"variables": {
+						"a": "2",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère deux événements $A$ et $B$ tels que $P \\left( A \\right) = 0{,}4$, $P \\left( B \\right) = 0{,}3$ et $P(A\\cap B)=0$.\n\nLes événements $A$ et $B$ sont-ils indépendants ?\n\n- A. Non, $A$ et $B$ ne sont pas indépendants.\n- B. Oui, $A$ et $B$ sont indépendants.",
+					"reponse": ["A. Non, $A$ et $B$ ne sont pas indépendants."],
+					"variables": {
+						"a": "4",
+						"b": "3"
+					}
+				}
+			]
+		}
+	]
+}

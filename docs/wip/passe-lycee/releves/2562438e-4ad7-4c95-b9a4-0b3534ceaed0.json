@@ -1,0 +1,184 @@
+{
+	"template_id": "2562438e-4ad7-4c95-b9a4-0b3534ceaed0",
+	"titre": "Trouver le pourcentage d'augmentation",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Variations",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-367",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..30|31..49|51..70|71..90|100|50|200"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Donne le pourcentage d'augmentation associé à un coefficient multiplicateur de ${{eval:1+a/100;d}}$.\n\nLe pourcentage d'augmentation est $?$.",
+				"reponses_brutes": ["{{a}}%"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 76,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 76
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 76,
+						"exemples": [
+							"16%",
+							"56%",
+							"14%",
+							"55%",
+							"50%",
+							"20%",
+							"30%",
+							"100%",
+							"200%",
+							"83%",
+							"18%",
+							"52%"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 200,
+							"nb_distinctes": 76,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1.01,
+				"max": 3,
+				"nb_distinctes": 76,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 200,
+				"nb_distinctes": 76,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 200,
+				"nb_distinctes": 152,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (200)",
+					"graine": 10,
+					"enonce": "Donne le pourcentage d'augmentation associé à un coefficient multiplicateur de $3$.\n\nLe pourcentage d'augmentation est $[?]$.",
+					"reponse": ["200%"],
+					"variables": {
+						"a": "200"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 27,
+					"enonce": "Donne le pourcentage d'augmentation associé à un coefficient multiplicateur de $1{,}01$.\n\nLe pourcentage d'augmentation est $[?]$.",
+					"reponse": ["1%"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Donne le pourcentage d'augmentation associé à un coefficient multiplicateur de $1{,}16$.\n\nLe pourcentage d'augmentation est $[?]$.",
+					"reponse": ["16%"],
+					"variables": {
+						"a": "16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Donne le pourcentage d'augmentation associé à un coefficient multiplicateur de $1{,}56$.\n\nLe pourcentage d'augmentation est $[?]$.",
+					"reponse": ["56%"],
+					"variables": {
+						"a": "56"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Donne le pourcentage d'augmentation associé à un coefficient multiplicateur de $1{,}14$.\n\nLe pourcentage d'augmentation est $[?]$.",
+					"reponse": ["14%"],
+					"variables": {
+						"a": "14"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,1070 @@
+{
+	"template_id": "bbd211a5-536a-4d7a-bc3e-4d578d9caf68",
+	"titre": "Produit, quotient, puissance et inverse sous forme exponentielle",
+	"sous_titre": "z₁z₂, z₁/z₂, zⁿ, 1/z avec z = re^{iθ} : module et argument principal du résultat (pièges : modules additionnés, arguments multipliés, argument non ramené dans ]−π ; π])",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Nombres complexes > Formes trigonométrique et exponentielle > Calculs sous forme exponentielle",
+	"mis_a_jour": "2026-10-20T20:27:04.846052+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-239",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r1",
+						"expression": "2..5"
+					},
+					{
+						"name": "r2",
+						"expression": "2..5"
+					},
+					{
+						"name": "m1",
+						"expression": "1..11;±"
+					},
+					{
+						"name": "m2",
+						"expression": "1..11;±"
+					}
+				],
+				"conditions": ["m1+m2 > -12", "m1+m2 <= 12", "m1+m2 != 0"],
+				"enonce_brut": "Soit $z_1={{r1}}e^{{{if:m1>=0||-}}i{{eval:abs(m1)*\\pi/12}}}$ et $z_2={{r2}}e^{{{if:m2>=0||-}}i{{eval:abs(m2)*\\pi/12}}}$. Écris $z_1z_2$ sous forme exponentielle, avec l'argument principal.\n\n$z_1z_2=?e^{i?}$",
+				"reponses_brutes": ["{{eval:r1*r2}}", "{{eval:(m1+m2)*\\pi/12}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 289,
+			"variables": [
+				{
+					"nom": "r1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "r2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "m1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 22,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				},
+				{
+					"nom": "m2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 22,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [4, 6, 8, 9, 10, 12, 15, 16, 20, 25]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 23,
+						"valeurs": [
+							"-\\dfrac{11 \\pi}{12}",
+							"-\\dfrac{2 \\pi}{3}",
+							"-\\dfrac{3 \\pi}{4}",
+							"-\\dfrac{5 \\pi}{12}",
+							"-\\dfrac{5 \\pi}{6}",
+							"-\\dfrac{7 \\pi}{12}",
+							"-\\dfrac{\\pi}{12}",
+							"-\\dfrac{\\pi}{2}",
+							"-\\dfrac{\\pi}{3}",
+							"-\\dfrac{\\pi}{4}",
+							"-\\dfrac{\\pi}{6}",
+							"\\dfrac{11 \\pi}{12}",
+							"\\dfrac{2 \\pi}{3}",
+							"\\dfrac{3 \\pi}{4}",
+							"\\dfrac{5 \\pi}{12}",
+							"\\dfrac{5 \\pi}{6}",
+							"\\dfrac{7 \\pi}{12}",
+							"\\dfrac{\\pi}{12}",
+							"\\dfrac{\\pi}{2}",
+							"\\dfrac{\\pi}{3}",
+							"\\dfrac{\\pi}{4}",
+							"\\dfrac{\\pi}{6}",
+							"\\pi"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 12,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 11, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 25,
+				"nb_distinctes": 15,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 20, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 25,
+				"nb_distinctes": 16,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 20, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (25)",
+					"graine": 45,
+					"enonce": "Soit $z_1=5e^{-i\\dfrac{\\pi}{4}}$ et $z_2=5e^{-i\\dfrac{\\pi}{12}}$. Écris $z_1 z_2$ sous forme exponentielle, avec l'argument principal.\n\n$z_1 z_2 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["25", "-\\dfrac{\\pi}{3}"],
+					"variables": {
+						"r1": "5",
+						"r2": "5",
+						"m1": "-3",
+						"m2": "-1"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $z_1=3e^{i\\dfrac{5 \\pi}{12}}$ et $z_2=4e^{-i\\dfrac{\\pi}{6}}$. Écris $z_1 z_2$ sous forme exponentielle, avec l'argument principal.\n\n$z_1 z_2 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["12", "\\dfrac{\\pi}{4}"],
+					"variables": {
+						"r1": "3",
+						"r2": "4",
+						"m1": "5",
+						"m2": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $z_1=3e^{i\\dfrac{\\pi}{12}}$ et $z_2=3e^{i\\dfrac{3 \\pi}{4}}$. Écris $z_1 z_2$ sous forme exponentielle, avec l'argument principal.\n\n$z_1 z_2 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["9", "\\dfrac{5 \\pi}{6}"],
+					"variables": {
+						"r1": "3",
+						"r2": "3",
+						"m1": "1",
+						"m2": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $z_1=2e^{-i\\dfrac{5 \\pi}{6}}$ et $z_2=3e^{i\\dfrac{\\pi}{2}}$. Écris $z_1 z_2$ sous forme exponentielle, avec l'argument principal.\n\n$z_1 z_2 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["6", "-\\dfrac{\\pi}{3}"],
+					"variables": {
+						"r1": "2",
+						"r2": "3",
+						"m1": "-10",
+						"m2": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $z_1=4e^{-i\\dfrac{\\pi}{4}}$ et $z_2=5e^{i\\dfrac{\\pi}{2}}$. Écris $z_1 z_2$ sous forme exponentielle, avec l'argument principal.\n\n$z_1 z_2 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["20", "\\dfrac{\\pi}{4}"],
+					"variables": {
+						"r1": "4",
+						"r2": "5",
+						"m1": "-3",
+						"m2": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r1",
+						"expression": "2..9"
+					},
+					{
+						"name": "r2",
+						"expression": "2..5"
+					},
+					{
+						"name": "m1",
+						"expression": "1..11;±"
+					},
+					{
+						"name": "m2",
+						"expression": "1..11;±"
+					}
+				],
+				"conditions": ["m1-m2 > -12", "m1-m2 <= 12", "m1 != m2", "r1 != r2"],
+				"enonce_brut": "Soit $z_1={{r1}}e^{{{if:m1>=0||-}}i{{eval:abs(m1)*\\pi/12}}}$ et $z_2={{r2}}e^{{{if:m2>=0||-}}i{{eval:abs(m2)*\\pi/12}}}$. Écris $\\dfrac{z_1}{z_2}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{z_1}{z_2}=?e^{i?}$",
+				"reponses_brutes": ["{{eval:r1/r2}}", "{{eval:(m1-m2)*\\pi/12}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 295,
+			"variables": [
+				{
+					"nom": "r1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "m1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 22,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				},
+				{
+					"nom": "m2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 22,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.22666666666666666,
+						"nb_distinctes": 24,
+						"valeurs": [
+							"2",
+							"3",
+							"4",
+							"\\dfrac{1}{2}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{4}{3}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{5}{3}",
+							"\\dfrac{5}{4}",
+							"\\dfrac{6}{5}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{7}{3}",
+							"\\dfrac{7}{4}",
+							"\\dfrac{7}{5}",
+							"\\dfrac{8}{3}",
+							"\\dfrac{8}{5}",
+							"\\dfrac{9}{2}",
+							"\\dfrac{9}{4}",
+							"\\dfrac{9}{5}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 23,
+						"valeurs": [
+							"-\\dfrac{11 \\pi}{12}",
+							"-\\dfrac{2 \\pi}{3}",
+							"-\\dfrac{3 \\pi}{4}",
+							"-\\dfrac{5 \\pi}{12}",
+							"-\\dfrac{5 \\pi}{6}",
+							"-\\dfrac{7 \\pi}{12}",
+							"-\\dfrac{\\pi}{12}",
+							"-\\dfrac{\\pi}{2}",
+							"-\\dfrac{\\pi}{3}",
+							"-\\dfrac{\\pi}{4}",
+							"-\\dfrac{\\pi}{6}",
+							"\\dfrac{11 \\pi}{12}",
+							"\\dfrac{2 \\pi}{3}",
+							"\\dfrac{3 \\pi}{4}",
+							"\\dfrac{5 \\pi}{12}",
+							"\\dfrac{5 \\pi}{6}",
+							"\\dfrac{7 \\pi}{12}",
+							"\\dfrac{\\pi}{12}",
+							"\\dfrac{\\pi}{2}",
+							"\\dfrac{\\pi}{3}",
+							"\\dfrac{\\pi}{4}",
+							"\\dfrac{\\pi}{6}",
+							"\\pi"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 12,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 11, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 232,
+				"denominateurs": [2, 3, 4, 5],
+				"denominateur_min": 2,
+				"denominateur_max": 5,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 1,
+					"enonce": "Soit $z_1=9e^{-i\\dfrac{\\pi}{12}}$ et $z_2=3e^{-i\\dfrac{2 \\pi}{3}}$. Écris $\\dfrac{z_1}{z_2}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{z_1}{z_2}=[?]e^{i[?]}$",
+					"reponse": ["3", "\\dfrac{7 \\pi}{12}"],
+					"variables": {
+						"r1": "9",
+						"r2": "3",
+						"m1": "-1",
+						"m2": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $z_1=4e^{i\\dfrac{\\pi}{12}}$ et $z_2=3e^{i\\dfrac{3 \\pi}{4}}$. Écris $\\dfrac{z_1}{z_2}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{z_1}{z_2}=[?]e^{i[?]}$",
+					"reponse": ["\\dfrac{4}{3}", "-\\dfrac{2 \\pi}{3}"],
+					"variables": {
+						"r1": "4",
+						"r2": "3",
+						"m1": "1",
+						"m2": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $z_1=5e^{-i\\dfrac{2 \\pi}{3}}$ et $z_2=3e^{-i\\dfrac{\\pi}{2}}$. Écris $\\dfrac{z_1}{z_2}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{z_1}{z_2}=[?]e^{i[?]}$",
+					"reponse": ["\\dfrac{5}{3}", "-\\dfrac{\\pi}{6}"],
+					"variables": {
+						"r1": "5",
+						"r2": "3",
+						"m1": "-8",
+						"m2": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $z_1=4e^{-i\\dfrac{5 \\pi}{6}}$ et $z_2=2e^{-i\\dfrac{\\pi}{2}}$. Écris $\\dfrac{z_1}{z_2}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{z_1}{z_2}=[?]e^{i[?]}$",
+					"reponse": ["2", "-\\dfrac{\\pi}{3}"],
+					"variables": {
+						"r1": "4",
+						"r2": "2",
+						"m1": "-10",
+						"m2": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $z_1=6e^{-i\\dfrac{\\pi}{12}}$ et $z_2=4e^{i\\dfrac{3 \\pi}{4}}$. Écris $\\dfrac{z_1}{z_2}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{z_1}{z_2}=[?]e^{i[?]}$",
+					"reponse": ["\\dfrac{3}{2}", "-\\dfrac{5 \\pi}{6}"],
+					"variables": {
+						"r1": "6",
+						"r2": "4",
+						"m1": "-1",
+						"m2": "9"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "2..3"
+					},
+					{
+						"name": "n",
+						"expression": "2..4"
+					},
+					{
+						"name": "m",
+						"expression": "1..5"
+					},
+					{
+						"name": "k",
+						"expression": "eval:mod(n*m+5,12)-5"
+					}
+				],
+				"conditions": ["k != n*m"],
+				"enonce_brut": "Soit $z={{r}}e^{i{{eval:m*\\pi/6}}}$. Écris $z^{ {{n}} }$ sous forme exponentielle, avec l'argument principal.\n\n$z^{ {{n}} }=?e^{i?}$",
+				"reponses_brutes": ["{{eval:r^n}}", "{{eval:k*\\pi/6}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 18,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-4, -3, -2, 0, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 81,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [4, 8, 9, 16, 27, 81]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.26666666666666666,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-\\dfrac{2 \\pi}{3}",
+							"-\\dfrac{\\pi}{2}",
+							"-\\dfrac{\\pi}{3}",
+							"0",
+							"\\dfrac{2 \\pi}{3}",
+							"\\dfrac{\\pi}{2}"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [0, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 81,
+				"nb_distinctes": 9,
+				"valeurs": [0, 2, 3, 4, 8, 9, 16, 27, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 81,
+				"nb_distinctes": 11,
+				"valeurs": [0, 2, 3, 4, 5, 6, 8, 9, 16, 27, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 6,
+					"enonce": "Soit $z=3e^{i\\dfrac{\\pi}{3}}$. Écris $z^4$ sous forme exponentielle, avec l'argument principal.\n\n$z^4 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["81", "-\\dfrac{2 \\pi}{3}"],
+					"variables": {
+						"r": "3",
+						"n": "4",
+						"m": "2",
+						"k": "-4"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 4,
+					"enonce": "Soit $z=3e^{i\\dfrac{2 \\pi}{3}}$. Écris $z^3$ sous forme exponentielle, avec l'argument principal.\n\n$z^3 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["27", "0"],
+					"variables": {
+						"r": "3",
+						"n": "3",
+						"m": "4",
+						"k": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $z=2e^{i\\dfrac{5 \\pi}{6}}$. Écris $z^3$ sous forme exponentielle, avec l'argument principal.\n\n$z^3 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["8", "\\dfrac{\\pi}{2}"],
+					"variables": {
+						"r": "2",
+						"n": "3",
+						"m": "5",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $z=3e^{i\\dfrac{\\pi}{2}}$. Écris $z^3$ sous forme exponentielle, avec l'argument principal.\n\n$z^3 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["27", "-\\dfrac{\\pi}{2}"],
+					"variables": {
+						"r": "3",
+						"n": "3",
+						"m": "3",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $z=3e^{i\\dfrac{2 \\pi}{3}}$. Écris $z^2$ sous forme exponentielle, avec l'argument principal.\n\n$z^2 = [?] \\exponentialE^{\\imaginaryI [?]}$",
+					"reponse": ["9", "-\\dfrac{2 \\pi}{3}"],
+					"variables": {
+						"r": "3",
+						"n": "2",
+						"m": "4",
+						"k": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "2..9"
+					},
+					{
+						"name": "m",
+						"expression": "1..11;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $z={{r}}e^{{{if:m>=0||-}}i{{eval:abs(m)*\\pi/12}}}$. Écris $\\dfrac{1}{z}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{1}{z}=?e^{i?}$",
+				"reponses_brutes": ["\\frac{1}{ {{r}} }", "{{eval:-m*\\pi/12}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 142,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 22,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\frac{1}{ 2 }",
+							"\\frac{1}{ 3 }",
+							"\\frac{1}{ 4 }",
+							"\\frac{1}{ 5 }",
+							"\\frac{1}{ 6 }",
+							"\\frac{1}{ 7 }",
+							"\\frac{1}{ 8 }",
+							"\\frac{1}{ 9 }"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 22,
+						"valeurs": [
+							"-\\dfrac{11 \\pi}{12}",
+							"-\\dfrac{2 \\pi}{3}",
+							"-\\dfrac{3 \\pi}{4}",
+							"-\\dfrac{5 \\pi}{12}",
+							"-\\dfrac{5 \\pi}{6}",
+							"-\\dfrac{7 \\pi}{12}",
+							"-\\dfrac{\\pi}{12}",
+							"-\\dfrac{\\pi}{2}",
+							"-\\dfrac{\\pi}{3}",
+							"-\\dfrac{\\pi}{4}",
+							"-\\dfrac{\\pi}{6}",
+							"\\dfrac{11 \\pi}{12}",
+							"\\dfrac{2 \\pi}{3}",
+							"\\dfrac{3 \\pi}{4}",
+							"\\dfrac{5 \\pi}{12}",
+							"\\dfrac{5 \\pi}{6}",
+							"\\dfrac{7 \\pi}{12}",
+							"\\dfrac{\\pi}{12}",
+							"\\dfrac{\\pi}{2}",
+							"\\dfrac{\\pi}{3}",
+							"\\dfrac{\\pi}{4}",
+							"\\dfrac{\\pi}{6}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 12,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 11, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 1,
+					"enonce": "Soit $z=2e^{i\\dfrac{\\pi}{12}}$. Écris $\\dfrac{1}{z}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{1}{z}=[?]e^{i[?]}$",
+					"reponse": ["\\frac{1}{ 2 }", "-\\dfrac{\\pi}{12}"],
+					"variables": {
+						"r": "2",
+						"m": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $z=4e^{-i\\dfrac{5 \\pi}{12}}$. Écris $\\dfrac{1}{z}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{1}{z}=[?]e^{i[?]}$",
+					"reponse": ["\\frac{1}{ 4 }", "\\dfrac{5 \\pi}{12}"],
+					"variables": {
+						"r": "4",
+						"m": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $z=2e^{-i\\dfrac{\\pi}{12}}$. Écris $\\dfrac{1}{z}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{1}{z}=[?]e^{i[?]}$",
+					"reponse": ["\\frac{1}{ 2 }", "\\dfrac{\\pi}{12}"],
+					"variables": {
+						"r": "2",
+						"m": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $z=4e^{-i\\dfrac{7 \\pi}{12}}$. Écris $\\dfrac{1}{z}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{1}{z}=[?]e^{i[?]}$",
+					"reponse": ["\\frac{1}{ 4 }", "\\dfrac{7 \\pi}{12}"],
+					"variables": {
+						"r": "4",
+						"m": "-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $z=8e^{-i\\dfrac{7 \\pi}{12}}$. Écris $\\dfrac{1}{z}$ sous forme exponentielle, avec l'argument principal.\n\n$\\dfrac{1}{z}=[?]e^{i[?]}$",
+					"reponse": ["\\frac{1}{ 8 }", "\\dfrac{7 \\pi}{12}"],
+					"variables": {
+						"r": "8",
+						"m": "-7"
+					}
+				}
+			]
+		}
+	]
+}

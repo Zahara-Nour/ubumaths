@@ -1,0 +1,1273 @@
+{
+	"template_id": "23402520-cbc3-4d49-b6dc-999e1ff17e3c",
+	"titre": "Primitive de sinus et cosinus vérifiant une condition",
+	"sous_titre": "Primitives de a·cos x, a·sin x, cos(ωx) et sin(ωx), rendues uniques par F(0) = y₀ (spécialité seulement)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Primitives et équations différentielles > Primitives > Primitives de sinus et cosinus",
+	"mis_a_jour": "2026-10-04T10:14:57.022901+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-467",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 7,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1|\\cos(x)}}{{if:a==-1|-\\cos(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\cos(x)}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+				"reponses_brutes": [
+					"{{if:a==1|\\sin(x)}}{{if:a==-1|-\\sin(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\sin(x)}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 104,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 104,
+						"exemples": [
+							"-5\\sin(x)",
+							"-2\\sin(x)-2",
+							"-2\\sin(x)-3",
+							"3\\sin(x)-3",
+							"-5\\sin(x)+2",
+							"-5\\sin(x)+5",
+							"2\\sin(x)-2",
+							"4\\sin(x)-4",
+							"5\\sin(x)+2",
+							"\\sin(x)+1",
+							"-5\\sin(x)+1",
+							"-2\\sin(x)-5"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 9,
+							"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 9,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-5\\cos(x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 5$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-5\\sin(x)+5"],
+					"variables": {
+						"a": "-5",
+						"y0": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-5\\cos(x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-5\\sin(x)"],
+					"variables": {
+						"a": "-5",
+						"y0": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-2\\cos(x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -2$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-2\\sin(x)-2"],
+					"variables": {
+						"a": "-2",
+						"y0": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-2\\cos(x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -3$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-2\\sin(x)-3"],
+					"variables": {
+						"a": "-2",
+						"y0": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3\\cos(x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -3$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["3\\sin(x)-3"],
+					"variables": {
+						"a": "3",
+						"y0": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": ["y0+a != 0"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1|\\sin(x)}}{{if:a==-1|-\\sin(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\sin(x)}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+				"reponses_brutes": [
+					"{{if:-a==1|\\cos(x)}}{{if:-a==-1|-\\cos(x)}}{{if:-a!=1 && -a!=-1|{{eval:-a}}\\cos(x)}}{{if:y0+a>0|+{{eval:y0+a}}}}{{if:y0+a<0|{{eval:y0+a}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 97,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 97,
+						"exemples": [
+							"5\\cos(x)-5",
+							"2\\cos(x)-4",
+							"2\\cos(x)-5",
+							"-2\\cos(x)-3",
+							"5\\cos(x)-3",
+							"-2\\cos(x)+2",
+							"-2\\cos(x)+3",
+							"-4\\cos(x)+6",
+							"-5\\cos(x)+7",
+							"-\\cos(x)+2",
+							"5\\cos(x)-4",
+							"2\\cos(x)-7"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 10,
+							"nb_distinctes": 14,
+							"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 10,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 10,
+				"nb_distinctes": 16,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 27,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-5\\sin(x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -5$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["5\\cos(x)-10"],
+					"variables": {
+						"a": "-5",
+						"y0": "-5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-5\\sin(x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["5\\cos(x)-5"],
+					"variables": {
+						"a": "-5",
+						"y0": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-2\\sin(x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -2$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["2\\cos(x)-4"],
+					"variables": {
+						"a": "-2",
+						"y0": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-2\\sin(x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -3$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["2\\cos(x)-5"],
+					"variables": {
+						"a": "-2",
+						"y0": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\sin(x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -5$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-2\\cos(x)-3"],
+					"variables": {
+						"a": "2",
+						"y0": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "w",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos({{eval:w}}x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)=0$.\n\n$F(x)=?$",
+				"reponses_brutes": ["\\frac{1}{{{eval:w}}}\\sin({{eval:w}}x)"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"\\frac{1}{2}\\sin(2x)",
+							"\\frac{1}{3}\\sin(3x)",
+							"\\frac{1}{4}\\sin(4x)",
+							"\\frac{1}{5}\\sin(5x)",
+							"\\frac{1}{6}\\sin(6x)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 6,
+							"nb_distinctes": 6,
+							"valeurs": [1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [0, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6],
+				"denominateur_min": 2,
+				"denominateur_max": 6,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 9,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(6x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{1}{6}\\sin(6x)"],
+					"variables": {
+						"w": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(2x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{1}{2}\\sin(2x)"],
+					"variables": {
+						"w": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(3x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{1}{3}\\sin(3x)"],
+					"variables": {
+						"w": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(5x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{1}{5}\\sin(5x)"],
+					"variables": {
+						"w": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(4x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{1}{4}\\sin(4x)"],
+					"variables": {
+						"w": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "w",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin({{eval:w}}x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)=0$.\n\n$F(x)=?$",
+				"reponses_brutes": ["-\\frac{1}{{{eval:w}}}\\cos({{eval:w}}x)+\\frac{1}{{{eval:w}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"-\\frac{1}{2}\\cos(2x)+\\frac{1}{2}",
+							"-\\frac{1}{3}\\cos(3x)+\\frac{1}{3}",
+							"-\\frac{1}{4}\\cos(4x)+\\frac{1}{4}",
+							"-\\frac{1}{5}\\cos(5x)+\\frac{1}{5}",
+							"-\\frac{1}{6}\\cos(6x)+\\frac{1}{6}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 6,
+							"nb_distinctes": 6,
+							"valeurs": [1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [0, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6],
+				"denominateur_min": 2,
+				"denominateur_max": 6,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 9,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin(6x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{1}{6}\\cos(6x)+\\frac{1}{6}"],
+					"variables": {
+						"w": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin(2x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{1}{2}\\cos(2x)+\\frac{1}{2}"],
+					"variables": {
+						"w": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin(3x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{1}{3}\\cos(3x)+\\frac{1}{3}"],
+					"variables": {
+						"w": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin(5x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{1}{5}\\cos(5x)+\\frac{1}{5}"],
+					"variables": {
+						"w": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\sin(4x)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-\\frac{1}{4}\\cos(4x)+\\frac{1}{4}"],
+					"variables": {
+						"w": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1|\\cos(x)}}{{if:a==-1|-\\cos(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\cos(x)}}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+				"reponses_brutes": [
+					"{{if:a==1|\\sin(x)}}{{if:a==-1|-\\sin(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\sin(x)}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"-2\\sin(x)",
+							"-3\\sin(x)",
+							"-4\\sin(x)",
+							"-5\\sin(x)",
+							"-\\sin(x)",
+							"2\\sin(x)",
+							"3\\sin(x)",
+							"4\\sin(x)",
+							"5\\sin(x)",
+							"\\sin(x)"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 8,
+							"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["primitive"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=5\\cos(x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["5\\sin(x)"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-5\\cos(x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-5\\sin(x)"],
+					"variables": {
+						"a": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-2\\cos(x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-2\\sin(x)"],
+					"variables": {
+						"a": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3\\cos(x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["3\\sin(x)"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\cos(x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["2\\sin(x)"],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a==1|\\sin(x)}}{{if:a==-1|-\\sin(x)}}{{if:a!=1 && a!=-1|{{eval:a}}\\sin(x)}}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+				"reponses_brutes": [
+					"{{if:-a==1|\\cos(x)}}{{if:-a==-1|-\\cos(x)}}{{if:-a!=1 && -a!=-1|{{eval:-a}}\\cos(x)}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"-2\\cos(x)",
+							"-3\\cos(x)",
+							"-4\\cos(x)",
+							"-5\\cos(x)",
+							"-\\cos(x)",
+							"2\\cos(x)",
+							"3\\cos(x)",
+							"4\\cos(x)",
+							"5\\cos(x)",
+							"\\cos(x)"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 8,
+							"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["primitive"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-5\\sin(x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["5\\cos(x)"],
+					"variables": {
+						"a": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=-2\\sin(x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["2\\cos(x)"],
+					"variables": {
+						"a": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=3\\sin(x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-3\\cos(x)"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=2\\sin(x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-2\\cos(x)"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=4\\sin(x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-4\\cos(x)"],
+					"variables": {
+						"a": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "w",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos({{eval:w}}x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+				"reponses_brutes": ["\\frac{1}{{{eval:w}}}\\sin({{eval:w}}x)"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"\\frac{1}{2}\\sin(2x)",
+							"\\frac{1}{3}\\sin(3x)",
+							"\\frac{1}{4}\\sin(4x)",
+							"\\frac{1}{5}\\sin(5x)",
+							"\\frac{1}{6}\\sin(6x)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 6,
+							"nb_distinctes": 6,
+							"valeurs": [1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6],
+				"denominateur_min": 2,
+				"denominateur_max": 6,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["primitive"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 9,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(6x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{1}{6}\\sin(6x)"],
+					"variables": {
+						"w": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(2x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{1}{2}\\sin(2x)"],
+					"variables": {
+						"w": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(3x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{1}{3}\\sin(3x)"],
+					"variables": {
+						"w": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(5x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{1}{5}\\sin(5x)"],
+					"variables": {
+						"w": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=\\cos(4x)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{1}{4}\\sin(4x)"],
+					"variables": {
+						"w": "4"
+					}
+				}
+			]
+		}
+	]
+}

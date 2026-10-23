@@ -1,0 +1,811 @@
+{
+	"template_id": "293f8225-0268-48bc-8487-52c6bf5b01e3",
+	"titre": "Racines d'un polynôme : compter les solutions, compléter par conjugaison",
+	"sous_titre": "Compléter les racines d'un polynôme réel de degré 4 connaissant deux racines non conjuguées, compter les solutions dans ℂ et dans ℝ de (z − r)(z² + q) = 0, solutions distinctes avec une racine double, racines restantes au plus (pièges : opposé au lieu du conjugué, solutions de z² + q = 0 comptées réelles, racine double comptée deux fois)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Nombres complexes > Équations polynomiales > Racines d'un polynôme",
+	"mis_a_jour": "2026-10-05T19:11:38.09069+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-246",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "2..5"
+					}
+				],
+				"conditions": ["b != c"],
+				"enonce_brut": "$P$ est un polynôme de degré $4$ à coefficients réels tel que $P({{a}}+{{b}}i) = 0$ et $P({{c}}i) = 0$.\n\nDonne ses deux autres racines (dans l'ordre que tu veux).\n\n$z_3=?$ et $z_4=?$",
+				"reponses_brutes": ["{{a}}-{{b}}i", "-{{c}}i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 24,
+						"valeurs": [
+							"-1-2i",
+							"-1-3i",
+							"-1-4i",
+							"-2-2i",
+							"-2-3i",
+							"-2-4i",
+							"-3-2i",
+							"-3-3i",
+							"-3-4i",
+							"-4-2i",
+							"-4-3i",
+							"-4-4i",
+							"1-2i",
+							"1-3i",
+							"1-4i",
+							"2-2i",
+							"2-3i",
+							"2-4i",
+							"3-2i",
+							"3-3i",
+							"3-4i",
+							"4-2i",
+							"4-3i",
+							"4-4i"
+						],
+						"nombres_contenus": {
+							"min": -4,
+							"max": 4,
+							"nb_distinctes": 8,
+							"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["-2i", "-3i", "-4i", "-5i"],
+						"nombres_contenus": {
+							"min": -5,
+							"max": -2,
+							"nb_distinctes": 4,
+							"valeurs": [-5, -4, -3, -2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 4,
+				"nb_distinctes": 9,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "$P$ est un polynôme de degré $4$ à coefficients réels tel que $P\\left( -4 + 3 \\imaginaryI \\right) = 0$ et $P\\left( 5 \\imaginaryI \\right) = 0$.\n\nDonne ses deux autres racines (dans l'ordre que tu veux).\n\n$z_3 = [?]$ et $z_4 = [?]$",
+					"reponse": ["-4-3i", "-5i"],
+					"variables": {
+						"a": "-4",
+						"b": "3",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$P$ est un polynôme de degré $4$ à coefficients réels tel que $P\\left( -2 + 2 \\imaginaryI \\right) = 0$ et $P\\left( 4 \\imaginaryI \\right) = 0$.\n\nDonne ses deux autres racines (dans l'ordre que tu veux).\n\n$z_3 = [?]$ et $z_4 = [?]$",
+					"reponse": ["-2-2i", "-4i"],
+					"variables": {
+						"a": "-2",
+						"b": "2",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$P$ est un polynôme de degré $4$ à coefficients réels tel que $P\\left( -4 + 3 \\imaginaryI \\right) = 0$ et $P\\left( 2 \\imaginaryI \\right) = 0$.\n\nDonne ses deux autres racines (dans l'ordre que tu veux).\n\n$z_3 = [?]$ et $z_4 = [?]$",
+					"reponse": ["-4-3i", "-2i"],
+					"variables": {
+						"a": "-4",
+						"b": "3",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$P$ est un polynôme de degré $4$ à coefficients réels tel que $P\\left( -3 + 3 \\imaginaryI \\right) = 0$ et $P\\left( 2 \\imaginaryI \\right) = 0$.\n\nDonne ses deux autres racines (dans l'ordre que tu veux).\n\n$z_3 = [?]$ et $z_4 = [?]$",
+					"reponse": ["-3-3i", "-2i"],
+					"variables": {
+						"a": "-3",
+						"b": "3",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$P$ est un polynôme de degré $4$ à coefficients réels tel que $P\\left( 3 + 2 \\imaginaryI \\right) = 0$ et $P\\left( 4 \\imaginaryI \\right) = 0$.\n\nDonne ses deux autres racines (dans l'ordre que tu veux).\n\n$z_3 = [?]$ et $z_4 = [?]$",
+					"reponse": ["3-2i", "-4i"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..12"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère $P(z) = (z-({{r}}))(z^2+{{q}})$.\n\nNombre de solutions de $P(z) = 0$ dans $\\mathbb{C}$ : $?$\n\nNombre de solutions de $P(z) = 0$ dans $\\mathbb{R}$ : $?$",
+				"reponses_brutes": ["3", "1"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 130,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [3]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 12,
+				"nb_distinctes": 13,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [1, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 12,
+				"nb_distinctes": 13,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 7,
+					"enonce": "On considère $P\\left( z \\right) = \\left( z + 6 \\right) \\left( z^2 + 12 \\right)$.\n\nNombre de solutions de $P\\left( z \\right) = 0$ dans $\\mathbb{C}$ : $[?]$\n\nNombre de solutions de $P\\left( z \\right) = 0$ dans $\\mathbb{R}$ : $[?]$",
+					"reponse": ["3", "1"],
+					"variables": {
+						"r": "-6",
+						"q": "12"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On considère $P\\left( z \\right) = \\left( z + 6 \\right) \\left( z^2 + 7 \\right)$.\n\nNombre de solutions de $P\\left( z \\right) = 0$ dans $\\mathbb{C}$ : $[?]$\n\nNombre de solutions de $P\\left( z \\right) = 0$ dans $\\mathbb{R}$ : $[?]$",
+					"reponse": ["3", "1"],
+					"variables": {
+						"r": "-6",
+						"q": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère $P\\left( z \\right) = \\left( z + 3 \\right) \\left( z^2 + 4 \\right)$.\n\nNombre de solutions de $P\\left( z \\right) = 0$ dans $\\mathbb{C}$ : $[?]$\n\nNombre de solutions de $P\\left( z \\right) = 0$ dans $\\mathbb{R}$ : $[?]$",
+					"reponse": ["3", "1"],
+					"variables": {
+						"r": "-3",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère $P\\left( z \\right) = \\left( z + 6 \\right) \\left( z^2 + 6 \\right)$.\n\nNombre de solutions de $P\\left( z \\right) = 0$ dans $\\mathbb{C}$ : $[?]$\n\nNombre de solutions de $P\\left( z \\right) = 0$ dans $\\mathbb{R}$ : $[?]$",
+					"reponse": ["3", "1"],
+					"variables": {
+						"r": "-6",
+						"q": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère $P\\left( z \\right) = \\left( z + 3 \\right) \\left( z^2 + 3 \\right)$.\n\nNombre de solutions de $P\\left( z \\right) = 0$ dans $\\mathbb{C}$ : $[?]$\n\nNombre de solutions de $P\\left( z \\right) = 0$ dans $\\mathbb{R}$ : $[?]$",
+					"reponse": ["3", "1"],
+					"variables": {
+						"r": "-3",
+						"q": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..12"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère $P(z) = (z-({{r}}))^2(z^2+{{q}})$.\n\nDegré de $P$ : $?$\n\nNombre de solutions DISTINCTES de $P(z) = 0$ dans $\\mathbb{C}$ : $?$",
+				"reponses_brutes": ["4", "3"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 130,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [3]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 12,
+				"nb_distinctes": 13,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 12,
+				"nb_distinctes": 13,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 7,
+					"enonce": "On considère $P\\left( z \\right) = \\left( z + 6 \\right)^2 \\left( z^2 + 12 \\right)$.\n\nDegré de $P$ : $[?]$\n\nNombre de solutions DISTINCTES de $P\\left( z \\right) = 0$ dans $\\mathbb{C}$ : $[?]$",
+					"reponse": ["4", "3"],
+					"variables": {
+						"r": "-6",
+						"q": "12"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On considère $P\\left( z \\right) = \\left( z + 6 \\right)^2 \\left( z^2 + 7 \\right)$.\n\nDegré de $P$ : $[?]$\n\nNombre de solutions DISTINCTES de $P\\left( z \\right) = 0$ dans $\\mathbb{C}$ : $[?]$",
+					"reponse": ["4", "3"],
+					"variables": {
+						"r": "-6",
+						"q": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère $P\\left( z \\right) = \\left( z + 3 \\right)^2 \\left( z^2 + 4 \\right)$.\n\nDegré de $P$ : $[?]$\n\nNombre de solutions DISTINCTES de $P\\left( z \\right) = 0$ dans $\\mathbb{C}$ : $[?]$",
+					"reponse": ["4", "3"],
+					"variables": {
+						"r": "-3",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère $P\\left( z \\right) = \\left( z + 6 \\right)^2 \\left( z^2 + 6 \\right)$.\n\nDegré de $P$ : $[?]$\n\nNombre de solutions DISTINCTES de $P\\left( z \\right) = 0$ dans $\\mathbb{C}$ : $[?]$",
+					"reponse": ["4", "3"],
+					"variables": {
+						"r": "-6",
+						"q": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère $P\\left( z \\right) = \\left( z + 3 \\right)^2 \\left( z^2 + 3 \\right)$.\n\nDegré de $P$ : $[?]$\n\nNombre de solutions DISTINCTES de $P\\left( z \\right) = 0$ dans $\\mathbb{C}$ : $[?]$",
+					"reponse": ["4", "3"],
+					"variables": {
+						"r": "-3",
+						"q": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "4..9"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					}
+				],
+				"conditions": ["k < n"],
+				"enonce_brut": "$P$ est un polynôme de degré ${{n}}$. On connaît déjà ${{k}}$ racines distinctes de $P$.\n\nCombien de racines distinctes, au plus, $P$ peut-il avoir en dehors de celles-ci ?\n\n$?$",
+				"reponses_brutes": ["{{eval:n-k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 27,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 8,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 25,
+					"max": 25
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 9,
+					"enonce": "$P$ est un polynôme de degré $9$. On connaît déjà $1$ racines distinctes de $P$.\n\nCombien de racines distinctes, au plus, $P$ peut-il avoir en dehors de celles-ci ?\n\n$[?]$",
+					"reponse": ["8"],
+					"variables": {
+						"n": "9",
+						"k": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "$P$ est un polynôme de degré $4$. On connaît déjà $3$ racines distinctes de $P$.\n\nCombien de racines distinctes, au plus, $P$ peut-il avoir en dehors de celles-ci ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"n": "4",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$P$ est un polynôme de degré $5$. On connaît déjà $2$ racines distinctes de $P$.\n\nCombien de racines distinctes, au plus, $P$ peut-il avoir en dehors de celles-ci ?\n\n$[?]$",
+					"reponse": ["3"],
+					"variables": {
+						"n": "5",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$P$ est un polynôme de degré $8$. On connaît déjà $2$ racines distinctes de $P$.\n\nCombien de racines distinctes, au plus, $P$ peut-il avoir en dehors de celles-ci ?\n\n$[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"n": "8",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "$P$ est un polynôme de degré $5$. On connaît déjà $3$ racines distinctes de $P$.\n\nCombien de racines distinctes, au plus, $P$ peut-il avoir en dehors de celles-ci ?\n\n$[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"n": "5",
+						"k": "3"
+					}
+				}
+			]
+		}
+	]
+}

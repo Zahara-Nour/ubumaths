@@ -1,0 +1,314 @@
+{
+	"template_id": "ef807ee9-f95b-469a-a6a8-4232e933b4c6",
+	"titre": "Somme des premiers entiers",
+	"sous_titre": "1 + 2 + … + n par la formule n(n+1)/2",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Sommes > Somme des entiers",
+	"mis_a_jour": "2026-10-01T20:22:24.498633+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-215",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "10..100"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule la somme $S=1+2+3+\\cdots+{{n}}$.\n\n$S=?$",
+				"reponses_brutes": ["{{eval:n*(n+1)/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 87,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 87
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 55,
+						"max": 5050,
+						"negatif_possible": false,
+						"nb_distinctes": 87
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 90,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 55,
+				"max": 5050,
+				"nb_distinctes": 87,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5050,
+				"nb_distinctes": 173,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5050)",
+					"graine": 37,
+					"enonce": "Calcule la somme $S=1+2+3+\\cdots+100$.\n\n$S = [?]$",
+					"reponse": ["5050"],
+					"variables": {
+						"n": "100"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule la somme $S=1+2+3+\\cdots+10$.\n\n$S = [?]$",
+					"reponse": ["55"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule la somme $S=1+2+3+\\cdots+39$.\n\n$S = [?]$",
+					"reponse": ["780"],
+					"variables": {
+						"n": "39"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule la somme $S=1+2+3+\\cdots+13$.\n\n$S = [?]$",
+					"reponse": ["91"],
+					"variables": {
+						"n": "13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule la somme $S=1+2+3+\\cdots+40$.\n\n$S = [?]$",
+					"reponse": ["820"],
+					"variables": {
+						"n": "40"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "10..100"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule la somme $S$ des ${{n}}$ premiers entiers naturels non nuls.\n\n$S=?$",
+				"reponses_brutes": ["{{eval:n*(n+1)/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 87,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 87
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 55,
+						"max": 5050,
+						"negatif_possible": false,
+						"nb_distinctes": 87
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 10,
+				"max": 100,
+				"nb_distinctes": 87,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 55,
+				"max": 5050,
+				"nb_distinctes": 87,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 10,
+				"max": 5050,
+				"nb_distinctes": 170,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5050)",
+					"graine": 37,
+					"enonce": "Calcule la somme $S$ des $100$ premiers entiers naturels non nuls.\n\n$S = [?]$",
+					"reponse": ["5050"],
+					"variables": {
+						"n": "100"
+					}
+				},
+				{
+					"role": "plus petite valeur (10)",
+					"graine": 1,
+					"enonce": "Calcule la somme $S$ des $10$ premiers entiers naturels non nuls.\n\n$S = [?]$",
+					"reponse": ["55"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule la somme $S$ des $39$ premiers entiers naturels non nuls.\n\n$S = [?]$",
+					"reponse": ["780"],
+					"variables": {
+						"n": "39"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule la somme $S$ des $13$ premiers entiers naturels non nuls.\n\n$S = [?]$",
+					"reponse": ["91"],
+					"variables": {
+						"n": "13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule la somme $S$ des $40$ premiers entiers naturels non nuls.\n\n$S = [?]$",
+					"reponse": ["820"],
+					"variables": {
+						"n": "40"
+					}
+				}
+			]
+		}
+	]
+}

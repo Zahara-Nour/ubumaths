@@ -1,0 +1,797 @@
+{
+	"template_id": "a3fce9d4-948e-4042-b015-5c11feaee488",
+	"titre": "Passer de la forme exponentielle ou trigonométrique à la forme algébrique",
+	"sous_titre": "re^{iπ/3}, k√2 e^{−iπ/4}, r(cos 2π/3 + i sin 2π/3), re^{−iπ/2}, re^{5iπ/6} → a + ib (pièges : cos et sin échangés, signe, valeurs remarquables)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Nombres complexes > Formes trigonométrique et exponentielle > Forme algébrique",
+	"mis_a_jour": "2026-10-05T16:03:07.541643+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-238",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "2|4|6|8"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris sous forme algébrique $z={{r}}e^{i\\frac{\\pi}{3}}$.\n\n$z=?$",
+				"reponses_brutes": ["{{eval:r/2}}+{{if:r/2==1||{{if:r/2==-1|-|{{eval:r/2}}}}}}\\sqrt{3}i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 4, 6, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["1+\\sqrt{3}i", "2+2\\sqrt{3}i", "3+3\\sqrt{3}i", "4+4\\sqrt{3}i"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 4,
+							"nb_distinctes": 4,
+							"valeurs": [1, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 4,
+				"nb_distinctes": 4,
+				"valeurs": [1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 8,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 4, 6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 5,
+					"enonce": "Écris sous forme algébrique $z=8e^{i\\frac{\\pi}{3}}$.\n\n$z = [?]$",
+					"reponse": ["4+4\\sqrt{3}i"],
+					"variables": {
+						"r": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Écris sous forme algébrique $z=2e^{i\\frac{\\pi}{3}}$.\n\n$z = [?]$",
+					"reponse": ["1+\\sqrt{3}i"],
+					"variables": {
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris sous forme algébrique $z=4e^{i\\frac{\\pi}{3}}$.\n\n$z = [?]$",
+					"reponse": ["2+2\\sqrt{3}i"],
+					"variables": {
+						"r": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Écris sous forme algébrique $z=6e^{i\\frac{\\pi}{3}}$.\n\n$z = [?]$",
+					"reponse": ["3+3\\sqrt{3}i"],
+					"variables": {
+						"r": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "1..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris sous forme algébrique $z={{if:k==1||{{if:k==-1|-|{{eval:k}}}}}}\\sqrt{2}e^{-i\\frac{\\pi}{4}}$.\n\n$z=?$",
+				"reponses_brutes": ["{{k}}-({{k}})i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["1-i", "2-2i", "3-3i", "4-4i", "5-5i"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 5,
+							"nb_distinctes": 5,
+							"valeurs": [1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 9,
+					"enonce": "Écris sous forme algébrique $z=5\\sqrt{2}e^{-i\\frac{\\pi}{4}}$.\n\n$z = [?]$",
+					"reponse": ["5-5i"],
+					"variables": {
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Écris sous forme algébrique $z=\\sqrt{2}e^{-i\\frac{\\pi}{4}}$.\n\n$z = [?]$",
+					"reponse": ["1-i"],
+					"variables": {
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris sous forme algébrique $z=2\\sqrt{2}e^{-i\\frac{\\pi}{4}}$.\n\n$z = [?]$",
+					"reponse": ["2-2i"],
+					"variables": {
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Écris sous forme algébrique $z=4\\sqrt{2}e^{-i\\frac{\\pi}{4}}$.\n\n$z = [?]$",
+					"reponse": ["4-4i"],
+					"variables": {
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Écris sous forme algébrique $z=3\\sqrt{2}e^{-i\\frac{\\pi}{4}}$.\n\n$z = [?]$",
+					"reponse": ["3-3i"],
+					"variables": {
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "2|4|6|8"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris sous forme algébrique $z={{r}}\\left(\\cos\\frac{2\\pi}{3}+i\\sin\\frac{2\\pi}{3}\\right)$.\n\n$z=?$",
+				"reponses_brutes": ["{{eval:-r/2}}+{{if:r/2==1||{{if:r/2==-1|-|{{eval:r/2}}}}}}\\sqrt{3}i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 4, 6, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["-1+\\sqrt{3}i", "-2+2\\sqrt{3}i", "-3+3\\sqrt{3}i", "-4+4\\sqrt{3}i"],
+						"nombres_contenus": {
+							"min": -4,
+							"max": 4,
+							"nb_distinctes": 7,
+							"valeurs": [-4, -3, -2, -1, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -4,
+				"max": 4,
+				"nb_distinctes": 7,
+				"valeurs": [-4, -3, -2, -1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 8,
+				"nb_distinctes": 9,
+				"valeurs": [-4, -3, -2, -1, 2, 3, 4, 6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 5,
+					"enonce": "Écris sous forme algébrique $z=8\\left(\\cos\\frac{2\\pi}{3}+i\\sin\\frac{2\\pi}{3}\\right)$.\n\n$z = [?]$",
+					"reponse": ["-4+4\\sqrt{3}i"],
+					"variables": {
+						"r": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Écris sous forme algébrique $z=2\\left(\\cos\\frac{2\\pi}{3}+i\\sin\\frac{2\\pi}{3}\\right)$.\n\n$z = [?]$",
+					"reponse": ["-1+\\sqrt{3}i"],
+					"variables": {
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris sous forme algébrique $z=4\\left(\\cos\\frac{2\\pi}{3}+i\\sin\\frac{2\\pi}{3}\\right)$.\n\n$z = [?]$",
+					"reponse": ["-2+2\\sqrt{3}i"],
+					"variables": {
+						"r": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Écris sous forme algébrique $z=6\\left(\\cos\\frac{2\\pi}{3}+i\\sin\\frac{2\\pi}{3}\\right)$.\n\n$z = [?]$",
+					"reponse": ["-3+3\\sqrt{3}i"],
+					"variables": {
+						"r": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris sous forme algébrique $z={{r}}e^{-i\\frac{\\pi}{2}}$.\n\n$z=?$",
+				"reponses_brutes": ["-{{r}}i"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["-2i", "-3i", "-4i", "-5i", "-6i", "-7i", "-8i", "-9i"],
+						"nombres_contenus": {
+							"min": -9,
+							"max": -2,
+							"nb_distinctes": 8,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": -2,
+				"nb_distinctes": 8,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Écris sous forme algébrique $z=9e^{-i\\frac{\\pi}{2}}$.\n\n$z = [?]$",
+					"reponse": ["-9i"],
+					"variables": {
+						"r": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Écris sous forme algébrique $z=2e^{-i\\frac{\\pi}{2}}$.\n\n$z = [?]$",
+					"reponse": ["-2i"],
+					"variables": {
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris sous forme algébrique $z=4e^{-i\\frac{\\pi}{2}}$.\n\n$z = [?]$",
+					"reponse": ["-4i"],
+					"variables": {
+						"r": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Écris sous forme algébrique $z=8e^{-i\\frac{\\pi}{2}}$.\n\n$z = [?]$",
+					"reponse": ["-8i"],
+					"variables": {
+						"r": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Écris sous forme algébrique $z=7e^{-i\\frac{\\pi}{2}}$.\n\n$z = [?]$",
+					"reponse": ["-7i"],
+					"variables": {
+						"r": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "2|4|6|8"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris sous forme algébrique $z={{r}}e^{i\\frac{5\\pi}{6}}$.\n\n$z=?$",
+				"reponses_brutes": [
+					"{{if:-r/2==1||{{if:-r/2==-1|-|{{eval:-r/2}}}}}}\\sqrt{3}{{if:r/2==1|+i|{{if:r/2==-1|-i|{{eval:r/2;+}}i}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 4, 6, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["-2\\sqrt{3}+2i", "-3\\sqrt{3}+3i", "-4\\sqrt{3}+4i", "-\\sqrt{3}+i"],
+						"nombres_contenus": {
+							"min": -4,
+							"max": 4,
+							"nb_distinctes": 6,
+							"valeurs": [-4, -3, -2, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 5,
+				"valeurs": [2, 4, 5, 6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -4,
+				"max": 4,
+				"nb_distinctes": 6,
+				"valeurs": [-4, -3, -2, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 8,
+				"nb_distinctes": 9,
+				"valeurs": [-4, -3, -2, 2, 3, 4, 5, 6, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 5,
+					"enonce": "Écris sous forme algébrique $z=8e^{i\\frac{5\\pi}{6}}$.\n\n$z = [?]$",
+					"reponse": ["-4\\sqrt{3}+4i"],
+					"variables": {
+						"r": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Écris sous forme algébrique $z=2e^{i\\frac{5\\pi}{6}}$.\n\n$z = [?]$",
+					"reponse": ["-\\sqrt{3}+i"],
+					"variables": {
+						"r": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris sous forme algébrique $z=4e^{i\\frac{5\\pi}{6}}$.\n\n$z = [?]$",
+					"reponse": ["-2\\sqrt{3}+2i"],
+					"variables": {
+						"r": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Écris sous forme algébrique $z=6e^{i\\frac{5\\pi}{6}}$.\n\n$z = [?]$",
+					"reponse": ["-3\\sqrt{3}+3i"],
+					"variables": {
+						"r": "6"
+					}
+				}
+			]
+		}
+	]
+}

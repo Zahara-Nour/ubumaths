@@ -1,0 +1,1231 @@
+{
+	"template_id": "d2943133-ebf7-424d-946a-8fed6cfa76be",
+	"titre": "Reconnaître une suite arithmétique ou géométrique à partir de sa forme explicite",
+	"sous_titre": "u(n) = an + b, u(n) = u(0) × qⁿ, ou ni l'un ni l'autre (n² + c, kⁿ + c)",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Reconnaître une suite > Arithmétique ou géométrique",
+	"mis_a_jour": "2026-10-03T14:03:50.278008+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-213",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "-9..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{eval:a*n+b}}$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 203,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["arithmétique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "85/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "58/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = n + 9$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"n": "n",
+						"a": "1",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 27,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -9 n - 6$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"n": "n",
+						"a": "-9",
+						"b": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = 1 - 4 n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"n": "n",
+						"a": "-4",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -n - 8$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"n": "n",
+						"a": "-1",
+						"b": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -6 n - 8$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"n": "n",
+						"a": "-6",
+						"b": "-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{b}}-{{a}}n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 88,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["arithmétique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "250/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = 9 - 5 n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"n": "n",
+						"a": "5",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 277,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -9 n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"n": "n",
+						"a": "9",
+						"b": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = 5 - 3 n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"n": "n",
+						"a": "3",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -5 n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"n": "n",
+						"a": "5",
+						"b": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -2 n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"n": "n",
+						"a": "2",
+						"b": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "2..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["géométrique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "262/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 24,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = 9 \\times 3^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "9",
+						"q": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -9 \\times 4^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-9",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -4 \\times 3^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-4",
+						"q": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -9 \\times 3^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-9",
+						"q": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -4 \\times 2^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-4",
+						"q": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "0.5|0.2|0.1|0.9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{a}}*{{q}}^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0.1, 0.2, 0.5, 0.9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["géométrique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 24,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, -0.9, -0.5, -0.2, -0.1, 0.1, 0.2, 0.5, 0.9, 2, 3, 4, 5, 6,
+					7, 8, 9
+				],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 24,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, -0.9, -0.5, -0.2, -0.1, 0.1, 0.2, 0.5, 0.9, 2, 3, 4, 5, 6,
+					7, 8, 9
+				],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "262/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 24,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = 9 \\times 0{,}2^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "9",
+						"q": "0.2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -9 \\times 0{,}1^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-9",
+						"q": "0.1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -4 \\times 0{,}2^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-4",
+						"q": "0.2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -9 \\times 0{,}2^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-9",
+						"q": "0.2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = -4 \\times 0{,}5^n$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"a": "-4",
+						"q": "0.5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "u0",
+						"expression": "eval:c"
+					},
+					{
+						"name": "u1",
+						"expression": "eval:1+c"
+					},
+					{
+						"name": "u2",
+						"expression": "eval:4+c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n=n^2+{{c}}$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "u0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni arithmétique, ni géométrique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = n^2 + 9$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"c": "9",
+						"u0": "9",
+						"u1": "10",
+						"u2": "13"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = n^2 + 1$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"c": "1",
+						"u0": "1",
+						"u1": "2",
+						"u2": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = n^2 + 3$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"c": "3",
+						"u0": "3",
+						"u1": "4",
+						"u2": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = n^2 + 7$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"c": "7",
+						"u0": "7",
+						"u1": "8",
+						"u2": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = n^2 + 6$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"c": "6",
+						"u0": "6",
+						"u1": "7",
+						"u2": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "k",
+						"expression": "2..3"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "u0",
+						"expression": "eval:1+c"
+					},
+					{
+						"name": "u1",
+						"expression": "eval:k+c"
+					},
+					{
+						"name": "u2",
+						"expression": "eval:k^2+c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La suite $(u_n)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n={{k}}^n+{{c}}$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 18,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "u0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni arithmétique, ni géométrique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = 3^n + 9$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"n": "n",
+						"k": "3",
+						"c": "9",
+						"u0": "10",
+						"u1": "12",
+						"u2": "18"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 3,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = 2^n + 1$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"n": "n",
+						"k": "2",
+						"c": "1",
+						"u0": "2",
+						"u1": "3",
+						"u2": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = 2^n + 5$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"n": "n",
+						"k": "2",
+						"c": "5",
+						"u0": "6",
+						"u1": "7",
+						"u2": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = 2^n + 6$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"n": "n",
+						"k": "2",
+						"c": "6",
+						"u0": "7",
+						"u1": "8",
+						"u2": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "La suite $\\left( u_n \\right)$ est définie, pour tout entier naturel $n$, par :\n\n$$u_n = 3^n + 2$$\n\nCette suite est-elle arithmétique, géométrique, ou ni l'un ni l'autre ?\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"n": "n",
+						"k": "3",
+						"c": "2",
+						"u0": "3",
+						"u1": "5",
+						"u2": "11"
+					}
+				}
+			]
+		}
+	]
+}

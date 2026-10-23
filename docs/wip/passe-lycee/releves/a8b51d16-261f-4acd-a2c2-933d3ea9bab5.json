@@ -1,0 +1,460 @@
+{
+	"template_id": "a8b51d16-261f-4acd-a2c2-933d3ea9bab5",
+	"titre": "Calculer un terme d'une suite arithmétique",
+	"sous_titre": "Calculer un terme éloigné, ou un terme de rang inférieur",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Suites arithmétiques > Calculer un terme",
+	"mis_a_jour": "2026-10-01T20:06:18.058339+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-224",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "20..50"
+					},
+					{
+						"name": "r",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "v",
+						"expression": "2..30;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule le terme demandé.\n\n$(u_n)$ est une suite arithmétique de raison ${{r}}$, et $u_{{a}}={{v}}$.\n\n$u_{{b}}=?$",
+				"reponses_brutes": ["{{eval:v+(b-a)*(r)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 31
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 57
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -425,
+						"max": 458,
+						"negatif_possible": true,
+						"nb_distinctes": 244
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -30,
+				"max": 50,
+				"nb_distinctes": 78,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -425,
+				"max": 458,
+				"nb_distinctes": 244,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -425,
+				"max": 458,
+				"nb_distinctes": 314,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (458)",
+					"graine": 160,
+					"enonce": "Calcule le terme demandé.\n\n$\\left( u_n \\right)$ est une suite arithmétique de raison $9$, et $u_1 = 26$.\n\n$u_{49} = [?]$",
+					"reponse": ["458"],
+					"variables": {
+						"a": "1",
+						"b": "49",
+						"r": "9",
+						"v": "26"
+					}
+				},
+				{
+					"role": "plus petite valeur (-425)",
+					"graine": 277,
+					"enonce": "Calcule le terme demandé.\n\n$\\left( u_n \\right)$ est une suite arithmétique de raison $-9$, et $u_3 = -2$.\n\n$u_{50} = [?]$",
+					"reponse": ["-425"],
+					"variables": {
+						"a": "3",
+						"b": "50",
+						"r": "-9",
+						"v": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule le terme demandé.\n\n$\\left( u_n \\right)$ est une suite arithmétique de raison $9$, et $u_1 = 29$.\n\n$u_{36} = [?]$",
+					"reponse": ["344"],
+					"variables": {
+						"a": "1",
+						"b": "36",
+						"r": "9",
+						"v": "29"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule le terme demandé.\n\n$\\left( u_n \\right)$ est une suite arithmétique de raison $2$, et $u_2 = 23$.\n\n$u_{28} = [?]$",
+					"reponse": ["75"],
+					"variables": {
+						"a": "2",
+						"b": "28",
+						"r": "2",
+						"v": "23"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule le terme demandé.\n\n$\\left( u_n \\right)$ est une suite arithmétique de raison $-8$, et $u_1 = 17$.\n\n$u_{34} = [?]$",
+					"reponse": ["-247"],
+					"variables": {
+						"a": "1",
+						"b": "34",
+						"r": "-8",
+						"v": "17"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "8..15"
+					},
+					{
+						"name": "k",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a-k"
+					},
+					{
+						"name": "r",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "v",
+						"expression": "2..30;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule le terme demandé.\n\n$(u_n)$ est une suite arithmétique de raison ${{r}}$, et $u_{{a}}={{v}}$.\n\n$u_{{b}}=?$",
+				"reponses_brutes": ["{{eval:v-k*(r)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 57
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -83,
+						"max": 69,
+						"negatif_possible": true,
+						"nb_distinctes": 119
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -30,
+				"max": 30,
+				"nb_distinctes": 58,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -83,
+				"max": 69,
+				"nb_distinctes": 119,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -83,
+				"max": 69,
+				"nb_distinctes": 124,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (69)",
+					"graine": 174,
+					"enonce": "Calcule le terme demandé.\n\n$\\left( u_n \\right)$ est une suite arithmétique de raison $-7$, et $u_{13} = 27$.\n\n$u_7 = [?]$",
+					"reponse": ["69"],
+					"variables": {
+						"a": "13",
+						"k": "6",
+						"b": "7",
+						"r": "-7",
+						"v": "27"
+					}
+				},
+				{
+					"role": "plus petite valeur (-83)",
+					"graine": 214,
+					"enonce": "Calcule le terme demandé.\n\n$\\left( u_n \\right)$ est une suite arithmétique de raison $9$, et $u_{12} = -29$.\n\n$u_6 = [?]$",
+					"reponse": ["-83"],
+					"variables": {
+						"a": "12",
+						"k": "6",
+						"b": "6",
+						"r": "9",
+						"v": "-29"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule le terme demandé.\n\n$\\left( u_n \\right)$ est une suite arithmétique de raison $9$, et $u_8 = 29$.\n\n$u_4 = [?]$",
+					"reponse": ["-7"],
+					"variables": {
+						"a": "8",
+						"k": "4",
+						"b": "4",
+						"r": "9",
+						"v": "29"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule le terme demandé.\n\n$\\left( u_n \\right)$ est une suite arithmétique de raison $2$, et $u_{10} = 23$.\n\n$u_7 = [?]$",
+					"reponse": ["17"],
+					"variables": {
+						"a": "10",
+						"k": "3",
+						"b": "7",
+						"r": "2",
+						"v": "23"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule le terme demandé.\n\n$\\left( u_n \\right)$ est une suite arithmétique de raison $-8$, et $u_8 = 17$.\n\n$u_4 = [?]$",
+					"reponse": ["49"],
+					"variables": {
+						"a": "8",
+						"k": "4",
+						"b": "4",
+						"r": "-8",
+						"v": "17"
+					}
+				}
+			]
+		}
+	]
+}

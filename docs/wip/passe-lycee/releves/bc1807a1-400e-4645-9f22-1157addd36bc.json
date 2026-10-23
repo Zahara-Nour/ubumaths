@@ -1,0 +1,585 @@
+{
+	"template_id": "bc1807a1-400e-4645-9f22-1157addd36bc",
+	"titre": "Composée de deux fonctions : calculer v∘u",
+	"sous_titre": "Calculer (v∘u)(k), (u∘v)(k) ou l'expression de ln(u(x)) (pièges : ordre de composition inversé, une seule fonction appliquée)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Fonctions composées",
+	"mis_a_jour": "2026-10-04T17:40:59.451264+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-407",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "k",
+						"expression": "-3..3"
+					}
+				],
+				"conditions": ["k != 0", "a*k+b != 0", "(a*k+b)^2 != a*k^2+b"],
+				"enonce_brut": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u(x)={{a}}x{{b;+}}$ et $v(x)=x^{2}$.\n\nCalcule $(v\\circ u)({{k}})$.\n\n$(v\\circ u)({{k}})=?$",
+				"reponses_brutes": ["{{eval:(a*k+b)^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 248,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 576,
+						"negatif_possible": false,
+						"nb_distinctes": 24,
+						"valeurs": [
+							1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361,
+							400, 441, 484, 529, 576
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 576,
+				"nb_distinctes": 24,
+				"valeurs": [
+					1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400,
+					441, 484, 529, 576
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 576,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "162/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (576)",
+					"graine": 266,
+					"enonce": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u\\left( x \\right) = 5 x - 9$ et $v\\left( x \\right) = x^2$.\n\nCalcule $(v\\circ u)(-3)$.\n\n$(v\\circ u)(-3)=[?]$",
+					"reponse": ["576"],
+					"variables": {
+						"a": "5",
+						"b": "-9",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u\\left( x \\right) = -5 x + 1$ et $v\\left( x \\right) = x^2$.\n\nCalcule $(v\\circ u)(3)$.\n\n$(v\\circ u)(3)=[?]$",
+					"reponse": ["196"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u\\left( x \\right) = -3 x + 6$ et $v\\left( x \\right) = x^2$.\n\nCalcule $(v\\circ u)(-3)$.\n\n$(v\\circ u)(-3)=[?]$",
+					"reponse": ["225"],
+					"variables": {
+						"a": "-3",
+						"b": "6",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u\\left( x \\right) = -5 x - 1$ et $v\\left( x \\right) = x^2$.\n\nCalcule $(v\\circ u)(-3)$.\n\n$(v\\circ u)(-3)=[?]$",
+					"reponse": ["196"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u\\left( x \\right) = -3 x - 6$ et $v\\left( x \\right) = x^2$.\n\nCalcule $(v\\circ u)(-3)$.\n\n$(v\\circ u)(-3)=[?]$",
+					"reponse": ["9"],
+					"variables": {
+						"a": "-3",
+						"b": "-6",
+						"k": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "k",
+						"expression": "-3..3"
+					}
+				],
+				"conditions": ["k != 0", "(a*k+b)^2 != a*k^2+b"],
+				"enonce_brut": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u(x)={{a}}x{{b;+}}$ et $v(x)=x^{2}$.\n\nCalcule $(u\\circ v)({{k}})$.\n\n$(u\\circ v)({{k}})=?$",
+				"reponses_brutes": ["{{eval:a*k^2+b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 250,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -54,
+						"max": 52,
+						"negatif_possible": true,
+						"nb_distinctes": 96
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -54,
+				"max": 52,
+				"nb_distinctes": 96,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -54,
+				"max": 52,
+				"nb_distinctes": 96,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "166/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (52)",
+					"graine": 70,
+					"enonce": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u\\left( x \\right) = 5 x + 7$ et $v\\left( x \\right) = x^2$.\n\nCalcule $(u\\circ v)(-3)$.\n\n$(u\\circ v)(-3)=[?]$",
+					"reponse": ["52"],
+					"variables": {
+						"a": "5",
+						"b": "7",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-54)",
+					"graine": 278,
+					"enonce": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u\\left( x \\right) = -5 x - 9$ et $v\\left( x \\right) = x^2$.\n\nCalcule $(u\\circ v)(3)$.\n\n$(u\\circ v)(3)=[?]$",
+					"reponse": ["-54"],
+					"variables": {
+						"a": "-5",
+						"b": "-9",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u\\left( x \\right) = -5 x + 1$ et $v\\left( x \\right) = x^2$.\n\nCalcule $(u\\circ v)(3)$.\n\n$(u\\circ v)(3)=[?]$",
+					"reponse": ["-44"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u\\left( x \\right) = -3 x + 6$ et $v\\left( x \\right) = x^2$.\n\nCalcule $(u\\circ v)(-3)$.\n\n$(u\\circ v)(-3)=[?]$",
+					"reponse": ["-21"],
+					"variables": {
+						"a": "-3",
+						"b": "6",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère les fonctions $u$ et $v$ définies sur $\\mathbb{R}$ par $u\\left( x \\right) = -5 x - 1$ et $v\\left( x \\right) = x^2$.\n\nCalcule $(u\\circ v)(-3)$.\n\n$(u\\circ v)(-3)=[?]$",
+					"reponse": ["-46"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"k": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère les fonctions $u$ et $v$ définies par $u(x)=x^{2}+{{c}}$ sur $\\mathbb{R}$ et $v(x)=\\ln x$ sur $\\left]0\\,;+\\infty\\right[$.\n\nDonne l'expression de $(v\\circ u)(x)$ pour tout réel $x$.\n\n$(v\\circ u)(x)=?$",
+				"reponses_brutes": ["\\ln\\left(x^{2}+{{c}}\\right)"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\ln\\left(x^{2}+1\\right)",
+							"\\ln\\left(x^{2}+2\\right)",
+							"\\ln\\left(x^{2}+3\\right)",
+							"\\ln\\left(x^{2}+4\\right)",
+							"\\ln\\left(x^{2}+5\\right)",
+							"\\ln\\left(x^{2}+6\\right)",
+							"\\ln\\left(x^{2}+7\\right)",
+							"\\ln\\left(x^{2}+8\\right)",
+							"\\ln\\left(x^{2}+9\\right)"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "On considère les fonctions $u$ et $v$ définies par $u\\left( x \\right) = x^2 + 9$ sur $\\mathbb{R}$ et $v(x)=\\ln x$ sur $\\left]0\\,;+\\infty\\right[$.\n\nDonne l'expression de $(v\\circ u)(x)$ pour tout réel $x$.\n\n$(v\\circ u)(x)=[?]$",
+					"reponse": ["\\ln\\left(x^{2}+9\\right)"],
+					"variables": {
+						"c": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On considère les fonctions $u$ et $v$ définies par $u\\left( x \\right) = x^2 + 1$ sur $\\mathbb{R}$ et $v(x)=\\ln x$ sur $\\left]0\\,;+\\infty\\right[$.\n\nDonne l'expression de $(v\\circ u)(x)$ pour tout réel $x$.\n\n$(v\\circ u)(x)=[?]$",
+					"reponse": ["\\ln\\left(x^{2}+1\\right)"],
+					"variables": {
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère les fonctions $u$ et $v$ définies par $u\\left( x \\right) = x^2 + 3$ sur $\\mathbb{R}$ et $v(x)=\\ln x$ sur $\\left]0\\,;+\\infty\\right[$.\n\nDonne l'expression de $(v\\circ u)(x)$ pour tout réel $x$.\n\n$(v\\circ u)(x)=[?]$",
+					"reponse": ["\\ln\\left(x^{2}+3\\right)"],
+					"variables": {
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère les fonctions $u$ et $v$ définies par $u\\left( x \\right) = x^2 + 7$ sur $\\mathbb{R}$ et $v(x)=\\ln x$ sur $\\left]0\\,;+\\infty\\right[$.\n\nDonne l'expression de $(v\\circ u)(x)$ pour tout réel $x$.\n\n$(v\\circ u)(x)=[?]$",
+					"reponse": ["\\ln\\left(x^{2}+7\\right)"],
+					"variables": {
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On considère les fonctions $u$ et $v$ définies par $u\\left( x \\right) = x^2 + 6$ sur $\\mathbb{R}$ et $v(x)=\\ln x$ sur $\\left]0\\,;+\\infty\\right[$.\n\nDonne l'expression de $(v\\circ u)(x)$ pour tout réel $x$.\n\n$(v\\circ u)(x)=[?]$",
+					"reponse": ["\\ln\\left(x^{2}+6\\right)"],
+					"variables": {
+						"c": "6"
+					}
+				}
+			]
+		}
+	]
+}

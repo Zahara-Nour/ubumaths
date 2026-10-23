@@ -1,0 +1,984 @@
+{
+	"template_id": "d787d8c0-6f5a-45d0-84de-73b887f81bc8",
+	"titre": "Produit scalaire avec les normes",
+	"sous_titre": "Calculer un produit scalaire à partir de normes seulement, avec les identités de polarisation",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Calculer un produit scalaire",
+	"mis_a_jour": "2026-10-02T18:13:39.280559+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-321",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:abs(a-b)+1}}..{{eval:a+b-1}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:c*c-a*a-b*b}}"
+					}
+				],
+				"conditions": ["N != 0", "a != b"],
+				"enonce_brut": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\|\\vec{u}+\\vec{v}\\|={{c}}$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["\\frac{ {{N}} }{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 173,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -104,
+						"max": 69,
+						"negatif_possible": true,
+						"nb_distinctes": 79
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 79,
+						"exemples": [
+							"\\frac{ 7 }{2}",
+							"\\frac{ -9 }{2}",
+							"\\frac{ -13 }{2}",
+							"\\frac{ -21 }{2}",
+							"\\frac{ 6 }{2}",
+							"\\frac{ -15 }{2}",
+							"\\frac{ 13 }{2}",
+							"\\frac{ -3 }{2}",
+							"\\frac{ 11 }{2}",
+							"\\frac{ 21 }{2}",
+							"\\frac{ -12 }{2}",
+							"\\frac{ 9 }{2}"
+						],
+						"nombres_contenus": {
+							"min": -104,
+							"max": 69,
+							"nb_distinctes": 79,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 13,
+				"nb_distinctes": 12,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -104,
+				"max": 69,
+				"nb_distinctes": 79,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -104,
+				"max": 69,
+				"nb_distinctes": 80,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": -104,
+				"numerateur_max": 69,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (69)",
+					"graine": 156,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=8$ et $\\|\\vec{u}+\\vec{v}\\|=13$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ 69 }{2}"],
+					"variables": {
+						"a": "6",
+						"b": "8",
+						"c": "13",
+						"N": "69"
+					}
+				},
+				{
+					"role": "plus petite valeur (-104)",
+					"graine": 209,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=8$, $\\|\\vec{v}\\|=7$ et $\\|\\vec{u}+\\vec{v}\\|=3$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ -104 }{2}"],
+					"variables": {
+						"a": "8",
+						"b": "7",
+						"c": "3",
+						"N": "-104"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et $\\|\\vec{u}+\\vec{v}\\|=6$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ 7 }{2}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "6",
+						"N": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=4$, $\\|\\vec{v}\\|=3$ et $\\|\\vec{u}+\\vec{v}\\|=4$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ -9 }{2}"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "4",
+						"N": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et $\\|\\vec{u}+\\vec{v}\\|=4$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ -13 }{2}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "4",
+						"N": "-13"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:abs(a-b)+1}}..{{eval:a+b-1}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:a*a+b*b-c*c}}"
+					}
+				],
+				"conditions": ["N != 0", "a != b"],
+				"enonce_brut": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\|\\vec{u}-\\vec{v}\\|={{c}}$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["\\frac{ {{N}} }{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 173,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -69,
+						"max": 104,
+						"negatif_possible": true,
+						"nb_distinctes": 79
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 79,
+						"exemples": [
+							"\\frac{ -7 }{2}",
+							"\\frac{ 9 }{2}",
+							"\\frac{ 13 }{2}",
+							"\\frac{ 21 }{2}",
+							"\\frac{ -6 }{2}",
+							"\\frac{ 15 }{2}",
+							"\\frac{ -13 }{2}",
+							"\\frac{ 3 }{2}",
+							"\\frac{ -11 }{2}",
+							"\\frac{ -21 }{2}",
+							"\\frac{ 12 }{2}",
+							"\\frac{ -9 }{2}"
+						],
+						"nombres_contenus": {
+							"min": -69,
+							"max": 104,
+							"nb_distinctes": 80,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 13,
+				"nb_distinctes": 12,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -69,
+				"max": 104,
+				"nb_distinctes": 80,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -69,
+				"max": 104,
+				"nb_distinctes": 83,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": -69,
+				"numerateur_max": 104,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (104)",
+					"graine": 209,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=8$, $\\|\\vec{v}\\|=7$ et $\\|\\vec{u}-\\vec{v}\\|=3$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ 104 }{2}"],
+					"variables": {
+						"a": "8",
+						"b": "7",
+						"c": "3",
+						"N": "104"
+					}
+				},
+				{
+					"role": "plus petite valeur (-69)",
+					"graine": 156,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=8$ et $\\|\\vec{u}-\\vec{v}\\|=13$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ -69 }{2}"],
+					"variables": {
+						"a": "6",
+						"b": "8",
+						"c": "13",
+						"N": "-69"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et $\\|\\vec{u}-\\vec{v}\\|=6$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ -7 }{2}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "6",
+						"N": "-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=4$, $\\|\\vec{v}\\|=3$ et $\\|\\vec{u}-\\vec{v}\\|=4$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ 9 }{2}"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "4",
+						"N": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et $\\|\\vec{u}-\\vec{v}\\|=4$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ 13 }{2}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "4",
+						"N": "13"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:abs(a-b)+1}}..{{eval:a+b-1}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:a*a+b*b-c*c}}"
+					}
+				],
+				"conditions": ["N != 0", "a != b", "b != c", "a != c"],
+				"enonce_brut": "$ABC$ est un triangle tel que $AB={{a}}$, $AC={{b}}$ et $BC={{c}}$.\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$. Donne sa valeur exacte.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$",
+				"reponses_brutes": ["\\frac{ {{N}} }{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 147,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -69,
+						"max": 109,
+						"negatif_possible": true,
+						"nb_distinctes": 79
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 79,
+						"exemples": [
+							"\\frac{ -7 }{2}",
+							"\\frac{ 76 }{2}",
+							"\\frac{ 13 }{2}",
+							"\\frac{ 21 }{2}",
+							"\\frac{ -6 }{2}",
+							"\\frac{ 15 }{2}",
+							"\\frac{ -13 }{2}",
+							"\\frac{ 3 }{2}",
+							"\\frac{ -11 }{2}",
+							"\\frac{ -21 }{2}",
+							"\\frac{ 12 }{2}",
+							"\\frac{ -9 }{2}"
+						],
+						"nombres_contenus": {
+							"min": -69,
+							"max": 109,
+							"nb_distinctes": 80,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 13,
+				"nb_distinctes": 12,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -69,
+				"max": 109,
+				"nb_distinctes": 80,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -69,
+				"max": 109,
+				"nb_distinctes": 84,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": -69,
+				"numerateur_max": 109,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (109)",
+					"graine": 70,
+					"enonce": "$ABC$ est un triangle tel que $AB = 8$, $AC = 7$ et $BC = 2$.\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$. Donne sa valeur exacte.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$",
+					"reponse": ["\\frac{ 109 }{2}"],
+					"variables": {
+						"a": "8",
+						"b": "7",
+						"c": "2",
+						"N": "109"
+					}
+				},
+				{
+					"role": "plus petite valeur (-69)",
+					"graine": 156,
+					"enonce": "$ABC$ est un triangle tel que $AB = 6$, $AC = 8$ et $BC = 13$.\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$. Donne sa valeur exacte.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$",
+					"reponse": ["\\frac{ -69 }{2}"],
+					"variables": {
+						"a": "6",
+						"b": "8",
+						"c": "13",
+						"N": "-69"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$ABC$ est un triangle tel que $AB = 2$, $AC = 5$ et $BC = 6$.\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$. Donne sa valeur exacte.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$",
+					"reponse": ["\\frac{ -7 }{2}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "6",
+						"N": "-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$ABC$ est un triangle tel que $AB = 7$, $AC = 6$ et $BC = 3$.\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$. Donne sa valeur exacte.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$",
+					"reponse": ["\\frac{ 76 }{2}"],
+					"variables": {
+						"a": "7",
+						"b": "6",
+						"c": "3",
+						"N": "76"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$ABC$ est un triangle tel que $AB = 2$, $AC = 5$ et $BC = 4$.\n\nCalcule le produit scalaire $\\overrightarrow{AB}\\cdot\\overrightarrow{AC}$. Donne sa valeur exacte.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$",
+					"reponse": ["\\frac{ 13 }{2}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "4",
+						"N": "13"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "n",
+						"expression": "{{eval:(a-b)^2+1}}..{{eval:(a+b)^2-1}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:n-a*a-b*b}}"
+					}
+				],
+				"conditions": [
+					"N != 0",
+					"a != b",
+					"sqrt(n) != round(sqrt(n))",
+					"mod(n,4) != 0",
+					"mod(n,9) != 0",
+					"mod(n,25) != 0",
+					"mod(n,49) != 0"
+				],
+				"enonce_brut": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\|\\vec{u}+\\vec{v}\\|=\\sqrt{ {{n}} }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["\\frac{ {{N}} }{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 241,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 115,
+						"negatif_possible": false,
+						"nb_distinctes": 58
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -59,
+						"max": 54,
+						"negatif_possible": true,
+						"nb_distinctes": 81
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 81,
+						"exemples": [
+							"\\frac{ 8 }{2}",
+							"\\frac{ 1 }{2}",
+							"\\frac{ -6 }{2}",
+							"\\frac{ -10 }{2}",
+							"\\frac{ 7 }{2}",
+							"\\frac{ -15 }{2}",
+							"\\frac{ 5 }{2}",
+							"\\frac{ 9 }{2}",
+							"\\frac{ 15 }{2}",
+							"\\frac{ 36 }{2}",
+							"\\frac{ -4 }{2}",
+							"\\frac{ -3 }{2}"
+						],
+						"nombres_contenus": {
+							"min": -59,
+							"max": 54,
+							"nb_distinctes": 81,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 115,
+				"nb_distinctes": 60,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": -59,
+				"max": 54,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -59,
+				"max": 115,
+				"nb_distinctes": 116,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": -59,
+				"numerateur_max": 54,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"racine": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (115)",
+					"graine": 156,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=5$, $\\|\\vec{v}\\|=6$ et $\\|\\vec{u}+\\vec{v}\\|=\\sqrt{ 115 }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ 54 }{2}"],
+					"variables": {
+						"a": "5",
+						"b": "6",
+						"n": "115",
+						"N": "54"
+					}
+				},
+				{
+					"role": "plus petite valeur (-59)",
+					"graine": 39,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=5$ et $\\|\\vec{u}+\\vec{v}\\|=\\sqrt{ 2 }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ -59 }{2}"],
+					"variables": {
+						"a": "6",
+						"b": "5",
+						"n": "2",
+						"N": "-59"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=3$ et $\\|\\vec{u}+\\vec{v}\\|=\\sqrt{ 53 }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ 8 }{2}"],
+					"variables": {
+						"a": "6",
+						"b": "3",
+						"n": "53",
+						"N": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=3$ et $\\|\\vec{u}+\\vec{v}\\|=\\sqrt{ 14 }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ 1 }{2}"],
+					"variables": {
+						"a": "2",
+						"b": "3",
+						"n": "14",
+						"N": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère deux vecteurs $\\vec{u}$ et $\\vec{v}$ tels que $\\|\\vec{u}\\|=1$, $\\|\\vec{v}\\|=4$ et $\\|\\vec{u}+\\vec{v}\\|=\\sqrt{ 11 }$.\n\nCalcule le produit scalaire $\\vec{u}\\cdot\\vec{v}$. Donne sa valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["\\frac{ -6 }{2}"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"n": "11",
+						"N": "-6"
+					}
+				}
+			]
+		}
+	]
+}

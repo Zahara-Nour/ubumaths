@@ -1,0 +1,390 @@
+{
+	"template_id": "21840f6c-e705-4ce7-b400-af9ca3ca195b",
+	"titre": "Reconnaître l'allure d'une courbe à partir de tableaux",
+	"sous_titre": "Choisir parmi quatre courbes celle compatible avec le tableau de variations de f (et le signe de f″) ; chaque leurre contredit une information (variations, convexité, abscisse de l'inflexion ou des extremums, valeurs des extremums)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions convexes > Convexité > Lecture graphique",
+	"mis_a_jour": "2026-10-04T16:31:49.260128+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-418",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "s",
+						"expression": "-1|1"
+					},
+					{
+						"name": "t",
+						"expression": "-1|1"
+					},
+					{
+						"name": "c",
+						"expression": "-2..2"
+					},
+					{
+						"name": "k",
+						"expression": "-1..1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le tableau ci-dessous donne le signe de la dérivée seconde $f''$ et les variations d'une fonction $f$ deux fois dérivable sur $\\left[{{eval:c-3}}\\,;{{eval:c+3}}\\right]$.\n\n```variation\nvariable: x\ndomain: {{eval:c-3}}, {{c}}, {{eval:c+3}}\n\nsign: f''(x)\n  {{eval:c-3}},{{c}}: {{if:s>0|-|+}}\n  {{c}}: z\n  {{c}},{{eval:c+3}}: {{if:s>0|+|-}}\n\nvariation: f(x)\n  {{eval:c-3}}: {{eval:k-4*s}}, {{if:s>0|bottom|top}}\n  {{c}}: {{k}}, center\n  {{eval:c+3}}: {{eval:k+4*s}}, {{if:s>0|top|bottom}}\n```\n\nQuelle courbe peut représenter $f$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*(7*(x-{{c}})^3/54+(x-{{c}})/6)+{{k}} sur [{{eval:c-3}} ; {{eval:c+3}}]   bleu\ntaille: petite\ndescription: Courbe {{if:s>0|croissante|décroissante}}, {{if:s>0|tournée vers le bas puis vers le haut|tournée vers le haut puis vers le bas}}, changement de courbure en x = {{c}}.\n```"
+					},
+					{
+						"content": "```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*(2*(x-{{c}})-2*(x-{{c}})^3/27)+{{k}} sur [{{eval:c-3}} ; {{eval:c+3}}]   bleu\ntaille: petite\ndescription: Courbe {{if:s>0|croissante|décroissante}}, {{if:s>0|tournée vers le haut puis vers le bas|tournée vers le bas puis vers le haut}}, changement de courbure en x = {{c}}.\n```"
+					},
+					{
+						"content": "```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*(2*(x-{{c}})^3/27-2*(x-{{c}}))+{{k}} sur [{{eval:c-3}} ; {{eval:c+3}}]   bleu\ntaille: petite\ndescription: Courbe {{if:s>0|décroissante|croissante}}, {{if:s>0|tournée vers le bas puis vers le haut|tournée vers le haut puis vers le bas}}, changement de courbure en x = {{c}}.\n```"
+					},
+					{
+						"content": "```courbe\nx: {{eval:c-3.5}} ; {{eval:c+3.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{eval:s*t}}*(({{t}}*(x-{{c}})-2)^3/25+37*({{t}}*(x-{{c}})-2)/75+52/15)+{{k}} sur [{{eval:c-3}} ; {{eval:c+3}}]   bleu\ntaille: petite\ndescription: Courbe {{if:s>0|croissante|décroissante}}, {{if:s>0|tournée vers le bas puis vers le haut|tournée vers le haut puis vers le bas}}, changement de courbure en x = {{eval:c+2*t}}.\n```"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["[courbe]"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"variation-table": 300,
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée seconde $f''$ et les variations d'une fonction $f$ deux fois dérivable sur $\\left[-1\\,;5\\right]$.\n\n[variation-table]\n\nQuelle courbe peut représenter $f$ ?\n\n- A. [courbe]\n- B. [courbe]\n- C. [courbe]\n- D. [courbe]",
+					"reponse": ["A. [courbe]"],
+					"variables": {
+						"s": "-1",
+						"t": "1",
+						"c": "2",
+						"k": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 3,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée seconde $f''$ et les variations d'une fonction $f$ deux fois dérivable sur $\\left[-5\\,;1\\right]$.\n\n[variation-table]\n\nQuelle courbe peut représenter $f$ ?\n\n- A. [courbe]\n- B. [courbe]\n- C. [courbe]\n- D. [courbe]",
+					"reponse": ["B. [courbe]"],
+					"variables": {
+						"s": "-1",
+						"t": "-1",
+						"c": "-2",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée seconde $f''$ et les variations d'une fonction $f$ deux fois dérivable sur $\\left[-3\\,;3\\right]$.\n\n[variation-table]\n\nQuelle courbe peut représenter $f$ ?\n\n- A. [courbe]\n- B. [courbe]\n- C. [courbe]\n- D. [courbe]",
+					"reponse": ["B. [courbe]"],
+					"variables": {
+						"s": "-1",
+						"t": "-1",
+						"c": "0",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée seconde $f''$ et les variations d'une fonction $f$ deux fois dérivable sur $\\left[-2\\,;4\\right]$.\n\n[variation-table]\n\nQuelle courbe peut représenter $f$ ?\n\n- A. [courbe]\n- B. [courbe]\n- C. [courbe]\n- D. [courbe]",
+					"reponse": ["B. [courbe]"],
+					"variables": {
+						"s": "1",
+						"t": "-1",
+						"c": "1",
+						"k": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Le tableau ci-dessous donne le signe de la dérivée seconde $f''$ et les variations d'une fonction $f$ deux fois dérivable sur $\\left[-4\\,;2\\right]$.\n\n[variation-table]\n\nQuelle courbe peut représenter $f$ ?\n\n- A. [courbe]\n- B. [courbe]\n- C. [courbe]\n- D. [courbe]",
+					"reponse": ["D. [courbe]"],
+					"variables": {
+						"s": "-1",
+						"t": "1",
+						"c": "-1",
+						"k": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "s",
+						"expression": "-1|1"
+					},
+					{
+						"name": "w",
+						"expression": "-1|1"
+					},
+					{
+						"name": "c",
+						"expression": "-2..2"
+					},
+					{
+						"name": "k",
+						"expression": "-1..1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le tableau ci-dessous donne les variations d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{eval:c-1}}, {{eval:c+1}}, +inf\n\nvariation: f(x)\n  {{eval:c-1}}: {{eval:k+2*s}}, {{if:s>0|top|bottom}}\n  {{eval:c+1}}: {{eval:k-2*s}}, {{if:s>0|bottom|top}}\n```\n\nQuelle courbe peut représenter $f$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "```courbe\nx: {{eval:c-2.5}} ; {{eval:c+2.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*((x-{{c}})^3-3*(x-{{c}}))+{{k}}   bleu\ntaille: petite\ndescription: Courbe avec un {{if:s>0|maximum {{eval:k+2}} en x = {{eval:c-1}}, minimum {{eval:k-2}} en x = {{eval:c+1}}|minimum {{eval:k-2}} en x = {{eval:c-1}}, maximum {{eval:k+2}} en x = {{eval:c+1}}}}, inflexion en x = {{c}}.\n```"
+					},
+					{
+						"content": "```courbe\nx: {{eval:c-2.5}} ; {{eval:c+2.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{eval:-s}}*((x-{{c}})^3-3*(x-{{c}}))+{{k}}   bleu\ntaille: petite\ndescription: Courbe avec un {{if:s>0|minimum {{eval:k-2}} en x = {{eval:c-1}}, maximum {{eval:k+2}} en x = {{eval:c+1}}|maximum {{eval:k+2}} en x = {{eval:c-1}}, minimum {{eval:k-2}} en x = {{eval:c+1}}}}, inflexion en x = {{c}}.\n```"
+					},
+					{
+						"content": "```courbe\nx: {{eval:c-2.5}} ; {{eval:c+2.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*((x-{{c}})^3/8-1.5*(x-{{c}}))+{{k}}   bleu\ntaille: petite\ndescription: Courbe avec un {{if:s>0|maximum {{eval:k+2}} en x = {{eval:c-2}}, minimum {{eval:k-2}} en x = {{eval:c+2}}|minimum {{eval:k-2}} en x = {{eval:c-2}}, maximum {{eval:k+2}} en x = {{eval:c+2}}}}, inflexion en x = {{c}}.\n```"
+					},
+					{
+						"content": "```courbe\nx: {{eval:c-2.5}} ; {{eval:c+2.5}}\ny: {{eval:k-5}} ; {{eval:k+5}}\ngrille: 1 ; 1\nf(x) = {{s}}*((x-{{c}})^3-3*(x-{{c}}))+{{eval:k+2*w}}   bleu\ntaille: petite\ndescription: Courbe avec un {{if:s>0|maximum {{eval:k+2+2*w}} en x = {{eval:c-1}}, minimum {{eval:k-2+2*w}} en x = {{eval:c+1}}|minimum {{eval:k-2+2*w}} en x = {{eval:c-1}}, maximum {{eval:k+2+2*w}} en x = {{eval:c+1}}}}, inflexion en x = {{c}}.\n```"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["[courbe]"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"variation-table": 300,
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ dérivable sur $\\mathbb{R}$.\n\n[variation-table]\n\nQuelle courbe peut représenter $f$ ?\n\n- A. [courbe]\n- B. [courbe]\n- C. [courbe]\n- D. [courbe]",
+					"reponse": ["A. [courbe]"],
+					"variables": {
+						"s": "-1",
+						"w": "1",
+						"c": "2",
+						"k": "1"
+					}
+				}
+			]
+		}
+	]
+}

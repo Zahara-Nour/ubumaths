@@ -1,0 +1,1216 @@
+{
+	"template_id": "ef3c495c-632b-40ec-840d-fbbf7bfc879a",
+	"titre": "Coefficients binomiaux : chemins, symétrie, triangle de Pascal",
+	"sous_titre": "Sans formule factorielle : nombre de chemins à k succès, C(n, 0), C(n, 1), C(n, n), symétrie C(n, n − k) = C(n, k), relation et triangle de Pascal",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Loi binomiale > Coefficients binomiaux",
+	"mis_a_jour": "2026-10-05T08:35:49.801348+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-296",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-314",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "3..5"
+					},
+					{
+						"name": "k",
+						"expression": "1..{{eval:n-1}}"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:binom(n,k)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On représente par un arbre un schéma de Bernoulli de ${{n}}$ épreuves (succès $S$, échec $\\overline{S}$).\n\nCombien de chemins de cet arbre comportent exactement ${{k}}$ succès ?\n\n$?$",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [3, 4, 5, 6, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [3, 4, 5, 6, 10]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 10,
+				"nb_distinctes": 5,
+				"valeurs": [3, 4, 5, 6, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 7,
+				"valeurs": [1, 2, 3, 4, 5, 6, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 10,
+					"enonce": "On représente par un arbre un schéma de Bernoulli de $5$ épreuves (succès $S$, échec $\\overline{S}$).\n\nCombien de chemins de cet arbre comportent exactement $3$ succès ?\n\n$[?]$",
+					"reponse": ["10"],
+					"variables": {
+						"n": "5",
+						"k": "3",
+						"c": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 2,
+					"enonce": "On représente par un arbre un schéma de Bernoulli de $3$ épreuves (succès $S$, échec $\\overline{S}$).\n\nCombien de chemins de cet arbre comportent exactement $1$ succès ?\n\n$[?]$",
+					"reponse": ["3"],
+					"variables": {
+						"n": "3",
+						"k": "1",
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On représente par un arbre un schéma de Bernoulli de $3$ épreuves (succès $S$, échec $\\overline{S}$).\n\nCombien de chemins de cet arbre comportent exactement $2$ succès ?\n\n$[?]$",
+					"reponse": ["3"],
+					"variables": {
+						"n": "3",
+						"k": "2",
+						"c": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On représente par un arbre un schéma de Bernoulli de $5$ épreuves (succès $S$, échec $\\overline{S}$).\n\nCombien de chemins de cet arbre comportent exactement $1$ succès ?\n\n$[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"n": "5",
+						"k": "1",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On représente par un arbre un schéma de Bernoulli de $4$ épreuves (succès $S$, échec $\\overline{S}$).\n\nCombien de chemins de cet arbre comportent exactement $1$ succès ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"n": "4",
+						"k": "1",
+						"c": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "8..20"
+					},
+					{
+						"name": "k",
+						"expression": "2..4"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:binom(n,k)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On donne $\\binom{ {{n}} }{ {{k}} }={{c}}$.\n\nSans calcul, donne $\\binom{ {{n}} }{ {{eval:n-k}} }$.\n\n$\\binom{ {{n}} }{ {{eval:n-k}} }=?$",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 39,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 28,
+						"max": 4845,
+						"negatif_possible": false,
+						"nb_distinctes": 38
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 28,
+						"max": 4845,
+						"negatif_possible": false,
+						"nb_distinctes": 38
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 4845,
+				"nb_distinctes": 57,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 28,
+				"max": 4845,
+				"nb_distinctes": 38,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 4845,
+				"nb_distinctes": 57,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4845)",
+					"graine": 79,
+					"enonce": "On donne $\\binom{ 20 }{ 4 }=4\\,845$.\n\nSans calcul, donne $\\binom{ 20 }{ 16 }$.\n\n$\\binom{ 20 }{ 16 }=[?]$",
+					"reponse": ["4845"],
+					"variables": {
+						"n": "20",
+						"k": "4",
+						"c": "4845"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 2,
+					"enonce": "On donne $\\binom{ 12 }{ 2 }=66$.\n\nSans calcul, donne $\\binom{ 12 }{ 10 }$.\n\n$\\binom{ 12 }{ 10 }=[?]$",
+					"reponse": ["66"],
+					"variables": {
+						"n": "12",
+						"k": "2",
+						"c": "66"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On donne $\\binom{ 8 }{ 3 }=56$.\n\nSans calcul, donne $\\binom{ 8 }{ 5 }$.\n\n$\\binom{ 8 }{ 5 }=[?]$",
+					"reponse": ["56"],
+					"variables": {
+						"n": "8",
+						"k": "3",
+						"c": "56"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On donne $\\binom{ 18 }{ 2 }=153$.\n\nSans calcul, donne $\\binom{ 18 }{ 16 }$.\n\n$\\binom{ 18 }{ 16 }=[?]$",
+					"reponse": ["153"],
+					"variables": {
+						"n": "18",
+						"k": "2",
+						"c": "153"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "On donne $\\binom{ 8 }{ 4 }=70$.\n\nSans calcul, donne $\\binom{ 8 }{ 4 }$.\n\n$\\binom{ 8 }{ 4 }=[?]$",
+					"reponse": ["70"],
+					"variables": {
+						"n": "8",
+						"k": "4",
+						"c": "70"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "6..15"
+					},
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "A",
+						"expression": "{{eval:binom(n,k)}}"
+					},
+					{
+						"name": "B",
+						"expression": "{{eval:binom(n,k+1)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On donne $\\binom{ {{n}} }{ {{k}} }={{A}}$ et $\\binom{ {{n}} }{ {{eval:k+1}} }={{B}}$.\n\nSans autre calcul, donne $\\binom{ {{eval:n+1}} }{ {{eval:k+1}} }$.\n\n$\\binom{ {{eval:n+1}} }{ {{eval:k+1}} }=?$",
+				"reponses_brutes": ["{{eval:A+B}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 20,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "A",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 105,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105]
+					}
+				},
+				{
+					"nom": "B",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 455,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [
+							15, 20, 21, 28, 35, 36, 45, 55, 56, 66, 78, 84, 91, 105, 120, 165, 220, 286, 364, 455
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 21,
+						"max": 560,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							21, 28, 35, 36, 45, 55, 56, 66, 78, 84, 91, 105, 120, 165, 220, 286, 364, 455, 560
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 455,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 21,
+				"max": 560,
+				"nb_distinctes": 19,
+				"valeurs": [
+					21, 28, 35, 36, 45, 55, 56, 66, 78, 84, 91, 105, 120, 165, 220, 286, 364, 455, 560
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 560,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (560)",
+					"graine": 10,
+					"enonce": "On donne $\\binom{ 15 }{ 2 }=105$ et $\\binom{ 15 }{ 3 }=455$.\n\nSans autre calcul, donne $\\binom{ 16 }{ 3 }$.\n\n$\\binom{ 16 }{ 3 }=[?]$",
+					"reponse": ["560"],
+					"variables": {
+						"n": "15",
+						"k": "2",
+						"A": "105",
+						"B": "455"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 2,
+					"enonce": "On donne $\\binom{ 9 }{ 1 }=9$ et $\\binom{ 9 }{ 2 }=36$.\n\nSans autre calcul, donne $\\binom{ 10 }{ 2 }$.\n\n$\\binom{ 10 }{ 2 }=[?]$",
+					"reponse": ["45"],
+					"variables": {
+						"n": "9",
+						"k": "1",
+						"A": "9",
+						"B": "36"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On donne $\\binom{ 6 }{ 2 }=15$ et $\\binom{ 6 }{ 3 }=20$.\n\nSans autre calcul, donne $\\binom{ 7 }{ 3 }$.\n\n$\\binom{ 7 }{ 3 }=[?]$",
+					"reponse": ["35"],
+					"variables": {
+						"n": "6",
+						"k": "2",
+						"A": "15",
+						"B": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On donne $\\binom{ 6 }{ 1 }=6$ et $\\binom{ 6 }{ 2 }=15$.\n\nSans autre calcul, donne $\\binom{ 7 }{ 2 }$.\n\n$\\binom{ 7 }{ 2 }=[?]$",
+					"reponse": ["21"],
+					"variables": {
+						"n": "6",
+						"k": "1",
+						"A": "6",
+						"B": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On donne $\\binom{ 13 }{ 1 }=13$ et $\\binom{ 13 }{ 2 }=78$.\n\nSans autre calcul, donne $\\binom{ 14 }{ 2 }$.\n\n$\\binom{ 14 }{ 2 }=[?]$",
+					"reponse": ["91"],
+					"variables": {
+						"n": "13",
+						"k": "1",
+						"A": "13",
+						"B": "78"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..40"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Donne les coefficients binomiaux suivants.\n\n$\\binom{ {{n}} }{0}=?$ ; $\\binom{ {{n}} }{1}=?$ ; $\\binom{ {{n}} }{ {{n}} }=?$",
+				"reponses_brutes": ["1", "{{n}}", "1"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 35,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 40,
+						"negatif_possible": false,
+						"nb_distinctes": 35
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 40,
+						"negatif_possible": false,
+						"nb_distinctes": 35
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 40,
+				"nb_distinctes": 37,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 40,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 40,
+				"nb_distinctes": 37,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (40)",
+					"graine": 37,
+					"enonce": "Donne les coefficients binomiaux suivants.\n\n$\\binom{ 40 }{0}=[?]$ ; $\\binom{ 40 }{1}=[?]$ ; $\\binom{ 40 }{ 40 }=[?]$",
+					"reponse": ["1", "40", "1"],
+					"variables": {
+						"n": "40"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Donne les coefficients binomiaux suivants.\n\n$\\binom{ 5 }{0}=[?]$ ; $\\binom{ 5 }{1}=[?]$ ; $\\binom{ 5 }{ 5 }=[?]$",
+					"reponse": ["1", "5", "1"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Donne les coefficients binomiaux suivants.\n\n$\\binom{ 16 }{0}=[?]$ ; $\\binom{ 16 }{1}=[?]$ ; $\\binom{ 16 }{ 16 }=[?]$",
+					"reponse": ["1", "16", "1"],
+					"variables": {
+						"n": "16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Donne les coefficients binomiaux suivants.\n\n$\\binom{ 6 }{0}=[?]$ ; $\\binom{ 6 }{1}=[?]$ ; $\\binom{ 6 }{ 6 }=[?]$",
+					"reponse": ["1", "6", "1"],
+					"variables": {
+						"n": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Donne les coefficients binomiaux suivants.\n\n$\\binom{ 32 }{0}=[?]$ ; $\\binom{ 32 }{1}=[?]$ ; $\\binom{ 32 }{ 32 }=[?]$",
+					"reponse": ["1", "32", "1"],
+					"variables": {
+						"n": "32"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..7"
+					},
+					{
+						"name": "c0",
+						"expression": "1"
+					},
+					{
+						"name": "c1",
+						"expression": "{{n}}"
+					},
+					{
+						"name": "c2",
+						"expression": "{{eval:n*(n-1)/2}}"
+					},
+					{
+						"name": "c3",
+						"expression": "{{eval:n*(n-1)*(n-2)/6}}"
+					},
+					{
+						"name": "m4",
+						"expression": "{{eval:n-4}}"
+					},
+					{
+						"name": "c4",
+						"expression": "{{eval:binom(n,m4)}}"
+					},
+					{
+						"name": "m5",
+						"expression": "{{eval:n-5}}"
+					},
+					{
+						"name": "c5",
+						"expression": "{{eval:binom(n,m5)}}"
+					},
+					{
+						"name": "m6",
+						"expression": "{{eval:n-6}}"
+					},
+					{
+						"name": "c6",
+						"expression": "{{eval:binom(n,m6)}}"
+					},
+					{
+						"name": "m7",
+						"expression": "{{eval:n-7}}"
+					},
+					{
+						"name": "c7",
+						"expression": "{{eval:binom(n,m7)}}"
+					},
+					{
+						"name": "k",
+						"expression": "2..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La ligne $n={{n}}$ du triangle de Pascal donne, dans l'ordre, les coefficients $\\binom{ {{n}} }{0}$, $\\binom{ {{n}} }{1}$, …, $\\binom{ {{n}} }{ {{n}} }$ :\n\n$1$ ; ${{c1}}$ ; ${{c2}}$ ; ${{c3}}$ ; ${{c4}}$ ; ${{c5}}${{if:n>=6| ; ${{c6}}$|}}{{if:n>=7| ; ${{c7}}$|}}\n\nDéduis-en $\\binom{ {{eval:n+1}} }{ {{k}} }$.\n\n$\\binom{ {{eval:n+1}} }{ {{k}} }=?$",
+				"reponses_brutes": ["{{if:k==2|{{eval:(n+1)*n/2}}|{{eval:(n+1)*n*(n-1)/6}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [5, 6, 7]
+					}
+				},
+				{
+					"nom": "c0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"nom": "c1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [5, 6, 7]
+					}
+				},
+				{
+					"nom": "c2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 21,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [10, 15, 21]
+					}
+				},
+				{
+					"nom": "c3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 35,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [10, 20, 35]
+					}
+				},
+				{
+					"nom": "m4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "c4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 35,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [5, 15, 35]
+					}
+				},
+				{
+					"nom": "m5",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				},
+				{
+					"nom": "c5",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 21,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 6, 21]
+					}
+				},
+				{
+					"nom": "m6",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-1, 0, 1]
+					}
+				},
+				{
+					"nom": "c6",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 7]
+					}
+				},
+				{
+					"nom": "m7",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 0,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-2, -1, 0]
+					}
+				},
+				{
+					"nom": "c7",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 56,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [15, 20, 21, 28, 35, 56]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 35,
+				"nb_distinctes": 13,
+				"valeurs": [0, 1, 2, 3, 5, 6, 7, 8, 10, 15, 20, 21, 35],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 15,
+				"max": 56,
+				"nb_distinctes": 6,
+				"valeurs": [15, 20, 21, 28, 35, 56],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 56,
+				"nb_distinctes": 15,
+				"valeurs": [0, 1, 2, 3, 5, 6, 7, 8, 10, 15, 20, 21, 28, 35, 56],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"…": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (56)",
+					"graine": 10,
+					"enonce": "La ligne $n = 7$ du triangle de Pascal donne, dans l'ordre, les coefficients $\\binom{ 7 }{0}$, $\\binom{ 7 }{1}$, …, $\\binom{ 7 }{ 7 }$ :\n\n$1$ ; $7$ ; $21$ ; $35$ ; $35$ ; $21$ ; $7$ ; $1$\n\nDéduis-en $\\binom{ 8 }{ 3 }$.\n\n$\\binom{ 8 }{ 3 }=[?]$",
+					"reponse": ["56"],
+					"variables": {
+						"n": "7",
+						"c0": "1",
+						"c1": "7",
+						"c2": "21",
+						"c3": "35",
+						"m4": "3",
+						"c4": "35",
+						"m5": "2",
+						"c5": "21",
+						"m6": "1",
+						"c6": "7",
+						"m7": "0",
+						"c7": "1",
+						"k": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "La ligne $n = 5$ du triangle de Pascal donne, dans l'ordre, les coefficients $\\binom{ 5 }{0}$, $\\binom{ 5 }{1}$, …, $\\binom{ 5 }{ 5 }$ :\n\n$1$ ; $5$ ; $10$ ; $10$ ; $5$ ; $1$\n\nDéduis-en $\\binom{ 6 }{ 3 }$.\n\n$\\binom{ 6 }{ 3 }=[?]$",
+					"reponse": ["20"],
+					"variables": {
+						"n": "5",
+						"c0": "1",
+						"c1": "5",
+						"c2": "10",
+						"c3": "10",
+						"m4": "1",
+						"c4": "5",
+						"m5": "0",
+						"c5": "1",
+						"m6": "-1",
+						"c6": "0",
+						"m7": "-2",
+						"c7": "0",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La ligne $n = 5$ du triangle de Pascal donne, dans l'ordre, les coefficients $\\binom{ 5 }{0}$, $\\binom{ 5 }{1}$, …, $\\binom{ 5 }{ 5 }$ :\n\n$1$ ; $5$ ; $10$ ; $10$ ; $5$ ; $1$\n\nDéduis-en $\\binom{ 6 }{ 2 }$.\n\n$\\binom{ 6 }{ 2 }=[?]$",
+					"reponse": ["15"],
+					"variables": {
+						"n": "5",
+						"c0": "1",
+						"c1": "5",
+						"c2": "10",
+						"c3": "10",
+						"m4": "1",
+						"c4": "5",
+						"m5": "0",
+						"c5": "1",
+						"m6": "-1",
+						"c6": "0",
+						"m7": "-2",
+						"c7": "0",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La ligne $n = 7$ du triangle de Pascal donne, dans l'ordre, les coefficients $\\binom{ 7 }{0}$, $\\binom{ 7 }{1}$, …, $\\binom{ 7 }{ 7 }$ :\n\n$1$ ; $7$ ; $21$ ; $35$ ; $35$ ; $21$ ; $7$ ; $1$\n\nDéduis-en $\\binom{ 8 }{ 2 }$.\n\n$\\binom{ 8 }{ 2 }=[?]$",
+					"reponse": ["28"],
+					"variables": {
+						"n": "7",
+						"c0": "1",
+						"c1": "7",
+						"c2": "21",
+						"c3": "35",
+						"m4": "3",
+						"c4": "35",
+						"m5": "2",
+						"c5": "21",
+						"m6": "1",
+						"c6": "7",
+						"m7": "0",
+						"c7": "1",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "La ligne $n = 6$ du triangle de Pascal donne, dans l'ordre, les coefficients $\\binom{ 6 }{0}$, $\\binom{ 6 }{1}$, …, $\\binom{ 6 }{ 6 }$ :\n\n$1$ ; $6$ ; $15$ ; $20$ ; $15$ ; $6$ ; $1$\n\nDéduis-en $\\binom{ 7 }{ 2 }$.\n\n$\\binom{ 7 }{ 2 }=[?]$",
+					"reponse": ["21"],
+					"variables": {
+						"n": "6",
+						"c0": "1",
+						"c1": "6",
+						"c2": "15",
+						"c3": "20",
+						"m4": "2",
+						"c4": "15",
+						"m5": "1",
+						"c5": "6",
+						"m6": "0",
+						"c6": "1",
+						"m7": "-1",
+						"c7": "0",
+						"k": "2"
+					}
+				}
+			]
+		}
+	]
+}

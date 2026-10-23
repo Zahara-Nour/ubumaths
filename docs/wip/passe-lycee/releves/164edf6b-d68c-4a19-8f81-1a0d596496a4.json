@@ -1,0 +1,474 @@
+{
+	"template_id": "164edf6b-d68c-4a19-8f81-1a0d596496a4",
+	"titre": "Aire entre deux courbes",
+	"sous_titre": "Aire = ∫ₐᵇ (f(x) − g(x)) dx quand C_f est au-dessus de C_g (pièges : g − f, oubli d'une des deux fonctions)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Intégration > Intégrale et aire > Aire entre deux courbes",
+	"mis_a_jour": "2026-10-04T16:20:25.23379+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-279",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-490",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "1..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère les fonctions $f$ et $g$ définies sur $\\mathbb{R}$ par $f(x)={{k}}x$ et $g(x)=x^2$. Sur $\\left[0\\,;{{k}}\\right]$, la droite $\\mathcal{C}_f$ est au-dessus de la parabole $\\mathcal{C}_g$.\n\n```courbe\nx: -0.5 ; {{eval:k+0.5}}\ny: -0.5 ; {{eval:k^2+0.5}}\nf(x) = {{k}}*x   bleu   nom=C_f\ng(x) = x^2   rouge   nom=C_g\ntaille: moyenne\ndescription: Une droite passant par l'origine et une parabole qui se coupent en deux points.\n```\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$ sur $\\left[0\\,;{{k}}\\right]$.\n\n$?$",
+				"reponses_brutes": ["{{eval:k^3/6}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.16666666666666666,
+						"max": 10.666666666666666,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 6],
+						"denominateur_min": 2,
+						"denominateur_max": 6,
+						"nb_distinctes": 4,
+						"valeurs": ["\\dfrac{1}{6}", "\\dfrac{32}{3}", "\\dfrac{4}{3}", "\\dfrac{9}{2}"]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 4,
+				"nb_distinctes": 5,
+				"valeurs": [0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 32,
+				"nb_distinctes": 7,
+				"valeurs": [1, 2, 3, 4, 6, 9, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 32,
+				"nb_distinctes": 8,
+				"valeurs": [0, 1, 2, 3, 4, 6, 9, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 6],
+				"denominateur_min": 2,
+				"denominateur_max": 6,
+				"numerateur_min": 1,
+				"numerateur_max": 32,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (32)",
+					"graine": 5,
+					"enonce": "On considère les fonctions $f$ et $g$ définies sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x$ et $g\\left( x \\right) = x^2$. Sur $\\left[0\\,;4\\right]$, la droite $\\mathcal{C}_f$ est au-dessus de la parabole $\\mathcal{C}_g$.\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$ sur $\\left[0\\,;4\\right]$.\n\n$[?]$",
+					"reponse": ["\\dfrac{32}{3}"],
+					"variables": {
+						"k": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "On considère les fonctions $f$ et $g$ définies sur $\\mathbb{R}$ par $f\\left( x \\right) = x$ et $g\\left( x \\right) = x^2$. Sur $\\left[0\\,;1\\right]$, la droite $\\mathcal{C}_f$ est au-dessus de la parabole $\\mathcal{C}_g$.\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$ sur $\\left[0\\,;1\\right]$.\n\n$[?]$",
+					"reponse": ["\\dfrac{1}{6}"],
+					"variables": {
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère les fonctions $f$ et $g$ définies sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x$ et $g\\left( x \\right) = x^2$. Sur $\\left[0\\,;2\\right]$, la droite $\\mathcal{C}_f$ est au-dessus de la parabole $\\mathcal{C}_g$.\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$ sur $\\left[0\\,;2\\right]$.\n\n$[?]$",
+					"reponse": ["\\dfrac{4}{3}"],
+					"variables": {
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On considère les fonctions $f$ et $g$ définies sur $\\mathbb{R}$ par $f\\left( x \\right) = 3 x$ et $g\\left( x \\right) = x^2$. Sur $\\left[0\\,;3\\right]$, la droite $\\mathcal{C}_f$ est au-dessus de la parabole $\\mathcal{C}_g$.\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$ sur $\\left[0\\,;3\\right]$.\n\n$[?]$",
+					"reponse": ["\\dfrac{9}{2}"],
+					"variables": {
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "1|2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur $\\left[0\\,;{{b}}\\right]$, la courbe de la fonction exponentielle est au-dessus de la droite d'équation $y=x$.\n\n```courbe\nx: -0.5 ; {{eval:b+0.5}}\ny: -0.5 ; {{eval:5*b-2}}\nf(x) = exp(x)   bleu   nom=C_f\ng(x) = x   rouge\ntaille: moyenne\ndescription: Courbe de l'exponentielle au-dessus de la droite y = x.\n```\n\nCalcule l'aire, en unités d'aire, du domaine compris entre ces deux courbes et les droites d'équations $x=0$ et $x={{b}}$ (valeur exacte).\n\n$?$",
+				"reponses_brutes": ["{{if:b==1|e-\\frac{3}{2}|e^{2}-3}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["e-\\frac{3}{2}", "e^{2}-3"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 3,
+							"nb_distinctes": 2,
+							"valeurs": [2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 4,
+				"valeurs": [0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 152,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 3,
+				"numerateur_max": 3,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "Sur $\\left[0\\,;1\\right]$, la courbe de la fonction exponentielle est au-dessus de la droite d'équation $y = x$.\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine compris entre ces deux courbes et les droites d'équations $x = 0$ et $x = 1$ (valeur exacte).\n\n$[?]$",
+					"reponse": ["e-\\frac{3}{2}"],
+					"variables": {
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur $\\left[0\\,;2\\right]$, la courbe de la fonction exponentielle est au-dessus de la droite d'équation $y = x$.\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine compris entre ces deux courbes et les droites d'équations $x = 0$ et $x = 2$ (valeur exacte).\n\n$[?]$",
+					"reponse": ["e^{2}-3"],
+					"variables": {
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1|2|3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère $f:x\\mapsto {{eval:a^2}}-x^2$ et $g:x\\mapsto x^2-{{eval:a^2}}$. Sur $\\left[{{eval:-a}}\\,;{{a}}\\right]$, $\\mathcal{C}_f$ est au-dessus de $\\mathcal{C}_g$.\n\n```courbe\nx: {{eval:-a-1}} ; {{eval:a+1}}\ny: {{eval:-a^2-1}} ; {{eval:a^2+1}}\nf(x) = {{eval:a^2}}-x^2   bleu   nom=C_f\ng(x) = x^2-{{eval:a^2}}   rouge   nom=C_g\ntaille: moyenne\ndescription: Deux paraboles symétriques par rapport à l'axe des abscisses, qui se coupent sur cet axe.\n```\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$.\n\n$?$",
+				"reponses_brutes": ["{{eval:8*a^3/3}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.3466666666666667,
+						"nb_distinctes": 3,
+						"valeurs": ["72", "\\dfrac{64}{3}", "\\dfrac{8}{3}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 72,
+							"nb_distinctes": 4,
+							"valeurs": [3, 8, 64, 72],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -3,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [-3, -2, -1, 1, 2, 3, 4, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 72,
+				"nb_distinctes": 4,
+				"valeurs": [3, 8, 64, 72],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": 72,
+				"nb_distinctes": 11,
+				"valeurs": [-3, -2, -1, 1, 2, 3, 4, 8, 9, 64, 72],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 196,
+				"denominateurs": [3],
+				"denominateur_min": 3,
+				"denominateur_max": 3,
+				"numerateur_min": 8,
+				"numerateur_max": 64,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (72)",
+					"graine": 5,
+					"enonce": "On considère $f:x\\mapsto 9-x^2$ et $g:x\\mapsto x^2-9$. Sur $\\left[-3\\,;3\\right]$, $\\mathcal{C}_f$ est au-dessus de $\\mathcal{C}_g$.\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$.\n\n$[?]$",
+					"reponse": ["72"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère $f:x\\mapsto 1-x^2$ et $g:x\\mapsto x^2-1$. Sur $\\left[-1\\,;1\\right]$, $\\mathcal{C}_f$ est au-dessus de $\\mathcal{C}_g$.\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$.\n\n$[?]$",
+					"reponse": ["\\dfrac{8}{3}"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On considère $f:x\\mapsto 4-x^2$ et $g:x\\mapsto x^2-4$. Sur $\\left[-2\\,;2\\right]$, $\\mathcal{C}_f$ est au-dessus de $\\mathcal{C}_g$.\n\n[courbe]\n\nCalcule l'aire, en unités d'aire, du domaine compris entre $\\mathcal{C}_f$ et $\\mathcal{C}_g$.\n\n$[?]$",
+					"reponse": ["\\dfrac{64}{3}"],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		}
+	]
+}

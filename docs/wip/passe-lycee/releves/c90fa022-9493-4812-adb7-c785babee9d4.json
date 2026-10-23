@@ -1,0 +1,668 @@
+{
+	"template_id": "c90fa022-9493-4812-adb7-c785babee9d4",
+	"titre": "Intérêts simples ou composés : nature de la suite",
+	"sous_titre": "Reconnaître une suite arithmétique ou géométrique dans un placement",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Modélisation > Placements",
+	"mis_a_jour": "2026-10-01T20:22:25.316865+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-230",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "5..50"
+					},
+					{
+						"name": "C",
+						"expression": "eval:100*k"
+					},
+					{
+						"name": "t",
+						"expression": "1..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On place ${{C}}$ € à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 182,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "C",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 500,
+						"max": 5000,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["arithmétique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5000,
+				"nb_distinctes": 52,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5000,
+				"nb_distinctes": 52,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 35,
+					"max": 35
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5000)",
+					"graine": 37,
+					"enonce": "On place $5\\,000$ € à intérêts simples au taux annuel de $1\\,\\%$ : chaque année, on ajoute au capital $1\\,\\%$ du capital initial. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"k": "50",
+						"C": "5000",
+						"t": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 9,
+					"enonce": "On place $4\\,400$ € à intérêts simples au taux annuel de $1\\,\\%$ : chaque année, on ajoute au capital $1\\,\\%$ du capital initial. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"k": "44",
+						"C": "4400",
+						"t": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On place $500$ € à intérêts simples au taux annuel de $4\\,\\%$ : chaque année, on ajoute au capital $4\\,\\%$ du capital initial. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"k": "5",
+						"C": "500",
+						"t": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On place $1\\,900$ € à intérêts simples au taux annuel de $2\\,\\%$ : chaque année, on ajoute au capital $2\\,\\%$ du capital initial. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"k": "19",
+						"C": "1900",
+						"t": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On place $600$ € à intérêts simples au taux annuel de $3\\,\\%$ : chaque année, on ajoute au capital $3\\,\\%$ du capital initial. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["A. arithmétique"],
+					"variables": {
+						"k": "6",
+						"C": "600",
+						"t": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "5..50"
+					},
+					{
+						"name": "C",
+						"expression": "eval:100*k"
+					},
+					{
+						"name": "t",
+						"expression": "1..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On place ${{C}}$ € à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 182,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "C",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 500,
+						"max": 5000,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["géométrique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5000,
+				"nb_distinctes": 52,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5000,
+				"nb_distinctes": 52,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 38,
+					"max": 38
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5000)",
+					"graine": 37,
+					"enonce": "On place $5\\,000$ € à intérêts composés au taux annuel de $1\\,\\%$ : chaque année, les intérêts, égaux à $1\\,\\%$ du capital de l'année, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"k": "50",
+						"C": "5000",
+						"t": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 9,
+					"enonce": "On place $4\\,400$ € à intérêts composés au taux annuel de $1\\,\\%$ : chaque année, les intérêts, égaux à $1\\,\\%$ du capital de l'année, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"k": "44",
+						"C": "4400",
+						"t": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On place $500$ € à intérêts composés au taux annuel de $4\\,\\%$ : chaque année, les intérêts, égaux à $4\\,\\%$ du capital de l'année, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"k": "5",
+						"C": "500",
+						"t": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On place $1\\,900$ € à intérêts composés au taux annuel de $2\\,\\%$ : chaque année, les intérêts, égaux à $2\\,\\%$ du capital de l'année, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"k": "19",
+						"C": "1900",
+						"t": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On place $600$ € à intérêts composés au taux annuel de $3\\,\\%$ : chaque année, les intérêts, égaux à $3\\,\\%$ du capital de l'année, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["B. géométrique"],
+					"variables": {
+						"k": "6",
+						"C": "600",
+						"t": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "10..50"
+					},
+					{
+						"name": "C",
+						"expression": "eval:100*k"
+					},
+					{
+						"name": "t",
+						"expression": "1..6"
+					},
+					{
+						"name": "f",
+						"expression": "10|15|20|25|30|40|50"
+					},
+					{
+						"name": "a",
+						"expression": "eval:C*(1+t/100)-f"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a*(1+t/100)-f"
+					}
+				],
+				"conditions": ["f != C*t/100"],
+				"enonce_brut": "On place ${{C}}$ € sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est :",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "arithmétique"
+					},
+					{
+						"content": "géométrique"
+					},
+					{
+						"content": "ni arithmétique, ni géométrique"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 267,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "C",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1000,
+						"max": 5000,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [10, 15, 20, 25, 30, 40, 50]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 980,
+						"max": 5290,
+						"negatif_possible": false,
+						"nb_distinctes": 258
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.056666666666666664,
+						"nb_distinctes": 267,
+						"exemples": [
+							"\\dfrac{4898}{5}",
+							"\\dfrac{117121}{50}",
+							"\\dfrac{114669}{100}",
+							"\\dfrac{59318}{25}",
+							"\\dfrac{105126}{25}",
+							"1051",
+							"\\dfrac{32163}{25}",
+							"\\dfrac{17904}{5}",
+							"\\dfrac{110201}{25}",
+							"\\dfrac{20399}{4}",
+							"\\dfrac{82294}{25}",
+							"\\dfrac{32602}{25}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 517811,
+							"nb_distinctes": 270,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 6
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["ni arithmétique, ni géométrique"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 5000,
+				"nb_distinctes": 54,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 5000,
+				"nb_distinctes": 54,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 35,
+					"max": 35
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5000)",
+					"graine": 37,
+					"enonce": "On place $5\\,000$ € sur un compte : chaque année, le capital augmente de $1\\,\\%$, puis la banque prélève $40$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"k": "50",
+						"C": "5000",
+						"t": "1",
+						"f": "40",
+						"a": "5010",
+						"b": "\\dfrac{50201}{10}"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 9,
+					"enonce": "On place $4\\,400$ € sur un compte : chaque année, le capital augmente de $1\\,\\%$, puis la banque prélève $40$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"k": "44",
+						"C": "4400",
+						"t": "1",
+						"f": "40",
+						"a": "4404",
+						"b": "\\dfrac{110201}{25}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On place $1\\,000$ € sur un compte : chaque année, le capital augmente de $4\\,\\%$, puis la banque prélève $50$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"k": "10",
+						"C": "1000",
+						"t": "4",
+						"f": "50",
+						"a": "990",
+						"b": "\\dfrac{4898}{5}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On place $2\\,300$ € sur un compte : chaque année, le capital augmente de $2\\,\\%$, puis la banque prélève $25$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"k": "23",
+						"C": "2300",
+						"t": "2",
+						"f": "25",
+						"a": "2321",
+						"b": "\\dfrac{117121}{50}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On place $1\\,100$ € sur un compte : chaque année, le capital augmente de $3\\,\\%$, puis la banque prélève $10$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $\\left( u_n \\right)$ est :\n\n- A. arithmétique\n- B. géométrique\n- C. ni arithmétique, ni géométrique",
+					"reponse": ["C. ni arithmétique, ni géométrique"],
+					"variables": {
+						"k": "11",
+						"C": "1100",
+						"t": "3",
+						"f": "10",
+						"a": "1123",
+						"b": "\\dfrac{114669}{100}"
+					}
+				}
+			]
+		}
+	]
+}

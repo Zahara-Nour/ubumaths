@@ -1,0 +1,515 @@
+{
+	"template_id": "8a6e41cc-264c-40df-b0b7-8a47e779d40d",
+	"titre": "Combinaisons avec répétitions : glaces, bonbons, solutions entières",
+	"sous_titre": "Approfondissement : choix de k objets parmi n types, sans ordre et avec répétition, compté par C(n + k − 1, k) (étoiles et barres) — boules de glace, bonbons identiques, solutions de x + y + z = k (pièges : C(n, k) sans répétition, nᵏ avec ordre)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > Combinaisons",
+	"mis_a_jour": "2026-10-05T08:35:45.439891+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-322",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "4..8"
+					},
+					{
+						"name": "k",
+						"expression": "2..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un glacier propose ${{n}}$ parfums. Un cornet contient ${{k}}$ boules ; plusieurs boules peuvent être du même parfum, et l'ordre des boules ne compte pas.\n\nCombien de cornets différents sont possibles ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(n+k-1,k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 120,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [10, 15, 20, 21, 28, 35, 36, 56, 84, 120]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 120,
+				"nb_distinctes": 10,
+				"valeurs": [10, 15, 20, 21, 28, 35, 36, 56, 84, 120],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 120,
+				"nb_distinctes": 17,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 10, 15, 20, 21, 28, 35, 36, 56, 84, 120],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (120)",
+					"graine": 10,
+					"enonce": "Un glacier propose $8$ parfums. Un cornet contient $3$ boules ; plusieurs boules peuvent être du même parfum, et l'ordre des boules ne compte pas.\n\nCombien de cornets différents sont possibles ?\n\n$[?]$",
+					"reponse": ["120"],
+					"variables": {
+						"n": "8",
+						"k": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 2,
+					"enonce": "Un glacier propose $5$ parfums. Un cornet contient $2$ boules ; plusieurs boules peuvent être du même parfum, et l'ordre des boules ne compte pas.\n\nCombien de cornets différents sont possibles ?\n\n$[?]$",
+					"reponse": ["15"],
+					"variables": {
+						"n": "5",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Un glacier propose $4$ parfums. Un cornet contient $3$ boules ; plusieurs boules peuvent être du même parfum, et l'ordre des boules ne compte pas.\n\nCombien de cornets différents sont possibles ?\n\n$[?]$",
+					"reponse": ["20"],
+					"variables": {
+						"n": "4",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un glacier propose $4$ parfums. Un cornet contient $2$ boules ; plusieurs boules peuvent être du même parfum, et l'ordre des boules ne compte pas.\n\nCombien de cornets différents sont possibles ?\n\n$[?]$",
+					"reponse": ["10"],
+					"variables": {
+						"n": "4",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un glacier propose $7$ parfums. Un cornet contient $2$ boules ; plusieurs boules peuvent être du même parfum, et l'ordre des boules ne compte pas.\n\nCombien de cornets différents sont possibles ?\n\n$[?]$",
+					"reponse": ["28"],
+					"variables": {
+						"n": "7",
+						"k": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "3..4"
+					},
+					{
+						"name": "k",
+						"expression": "5..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On répartit ${{k}}$ bonbons identiques entre ${{n}}$ enfants ; un enfant peut n'en recevoir aucun.\n\nCombien de répartitions sont possibles ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(n+k-1,n-1)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3, 4]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 21,
+						"max": 286,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [21, 28, 36, 45, 55, 56, 66, 84, 120, 165, 220, 286]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 21,
+				"max": 286,
+				"nb_distinctes": 12,
+				"valeurs": [21, 28, 36, 45, 55, 56, 66, 84, 120, 165, 220, 286],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 286,
+				"nb_distinctes": 20,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 21, 28, 36, 45, 55, 56, 66, 84, 120, 165, 220, 286],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (286)",
+					"graine": 61,
+					"enonce": "On répartit $10$ bonbons identiques entre $4$ enfants ; un enfant peut n'en recevoir aucun.\n\nCombien de répartitions sont possibles ?\n\n$[?]$",
+					"reponse": ["286"],
+					"variables": {
+						"n": "4",
+						"k": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 1,
+					"enonce": "On répartit $8$ bonbons identiques entre $3$ enfants ; un enfant peut n'en recevoir aucun.\n\nCombien de répartitions sont possibles ?\n\n$[?]$",
+					"reponse": ["45"],
+					"variables": {
+						"n": "3",
+						"k": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On répartit $6$ bonbons identiques entre $3$ enfants ; un enfant peut n'en recevoir aucun.\n\nCombien de répartitions sont possibles ?\n\n$[?]$",
+					"reponse": ["28"],
+					"variables": {
+						"n": "3",
+						"k": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On répartit $7$ bonbons identiques entre $3$ enfants ; un enfant peut n'en recevoir aucun.\n\nCombien de répartitions sont possibles ?\n\n$[?]$",
+					"reponse": ["36"],
+					"variables": {
+						"n": "3",
+						"k": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On répartit $6$ bonbons identiques entre $4$ enfants ; un enfant peut n'en recevoir aucun.\n\nCombien de répartitions sont possibles ?\n\n$[?]$",
+					"reponse": ["84"],
+					"variables": {
+						"n": "4",
+						"k": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "4..15"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Combien de triplets $(x\\,;y\\,;z)$ d'entiers naturels vérifient $x+y+z={{k}}$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(k+2,2)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 136,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 15,
+				"nb_distinctes": 12,
+				"valeurs": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 15,
+				"max": 136,
+				"nb_distinctes": 12,
+				"valeurs": [15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 4,
+				"max": 136,
+				"nb_distinctes": 23,
+				"valeurs": [
+					4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 6,
+					"max": 6
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (136)",
+					"graine": 10,
+					"enonce": "Combien de triplets $(x\\,;y\\,;z)$ d'entiers naturels vérifient $x + y + z = 15$ ?\n\n$[?]$",
+					"reponse": ["136"],
+					"variables": {
+						"k": "15"
+					}
+				},
+				{
+					"role": "plus petite valeur (4)",
+					"graine": 1,
+					"enonce": "Combien de triplets $(x\\,;y\\,;z)$ d'entiers naturels vérifient $x + y + z = 4$ ?\n\n$[?]$",
+					"reponse": ["15"],
+					"variables": {
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Combien de triplets $(x\\,;y\\,;z)$ d'entiers naturels vérifient $x + y + z = 7$ ?\n\n$[?]$",
+					"reponse": ["36"],
+					"variables": {
+						"k": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Combien de triplets $(x\\,;y\\,;z)$ d'entiers naturels vérifient $x + y + z = 13$ ?\n\n$[?]$",
+					"reponse": ["105"],
+					"variables": {
+						"k": "13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Combien de triplets $(x\\,;y\\,;z)$ d'entiers naturels vérifient $x + y + z = 11$ ?\n\n$[?]$",
+					"reponse": ["78"],
+					"variables": {
+						"k": "11"
+					}
+				}
+			]
+		}
+	]
+}

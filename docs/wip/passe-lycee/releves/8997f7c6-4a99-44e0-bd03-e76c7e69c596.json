@@ -1,0 +1,621 @@
+{
+	"template_id": "8997f7c6-4a99-44e0-bd03-e76c7e69c596",
+	"titre": "Dériver un produit",
+	"sous_titre": "Dérivée d'un produit u·v : polynôme × polynôme, x√x, (ax + b)√x",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Dérivation > Fonctions dérivées",
+	"mis_a_jour": "2026-10-03T14:03:46.876373+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-274",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..7;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=({{a}}x{{eval:b;+}})(x^2{{eval:c;+}})$.\n\nCalcule $f'(x)$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{eval:3*a}}x^2{{eval:2*b;+}}x{{eval:a*c;+}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 282,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 282,
+						"exemples": [
+							"-15x^2+2x-30",
+							"-6x^2-8x-2",
+							"-15x^2-2x+30",
+							"-6x^2-8x+12",
+							"9x^2-8x+6",
+							"-15x^2+6x+20",
+							"-15x^2+14x-15",
+							"6x^2-6x+6",
+							"12x^2-12x+16",
+							"15x^2+6x+20",
+							"3x^2+4x+2",
+							"-15x^2+4x-30"
+						],
+						"nombres_contenus": {
+							"min": -15,
+							"max": 30,
+							"nb_distinctes": 23,
+							"valeurs": [
+								-15, -12, -9, -6, -3, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 24, 25, 30
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 7,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -15,
+				"max": 30,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-15, -12, -9, -6, -3, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 24, 25, 30
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -15,
+				"max": 30,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-15, -12, -9, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20,
+					24, 25, 30
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "236/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "142/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( -5 x + 1 \\right) \\left( x^2 + 6 \\right)$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-15x^2+2x-30"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"c": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( -2 x - 4 \\right) \\left( x^2 + 1 \\right)$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-6x^2-8x-2"],
+					"variables": {
+						"a": "-2",
+						"b": "-4",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( -5 x - 1 \\right) \\left( x^2 - 6 \\right)$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-15x^2-2x+30"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"c": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( -2 x - 4 \\right) \\left( x^2 - 6 \\right)$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-6x^2-8x+12"],
+					"variables": {
+						"a": "-2",
+						"b": "-4",
+						"c": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = \\left( 3 x - 4 \\right) \\left( x^2 + 2 \\right)$.\n\nCalcule $f'\\left( x \\right)$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["9x^2-8x+6"],
+					"variables": {
+						"a": "3",
+						"b": "-4",
+						"c": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f(x)={{a}}xsqrt(x)$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'(x)$ pour $x>0$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["{{eval:3*a/2}}\\sqrt{x}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"-3\\sqrt{x}",
+							"-6\\sqrt{x}",
+							"-\\dfrac{15}{2}\\sqrt{x}",
+							"-\\dfrac{3}{2}\\sqrt{x}",
+							"-\\dfrac{9}{2}\\sqrt{x}",
+							"3\\sqrt{x}",
+							"6\\sqrt{x}",
+							"\\dfrac{15}{2}\\sqrt{x}",
+							"\\dfrac{3}{2}\\sqrt{x}",
+							"\\dfrac{9}{2}\\sqrt{x}"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 15,
+							"nb_distinctes": 7,
+							"valeurs": [-6, -3, 2, 3, 6, 9, 15],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 9,
+				"valeurs": [-5, -4, -3, -2, 0, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 15,
+				"nb_distinctes": 7,
+				"valeurs": [-6, -3, 2, 3, 6, 9, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 15,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, 0, 2, 3, 4, 5, 6, 9, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 176,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 3,
+				"numerateur_max": 15,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"+": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (15)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f\\left( x \\right) = -5 x \\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'\\left( x \\right)$ pour $x > 0$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-\\dfrac{15}{2}\\sqrt{x}"],
+					"variables": {
+						"a": "-5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 16,
+					"enonce": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f\\left( x \\right) = -4 x \\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'\\left( x \\right)$ pour $x > 0$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-6\\sqrt{x}"],
+					"variables": {
+						"a": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f\\left( x \\right) = -2 x \\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'\\left( x \\right)$ pour $x > 0$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["-3\\sqrt{x}"],
+					"variables": {
+						"a": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f\\left( x \\right) = 3 x \\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'\\left( x \\right)$ pour $x > 0$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\dfrac{9}{2}\\sqrt{x}"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f\\left( x \\right) = 2 x \\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'\\left( x \\right)$ pour $x > 0$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["3\\sqrt{x}"],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "b",
+						"expression": "1|3|5|7|-1|-3|-5|-7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f(x)=({{a}}x{{eval:b;+}})sqrt(x)$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'(x)$ pour $x>0$.\n\n$f'(x)=?$",
+				"reponses_brutes": ["\\frac{ {{eval:3*a}}x{{eval:b;+}} }{2\\sqrt{x}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 62,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-7, -5, -3, -1, 1, 3, 5, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 62,
+						"exemples": [
+							"\\frac{ -12x-1 }{2\\sqrt{x}}",
+							"\\frac{ -6x+5 }{2\\sqrt{x}}",
+							"\\frac{ -12x+7 }{2\\sqrt{x}}",
+							"\\frac{ -6x+3 }{2\\sqrt{x}}",
+							"\\frac{ 9x+3 }{2\\sqrt{x}}",
+							"\\frac{ -12x-3 }{2\\sqrt{x}}",
+							"\\frac{ -12x-7 }{2\\sqrt{x}}",
+							"\\frac{ 6x+5 }{2\\sqrt{x}}",
+							"\\frac{ 12x-3 }{2\\sqrt{x}}",
+							"\\frac{ 3x-1 }{2\\sqrt{x}}",
+							"\\frac{ -6x+1 }{2\\sqrt{x}}",
+							"\\frac{ -3x-1 }{2\\sqrt{x}}"
+						],
+						"nombres_contenus": {
+							"min": -12,
+							"max": 12,
+							"nb_distinctes": 12,
+							"valeurs": [-12, -9, -6, -3, 1, 2, 3, 5, 6, 7, 9, 12],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 7,
+				"nb_distinctes": 10,
+				"valeurs": [-4, -3, -2, 0, 1, 2, 3, 4, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 12,
+				"valeurs": [-12, -9, -6, -3, 1, 2, 3, 5, 6, 7, 9, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 16,
+				"valeurs": [-12, -9, -6, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 9, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"+": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 10,
+					"enonce": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f\\left( x \\right) = \\left( 4 x - 3 \\right) \\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'\\left( x \\right)$ pour $x > 0$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{ 12x-3 }{2\\sqrt{x}}"],
+					"variables": {
+						"a": "4",
+						"b": "-3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-12)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f\\left( x \\right) = \\left( -4 x - 1 \\right) \\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'\\left( x \\right)$ pour $x > 0$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{ -12x-1 }{2\\sqrt{x}}"],
+					"variables": {
+						"a": "-4",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f\\left( x \\right) = \\left( -2 x + 5 \\right) \\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'\\left( x \\right)$ pour $x > 0$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{ -6x+5 }{2\\sqrt{x}}"],
+					"variables": {
+						"a": "-2",
+						"b": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f\\left( x \\right) = \\left( -4 x + 7 \\right) \\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'\\left( x \\right)$ pour $x > 0$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{ -12x+7 }{2\\sqrt{x}}"],
+					"variables": {
+						"a": "-4",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $[0\\,;+\\infty[$ par $f\\left( x \\right) = \\left( -2 x + 3 \\right) \\sqrt{x}$. Elle est dérivable sur $]0\\,;+\\infty[$.\n\nCalcule $f'\\left( x \\right)$ pour $x > 0$.\n\n$f'\\left( x \\right) = [?]$",
+					"reponse": ["\\frac{ -6x+3 }{2\\sqrt{x}}"],
+					"variables": {
+						"a": "-2",
+						"b": "3"
+					}
+				}
+			]
+		}
+	]
+}

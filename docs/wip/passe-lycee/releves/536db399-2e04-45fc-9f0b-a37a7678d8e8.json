@@ -1,0 +1,744 @@
+{
+	"template_id": "536db399-2e04-45fc-9f0b-a37a7678d8e8",
+	"titre": "Espace : plans perpendiculaires, droite orthogonale à un plan",
+	"sous_titre": "Décider (QCM) si deux plans sont perpendiculaires (vecteurs normaux orthogonaux), si une droite est orthogonale à un plan (vecteur directeur colinéaire au vecteur normal)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Géométrie > Orthogonalité et distances dans l'espace > Orthogonalité droites et plans",
+	"mis_a_jour": "2026-10-04T21:39:28.273653+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-353",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "b",
+						"expression": "-3..3"
+					},
+					{
+						"name": "c",
+						"expression": "-3..3"
+					},
+					{
+						"name": "d",
+						"expression": "-6..6"
+					},
+					{
+						"name": "q",
+						"expression": "-6..6"
+					},
+					{
+						"name": "r",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "o",
+						"expression": "0..1"
+					},
+					{
+						"name": "p1",
+						"expression": "{{eval:r*b+o*a}}"
+					},
+					{
+						"name": "p2",
+						"expression": "{{eval:-r*a+o*b}}"
+					},
+					{
+						"name": "p3",
+						"expression": "{{eval:o*c}}"
+					}
+				],
+				"conditions": ["b != 0 || c != 0", "abs(p1)+abs(p2)+abs(p3) > 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et ${{p1}}x+({{p2}})y+({{p3}})z+({{q}})=0$.\n\nLes plans $\\mathcal{P}$ et $\\mathcal{Q}$ sont-ils perpendiculaires ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires."
+					},
+					{
+						"content": "Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "o",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "p1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "p2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "p3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": [
+							"Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires.",
+							"Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "285/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 30,
+					"max": 30
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 37,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $3 x - 3 y + 2 z - 4 = 0$ et $9 x + 3 y + 2 z + 1 = 0$.\n\nLes plans $\\mathcal{P}$ et $\\mathcal{Q}$ sont-ils perpendiculaires ?\n\n- A. Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires.\n- B. Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires.",
+					"reponse": ["B. Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires."],
+					"variables": {
+						"a": "3",
+						"b": "-3",
+						"c": "2",
+						"d": "-4",
+						"q": "1",
+						"r": "-2",
+						"o": "1",
+						"p1": "9",
+						"p2": "3",
+						"p3": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-3 x + 3 z + 6 = 0$ et $-3 x + 3 y + 3 z - 3 = 0$.\n\nLes plans $\\mathcal{P}$ et $\\mathcal{Q}$ sont-ils perpendiculaires ?\n\n- A. Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires.\n- B. Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires.",
+					"reponse": ["A. Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires."],
+					"variables": {
+						"a": "-3",
+						"b": "0",
+						"c": "3",
+						"d": "6",
+						"q": "-3",
+						"r": "1",
+						"o": "1",
+						"p1": "-3",
+						"p2": "3",
+						"p3": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-2 x - 2 y + 5 = 0$ et $2 x - 2 y + 2 = 0$.\n\nLes plans $\\mathcal{P}$ et $\\mathcal{Q}$ sont-ils perpendiculaires ?\n\n- A. Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires.\n- B. Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires.",
+					"reponse": ["A. Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires."],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "0",
+						"d": "5",
+						"q": "2",
+						"r": "-1",
+						"o": "0",
+						"p1": "2",
+						"p2": "-2",
+						"p3": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-3 x - 3 z + 3 = 0$ et $-3 y = 0$.\n\nLes plans $\\mathcal{P}$ et $\\mathcal{Q}$ sont-ils perpendiculaires ?\n\n- A. Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires.\n- B. Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires.",
+					"reponse": ["B. Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires."],
+					"variables": {
+						"a": "-3",
+						"b": "0",
+						"c": "-3",
+						"d": "3",
+						"q": "0",
+						"r": "-1",
+						"o": "0",
+						"p1": "0",
+						"p2": "-3",
+						"p3": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-2 x - 2 y - 3 z - 3 = 0$ et $2 x - 6 y - 3 z = 0$.\n\nLes plans $\\mathcal{P}$ et $\\mathcal{Q}$ sont-ils perpendiculaires ?\n\n- A. Oui, $\\mathcal{P}$ et $\\mathcal{Q}$ sont perpendiculaires.\n- B. Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires.",
+					"reponse": ["B. Non, $\\mathcal{P}$ et $\\mathcal{Q}$ ne sont pas perpendiculaires."],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "-3",
+						"d": "-3",
+						"q": "0",
+						"r": "-2",
+						"o": "1",
+						"p1": "2",
+						"p2": "-6",
+						"p3": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "c",
+						"expression": "-3..3"
+					},
+					{
+						"name": "d",
+						"expression": "-6..6"
+					},
+					{
+						"name": "k",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "o",
+						"expression": "0..1"
+					},
+					{
+						"name": "x0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "y0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "z0",
+						"expression": "-4..4"
+					},
+					{
+						"name": "u1",
+						"expression": "{{eval:k*a+o*b}}"
+					},
+					{
+						"name": "u2",
+						"expression": "{{eval:k*b-o*a}}"
+					},
+					{
+						"name": "u3",
+						"expression": "{{eval:k*c}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et la droite $\\Delta$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $\\Delta$ est-elle orthogonale au plan $\\mathcal{P}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$."
+					},
+					{
+						"content": "Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "o",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "z0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 9]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-6, -4, -3, -2, -1, 0, 1, 2, 3, 4, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": [
+							"Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$.",
+							"Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -7,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -7,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "285/300",
+					"−": "210/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 158,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-3 x + 3 y + z + 5 = 0$ et la droite $\\Delta$ de représentation paramétrique\n\n$$\\begin{cases}x=1+9t\\\\y=-3-3t\\\\z=-1-2t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $\\Delta$ est-elle orthogonale au plan $\\mathcal{P}$ ?\n\n- A. Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$.\n- B. Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$.",
+					"reponse": ["A. Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$."],
+					"variables": {
+						"a": "-3",
+						"b": "3",
+						"c": "1",
+						"d": "5",
+						"k": "-2",
+						"o": "1",
+						"x0": "1",
+						"y0": "-3",
+						"z0": "-1",
+						"u1": "9",
+						"u2": "-3",
+						"u3": "-2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-7)",
+					"graine": 55,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $3 x + 2 y + 2 z - 6 = 0$ et la droite $\\Delta$ de représentation paramétrique\n\n$$\\begin{cases}x=-2-4t\\\\y=-7t\\\\z=-4-4t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $\\Delta$ est-elle orthogonale au plan $\\mathcal{P}$ ?\n\n- A. Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$.\n- B. Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$.",
+					"reponse": ["B. Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$."],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "2",
+						"d": "-6",
+						"k": "-2",
+						"o": "1",
+						"x0": "-2",
+						"y0": "0",
+						"z0": "-4",
+						"u1": "-4",
+						"u2": "-7",
+						"u3": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-3 x + y + 3 z + 6 = 0$ et la droite $\\Delta$ de représentation paramétrique\n\n$$\\begin{cases}x=2+4t\\\\y=-1+2t\\\\z=4-3t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $\\Delta$ est-elle orthogonale au plan $\\mathcal{P}$ ?\n\n- A. Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$.\n- B. Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$.",
+					"reponse": ["A. Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$."],
+					"variables": {
+						"a": "-3",
+						"b": "1",
+						"c": "3",
+						"d": "6",
+						"k": "-1",
+						"o": "1",
+						"x0": "2",
+						"y0": "-1",
+						"z0": "4",
+						"u1": "4",
+						"u2": "2",
+						"u3": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-2 x - 2 y + 5 = 0$ et la droite $\\Delta$ de représentation paramétrique\n\n$$\\begin{cases}x=-1-2t\\\\y=3-2t\\\\z=-3\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $\\Delta$ est-elle orthogonale au plan $\\mathcal{P}$ ?\n\n- A. Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$.\n- B. Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$.",
+					"reponse": ["A. Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$."],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "0",
+						"d": "5",
+						"k": "1",
+						"o": "0",
+						"x0": "-1",
+						"y0": "3",
+						"z0": "-3",
+						"u1": "-2",
+						"u2": "-2",
+						"u3": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-3 x - y - 3 z + 3 = 0$ et la droite $\\Delta$ de représentation paramétrique\n\n$$\\begin{cases}x=-3+3t\\\\y=-2+t\\\\z=3t\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nLa droite $\\Delta$ est-elle orthogonale au plan $\\mathcal{P}$ ?\n\n- A. Non, $\\Delta$ n'est pas orthogonale à $\\mathcal{P}$.\n- B. Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$.",
+					"reponse": ["B. Oui, $\\Delta$ est orthogonale à $\\mathcal{P}$."],
+					"variables": {
+						"a": "-3",
+						"b": "-1",
+						"c": "-3",
+						"d": "3",
+						"k": "-1",
+						"o": "0",
+						"x0": "-3",
+						"y0": "-2",
+						"z0": "0",
+						"u1": "3",
+						"u2": "1",
+						"u3": "3"
+					}
+				}
+			]
+		}
+	]
+}

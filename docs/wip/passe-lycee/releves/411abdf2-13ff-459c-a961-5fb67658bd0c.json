@@ -1,0 +1,803 @@
+{
+	"template_id": "411abdf2-13ff-459c-a961-5fb67658bd0c",
+	"titre": "Tests de divisibilité par 3, 9 et 11",
+	"sous_titre": "Utiliser les critères de divisibilité par 3, 9 et 11 (somme des chiffres, somme alternée) : chiffre manquant, reste modulo 9 (pièges : somme des chiffres non réduite, somme alternée lue dans le mauvais sens)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Arithmétique > Divisibilité > Divisibilité",
+	"mis_a_jour": "2026-10-05T16:06:49.457668+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-289",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "d1",
+						"expression": "1..9"
+					},
+					{
+						"name": "d2",
+						"expression": "0..9"
+					},
+					{
+						"name": "d3",
+						"expression": "0..9"
+					}
+				],
+				"conditions": ["mod(d1+d2+d3,9) != 0"],
+				"enonce_brut": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ {{d1}}{{d2}}x{{d3}} }$ soit divisible par $9$ ?\n\n$x=?$",
+				"reponses_brutes": ["{{eval:9-mod(d1+d2+d3,9)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 241,
+			"variables": [
+				{
+					"nom": "d1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 9,
+				"max": 99,
+				"nb_distinctes": 89,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 8,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 99,
+				"nb_distinctes": 97,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 115,
+					"enonce": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ 99x2 }$ soit divisible par $9$ ?\n\n$x = [?]$",
+					"reponse": ["7"],
+					"variables": {
+						"d1": "9",
+						"d2": "9",
+						"d3": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 9,
+					"enonce": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ 81x8 }$ soit divisible par $9$ ?\n\n$x = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"d1": "8",
+						"d2": "1",
+						"d3": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ 15x9 }$ soit divisible par $9$ ?\n\n$x = [?]$",
+					"reponse": ["3"],
+					"variables": {
+						"d1": "1",
+						"d2": "5",
+						"d3": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ 32x5 }$ soit divisible par $9$ ?\n\n$x = [?]$",
+					"reponse": ["8"],
+					"variables": {
+						"d1": "3",
+						"d2": "2",
+						"d3": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ 14x0 }$ soit divisible par $9$ ?\n\n$x = [?]$",
+					"reponse": ["4"],
+					"variables": {
+						"d1": "1",
+						"d2": "4",
+						"d3": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "d1",
+						"expression": "1..9"
+					},
+					{
+						"name": "d2",
+						"expression": "0..9"
+					},
+					{
+						"name": "d3",
+						"expression": "0..9"
+					}
+				],
+				"conditions": ["mod(d1-d2+d3,11) <= 9"],
+				"enonce_brut": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ {{d1}}{{d2}}{{d3}}x }$ soit divisible par $11$ ?\n\n$x=?$",
+				"reponses_brutes": ["{{eval:mod(d1-d2+d3,11)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 244,
+			"variables": [
+				{
+					"nom": "d1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 11,
+				"max": 992,
+				"nb_distinctes": 245,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 992,
+				"nb_distinctes": 255,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (992)",
+					"graine": 115,
+					"enonce": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ 992x }$ soit divisible par $11$ ?\n\n$x = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"d1": "9",
+						"d2": "9",
+						"d3": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 5,
+					"enonce": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ 726x }$ soit divisible par $11$ ?\n\n$x = [?]$",
+					"reponse": ["0"],
+					"variables": {
+						"d1": "7",
+						"d2": "2",
+						"d3": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ 159x }$ soit divisible par $11$ ?\n\n$x = [?]$",
+					"reponse": ["5"],
+					"variables": {
+						"d1": "1",
+						"d2": "5",
+						"d3": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ 325x }$ soit divisible par $11$ ?\n\n$x = [?]$",
+					"reponse": ["6"],
+					"variables": {
+						"d1": "3",
+						"d2": "2",
+						"d3": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel chiffre $x$ faut-il écrire pour que le nombre $\\overline{ 140x }$ soit divisible par $11$ ?\n\n$x = [?]$",
+					"reponse": ["8"],
+					"variables": {
+						"d1": "1",
+						"d2": "4",
+						"d3": "0"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "d1",
+						"expression": "1..9"
+					},
+					{
+						"name": "d2",
+						"expression": "0..9"
+					},
+					{
+						"name": "d3",
+						"expression": "0..9"
+					},
+					{
+						"name": "d4",
+						"expression": "0..9"
+					},
+					{
+						"name": "d5",
+						"expression": "0..9"
+					}
+				],
+				"conditions": ["d1+d2+d3+d4+d5 >= 9"],
+				"enonce_brut": "Quel est le reste de la division euclidienne de ${{eval:10000*d1+1000*d2+100*d3+10*d4+d5}}$ par $9$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:mod(d1+d2+d3+d4+d5,9)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "d1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d5",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 9,
+				"max": 99269,
+				"nb_distinctes": 301,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 8,
+				"nb_distinctes": 9,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 99269,
+				"nb_distinctes": 310,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99269)",
+					"graine": 206,
+					"enonce": "Quel est le reste de la division euclidienne de $99\\,269$ par $9$ ?\n\n$[?]$",
+					"reponse": ["8"],
+					"variables": {
+						"d1": "9",
+						"d2": "9",
+						"d3": "2",
+						"d4": "6",
+						"d5": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 22,
+					"enonce": "Quel est le reste de la division euclidienne de $32\\,238$ par $9$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"d1": "3",
+						"d2": "2",
+						"d3": "2",
+						"d4": "3",
+						"d5": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le reste de la division euclidienne de $15\\,992$ par $9$ ?\n\n$[?]$",
+					"reponse": ["8"],
+					"variables": {
+						"d1": "1",
+						"d2": "5",
+						"d3": "9",
+						"d4": "9",
+						"d5": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le reste de la division euclidienne de $32\\,586$ par $9$ ?\n\n$[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"d1": "3",
+						"d2": "2",
+						"d3": "5",
+						"d4": "8",
+						"d5": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le reste de la division euclidienne de $14\\,074$ par $9$ ?\n\n$[?]$",
+					"reponse": ["7"],
+					"variables": {
+						"d1": "1",
+						"d2": "4",
+						"d3": "0",
+						"d4": "7",
+						"d5": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "d1",
+						"expression": "1..9"
+					},
+					{
+						"name": "d2",
+						"expression": "0..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Donne un chiffre $x$ pour lequel le nombre $\\overline{ {{d1}}{{d2}}x }$ est divisible par $3$.\n\n$x=?$",
+				"reponses_brutes": ["{{eval:mod(-d1-d2,3)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 89,
+			"variables": [
+				{
+					"nom": "d1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 99,
+				"nb_distinctes": 90,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 99,
+				"nb_distinctes": 93,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 115,
+					"enonce": "Donne un chiffre $x$ pour lequel le nombre $\\overline{ 99x }$ est divisible par $3$.\n\n$x = [?]$",
+					"reponse": ["0"],
+					"variables": {
+						"d1": "9",
+						"d2": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Donne un chiffre $x$ pour lequel le nombre $\\overline{ 15x }$ est divisible par $3$.\n\n$x = [?]$",
+					"reponse": ["0"],
+					"variables": {
+						"d1": "1",
+						"d2": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Donne un chiffre $x$ pour lequel le nombre $\\overline{ 32x }$ est divisible par $3$.\n\n$x = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"d1": "3",
+						"d2": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Donne un chiffre $x$ pour lequel le nombre $\\overline{ 14x }$ est divisible par $3$.\n\n$x = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"d1": "1",
+						"d2": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Donne un chiffre $x$ pour lequel le nombre $\\overline{ 72x }$ est divisible par $3$.\n\n$x = [?]$",
+					"reponse": ["0"],
+					"variables": {
+						"d1": "7",
+						"d2": "2"
+					}
+				}
+			]
+		}
+	]
+}

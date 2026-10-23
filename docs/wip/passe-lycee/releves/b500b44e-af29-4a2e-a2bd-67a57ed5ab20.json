@@ -1,0 +1,573 @@
+{
+	"template_id": "b500b44e-af29-4a2e-a2bd-67a57ed5ab20",
+	"titre": "Tirages dans une urne : avec remise, sans remise, simultanés",
+	"sous_titre": "Une même urne, trois façons de tirer : nᵏ, n!/(n − k)!, C(n, k) ; puis tirages contenant une boule donnée (pièges : confondre les trois modèles, oublier de fixer la boule imposée)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > Reconnaître le modèle",
+	"mis_a_jour": "2026-10-05T08:35:44.773907+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-318",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "6..12"
+					},
+					{
+						"name": "k",
+						"expression": "2..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une urne contient ${{n}}$ boules numérotées de $1$ à ${{n}}$. On tire ${{k}}$ boules.\n\nCombien de résultats sont possibles si l'on tire :\n\n- successivement **avec remise** (liste ordonnée des numéros) : $?$\n- successivement **sans remise** (liste ordonnée des numéros) : $?$\n- **simultanément** (ensemble des numéros) : $?$",
+				"reponses_brutes": [
+					"{{eval:n^k}}",
+					"{{eval:factorial(n)/factorial(n-k)}}",
+					"{{eval:binom(n,k)}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 21,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 36,
+						"max": 20736,
+						"negatif_possible": false,
+						"nb_distinctes": 21,
+						"valeurs": [
+							36, 49, 64, 81, 100, 121, 144, 216, 343, 512, 729, 1000, 1296, 1331, 1728, 2401, 4096,
+							6561, 10000, 14641, 20736
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 11880,
+						"negatif_possible": false,
+						"nb_distinctes": 21,
+						"valeurs": [
+							30, 42, 56, 72, 90, 110, 120, 132, 210, 336, 360, 504, 720, 840, 990, 1320, 1680,
+							3024, 5040, 7920, 11880
+						]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 495,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							15, 20, 21, 28, 35, 36, 45, 55, 56, 66, 70, 84, 120, 126, 165, 210, 220, 330, 495
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 15,
+				"max": 20736,
+				"nb_distinctes": 57,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 20736,
+				"nb_distinctes": 68,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 35,
+					"max": 35
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20736)",
+					"graine": 10,
+					"enonce": "Une urne contient $12$ boules numérotées de $1$ à $12$. On tire $4$ boules.\n\nCombien de résultats sont possibles si l'on tire :\n\n- successivement avec remise (liste ordonnée des numéros) : $[?]$\n- successivement sans remise (liste ordonnée des numéros) : $[?]$\n- simultanément (ensemble des numéros) : $[?]$",
+					"reponse": ["20736", "11880", "495"],
+					"variables": {
+						"n": "12",
+						"k": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Une urne contient $6$ boules numérotées de $1$ à $6$. On tire $3$ boules.\n\nCombien de résultats sont possibles si l'on tire :\n\n- successivement avec remise (liste ordonnée des numéros) : $[?]$\n- successivement sans remise (liste ordonnée des numéros) : $[?]$\n- simultanément (ensemble des numéros) : $[?]$",
+					"reponse": ["216", "120", "20"],
+					"variables": {
+						"n": "6",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une urne contient $8$ boules numérotées de $1$ à $8$. On tire $2$ boules.\n\nCombien de résultats sont possibles si l'on tire :\n\n- successivement avec remise (liste ordonnée des numéros) : $[?]$\n- successivement sans remise (liste ordonnée des numéros) : $[?]$\n- simultanément (ensemble des numéros) : $[?]$",
+					"reponse": ["64", "56", "28"],
+					"variables": {
+						"n": "8",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une urne contient $11$ boules numérotées de $1$ à $11$. On tire $2$ boules.\n\nCombien de résultats sont possibles si l'on tire :\n\n- successivement avec remise (liste ordonnée des numéros) : $[?]$\n- successivement sans remise (liste ordonnée des numéros) : $[?]$\n- simultanément (ensemble des numéros) : $[?]$",
+					"reponse": ["121", "110", "55"],
+					"variables": {
+						"n": "11",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Une urne contient $6$ boules numérotées de $1$ à $6$. On tire $4$ boules.\n\nCombien de résultats sont possibles si l'on tire :\n\n- successivement avec remise (liste ordonnée des numéros) : $[?]$\n- successivement sans remise (liste ordonnée des numéros) : $[?]$\n- simultanément (ensemble des numéros) : $[?]$",
+					"reponse": ["1296", "360", "15"],
+					"variables": {
+						"n": "6",
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "6..12"
+					},
+					{
+						"name": "k",
+						"expression": "3..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une urne contient ${{n}}$ boules numérotées de $1$ à ${{n}}$. On tire successivement et sans remise ${{k}}$ boules, et on note la liste ordonnée des numéros.\n\nDans combien de ces listes la **première** boule tirée porte-t-elle le numéro $1$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:factorial(n-1)/factorial(n-k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 990,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [20, 30, 42, 56, 60, 72, 90, 110, 120, 210, 336, 504, 720, 990]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 10,
+				"valeurs": [1, 3, 4, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 20,
+				"max": 990,
+				"nb_distinctes": 14,
+				"valeurs": [20, 30, 42, 56, 60, 72, 90, 110, 120, 210, 336, 504, 720, 990],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 990,
+				"nb_distinctes": 24,
+				"valeurs": [
+					1, 3, 4, 6, 7, 8, 9, 10, 11, 12, 20, 30, 42, 56, 60, 72, 90, 110, 120, 210, 336, 504, 720,
+					990
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (990)",
+					"graine": 10,
+					"enonce": "Une urne contient $12$ boules numérotées de $1$ à $12$. On tire successivement et sans remise $4$ boules, et on note la liste ordonnée des numéros.\n\nDans combien de ces listes la première boule tirée porte-t-elle le numéro $1$ ?\n\n$[?]$",
+					"reponse": ["990"],
+					"variables": {
+						"n": "12",
+						"k": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Une urne contient $6$ boules numérotées de $1$ à $6$. On tire successivement et sans remise $4$ boules, et on note la liste ordonnée des numéros.\n\nDans combien de ces listes la première boule tirée porte-t-elle le numéro $1$ ?\n\n$[?]$",
+					"reponse": ["60"],
+					"variables": {
+						"n": "6",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une urne contient $8$ boules numérotées de $1$ à $8$. On tire successivement et sans remise $3$ boules, et on note la liste ordonnée des numéros.\n\nDans combien de ces listes la première boule tirée porte-t-elle le numéro $1$ ?\n\n$[?]$",
+					"reponse": ["42"],
+					"variables": {
+						"n": "8",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une urne contient $6$ boules numérotées de $1$ à $6$. On tire successivement et sans remise $3$ boules, et on note la liste ordonnée des numéros.\n\nDans combien de ces listes la première boule tirée porte-t-elle le numéro $1$ ?\n\n$[?]$",
+					"reponse": ["20"],
+					"variables": {
+						"n": "6",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une urne contient $11$ boules numérotées de $1$ à $11$. On tire successivement et sans remise $3$ boules, et on note la liste ordonnée des numéros.\n\nDans combien de ces listes la première boule tirée porte-t-elle le numéro $1$ ?\n\n$[?]$",
+					"reponse": ["90"],
+					"variables": {
+						"n": "11",
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "8..15"
+					},
+					{
+						"name": "k",
+						"expression": "3..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une urne contient ${{n}}$ boules numérotées de $1$ à ${{n}}$. On tire simultanément ${{k}}$ boules.\n\nCombien de tirages contiennent la boule numéro $1$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(n-1,k-1)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 21,
+						"max": 1001,
+						"negatif_possible": false,
+						"nb_distinctes": 23,
+						"valeurs": [
+							21, 28, 35, 36, 45, 55, 56, 66, 70, 78, 84, 91, 120, 126, 165, 210, 220, 286, 330,
+							364, 495, 715, 1001
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 15,
+				"nb_distinctes": 12,
+				"valeurs": [1, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 21,
+				"max": 1001,
+				"nb_distinctes": 23,
+				"valeurs": [
+					21, 28, 35, 36, 45, 55, 56, 66, 70, 78, 84, 91, 120, 126, 165, 210, 220, 286, 330, 364,
+					495, 715, 1001
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1001,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1001)",
+					"graine": 10,
+					"enonce": "Une urne contient $15$ boules numérotées de $1$ à $15$. On tire simultanément $5$ boules.\n\nCombien de tirages contiennent la boule numéro $1$ ?\n\n$[?]$",
+					"reponse": ["1001"],
+					"variables": {
+						"n": "15",
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Une urne contient $8$ boules numérotées de $1$ à $8$. On tire simultanément $4$ boules.\n\nCombien de tirages contiennent la boule numéro $1$ ?\n\n$[?]$",
+					"reponse": ["35"],
+					"variables": {
+						"n": "8",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une urne contient $10$ boules numérotées de $1$ à $10$. On tire simultanément $3$ boules.\n\nCombien de tirages contiennent la boule numéro $1$ ?\n\n$[?]$",
+					"reponse": ["36"],
+					"variables": {
+						"n": "10",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une urne contient $14$ boules numérotées de $1$ à $14$. On tire simultanément $3$ boules.\n\nCombien de tirages contiennent la boule numéro $1$ ?\n\n$[?]$",
+					"reponse": ["78"],
+					"variables": {
+						"n": "14",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Une urne contient $8$ boules numérotées de $1$ à $8$. On tire simultanément $5$ boules.\n\nCombien de tirages contiennent la boule numéro $1$ ?\n\n$[?]$",
+					"reponse": ["35"],
+					"variables": {
+						"n": "8",
+						"k": "5"
+					}
+				}
+			]
+		}
+	]
+}

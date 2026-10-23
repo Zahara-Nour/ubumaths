@@ -1,0 +1,476 @@
+{
+	"template_id": "2dd2b712-3687-4910-ab92-378c46125129",
+	"titre": "Trouver une racine évidente d'un polynôme",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Polynôme du second degré > Racines",
+	"mis_a_jour": "2026-10-03T10:14:38.233001+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-253",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "r",
+						"expression": "1|-1|2|-2"
+					},
+					{
+						"name": "s",
+						"expression": "-6..6"
+					}
+				],
+				"conditions": ["s != r"],
+				"enonce_brut": "Trouve une racine évidente de ce polynôme :\n\n$$P(x)={{eval:x^2-(r+s)x+r*s}}$$\n\nUne racine évidente est $?$.",
+				"reponses_brutes": ["{{r}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 42,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -2,
+				"max": 2,
+				"nb_distinctes": 4,
+				"valeurs": [-2, -1, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -2,
+				"max": 12,
+				"nb_distinctes": 12,
+				"valeurs": [-2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "200/300",
+					"−": "134/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 1,
+					"enonce": "Trouve une racine évidente de ce polynôme :\n\n$$P \\left( x \\right) = x^2 - 8 x + 12$$\n\nUne racine évidente est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"x": "x",
+						"r": "2",
+						"s": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-2)",
+					"graine": 7,
+					"enonce": "Trouve une racine évidente de ce polynôme :\n\n$$P \\left( x \\right) = x^2 - x - 6$$\n\nUne racine évidente est $[?]$.",
+					"reponse": ["-2"],
+					"variables": {
+						"x": "x",
+						"r": "-2",
+						"s": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve une racine évidente de ce polynôme :\n\n$$P \\left( x \\right) = x^2 + x$$\n\nUne racine évidente est $[?]$.",
+					"reponse": ["-1"],
+					"variables": {
+						"x": "x",
+						"r": "-1",
+						"s": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve une racine évidente de ce polynôme :\n\n$$P \\left( x \\right) = x^2 + 7 x + 6$$\n\nUne racine évidente est $[?]$.",
+					"reponse": ["-1"],
+					"variables": {
+						"x": "x",
+						"r": "-1",
+						"s": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve une racine évidente de ce polynôme :\n\n$$P \\left( x \\right) = x^2 + 4 x - 5$$\n\nUne racine évidente est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"x": "x",
+						"r": "1",
+						"s": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "r",
+						"expression": "1|-1"
+					},
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..7;±"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-(q+a*r)"
+					},
+					{
+						"name": "c",
+						"expression": "eval:q*r"
+					}
+				],
+				"conditions": ["q != a*r"],
+				"enonce_brut": "Trouve une racine évidente de ce polynôme :\n\n$$P(x)={{eval:ax^2+bx+c}}$$\n\nUne racine évidente est $?$.",
+				"reponses_brutes": ["{{r}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 153,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12
+						]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 12,
+				"nb_distinctes": 16,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -1,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [-1, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 12,
+				"nb_distinctes": 17,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "144/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "204/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 13,
+					"enonce": "Trouve une racine évidente de ce polynôme :\n\n$$P \\left( x \\right) = -5 x^2 + 12 x - 7$$\n\nUne racine évidente est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"x": "x",
+						"r": "1",
+						"a": "-5",
+						"q": "-7",
+						"b": "12",
+						"c": "-7"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 3,
+					"enonce": "Trouve une racine évidente de ce polynôme :\n\n$$P \\left( x \\right) = -5 x^2 + x + 4$$\n\nUne racine évidente est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"x": "x",
+						"r": "1",
+						"a": "-5",
+						"q": "4",
+						"b": "1",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Trouve une racine évidente de ce polynôme :\n\n$$P \\left( x \\right) = 5 x^2 - 2 x - 7$$\n\nUne racine évidente est $[?]$.",
+					"reponse": ["-1"],
+					"variables": {
+						"x": "x",
+						"r": "-1",
+						"a": "5",
+						"q": "7",
+						"b": "-2",
+						"c": "-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve une racine évidente de ce polynôme :\n\n$$P \\left( x \\right) = 2 x^2 - 8 x + 6$$\n\nUne racine évidente est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"x": "x",
+						"r": "1",
+						"a": "2",
+						"q": "6",
+						"b": "-8",
+						"c": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve une racine évidente de ce polynôme :\n\n$$P \\left( x \\right) = -5 x^2 + 9 x - 4$$\n\nUne racine évidente est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"x": "x",
+						"r": "1",
+						"a": "-5",
+						"q": "-4",
+						"b": "9",
+						"c": "-4"
+					}
+				}
+			]
+		}
+	]
+}

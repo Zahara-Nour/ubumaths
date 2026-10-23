@@ -1,0 +1,685 @@
+{
+	"template_id": "04ec9518-1d43-461c-beb0-aa38d62b6835",
+	"titre": "Limite en un point : dénominateur qui tend vers 0",
+	"sous_titre": "Limite à droite, à gauche ou des deux côtés de k/(x−a), k/(x−a)², (x+b)/(x−a) : signe du dénominateur selon le côté (pièges : côté oublié, signe du numérateur, 0 au lieu de ±∞)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Limites de fonctions > Limite en un point",
+	"mis_a_jour": "2026-10-04T17:40:56.075542+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-230",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-415",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-5..5"
+					},
+					{
+						"name": "k",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["a != 0"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à droite** (pour $x>{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+				"reponses_brutes": ["{{if:k>0|+\\infty|-\\infty}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 151,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["+\\infty", "-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"+": "150/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=\\dfrac{ 9 }{x+5}$.\n\nDétermine la limite de $f$ en $-5$ à droite (pour $x > -5$).\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-5",
+						"k": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=\\dfrac{ 1 }{x+5}$.\n\nDétermine la limite de $f$ en $-5$ à droite (pour $x > -5$).\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-5",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=-\\dfrac{ 4 }{x+2}$.\n\nDétermine la limite de $f$ en $-2$ à droite (pour $x > -2$).\n\n$\\displaystyle\\lim_{x\\to -2}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-2",
+						"k": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=-\\dfrac{ 1 }{x+5}$.\n\nDétermine la limite de $f$ en $-5$ à droite (pour $x > -5$).\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-5",
+						"k": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=-\\dfrac{ 6 }{x+2}$.\n\nDétermine la limite de $f$ en $-2$ à droite (pour $x > -2$).\n\n$\\displaystyle\\lim_{x\\to -2}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-2",
+						"k": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-5..5"
+					},
+					{
+						"name": "k",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["a != 0"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à gauche** (pour $x<{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+				"reponses_brutes": ["{{if:k>0|-\\infty|+\\infty}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 151,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["+\\infty", "-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"+": "150/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=\\dfrac{ 9 }{x+5}$.\n\nDétermine la limite de $f$ en $-5$ à gauche (pour $x<-5$).\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-5",
+						"k": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=\\dfrac{ 1 }{x+5}$.\n\nDétermine la limite de $f$ en $-5$ à gauche (pour $x<-5$).\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-5",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=-\\dfrac{ 4 }{x+2}$.\n\nDétermine la limite de $f$ en $-2$ à gauche (pour $x<-2$).\n\n$\\displaystyle\\lim_{x\\to -2}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-2",
+						"k": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=-\\dfrac{ 1 }{x+5}$.\n\nDétermine la limite de $f$ en $-5$ à gauche (pour $x<-5$).\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-5",
+						"k": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=-\\dfrac{ 6 }{x+2}$.\n\nDétermine la limite de $f$ en $-2$ à gauche (pour $x<-2$).\n\n$\\displaystyle\\lim_{x\\to -2}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-2",
+						"k": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-5..5"
+					},
+					{
+						"name": "k",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["a != 0"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)={{if:k>0|\\dfrac{ {{k}} }|-\\dfrac{ {{eval:abs(k)}} }}}{\\left(x{{eval:-a;+}}\\right)^{2}}$.\n\nDétermine la limite de $f$ en ${{a}}$.\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+				"reponses_brutes": ["{{if:k>0|+\\infty|-\\infty}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 151,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["+\\infty", "-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "150/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=\\dfrac{ 9 }{\\left(x+5\\right)^{2}}$.\n\nDétermine la limite de $f$ en $-5$.\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-5",
+						"k": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=\\dfrac{ 1 }{\\left(x+5\\right)^{2}}$.\n\nDétermine la limite de $f$ en $-5$.\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-5",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=-\\dfrac{ 4 }{\\left(x+2\\right)^{2}}$.\n\nDétermine la limite de $f$ en $-2$.\n\n$\\displaystyle\\lim_{x\\to -2}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-2",
+						"k": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=-\\dfrac{ 1 }{\\left(x+5\\right)^{2}}$.\n\nDétermine la limite de $f$ en $-5$.\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-5",
+						"k": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=-\\dfrac{ 6 }{\\left(x+2\\right)^{2}}$.\n\nDétermine la limite de $f$ en $-2$.\n\n$\\displaystyle\\lim_{x\\to -2}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-2",
+						"k": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-5..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["a != 0", "a + b != 0"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ {{a}} \\right\\}$ par $f(x)=\\dfrac{x{{b;+}}}{x{{eval:-a;+}}}$.\n\nDétermine la limite de $f$ en ${{a}}$ **à droite** (pour $x>{{a}}$).\n\n$\\displaystyle\\lim_{x\\to {{a}}}f(x)=?$",
+				"reponses_brutes": ["{{if:a+b>0|+\\infty|-\\infty}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 147,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["+\\infty", "-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 14,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"+": "238/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=\\dfrac{x+9}{x+5}$.\n\nDétermine la limite de $f$ en $-5$ à droite (pour $x > -5$).\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["+\\infty"],
+					"variables": {
+						"a": "-5",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=\\dfrac{x+1}{x+5}$.\n\nDétermine la limite de $f$ en $-5$ à droite (pour $x > -5$).\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-5",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=\\dfrac{x-4}{x+2}$.\n\nDétermine la limite de $f$ en $-2$ à droite (pour $x > -2$).\n\n$\\displaystyle\\lim_{x\\to -2}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-2",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -5 \\right\\}$ par $f(x)=\\dfrac{x-1}{x+5}$.\n\nDétermine la limite de $f$ en $-5$ à droite (pour $x > -5$).\n\n$\\displaystyle\\lim_{x\\to -5}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-5",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}\\setminus\\left\\{ -2 \\right\\}$ par $f(x)=\\dfrac{x-6}{x+2}$.\n\nDétermine la limite de $f$ en $-2$ à droite (pour $x > -2$).\n\n$\\displaystyle\\lim_{x\\to -2}f(x)=[?]$",
+					"reponse": ["-\\infty"],
+					"variables": {
+						"a": "-2",
+						"b": "-6"
+					}
+				}
+			]
+		}
+	]
+}

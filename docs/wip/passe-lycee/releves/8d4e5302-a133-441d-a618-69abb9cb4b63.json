@@ -1,0 +1,339 @@
+{
+	"template_id": "8d4e5302-a133-441d-a618-69abb9cb4b63",
+	"titre": "Lire le premier terme et la raison sur un graphique",
+	"sous_titre": "Suite arithmétique : lire u_0 et la raison r sur le nuage de points",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Représentation graphique > Lire un terme",
+	"mis_a_jour": "2026-10-01T20:22:23.836871+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-221",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-5..11"
+					},
+					{
+						"name": "r",
+						"expression": "1..3;±"
+					}
+				],
+				"conditions": ["a+5*r >= -5", "a+5*r <= 11", "a != r"],
+				"enonce_brut": "La suite arithmétique $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 6\ny: -6 ; 12\nu(n) = {{a}}+({{r}})*n pour n de 0 à 5   bleu   nom=u_n\ngrille: 1 ; 1\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite arithmétique, un point par rang n.\n```\n\nLis son premier terme $u_0$ et sa raison $r$.\n\n$u_0=?$ et $r=?$",
+				"reponses_brutes": ["{{eval:a}}", "{{eval:r}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 11,
+				"nb_distinctes": 17,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 11,
+				"nb_distinctes": 17,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (11)",
+					"graine": 24,
+					"enonce": "La suite arithmétique $\\left( u_n \\right)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nLis son premier terme $u_0$ et sa raison $r$.\n\n$u_0 = [?]$ et $r = [?]$",
+					"reponse": ["11", "-2"],
+					"variables": {
+						"a": "11",
+						"r": "-2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "La suite arithmétique $\\left( u_n \\right)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nLis son premier terme $u_0$ et sa raison $r$.\n\n$u_0 = [?]$ et $r = [?]$",
+					"reponse": ["-5", "1"],
+					"variables": {
+						"a": "-5",
+						"r": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..7"
+					},
+					{
+						"name": "s",
+						"expression": "1|-1"
+					}
+				],
+				"conditions": ["a+4*s >= 0", "a+4*s <= 7"],
+				"enonce_brut": "La suite arithmétique $(u_n)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n```courbe\nx: -1 ; 9\ny: -1 ; 8\nu(n) = {{a}}+({{s}})*n/2 pour n de 0 à 8   bleu   nom=u_n\ngrille: 1 ; 0.5\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite arithmétique, un point par rang n.\n```\n\nLis son premier terme $u_0$ et sa raison $r$.\n\n$u_0=?$ et $r=?$",
+				"reponses_brutes": ["{{eval:a}}", "{{eval:s/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["-\\dfrac{1}{2}", "\\dfrac{1}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 7,
+				"nb_distinctes": 8,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 7,
+				"nb_distinctes": 8,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 1,
+					"enonce": "La suite arithmétique $\\left( u_n \\right)$ est représentée ci-dessous par un nuage de points : le point d'abscisse $n$ a pour ordonnée $u_n$.\n\n[courbe]\n\nLis son premier terme $u_0$ et sa raison $r$.\n\n$u_0 = [?]$ et $r = [?]$",
+					"reponse": ["7", "-\\dfrac{1}{2}"],
+					"variables": {
+						"a": "7",
+						"s": "-1"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,408 @@
+{
+	"template_id": "c4372fd8-eb9d-4d62-a01a-7ab7618eed4b",
+	"titre": "Appliquer une évolution en pourcentage",
+	"sous_titre": "Nouvelle valeur après une hausse ou une baisse",
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Variations",
+	"mis_a_jour": "2026-10-04T14:09:14.301633+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-377",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2..30"
+					},
+					{
+						"name": "v",
+						"expression": "eval:10*k"
+					},
+					{
+						"name": "t",
+						"expression": "5|10|15|20|25|30|40|50|60|75"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un prix de ${{v}}$ € augmente de ${{t}}\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $?$ €.",
+				"reponses_brutes": ["{{eval:v*(1+t/100);d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 184,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 29,
+						"valeurs": [
+							2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+							25, 26, 27, 28, 29, 30
+						]
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 300,
+						"negatif_possible": false,
+						"nb_distinctes": 29,
+						"valeurs": [
+							20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200,
+							210, 220, 230, 240, 250, 260, 270, 280, 290, 300
+						]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 75,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [5, 10, 15, 20, 25, 30, 40, 50, 60, 75]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 21,
+						"max": 525,
+						"negatif_possible": false,
+						"nb_distinctes": 154
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 300,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 21,
+				"max": 525,
+				"nb_distinctes": 154,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 5,
+				"max": 525,
+				"nb_distinctes": 167,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (525)",
+					"graine": 115,
+					"enonce": "Un prix de $300$ € augmente de $75\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $[?]$ €.",
+					"reponse": ["525"],
+					"variables": {
+						"k": "30",
+						"v": "300",
+						"t": "75"
+					}
+				},
+				{
+					"role": "plus petite valeur (5)",
+					"graine": 13,
+					"enonce": "Un prix de $120$ € augmente de $5\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $[?]$ €.",
+					"reponse": ["126"],
+					"variables": {
+						"k": "12",
+						"v": "120",
+						"t": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Un prix de $20$ € augmente de $30\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $[?]$ €.",
+					"reponse": ["26"],
+					"variables": {
+						"k": "2",
+						"v": "20",
+						"t": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un prix de $110$ € augmente de $15\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $[?]$ €.",
+					"reponse": ["126.5"],
+					"variables": {
+						"k": "11",
+						"v": "110",
+						"t": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un prix de $30$ € augmente de $25\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $[?]$ €.",
+					"reponse": ["37.5"],
+					"variables": {
+						"k": "3",
+						"v": "30",
+						"t": "25"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2..30"
+					},
+					{
+						"name": "v",
+						"expression": "eval:10*k"
+					},
+					{
+						"name": "t",
+						"expression": "5|10|15|20|25|30|40|50|60|75"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un prix de ${{v}}$ € baisse de ${{t}}\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $?$ €.",
+				"reponses_brutes": ["{{eval:v*(1-t/100);d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 184,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 29,
+						"valeurs": [
+							2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+							25, 26, 27, 28, 29, 30
+						]
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 300,
+						"negatif_possible": false,
+						"nb_distinctes": 29,
+						"valeurs": [
+							20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200,
+							210, 220, 230, 240, 250, 260, 270, 280, 290, 300
+						]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 75,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [5, 10, 15, 20, 25, 30, 40, 50, 60, 75]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 5,
+						"max": 285,
+						"negatif_possible": false,
+						"nb_distinctes": 139
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 300,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 5,
+				"max": 285,
+				"nb_distinctes": 139,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 5,
+				"max": 300,
+				"nb_distinctes": 147,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (300)",
+					"graine": 37,
+					"enonce": "Un prix de $300$ € baisse de $5\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $[?]$ €.",
+					"reponse": ["285"],
+					"variables": {
+						"k": "30",
+						"v": "300",
+						"t": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (5)",
+					"graine": 13,
+					"enonce": "Un prix de $120$ € baisse de $5\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $[?]$ €.",
+					"reponse": ["114"],
+					"variables": {
+						"k": "12",
+						"v": "120",
+						"t": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Un prix de $20$ € baisse de $30\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $[?]$ €.",
+					"reponse": ["14"],
+					"variables": {
+						"k": "2",
+						"v": "20",
+						"t": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un prix de $110$ € baisse de $15\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $[?]$ €.",
+					"reponse": ["93.5"],
+					"variables": {
+						"k": "11",
+						"v": "110",
+						"t": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un prix de $30$ € baisse de $25\\,\\%$. Donne le nouveau prix.\n\nLe nouveau prix est $[?]$ €.",
+					"reponse": ["22.5"],
+					"variables": {
+						"k": "3",
+						"v": "30",
+						"t": "25"
+					}
+				}
+			]
+		}
+	]
+}

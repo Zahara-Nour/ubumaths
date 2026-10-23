@@ -1,0 +1,2450 @@
+{
+	"template_id": "9e1d084e-ff83-4852-ad51-fe79c3328ae0",
+	"titre": "Résoudre une inéquation du second degré",
+	"sous_titre": "ax²+bx+c > / ≥ / < / ≤ 0 : ensemble des solutions en intervalles, depuis le signe du trinôme",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Polynôme du second degré > Signe et inéquations",
+	"mis_a_jour": "2026-10-01T10:26:06.108768+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-250",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 9,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "r",
+						"expression": "-6..5"
+					},
+					{
+						"name": "s",
+						"expression": "-5..6"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-a*(r+s)"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*r*s"
+					}
+				],
+				"conditions": ["r < s"],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}>0$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["]-\\infty;{{r}}[\\cup]{{s}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 171,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -33,
+						"max": 33,
+						"negatif_possible": true,
+						"nb_distinctes": 43
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -108,
+						"max": 90,
+						"negatif_possible": true,
+						"nb_distinctes": 52
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 75,
+						"exemples": [
+							"]-\\infty;5[\\cup]6;+\\infty[",
+							"]-\\infty;0[\\cup]5;+\\infty[",
+							"]-\\infty;-6[\\cup]4;+\\infty[",
+							"]-\\infty;-6[\\cup]-3;+\\infty[",
+							"]-\\infty;-1[\\cup]5;+\\infty[",
+							"]-\\infty;-4[\\cup]1;+\\infty[",
+							"]-\\infty;4[\\cup]5;+\\infty[",
+							"]-\\infty;-5[\\cup]-1;+\\infty[",
+							"]-\\infty;1[\\cup]5;+\\infty[",
+							"]-\\infty;-4[\\cup]-2;+\\infty[",
+							"]-\\infty;-6[\\cup]-5;+\\infty[",
+							"]-\\infty;-6[\\cup]6;+\\infty["
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 6,
+							"nb_distinctes": 7,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 108,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 108,
+				"nb_distinctes": 37,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"+": "196/300",
+					"−": "150/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (108)",
+					"graine": 14,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $3 x^2 - 108 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-6[\\cup]6;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"r": "-6",
+						"s": "6",
+						"b": "0",
+						"c": "-108"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2 x^2 - 22 x + 60 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;5[\\cup]6;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"r": "5",
+						"s": "6",
+						"b": "-22",
+						"c": "60"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 - 5 x > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;0[\\cup]5;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"r": "0",
+						"s": "5",
+						"b": "-5",
+						"c": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2 x^2 + 4 x - 48 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-6[\\cup]4;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"r": "-6",
+						"s": "4",
+						"b": "4",
+						"c": "-48"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 + 9 x + 18 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-6[\\cup]-3;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"r": "-6",
+						"s": "-3",
+						"b": "9",
+						"c": "18"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "r",
+						"expression": "-6..5"
+					},
+					{
+						"name": "s",
+						"expression": "-5..6"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-a*(r+s)"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*r*s"
+					}
+				],
+				"conditions": ["r < s"],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}\\le0$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["[{{r}};{{s}}]"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 171,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -33,
+						"max": 33,
+						"negatif_possible": true,
+						"nb_distinctes": 43
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -108,
+						"max": 90,
+						"negatif_possible": true,
+						"nb_distinctes": 52
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 75,
+						"exemples": [
+							"[5;6]",
+							"[0;5]",
+							"[-6;4]",
+							"[-6;-3]",
+							"[-1;5]",
+							"[-4;1]",
+							"[4;5]",
+							"[-5;-1]",
+							"[1;5]",
+							"[-4;-2]",
+							"[-6;-5]",
+							"[-6;6]"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 6,
+							"nb_distinctes": 13,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 108,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 108,
+				"nb_distinctes": 43,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "196/300",
+					"−": "150/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (108)",
+					"graine": 14,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $3x^2-108\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[-6;6]"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"r": "-6",
+						"s": "6",
+						"b": "0",
+						"c": "-108"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2x^2+4x-48\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[-6;4]"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"r": "-6",
+						"s": "4",
+						"b": "4",
+						"c": "-48"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2x^2-22x+60\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[5;6]"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"r": "5",
+						"s": "6",
+						"b": "-22",
+						"c": "60"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2-5x\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[0;5]"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"r": "0",
+						"s": "5",
+						"b": "-5",
+						"c": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2+9x+18\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[-6;-3]"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"r": "-6",
+						"s": "-3",
+						"b": "9",
+						"c": "18"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "-3..-1"
+					},
+					{
+						"name": "r",
+						"expression": "-6..5"
+					},
+					{
+						"name": "s",
+						"expression": "-5..6"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-a*(r+s)"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*r*s"
+					}
+				],
+				"conditions": ["r < s"],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}\\ge0$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["[{{r}};{{s}}]"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 171,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-3, -2, -1]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -33,
+						"max": 33,
+						"negatif_possible": true,
+						"nb_distinctes": 44
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -90,
+						"max": 90,
+						"negatif_possible": true,
+						"nb_distinctes": 50
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 75,
+						"exemples": [
+							"[5;6]",
+							"[0;5]",
+							"[-6;4]",
+							"[-6;-3]",
+							"[-1;5]",
+							"[-4;1]",
+							"[4;5]",
+							"[-5;-1]",
+							"[1;5]",
+							"[-4;-2]",
+							"[-6;-5]",
+							"[-6;6]"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 6,
+							"nb_distinctes": 13,
+							"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 90,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 90,
+				"nb_distinctes": 41,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "166/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (90)",
+					"graine": 13,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $-3x^2-33x-90\\ge0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[-6;-5]"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"r": "-6",
+						"s": "-5",
+						"b": "-33",
+						"c": "-90"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $-2x^2-4x+48\\ge0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[-6;4]"],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"r": "-6",
+						"s": "4",
+						"b": "-4",
+						"c": "48"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $-2x^2+22x-60\\ge0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[5;6]"],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"r": "5",
+						"s": "6",
+						"b": "22",
+						"c": "-60"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $15x-3x^2\\ge0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[0;5]"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"r": "0",
+						"s": "5",
+						"b": "15",
+						"c": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $-3x^2-27x-54\\ge0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[-6;-3]"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"r": "-6",
+						"s": "-3",
+						"b": "-27",
+						"c": "-54"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "-3..-1"
+					},
+					{
+						"name": "r",
+						"expression": "-6..5"
+					},
+					{
+						"name": "s",
+						"expression": "-5..6"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-a*(r+s)"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*r*s"
+					}
+				],
+				"conditions": ["r < s"],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}<0$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["]-\\infty;{{r}}[\\cup]{{s}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 171,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-3, -2, -1]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -33,
+						"max": 33,
+						"negatif_possible": true,
+						"nb_distinctes": 44
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -90,
+						"max": 90,
+						"negatif_possible": true,
+						"nb_distinctes": 50
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 75,
+						"exemples": [
+							"]-\\infty;5[\\cup]6;+\\infty[",
+							"]-\\infty;0[\\cup]5;+\\infty[",
+							"]-\\infty;-6[\\cup]4;+\\infty[",
+							"]-\\infty;-6[\\cup]-3;+\\infty[",
+							"]-\\infty;-1[\\cup]5;+\\infty[",
+							"]-\\infty;-4[\\cup]1;+\\infty[",
+							"]-\\infty;4[\\cup]5;+\\infty[",
+							"]-\\infty;-5[\\cup]-1;+\\infty[",
+							"]-\\infty;1[\\cup]5;+\\infty[",
+							"]-\\infty;-4[\\cup]-2;+\\infty[",
+							"]-\\infty;-6[\\cup]-5;+\\infty[",
+							"]-\\infty;-6[\\cup]6;+\\infty["
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 6,
+							"nb_distinctes": 7,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 90,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 90,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"+": "166/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (90)",
+					"graine": 13,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $-3 x^2 - 33 x - 90 < 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-6[\\cup]-5;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"r": "-6",
+						"s": "-5",
+						"b": "-33",
+						"c": "-90"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $-2 x^2 + 22 x - 60 < 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;5[\\cup]6;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"r": "5",
+						"s": "6",
+						"b": "22",
+						"c": "-60"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $15 x - 3 x^2 < 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;0[\\cup]5;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"r": "0",
+						"s": "5",
+						"b": "15",
+						"c": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $-2 x^2 - 4 x + 48 < 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-6[\\cup]4;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"r": "-6",
+						"s": "4",
+						"b": "-4",
+						"c": "48"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $-3 x^2 - 27 x - 54 < 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-\\infty;-6[\\cup]-3;+\\infty["],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"r": "-6",
+						"s": "-3",
+						"b": "-27",
+						"c": "-54"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "h",
+						"expression": "-5..5"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-2*a*h"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*h^2+k"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}\\le0$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["\\emptyset"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 142,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-30, -24, -20, -18, -16, -12, -10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 16, 18, 20,
+							24, 30
+						]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 80,
+						"negatif_possible": false,
+						"nb_distinctes": 47
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\emptyset"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 80,
+				"nb_distinctes": 49,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 80,
+				"nb_distinctes": 49,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "141/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (80)",
+					"graine": 58,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $3x^2+30x+80\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\emptyset"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"h": "-5",
+						"k": "5",
+						"b": "30",
+						"c": "80"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2x^2-20x+55\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\emptyset"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"h": "5",
+						"k": "5",
+						"b": "-20",
+						"c": "55"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2+5\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\emptyset"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"h": "0",
+						"k": "5",
+						"b": "0",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2x^2+20x+54\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\emptyset"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"h": "-5",
+						"k": "4",
+						"b": "20",
+						"c": "54"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2+10x+27\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\emptyset"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"h": "-5",
+						"k": "2",
+						"b": "10",
+						"c": "27"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "h",
+						"expression": "-5..5"
+					},
+					{
+						"name": "k",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-2*a*h"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*h^2+k"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}>0$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["\\mathbb{R}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 142,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-30, -24, -20, -18, -16, -12, -10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 16, 18, 20,
+							24, 30
+						]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 80,
+						"negatif_possible": false,
+						"nb_distinctes": 47
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\mathbb{R}"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 80,
+				"nb_distinctes": 49,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 80,
+				"nb_distinctes": 49,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"+": "300/300",
+					"−": "141/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (80)",
+					"graine": 58,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $3 x^2 + 30 x + 80 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\mathbb{R}"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"h": "-5",
+						"k": "5",
+						"b": "30",
+						"c": "80"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2 x^2 - 20 x + 55 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\mathbb{R}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"h": "5",
+						"k": "5",
+						"b": "-20",
+						"c": "55"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 + 5 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\mathbb{R}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"h": "0",
+						"k": "5",
+						"b": "0",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2 x^2 + 20 x + 54 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\mathbb{R}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"h": "-5",
+						"k": "4",
+						"b": "20",
+						"c": "54"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 + 10 x + 27 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\mathbb{R}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"h": "-5",
+						"k": "2",
+						"b": "10",
+						"c": "27"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "h",
+						"expression": "-5..5"
+					},
+					{
+						"name": "k",
+						"expression": "0"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-2*a*h"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*h^2+k"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}>0$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["\\mathbb{R}\\setminus\\{ {{h}} \\}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 33,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-30, -24, -20, -18, -16, -12, -10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 16, 18, 20,
+							24, 30
+						]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 75,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [0, 1, 2, 3, 4, 8, 9, 12, 16, 18, 25, 27, 32, 48, 50, 75]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"\\mathbb{R}\\setminus\\{ -1 \\}",
+							"\\mathbb{R}\\setminus\\{ -2 \\}",
+							"\\mathbb{R}\\setminus\\{ -3 \\}",
+							"\\mathbb{R}\\setminus\\{ -4 \\}",
+							"\\mathbb{R}\\setminus\\{ -5 \\}",
+							"\\mathbb{R}\\setminus\\{ 0 \\}",
+							"\\mathbb{R}\\setminus\\{ 1 \\}",
+							"\\mathbb{R}\\setminus\\{ 2 \\}",
+							"\\mathbb{R}\\setminus\\{ 3 \\}",
+							"\\mathbb{R}\\setminus\\{ 4 \\}",
+							"\\mathbb{R}\\setminus\\{ 5 \\}"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 11,
+							"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 75,
+				"nb_distinctes": 21,
+				"valeurs": [0, 1, 2, 3, 4, 6, 8, 9, 10, 12, 16, 18, 20, 24, 25, 27, 30, 32, 48, 50, 75],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 75,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 16, 18, 20, 24, 25, 27, 30, 32, 48,
+					50, 75
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"+": "270/300",
+					"−": "141/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (75)",
+					"graine": 31,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $3 x^2 + 30 x + 75 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\mathbb{R}\\setminus\\{ -5 \\}"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"h": "-5",
+						"k": "0",
+						"b": "30",
+						"c": "75"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2 x^2 + 20 x + 50 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\mathbb{R}\\setminus\\{ -5 \\}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"h": "-5",
+						"k": "0",
+						"b": "20",
+						"c": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2 x^2 - 20 x + 50 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\mathbb{R}\\setminus\\{ 5 \\}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"h": "5",
+						"k": "0",
+						"b": "-20",
+						"c": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\mathbb{R}\\setminus\\{ 0 \\}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"h": "0",
+						"k": "0",
+						"b": "0",
+						"c": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 + 10 x + 25 > 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\mathbb{R}\\setminus\\{ -5 \\}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"h": "-5",
+						"k": "0",
+						"b": "10",
+						"c": "25"
+					}
+				}
+			]
+		},
+		{
+			"variation": 8,
+			"graines": "1..300 (modèle réduit à la variation 8)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..3"
+					},
+					{
+						"name": "h",
+						"expression": "-5..5"
+					},
+					{
+						"name": "k",
+						"expression": "0"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-2*a*h"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*h^2+k"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}\\le0$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["\\{ {{h}} \\}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 33,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-30, -24, -20, -18, -16, -12, -10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10, 12, 16, 18, 20,
+							24, 30
+						]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 75,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [0, 1, 2, 3, 4, 8, 9, 12, 16, 18, 25, 27, 32, 48, 50, 75]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"\\{ -1 \\}",
+							"\\{ -2 \\}",
+							"\\{ -3 \\}",
+							"\\{ -4 \\}",
+							"\\{ -5 \\}",
+							"\\{ 0 \\}",
+							"\\{ 1 \\}",
+							"\\{ 2 \\}",
+							"\\{ 3 \\}",
+							"\\{ 4 \\}",
+							"\\{ 5 \\}"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 11,
+							"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 75,
+				"nb_distinctes": 21,
+				"valeurs": [0, 1, 2, 3, 4, 6, 8, 9, 10, 12, 16, 18, 20, 24, 25, 27, 30, 32, 48, 50, 75],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 75,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 16, 18, 20, 24, 25, 27, 30, 32, 48,
+					50, 75
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "270/300",
+					"−": "141/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (75)",
+					"graine": 31,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $3x^2+30x+75\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{ -5 \\}"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"h": "-5",
+						"k": "0",
+						"b": "30",
+						"c": "75"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2x^2+20x+50\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{ -5 \\}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"h": "-5",
+						"k": "0",
+						"b": "20",
+						"c": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $2x^2-20x+50\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{ 5 \\}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"h": "5",
+						"k": "0",
+						"b": "-20",
+						"c": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{ 0 \\}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"h": "0",
+						"k": "0",
+						"b": "0",
+						"c": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2+10x+25\\le0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["\\{ -5 \\}"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"h": "-5",
+						"k": "0",
+						"b": "10",
+						"c": "25"
+					}
+				}
+			]
+		},
+		{
+			"variation": 9,
+			"graines": "1..300 (modèle réduit à la variation 9)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "p",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "r",
+						"expression": "2|3|5|6|7"
+					},
+					{
+						"name": "a",
+						"expression": "1"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-2*p"
+					},
+					{
+						"name": "c",
+						"expression": "eval:p^2-r"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation ${{eval:ax^2+bx+c}}<0$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["]{{p}}-sqrt({{r}});{{p}}+sqrt({{r}})["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 40,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-8, -6, -4, -2, 2, 4, 6, 8]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 14,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 6, 7, 9, 10, 11, 13, 14]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 40,
+						"exemples": [
+							"]1-sqrt(7);1+sqrt(7)[",
+							"]-2-sqrt(5);-2+sqrt(5)[",
+							"]-1-sqrt(2);-1+sqrt(2)[",
+							"]-3-sqrt(2);-3+sqrt(2)[",
+							"]-3-sqrt(6);-3+sqrt(6)[",
+							"]2-sqrt(3);2+sqrt(3)[",
+							"]4-sqrt(6);4+sqrt(6)[",
+							"]-2-sqrt(6);-2+sqrt(6)[",
+							"]-3-sqrt(7);-3+sqrt(7)[",
+							"]2-sqrt(7);2+sqrt(7)[",
+							"]1-sqrt(5);1+sqrt(5)[",
+							"]-4-sqrt(2);-4+sqrt(2)["
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 7,
+							"nb_distinctes": 7,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 14,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 7,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 14,
+				"nb_distinctes": 14,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"−": "169/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "225/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (14)",
+					"graine": 13,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 + 8 x + 14 < 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-4-sqrt(2);-4+sqrt(2)["],
+					"variables": {
+						"x": "x",
+						"p": "-4",
+						"r": "2",
+						"a": "1",
+						"b": "8",
+						"c": "14"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 - 2 x - 6 < 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]1-sqrt(7);1+sqrt(7)["],
+					"variables": {
+						"x": "x",
+						"p": "1",
+						"r": "7",
+						"a": "1",
+						"b": "-2",
+						"c": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 + 4 x - 1 < 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-2-sqrt(5);-2+sqrt(5)["],
+					"variables": {
+						"x": "x",
+						"p": "-2",
+						"r": "5",
+						"a": "1",
+						"b": "4",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 + 2 x - 1 < 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-1-sqrt(2);-1+sqrt(2)["],
+					"variables": {
+						"x": "x",
+						"p": "-1",
+						"r": "2",
+						"a": "1",
+						"b": "2",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $x^2 + 6 x + 7 < 0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]-3-sqrt(2);-3+sqrt(2)["],
+					"variables": {
+						"x": "x",
+						"p": "-3",
+						"r": "2",
+						"a": "1",
+						"b": "6",
+						"c": "7"
+					}
+				}
+			]
+		}
+	]
+}

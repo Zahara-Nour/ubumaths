@@ -1,0 +1,651 @@
+{
+	"template_id": "4b3c1d88-c064-45da-8976-820dff5be28e",
+	"titre": "Convertir des degrés en radians",
+	"sous_titre": "Degrés ↔ radians pour les angles usuels (30°, 45°, 60°, 90°… et leurs multiples), fraction de π réduite",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions trigonométriques > Cercle et radians",
+	"mis_a_jour": "2026-10-02T09:17:21.226355+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-303",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}|\\pi|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}|\\frac{3\\pi}{2}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|\\frac{11\\pi}{6}|2\\pi"
+					},
+					{
+						"name": "d",
+						"expression": "eval:r*180/\\pi"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Convertis en radians un angle de ${{d}}^\\circ$.\n\n${{d}}^\\circ=?$ rad",
+				"reponses_brutes": ["{{r}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"2\\pi",
+							"\\frac{11\\pi}{6}",
+							"\\frac{2\\pi}{3}",
+							"\\frac{3\\pi}{2}",
+							"\\frac{3\\pi}{4}",
+							"\\frac{4\\pi}{3}",
+							"\\frac{5\\pi}{3}",
+							"\\frac{5\\pi}{4}",
+							"\\frac{5\\pi}{6}",
+							"\\frac{7\\pi}{4}",
+							"\\frac{7\\pi}{6}",
+							"\\frac{\\pi}{2}",
+							"\\frac{\\pi}{3}",
+							"\\frac{\\pi}{4}",
+							"\\frac{\\pi}{6}",
+							"\\pi"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 7,
+							"valeurs": [2, 3, 4, 5, 6, 7, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 360,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330, 360]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"2\\pi",
+							"\\frac{11\\pi}{6}",
+							"\\frac{2\\pi}{3}",
+							"\\frac{3\\pi}{2}",
+							"\\frac{3\\pi}{4}",
+							"\\frac{4\\pi}{3}",
+							"\\frac{5\\pi}{3}",
+							"\\frac{5\\pi}{4}",
+							"\\frac{5\\pi}{6}",
+							"\\frac{7\\pi}{4}",
+							"\\frac{7\\pi}{6}",
+							"\\frac{\\pi}{2}",
+							"\\frac{\\pi}{3}",
+							"\\frac{\\pi}{4}",
+							"\\frac{\\pi}{6}",
+							"\\pi"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 7,
+							"valeurs": [2, 3, 4, 5, 6, 7, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 30,
+				"max": 360,
+				"nb_distinctes": 16,
+				"valeurs": [30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330, 360],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 11,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 360,
+				"nb_distinctes": 23,
+				"valeurs": [
+					2, 3, 4, 5, 6, 7, 11, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315,
+					330, 360
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (360)",
+					"graine": 24,
+					"enonce": "Convertis en radians un angle de $360^\\circ$.\n\n$360^\\circ=[?]$ rad",
+					"reponse": ["2\\pi"],
+					"variables": {
+						"r": "2\\pi",
+						"d": "360"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 17,
+					"enonce": "Convertis en radians un angle de $90^\\circ$.\n\n$90^\\circ=[?]$ rad",
+					"reponse": ["\\frac{\\pi}{2}"],
+					"variables": {
+						"r": "\\frac{\\pi}{2}",
+						"d": "90"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Convertis en radians un angle de $30^\\circ$.\n\n$30^\\circ=[?]$ rad",
+					"reponse": ["\\frac{\\pi}{6}"],
+					"variables": {
+						"r": "\\frac{\\pi}{6}",
+						"d": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Convertis en radians un angle de $135^\\circ$.\n\n$135^\\circ=[?]$ rad",
+					"reponse": ["\\frac{3\\pi}{4}"],
+					"variables": {
+						"r": "\\frac{3\\pi}{4}",
+						"d": "135"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Convertis en radians un angle de $300^\\circ$.\n\n$300^\\circ=[?]$ rad",
+					"reponse": ["\\frac{5\\pi}{3}"],
+					"variables": {
+						"r": "\\frac{5\\pi}{3}",
+						"d": "300"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}|\\frac{\\pi}{2}|\\frac{2\\pi}{3}|\\frac{3\\pi}{4}|\\frac{5\\pi}{6}|\\pi|\\frac{7\\pi}{6}|\\frac{5\\pi}{4}|\\frac{4\\pi}{3}|\\frac{3\\pi}{2}|\\frac{5\\pi}{3}|\\frac{7\\pi}{4}|\\frac{11\\pi}{6}|2\\pi"
+					},
+					{
+						"name": "d",
+						"expression": "eval:r*180/\\pi"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Convertis en degrés un angle de ${{r}}$ radians.\n\n${{r}}\\text{ rad}=?\\,^\\circ$",
+				"reponses_brutes": ["{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"2\\pi",
+							"\\frac{11\\pi}{6}",
+							"\\frac{2\\pi}{3}",
+							"\\frac{3\\pi}{2}",
+							"\\frac{3\\pi}{4}",
+							"\\frac{4\\pi}{3}",
+							"\\frac{5\\pi}{3}",
+							"\\frac{5\\pi}{4}",
+							"\\frac{5\\pi}{6}",
+							"\\frac{7\\pi}{4}",
+							"\\frac{7\\pi}{6}",
+							"\\frac{\\pi}{2}",
+							"\\frac{\\pi}{3}",
+							"\\frac{\\pi}{4}",
+							"\\frac{\\pi}{6}",
+							"\\pi"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 7,
+							"valeurs": [2, 3, 4, 5, 6, 7, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 360,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330, 360]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 360,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330, 360]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 11,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 30,
+				"max": 360,
+				"nb_distinctes": 16,
+				"valeurs": [30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330, 360],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 360,
+				"nb_distinctes": 23,
+				"valeurs": [
+					2, 3, 4, 5, 6, 7, 11, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315,
+					330, 360
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "253/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (360)",
+					"graine": 24,
+					"enonce": "Convertis en degrés un angle de $2 \\pi$ radians.\n\n$2\\pi\\text{ rad}=[?]\\,^\\circ$",
+					"reponse": ["360"],
+					"variables": {
+						"r": "2\\pi",
+						"d": "360"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 17,
+					"enonce": "Convertis en degrés un angle de $\\frac{\\pi}{2}$ radians.\n\n$\\frac{\\pi}{2}\\text{ rad}=[?]\\,^\\circ$",
+					"reponse": ["90"],
+					"variables": {
+						"r": "\\frac{\\pi}{2}",
+						"d": "90"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Convertis en degrés un angle de $\\frac{\\pi}{6}$ radians.\n\n$\\frac{\\pi}{6}\\text{ rad}=[?]\\,^\\circ$",
+					"reponse": ["30"],
+					"variables": {
+						"r": "\\frac{\\pi}{6}",
+						"d": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Convertis en degrés un angle de $\\frac{3\\pi}{4}$ radians.\n\n$\\frac{3\\pi}{4}\\text{ rad}=[?]\\,^\\circ$",
+					"reponse": ["135"],
+					"variables": {
+						"r": "\\frac{3\\pi}{4}",
+						"d": "135"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Convertis en degrés un angle de $\\frac{5\\pi}{3}$ radians.\n\n$\\frac{5\\pi}{3}\\text{ rad}=[?]\\,^\\circ$",
+					"reponse": ["300"],
+					"variables": {
+						"r": "\\frac{5\\pi}{3}",
+						"d": "300"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "\\frac{\\pi}{12}|\\frac{5\\pi}{12}|\\frac{7\\pi}{12}|\\frac{\\pi}{10}|\\frac{\\pi}{5}|\\frac{2\\pi}{5}|\\frac{3\\pi}{5}|\\frac{\\pi}{9}|\\frac{2\\pi}{9}|\\frac{\\pi}{18}"
+					},
+					{
+						"name": "d",
+						"expression": "eval:r*180/\\pi"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Convertis en radians un angle de ${{d}}^\\circ$.\n\n${{d}}^\\circ=?$ rad",
+				"reponses_brutes": ["{{r}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"\\frac{2\\pi}{5}",
+							"\\frac{2\\pi}{9}",
+							"\\frac{3\\pi}{5}",
+							"\\frac{5\\pi}{12}",
+							"\\frac{7\\pi}{12}",
+							"\\frac{\\pi}{10}",
+							"\\frac{\\pi}{12}",
+							"\\frac{\\pi}{18}",
+							"\\frac{\\pi}{5}",
+							"\\frac{\\pi}{9}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 18,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 5, 7, 9, 10, 12, 18],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 108,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [10, 15, 18, 20, 36, 40, 72, 75, 105, 108]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"\\frac{2\\pi}{5}",
+							"\\frac{2\\pi}{9}",
+							"\\frac{3\\pi}{5}",
+							"\\frac{5\\pi}{12}",
+							"\\frac{7\\pi}{12}",
+							"\\frac{\\pi}{10}",
+							"\\frac{\\pi}{12}",
+							"\\frac{\\pi}{18}",
+							"\\frac{\\pi}{5}",
+							"\\frac{\\pi}{9}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 18,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 5, 7, 9, 10, 12, 18],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 10,
+				"max": 108,
+				"nb_distinctes": 10,
+				"valeurs": [10, 15, 18, 20, 36, 40, 72, 75, 105, 108],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 18,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 5, 7, 9, 10, 12, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 108,
+				"nb_distinctes": 16,
+				"valeurs": [2, 3, 5, 7, 9, 10, 12, 15, 18, 20, 36, 40, 72, 75, 105, 108],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (108)",
+					"graine": 8,
+					"enonce": "Convertis en radians un angle de $108^\\circ$.\n\n$108^\\circ=[?]$ rad",
+					"reponse": ["\\frac{3\\pi}{5}"],
+					"variables": {
+						"r": "\\frac{3\\pi}{5}",
+						"d": "108"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 9,
+					"enonce": "Convertis en radians un angle de $40^\\circ$.\n\n$40^\\circ=[?]$ rad",
+					"reponse": ["\\frac{2\\pi}{9}"],
+					"variables": {
+						"r": "\\frac{2\\pi}{9}",
+						"d": "40"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Convertis en radians un angle de $15^\\circ$.\n\n$15^\\circ=[?]$ rad",
+					"reponse": ["\\frac{\\pi}{12}"],
+					"variables": {
+						"r": "\\frac{\\pi}{12}",
+						"d": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Convertis en radians un angle de $18^\\circ$.\n\n$18^\\circ=[?]$ rad",
+					"reponse": ["\\frac{\\pi}{10}"],
+					"variables": {
+						"r": "\\frac{\\pi}{10}",
+						"d": "18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Convertis en radians un angle de $20^\\circ$.\n\n$20^\\circ=[?]$ rad",
+					"reponse": ["\\frac{\\pi}{9}"],
+					"variables": {
+						"r": "\\frac{\\pi}{9}",
+						"d": "20"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,475 @@
+{
+	"template_id": "f3e68e4b-9855-4e91-bc0d-7363b7650b86",
+	"titre": "Tableau croisé : probabilité de A sachant B",
+	"sous_titre": "Calculer P_B(A) dans un tableau à double entrée, d'effectifs ou de pourcentages, sans la confondre avec P_A(B)",
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Probabilités conditionnelles > Tableaux croisés",
+	"mis_a_jour": "2026-10-04T12:00:48.861662+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-396",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "4..60"
+					},
+					{
+						"name": "b",
+						"expression": "4..60"
+					},
+					{
+						"name": "c",
+						"expression": "4..60"
+					},
+					{
+						"name": "d",
+						"expression": "4..60"
+					}
+				],
+				"conditions": ["gcd(a,a+c) > 1", "b != c"],
+				"enonce_brut": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n|---|---|---|---|\n| $A$ | ${{a}}$ | ${{b}}$ | ${{eval:a+b}}$ |\n| $\\overline{A}$ | ${{c}}$ | ${{d}}$ | ${{eval:c+d}}$ |\n| Total | ${{eval:a+c}}$ | ${{eval:b+d}}$ | ${{eval:a+b+c+d}}$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B(A)=?$",
+				"reponses_brutes": ["{{eval:a/(a+c)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 47
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 57
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 55
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.0625,
+						"max": 0.9310344827586207,
+						"negatif_possible": false,
+						"denominateur_min": 2,
+						"denominateur_max": 56,
+						"nb_distinctes": 189
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 211,
+				"nb_distinctes": 182,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 56,
+				"nb_distinctes": 53,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 211,
+				"nb_distinctes": 185,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateur_min": 2,
+				"denominateur_max": 56,
+				"numerateur_min": 1,
+				"numerateur_max": 30,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 46,
+					"max": 46
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (211)",
+					"graine": 117,
+					"enonce": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $54$ | $60$ | $114$ |\n| $\\overline{A}$ | $56$ | $41$ | $97$ |\n| Total | $110$ | $101$ | $211$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{27}{55}"],
+					"variables": {
+						"a": "54",
+						"b": "60",
+						"c": "56",
+						"d": "41"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 6,
+					"enonce": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $8$ | $4$ | $12$ |\n| $\\overline{A}$ | $56$ | $59$ | $115$ |\n| Total | $64$ | $63$ | $127$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{8}"],
+					"variables": {
+						"a": "8",
+						"b": "4",
+						"c": "56",
+						"d": "59"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $20$ | $38$ | $58$ |\n| $\\overline{A}$ | $45$ | $28$ | $73$ |\n| Total | $65$ | $66$ | $131$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{4}{13}"],
+					"variables": {
+						"a": "20",
+						"b": "38",
+						"c": "45",
+						"d": "28"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $22$ | $20$ | $42$ |\n| $\\overline{A}$ | $34$ | $53$ | $87$ |\n| Total | $56$ | $73$ | $129$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{11}{28}"],
+					"variables": {
+						"a": "22",
+						"b": "20",
+						"c": "34",
+						"d": "53"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $6$ | $30$ | $36$ |\n| $\\overline{A}$ | $8$ | $47$ | $55$ |\n| Total | $14$ | $77$ | $91$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{3}{7}"],
+					"variables": {
+						"a": "6",
+						"b": "30",
+						"c": "8",
+						"d": "47"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "5..30"
+					},
+					{
+						"name": "b",
+						"expression": "5..35"
+					},
+					{
+						"name": "c",
+						"expression": "5..30"
+					},
+					{
+						"name": "d",
+						"expression": "eval:100-a-b-c"
+					}
+				],
+				"conditions": ["gcd(a,a+c) > 1", "b != c"],
+				"enonce_brut": "Dans une ville, on note $A$ l'événement « l'habitant a moins de 30 ans » et $B$ l'événement « l'habitant utilise un vélo ». Le tableau donne la répartition des habitants, en pourcentage de la population.\n\n|  | $B$ | $\\overline{B}$ | Total |\n|---|---|---|---|\n| $A$ | ${{a}}\\,\\%$ | ${{b}}\\,\\%$ | ${{eval:a+b}}\\,\\%$ |\n| $\\overline{A}$ | ${{c}}\\,\\%$ | ${{d}}\\,\\%$ | ${{eval:c+d}}\\,\\%$ |\n| Total | ${{eval:a+c}}\\,\\%$ | ${{eval:b+d}}\\,\\%$ | $100\\,\\%$ |\n\nOn choisit un habitant au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B(A)=?$",
+				"reponses_brutes": ["{{eval:a/(a+c)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 294,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 25,
+						"valeurs": [
+							5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28,
+							29, 30
+						]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 35,
+						"negatif_possible": false,
+						"nb_distinctes": 31
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 24,
+						"valeurs": [
+							5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29,
+							30
+						]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 77,
+						"negatif_possible": false,
+						"nb_distinctes": 62
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.14285714285714285,
+						"max": 0.8333333333333334,
+						"negatif_possible": false,
+						"denominateurs": [
+							2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+							25, 26, 27, 28
+						],
+						"denominateur_min": 2,
+						"denominateur_max": 28,
+						"nb_distinctes": 91
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 100,
+				"nb_distinctes": 87,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 28,
+				"nb_distinctes": 28,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+					26, 27, 28
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 91,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [
+					2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+					26, 27, 28
+				],
+				"denominateur_min": 2,
+				"denominateur_max": 28,
+				"numerateur_min": 1,
+				"numerateur_max": 15,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"%": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 47,
+					"max": 47
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Dans une ville, on note $A$ l'événement « l'habitant a moins de 30 ans » et $B$ l'événement « l'habitant utilise un vélo ». Le tableau donne la répartition des habitants, en pourcentage de la population.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $5\\,\\%$ | $21\\,\\%$ | $26\\,\\%$ |\n| $\\overline{A}$ | $30\\,\\%$ | $44\\,\\%$ | $74\\,\\%$ |\n| Total | $35\\,\\%$ | $65\\,\\%$ | $100\\,\\%$ |\n\nOn choisit un habitant au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{7}"],
+					"variables": {
+						"a": "5",
+						"b": "21",
+						"c": "30",
+						"d": "44"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans une ville, on note $A$ l'événement « l'habitant a moins de 30 ans » et $B$ l'événement « l'habitant utilise un vélo ». Le tableau donne la répartition des habitants, en pourcentage de la population.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $14\\,\\%$ | $29\\,\\%$ | $43\\,\\%$ |\n| $\\overline{A}$ | $7\\,\\%$ | $50\\,\\%$ | $57\\,\\%$ |\n| Total | $21\\,\\%$ | $79\\,\\%$ | $100\\,\\%$ |\n\nOn choisit un habitant au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{2}{3}"],
+					"variables": {
+						"a": "14",
+						"b": "29",
+						"c": "7",
+						"d": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans une ville, on note $A$ l'événement « l'habitant a moins de 30 ans » et $B$ l'événement « l'habitant utilise un vélo ». Le tableau donne la répartition des habitants, en pourcentage de la population.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $6\\,\\%$ | $19\\,\\%$ | $25\\,\\%$ |\n| $\\overline{A}$ | $6\\,\\%$ | $69\\,\\%$ | $75\\,\\%$ |\n| Total | $12\\,\\%$ | $88\\,\\%$ | $100\\,\\%$ |\n\nOn choisit un habitant au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"a": "6",
+						"b": "19",
+						"c": "6",
+						"d": "69"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans une ville, on note $A$ l'événement « l'habitant a moins de 30 ans » et $B$ l'événement « l'habitant utilise un vélo ». Le tableau donne la répartition des habitants, en pourcentage de la population.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $30\\,\\%$ | $24\\,\\%$ | $54\\,\\%$ |\n| $\\overline{A}$ | $22\\,\\%$ | $24\\,\\%$ | $46\\,\\%$ |\n| Total | $52\\,\\%$ | $48\\,\\%$ | $100\\,\\%$ |\n\nOn choisit un habitant au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{15}{26}"],
+					"variables": {
+						"a": "30",
+						"b": "24",
+						"c": "22",
+						"d": "24"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans une ville, on note $A$ l'événement « l'habitant a moins de 30 ans » et $B$ l'événement « l'habitant utilise un vélo ». Le tableau donne la répartition des habitants, en pourcentage de la population.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $16\\,\\%$ | $33\\,\\%$ | $49\\,\\%$ |\n| $\\overline{A}$ | $10\\,\\%$ | $41\\,\\%$ | $51\\,\\%$ |\n| Total | $26\\,\\%$ | $74\\,\\%$ | $100\\,\\%$ |\n\nOn choisit un habitant au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P_B \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{8}{13}"],
+					"variables": {
+						"a": "16",
+						"b": "33",
+						"c": "10",
+						"d": "41"
+					}
+				}
+			]
+		}
+	]
+}

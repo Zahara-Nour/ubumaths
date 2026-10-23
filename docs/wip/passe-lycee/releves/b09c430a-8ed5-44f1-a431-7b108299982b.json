@@ -1,0 +1,833 @@
+{
+	"template_id": "b09c430a-8ed5-44f1-a431-7b108299982b",
+	"titre": "Calculer le discriminant",
+	"sous_titre": "Δ = b² − 4ac, coefficients entiers",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Polynôme du second degré > Discriminant",
+	"mis_a_jour": "2026-10-01T08:36:38.115859+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-248",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{eval:ax^2+bx+c}}$.\n\n$\\Delta=?$",
+				"reponses_brutes": ["{{eval:b^2-4*a*c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 286,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -164,
+						"max": 261,
+						"negatif_possible": true,
+						"nb_distinctes": 122
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 13,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -164,
+				"max": 261,
+				"nb_distinctes": 122,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -164,
+				"max": 261,
+				"nb_distinctes": 128,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "228/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "126/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (261)",
+					"graine": 214,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = 5 x^2 + 9 x - 9$.\n\n$\\Delta = [?]$",
+					"reponse": ["261"],
+					"variables": {
+						"x": "x",
+						"a": "5",
+						"b": "9",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-164)",
+					"graine": 299,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = -5 x^2 + 4 x - 9$.\n\n$\\Delta = [?]$",
+					"reponse": ["-164"],
+					"variables": {
+						"x": "x",
+						"a": "-5",
+						"b": "4",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = x^2 + 9 x + 9$.\n\n$\\Delta = [?]$",
+					"reponse": ["45"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"b": "9",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = -3 x^2 + x + 7$.\n\n$\\Delta = [?]$",
+					"reponse": ["85"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"b": "1",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = -x^2 - 8 x + 5$.\n\n$\\Delta = [?]$",
+					"reponse": ["84"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "-8",
+						"c": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{eval:ax^2+c}}$.\n\n$\\Delta=?$",
+				"reponses_brutes": ["{{eval:-4*a*c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 154,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -180,
+						"max": 180,
+						"negatif_possible": true,
+						"nb_distinctes": 51
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 13,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -180,
+				"max": 180,
+				"nb_distinctes": 51,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -180,
+				"max": 180,
+				"nb_distinctes": 61,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "91/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "194/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (180)",
+					"graine": 53,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = 9 - 5 x^2$.\n\n$\\Delta = [?]$",
+					"reponse": ["180"],
+					"variables": {
+						"x": "x",
+						"a": "-5",
+						"c": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-180)",
+					"graine": 13,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = -5 x^2 - 9$.\n\n$\\Delta = [?]$",
+					"reponse": ["-180"],
+					"variables": {
+						"x": "x",
+						"a": "-5",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = x^2 + 9$.\n\n$\\Delta = [?]$",
+					"reponse": ["-36"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = 1 - 3 x^2$.\n\n$\\Delta = [?]$",
+					"reponse": ["12"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = -x^2 - 8$.\n\n$\\Delta = [?]$",
+					"reponse": ["-32"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"c": "-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{eval:ax^2+bx}}$.\n\n$\\Delta=?$",
+				"reponses_brutes": ["{{eval:b^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 154,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 81,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 4, 9, 16, 25, 36, 49, 64, 81]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 12,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 9,
+				"valeurs": [1, 4, 9, 16, 25, 36, 49, 64, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 81,
+				"nb_distinctes": 19,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 16, 25, 36, 49, 64, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "91/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "126/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 1,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = x^2 + 9 x$.\n\n$\\Delta = [?]$",
+					"reponse": ["81"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 13,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = -5 x^2 - 9 x$.\n\n$\\Delta = [?]$",
+					"reponse": ["81"],
+					"variables": {
+						"x": "x",
+						"a": "-5",
+						"b": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = x - 3 x^2$.\n\n$\\Delta = [?]$",
+					"reponse": ["1"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = -x^2 - 8 x$.\n\n$\\Delta = [?]$",
+					"reponse": ["64"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = -3 x^2 - 8 x$.\n\n$\\Delta = [?]$",
+					"reponse": ["64"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"b": "-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule le discriminant $\\Delta$ du polynôme $P(x)={{c}}{{eval:bx;+}}{{eval:ax^2;+}}$.\n\n$\\Delta=?$",
+				"reponses_brutes": ["{{eval:b^2-4*a*c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 286,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -164,
+						"max": 261,
+						"negatif_possible": true,
+						"nb_distinctes": 122
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -164,
+				"max": 261,
+				"nb_distinctes": 122,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -164,
+				"max": 261,
+				"nb_distinctes": 131,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "236/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "126/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (261)",
+					"graine": 214,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = -9 + 9 x + 5 x^2$.\n\n$\\Delta = [?]$",
+					"reponse": ["261"],
+					"variables": {
+						"x": "x",
+						"a": "5",
+						"b": "9",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-164)",
+					"graine": 299,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = -9 + 4 x - 5 x^2$.\n\n$\\Delta = [?]$",
+					"reponse": ["-164"],
+					"variables": {
+						"x": "x",
+						"a": "-5",
+						"b": "4",
+						"c": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = 9 + 9 x + x^2$.\n\n$\\Delta = [?]$",
+					"reponse": ["45"],
+					"variables": {
+						"x": "x",
+						"a": "1",
+						"b": "9",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = 7 + x - 3 x^2$.\n\n$\\Delta = [?]$",
+					"reponse": ["85"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"b": "1",
+						"c": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule le discriminant $\\Delta$ du polynôme $P \\left( x \\right) = 5 - 8 x - x^2$.\n\n$\\Delta = [?]$",
+					"reponse": ["84"],
+					"variables": {
+						"x": "x",
+						"a": "-1",
+						"b": "-8",
+						"c": "5"
+					}
+				}
+			]
+		}
+	]
+}

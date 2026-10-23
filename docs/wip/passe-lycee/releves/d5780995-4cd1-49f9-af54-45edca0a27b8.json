@@ -1,0 +1,466 @@
+{
+	"template_id": "d5780995-4cd1-49f9-af54-45edca0a27b8",
+	"titre": "Deux épreuves indépendantes : « au moins une fois »",
+	"sous_titre": "Répéter deux fois une épreuve de façon indépendante : probabilité d'une issue, puis d'un événement « au moins une fois » par l'événement contraire",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Probabilités conditionnelles > Indépendance",
+	"mis_a_jour": "2026-10-02T13:25:38.575303+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-338",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "2..8"
+					},
+					{
+						"name": "n",
+						"expression": "2..8"
+					}
+				],
+				"conditions": ["gcd(r,n) = 1"],
+				"enonce_brut": "Une urne contient ${{r}}$ boules rouges et ${{n}}$ boules noires, indiscernables au toucher. On tire une boule, on note sa couleur et on la remet dans l'urne, puis on tire une deuxième boule.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'obtenir deux boules rouges : $?$\n\nProbabilité d'obtenir au moins une boule rouge : $?$",
+				"reponses_brutes": ["{{eval:r^2/(r+n)^2}}", "{{eval:1-n^2/(r+n)^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 28,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.04938271604938271,
+						"max": 0.6049382716049383,
+						"negatif_possible": false,
+						"denominateurs": [25, 49, 64, 81, 100, 121, 144, 169, 225],
+						"denominateur_min": 25,
+						"denominateur_max": 225,
+						"nb_distinctes": 28,
+						"valeurs": [
+							"\\dfrac{16}{121}",
+							"\\dfrac{16}{49}",
+							"\\dfrac{16}{81}",
+							"\\dfrac{25}{121}",
+							"\\dfrac{25}{144}",
+							"\\dfrac{25}{169}",
+							"\\dfrac{25}{49}",
+							"\\dfrac{25}{64}",
+							"\\dfrac{25}{81}",
+							"\\dfrac{36}{121}",
+							"\\dfrac{36}{169}",
+							"\\dfrac{49}{100}",
+							"\\dfrac{49}{121}",
+							"\\dfrac{49}{144}",
+							"\\dfrac{49}{169}",
+							"\\dfrac{49}{225}",
+							"\\dfrac{49}{81}",
+							"\\dfrac{4}{25}",
+							"\\dfrac{4}{49}",
+							"\\dfrac{4}{81}",
+							"\\dfrac{64}{121}",
+							"\\dfrac{64}{169}",
+							"\\dfrac{64}{225}",
+							"\\dfrac{9}{100}",
+							"\\dfrac{9}{121}",
+							"\\dfrac{9}{25}",
+							"\\dfrac{9}{49}",
+							"\\dfrac{9}{64}"
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.3950617283950617,
+						"max": 0.9506172839506173,
+						"negatif_possible": false,
+						"denominateurs": [25, 49, 64, 81, 100, 121, 144, 169, 225],
+						"denominateur_min": 25,
+						"denominateur_max": 225,
+						"nb_distinctes": 28,
+						"valeurs": [
+							"\\dfrac{105}{121}",
+							"\\dfrac{105}{169}",
+							"\\dfrac{112}{121}",
+							"\\dfrac{119}{144}",
+							"\\dfrac{120}{169}",
+							"\\dfrac{133}{169}",
+							"\\dfrac{144}{169}",
+							"\\dfrac{161}{225}",
+							"\\dfrac{16}{25}",
+							"\\dfrac{176}{225}",
+							"\\dfrac{21}{25}",
+							"\\dfrac{24}{49}",
+							"\\dfrac{32}{81}",
+							"\\dfrac{33}{49}",
+							"\\dfrac{39}{64}",
+							"\\dfrac{40}{49}",
+							"\\dfrac{45}{49}",
+							"\\dfrac{51}{100}",
+							"\\dfrac{55}{64}",
+							"\\dfrac{56}{81}",
+							"\\dfrac{57}{121}",
+							"\\dfrac{65}{81}",
+							"\\dfrac{72}{121}",
+							"\\dfrac{77}{81}",
+							"\\dfrac{85}{121}",
+							"\\dfrac{91}{100}",
+							"\\dfrac{95}{144}",
+							"\\dfrac{96}{121}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 225,
+				"nb_distinctes": 38,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 225,
+				"nb_distinctes": 44,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [25, 49, 64, 81, 100, 121, 144, 169, 225],
+				"denominateur_min": 25,
+				"denominateur_max": 225,
+				"numerateur_min": 4,
+				"numerateur_max": 176,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 54,
+					"max": 54
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (225)",
+					"graine": 31,
+					"enonce": "Une urne contient $8$ boules rouges et $7$ boules noires, indiscernables au toucher. On tire une boule, on note sa couleur et on la remet dans l'urne, puis on tire une deuxième boule.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'obtenir deux boules rouges : $[?]$\n\nProbabilité d'obtenir au moins une boule rouge : $[?]$",
+					"reponse": ["\\dfrac{64}{225}", "\\dfrac{176}{225}"],
+					"variables": {
+						"r": "8",
+						"n": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Une urne contient $2$ boules rouges et $5$ boules noires, indiscernables au toucher. On tire une boule, on note sa couleur et on la remet dans l'urne, puis on tire une deuxième boule.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'obtenir deux boules rouges : $[?]$\n\nProbabilité d'obtenir au moins une boule rouge : $[?]$",
+					"reponse": ["\\dfrac{4}{49}", "\\dfrac{24}{49}"],
+					"variables": {
+						"r": "2",
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une urne contient $4$ boules rouges et $3$ boules noires, indiscernables au toucher. On tire une boule, on note sa couleur et on la remet dans l'urne, puis on tire une deuxième boule.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'obtenir deux boules rouges : $[?]$\n\nProbabilité d'obtenir au moins une boule rouge : $[?]$",
+					"reponse": ["\\dfrac{16}{49}", "\\dfrac{40}{49}"],
+					"variables": {
+						"r": "4",
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une urne contient $7$ boules rouges et $3$ boules noires, indiscernables au toucher. On tire une boule, on note sa couleur et on la remet dans l'urne, puis on tire une deuxième boule.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'obtenir deux boules rouges : $[?]$\n\nProbabilité d'obtenir au moins une boule rouge : $[?]$",
+					"reponse": ["\\dfrac{49}{100}", "\\dfrac{91}{100}"],
+					"variables": {
+						"r": "7",
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Une urne contient $3$ boules rouges et $5$ boules noires, indiscernables au toucher. On tire une boule, on note sa couleur et on la remet dans l'urne, puis on tire une deuxième boule.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'obtenir deux boules rouges : $[?]$\n\nProbabilité d'obtenir au moins une boule rouge : $[?]$",
+					"reponse": ["\\dfrac{9}{64}", "\\dfrac{39}{64}"],
+					"variables": {
+						"r": "3",
+						"n": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un joueur de fléchettes atteint le centre de la cible avec la probabilité ${{eval:p/10;d}}$. Il lance deux fléchettes ; les deux lancers sont indépendants.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'atteindre le centre deux fois : $?$\n\nProbabilité d'atteindre le centre au moins une fois : $?$",
+				"reponses_brutes": ["{{eval:p^2/100}}", "{{eval:1-(10-p)^2/100}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.01,
+						"max": 0.81,
+						"negatif_possible": false,
+						"denominateurs": [4, 25, 100],
+						"denominateur_min": 4,
+						"denominateur_max": 100,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{16}{25}",
+							"\\dfrac{1}{100}",
+							"\\dfrac{1}{25}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{49}{100}",
+							"\\dfrac{4}{25}",
+							"\\dfrac{81}{100}",
+							"\\dfrac{9}{100}",
+							"\\dfrac{9}{25}"
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.19,
+						"max": 0.99,
+						"negatif_possible": false,
+						"denominateurs": [4, 25, 100],
+						"denominateur_min": 4,
+						"denominateur_max": 100,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{16}{25}",
+							"\\dfrac{19}{100}",
+							"\\dfrac{21}{25}",
+							"\\dfrac{24}{25}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{51}{100}",
+							"\\dfrac{91}{100}",
+							"\\dfrac{99}{100}",
+							"\\dfrac{9}{25}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.1,
+				"max": 0.9,
+				"nb_distinctes": 9,
+				"valeurs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 15,
+				"valeurs": [1, 3, 4, 9, 16, 19, 21, 24, 25, 49, 51, 81, 91, 99, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.1,
+				"max": 100,
+				"nb_distinctes": 24,
+				"valeurs": [
+					0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 3, 4, 9, 16, 19, 21, 24, 25, 49, 51, 81,
+					91, 99, 100
+				],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [4, 25, 100],
+				"denominateur_min": 4,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 99,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 47,
+					"max": 47
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Un joueur de fléchettes atteint le centre de la cible avec la probabilité $0{,}1$. Il lance deux fléchettes ; les deux lancers sont indépendants.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'atteindre le centre deux fois : $[?]$\n\nProbabilité d'atteindre le centre au moins une fois : $[?]$",
+					"reponse": ["\\dfrac{1}{100}", "\\dfrac{19}{100}"],
+					"variables": {
+						"p": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un joueur de fléchettes atteint le centre de la cible avec la probabilité $0{,}3$. Il lance deux fléchettes ; les deux lancers sont indépendants.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'atteindre le centre deux fois : $[?]$\n\nProbabilité d'atteindre le centre au moins une fois : $[?]$",
+					"reponse": ["\\dfrac{9}{100}", "\\dfrac{51}{100}"],
+					"variables": {
+						"p": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un joueur de fléchettes atteint le centre de la cible avec la probabilité $0{,}7$. Il lance deux fléchettes ; les deux lancers sont indépendants.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'atteindre le centre deux fois : $[?]$\n\nProbabilité d'atteindre le centre au moins une fois : $[?]$",
+					"reponse": ["\\dfrac{49}{100}", "\\dfrac{91}{100}"],
+					"variables": {
+						"p": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Un joueur de fléchettes atteint le centre de la cible avec la probabilité $0{,}6$. Il lance deux fléchettes ; les deux lancers sont indépendants.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'atteindre le centre deux fois : $[?]$\n\nProbabilité d'atteindre le centre au moins une fois : $[?]$",
+					"reponse": ["\\dfrac{9}{25}", "\\dfrac{21}{25}"],
+					"variables": {
+						"p": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Un joueur de fléchettes atteint le centre de la cible avec la probabilité $0{,}8$. Il lance deux fléchettes ; les deux lancers sont indépendants.\n\nRéponds par une fraction irréductible ou par un nombre décimal exact.\n\nProbabilité d'atteindre le centre deux fois : $[?]$\n\nProbabilité d'atteindre le centre au moins une fois : $[?]$",
+					"reponse": ["\\dfrac{16}{25}", "\\dfrac{24}{25}"],
+					"variables": {
+						"p": "8"
+					}
+				}
+			]
+		}
+	]
+}

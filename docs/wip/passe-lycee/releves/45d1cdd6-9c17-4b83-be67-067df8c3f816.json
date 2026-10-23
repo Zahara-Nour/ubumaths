@@ -1,0 +1,668 @@
+{
+	"template_id": "45d1cdd6-9c17-4b83-be67-067df8c3f816",
+	"titre": "Formules d'Euler et de Moivre, formules d'addition et de duplication",
+	"sous_titre": "Linéariser cos³x et sin²x (Euler), exprimer cos 3x (Moivre), cos(π/12) par une formule d'addition, sin 2a par la duplication (pièges : coefficients, signe, sin et cos confondus)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Nombres complexes > Formes trigonométrique et exponentielle > Formules d'Euler et de Moivre",
+	"mis_a_jour": "2026-10-05T16:03:08.116482+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-240",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "À l'aide des formules d'Euler, linéarise $\\cos^3x$ : trouve les réels $a$ et $b$ tels que, pour tout réel $x$, $\\cos^3x=a\\cos(3x)+b\\cos x$.\n\n$a=?$\n\n$b=?$",
+				"reponses_brutes": ["\\frac{1}{4}", "\\frac{3}{4}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.25,
+						"max": 0.25,
+						"negatif_possible": false,
+						"denominateurs": [4],
+						"denominateur_min": 4,
+						"denominateur_max": 4,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{1}{4}"]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.75,
+						"max": 0.75,
+						"negatif_possible": false,
+						"denominateurs": [4],
+						"denominateur_min": 4,
+						"denominateur_max": 4,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{3}{4}"]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 4,
+				"nb_distinctes": 3,
+				"valeurs": [1, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 4,
+				"nb_distinctes": 3,
+				"valeurs": [1, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [4],
+				"denominateur_min": 4,
+				"denominateur_max": 4,
+				"numerateur_min": 1,
+				"numerateur_max": 3,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "À l'aide des formules d'Euler, linéarise $\\cos^3x$ : trouve les réels $a$ et $b$ tels que, pour tout réel $x$, $\\cos^3x=a\\cos(3x)+b\\cos x$.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\frac{1}{4}", "\\frac{3}{4}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "À l'aide des formules d'Euler, linéarise $\\sin^2x$ : trouve les réels $a$ et $b$ tels que, pour tout réel $x$, $\\sin^2x=a+b\\cos(2x)$.\n\n$a=?$\n\n$b=?$",
+				"reponses_brutes": ["\\frac{1}{2}", "-\\frac{1}{2}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.5,
+						"max": 0.5,
+						"negatif_possible": false,
+						"denominateurs": [2],
+						"denominateur_min": 2,
+						"denominateur_max": 2,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{1}{2}"]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{1}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "À l'aide des formules d'Euler, linéarise $\\sin^2x$ : trouve les réels $a$ et $b$ tels que, pour tout réel $x$, $\\sin^2x=a+b\\cos(2x)$.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["\\frac{1}{2}", "-\\frac{1}{2}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "À l'aide de la formule de Moivre, trouve les réels $a$ et $b$ tels que, pour tout réel $x$, $\\cos(3x)=a\\cos^3x+b\\cos x$.\n\n$a=?$\n\n$b=?$",
+				"reponses_brutes": ["4", "-3"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [4]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": -3,
+						"negatif_possible": true,
+						"nb_distinctes": 1,
+						"valeurs": [-3]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -3,
+				"max": 4,
+				"nb_distinctes": 2,
+				"valeurs": [-3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": 4,
+				"nb_distinctes": 3,
+				"valeurs": [-3, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "À l'aide de la formule de Moivre, trouve les réels $a$ et $b$ tels que, pour tout réel $x$, $\\cos(3x)=a\\cos^3x+b\\cos x$.\n\n$a = [?]$\n\n$b = [?]$",
+					"reponse": ["4", "-3"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "En remarquant que $\\frac{\\pi}{12}=\\frac{\\pi}{3}-\\frac{\\pi}{4}$, calcule la valeur exacte de $\\cos\\frac{\\pi}{12}$.\n\n$\\cos\\frac{\\pi}{12}=?$",
+				"reponses_brutes": ["\\frac{\\sqrt{6}+\\sqrt{2}}{4}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{\\sqrt{6}+\\sqrt{2}}{4}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [2, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 12,
+				"nb_distinctes": 3,
+				"valeurs": [3, 4, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 3,
+				"valeurs": [2, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 12,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 6, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 1,
+					"enonce": "En remarquant que $\\frac{\\pi}{12}=\\frac{\\pi}{3}-\\frac{\\pi}{4}$, calcule la valeur exacte de $\\cos\\frac{\\pi}{12}$.\n\n$\\cos\\frac{\\pi}{12}=[?]$",
+					"reponse": ["\\frac{\\sqrt{6}+\\sqrt{2}}{4}"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "2..4"
+					},
+					{
+						"name": "q",
+						"expression": "1..3"
+					}
+				],
+				"conditions": ["m > q", "gcd(m, q) == 1", "mod(m-q, 2) == 1"],
+				"enonce_brut": "Soit $a\\in\\left]0\\,;\\frac{\\pi}{2}\\right[$ tel que $\\sin a={{eval:(m^2-q^2)/(m^2+q^2)}}$. Calcule $\\sin(2a)$.\n\n$\\sin(2a)=?$",
+				"reponses_brutes": ["{{eval:4*m*q*(m^2-q^2)/(m^2+q^2)^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.5376,
+						"max": 0.96,
+						"negatif_possible": false,
+						"denominateurs": [25, 169, 289, 625],
+						"denominateur_min": 25,
+						"denominateur_max": 625,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"\\dfrac{120}{169}",
+							"\\dfrac{240}{289}",
+							"\\dfrac{24}{25}",
+							"\\dfrac{336}{625}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 25,
+				"nb_distinctes": 9,
+				"valeurs": [0, 2, 3, 5, 7, 13, 15, 17, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 24,
+				"max": 625,
+				"nb_distinctes": 8,
+				"valeurs": [24, 25, 120, 169, 240, 289, 336, 625],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 625,
+				"nb_distinctes": 16,
+				"valeurs": [0, 2, 3, 5, 7, 13, 15, 17, 24, 25, 120, 169, 240, 289, 336, 625],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [5, 13, 17, 25],
+				"denominateur_min": 5,
+				"denominateur_max": 25,
+				"numerateur_min": 3,
+				"numerateur_max": 15,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [25, 169, 289, 625],
+				"denominateur_min": 25,
+				"denominateur_max": 625,
+				"numerateur_min": 24,
+				"numerateur_max": 336,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (625)",
+					"graine": 1,
+					"enonce": "Soit $a\\in\\left]0\\,;\\frac{\\pi}{2}\\right[$ tel que $\\sin a=\\dfrac{7}{25}$. Calcule $\\sin(2a)$.\n\n$\\sin(2a)=[?]$",
+					"reponse": ["\\dfrac{336}{625}"],
+					"variables": {
+						"m": "4",
+						"q": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $a\\in\\left]0\\,;\\frac{\\pi}{2}\\right[$ tel que $\\sin a=\\dfrac{3}{5}$. Calcule $\\sin(2a)$.\n\n$\\sin(2a)=[?]$",
+					"reponse": ["\\dfrac{24}{25}"],
+					"variables": {
+						"m": "2",
+						"q": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $a\\in\\left]0\\,;\\frac{\\pi}{2}\\right[$ tel que $\\sin a=\\dfrac{5}{13}$. Calcule $\\sin(2a)$.\n\n$\\sin(2a)=[?]$",
+					"reponse": ["\\dfrac{120}{169}"],
+					"variables": {
+						"m": "3",
+						"q": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $a\\in\\left]0\\,;\\frac{\\pi}{2}\\right[$ tel que $\\sin a=\\dfrac{15}{17}$. Calcule $\\sin(2a)$.\n\n$\\sin(2a)=[?]$",
+					"reponse": ["\\dfrac{240}{289}"],
+					"variables": {
+						"m": "4",
+						"q": "1"
+					}
+				}
+			]
+		}
+	]
+}

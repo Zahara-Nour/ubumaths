@@ -1,0 +1,446 @@
+{
+	"template_id": "b72fae4a-f8c1-4758-a4d7-9a7523cda877",
+	"titre": "Somme de termes consécutifs d'une suite géométrique",
+	"sous_titre": "u₀ + u₁ + … + uₙ, premier terme et raison entiers",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Sommes > Suites géométriques",
+	"mis_a_jour": "2026-10-01T20:22:24.832044+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-227",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "2..3"
+					},
+					{
+						"name": "n",
+						"expression": "3..6"
+					},
+					{
+						"name": "s",
+						"expression": "eval:a*(1-q^(n+1))/(1-q)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ {{n}} }$.\n\n$S=?$",
+				"reponses_brutes": ["{{s}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 117,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9837,
+						"max": 9837,
+						"negatif_possible": true,
+						"nb_distinctes": 115
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9837,
+						"max": 9837,
+						"negatif_possible": true,
+						"nb_distinctes": 115
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9837,
+				"max": 9837,
+				"nb_distinctes": 115,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9837,
+				"max": 9837,
+				"nb_distinctes": 133,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9837)",
+					"graine": 86,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 9$ et de raison $q = 3$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 6 }$.\n\n$S = [?]$",
+					"reponse": ["9837"],
+					"variables": {
+						"a": "9",
+						"q": "3",
+						"n": "6",
+						"s": "9837"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9837)",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -9$ et de raison $q = 3$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 6 }$.\n\n$S = [?]$",
+					"reponse": ["-9837"],
+					"variables": {
+						"a": "-9",
+						"q": "3",
+						"n": "6",
+						"s": "-9837"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -4$ et de raison $q = 2$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 5 }$.\n\n$S = [?]$",
+					"reponse": ["-252"],
+					"variables": {
+						"a": "-4",
+						"q": "2",
+						"n": "5",
+						"s": "-252"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -9$ et de raison $q = 2$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 3 }$.\n\n$S = [?]$",
+					"reponse": ["-135"],
+					"variables": {
+						"a": "-9",
+						"q": "2",
+						"n": "3",
+						"s": "-135"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -4$ et de raison $q = 2$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 3 }$.\n\n$S = [?]$",
+					"reponse": ["-60"],
+					"variables": {
+						"a": "-4",
+						"q": "2",
+						"n": "3",
+						"s": "-60"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "-3..-2"
+					},
+					{
+						"name": "n",
+						"expression": "3..6"
+					},
+					{
+						"name": "s",
+						"expression": "eval:a*(1-q^(n+1))/(1-q)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite géométrique de premier terme $u_0={{a}}$ et de raison $q={{q}}$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ {{n}} }$.\n\n$S=?$",
+				"reponses_brutes": ["{{s}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 117,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-3, -2]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4923,
+						"max": 4923,
+						"negatif_possible": true,
+						"nb_distinctes": 115
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4923,
+						"max": 4923,
+						"negatif_possible": true,
+						"nb_distinctes": 115
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -4923,
+				"max": 4923,
+				"nb_distinctes": 115,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4923,
+				"max": 4923,
+				"nb_distinctes": 133,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4923)",
+					"graine": 103,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = 9$ et de raison $q = -3$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 6 }$.\n\n$S = [?]$",
+					"reponse": ["4923"],
+					"variables": {
+						"a": "9",
+						"q": "-3",
+						"n": "6",
+						"s": "4923"
+					}
+				},
+				{
+					"role": "plus petite valeur (-4923)",
+					"graine": 52,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -9$ et de raison $q = -3$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 6 }$.\n\n$S = [?]$",
+					"reponse": ["-4923"],
+					"variables": {
+						"a": "-9",
+						"q": "-3",
+						"n": "6",
+						"s": "-4923"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -9$ et de raison $q = -2$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 6 }$.\n\n$S = [?]$",
+					"reponse": ["-387"],
+					"variables": {
+						"a": "-9",
+						"q": "-2",
+						"n": "6",
+						"s": "-387"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -4$ et de raison $q = -3$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 5 }$.\n\n$S = [?]$",
+					"reponse": ["728"],
+					"variables": {
+						"a": "-4",
+						"q": "-3",
+						"n": "5",
+						"s": "728"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$\\left( u_n \\right)$ est la suite géométrique de premier terme $u_0 = -9$ et de raison $q = -3$.\n\nCalcule $S=u_0+u_1+\\cdots+u_{ 3 }$.\n\n$S = [?]$",
+					"reponse": ["180"],
+					"variables": {
+						"a": "-9",
+						"q": "-3",
+						"n": "3",
+						"s": "180"
+					}
+				}
+			]
+		}
+	]
+}

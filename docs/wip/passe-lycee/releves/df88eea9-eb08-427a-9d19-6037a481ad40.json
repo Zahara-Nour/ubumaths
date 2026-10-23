@@ -1,0 +1,560 @@
+{
+	"template_id": "df88eea9-eb08-427a-9d19-6037a481ad40",
+	"titre": "Espérance d'une loi à densité par une intégrale",
+	"sous_titre": "E(X) = ∫ x f(x) dx pour des densités polynomiales simples sur [0 ; a] (pièges : ∫ f(x) dx = 1 au lieu de ∫ x f(x) dx, milieu de l'intervalle)",
+	"consigne": null,
+	"grades": ["T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Lois à densité > Espérance",
+	"mis_a_jour": "2026-10-04T20:32:57.493325+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-316",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;{{a}}\\right]$ par $f(x)={{eval:2/a^2}}x$.\n\nCalcule $E(X)=\\displaystyle\\int_{0}^{ {{a}} }x f(x)\\,\\mathrm{d}x$.\n\n$E(X)=?$",
+				"reponses_brutes": ["{{eval:2*a/3}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.37333333333333335,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"2",
+							"4",
+							"6",
+							"\\dfrac{10}{3}",
+							"\\dfrac{14}{3}",
+							"\\dfrac{16}{3}",
+							"\\dfrac{4}{3}",
+							"\\dfrac{8}{3}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 16,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 6, 8, 10, 14, 16],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 81,
+				"nb_distinctes": 15,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 18, 25, 32, 49, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 16,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 6, 8, 10, 14, 16],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 81,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 16, 18, 25, 32, 49, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [2, 8, 9, 18, 25, 32, 49, 81],
+				"denominateur_min": 2,
+				"denominateur_max": 81,
+				"numerateur_min": 1,
+				"numerateur_max": 2,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": {
+				"nb": 188,
+				"denominateurs": [3],
+				"denominateur_min": 3,
+				"denominateur_max": 3,
+				"numerateur_min": 4,
+				"numerateur_max": 16,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 10,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;9\\right]$ par $f\\left( x \\right) = \\dfrac{2}{81} x$.\n\nCalcule $E(X)=\\displaystyle\\int_{0}^{ 9 }x f(x)\\,\\mathrm{d}x$.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["6"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;2\\right]$ par $f\\left( x \\right) = \\dfrac{1}{2} x$.\n\nCalcule $E(X)=\\displaystyle\\int_{0}^{ 2 }x f(x)\\,\\mathrm{d}x$.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{4}{3}"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;4\\right]$ par $f\\left( x \\right) = \\dfrac{1}{8} x$.\n\nCalcule $E(X)=\\displaystyle\\int_{0}^{ 4 }x f(x)\\,\\mathrm{d}x$.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{8}{3}"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;8\\right]$ par $f\\left( x \\right) = \\dfrac{1}{32} x$.\n\nCalcule $E(X)=\\displaystyle\\int_{0}^{ 8 }x f(x)\\,\\mathrm{d}x$.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{16}{3}"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;7\\right]$ par $f\\left( x \\right) = \\dfrac{2}{49} x$.\n\nCalcule $E(X)=\\displaystyle\\int_{0}^{ 7 }x f(x)\\,\\mathrm{d}x$.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{14}{3}"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;1\\right]$ par $f(x)={{eval:k+1}}x^{ {{k}} }$.\n\nCalcule son espérance.\n\n$E(X)=?$",
+				"reponses_brutes": ["{{eval:(k+1)/(k+2)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.75,
+						"max": 0.875,
+						"negatif_possible": false,
+						"denominateurs": [4, 5, 6, 7, 8],
+						"denominateur_min": 4,
+						"denominateur_max": 8,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"\\dfrac{3}{4}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{5}{6}",
+							"\\dfrac{6}{7}",
+							"\\dfrac{7}{8}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 7,
+				"nb_distinctes": 8,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 8,
+				"nb_distinctes": 6,
+				"valeurs": [3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 8,
+				"nb_distinctes": 9,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [4, 5, 6, 7, 8],
+				"denominateur_min": 4,
+				"denominateur_max": 8,
+				"numerateur_min": 3,
+				"numerateur_max": 7,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 9,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;1\\right]$ par $f\\left( x \\right) = 7 x^6$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{7}{8}"],
+					"variables": {
+						"k": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;1\\right]$ par $f\\left( x \\right) = 3 x^2$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{3}{4}"],
+					"variables": {
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;1\\right]$ par $f\\left( x \\right) = 4 x^3$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{4}{5}"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;1\\right]$ par $f\\left( x \\right) = 6 x^5$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{6}{7}"],
+					"variables": {
+						"k": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;1\\right]$ par $f\\left( x \\right) = 5 x^4$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{5}{6}"],
+					"variables": {
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;{{a}}\\right]$ par $f(x)={{eval:3/a^3}}x^{2}$.\n\nCalcule son espérance.\n\n$E(X)=?$",
+				"reponses_brutes": ["{{eval:3*a/4}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 7,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.33666666666666667,
+						"nb_distinctes": 7,
+						"valeurs": [
+							"3",
+							"6",
+							"\\dfrac{15}{4}",
+							"\\dfrac{21}{4}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{9}{2}",
+							"\\dfrac{9}{4}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 21,
+							"nb_distinctes": 7,
+							"valeurs": [2, 3, 4, 6, 9, 15, 21],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 512,
+				"nb_distinctes": 15,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 64, 72, 125, 343, 512],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 21,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 6, 9, 15, 21],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 512,
+				"nb_distinctes": 17,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 15, 21, 64, 72, 125, 343, 512],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [8, 9, 64, 72, 125, 343, 512],
+				"denominateur_min": 8,
+				"denominateur_max": 512,
+				"numerateur_min": 1,
+				"numerateur_max": 3,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": {
+				"nb": 199,
+				"denominateurs": [2, 4],
+				"denominateur_min": 2,
+				"denominateur_max": 4,
+				"numerateur_min": 3,
+				"numerateur_max": 21,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (512)",
+					"graine": 10,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;8\\right]$ par $f\\left( x \\right) = \\dfrac{3}{512} x^2$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["6"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;2\\right]$ par $f\\left( x \\right) = \\dfrac{3}{8} x^2$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{3}{2}"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;4\\right]$ par $f\\left( x \\right) = \\dfrac{3}{64} x^2$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;7\\right]$ par $f\\left( x \\right) = \\dfrac{3}{343} x^2$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{21}{4}"],
+					"variables": {
+						"a": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "La variable aléatoire $X$ a pour densité la fonction $f$ définie sur $\\left[0\\,;6\\right]$ par $f\\left( x \\right) = \\dfrac{1}{72} x^2$.\n\nCalcule son espérance.\n\n$E \\left( X \\right) = [?]$",
+					"reponse": ["\\dfrac{9}{2}"],
+					"variables": {
+						"a": "6"
+					}
+				}
+			]
+		}
+	]
+}

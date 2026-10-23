@@ -1,0 +1,319 @@
+{
+	"template_id": "e7cfe442-6653-4f97-a74e-08b8853d3305",
+	"titre": "Somme des puissances successives de q",
+	"sous_titre": "1 + q + q² + … + qⁿ, q = 2 ou 3",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Sommes > Suites géométriques",
+	"mis_a_jour": "2026-10-01T20:22:24.741132+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-227",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "4..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule la somme $S=1+2+2^2+2^3+\\cdots+2^{ {{n}} }$.\n\n$S=?$",
+				"reponses_brutes": ["{{eval:2^(n+1)-1}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 7,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 31,
+						"max": 2047,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [31, 63, 127, 255, 511, 1023, 2047]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 31,
+				"max": 2047,
+				"nb_distinctes": 7,
+				"valeurs": [31, 63, 127, 255, 511, 1023, 2047],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 2047,
+				"nb_distinctes": 17,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 31, 63, 127, 255, 511, 1023, 2047],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2047)",
+					"graine": 10,
+					"enonce": "Calcule la somme $S=1+2+2^2+2^3+\\cdots+2^{ 10 }$.\n\n$S = [?]$",
+					"reponse": ["2047"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule la somme $S=1+2+2^2+2^3+\\cdots+2^{ 4 }$.\n\n$S = [?]$",
+					"reponse": ["31"],
+					"variables": {
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule la somme $S=1+2+2^2+2^3+\\cdots+2^{ 6 }$.\n\n$S = [?]$",
+					"reponse": ["127"],
+					"variables": {
+						"n": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule la somme $S=1+2+2^2+2^3+\\cdots+2^{ 9 }$.\n\n$S = [?]$",
+					"reponse": ["1023"],
+					"variables": {
+						"n": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule la somme $S=1+2+2^2+2^3+\\cdots+2^{ 8 }$.\n\n$S = [?]$",
+					"reponse": ["511"],
+					"variables": {
+						"n": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "4..7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule la somme $S=1+3+3^2+3^3+\\cdots+3^{ {{n}} }$.\n\n$S=?$",
+				"reponses_brutes": ["{{eval:(3^(n+1)-1)/2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 121,
+						"max": 3280,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [121, 364, 1093, 3280]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 7,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 121,
+				"max": 3280,
+				"nb_distinctes": 4,
+				"valeurs": [121, 364, 1093, 3280],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 3280,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 121, 364, 1093, 3280],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3280)",
+					"graine": 5,
+					"enonce": "Calcule la somme $S=1+3+3^2+3^3+\\cdots+3^{ 7 }$.\n\n$S = [?]$",
+					"reponse": ["3280"],
+					"variables": {
+						"n": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule la somme $S=1+3+3^2+3^3+\\cdots+3^{ 4 }$.\n\n$S = [?]$",
+					"reponse": ["121"],
+					"variables": {
+						"n": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule la somme $S=1+3+3^2+3^3+\\cdots+3^{ 5 }$.\n\n$S = [?]$",
+					"reponse": ["364"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule la somme $S=1+3+3^2+3^3+\\cdots+3^{ 6 }$.\n\n$S = [?]$",
+					"reponse": ["1093"],
+					"variables": {
+						"n": "6"
+					}
+				}
+			]
+		}
+	]
+}

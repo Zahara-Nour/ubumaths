@@ -1,0 +1,1156 @@
+{
+	"template_id": "6c80b4ec-541d-47dc-a652-13b51f9b8b9b",
+	"titre": "Loi binomiale : utiliser une table de P(X ⩽ k)",
+	"sous_titre": "Extrait de table des probabilités cumulées fourni : P(X > k), P(X = k), P(a ⩽ X ⩽ b), seuil, intervalle de fluctuation [a ; b] (pièges : 1 − P(X ⩽ k − 1), F(b) − F(a) au lieu de F(b) − F(a − 1))",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Loi binomiale > Calcul de probabilités",
+	"mis_a_jour": "2026-10-04T20:32:55.397776+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-297",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-510",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "3..9"
+					},
+					{
+						"name": "f",
+						"expression": "{{if:k==3|0.1071|{{if:k==4|0.2375|{{if:k==5|0.4164|{{if:k==6|0.608|{{if:k==7|0.7723|{{if:k==8|0.8867|0.952}}}}}}}}}}}}"
+					},
+					{
+						"name": "r",
+						"expression": "{{if:k==3|0.8929|{{if:k==4|0.7625|{{if:k==5|0.5836|{{if:k==6|0.392|{{if:k==7|0.2277|{{if:k==8|0.1133|0.048}}}}}}}}}}}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$X$ suit la loi binomiale $\\mathcal{B}(20\\,;0.3)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $2$ | $0.0355$ |\n| $3$ | $0.1071$ |\n| $4$ | $0.2375$ |\n| $5$ | $0.4164$ |\n| $6$ | $0.608$ |\n| $7$ | $0.7723$ |\n| $8$ | $0.8867$ |\n| $9$ | $0.952$ |\n| $10$ | $0.9829$ |\n\nEn utilisant uniquement cette table, calcule $P(X>{{k}})$.\n\n$P(X>{{k}})=?$",
+				"reponses_brutes": ["{{r}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 7,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.1071,
+						"max": 0.952,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [0.1071, 0.2375, 0.4164, 0.608, 0.7723, 0.8867, 0.952]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.048,
+						"max": 0.8929,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [0.048, 0.1133, 0.2277, 0.392, 0.5836, 0.7625, 0.8929]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.048,
+						"max": 0.8929,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [0.048, 0.1133, 0.2277, 0.392, 0.5836, 0.7625, 0.8929]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 20,
+				"nb_distinctes": 21,
+				"valeurs": [
+					-4, 0.0355, 0.1071, 0.2375, 0.3, 0.4164, 0.608, 0.7723, 0.8867, 0.952, 0.9829, 2, 3, 4, 5,
+					6, 7, 8, 9, 10, 20
+				],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0.048,
+				"max": 0.8929,
+				"nb_distinctes": 7,
+				"valeurs": [0.048, 0.1133, 0.2277, 0.392, 0.5836, 0.7625, 0.8929],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 20,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-4, 0.0355, 0.048, 0.1071, 0.1133, 0.2277, 0.2375, 0.3, 0.392, 0.4164, 0.5836, 0.608,
+					0.7625, 0.7723, 0.8867, 0.8929, 0.952, 0.9829, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20
+				],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 1,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(20\\,;0{,}3)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $2$ | $0{,}035\\,5$ |\n| $3$ | $0{,}107\\,1$ |\n| $4$ | $0{,}237\\,5$ |\n| $5$ | $0{,}416\\,4$ |\n| $6$ | $0{,}608$ |\n| $7$ | $0{,}772\\,3$ |\n| $8$ | $0{,}886\\,7$ |\n| $9$ | $0{,}952$ |\n| $10$ | $0{,}982\\,9$ |\n\nEn utilisant uniquement cette table, calcule $P \\left( X > 3 \\right)$.\n\n$P \\left( X > 3 \\right) = [?]$",
+					"reponse": ["0.8929"],
+					"variables": {
+						"k": "3",
+						"f": "0.1071",
+						"r": "0.8929"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(20\\,;0{,}3)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $2$ | $0{,}035\\,5$ |\n| $3$ | $0{,}107\\,1$ |\n| $4$ | $0{,}237\\,5$ |\n| $5$ | $0{,}416\\,4$ |\n| $6$ | $0{,}608$ |\n| $7$ | $0{,}772\\,3$ |\n| $8$ | $0{,}886\\,7$ |\n| $9$ | $0{,}952$ |\n| $10$ | $0{,}982\\,9$ |\n\nEn utilisant uniquement cette table, calcule $P \\left( X > 5 \\right)$.\n\n$P \\left( X > 5 \\right) = [?]$",
+					"reponse": ["0.5836"],
+					"variables": {
+						"k": "5",
+						"f": "0.4164",
+						"r": "0.5836"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(20\\,;0{,}3)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $2$ | $0{,}035\\,5$ |\n| $3$ | $0{,}107\\,1$ |\n| $4$ | $0{,}237\\,5$ |\n| $5$ | $0{,}416\\,4$ |\n| $6$ | $0{,}608$ |\n| $7$ | $0{,}772\\,3$ |\n| $8$ | $0{,}886\\,7$ |\n| $9$ | $0{,}952$ |\n| $10$ | $0{,}982\\,9$ |\n\nEn utilisant uniquement cette table, calcule $P \\left( X > 8 \\right)$.\n\n$P \\left( X > 8 \\right) = [?]$",
+					"reponse": ["0.1133"],
+					"variables": {
+						"k": "8",
+						"f": "0.8867",
+						"r": "0.1133"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(20\\,;0{,}3)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $2$ | $0{,}035\\,5$ |\n| $3$ | $0{,}107\\,1$ |\n| $4$ | $0{,}237\\,5$ |\n| $5$ | $0{,}416\\,4$ |\n| $6$ | $0{,}608$ |\n| $7$ | $0{,}772\\,3$ |\n| $8$ | $0{,}886\\,7$ |\n| $9$ | $0{,}952$ |\n| $10$ | $0{,}982\\,9$ |\n\nEn utilisant uniquement cette table, calcule $P \\left( X > 7 \\right)$.\n\n$P \\left( X > 7 \\right) = [?]$",
+					"reponse": ["0.2277"],
+					"variables": {
+						"k": "7",
+						"f": "0.7723",
+						"r": "0.2277"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 10,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(20\\,;0{,}3)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $2$ | $0{,}035\\,5$ |\n| $3$ | $0{,}107\\,1$ |\n| $4$ | $0{,}237\\,5$ |\n| $5$ | $0{,}416\\,4$ |\n| $6$ | $0{,}608$ |\n| $7$ | $0{,}772\\,3$ |\n| $8$ | $0{,}886\\,7$ |\n| $9$ | $0{,}952$ |\n| $10$ | $0{,}982\\,9$ |\n\nEn utilisant uniquement cette table, calcule $P \\left( X > 9 \\right)$.\n\n$P \\left( X > 9 \\right) = [?]$",
+					"reponse": ["0.048"],
+					"variables": {
+						"k": "9",
+						"f": "0.952",
+						"r": "0.048"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "8..15"
+					},
+					{
+						"name": "f",
+						"expression": "{{if:k==8|0.094|{{if:k==9|0.1763|{{if:k==10|0.2915|{{if:k==11|0.4311|{{if:k==12|0.5785|{{if:k==13|0.7145|{{if:k==14|0.8246|0.9029}}}}}}}}}}}}}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{if:k==8|0.0435|{{if:k==9|0.094|{{if:k==10|0.1763|{{if:k==11|0.2915|{{if:k==12|0.4311|{{if:k==13|0.5785|{{if:k==14|0.7145|0.8246}}}}}}}}}}}}}}"
+					},
+					{
+						"name": "r",
+						"expression": "{{if:k==8|0.0505|{{if:k==9|0.0823|{{if:k==10|0.1152|{{if:k==11|0.1396|{{if:k==12|0.1474|{{if:k==13|0.136|{{if:k==14|0.1101|0.0783}}}}}}}}}}}}}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$X$ suit la loi binomiale $\\mathcal{B}(30\\,;0.4)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $7$ | $0.0435$ |\n| $8$ | $0.094$ |\n| $9$ | $0.1763$ |\n| $10$ | $0.2915$ |\n| $11$ | $0.4311$ |\n| $12$ | $0.5785$ |\n| $13$ | $0.7145$ |\n| $14$ | $0.8246$ |\n| $15$ | $0.9029$ |\n\nEn utilisant uniquement cette table, calcule $P(X={{k}})$.\n\n$P(X={{k}})=?$",
+				"reponses_brutes": ["{{r}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.094,
+						"max": 0.9029,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [0.094, 0.1763, 0.2915, 0.4311, 0.5785, 0.7145, 0.8246, 0.9029]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.0435,
+						"max": 0.8246,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [0.0435, 0.094, 0.1763, 0.2915, 0.4311, 0.5785, 0.7145, 0.8246]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.0505,
+						"max": 0.1474,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [0.0505, 0.0783, 0.0823, 0.1101, 0.1152, 0.136, 0.1396, 0.1474]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.0505,
+						"max": 0.1474,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [0.0505, 0.0783, 0.0823, 0.1101, 0.1152, 0.136, 0.1396, 0.1474]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 30,
+				"nb_distinctes": 21,
+				"valeurs": [
+					-4, 0.0435, 0.094, 0.1763, 0.2915, 0.4, 0.4311, 0.5785, 0.7145, 0.8246, 0.9029, 7, 8, 9,
+					10, 11, 12, 13, 14, 15, 30
+				],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0.0505,
+				"max": 0.1474,
+				"nb_distinctes": 8,
+				"valeurs": [0.0505, 0.0783, 0.0823, 0.1101, 0.1152, 0.136, 0.1396, 0.1474],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 30,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-4, 0.0435, 0.0505, 0.0783, 0.0823, 0.094, 0.1101, 0.1152, 0.136, 0.1396, 0.1474, 0.1763,
+					0.2915, 0.4, 0.4311, 0.5785, 0.7145, 0.8246, 0.9029, 7, 8, 9, 10, 11, 12, 13, 14, 15, 30
+				],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30)",
+					"graine": 1,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(30\\,;0{,}4)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $7$ | $0{,}043\\,5$ |\n| $8$ | $0{,}094$ |\n| $9$ | $0{,}176\\,3$ |\n| $10$ | $0{,}291\\,5$ |\n| $11$ | $0{,}431\\,1$ |\n| $12$ | $0{,}578\\,5$ |\n| $13$ | $0{,}714\\,5$ |\n| $14$ | $0{,}824\\,6$ |\n| $15$ | $0{,}902\\,9$ |\n\nEn utilisant uniquement cette table, calcule $P \\left( X = 8 \\right)$.\n\n$P \\left( X = 8 \\right) = [?]$",
+					"reponse": ["0.0505"],
+					"variables": {
+						"k": "8",
+						"f": "0.094",
+						"g": "0.0435",
+						"r": "0.0505"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(30\\,;0{,}4)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $7$ | $0{,}043\\,5$ |\n| $8$ | $0{,}094$ |\n| $9$ | $0{,}176\\,3$ |\n| $10$ | $0{,}291\\,5$ |\n| $11$ | $0{,}431\\,1$ |\n| $12$ | $0{,}578\\,5$ |\n| $13$ | $0{,}714\\,5$ |\n| $14$ | $0{,}824\\,6$ |\n| $15$ | $0{,}902\\,9$ |\n\nEn utilisant uniquement cette table, calcule $P \\left( X = 10 \\right)$.\n\n$P \\left( X = 10 \\right) = [?]$",
+					"reponse": ["0.1152"],
+					"variables": {
+						"k": "10",
+						"f": "0.2915",
+						"g": "0.1763",
+						"r": "0.1152"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(30\\,;0{,}4)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $7$ | $0{,}043\\,5$ |\n| $8$ | $0{,}094$ |\n| $9$ | $0{,}176\\,3$ |\n| $10$ | $0{,}291\\,5$ |\n| $11$ | $0{,}431\\,1$ |\n| $12$ | $0{,}578\\,5$ |\n| $13$ | $0{,}714\\,5$ |\n| $14$ | $0{,}824\\,6$ |\n| $15$ | $0{,}902\\,9$ |\n\nEn utilisant uniquement cette table, calcule $P \\left( X = 14 \\right)$.\n\n$P \\left( X = 14 \\right) = [?]$",
+					"reponse": ["0.1101"],
+					"variables": {
+						"k": "14",
+						"f": "0.8246",
+						"g": "0.7145",
+						"r": "0.1101"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(30\\,;0{,}4)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $7$ | $0{,}043\\,5$ |\n| $8$ | $0{,}094$ |\n| $9$ | $0{,}176\\,3$ |\n| $10$ | $0{,}291\\,5$ |\n| $11$ | $0{,}431\\,1$ |\n| $12$ | $0{,}578\\,5$ |\n| $13$ | $0{,}714\\,5$ |\n| $14$ | $0{,}824\\,6$ |\n| $15$ | $0{,}902\\,9$ |\n\nEn utilisant uniquement cette table, calcule $P \\left( X = 13 \\right)$.\n\n$P \\left( X = 13 \\right) = [?]$",
+					"reponse": ["0.136"],
+					"variables": {
+						"k": "13",
+						"f": "0.7145",
+						"g": "0.5785",
+						"r": "0.136"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 10,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(30\\,;0{,}4)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $7$ | $0{,}043\\,5$ |\n| $8$ | $0{,}094$ |\n| $9$ | $0{,}176\\,3$ |\n| $10$ | $0{,}291\\,5$ |\n| $11$ | $0{,}431\\,1$ |\n| $12$ | $0{,}578\\,5$ |\n| $13$ | $0{,}714\\,5$ |\n| $14$ | $0{,}824\\,6$ |\n| $15$ | $0{,}902\\,9$ |\n\nEn utilisant uniquement cette table, calcule $P \\left( X = 15 \\right)$.\n\n$P \\left( X = 15 \\right) = [?]$",
+					"reponse": ["0.0783"],
+					"variables": {
+						"k": "15",
+						"f": "0.9029",
+						"g": "0.8246",
+						"r": "0.0783"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "9..12"
+					},
+					{
+						"name": "b",
+						"expression": "14..16"
+					},
+					{
+						"name": "fb",
+						"expression": "{{if:b==14|0.7878|{{if:b==15|0.8852|0.9461}}}}"
+					},
+					{
+						"name": "fa",
+						"expression": "{{if:a==9|0.0539|{{if:a==10|0.1148|{{if:a==11|0.2122|0.345}}}}}}"
+					},
+					{
+						"name": "r",
+						"expression": "{{eval:fb-fa;d}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$X$ suit la loi binomiale $\\mathcal{B}(25\\,;0.5)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $8$ | $0.0539$ |\n| $9$ | $0.1148$ |\n| $10$ | $0.2122$ |\n| $11$ | $0.345$ |\n| $12$ | $0.5$ |\n| $13$ | $0.655$ |\n| $14$ | $0.7878$ |\n| $15$ | $0.8852$ |\n| $16$ | $0.9461$ |\n\nEn utilisant uniquement cette table, calcule $P({{a}}\\leqslant X\\leqslant {{b}})$.\n\n$P({{a}}\\leqslant X\\leqslant {{b}})=?$",
+				"reponses_brutes": ["{{r}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 9,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 14,
+						"max": 16,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [14, 15, 16]
+					}
+				},
+				{
+					"nom": "fb",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.7878,
+						"max": 0.9461,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0.7878, 0.8852, 0.9461]
+					}
+				},
+				{
+					"nom": "fa",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.0539,
+						"max": 0.345,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0.0539, 0.1148, 0.2122, 0.345]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.4428,
+						"max": 0.8922,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [0.4428, 0.5402, 0.5756, 0.6011, 0.673, 0.7339, 0.7704, 0.8313, 0.8922]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.4428,
+						"max": 0.8922,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [0.4428, 0.5402, 0.5756, 0.6011, 0.673, 0.7339, 0.7704, 0.8313, 0.8922]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 25,
+				"nb_distinctes": 20,
+				"valeurs": [
+					-4, 0.0539, 0.1148, 0.2122, 0.345, 0.5, 0.655, 0.7878, 0.8852, 0.9461, 8, 9, 10, 11, 12,
+					13, 14, 15, 16, 25
+				],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0.4428,
+				"max": 0.8922,
+				"nb_distinctes": 9,
+				"valeurs": [0.4428, 0.5402, 0.5756, 0.6011, 0.673, 0.7339, 0.7704, 0.8313, 0.8922],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 25,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-4, 0.0539, 0.1148, 0.2122, 0.345, 0.4428, 0.5, 0.5402, 0.5756, 0.6011, 0.655, 0.673,
+					0.7339, 0.7704, 0.7878, 0.8313, 0.8852, 0.8922, 0.9461, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+					25
+				],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (25)",
+					"graine": 1,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(25\\,;0{,}5)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $8$ | $0{,}053\\,9$ |\n| $9$ | $0{,}114\\,8$ |\n| $10$ | $0{,}212\\,2$ |\n| $11$ | $0{,}345$ |\n| $12$ | $0{,}5$ |\n| $13$ | $0{,}655$ |\n| $14$ | $0{,}787\\,8$ |\n| $15$ | $0{,}885\\,2$ |\n| $16$ | $0{,}946\\,1$ |\n\nEn utilisant uniquement cette table, calcule $P(9\\leqslant X\\leqslant 15)$.\n\n$P(9\\leqslant X\\leqslant 15)=[?]$",
+					"reponse": ["0.8313"],
+					"variables": {
+						"a": "9",
+						"b": "15",
+						"fb": "0.8852",
+						"fa": "0.0539",
+						"r": "0.8313"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(25\\,;0{,}5)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $8$ | $0{,}053\\,9$ |\n| $9$ | $0{,}114\\,8$ |\n| $10$ | $0{,}212\\,2$ |\n| $11$ | $0{,}345$ |\n| $12$ | $0{,}5$ |\n| $13$ | $0{,}655$ |\n| $14$ | $0{,}787\\,8$ |\n| $15$ | $0{,}885\\,2$ |\n| $16$ | $0{,}946\\,1$ |\n\nEn utilisant uniquement cette table, calcule $P(10\\leqslant X\\leqslant 14)$.\n\n$P(10\\leqslant X\\leqslant 14)=[?]$",
+					"reponse": ["0.673"],
+					"variables": {
+						"a": "10",
+						"b": "14",
+						"fb": "0.7878",
+						"fa": "0.1148",
+						"r": "0.673"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(25\\,;0{,}5)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $8$ | $0{,}053\\,9$ |\n| $9$ | $0{,}114\\,8$ |\n| $10$ | $0{,}212\\,2$ |\n| $11$ | $0{,}345$ |\n| $12$ | $0{,}5$ |\n| $13$ | $0{,}655$ |\n| $14$ | $0{,}787\\,8$ |\n| $15$ | $0{,}885\\,2$ |\n| $16$ | $0{,}946\\,1$ |\n\nEn utilisant uniquement cette table, calcule $P(12\\leqslant X\\leqslant 14)$.\n\n$P(12\\leqslant X\\leqslant 14)=[?]$",
+					"reponse": ["0.4428"],
+					"variables": {
+						"a": "12",
+						"b": "14",
+						"fb": "0.7878",
+						"fa": "0.345",
+						"r": "0.4428"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(25\\,;0{,}5)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $8$ | $0{,}053\\,9$ |\n| $9$ | $0{,}114\\,8$ |\n| $10$ | $0{,}212\\,2$ |\n| $11$ | $0{,}345$ |\n| $12$ | $0{,}5$ |\n| $13$ | $0{,}655$ |\n| $14$ | $0{,}787\\,8$ |\n| $15$ | $0{,}885\\,2$ |\n| $16$ | $0{,}946\\,1$ |\n\nEn utilisant uniquement cette table, calcule $P(9\\leqslant X\\leqslant 16)$.\n\n$P(9\\leqslant X\\leqslant 16)=[?]$",
+					"reponse": ["0.8922"],
+					"variables": {
+						"a": "9",
+						"b": "16",
+						"fb": "0.9461",
+						"fa": "0.0539",
+						"r": "0.8922"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(25\\,;0{,}5)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $8$ | $0{,}053\\,9$ |\n| $9$ | $0{,}114\\,8$ |\n| $10$ | $0{,}212\\,2$ |\n| $11$ | $0{,}345$ |\n| $12$ | $0{,}5$ |\n| $13$ | $0{,}655$ |\n| $14$ | $0{,}787\\,8$ |\n| $15$ | $0{,}885\\,2$ |\n| $16$ | $0{,}946\\,1$ |\n\nEn utilisant uniquement cette table, calcule $P(11\\leqslant X\\leqslant 14)$.\n\n$P(11\\leqslant X\\leqslant 14)=[?]$",
+					"reponse": ["0.5756"],
+					"variables": {
+						"a": "11",
+						"b": "14",
+						"fb": "0.7878",
+						"fa": "0.2122",
+						"r": "0.5756"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "j",
+						"expression": "1..3"
+					},
+					{
+						"name": "s",
+						"expression": "{{if:j==1|0.9|{{if:j==2|0.95|0.99}}}}"
+					},
+					{
+						"name": "r",
+						"expression": "{{if:j==1|14|{{if:j==2|15|17}}}}"
+					},
+					{
+						"name": "fr",
+						"expression": "{{if:j==1|0.9393|{{if:j==2|0.9692|0.9937}}}}"
+					},
+					{
+						"name": "fq",
+						"expression": "{{if:j==1|0.8894|{{if:j==2|0.9393|0.9856}}}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$X$ suit la loi binomiale $\\mathcal{B}(50\\,;0.2)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $10$ | $0.5836$ |\n| $11$ | $0.7107$ |\n| $12$ | $0.8139$ |\n| $13$ | $0.8894$ |\n| $14$ | $0.9393$ |\n| $15$ | $0.9692$ |\n| $16$ | $0.9856$ |\n| $17$ | $0.9937$ |\n| $18$ | $0.9975$ |\n\nDétermine le plus petit entier $k$ tel que $P(X\\leqslant k)\\geqslant {{s}}$.\n\n$k=?$",
+				"reponses_brutes": ["{{r}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.9,
+						"max": 0.99,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0.9, 0.95, 0.99]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 14,
+						"max": 17,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [14, 15, 17]
+					}
+				},
+				{
+					"nom": "fr",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.9393,
+						"max": 0.9937,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0.9393, 0.9692, 0.9937]
+					}
+				},
+				{
+					"nom": "fq",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.8894,
+						"max": 0.9856,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0.8894, 0.9393, 0.9856]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 14,
+						"max": 17,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [14, 15, 17]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 50,
+				"nb_distinctes": 24,
+				"valeurs": [
+					-4, 0.2, 0.5836, 0.7107, 0.8139, 0.8894, 0.9, 0.9393, 0.95, 0.9692, 0.9856, 0.99, 0.9937,
+					0.9975, 10, 11, 12, 13, 14, 15, 16, 17, 18, 50
+				],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 14,
+				"max": 17,
+				"nb_distinctes": 3,
+				"valeurs": [14, 15, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 50,
+				"nb_distinctes": 24,
+				"valeurs": [
+					-4, 0.2, 0.5836, 0.7107, 0.8139, 0.8894, 0.9, 0.9393, 0.95, 0.9692, 0.9856, 0.99, 0.9937,
+					0.9975, 10, 11, 12, 13, 14, 15, 16, 17, 18, 50
+				],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (50)",
+					"graine": 1,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(50\\,;0{,}2)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $10$ | $0{,}583\\,6$ |\n| $11$ | $0{,}710\\,7$ |\n| $12$ | $0{,}813\\,9$ |\n| $13$ | $0{,}889\\,4$ |\n| $14$ | $0{,}939\\,3$ |\n| $15$ | $0{,}969\\,2$ |\n| $16$ | $0{,}985\\,6$ |\n| $17$ | $0{,}993\\,7$ |\n| $18$ | $0{,}997\\,5$ |\n\nDétermine le plus petit entier $k$ tel que $P(X\\leqslant k)\\geqslant 0{,}9$.\n\n$k = [?]$",
+					"reponse": ["14"],
+					"variables": {
+						"j": "1",
+						"s": "0.9",
+						"r": "14",
+						"fr": "0.9393",
+						"fq": "0.8894"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(50\\,;0{,}2)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $10$ | $0{,}583\\,6$ |\n| $11$ | $0{,}710\\,7$ |\n| $12$ | $0{,}813\\,9$ |\n| $13$ | $0{,}889\\,4$ |\n| $14$ | $0{,}939\\,3$ |\n| $15$ | $0{,}969\\,2$ |\n| $16$ | $0{,}985\\,6$ |\n| $17$ | $0{,}993\\,7$ |\n| $18$ | $0{,}997\\,5$ |\n\nDétermine le plus petit entier $k$ tel que $P(X\\leqslant k)\\geqslant 0{,}99$.\n\n$k = [?]$",
+					"reponse": ["17"],
+					"variables": {
+						"j": "3",
+						"s": "0.99",
+						"r": "17",
+						"fr": "0.9937",
+						"fq": "0.9856"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(50\\,;0{,}2)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $10$ | $0{,}583\\,6$ |\n| $11$ | $0{,}710\\,7$ |\n| $12$ | $0{,}813\\,9$ |\n| $13$ | $0{,}889\\,4$ |\n| $14$ | $0{,}939\\,3$ |\n| $15$ | $0{,}969\\,2$ |\n| $16$ | $0{,}985\\,6$ |\n| $17$ | $0{,}993\\,7$ |\n| $18$ | $0{,}997\\,5$ |\n\nDétermine le plus petit entier $k$ tel que $P(X\\leqslant k)\\geqslant 0{,}95$.\n\n$k = [?]$",
+					"reponse": ["15"],
+					"variables": {
+						"j": "2",
+						"s": "0.95",
+						"r": "15",
+						"fr": "0.9692",
+						"fq": "0.9393"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "j",
+						"expression": "1..2"
+					},
+					{
+						"name": "h",
+						"expression": "{{if:j==1|0.025|0.05}}"
+					},
+					{
+						"name": "g",
+						"expression": "{{if:j==1|0.975|0.95}}"
+					},
+					{
+						"name": "c",
+						"expression": "{{if:j==1|0.95|0.9}}"
+					},
+					{
+						"name": "ra",
+						"expression": "{{if:j==1|5|6}}"
+					},
+					{
+						"name": "rb",
+						"expression": "{{if:j==1|16|15}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$X$ suit la loi binomiale $\\mathcal{B}(40\\,;0.25)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n|---|---|\n| $3$ | $0.0047$ |\n| $4$ | $0.016$ |\n| $5$ | $0.0433$ |\n| $6$ | $0.0962$ |\n| $7$ | $0.182$ |\n| $\\ldots$ | $\\ldots$ |\n| $13$ | $0.8968$ |\n| $14$ | $0.9456$ |\n| $15$ | $0.9738$ |\n| $16$ | $0.9884$ |\n| $17$ | $0.9953$ |\n\nOn cherche l'intervalle $[a\\,;b]$, avec $a$ et $b$ entiers, tel que $a$ est le plus petit entier vérifiant $P(X\\leqslant a)>{{h}}$ et $b$ le plus petit entier vérifiant $P(X\\leqslant b)\\geqslant {{g}}$. On a alors $P(a\\leqslant X\\leqslant b)\\geqslant {{c}}$.\n\n$a=?$ et $b=?$",
+				"reponses_brutes": ["{{ra}}", "{{rb}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 0.025,
+						"max": 0.05,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0.025, 0.05]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 0.95,
+						"max": 0.975,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0.95, 0.975]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.9,
+						"max": 0.95,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0.9, 0.95]
+					}
+				},
+				{
+					"nom": "ra",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [5, 6]
+					}
+				},
+				{
+					"nom": "rb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 16,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [15, 16]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [5, 6]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 16,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [15, 16]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 40,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-4, 0.0047, 0.016, 0.025, 0.0433, 0.05, 0.0962, 0.182, 0.25, 0.8968, 0.9, 0.9456, 0.95,
+					0.9738, 0.975, 0.9884, 0.9953, 3, 4, 5, 6, 7, 10, 13, 14, 15, 16, 17, 40
+				],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 5,
+				"max": 16,
+				"nb_distinctes": 4,
+				"valeurs": [5, 6, 15, 16],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 40,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-4, 0.0047, 0.016, 0.025, 0.0433, 0.05, 0.0962, 0.182, 0.25, 0.8968, 0.9, 0.9456, 0.95,
+					0.9738, 0.975, 0.9884, 0.9953, 3, 4, 5, 6, 7, 10, 13, 14, 15, 16, 17, 40
+				],
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"…": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 39,
+					"max": 39
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (40)",
+					"graine": 1,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(40\\,;0{,}25)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $3$ | $0{,}004\\,7$ |\n| $4$ | $0{,}016$ |\n| $5$ | $0{,}043\\,3$ |\n| $6$ | $0{,}096\\,2$ |\n| $7$ | $0{,}182$ |\n| $\\ldots$ | $\\ldots$ |\n| $13$ | $0{,}896\\,8$ |\n| $14$ | $0{,}945\\,6$ |\n| $15$ | $0{,}973\\,8$ |\n| $16$ | $0{,}988\\,4$ |\n| $17$ | $0{,}995\\,3$ |\n\nOn cherche l'intervalle $[a\\,;b]$, avec $a$ et $b$ entiers, tel que $a$ est le plus petit entier vérifiant $P(X\\leqslant a)>0{,}025$ et $b$ le plus petit entier vérifiant $P(X\\leqslant b)\\geqslant 0{,}975$. On a alors $P(a\\leqslant X\\leqslant b)\\geqslant 0{,}95$.\n\n$a = [?]$ et $b = [?]$",
+					"reponse": ["5", "16"],
+					"variables": {
+						"j": "1",
+						"h": "0.025",
+						"g": "0.975",
+						"c": "0.95",
+						"ra": "5",
+						"rb": "16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$X$ suit la loi binomiale $\\mathcal{B}(40\\,;0{,}25)$. On donne un extrait de la table de ses probabilités cumulées (arrondies à $10^{-4}$).\n\n| $k$ | $P(X\\leqslant k)$ |\n| $3$ | $0{,}004\\,7$ |\n| $4$ | $0{,}016$ |\n| $5$ | $0{,}043\\,3$ |\n| $6$ | $0{,}096\\,2$ |\n| $7$ | $0{,}182$ |\n| $\\ldots$ | $\\ldots$ |\n| $13$ | $0{,}896\\,8$ |\n| $14$ | $0{,}945\\,6$ |\n| $15$ | $0{,}973\\,8$ |\n| $16$ | $0{,}988\\,4$ |\n| $17$ | $0{,}995\\,3$ |\n\nOn cherche l'intervalle $[a\\,;b]$, avec $a$ et $b$ entiers, tel que $a$ est le plus petit entier vérifiant $P(X\\leqslant a)>0{,}05$ et $b$ le plus petit entier vérifiant $P(X\\leqslant b)\\geqslant 0{,}95$. On a alors $P(a\\leqslant X\\leqslant b)\\geqslant 0{,}9$.\n\n$a = [?]$ et $b = [?]$",
+					"reponse": ["6", "15"],
+					"variables": {
+						"j": "2",
+						"h": "0.05",
+						"g": "0.95",
+						"c": "0.9",
+						"ra": "6",
+						"rb": "15"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,858 @@
+{
+	"template_id": "a69dfde7-44b7-489e-a248-be0a1e5c5117",
+	"titre": "Python : générer les paires, les triplets, les parties",
+	"sous_titre": "Lire un programme qui énumère des objets : paires i < j (C(n, 2)), couples i ≠ j (n(n − 1)), triplets i < j < k (C(n, 3)), liste des parties (2ⁿ), ligne du triangle de Pascal (pièges : confondre i < j et i ≠ j)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > Algorithmique",
+	"mis_a_jour": "2026-10-05T06:04:02.897719+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-325",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..20"
+					},
+					{
+						"name": "k",
+						"expression": "2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la fonction Python suivante.\n\n```python\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            c = c + 1\n    return c\n```\n\nQue renvoie `compte({{n}})` ?\n\nLa valeur renvoyée est $?$.",
+				"reponses_brutes": ["{{eval:binom(n,k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 190,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153, 171, 190]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 20,
+				"nb_distinctes": 16,
+				"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 190,
+				"nb_distinctes": 16,
+				"valeurs": [10, 15, 21, 28, 36, 45, 55, 66, 78, 91, 105, 120, 136, 153, 171, 190],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 5,
+				"max": 190,
+				"nb_distinctes": 30,
+				"valeurs": [
+					5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 28, 36, 45, 55, 66, 78, 91,
+					105, 120, 136, 153, 171, 190
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"python": 300
+				},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (190)",
+					"graine": 24,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            c = c + 1\n    return c\n[/figure]\n\nQue renvoie compte(20) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["190"],
+					"variables": {
+						"n": "20",
+						"k": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (5)",
+					"graine": 1,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            c = c + 1\n    return c\n[/figure]\n\nQue renvoie compte(5) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"n": "5",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            c = c + 1\n    return c\n[/figure]\n\nQue renvoie compte(10) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["45"],
+					"variables": {
+						"n": "10",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            c = c + 1\n    return c\n[/figure]\n\nQue renvoie compte(17) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["136"],
+					"variables": {
+						"n": "17",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(i + 1, n):\n            c = c + 1\n    return c\n[/figure]\n\nQue renvoie compte(15) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["105"],
+					"variables": {
+						"n": "15",
+						"k": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..20"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la fonction Python suivante.\n\n```python\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(n):\n            if i != j:\n                c = c + 1\n    return c\n```\n\nQue renvoie `compte({{n}})` ?\n\nLa valeur renvoyée est $?$.",
+				"reponses_brutes": ["{{eval:n*(n-1)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 380,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [20, 30, 42, 56, 72, 90, 110, 132, 156, 182, 210, 240, 272, 306, 342, 380]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 20,
+				"nb_distinctes": 16,
+				"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 20,
+				"max": 380,
+				"nb_distinctes": 16,
+				"valeurs": [20, 30, 42, 56, 72, 90, 110, 132, 156, 182, 210, 240, 272, 306, 342, 380],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 5,
+				"max": 380,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"python": 300
+				},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (380)",
+					"graine": 24,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(n):\n            if i != j:\n                c = c + 1\n    return c\n[/figure]\n\nQue renvoie compte(20) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["380"],
+					"variables": {
+						"n": "20"
+					}
+				},
+				{
+					"role": "plus petite valeur (5)",
+					"graine": 1,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(n):\n            if i != j:\n                c = c + 1\n    return c\n[/figure]\n\nQue renvoie compte(5) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["20"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(n):\n            if i != j:\n                c = c + 1\n    return c\n[/figure]\n\nQue renvoie compte(10) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["90"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(n):\n            if i != j:\n                c = c + 1\n    return c\n[/figure]\n\nQue renvoie compte(17) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["272"],
+					"variables": {
+						"n": "17"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef compte(n):\n    c = 0\n    for i in range(n):\n        for j in range(n):\n            if i != j:\n                c = c + 1\n    return c\n[/figure]\n\nQue renvoie compte(15) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["210"],
+					"variables": {
+						"n": "15"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..12"
+					},
+					{
+						"name": "k",
+						"expression": "3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la fonction Python suivante.\n\n```python\ndef triplets(n):\n    L = []\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                L.append([i, j, k])\n    return L\n```\n\nQue renvoie `len(triplets({{n}}))` ?\n\nLa valeur renvoyée est $?$.",
+				"reponses_brutes": ["{{eval:binom(n,k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 220,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [10, 20, 35, 56, 84, 120, 165, 220]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 12,
+				"nb_distinctes": 8,
+				"valeurs": [5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 220,
+				"nb_distinctes": 8,
+				"valeurs": [10, 20, 35, 56, 84, 120, 165, 220],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 5,
+				"max": 220,
+				"nb_distinctes": 15,
+				"valeurs": [5, 6, 7, 8, 9, 10, 11, 12, 20, 35, 56, 84, 120, 165, 220],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"python": 300
+				},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (220)",
+					"graine": 10,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef triplets(n):\n    L = []\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                L.append([i, j, k])\n    return L\n[/figure]\n\nQue renvoie len(triplets(12)) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["220"],
+					"variables": {
+						"n": "12",
+						"k": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (5)",
+					"graine": 1,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef triplets(n):\n    L = []\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                L.append([i, j, k])\n    return L\n[/figure]\n\nQue renvoie len(triplets(5)) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"n": "5",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef triplets(n):\n    L = []\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                L.append([i, j, k])\n    return L\n[/figure]\n\nQue renvoie len(triplets(7)) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["35"],
+					"variables": {
+						"n": "7",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef triplets(n):\n    L = []\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                L.append([i, j, k])\n    return L\n[/figure]\n\nQue renvoie len(triplets(11)) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["165"],
+					"variables": {
+						"n": "11",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef triplets(n):\n    L = []\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                L.append([i, j, k])\n    return L\n[/figure]\n\nQue renvoie len(triplets(10)) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["120"],
+					"variables": {
+						"n": "10",
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "3..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la fonction Python suivante.\n\n```python\ndef parties(E):\n    L = [[]]\n    for x in E:\n        L = L + [P + [x] for P in L]\n    return L\n```\n\nQue renvoie `len(parties(list(range({{n}}))))` ?\n\nLa valeur renvoyée est $?$.",
+				"reponses_brutes": ["{{eval:2^n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 1024,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [8, 16, 32, 64, 128, 256, 512, 1024]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 8,
+				"max": 1024,
+				"nb_distinctes": 8,
+				"valeurs": [8, 16, 32, 64, 128, 256, 512, 1024],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 1024,
+				"nb_distinctes": 15,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 16, 32, 64, 128, 256, 512, 1024],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"python": 300
+				},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1024)",
+					"graine": 10,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef parties(E):\n    L = [[]]\n    for x in E:\n        L = L + [P + [x] for P in L]\n    return L\n[/figure]\n\nQue renvoie len(parties(list(range(10)))) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["1024"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 1,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef parties(E):\n    L = [[]]\n    for x in E:\n        L = L + [P + [x] for P in L]\n    return L\n[/figure]\n\nQue renvoie len(parties(list(range(3)))) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["8"],
+					"variables": {
+						"n": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef parties(E):\n    L = [[]]\n    for x in E:\n        L = L + [P + [x] for P in L]\n    return L\n[/figure]\n\nQue renvoie len(parties(list(range(5)))) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["32"],
+					"variables": {
+						"n": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef parties(E):\n    L = [[]]\n    for x in E:\n        L = L + [P + [x] for P in L]\n    return L\n[/figure]\n\nQue renvoie len(parties(list(range(9)))) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["512"],
+					"variables": {
+						"n": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef parties(E):\n    L = [[]]\n    for x in E:\n        L = L + [P + [x] for P in L]\n    return L\n[/figure]\n\nQue renvoie len(parties(list(range(8)))) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["256"],
+					"variables": {
+						"n": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "5..10"
+					},
+					{
+						"name": "k",
+						"expression": "2..{{eval:n-2}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la fonction Python suivante.\n\n```python\ndef ligne(n):\n    L = [1]\n    for _ in range(n):\n        L = [1] + [L[i] + L[i + 1] for i in range(len(L) - 1)] + [1]\n    return L\n```\n\nQue renvoie `ligne({{n}})[{{k}}]` ?\n\nLa valeur renvoyée est $?$.",
+				"reponses_brutes": ["{{eval:binom(n,k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 27,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 252,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [10, 15, 20, 21, 28, 35, 36, 45, 56, 70, 84, 120, 126, 210, 252]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 252,
+				"nb_distinctes": 15,
+				"valeurs": [10, 15, 20, 21, 28, 35, 36, 45, 56, 70, 84, 120, 126, 210, 252],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 252,
+				"nb_distinctes": 23,
+				"valeurs": [
+					2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 21, 28, 35, 36, 45, 56, 70, 84, 120, 126, 210, 252
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"python": 300
+				},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (252)",
+					"graine": 30,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef ligne(n):\n    L = [1]\n    for _ in range(n):\n        L = [1] + [L[i] + L[i + 1] for i in range(len(L) - 1)] + [1]\n    return L\n[/figure]\n\nQue renvoie ligne(10)[5] ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["252"],
+					"variables": {
+						"n": "10",
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 2,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef ligne(n):\n    L = [1]\n    for _ in range(n):\n        L = [1] + [L[i] + L[i + 1] for i in range(len(L) - 1)] + [1]\n    return L\n[/figure]\n\nQue renvoie ligne(6)[2] ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["15"],
+					"variables": {
+						"n": "6",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef ligne(n):\n    L = [1]\n    for _ in range(n):\n        L = [1] + [L[i] + L[i + 1] for i in range(len(L) - 1)] + [1]\n    return L\n[/figure]\n\nQue renvoie ligne(5)[3] ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"n": "5",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef ligne(n):\n    L = [1]\n    for _ in range(n):\n        L = [1] + [L[i] + L[i + 1] for i in range(len(L) - 1)] + [1]\n    return L\n[/figure]\n\nQue renvoie ligne(5)[2] ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"n": "5",
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef ligne(n):\n    L = [1]\n    for _ in range(n):\n        L = [1] + [L[i] + L[i + 1] for i in range(len(L) - 1)] + [1]\n    return L\n[/figure]\n\nQue renvoie ligne(9)[3] ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["84"],
+					"variables": {
+						"n": "9",
+						"k": "3"
+					}
+				}
+			]
+		}
+	]
+}

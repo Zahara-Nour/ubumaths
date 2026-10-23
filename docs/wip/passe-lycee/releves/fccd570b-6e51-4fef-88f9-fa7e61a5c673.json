@@ -1,0 +1,677 @@
+{
+	"template_id": "fccd570b-6e51-4fef-88f9-fa7e61a5c673",
+	"titre": "Résoudre sin x > a sur un tour",
+	"sous_titre": "Inéquation sin x > a, a valeur remarquable, résolue dans [0 ; 2π[ ; réponse : intervalle ou réunion",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions trigonométriques > Inéquations",
+	"mis_a_jour": "2026-10-20T20:27:05.121007+00:00",
+	"points_candidats": [
+		{
+			"decision": "SANS_POINT",
+			"code": "",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*a/\\pi"
+					},
+					{
+						"name": "c",
+						"expression": "eval:n/gcd(abs(n),12)"
+					},
+					{
+						"name": "q",
+						"expression": "eval:12/gcd(abs(n),12)"
+					},
+					{
+						"name": "u",
+						"expression": "eval:(12-n)/gcd(12-n,12)"
+					},
+					{
+						"name": "w",
+						"expression": "eval:12/gcd(12-n,12)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>{{eval:sin(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["]{{a}};\\frac{ {{u}}\\pi}{ {{w}} }["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\frac{\\pi}{3}", "\\frac{\\pi}{4}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 5]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"]\\frac{\\pi}{3};\\frac{ 2\\pi}{ 3 }[",
+							"]\\frac{\\pi}{4};\\frac{ 3\\pi}{ 4 }[",
+							"]\\frac{\\pi}{6};\\frac{ 5\\pi}{ 6 }["
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 6,
+							"nb_distinctes": 5,
+							"valeurs": [2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 4,
+				"valeurs": [0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": {
+				"nb": 92,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"racine": "208/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>\\dfrac{1}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]\\frac{\\pi}{6};\\frac{ 5\\pi}{ 6 }["],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2",
+						"c": "1",
+						"q": "6",
+						"u": "5",
+						"w": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>\\dfrac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]\\frac{\\pi}{3};\\frac{ 2\\pi}{ 3 }["],
+					"variables": {
+						"a": "\\frac{\\pi}{3}",
+						"n": "4",
+						"c": "1",
+						"q": "3",
+						"u": "2",
+						"w": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>\\dfrac{\\sqrt{2}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]\\frac{\\pi}{4};\\frac{ 3\\pi}{ 4 }["],
+					"variables": {
+						"a": "\\frac{\\pi}{4}",
+						"n": "3",
+						"c": "1",
+						"q": "4",
+						"u": "3",
+						"w": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "\\frac{\\pi}{6}|\\frac{\\pi}{4}|\\frac{\\pi}{3}"
+					},
+					{
+						"name": "n",
+						"expression": "eval:12*a/\\pi"
+					},
+					{
+						"name": "c",
+						"expression": "eval:n/gcd(abs(n),12)"
+					},
+					{
+						"name": "q",
+						"expression": "eval:12/gcd(abs(n),12)"
+					},
+					{
+						"name": "u",
+						"expression": "eval:(12+n)/gcd(12+n,12)"
+					},
+					{
+						"name": "w",
+						"expression": "eval:12/gcd(12+n,12)"
+					},
+					{
+						"name": "g",
+						"expression": "eval:(24-n)/gcd(24-n,12)"
+					},
+					{
+						"name": "h",
+						"expression": "eval:12/gcd(24-n,12)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>{{eval:-sin(n*\\pi/12)}}$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": [
+					"[0;\\frac{ {{u}}\\pi}{ {{w}} }[\\cup]\\frac{ {{g}}\\pi}{ {{h}} };2\\pi["
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["\\frac{\\pi}{3}", "\\frac{\\pi}{4}", "\\frac{\\pi}{6}"],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 6,
+							"nb_distinctes": 3,
+							"valeurs": [3, 4, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				},
+				{
+					"nom": "u",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [4, 5, 7]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [5, 7, 11]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"[0;\\frac{ 4\\pi}{ 3 }[\\cup]\\frac{ 5\\pi}{ 3 };2\\pi[",
+							"[0;\\frac{ 5\\pi}{ 4 }[\\cup]\\frac{ 7\\pi}{ 4 };2\\pi[",
+							"[0;\\frac{ 7\\pi}{ 6 }[\\cup]\\frac{ 11\\pi}{ 6 };2\\pi["
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 11,
+							"nb_distinctes": 8,
+							"valeurs": [0, 2, 3, 4, 5, 6, 7, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 4,
+				"valeurs": [0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 11,
+				"nb_distinctes": 8,
+				"valeurs": [0, 2, 3, 4, 5, 6, 7, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 11,
+				"nb_distinctes": 9,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 92,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"racine": "208/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (11)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>-\\dfrac{1}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[0;\\frac{ 7\\pi}{ 6 }[\\cup]\\frac{ 11\\pi}{ 6 };2\\pi["],
+					"variables": {
+						"a": "\\frac{\\pi}{6}",
+						"n": "2",
+						"c": "1",
+						"q": "6",
+						"u": "7",
+						"w": "6",
+						"g": "11",
+						"h": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>-\\dfrac{\\sqrt{3}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[0;\\frac{ 4\\pi}{ 3 }[\\cup]\\frac{ 5\\pi}{ 3 };2\\pi["],
+					"variables": {
+						"a": "\\frac{\\pi}{3}",
+						"n": "4",
+						"c": "1",
+						"q": "3",
+						"u": "4",
+						"w": "3",
+						"g": "5",
+						"h": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>-\\dfrac{\\sqrt{2}}{2}$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["[0;\\frac{ 5\\pi}{ 4 }[\\cup]\\frac{ 7\\pi}{ 4 };2\\pi["],
+					"variables": {
+						"a": "\\frac{\\pi}{4}",
+						"n": "3",
+						"c": "1",
+						"q": "4",
+						"u": "5",
+						"w": "4",
+						"g": "7",
+						"h": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>0$.\n\nL'ensemble des solutions est $S=?$.",
+				"reponses_brutes": ["]0;\\pi["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["]0;\\pi["],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 0,
+							"nb_distinctes": 1,
+							"valeurs": [0],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [0, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [0, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left[0\\,;2\\pi\\right[$ l'inéquation $\\sin x>0$.\n\nL'ensemble des solutions est $S = [?]$.",
+					"reponse": ["]0;\\pi["],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

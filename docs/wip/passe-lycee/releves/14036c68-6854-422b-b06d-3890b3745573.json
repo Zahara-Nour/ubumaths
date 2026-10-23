@@ -1,0 +1,896 @@
+{
+	"template_id": "14036c68-6854-422b-b06d-3890b3745573",
+	"titre": "Résoudre une inéquation avec ln ou exp",
+	"sous_titre": "ln x < a, ln x ≥ a, eˣ > b, ln(ax+b) ≤ 0, e⁻ˣ ≥ k ; ensemble de solutions en intervalle (pièges : domaine x > 0 oublié, sens de l'inégalité, crochets)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonction logarithme > Équations et inéquations",
+	"mis_a_jour": "2026-10-04T19:48:39.400394+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-238",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-446",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-3..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x<{{a}}$.\n\n$S=?$",
+				"reponses_brutes": ["]0;{{if:a==0|1|e^{ {{a}} }}}["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"]0;1[",
+							"]0;e^{ -1 }[",
+							"]0;e^{ -2 }[",
+							"]0;e^{ -3 }[",
+							"]0;e^{ 1 }[",
+							"]0;e^{ 2 }[",
+							"]0;e^{ 3 }[",
+							"]0;e^{ 4 }["
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 4,
+							"nb_distinctes": 8,
+							"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 4,
+				"nb_distinctes": 5,
+				"valeurs": [0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -3,
+				"max": 4,
+				"nb_distinctes": 8,
+				"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": 4,
+				"nb_distinctes": 8,
+				"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"<": "300/300",
+					"+": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 10,
+					"enonce": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x<4$.\n\n$S = [?]$",
+					"reponse": ["]0;e^{ 4 }["],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-3)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x<-3$.\n\n$S = [?]$",
+					"reponse": ["]0;e^{ -3 }["],
+					"variables": {
+						"a": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x<-1$.\n\n$S = [?]$",
+					"reponse": ["]0;e^{ -1 }["],
+					"variables": {
+						"a": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x<3$.\n\n$S = [?]$",
+					"reponse": ["]0;e^{ 3 }["],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x<2$.\n\n$S = [?]$",
+					"reponse": ["]0;e^{ 2 }["],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-3..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x\\geqslant{{a}}$.\n\n$S=?$",
+				"reponses_brutes": ["[{{if:a==0|1|e^{ {{a}} }}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"[1;+\\infty[",
+							"[e^{ -1 };+\\infty[",
+							"[e^{ -2 };+\\infty[",
+							"[e^{ -3 };+\\infty[",
+							"[e^{ 1 };+\\infty[",
+							"[e^{ 2 };+\\infty[",
+							"[e^{ 3 };+\\infty[",
+							"[e^{ 4 };+\\infty["
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 4,
+							"nb_distinctes": 7,
+							"valeurs": [-3, -2, -1, 1, 2, 3, 4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 4,
+				"nb_distinctes": 5,
+				"valeurs": [0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -3,
+				"max": 4,
+				"nb_distinctes": 7,
+				"valeurs": [-3, -2, -1, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": 4,
+				"nb_distinctes": 8,
+				"valeurs": [-3, -2, -1, 0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 10,
+					"enonce": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x\\geqslant4$.\n\n$S = [?]$",
+					"reponse": ["[e^{ 4 };+\\infty["],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-3)",
+					"graine": 1,
+					"enonce": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x\\geqslant-3$.\n\n$S = [?]$",
+					"reponse": ["[e^{ -3 };+\\infty["],
+					"variables": {
+						"a": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x\\geqslant-1$.\n\n$S = [?]$",
+					"reponse": ["[e^{ -1 };+\\infty["],
+					"variables": {
+						"a": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x\\geqslant3$.\n\n$S = [?]$",
+					"reponse": ["[e^{ 3 };+\\infty["],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Résous dans $\\left]0\\,;+\\infty\\right[$ l'inéquation $\\ln x\\geqslant2$.\n\n$S = [?]$",
+					"reponse": ["[e^{ 2 };+\\infty["],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "2|3|5|6|7|10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation $e^{x}>{{b}}$.\n\n$S=?$",
+				"reponses_brutes": ["]\\ln {{b}};+\\infty["]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 3, 5, 6, 7, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"]\\ln 10;+\\infty[",
+							"]\\ln 2;+\\infty[",
+							"]\\ln 3;+\\infty[",
+							"]\\ln 5;+\\infty[",
+							"]\\ln 6;+\\infty[",
+							"]\\ln 7;+\\infty["
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 6,
+							"valeurs": [2, 3, 5, 6, 7, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 6,
+				"valeurs": [2, 3, 5, 6, 7, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 6,
+				"valeurs": [2, 3, 5, 6, 7, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 6,
+				"valeurs": [2, 3, 5, 6, 7, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					">": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 9,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^x > 10$.\n\n$S = [?]$",
+					"reponse": ["]\\ln 10;+\\infty["],
+					"variables": {
+						"b": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^x > 2$.\n\n$S = [?]$",
+					"reponse": ["]\\ln 2;+\\infty["],
+					"variables": {
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^x > 3$.\n\n$S = [?]$",
+					"reponse": ["]\\ln 3;+\\infty["],
+					"variables": {
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^x > 7$.\n\n$S = [?]$",
+					"reponse": ["]\\ln 7;+\\infty["],
+					"variables": {
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $\\exponentialE^x > 6$.\n\n$S = [?]$",
+					"reponse": ["]\\ln 6;+\\infty["],
+					"variables": {
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous l'inéquation $\\ln\\left({{a}}x{{b;+}}\\right)\\leqslant0$.\n\n$S=?$",
+				"reponses_brutes": ["]{{eval:-b/a}};{{eval:(1-b)/a}}]"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 72,
+						"exemples": [
+							"]-\\dfrac{1}{2};0]",
+							"]\\dfrac{4}{3};\\dfrac{5}{3}]",
+							"]\\dfrac{1}{2};1]",
+							"]2;\\dfrac{7}{3}]",
+							"]\\dfrac{6}{5};\\dfrac{7}{5}]",
+							"]-\\dfrac{3}{2};-1]",
+							"]-\\dfrac{9}{2};-4]",
+							"]1;\\dfrac{5}{4}]",
+							"]\\dfrac{7}{5};\\dfrac{8}{5}]",
+							"]-\\dfrac{4}{5};-\\dfrac{3}{5}]",
+							"]-\\dfrac{1}{2};-\\dfrac{1}{4}]",
+							"]-1;-\\dfrac{1}{2}]"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 10,
+							"nb_distinctes": 11,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 404,
+				"denominateurs": [2, 3, 4, 5],
+				"denominateur_min": 2,
+				"denominateur_max": 5,
+				"numerateur_min": 1,
+				"numerateur_max": 10,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "169/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 2,
+					"max": 2
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 118,
+					"enonce": "Résous l'inéquation $\\ln\\left(3x-9\\right)\\leqslant0$.\n\n$S = [?]$",
+					"reponse": ["]3;\\dfrac{10}{3}]"],
+					"variables": {
+						"a": "3",
+						"b": "-9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Résous l'inéquation $\\ln\\left(2x+1\\right)\\leqslant0$.\n\n$S = [?]$",
+					"reponse": ["]-\\dfrac{1}{2};0]"],
+					"variables": {
+						"a": "2",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous l'inéquation $\\ln\\left(3x-4\\right)\\leqslant0$.\n\n$S = [?]$",
+					"reponse": ["]\\dfrac{4}{3};\\dfrac{5}{3}]"],
+					"variables": {
+						"a": "3",
+						"b": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous l'inéquation $\\ln\\left(2x-1\\right)\\leqslant0$.\n\n$S = [?]$",
+					"reponse": ["]\\dfrac{1}{2};1]"],
+					"variables": {
+						"a": "2",
+						"b": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Résous l'inéquation $\\ln\\left(3x-6\\right)\\leqslant0$.\n\n$S = [?]$",
+					"reponse": ["]2;\\dfrac{7}{3}]"],
+					"variables": {
+						"a": "3",
+						"b": "-6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2|3|5|6|7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous dans $\\mathbb{R}$ l'inéquation $e^{-x}\\geqslant{{k}}$.\n\n$S=?$",
+				"reponses_brutes": ["]-\\infty;-\\ln {{k}}]"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": [
+							"]-\\infty;-\\ln 2]",
+							"]-\\infty;-\\ln 3]",
+							"]-\\infty;-\\ln 5]",
+							"]-\\infty;-\\ln 6]",
+							"]-\\infty;-\\ln 7]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 7,
+							"nb_distinctes": 5,
+							"valeurs": [2, 3, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 7,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["intervalles"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 9,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{-x}\\geqslant7$.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-\\ln 7]"],
+					"variables": {
+						"k": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{-x}\\geqslant2$.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-\\ln 2]"],
+					"variables": {
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{-x}\\geqslant3$.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-\\ln 3]"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{-x}\\geqslant6$.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-\\ln 6]"],
+					"variables": {
+						"k": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Résous dans $\\mathbb{R}$ l'inéquation $e^{-x}\\geqslant5$.\n\n$S = [?]$",
+					"reponse": ["]-\\infty;-\\ln 5]"],
+					"variables": {
+						"k": "5"
+					}
+				}
+			]
+		}
+	]
+}

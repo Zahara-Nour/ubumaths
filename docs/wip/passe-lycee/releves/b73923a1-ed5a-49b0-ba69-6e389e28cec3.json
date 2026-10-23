@@ -1,0 +1,846 @@
+{
+	"template_id": "b73923a1-ed5a-49b0-ba69-6e389e28cec3",
+	"titre": "Choisir la méthode dans une figure usuelle",
+	"sous_titre": "Calculer des produits scalaires dans un carré, un triangle équilatéral ou un rectangle en choisissant la méthode adaptée (projection, angle, orthogonalité, décomposition)",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Calculer un produit scalaire",
+	"mis_a_jour": "2026-10-03T06:50:35.274751+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-321",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$ABCD$ est un carré de côté ${{a}}$.\n\n```figure\nfenetre: -1.2 ; 5.2 ; -1.2 ; 5\ntaille: petite\ndescription: Carré ABCD et sa diagonale AC.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(4, 0, etiquette=\"bas-droite\")\nC = point(4, 4, etiquette=\"haut-droite\")\nD = point(0, 4, etiquette=\"haut-gauche\")\nM = milieu(A, B, visible=faux)\npolygone(A, B, C, D)\nangle(A, B, C, marque=\"carre\")\nmarque_segment(A, B)\nmarque_segment(C, D)\nmarque_segment(D, A)\nsegment(A, C)\nmarque_segment(B, C)\ntexte(M, \"{{a}}\", dx=0, dy=-0.3, ancre=\"haut\")\n```\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=?$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{CD}=?$",
+				"reponses_brutes": ["{{eval:a*a}}", "0", "{{eval:-a*a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 81,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [4, 9, 16, 25, 36, 49, 64, 81]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -81,
+						"max": -4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-81, -64, -49, -36, -25, -16, -9, -4]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -81,
+				"max": 81,
+				"nb_distinctes": 17,
+				"valeurs": [-81, -64, -49, -36, -25, -16, -9, -4, 0, 4, 9, 16, 25, 36, 49, 64, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -81,
+				"max": 81,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-81, -64, -49, -36, -25, -16, -9, -4, 0, 2, 3, 4, 5, 6, 7, 8, 9, 16, 25, 36, 49, 64, 81
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 10,
+					"enonce": "$ABCD$ est un carré de côté $9$.\n\n[figure]\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{CD}=[?]$",
+					"reponse": ["81", "0", "-81"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$ABCD$ est un carré de côté $2$.\n\n[figure]\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{CD}=[?]$",
+					"reponse": ["4", "0", "-4"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$ABCD$ est un carré de côté $4$.\n\n[figure]\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{CD}=[?]$",
+					"reponse": ["16", "0", "-16"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$ABCD$ est un carré de côté $8$.\n\n[figure]\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{CD}=[?]$",
+					"reponse": ["64", "0", "-64"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "$ABCD$ est un carré de côté $7$.\n\n[figure]\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AD}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{CD}=[?]$",
+					"reponse": ["49", "0", "-49"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$ABC$ est un triangle équilatéral de côté ${{a}}$ et $I$ est le milieu de $[BC]$.\n\n```figure\nfenetre: -1.2 ; 5.2 ; -1 ; 4.4\ntaille: petite\ndescription: Triangle équilatéral ABC ; I est le milieu du côté BC.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(4, 0, etiquette=\"bas-droite\")\nC = point(2, 2*sqrt(3), etiquette=\"haut\")\nI = milieu(B, C, etiquette=\"haut-droite\")\nM = milieu(A, B, visible=faux)\npolygone(A, B, C)\nsegment(A, I)\nmarque_segment(A, B)\nmarque_segment(A, C)\nmarque_segment(B, I, traits=2)\nmarque_segment(I, C, traits=2)\ntexte(M, \"{{a}}\", dx=0, dy=-0.3, ancre=\"haut\")\n```\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=?$\n\n$\\overrightarrow{AI}\\cdot\\overrightarrow{BC}=?$",
+				"reponses_brutes": ["\\frac{ {{eval:a*a}} }{2}", "\\frac{ {{eval:-a*a}} }{2}", "0"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\frac{ 16 }{2}",
+							"\\frac{ 25 }{2}",
+							"\\frac{ 36 }{2}",
+							"\\frac{ 4 }{2}",
+							"\\frac{ 49 }{2}",
+							"\\frac{ 64 }{2}",
+							"\\frac{ 81 }{2}",
+							"\\frac{ 9 }{2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 9,
+							"valeurs": [2, 4, 9, 16, 25, 36, 49, 64, 81],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\frac{ -16 }{2}",
+							"\\frac{ -25 }{2}",
+							"\\frac{ -36 }{2}",
+							"\\frac{ -4 }{2}",
+							"\\frac{ -49 }{2}",
+							"\\frac{ -64 }{2}",
+							"\\frac{ -81 }{2}",
+							"\\frac{ -9 }{2}"
+						],
+						"nombres_contenus": {
+							"min": -81,
+							"max": 2,
+							"nb_distinctes": 9,
+							"valeurs": [-81, -64, -49, -36, -25, -16, -9, -4, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -81,
+				"max": 81,
+				"nb_distinctes": 18,
+				"valeurs": [-81, -64, -49, -36, -25, -16, -9, -4, 0, 2, 4, 9, 16, 25, 36, 49, 64, 81],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -81,
+				"max": 81,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-81, -64, -49, -36, -25, -16, -9, -4, 0, 2, 3, 4, 5, 6, 7, 8, 9, 16, 25, 36, 49, 64, 81
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": -81,
+				"numerateur_max": 81,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 10,
+					"enonce": "$ABC$ est un triangle équilatéral de côté $9$ et $I$ est le milieu de $\\left[ BC \\right]$.\n\n[figure]\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=[?]$\n\n$\\overrightarrow{AI}\\cdot\\overrightarrow{BC}=[?]$",
+					"reponse": ["\\frac{ 81 }{2}", "\\frac{ -81 }{2}", "0"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$ABC$ est un triangle équilatéral de côté $2$ et $I$ est le milieu de $\\left[ BC \\right]$.\n\n[figure]\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=[?]$\n\n$\\overrightarrow{AI}\\cdot\\overrightarrow{BC}=[?]$",
+					"reponse": ["\\frac{ 4 }{2}", "\\frac{ -4 }{2}", "0"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$ABC$ est un triangle équilatéral de côté $4$ et $I$ est le milieu de $\\left[ BC \\right]$.\n\n[figure]\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=[?]$\n\n$\\overrightarrow{AI}\\cdot\\overrightarrow{BC}=[?]$",
+					"reponse": ["\\frac{ 16 }{2}", "\\frac{ -16 }{2}", "0"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$ABC$ est un triangle équilatéral de côté $8$ et $I$ est le milieu de $\\left[ BC \\right]$.\n\n[figure]\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=[?]$\n\n$\\overrightarrow{AI}\\cdot\\overrightarrow{BC}=[?]$",
+					"reponse": ["\\frac{ 64 }{2}", "\\frac{ -64 }{2}", "0"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "$ABC$ est un triangle équilatéral de côté $7$ et $I$ est le milieu de $\\left[ BC \\right]$.\n\n[figure]\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{BC}=[?]$\n\n$\\overrightarrow{AI}\\cdot\\overrightarrow{BC}=[?]$",
+					"reponse": ["\\frac{ 49 }{2}", "\\frac{ -49 }{2}", "0"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "L",
+						"expression": "3..8"
+					},
+					{
+						"name": "l",
+						"expression": "2..{{eval:L-1}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$ABCD$ est un rectangle tel que $AB={{L}}$ et $AD={{l}}$.\n\n```figure\nfenetre: -1.3 ; {{eval:L+1}} ; -1.2 ; {{eval:l+1}}\ntaille: petite\ndescription: Rectangle ABCD et ses diagonales AC et BD.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point({{L}}, 0, etiquette=\"bas-droite\")\nC = point({{L}}, {{l}}, etiquette=\"haut-droite\")\nD = point(0, {{l}}, etiquette=\"haut-gauche\")\nM = milieu(A, B, visible=faux)\nN = milieu(A, D, visible=faux)\npolygone(A, B, C, D)\nangle(B, A, D, marque=\"carre\")\nsegment(A, C)\nsegment(B, D)\ntexte(M, \"{{L}}\", dx=0, dy=-0.3, ancre=\"haut\")\ntexte(N, \"{{l}}\", dx=-0.3, dy=0, ancre=\"droite\")\n```\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=?$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AC}=?$\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=?$",
+				"reponses_brutes": ["{{eval:L*L}}", "{{eval:l*l}}", "{{eval:l*l-L*L}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 21,
+			"variables": [
+				{
+					"nom": "L",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "l",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 9,
+						"max": 64,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [9, 16, 25, 36, 49, 64]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 49,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [4, 9, 16, 25, 36, 49]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -60,
+						"max": -5,
+						"negatif_possible": true,
+						"nb_distinctes": 21,
+						"valeurs": [
+							-60, -55, -48, -45, -40, -39, -33, -32, -28, -27, -24, -21, -20, -16, -15, -13, -12,
+							-11, -9, -7, -5
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -60,
+				"max": 64,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-60, -55, -48, -45, -40, -39, -33, -32, -28, -27, -24, -21, -20, -16, -15, -13, -12, -11,
+					-9, -7, -5, 4, 9, 16, 25, 36, 49, 64
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -60,
+				"max": 64,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (64)",
+					"graine": 9,
+					"enonce": "$ABCD$ est un rectangle tel que $AB = 8$ et $AD = 2$.\n\n[figure]\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=[?]$",
+					"reponse": ["64", "4", "-60"],
+					"variables": {
+						"L": "8",
+						"l": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$ABCD$ est un rectangle tel que $AB = 3$ et $AD = 2$.\n\n[figure]\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=[?]$",
+					"reponse": ["9", "4", "-5"],
+					"variables": {
+						"L": "3",
+						"l": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$ABCD$ est un rectangle tel que $AB = 4$ et $AD = 2$.\n\n[figure]\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=[?]$",
+					"reponse": ["16", "4", "-12"],
+					"variables": {
+						"L": "4",
+						"l": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$ABCD$ est un rectangle tel que $AB = 7$ et $AD = 3$.\n\n[figure]\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=[?]$",
+					"reponse": ["49", "9", "-40"],
+					"variables": {
+						"L": "7",
+						"l": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "$ABCD$ est un rectangle tel que $AB = 6$ et $AD = 3$.\n\n[figure]\n\nCalcule les produits scalaires suivants.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AC}=[?]$\n\n$\\overrightarrow{AC}\\cdot\\overrightarrow{BD}=[?]$",
+					"reponse": ["36", "9", "-27"],
+					"variables": {
+						"L": "6",
+						"l": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$ABCD$ est un carré de côté ${{a}}$ et $I$ est le milieu de $[BC]$.\n\n```figure\nfenetre: -1.2 ; 5.4 ; -1.2 ; 5\ntaille: petite\ndescription: Carré ABCD ; I est le milieu du côté BC.\n---\nA = point(0, 0, etiquette=\"bas-gauche\")\nB = point(4, 0, etiquette=\"bas-droite\")\nC = point(4, 4, etiquette=\"haut-droite\")\nD = point(0, 4, etiquette=\"haut-gauche\")\nM = milieu(A, B, visible=faux)\npolygone(A, B, C, D)\nangle(A, B, C, marque=\"carre\")\nI = milieu(B, C, etiquette=\"droite\")\nsegment(A, I)\nsegment(D, I)\nmarque_segment(A, B)\nmarque_segment(C, D)\nmarque_segment(D, A)\nmarque_segment(B, I, traits=2)\nmarque_segment(I, C, traits=2)\ntexte(M, \"{{a}}\", dx=0, dy=-0.3, ancre=\"haut\")\n```\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AI}=?$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AI}=?$\n\n$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=?$",
+				"reponses_brutes": [
+					"{{eval:a*a}}",
+					"\\frac{ {{eval:a*a}} }{2}",
+					"\\frac{ {{eval:3*a*a}} }{4}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 81,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [4, 9, 16, 25, 36, 49, 64, 81]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\frac{ 16 }{2}",
+							"\\frac{ 25 }{2}",
+							"\\frac{ 36 }{2}",
+							"\\frac{ 4 }{2}",
+							"\\frac{ 49 }{2}",
+							"\\frac{ 64 }{2}",
+							"\\frac{ 81 }{2}",
+							"\\frac{ 9 }{2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 81,
+							"nb_distinctes": 9,
+							"valeurs": [2, 4, 9, 16, 25, 36, 49, 64, 81],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\frac{ 108 }{4}",
+							"\\frac{ 12 }{4}",
+							"\\frac{ 147 }{4}",
+							"\\frac{ 192 }{4}",
+							"\\frac{ 243 }{4}",
+							"\\frac{ 27 }{4}",
+							"\\frac{ 48 }{4}",
+							"\\frac{ 75 }{4}"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 243,
+							"nb_distinctes": 9,
+							"valeurs": [4, 12, 27, 48, 75, 108, 147, 192, 243],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 243,
+				"nb_distinctes": 17,
+				"valeurs": [2, 4, 9, 12, 16, 25, 27, 36, 48, 49, 64, 75, 81, 108, 147, 192, 243],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 243,
+				"nb_distinctes": 22,
+				"valeurs": [
+					2, 3, 4, 5, 6, 7, 8, 9, 12, 16, 25, 27, 36, 48, 49, 64, 75, 81, 108, 147, 192, 243
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [2, 4],
+				"denominateur_min": 2,
+				"denominateur_max": 4,
+				"numerateur_min": 4,
+				"numerateur_max": 243,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (243)",
+					"graine": 10,
+					"enonce": "$ABCD$ est un carré de côté $9$ et $I$ est le milieu de $\\left[ BC \\right]$.\n\n[figure]\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AI}=[?]$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AI}=[?]$\n\n$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=[?]$",
+					"reponse": ["81", "\\frac{ 81 }{2}", "\\frac{ 243 }{4}"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "$ABCD$ est un carré de côté $2$ et $I$ est le milieu de $\\left[ BC \\right]$.\n\n[figure]\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AI}=[?]$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AI}=[?]$\n\n$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=[?]$",
+					"reponse": ["4", "\\frac{ 4 }{2}", "\\frac{ 12 }{4}"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$ABCD$ est un carré de côté $4$ et $I$ est le milieu de $\\left[ BC \\right]$.\n\n[figure]\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AI}=[?]$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AI}=[?]$\n\n$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=[?]$",
+					"reponse": ["16", "\\frac{ 16 }{2}", "\\frac{ 48 }{4}"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$ABCD$ est un carré de côté $8$ et $I$ est le milieu de $\\left[ BC \\right]$.\n\n[figure]\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AI}=[?]$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AI}=[?]$\n\n$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=[?]$",
+					"reponse": ["64", "\\frac{ 64 }{2}", "\\frac{ 192 }{4}"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "$ABCD$ est un carré de côté $7$ et $I$ est le milieu de $\\left[ BC \\right]$.\n\n[figure]\n\nCalcule les produits scalaires suivants. Donne leurs valeurs exactes.\n\n$\\overrightarrow{AB}\\cdot\\overrightarrow{AI}=[?]$\n\n$\\overrightarrow{AD}\\cdot\\overrightarrow{AI}=[?]$\n\n$\\overrightarrow{IA}\\cdot\\overrightarrow{ID}=[?]$",
+					"reponse": ["49", "\\frac{ 49 }{2}", "\\frac{ 147 }{4}"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		}
+	]
+}

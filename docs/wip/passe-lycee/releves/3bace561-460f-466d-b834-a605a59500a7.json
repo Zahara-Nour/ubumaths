@@ -1,0 +1,951 @@
+{
+	"template_id": "3bace561-460f-466d-b834-a605a59500a7",
+	"titre": "Espace : positions relatives d'une droite et d'un plan, de deux plans",
+	"sous_titre": "Décider (QCM) si une droite et un plan sont sécants, strictement parallèles ou si la droite est incluse ; si deux plans sont sécants, strictement parallèles ou confondus",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Géométrie > Représentations paramétriques et équations cartésiennes > Positions relatives",
+	"mis_a_jour": "2026-10-04T21:39:28.87683+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-371",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "c",
+						"expression": "-3..3"
+					},
+					{
+						"name": "hx",
+						"expression": "-3..3"
+					},
+					{
+						"name": "hy",
+						"expression": "-3..3"
+					},
+					{
+						"name": "hz",
+						"expression": "-3..3"
+					},
+					{
+						"name": "r",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "m",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "sel",
+						"expression": "0..2"
+					},
+					{
+						"name": "s0",
+						"expression": "{{eval:max(1-sel,0)}}"
+					},
+					{
+						"name": "off",
+						"expression": "{{eval:1-abs(sel-1)}}"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:-(a*hx+b*hy+c*hz)}}"
+					},
+					{
+						"name": "u1",
+						"expression": "{{eval:r*b+s0*a}}"
+					},
+					{
+						"name": "u2",
+						"expression": "{{eval:-r*a+s0*b}}"
+					},
+					{
+						"name": "u3",
+						"expression": "{{eval:s0*c}}"
+					},
+					{
+						"name": "x0",
+						"expression": "{{eval:hx+off*m*a}}"
+					},
+					{
+						"name": "y0",
+						"expression": "{{eval:hy+off*m*b}}"
+					},
+					{
+						"name": "z0",
+						"expression": "{{eval:hz+off*m*c}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et la droite $\\Delta$ de représentation paramétrique $$\\begin{cases}x={{if:x0!=0|{{x0}}}}{{if:u1==1|{{if:x0!=0|+}}t}}{{if:u1==-1|-t}}{{if:u1>1|{{if:x0!=0|+}}{{u1}}t}}{{if:u1< -1|{{u1}}t}}{{if:u1==0|{{if:x0==0|0}}}}\\\\y={{if:y0!=0|{{y0}}}}{{if:u2==1|{{if:y0!=0|+}}t}}{{if:u2==-1|-t}}{{if:u2>1|{{if:y0!=0|+}}{{u2}}t}}{{if:u2< -1|{{u2}}t}}{{if:u2==0|{{if:y0==0|0}}}}\\\\z={{if:z0!=0|{{z0}}}}{{if:u3==1|{{if:z0!=0|+}}t}}{{if:u3==-1|-t}}{{if:u3>1|{{if:z0!=0|+}}{{u3}}t}}{{if:u3< -1|{{u3}}t}}{{if:u3==0|{{if:z0==0|0}}}}\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nQuelle est la position relative de $\\Delta$ et $\\mathcal{P}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$\\Delta$ et $\\mathcal{P}$ sont sécants en un point."
+					},
+					{
+						"content": "$\\Delta$ est strictement parallèle à $\\mathcal{P}$."
+					},
+					{
+						"content": "$\\Delta$ est incluse dans $\\mathcal{P}$."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "hx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "hy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "hz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "sel",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				},
+				{
+					"nom": "s0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "off",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -21,
+						"max": 18,
+						"negatif_possible": true,
+						"nb_distinctes": 35
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "z0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-9, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"\\Delta$ est incluse dans $\\mathcal{P}$.",
+							"\\Delta$ est strictement parallèle à $\\mathcal{P}$.",
+							"\\Delta$ et $\\mathcal{P}$ sont sécants en un point."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 21,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+					16, 17, 18, 21
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 21,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+					16, 17, 18, 21
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "288/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "162/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (21)",
+					"graine": 13,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-x - 3 y - 3 z - 21 = 0$ et la droite $\\Delta$ de représentation paramétrique\n\n$$\\begin{cases}x=-3+3t\\\\y=-3-t\\\\z=-3\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nQuelle est la position relative de $\\Delta$ et $\\mathcal{P}$ ?\n\n- A. $\\Delta$ et $\\mathcal{P}$ sont sécants en un point.\n- B. $\\Delta$ est incluse dans $\\mathcal{P}$.\n- C. $\\Delta$ est strictement parallèle à $\\mathcal{P}$.",
+					"reponse": ["B. $\\Delta$ est incluse dans $\\mathcal{P}$."],
+					"variables": {
+						"a": "-1",
+						"b": "-3",
+						"c": "-3",
+						"hx": "-3",
+						"hy": "-3",
+						"hz": "-3",
+						"r": "-1",
+						"m": "1",
+						"sel": "2",
+						"s0": "0",
+						"off": "0",
+						"d": "-21",
+						"u1": "3",
+						"u2": "-1",
+						"u3": "0",
+						"x0": "-3",
+						"y0": "-3",
+						"z0": "-3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 31,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $3 x + 2 y - 3 z - 4 = 0$ et la droite $\\Delta$ de représentation paramétrique\n\n$$\\begin{cases}x=5+4t\\\\y=3-6t\\\\z=-9\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nQuelle est la position relative de $\\Delta$ et $\\mathcal{P}$ ?\n\n- A. $\\Delta$ est incluse dans $\\mathcal{P}$.\n- B. $\\Delta$ est strictement parallèle à $\\mathcal{P}$.\n- C. $\\Delta$ et $\\mathcal{P}$ sont sécants en un point.",
+					"reponse": ["B. $\\Delta$ est strictement parallèle à $\\mathcal{P}$."],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "-3",
+						"hx": "-1",
+						"hy": "-1",
+						"hz": "-3",
+						"r": "2",
+						"m": "2",
+						"sel": "1",
+						"s0": "0",
+						"off": "1",
+						"d": "-4",
+						"u1": "4",
+						"u2": "-6",
+						"u3": "0",
+						"x0": "5",
+						"y0": "3",
+						"z0": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-3 x + y + 3 z + 8 = 0$ et la droite $\\Delta$ de représentation paramétrique\n\n$$\\begin{cases}x=3+t\\\\y=-2+3t\\\\z=1\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nQuelle est la position relative de $\\Delta$ et $\\mathcal{P}$ ?\n\n- A. $\\Delta$ est incluse dans $\\mathcal{P}$.\n- B. $\\Delta$ et $\\mathcal{P}$ sont sécants en un point.\n- C. $\\Delta$ est strictement parallèle à $\\mathcal{P}$.",
+					"reponse": ["A. $\\Delta$ est incluse dans $\\mathcal{P}$."],
+					"variables": {
+						"a": "-3",
+						"b": "1",
+						"c": "3",
+						"hx": "3",
+						"hy": "-2",
+						"hz": "1",
+						"r": "1",
+						"m": "-1",
+						"sel": "2",
+						"s0": "0",
+						"off": "0",
+						"d": "8",
+						"u1": "1",
+						"u2": "3",
+						"u3": "0",
+						"x0": "3",
+						"y0": "-2",
+						"z0": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-2 x - 2 y + 8 = 0$ et la droite $\\Delta$ de représentation paramétrique\n\n$$\\begin{cases}x=3\\\\y=1-4t\\\\z=0\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nQuelle est la position relative de $\\Delta$ et $\\mathcal{P}$ ?\n\n- A. $\\Delta$ est strictement parallèle à $\\mathcal{P}$.\n- B. $\\Delta$ et $\\mathcal{P}$ sont sécants en un point.\n- C. $\\Delta$ est incluse dans $\\mathcal{P}$.",
+					"reponse": ["B. $\\Delta$ et $\\mathcal{P}$ sont sécants en un point."],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "0",
+						"hx": "3",
+						"hy": "1",
+						"hz": "0",
+						"r": "-1",
+						"m": "2",
+						"sel": "0",
+						"s0": "1",
+						"off": "0",
+						"d": "8",
+						"u1": "0",
+						"u2": "-4",
+						"u3": "0",
+						"x0": "3",
+						"y0": "1",
+						"z0": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le plan $\\mathcal{P}$ d'équation $-3 x - y - 3 z + 6 = 0$ et la droite $\\Delta$ de représentation paramétrique\n\n$$\\begin{cases}x=5+2t\\\\y=1-6t\\\\z=3\\end{cases}\\quad(t\\in\\mathbb{R})$$\n\nQuelle est la position relative de $\\Delta$ et $\\mathcal{P}$ ?\n\n- A. $\\Delta$ est strictement parallèle à $\\mathcal{P}$.\n- B. $\\Delta$ est incluse dans $\\mathcal{P}$.\n- C. $\\Delta$ et $\\mathcal{P}$ sont sécants en un point.",
+					"reponse": ["A. $\\Delta$ est strictement parallèle à $\\mathcal{P}$."],
+					"variables": {
+						"a": "-3",
+						"b": "-1",
+						"c": "-3",
+						"hx": "2",
+						"hy": "0",
+						"hz": "0",
+						"r": "-2",
+						"m": "-1",
+						"sel": "1",
+						"s0": "0",
+						"off": "1",
+						"d": "6",
+						"u1": "2",
+						"u2": "-6",
+						"u3": "0",
+						"x0": "5",
+						"y0": "1",
+						"z0": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "c",
+						"expression": "-3..3"
+					},
+					{
+						"name": "d",
+						"expression": "-5..5"
+					},
+					{
+						"name": "k",
+						"expression": "2..3;±"
+					},
+					{
+						"name": "m",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "sel",
+						"expression": "0..2"
+					},
+					{
+						"name": "s0",
+						"expression": "{{eval:max(1-sel,0)}}"
+					},
+					{
+						"name": "off",
+						"expression": "{{eval:1-abs(sel-1)}}"
+					},
+					{
+						"name": "p1",
+						"expression": "{{eval:k*a+s0*b}}"
+					},
+					{
+						"name": "p2",
+						"expression": "{{eval:k*b-s0*a}}"
+					},
+					{
+						"name": "p3",
+						"expression": "{{eval:k*c}}"
+					},
+					{
+						"name": "q",
+						"expression": "{{eval:k*d+off*m}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives ${{a}}x+({{b}})y+({{c}})z+({{d}})=0$ et ${{p1}}x+({{p2}})y+({{p3}})z+({{q}})=0$.\n\nQuelle est la position relative de $\\mathcal{P}$ et $\\mathcal{Q}$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite."
+					},
+					{
+						"content": "$\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles."
+					},
+					{
+						"content": "$\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -2, 2, 3]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "sel",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				},
+				{
+					"nom": "s0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "off",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "p1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 24,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							12
+						]
+					}
+				},
+				{
+					"nom": "p2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12
+						]
+					}
+				},
+				{
+					"nom": "p3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-9, -6, -4, -3, -2, 0, 2, 3, 4, 6, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -17,
+						"max": 16,
+						"negatif_possible": true,
+						"nb_distinctes": 32
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": [
+							"\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus.",
+							"\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles.",
+							"\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite."
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 17,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 17,
+				"nb_distinctes": 18,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 3,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "280/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 34,
+					"max": 34
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (17)",
+					"graine": 17,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-2 x + y - 2 z - 5 = 0$ et $-6 x + 3 y - 6 z - 17 = 0$.\n\nQuelle est la position relative de $\\mathcal{P}$ et $\\mathcal{Q}$ ?\n\n- A. $\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus.\n- B. $\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles.\n- C. $\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite.",
+					"reponse": ["B. $\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles."],
+					"variables": {
+						"a": "-2",
+						"b": "1",
+						"c": "-2",
+						"d": "-5",
+						"k": "3",
+						"m": "-2",
+						"sel": "1",
+						"s0": "0",
+						"off": "1",
+						"p1": "-6",
+						"p2": "3",
+						"p3": "-6",
+						"q": "-17"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-3 x + y + 3 z + 5 = 0$ et $6 x - 2 y - 6 z - 10 = 0$.\n\nQuelle est la position relative de $\\mathcal{P}$ et $\\mathcal{Q}$ ?\n\n- A. $\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite.\n- B. $\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus.\n- C. $\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles.",
+					"reponse": ["B. $\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus."],
+					"variables": {
+						"a": "-3",
+						"b": "1",
+						"c": "3",
+						"d": "5",
+						"k": "-2",
+						"m": "1",
+						"sel": "2",
+						"s0": "0",
+						"off": "0",
+						"p1": "6",
+						"p2": "-2",
+						"p3": "-6",
+						"q": "-10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-2 x - 2 y + 4 = 0$ et $-4 x - 4 y + 7 = 0$.\n\nQuelle est la position relative de $\\mathcal{P}$ et $\\mathcal{Q}$ ?\n\n- A. $\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles.\n- B. $\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite.\n- C. $\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus.",
+					"reponse": ["A. $\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles."],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "0",
+						"d": "4",
+						"k": "2",
+						"m": "-1",
+						"sel": "1",
+						"s0": "0",
+						"off": "1",
+						"p1": "-4",
+						"p2": "-4",
+						"p3": "0",
+						"q": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-3 x - y - 3 z + 3 = 0$ et $5 x + 5 y + 6 z - 6 = 0$.\n\nQuelle est la position relative de $\\mathcal{P}$ et $\\mathcal{Q}$ ?\n\n- A. $\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus.\n- B. $\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles.\n- C. $\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite.",
+					"reponse": ["C. $\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite."],
+					"variables": {
+						"a": "-3",
+						"b": "-1",
+						"c": "-3",
+						"d": "3",
+						"k": "-2",
+						"m": "-1",
+						"sel": "0",
+						"s0": "1",
+						"off": "0",
+						"p1": "5",
+						"p2": "5",
+						"p3": "6",
+						"q": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les plans $\\mathcal{P}$ et $\\mathcal{Q}$ d'équations respectives $-2 x - 2 y - 3 z - 3 = 0$ et $-4 x - 4 y - 6 z - 6 = 0$.\n\nQuelle est la position relative de $\\mathcal{P}$ et $\\mathcal{Q}$ ?\n\n- A. $\\mathcal{P}$ et $\\mathcal{Q}$ sont sécants selon une droite.\n- B. $\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus.\n- C. $\\mathcal{P}$ et $\\mathcal{Q}$ sont strictement parallèles.",
+					"reponse": ["B. $\\mathcal{P}$ et $\\mathcal{Q}$ sont confondus."],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "-3",
+						"d": "-3",
+						"k": "2",
+						"m": "-3",
+						"sel": "2",
+						"s0": "0",
+						"off": "0",
+						"p1": "-4",
+						"p2": "-4",
+						"p3": "-6",
+						"q": "-6"
+					}
+				}
+			]
+		}
+	]
+}

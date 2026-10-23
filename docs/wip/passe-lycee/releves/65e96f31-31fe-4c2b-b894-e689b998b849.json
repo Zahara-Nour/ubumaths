@@ -1,0 +1,213 @@
+{
+	"template_id": "65e96f31-31fe-4c2b-b894-e689b998b849",
+	"titre": "Terme général d'une suite arithmétique",
+	"sous_titre": "À partir de u_0 et de la raison",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Suites arithmétiques > Terme général",
+	"mis_a_jour": "2026-10-03T14:03:49.982847+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-224",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..9"
+					},
+					{
+						"name": "r",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$(u_n)$ est la suite arithmétique de premier terme $u_0={{a}}$ et de raison $r={{r}}$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n=?$",
+				"reponses_brutes": ["{{a}}{{eval:r;+}}n"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 209,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 209,
+						"exemples": [
+							"-9+n",
+							"-3-4n",
+							"-9-n",
+							"-3-6n",
+							"5-6n",
+							"-9+3n",
+							"-8+9n",
+							"2-4n",
+							"7-7n",
+							"8+4n",
+							"1+2n",
+							"-8+2n"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 18,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -8$ et de raison $r = 9$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["-8+9n"],
+					"variables": {
+						"a": "-8",
+						"r": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -9$ et de raison $r = 1$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["-9+n"],
+					"variables": {
+						"a": "-9",
+						"r": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -3$ et de raison $r = -4$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["-3-4n"],
+					"variables": {
+						"a": "-3",
+						"r": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -9$ et de raison $r = -1$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["-9-n"],
+					"variables": {
+						"a": "-9",
+						"r": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$\\left( u_n \\right)$ est la suite arithmétique de premier terme $u_0 = -3$ et de raison $r = -6$.\n\nExprime $u_n$ en fonction de $n$.\n\n$u_n = [?]$",
+					"reponse": ["-3-6n"],
+					"variables": {
+						"a": "-3",
+						"r": "-6"
+					}
+				}
+			]
+		}
+	]
+}

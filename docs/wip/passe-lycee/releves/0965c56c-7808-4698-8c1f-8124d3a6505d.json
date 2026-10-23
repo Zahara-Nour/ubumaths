@@ -1,0 +1,582 @@
+{
+	"template_id": "0965c56c-7808-4698-8c1f-8124d3a6505d",
+	"titre": "k-uplets d'éléments distincts : codes, bureaux, places, anagrammes",
+	"sous_titre": "Arrangements n!/(n − k)! et permutations n! en situation : code sans chiffre répété, bureau à rôles, places dans une rangée, anagrammes (pièges : nᵏ, combinaison au lieu d'arrangement)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > Arrangements et permutations",
+	"mis_a_jour": "2026-10-05T08:35:44.367346+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-309",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "10"
+					},
+					{
+						"name": "k",
+						"expression": "3..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un code est formé de ${{k}}$ chiffres (de $0$ à $9$) **tous différents**.\n\nCombien de codes différents existe-t-il ?\n\n$?$",
+				"reponses_brutes": ["{{eval:factorial(n)/factorial(n-k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [10]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 720,
+						"max": 30240,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [720, 5040, 30240]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 5,
+				"valeurs": [0, 3, 4, 5, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 720,
+				"max": 30240,
+				"nb_distinctes": 3,
+				"valeurs": [720, 5040, 30240],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 30240,
+				"nb_distinctes": 8,
+				"valeurs": [0, 3, 4, 5, 9, 720, 5040, 30240],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30240)",
+					"graine": 5,
+					"enonce": "Un code est formé de $5$ chiffres (de $0$ à $9$) tous différents.\n\nCombien de codes différents existe-t-il ?\n\n$[?]$",
+					"reponse": ["30240"],
+					"variables": {
+						"n": "10",
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Un code est formé de $3$ chiffres (de $0$ à $9$) tous différents.\n\nCombien de codes différents existe-t-il ?\n\n$[?]$",
+					"reponse": ["720"],
+					"variables": {
+						"n": "10",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Un code est formé de $4$ chiffres (de $0$ à $9$) tous différents.\n\nCombien de codes différents existe-t-il ?\n\n$[?]$",
+					"reponse": ["5040"],
+					"variables": {
+						"n": "10",
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "10..25"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une association de ${{n}}$ membres élit son bureau : un président, un vice-président, un trésorier et un secrétaire, quatre personnes différentes.\n\nCombien de bureaux différents sont possibles ?\n\n$?$",
+				"reponses_brutes": ["{{eval:n*(n-1)*(n-2)*(n-3)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 16,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5040,
+						"max": 303600,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [
+							5040, 7920, 11880, 17160, 24024, 32760, 43680, 57120, 73440, 93024, 116280, 143640,
+							175560, 212520, 255024, 303600
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 10,
+				"max": 25,
+				"nb_distinctes": 16,
+				"valeurs": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 5040,
+				"max": 303600,
+				"nb_distinctes": 16,
+				"valeurs": [
+					5040, 7920, 11880, 17160, 24024, 32760, 43680, 57120, 73440, 93024, 116280, 143640,
+					175560, 212520, 255024, 303600
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 10,
+				"max": 303600,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (303600)",
+					"graine": 24,
+					"enonce": "Une association de $25$ membres élit son bureau : un président, un vice-président, un trésorier et un secrétaire, quatre personnes différentes.\n\nCombien de bureaux différents sont possibles ?\n\n$[?]$",
+					"reponse": ["303600"],
+					"variables": {
+						"n": "25"
+					}
+				},
+				{
+					"role": "plus petite valeur (10)",
+					"graine": 1,
+					"enonce": "Une association de $10$ membres élit son bureau : un président, un vice-président, un trésorier et un secrétaire, quatre personnes différentes.\n\nCombien de bureaux différents sont possibles ?\n\n$[?]$",
+					"reponse": ["5040"],
+					"variables": {
+						"n": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une association de $15$ membres élit son bureau : un président, un vice-président, un trésorier et un secrétaire, quatre personnes différentes.\n\nCombien de bureaux différents sont possibles ?\n\n$[?]$",
+					"reponse": ["32760"],
+					"variables": {
+						"n": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une association de $22$ membres élit son bureau : un président, un vice-président, un trésorier et un secrétaire, quatre personnes différentes.\n\nCombien de bureaux différents sont possibles ?\n\n$[?]$",
+					"reponse": ["175560"],
+					"variables": {
+						"n": "22"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Une association de $20$ membres élit son bureau : un président, un vice-président, un trésorier et un secrétaire, quatre personnes différentes.\n\nCombien de bureaux différents sont possibles ?\n\n$[?]$",
+					"reponse": ["116280"],
+					"variables": {
+						"n": "20"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "8..12"
+					},
+					{
+						"name": "k",
+						"expression": "3..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "${{k}}$ amis entrent dans une salle de cinéma où une rangée de ${{n}}$ fauteuils est libre.\n\nDe combien de façons peuvent-ils s'asseoir dans cette rangée, un par fauteuil ?\n\n$?$",
+				"reponses_brutes": ["{{eval:factorial(n)/factorial(n-k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 336,
+						"max": 11880,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [336, 504, 720, 990, 1320, 1680, 3024, 5040, 7920, 11880]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 12,
+				"nb_distinctes": 7,
+				"valeurs": [3, 4, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 336,
+				"max": 11880,
+				"nb_distinctes": 10,
+				"valeurs": [336, 504, 720, 990, 1320, 1680, 3024, 5040, 7920, 11880],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 11880,
+				"nb_distinctes": 17,
+				"valeurs": [
+					3, 4, 8, 9, 10, 11, 12, 336, 504, 720, 990, 1320, 1680, 3024, 5040, 7920, 11880
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (11880)",
+					"graine": 10,
+					"enonce": "$4$ amis entrent dans une salle de cinéma où une rangée de $12$ fauteuils est libre.\n\nDe combien de façons peuvent-ils s'asseoir dans cette rangée, un par fauteuil ?\n\n$[?]$",
+					"reponse": ["11880"],
+					"variables": {
+						"n": "12",
+						"k": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 2,
+					"enonce": "$3$ amis entrent dans une salle de cinéma où une rangée de $9$ fauteuils est libre.\n\nDe combien de façons peuvent-ils s'asseoir dans cette rangée, un par fauteuil ?\n\n$[?]$",
+					"reponse": ["504"],
+					"variables": {
+						"n": "9",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$4$ amis entrent dans une salle de cinéma où une rangée de $8$ fauteuils est libre.\n\nDe combien de façons peuvent-ils s'asseoir dans cette rangée, un par fauteuil ?\n\n$[?]$",
+					"reponse": ["1680"],
+					"variables": {
+						"n": "8",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$3$ amis entrent dans une salle de cinéma où une rangée de $8$ fauteuils est libre.\n\nDe combien de façons peuvent-ils s'asseoir dans cette rangée, un par fauteuil ?\n\n$[?]$",
+					"reponse": ["336"],
+					"variables": {
+						"n": "8",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$3$ amis entrent dans une salle de cinéma où une rangée de $11$ fauteuils est libre.\n\nDe combien de façons peuvent-ils s'asseoir dans cette rangée, un par fauteuil ?\n\n$[?]$",
+					"reponse": ["990"],
+					"variables": {
+						"n": "11",
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Une anagramme d'un mot est un mot (ayant un sens ou non) formé avec exactement les mêmes lettres.\n\nCombien le mot PYTHON a-t-il d'anagrammes, lui-même compris ?\n\n$?$",
+				"reponses_brutes": ["720"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 720,
+						"max": 720,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [720]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 720,
+				"max": 720,
+				"nb_distinctes": 1,
+				"valeurs": [720],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 720,
+				"max": 720,
+				"nb_distinctes": 1,
+				"valeurs": [720],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (720)",
+					"graine": 1,
+					"enonce": "Une anagramme d'un mot est un mot (ayant un sens ou non) formé avec exactement les mêmes lettres.\n\nCombien le mot PYTHON a-t-il d'anagrammes, lui-même compris ?\n\n$[?]$",
+					"reponse": ["720"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

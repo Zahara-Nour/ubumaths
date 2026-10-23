@@ -1,0 +1,548 @@
+{
+	"template_id": "288c2bf0-2442-4e2d-ad4b-afcc1d23b6b2",
+	"titre": "Développer $(a+b)^2$",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Calcul littéral > Transformation > Identités remarquables",
+	"mis_a_jour": "2026-10-01T06:17:55.0275+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-262",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "b",
+						"expression": "1..7!a"
+					},
+					{
+						"name": "c",
+						"expression": "t|x|y|z"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "({{a}}+{{eval:bc}})^2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Développe et réduis.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:a^2}}+{{eval:2*a*bc}}+{{eval:(bc)^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 140,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["t", "x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 140,
+						"exemples": [
+							"(1+4z)^2",
+							"(3+2y)^2",
+							"(1+4t)^2",
+							"(3+2t)^2",
+							"(6+2y)^2",
+							"(1+5t)^2",
+							"(1+7y)^2",
+							"(5+3y)^2",
+							"(6+z)^2",
+							"(7+5z)^2",
+							"(4+5y)^2",
+							"(1+5z)^2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 7,
+							"nb_distinctes": 7,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 140,
+						"exemples": [
+							"1+8z+16z^2",
+							"9+12y+4y^2",
+							"1+8t+16t^2",
+							"9+12t+4t^2",
+							"36+24y+4y^2",
+							"1+10t+25t^2",
+							"1+14y+49y^2",
+							"25+30y+9y^2",
+							"36+12z+z^2",
+							"49+70z+25z^2",
+							"16+40y+25y^2",
+							"1+10z+25z^2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 84,
+							"nb_distinctes": 24,
+							"valeurs": [
+								1, 2, 4, 6, 8, 9, 10, 12, 14, 16, 20, 24, 25, 28, 30, 36, 40, 42, 48, 49, 56, 60,
+								70, 84
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 7,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 84,
+				"nb_distinctes": 24,
+				"valeurs": [
+					1, 2, 4, 6, 8, 9, 10, 12, 14, 16, 20, 24, 25, 28, 30, 36, 40, 42, 48, 49, 56, 60, 70, 84
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 84,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 20, 24, 25, 28, 30, 36, 40, 42, 48, 49, 56, 60,
+					70, 84
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (84)",
+					"graine": 45,
+					"enonce": "Développe et réduis.\n\n$$\\left( 7 + 6 x \\right)^2 = [?]$$",
+					"reponse": ["49+84x+36x^2"],
+					"variables": {
+						"a": "7",
+						"b": "6",
+						"c": "x",
+						"expression1": "(7+6x)^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Développe et réduis.\n\n$$\\left( 1 + 4 z \\right)^2 = [?]$$",
+					"reponse": ["1+8z+16z^2"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "z",
+						"expression1": "(1+4z)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Développe et réduis.\n\n$$\\left( 3 + 2 y \\right)^2 = [?]$$",
+					"reponse": ["9+12y+4y^2"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "y",
+						"expression1": "(3+2y)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Développe et réduis.\n\n$$\\left( 1 + 4 t \\right)^2 = [?]$$",
+					"reponse": ["1+8t+16t^2"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "t",
+						"expression1": "(1+4t)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Développe et réduis.\n\n$$\\left( 3 + 2 t \\right)^2 = [?]$$",
+					"reponse": ["9+12t+4t^2"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "t",
+						"expression1": "(3+2t)^2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..7"
+					},
+					{
+						"name": "b",
+						"expression": "1..7!a"
+					},
+					{
+						"name": "c",
+						"expression": "t|x|y|z"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "({{eval:bc}}+{{a}})^2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Développe et réduis.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{eval:(bc)^2}}+{{eval:2*a*bc}}+{{eval:a^2}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 140,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["t", "x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 140,
+						"exemples": [
+							"(4z+1)^2",
+							"(2y+3)^2",
+							"(4t+1)^2",
+							"(2t+3)^2",
+							"(2y+6)^2",
+							"(5t+1)^2",
+							"(7y+1)^2",
+							"(3y+5)^2",
+							"(z+6)^2",
+							"(5z+7)^2",
+							"(5y+4)^2",
+							"(5z+1)^2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 7,
+							"nb_distinctes": 7,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 140,
+						"exemples": [
+							"16z^2+8z+1",
+							"4y^2+12y+9",
+							"16t^2+8t+1",
+							"4t^2+12t+9",
+							"4y^2+24y+36",
+							"25t^2+10t+1",
+							"49y^2+14y+1",
+							"9y^2+30y+25",
+							"z^2+12z+36",
+							"25z^2+70z+49",
+							"25y^2+40y+16",
+							"25z^2+10z+1"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 84,
+							"nb_distinctes": 24,
+							"valeurs": [
+								1, 2, 4, 6, 8, 9, 10, 12, 14, 16, 20, 24, 25, 28, 30, 36, 40, 42, 48, 49, 56, 60,
+								70, 84
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 7,
+				"nb_distinctes": 7,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 84,
+				"nb_distinctes": 24,
+				"valeurs": [
+					1, 2, 4, 6, 8, 9, 10, 12, 14, 16, 20, 24, 25, 28, 30, 36, 40, 42, 48, 49, 56, 60, 70, 84
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 84,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 20, 24, 25, 28, 30, 36, 40, 42, 48, 49, 56, 60,
+					70, 84
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (84)",
+					"graine": 45,
+					"enonce": "Développe et réduis.\n\n$$\\left( 6 x + 7 \\right)^2 = [?]$$",
+					"reponse": ["36x^2+84x+49"],
+					"variables": {
+						"a": "7",
+						"b": "6",
+						"c": "x",
+						"expression2": "(6x+7)^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Développe et réduis.\n\n$$\\left( 4 z + 1 \\right)^2 = [?]$$",
+					"reponse": ["16z^2+8z+1"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "z",
+						"expression2": "(4z+1)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Développe et réduis.\n\n$$\\left( 2 y + 3 \\right)^2 = [?]$$",
+					"reponse": ["4y^2+12y+9"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "y",
+						"expression2": "(2y+3)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Développe et réduis.\n\n$$\\left( 4 t + 1 \\right)^2 = [?]$$",
+					"reponse": ["16t^2+8t+1"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "t",
+						"expression2": "(4t+1)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Développe et réduis.\n\n$$\\left( 2 t + 3 \\right)^2 = [?]$$",
+					"reponse": ["4t^2+12t+9"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "t",
+						"expression2": "(2t+3)^2"
+					}
+				}
+			]
+		}
+	]
+}

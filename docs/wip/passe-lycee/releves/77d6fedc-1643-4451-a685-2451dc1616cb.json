@@ -1,0 +1,1043 @@
+{
+	"template_id": "77d6fedc-1643-4451-a685-2451dc1616cb",
+	"titre": "Parmi les… : modéliser un tableau croisé ou un sondage",
+	"sous_titre": "Tableau d'effectifs, sondage décrit en texte ou tableau de fréquences en contexte (lycée, trajets, sport) : P_A(B) et P_B(A) en valeur exacte, le « parmi les … » fixant l'univers",
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Probabilités conditionnelles > Problèmes en contexte",
+	"mis_a_jour": "2026-10-04T12:00:49.949628+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-395",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "30..70"
+					},
+					{
+						"name": "y",
+						"expression": "30..70"
+					},
+					{
+						"name": "z",
+						"expression": "30..70"
+					},
+					{
+						"name": "k",
+						"expression": "15..45"
+					},
+					{
+						"name": "m",
+						"expression": "15..45"
+					},
+					{
+						"name": "n",
+						"expression": "15..45"
+					},
+					{
+						"name": "sd",
+						"expression": "eval:2*x"
+					},
+					{
+						"name": "pd",
+						"expression": "eval:2*y"
+					},
+					{
+						"name": "td",
+						"expression": "eval:2*z"
+					},
+					{
+						"name": "se",
+						"expression": "eval:2*k"
+					},
+					{
+						"name": "pe",
+						"expression": "eval:2*m"
+					},
+					{
+						"name": "te",
+						"expression": "eval:2*n"
+					}
+				],
+				"conditions": ["x+y+z != x+k"],
+				"enonce_brut": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur niveau et leur régime.\n\n| Régime | Seconde | Première | Terminale |\n|---|---|---|---|\n| Demi-pensionnaire | ${{sd}}$ | ${{pd}}$ | ${{td}}$ |\n| Externe | ${{se}}$ | ${{pe}}$ | ${{te}}$ |\n\n1. On choisit un élève au hasard **parmi les demi-pensionnaires**. Quelle est la probabilité $p_1$ qu'il soit en seconde ?\n\n$p_1=?$\n\n2. On choisit un élève au hasard **parmi les élèves de seconde**. Quelle est la probabilité $p_2$ qu'il soit demi-pensionnaire ?\n\n$p_2=?$",
+				"reponses_brutes": ["{{eval:sd/(sd+pd+td)}}", "{{eval:sd/(sd+se)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 70,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 70,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "z",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 70,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 31
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 31
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 31
+					}
+				},
+				{
+					"nom": "sd",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 60,
+						"max": 140,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "pd",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 60,
+						"max": 140,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "td",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 60,
+						"max": 140,
+						"negatif_possible": false,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "se",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 31
+					}
+				},
+				{
+					"nom": "pe",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 31
+					}
+				},
+				{
+					"nom": "te",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 31
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1935483870967742,
+						"max": 0.5271317829457365,
+						"negatif_possible": false,
+						"denominateur_min": 3,
+						"denominateur_max": 195,
+						"nb_distinctes": 270
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.4,
+						"max": 0.8214285714285714,
+						"negatif_possible": false,
+						"denominateur_min": 2,
+						"denominateur_max": 113,
+						"nb_distinctes": 238
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 140,
+				"nb_distinctes": 58,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 195,
+				"nb_distinctes": 169,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 195,
+				"nb_distinctes": 176,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateur_min": 2,
+				"denominateur_max": 195,
+				"numerateur_min": 1,
+				"numerateur_max": 70,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 61,
+					"max": 61
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (195)",
+					"graine": 156,
+					"enonce": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur niveau et leur régime.\n\n| Régime | Seconde | Première | Terminale |\n| Demi-pensionnaire | $116$ | $136$ | $138$ |\n| Externe | $38$ | $58$ | $56$ |\n\n- On choisit un élève au hasard parmi les demi-pensionnaires. Quelle est la probabilité $p_1$ qu'il soit en seconde ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi les élèves de seconde. Quelle est la probabilité $p_2$ qu'il soit demi-pensionnaire ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{58}{195}", "\\dfrac{58}{77}"],
+					"variables": {
+						"x": "58",
+						"y": "68",
+						"z": "69",
+						"k": "19",
+						"m": "29",
+						"n": "28",
+						"sd": "116",
+						"pd": "136",
+						"td": "138",
+						"se": "38",
+						"pe": "58",
+						"te": "56"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur niveau et leur régime.\n\n| Régime | Seconde | Première | Terminale |\n| Demi-pensionnaire | $60$ | $102$ | $140$ |\n| Externe | $90$ | $46$ | $66$ |\n\n- On choisit un élève au hasard parmi les demi-pensionnaires. Quelle est la probabilité $p_1$ qu'il soit en seconde ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi les élèves de seconde. Quelle est la probabilité $p_2$ qu'il soit demi-pensionnaire ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{30}{151}", "\\dfrac{2}{5}"],
+					"variables": {
+						"x": "30",
+						"y": "51",
+						"z": "70",
+						"k": "45",
+						"m": "23",
+						"n": "33",
+						"sd": "60",
+						"pd": "102",
+						"td": "140",
+						"se": "90",
+						"pe": "46",
+						"te": "66"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur niveau et leur régime.\n\n| Régime | Seconde | Première | Terminale |\n| Demi-pensionnaire | $86$ | $82$ | $104$ |\n| Externe | $84$ | $68$ | $60$ |\n\n- On choisit un élève au hasard parmi les demi-pensionnaires. Quelle est la probabilité $p_1$ qu'il soit en seconde ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi les élèves de seconde. Quelle est la probabilité $p_2$ qu'il soit demi-pensionnaire ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{43}{136}", "\\dfrac{43}{85}"],
+					"variables": {
+						"x": "43",
+						"y": "41",
+						"z": "52",
+						"k": "42",
+						"m": "34",
+						"n": "30",
+						"sd": "86",
+						"pd": "82",
+						"td": "104",
+						"se": "84",
+						"pe": "68",
+						"te": "60"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur niveau et leur régime.\n\n| Régime | Seconde | Première | Terminale |\n| Demi-pensionnaire | $62$ | $96$ | $66$ |\n| Externe | $76$ | $58$ | $60$ |\n\n- On choisit un élève au hasard parmi les demi-pensionnaires. Quelle est la probabilité $p_1$ qu'il soit en seconde ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi les élèves de seconde. Quelle est la probabilité $p_2$ qu'il soit demi-pensionnaire ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{31}{112}", "\\dfrac{31}{69}"],
+					"variables": {
+						"x": "31",
+						"y": "48",
+						"z": "33",
+						"k": "38",
+						"m": "29",
+						"n": "30",
+						"sd": "62",
+						"pd": "96",
+						"td": "66",
+						"se": "76",
+						"pe": "58",
+						"te": "60"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le tableau ci-dessous donne la répartition des élèves d'un lycée selon leur niveau et leur régime.\n\n| Régime | Seconde | Première | Terminale |\n| Demi-pensionnaire | $86$ | $78$ | $66$ |\n| Externe | $44$ | $60$ | $34$ |\n\n- On choisit un élève au hasard parmi les demi-pensionnaires. Quelle est la probabilité $p_1$ qu'il soit en seconde ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi les élèves de seconde. Quelle est la probabilité $p_2$ qu'il soit demi-pensionnaire ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{43}{115}", "\\dfrac{43}{65}"],
+					"variables": {
+						"x": "43",
+						"y": "39",
+						"z": "33",
+						"k": "22",
+						"m": "30",
+						"n": "17",
+						"sd": "86",
+						"pd": "78",
+						"td": "66",
+						"se": "44",
+						"pe": "60",
+						"te": "34"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "q",
+						"expression": "40..60"
+					},
+					{
+						"name": "r",
+						"expression": "70..140"
+					},
+					{
+						"name": "h",
+						"expression": "50..120"
+					},
+					{
+						"name": "g",
+						"expression": "20..45"
+					},
+					{
+						"name": "N",
+						"expression": "eval:10*q"
+					},
+					{
+						"name": "b",
+						"expression": "eval:2*r"
+					},
+					{
+						"name": "l",
+						"expression": "eval:2*h"
+					},
+					{
+						"name": "c",
+						"expression": "eval:2*g"
+					}
+				],
+				"conditions": ["r != h", "g < h", "2*r+2*h-2*g <= 10*q - 20"],
+				"enonce_brut": "On a interrogé les ${{N}}$ élèves d'un lycée sur leur trajet. ${{b}}$ élèves prennent le bus, ${{l}}$ élèves habitent à plus de $10$ km du lycée, et ${{c}}$ élèves prennent le bus **et** habitent à plus de $10$ km.\n\n1. On choisit un élève au hasard **parmi ceux qui habitent à plus de 10 km**. Quelle est la probabilité $p_1$ qu'il prenne le bus ?\n\n$p_1=?$\n\n2. On choisit un élève au hasard **parmi ceux qui prennent le bus**. Quelle est la probabilité $p_2$ qu'il habite à plus de $10$ km ?\n\n$p_2=?$",
+				"reponses_brutes": ["{{eval:c/l}}", "{{eval:c/b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 40,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 21,
+						"valeurs": [
+							40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60
+						]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 70,
+						"max": 140,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 50,
+						"max": 120,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 26,
+						"valeurs": [
+							20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+							41, 42, 43, 44, 45
+						]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 400,
+						"max": 600,
+						"negatif_possible": false,
+						"nb_distinctes": 21,
+						"valeurs": [
+							400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560,
+							570, 580, 590, 600
+						]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 140,
+						"max": 280,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "l",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 240,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 40,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 26,
+						"valeurs": [
+							40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80,
+							82, 84, 86, 88, 90
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.16806722689075632,
+						"max": 0.84,
+						"negatif_possible": false,
+						"denominateur_min": 2,
+						"denominateur_max": 119,
+						"nb_distinctes": 265
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.14388489208633093,
+						"max": 0.6197183098591549,
+						"negatif_possible": false,
+						"denominateur_min": 3,
+						"denominateur_max": 140,
+						"nb_distinctes": 263
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 600,
+				"nb_distinctes": 140,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 140,
+				"nb_distinctes": 132,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 600,
+				"nb_distinctes": 231,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateur_min": 2,
+				"denominateur_max": 140,
+				"numerateur_min": 1,
+				"numerateur_max": 45,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 72,
+					"max": 72
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 24,
+					"enonce": "On a interrogé les $600$ élèves d'un lycée sur leur trajet. $180$ élèves prennent le bus, $112$ élèves habitent à plus de $10$ km du lycée, et $66$ élèves prennent le bus et habitent à plus de $10$ km.\n\n- On choisit un élève au hasard parmi ceux qui habitent à plus de 10 km. Quelle est la probabilité $p_1$ qu'il prenne le bus ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi ceux qui prennent le bus. Quelle est la probabilité $p_2$ qu'il habite à plus de $10$ km ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{33}{56}", "\\dfrac{11}{30}"],
+					"variables": {
+						"q": "60",
+						"r": "90",
+						"h": "56",
+						"g": "33",
+						"N": "600",
+						"b": "180",
+						"l": "112",
+						"c": "66"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "On a interrogé les $400$ élèves d'un lycée sur leur trajet. $214$ élèves prennent le bus, $238$ élèves habitent à plus de $10$ km du lycée, et $90$ élèves prennent le bus et habitent à plus de $10$ km.\n\n- On choisit un élève au hasard parmi ceux qui habitent à plus de 10 km. Quelle est la probabilité $p_1$ qu'il prenne le bus ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi ceux qui prennent le bus. Quelle est la probabilité $p_2$ qu'il habite à plus de $10$ km ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{45}{119}", "\\dfrac{45}{107}"],
+					"variables": {
+						"q": "40",
+						"r": "107",
+						"h": "119",
+						"g": "45",
+						"N": "400",
+						"b": "214",
+						"l": "238",
+						"c": "90"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On a interrogé les $460$ élèves d'un lycée sur leur trajet. $180$ élèves prennent le bus, $176$ élèves habitent à plus de $10$ km du lycée, et $84$ élèves prennent le bus et habitent à plus de $10$ km.\n\n- On choisit un élève au hasard parmi ceux qui habitent à plus de 10 km. Quelle est la probabilité $p_1$ qu'il prenne le bus ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi ceux qui prennent le bus. Quelle est la probabilité $p_2$ qu'il habite à plus de $10$ km ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{21}{44}", "\\dfrac{7}{15}"],
+					"variables": {
+						"q": "46",
+						"r": "90",
+						"h": "88",
+						"g": "42",
+						"N": "460",
+						"b": "180",
+						"l": "176",
+						"c": "84"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On a interrogé les $400$ élèves d'un lycée sur leur trajet. $204$ élèves prennent le bus, $110$ élèves habitent à plus de $10$ km du lycée, et $78$ élèves prennent le bus et habitent à plus de $10$ km.\n\n- On choisit un élève au hasard parmi ceux qui habitent à plus de 10 km. Quelle est la probabilité $p_1$ qu'il prenne le bus ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi ceux qui prennent le bus. Quelle est la probabilité $p_2$ qu'il habite à plus de $10$ km ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{39}{55}", "\\dfrac{13}{34}"],
+					"variables": {
+						"q": "40",
+						"r": "102",
+						"h": "55",
+						"g": "39",
+						"N": "400",
+						"b": "204",
+						"l": "110",
+						"c": "78"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On a interrogé les $460$ élèves d'un lycée sur leur trajet. $170$ élèves prennent le bus, $110$ élèves habitent à plus de $10$ km du lycée, et $52$ élèves prennent le bus et habitent à plus de $10$ km.\n\n- On choisit un élève au hasard parmi ceux qui habitent à plus de 10 km. Quelle est la probabilité $p_1$ qu'il prenne le bus ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi ceux qui prennent le bus. Quelle est la probabilité $p_2$ qu'il habite à plus de $10$ km ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{26}{55}", "\\dfrac{26}{85}"],
+					"variables": {
+						"q": "46",
+						"r": "85",
+						"h": "55",
+						"g": "26",
+						"N": "460",
+						"b": "170",
+						"l": "110",
+						"c": "52"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "f",
+						"expression": "6..14"
+					},
+					{
+						"name": "v",
+						"expression": "10..18"
+					},
+					{
+						"name": "o",
+						"expression": "6..14"
+					},
+					{
+						"name": "x1",
+						"expression": "eval:2*f"
+					},
+					{
+						"name": "x2",
+						"expression": "eval:2*v"
+					},
+					{
+						"name": "x3",
+						"expression": "eval:2*o"
+					},
+					{
+						"name": "x4",
+						"expression": "eval:100-2*f-2*v-2*o"
+					}
+				],
+				"conditions": ["v != o", "f != v"],
+				"enonce_brut": "Dans un lycée, une enquête sur la pratique d'un sport en club donne la répartition suivante, en pourcentage de l'ensemble des élèves.\n\n| | Sport en club | Pas de sport en club |\n|---|---|---|\n| Fille | ${{x1}}\\,\\%$ | ${{x2}}\\,\\%$ |\n| Garçon | ${{x3}}\\,\\%$ | ${{x4}}\\,\\%$ |\n\n1. On choisit un élève au hasard **parmi ceux qui pratiquent un sport en club**. Quelle est la probabilité $p_1$ que ce soit une fille ?\n\n$p_1=?$\n\n2. On choisit un élève au hasard **parmi les filles**. Quelle est la probabilité $p_2$ qu'elle pratique un sport en club ?\n\n$p_2=?$",
+				"reponses_brutes": ["{{eval:x1/(x1+x3)}}", "{{eval:x1/(x1+x2)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 235,
+			"variables": [
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 14,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [6, 7, 8, 9, 10, 11, 12, 13, 14]
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				},
+				{
+					"nom": "o",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 14,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [6, 7, 8, 9, 10, 11, 12, 13, 14]
+					}
+				},
+				{
+					"nom": "x1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 12,
+						"max": 28,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [12, 14, 16, 18, 20, 22, 24, 26, 28]
+					}
+				},
+				{
+					"nom": "x2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [20, 22, 24, 26, 28, 30, 32, 34, 36]
+					}
+				},
+				{
+					"nom": "x3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 12,
+						"max": 28,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [12, 14, 16, 18, 20, 22, 24, 26, 28]
+					}
+				},
+				{
+					"nom": "x4",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 54,
+						"negatif_possible": false,
+						"nb_distinctes": 23,
+						"valeurs": [
+							10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50,
+							52, 54
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.3,
+						"max": 0.7,
+						"negatif_possible": false,
+						"denominateurs": [
+							2, 3, 5, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27
+						],
+						"denominateur_min": 2,
+						"denominateur_max": 27,
+						"nb_distinctes": 64
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.25,
+						"max": 0.5833333333333334,
+						"negatif_possible": false,
+						"denominateurs": [
+							3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+							27, 28, 29, 30, 31
+						],
+						"denominateur_min": 3,
+						"denominateur_max": 31,
+						"nb_distinctes": 68
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 54,
+				"nb_distinctes": 25,
+				"valeurs": [
+					1, 2, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50,
+					52, 54
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 31,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 54,
+				"nb_distinctes": 43,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateurs": [
+					2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+					27, 28, 29, 30, 31
+				],
+				"denominateur_min": 2,
+				"denominateur_max": 31,
+				"numerateur_min": 1,
+				"numerateur_max": 14,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"%": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 74,
+					"max": 74
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (54)",
+					"graine": 27,
+					"enonce": "Dans un lycée, une enquête sur la pratique d'un sport en club donne la répartition suivante, en pourcentage de l'ensemble des élèves.\n\n|  | Sport en club | Pas de sport en club |\n| Fille | $12\\,\\%$ | $20\\,\\%$ |\n| Garçon | $14\\,\\%$ | $54\\,\\%$ |\n\n- On choisit un élève au hasard parmi ceux qui pratiquent un sport en club. Quelle est la probabilité $p_1$ que ce soit une fille ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi les filles. Quelle est la probabilité $p_2$ qu'elle pratique un sport en club ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{6}{13}", "\\dfrac{3}{8}"],
+					"variables": {
+						"f": "6",
+						"v": "10",
+						"o": "7",
+						"x1": "12",
+						"x2": "20",
+						"x3": "14",
+						"x4": "54"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Dans un lycée, une enquête sur la pratique d'un sport en club donne la répartition suivante, en pourcentage de l'ensemble des élèves.\n\n|  | Sport en club | Pas de sport en club |\n| Fille | $28\\,\\%$ | $24\\,\\%$ |\n| Garçon | $22\\,\\%$ | $26\\,\\%$ |\n\n- On choisit un élève au hasard parmi ceux qui pratiquent un sport en club. Quelle est la probabilité $p_1$ que ce soit une fille ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi les filles. Quelle est la probabilité $p_2$ qu'elle pratique un sport en club ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{14}{25}", "\\dfrac{7}{13}"],
+					"variables": {
+						"f": "14",
+						"v": "12",
+						"o": "11",
+						"x1": "28",
+						"x2": "24",
+						"x3": "22",
+						"x4": "26"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans un lycée, une enquête sur la pratique d'un sport en club donne la répartition suivante, en pourcentage de l'ensemble des élèves.\n\n|  | Sport en club | Pas de sport en club |\n| Fille | $16\\,\\%$ | $24\\,\\%$ |\n| Garçon | $20\\,\\%$ | $40\\,\\%$ |\n\n- On choisit un élève au hasard parmi ceux qui pratiquent un sport en club. Quelle est la probabilité $p_1$ que ce soit une fille ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi les filles. Quelle est la probabilité $p_2$ qu'elle pratique un sport en club ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{4}{9}", "\\dfrac{2}{5}"],
+					"variables": {
+						"f": "8",
+						"v": "12",
+						"o": "10",
+						"x1": "16",
+						"x2": "24",
+						"x3": "20",
+						"x4": "40"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans un lycée, une enquête sur la pratique d'un sport en club donne la répartition suivante, en pourcentage de l'ensemble des élèves.\n\n|  | Sport en club | Pas de sport en club |\n| Fille | $12\\,\\%$ | $28\\,\\%$ |\n| Garçon | $12\\,\\%$ | $48\\,\\%$ |\n\n- On choisit un élève au hasard parmi ceux qui pratiquent un sport en club. Quelle est la probabilité $p_1$ que ce soit une fille ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi les filles. Quelle est la probabilité $p_2$ qu'elle pratique un sport en club ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{1}{2}", "\\dfrac{3}{10}"],
+					"variables": {
+						"f": "6",
+						"v": "14",
+						"o": "6",
+						"x1": "12",
+						"x2": "28",
+						"x3": "12",
+						"x4": "48"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans un lycée, une enquête sur la pratique d'un sport en club donne la répartition suivante, en pourcentage de l'ensemble des élèves.\n\n|  | Sport en club | Pas de sport en club |\n| Fille | $16\\,\\%$ | $22\\,\\%$ |\n| Garçon | $12\\,\\%$ | $50\\,\\%$ |\n\n- On choisit un élève au hasard parmi ceux qui pratiquent un sport en club. Quelle est la probabilité $p_1$ que ce soit une fille ?\n\n$p_1 = [?]$\n\n- On choisit un élève au hasard parmi les filles. Quelle est la probabilité $p_2$ qu'elle pratique un sport en club ?\n\n$p_2 = [?]$",
+					"reponse": ["\\dfrac{4}{7}", "\\dfrac{8}{19}"],
+					"variables": {
+						"f": "8",
+						"v": "11",
+						"o": "6",
+						"x1": "16",
+						"x2": "22",
+						"x3": "12",
+						"x4": "50"
+					}
+				}
+			]
+		}
+	]
+}

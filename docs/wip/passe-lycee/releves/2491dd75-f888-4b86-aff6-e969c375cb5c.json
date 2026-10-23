@@ -1,0 +1,742 @@
+{
+	"template_id": "2491dd75-f888-4b86-aff6-e969c375cb5c",
+	"titre": "Théorème des valeurs intermédiaires : nombre de solutions de f(x) = k",
+	"sous_titre": "Compter les solutions de f(x) = k à partir d'un tableau de variations (fonction continue, strictement monotone par morceaux), limites aux bornes comprises (pièges : une solution par intervalle quoi qu'il arrive, limite non atteinte)",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Continuité > Théorème des valeurs intermédiaires",
+	"mis_a_jour": "2026-10-04T17:40:57.103651+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-233",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-430",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p1",
+						"expression": "2..6"
+					},
+					{
+						"name": "d0",
+						"expression": "2..8"
+					},
+					{
+						"name": "p0",
+						"expression": "{{eval:p1-d0}}"
+					},
+					{
+						"name": "p2",
+						"expression": "-6..-2"
+					},
+					{
+						"name": "d3",
+						"expression": "2..8"
+					},
+					{
+						"name": "p3",
+						"expression": "{{eval:p2+d3}}"
+					},
+					{
+						"name": "k",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": ["k != p0", "k != p1", "k != p2", "k != p3"],
+				"enonce_brut": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left[-3\\,;4\\right]$.\n\n```variation\nvariable: x\ndomain: -3, -1, 2, 4\n\nvariation: f(x)\n  -3: {{p0}}, bottom\n  -1: {{p1}}, top\n  2: {{p2}}, bottom\n  4: {{p3}}, top\n```\n\nCombien de solutions l'équation $f(x)={{k}}$ admet-elle sur $\\left[-3\\,;4\\right]$ ?\n\n$?$",
+				"reponses_brutes": [
+					"{{eval:abs(sign(p0-k)-sign(p1-k))/2+abs(sign(p1-k)-sign(p2-k))/2+abs(sign(p2-k)-sign(p3-k))/2}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "p1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "d0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "p0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "p2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": -2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-6, -5, -4, -3, -2]
+					}
+				},
+				{
+					"nom": "d3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "p3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [0, 1, 2, 3]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 4,
+				"valeurs": [0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"variation-table": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 6,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left[-3\\,;4\\right]$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = 5$ admet-elle sur $\\left[-3\\,;4\\right]$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"p1": "2",
+						"d0": "8",
+						"p0": "-6",
+						"p2": "-2",
+						"d3": "3",
+						"p3": "1",
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 12,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left[-3\\,;4\\right]$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = -5$ admet-elle sur $\\left[-3\\,;4\\right]$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"p1": "2",
+						"d0": "6",
+						"p0": "-4",
+						"p2": "-2",
+						"d3": "3",
+						"p3": "1",
+						"k": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left[-3\\,;4\\right]$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = 0$ admet-elle sur $\\left[-3\\,;4\\right]$ ?\n\n$[?]$",
+					"reponse": ["3"],
+					"variables": {
+						"p1": "5",
+						"d0": "7",
+						"p0": "-2",
+						"p2": "-4",
+						"d3": "8",
+						"p3": "4",
+						"k": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left[-3\\,;4\\right]$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = 1$ admet-elle sur $\\left[-3\\,;4\\right]$ ?\n\n$[?]$",
+					"reponse": ["3"],
+					"variables": {
+						"p1": "3",
+						"d0": "3",
+						"p0": "0",
+						"p2": "-4",
+						"d3": "8",
+						"p3": "4",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left[-3\\,;4\\right]$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = 3$ admet-elle sur $\\left[-3\\,;4\\right]$ ?\n\n$[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"p1": "4",
+						"d0": "4",
+						"p0": "0",
+						"p2": "-3",
+						"d3": "3",
+						"p3": "0",
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-3..3"
+					},
+					{
+						"name": "m",
+						"expression": "-6..0"
+					},
+					{
+						"name": "dL",
+						"expression": "2..6"
+					},
+					{
+						"name": "L",
+						"expression": "{{eval:m+dL}}"
+					},
+					{
+						"name": "k",
+						"expression": "-7..7"
+					}
+				],
+				"conditions": ["k != m", "k != L"],
+				"enonce_brut": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\mathbb{R}$.\n\n```variation\nvariable: x\ndomain: -inf, {{a}}, +inf\n\nvariation: f(x)\n  -inf: +inf, top\n  {{a}}: {{m}}, bottom\n  +inf: {{L}}, top\n```\n\nCombien de solutions l'équation $f(x)={{k}}$ admet-elle sur $\\mathbb{R}$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:(1+sign(k-m))/2*(1+(1+sign(L-k))/2)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 15,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 0,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0]
+					}
+				},
+				{
+					"nom": "dL",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "L",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -7,
+				"max": 7,
+				"nb_distinctes": 15,
+				"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -7,
+				"max": 7,
+				"nb_distinctes": 15,
+				"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"variation-table": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 1,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\mathbb{R}$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = 7$ admet-elle sur $\\mathbb{R}$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "-3",
+						"m": "-3",
+						"dL": "6",
+						"L": "3",
+						"k": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (-7)",
+					"graine": 13,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\mathbb{R}$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = -7$ admet-elle sur $\\mathbb{R}$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"a": "-1",
+						"m": "-6",
+						"dL": "2",
+						"L": "-4",
+						"k": "-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\mathbb{R}$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = 6$ admet-elle sur $\\mathbb{R}$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "-1",
+						"m": "-5",
+						"dL": "4",
+						"L": "-1",
+						"k": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\mathbb{R}$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = 4$ admet-elle sur $\\mathbb{R}$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "-3",
+						"m": "-3",
+						"dL": "2",
+						"L": "-1",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\mathbb{R}$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = -4$ admet-elle sur $\\mathbb{R}$ ?\n\n$[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "-1",
+						"m": "-5",
+						"dL": "2",
+						"L": "-3",
+						"k": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "M",
+						"expression": "1..6"
+					},
+					{
+						"name": "k",
+						"expression": "-5..7"
+					}
+				],
+				"conditions": ["k != M", "k != 0"],
+				"enonce_brut": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left]0\\,;+\\infty\\right[$.\n\n```variation\nvariable: x\ndomain: 0, {{a}}, +inf\n\nvariation: f(x)\n  0: -inf, bottom\n  {{a}}: {{M}}, top\n  +inf: 0, bottom\n```\n\nCombien de solutions l'équation $f(x)={{k}}$ admet-elle sur $\\left]0\\,;+\\infty\\right[$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:(1+sign(M-k))/2*(1+(1+sign(k))/2)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "M",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [0, 1, 2]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 7,
+				"nb_distinctes": 13,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [0, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 7,
+				"nb_distinctes": 13,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"variation-table": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7)",
+					"graine": 1,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left]0\\,;+\\infty\\right[$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = 7$ admet-elle sur $\\left]0\\,;+\\infty\\right[$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"a": "1",
+						"M": "4",
+						"k": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 3,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left]0\\,;+\\infty\\right[$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = -5$ admet-elle sur $\\left]0\\,;+\\infty\\right[$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"M": "3",
+						"k": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left]0\\,;+\\infty\\right[$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = 1$ admet-elle sur $\\left]0\\,;+\\infty\\right[$ ?\n\n$[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"M": "2",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left]0\\,;+\\infty\\right[$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = -4$ admet-elle sur $\\left]0\\,;+\\infty\\right[$ ?\n\n$[?]$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "2",
+						"M": "2",
+						"k": "-4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le tableau ci-dessous donne les variations d'une fonction $f$ continue sur $\\left]0\\,;+\\infty\\right[$.\n\n[variation-table]\n\nCombien de solutions l'équation $f\\left( x \\right) = 3$ admet-elle sur $\\left]0\\,;+\\infty\\right[$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"a": "4",
+						"M": "2",
+						"k": "3"
+					}
+				}
+			]
+		}
+	]
+}

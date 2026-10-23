@@ -1,0 +1,893 @@
+{
+	"template_id": "8d69e3a9-3b97-4ec5-a768-adac14a53ca3",
+	"titre": "Matrice d'une rotation, d'une symétrie, d'une homothétie",
+	"sous_titre": "Écrire la matrice d'une transformation du plan : rotation de centre O d'angle remarquable, symétrie d'axe (Ox), (Oy), y = x ou y = −x, homothétie de centre O, application (x ; y) ↦ (ax + by ; cx + dy) (pièges : matrice transposée, rotation d'angle opposé, axes (Ox) et (Oy) confondus, valeurs décimales approchées)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Graphes et matrices > Matrices > Transformations du plan",
+	"mis_a_jour": "2026-10-05T19:22:09.39914+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-323",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "1..7"
+					},
+					{
+						"name": "r11",
+						"expression": "{{if:m==1|0|{{if:m==2|-1|{{if:m==3|0|{{if:m==4|\\frac{1}{2}|{{if:m==5|\\frac{\\sqrt{3}}{2}|{{if:m==6|\\frac{\\sqrt{2}}{2}|-\\frac{1}{2}}}}}}}}}}}}}"
+					},
+					{
+						"name": "r12",
+						"expression": "{{if:m==1|-1|{{if:m==2|0|{{if:m==3|1|{{if:m==4|-\\frac{\\sqrt{3}}{2}|{{if:m==5|-\\frac{1}{2}|{{if:m==6|-\\frac{\\sqrt{2}}{2}|-\\frac{\\sqrt{3}}{2}}}}}}}}}}}}}"
+					},
+					{
+						"name": "r21",
+						"expression": "{{if:m==1|1|{{if:m==2|0|{{if:m==3|-1|{{if:m==4|\\frac{\\sqrt{3}}{2}|{{if:m==5|\\frac{1}{2}|{{if:m==6|\\frac{\\sqrt{2}}{2}|\\frac{\\sqrt{3}}{2}}}}}}}}}}}}}"
+					},
+					{
+						"name": "r22",
+						"expression": "{{if:m==1|0|{{if:m==2|-1|{{if:m==3|0|{{if:m==4|\\frac{1}{2}|{{if:m==5|\\frac{\\sqrt{3}}{2}|{{if:m==6|\\frac{\\sqrt{2}}{2}|-\\frac{1}{2}}}}}}}}}}}}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans un repère orthonormé d'origine $O$, la rotation de centre $O$ et d'angle $\\theta$ transforme le point de coordonnées $(x \\,;\\, y)$ en le point de coordonnées $(x\\cos\\theta - y\\sin\\theta \\,;\\, x\\sin\\theta + y\\cos\\theta)$.\n\nDonne la matrice de la rotation de centre $O$ et d'angle $\\theta = {{if:m==1|\\dfrac{\\pi}{2}|{{if:m==2|\\pi|{{if:m==3|-\\dfrac{\\pi}{2}|{{if:m==4|\\dfrac{\\pi}{3}|{{if:m==5|\\dfrac{\\pi}{6}|{{if:m==6|\\dfrac{\\pi}{4}|\\dfrac{2\\pi}{3}}}}}}}}}}}}}$ (valeurs exactes).\n\n$?$",
+				"reponses_brutes": ["\\begin{pmatrix}{{r11}}&{{r12}}\\\\{{r21}}&{{r22}}\\end{pmatrix}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 7,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "r11",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.42333333333333334,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-1",
+							"-\\frac{1}{2}",
+							"0",
+							"\\frac{1}{2}",
+							"\\frac{\\sqrt{2}}{2}",
+							"\\frac{\\sqrt{3}}{2}"
+						],
+						"nombres_contenus": {
+							"min": -1,
+							"max": 3,
+							"nb_distinctes": 5,
+							"valeurs": [-1, 0, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "r12",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.42333333333333334,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-1",
+							"-\\frac{1}{2}",
+							"-\\frac{\\sqrt{2}}{2}",
+							"-\\frac{\\sqrt{3}}{2}",
+							"0",
+							"1"
+						],
+						"nombres_contenus": {
+							"min": -1,
+							"max": 3,
+							"nb_distinctes": 5,
+							"valeurs": [-1, 0, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "r21",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.42333333333333334,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-1",
+							"0",
+							"1",
+							"\\frac{1}{2}",
+							"\\frac{\\sqrt{2}}{2}",
+							"\\frac{\\sqrt{3}}{2}"
+						],
+						"nombres_contenus": {
+							"min": -1,
+							"max": 3,
+							"nb_distinctes": 5,
+							"valeurs": [-1, 0, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "r22",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.42333333333333334,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"-1",
+							"-\\frac{1}{2}",
+							"0",
+							"\\frac{1}{2}",
+							"\\frac{\\sqrt{2}}{2}",
+							"\\frac{\\sqrt{3}}{2}"
+						],
+						"nombres_contenus": {
+							"min": -1,
+							"max": 3,
+							"nb_distinctes": 5,
+							"valeurs": [-1, 0, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 7,
+						"valeurs": [
+							"\\begin{pmatrix}-1&0\\\\0&-1\\end{pmatrix}",
+							"\\begin{pmatrix}-\\frac{1}{2}&-\\frac{\\sqrt{3}}{2}\\\\\\frac{\\sqrt{3}}{2}&-\\frac{1}{2}\\end{pmatrix}",
+							"\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}0&1\\\\-1&0\\end{pmatrix}",
+							"\\begin{pmatrix}\\frac{1}{2}&-\\frac{\\sqrt{3}}{2}\\\\\\frac{\\sqrt{3}}{2}&\\frac{1}{2}\\end{pmatrix}",
+							"\\begin{pmatrix}\\frac{\\sqrt{2}}{2}&-\\frac{\\sqrt{2}}{2}\\\\\\frac{\\sqrt{2}}{2}&\\frac{\\sqrt{2}}{2}\\end{pmatrix}",
+							"\\begin{pmatrix}\\frac{\\sqrt{3}}{2}&-\\frac{1}{2}\\\\\\frac{1}{2}&\\frac{\\sqrt{3}}{2}\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 3,
+							"nb_distinctes": 4,
+							"valeurs": [0, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 6,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 3,
+				"nb_distinctes": 4,
+				"valeurs": [0, 1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [0, 1, 2, 3, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 266,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "257/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 33,
+					"max": 33
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 8,
+					"enonce": "Dans un repère orthonormé d'origine $O$, la rotation de centre $O$ et d'angle $\\theta$ transforme le point de coordonnées $(x \\,;\\, y)$ en le point de coordonnées $(x\\cos\\theta - y\\sin\\theta \\,;\\, x\\sin\\theta + y\\cos\\theta)$.\n\nDonne la matrice de la rotation de centre $O$ et d'angle $\\theta = \\dfrac{\\pi}{6}$ (valeurs exactes).\n\n$[?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\frac{\\sqrt{3}}{2}&-\\frac{1}{2}\\\\\\frac{1}{2}&\\frac{\\sqrt{3}}{2}\\end{pmatrix}"
+					],
+					"variables": {
+						"m": "5",
+						"r11": "\\frac{\\sqrt{3}}{2}",
+						"r12": "-\\frac{1}{2}",
+						"r21": "\\frac{1}{2}",
+						"r22": "\\frac{\\sqrt{3}}{2}"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Dans un repère orthonormé d'origine $O$, la rotation de centre $O$ et d'angle $\\theta$ transforme le point de coordonnées $(x \\,;\\, y)$ en le point de coordonnées $(x\\cos\\theta - y\\sin\\theta \\,;\\, x\\sin\\theta + y\\cos\\theta)$.\n\nDonne la matrice de la rotation de centre $O$ et d'angle $\\theta = \\dfrac{\\pi}{2}$ (valeurs exactes).\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}"],
+					"variables": {
+						"m": "1",
+						"r11": "0",
+						"r12": "-1",
+						"r21": "1",
+						"r22": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans un repère orthonormé d'origine $O$, la rotation de centre $O$ et d'angle $\\theta$ transforme le point de coordonnées $(x \\,;\\, y)$ en le point de coordonnées $(x\\cos\\theta - y\\sin\\theta \\,;\\, x\\sin\\theta + y\\cos\\theta)$.\n\nDonne la matrice de la rotation de centre $O$ et d'angle $\\theta = -\\dfrac{\\pi}{2}$ (valeurs exactes).\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}0&1\\\\-1&0\\end{pmatrix}"],
+					"variables": {
+						"m": "3",
+						"r11": "0",
+						"r12": "1",
+						"r21": "-1",
+						"r22": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans un repère orthonormé d'origine $O$, la rotation de centre $O$ et d'angle $\\theta$ transforme le point de coordonnées $(x \\,;\\, y)$ en le point de coordonnées $(x\\cos\\theta - y\\sin\\theta \\,;\\, x\\sin\\theta + y\\cos\\theta)$.\n\nDonne la matrice de la rotation de centre $O$ et d'angle $\\theta = \\dfrac{\\pi}{4}$ (valeurs exactes).\n\n$[?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\frac{\\sqrt{2}}{2}&-\\frac{\\sqrt{2}}{2}\\\\\\frac{\\sqrt{2}}{2}&\\frac{\\sqrt{2}}{2}\\end{pmatrix}"
+					],
+					"variables": {
+						"m": "6",
+						"r11": "\\frac{\\sqrt{2}}{2}",
+						"r12": "-\\frac{\\sqrt{2}}{2}",
+						"r21": "\\frac{\\sqrt{2}}{2}",
+						"r22": "\\frac{\\sqrt{2}}{2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 10,
+					"enonce": "Dans un repère orthonormé d'origine $O$, la rotation de centre $O$ et d'angle $\\theta$ transforme le point de coordonnées $(x \\,;\\, y)$ en le point de coordonnées $(x\\cos\\theta - y\\sin\\theta \\,;\\, x\\sin\\theta + y\\cos\\theta)$.\n\nDonne la matrice de la rotation de centre $O$ et d'angle $\\theta = \\dfrac{2\\pi}{3}$ (valeurs exactes).\n\n$[?]$",
+					"reponse": [
+						"\\begin{pmatrix}-\\frac{1}{2}&-\\frac{\\sqrt{3}}{2}\\\\\\frac{\\sqrt{3}}{2}&-\\frac{1}{2}\\end{pmatrix}"
+					],
+					"variables": {
+						"m": "7",
+						"r11": "-\\frac{1}{2}",
+						"r12": "-\\frac{\\sqrt{3}}{2}",
+						"r21": "\\frac{\\sqrt{3}}{2}",
+						"r22": "-\\frac{1}{2}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "s",
+						"expression": "1..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans un repère orthonormé, donne la matrice de la symétrie orthogonale d'axe {{if:s==1|l'axe des abscisses $(Ox)$|{{if:s==2|l'axe des ordonnées $(Oy)$|{{if:s==3|la droite d'équation $y = x$|la droite d'équation $y = -x$}}}}}}.\n\n$?$",
+				"reponses_brutes": [
+					"\\begin{pmatrix}{{if:s==1|1|{{if:s==2|-1|0}}}}&{{if:s==3|1|{{if:s==4|-1|0}}}}\\\\{{if:s==3|1|{{if:s==4|-1|0}}}}&{{if:s==1|-1|{{if:s==2|1|0}}}}\\end{pmatrix}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": [
+							"\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}",
+							"\\begin{pmatrix}0&-1\\\\-1&0\\end{pmatrix}",
+							"\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}",
+							"\\begin{pmatrix}1&0\\\\0&-1\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 1,
+							"nb_distinctes": 2,
+							"valeurs": [0, 1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "152/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"=": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 15,
+					"max": 15
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Dans un repère orthonormé, donne la matrice de la symétrie orthogonale d'axe l'axe des abscisses $\\left( O x \\right)$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}1&0\\\\0&-1\\end{pmatrix}"],
+					"variables": {
+						"s": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans un repère orthonormé, donne la matrice de la symétrie orthogonale d'axe l'axe des ordonnées $\\left( O y \\right)$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}"],
+					"variables": {
+						"s": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans un repère orthonormé, donne la matrice de la symétrie orthogonale d'axe la droite d'équation $y = -x$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}0&-1\\\\-1&0\\end{pmatrix}"],
+					"variables": {
+						"s": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Dans un repère orthonormé, donne la matrice de la symétrie orthogonale d'axe la droite d'équation $y = x$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}"],
+					"variables": {
+						"s": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2..5;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans un repère d'origine $O$, donne la matrice de l'homothétie de centre $O$ et de rapport ${{k}}$.\n\n$?$",
+				"reponses_brutes": ["\\begin{pmatrix}{{k}}&0\\\\0&{{k}}\\end{pmatrix}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\begin{pmatrix}-2&0\\\\0&-2\\end{pmatrix}",
+							"\\begin{pmatrix}-3&0\\\\0&-3\\end{pmatrix}",
+							"\\begin{pmatrix}-4&0\\\\0&-4\\end{pmatrix}",
+							"\\begin{pmatrix}-5&0\\\\0&-5\\end{pmatrix}",
+							"\\begin{pmatrix}2&0\\\\0&2\\end{pmatrix}",
+							"\\begin{pmatrix}3&0\\\\0&3\\end{pmatrix}",
+							"\\begin{pmatrix}4&0\\\\0&4\\end{pmatrix}",
+							"\\begin{pmatrix}5&0\\\\0&5\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 5,
+							"nb_distinctes": 5,
+							"valeurs": [0, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [0, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [0, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Dans un repère d'origine $O$, donne la matrice de l'homothétie de centre $O$ et de rapport $-5$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}-5&0\\\\0&-5\\end{pmatrix}"],
+					"variables": {
+						"k": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans un repère d'origine $O$, donne la matrice de l'homothétie de centre $O$ et de rapport $-3$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}-3&0\\\\0&-3\\end{pmatrix}"],
+					"variables": {
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans un repère d'origine $O$, donne la matrice de l'homothétie de centre $O$ et de rapport $4$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}4&0\\\\0&4\\end{pmatrix}"],
+					"variables": {
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Dans un repère d'origine $O$, donne la matrice de l'homothétie de centre $O$ et de rapport $3$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}3&0\\\\0&3\\end{pmatrix}"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 10,
+					"enonce": "Dans un repère d'origine $O$, donne la matrice de l'homothétie de centre $O$ et de rapport $5$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}5&0\\\\0&5\\end{pmatrix}"],
+					"variables": {
+						"k": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-5..5"
+					},
+					{
+						"name": "b",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "d",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": ["b != c"],
+				"enonce_brut": "Une transformation du plan associe au point de coordonnées $(x \\,;\\, y)$ le point de coordonnées $(X \\,;\\, Y)$ avec $X = {{a}}x+({{b}})y$ et $Y = {{c}}x+({{d}})y$.\n\nDonne sa matrice $M$, telle que $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = M\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\n$?$",
+				"reponses_brutes": ["\\begin{pmatrix}{{a}}&{{b}}\\\\{{c}}&{{d}}\\end{pmatrix}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 295,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 295,
+						"exemples": [
+							"\\begin{pmatrix}-5&1\\\\5&5\\end{pmatrix}",
+							"\\begin{pmatrix}-2&-3\\\\1&4\\end{pmatrix}",
+							"\\begin{pmatrix}-5&-1\\\\-5&3\\end{pmatrix}",
+							"\\begin{pmatrix}-2&-3\\\\-5&-3\\end{pmatrix}",
+							"\\begin{pmatrix}3&-3\\\\2&-5\\end{pmatrix}",
+							"\\begin{pmatrix}-5&2\\\\-3&0\\end{pmatrix}",
+							"\\begin{pmatrix}-5&5\\\\2&0\\end{pmatrix}",
+							"\\begin{pmatrix}1&-2\\\\2&1\\end{pmatrix}",
+							"\\begin{pmatrix}4&-4\\\\4&2\\end{pmatrix}",
+							"\\begin{pmatrix}5&2\\\\4&0\\end{pmatrix}",
+							"\\begin{pmatrix}0&2\\\\1&4\\end{pmatrix}",
+							"\\begin{pmatrix}-5&1\\\\5&-4\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 5,
+							"nb_distinctes": 6,
+							"valeurs": [0, 1, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 5,
+				"nb_distinctes": 6,
+				"valeurs": [0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "217/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "Une transformation du plan associe au point de coordonnées $(x \\,;\\, y)$ le point de coordonnées $(X \\,;\\, Y)$ avec $X = -5 x + y$ et $Y = 5 x + 5 y$.\n\nDonne sa matrice $M$, telle que $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = M\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}-5&1\\\\5&5\\end{pmatrix}"],
+					"variables": {
+						"a": "-5",
+						"b": "1",
+						"c": "5",
+						"d": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une transformation du plan associe au point de coordonnées $(x \\,;\\, y)$ le point de coordonnées $(X \\,;\\, Y)$ avec $X = -2 x - 3 y$ et $Y = x + 4 y$.\n\nDonne sa matrice $M$, telle que $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = M\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}-2&-3\\\\1&4\\end{pmatrix}"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "1",
+						"d": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une transformation du plan associe au point de coordonnées $(x \\,;\\, y)$ le point de coordonnées $(X \\,;\\, Y)$ avec $X = -5 x - y$ et $Y = -5 x + 3 y$.\n\nDonne sa matrice $M$, telle que $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = M\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}-5&-1\\\\-5&3\\end{pmatrix}"],
+					"variables": {
+						"a": "-5",
+						"b": "-1",
+						"c": "-5",
+						"d": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une transformation du plan associe au point de coordonnées $(x \\,;\\, y)$ le point de coordonnées $(X \\,;\\, Y)$ avec $X = -2 x - 3 y$ et $Y = -5 x - 3 y$.\n\nDonne sa matrice $M$, telle que $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = M\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}-2&-3\\\\-5&-3\\end{pmatrix}"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "-5",
+						"d": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une transformation du plan associe au point de coordonnées $(x \\,;\\, y)$ le point de coordonnées $(X \\,;\\, Y)$ avec $X = 3 x - 3 y$ et $Y = 2 x - 5 y$.\n\nDonne sa matrice $M$, telle que $\\begin{pmatrix}X\\\\Y\\end{pmatrix} = M\\begin{pmatrix}x\\\\y\\end{pmatrix}$.\n\n$[?]$",
+					"reponse": ["\\begin{pmatrix}3&-3\\\\2&-5\\end{pmatrix}"],
+					"variables": {
+						"a": "3",
+						"b": "-3",
+						"c": "2",
+						"d": "-5"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,1459 @@
+{
+	"template_id": "2d480f3d-2092-4f25-91b5-b92887f7b71b",
+	"titre": "Primitive de u′eᵘ, 2uu′ ou u′/u vérifiant une condition",
+	"sous_titre": "Reconnaître u′eᵘ, 2uu′ ou u′/u (à un facteur constant près) puis fixer la constante par F(x₀) = y₀",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Primitives et équations différentielles > Primitives > Formes u′eᵘ, 2uu′, u′/u",
+	"mis_a_jour": "2026-10-04T10:14:56.221111+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-252",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-468",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 7,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "h",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": ["y0 != h"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:2*h==1|x}}{{if:2*h==-1|-x}}{{if:2*h!=1 && 2*h!=-1|{{eval:2*h}}x}}e^{x^2}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+				"reponses_brutes": [
+					"{{if:h==1|e^{x^2}}}{{if:h==-1|-e^{x^2}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{x^2}}}{{if:y0-h>0|+{{eval:y0-h}}}}{{if:y0-h<0|{{eval:y0-h}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 60,
+			"variables": [
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 60,
+						"exemples": [
+							"-3e^{x^2}+3",
+							"e^{x^2}+3",
+							"-2e^{x^2}-1",
+							"2e^{x^2}-5",
+							"-3e^{x^2}+5",
+							"-3e^{x^2}+8",
+							"e^{x^2}-3",
+							"3e^{x^2}-7",
+							"3e^{x^2}-1",
+							"-3e^{x^2}+4",
+							"-e^{x^2}-4",
+							"-e^{x^2}+1"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 8,
+							"nb_distinctes": 10,
+							"valeurs": [-3, -2, 1, 2, 3, 4, 5, 6, 7, 8],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -3,
+				"max": 8,
+				"nb_distinctes": 10,
+				"valeurs": [-3, -2, 1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 8,
+				"nb_distinctes": 15,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (8)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -6 x \\exponentialE^{x^2}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 5$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-3e^{x^2}+8"],
+					"variables": {
+						"h": "-3",
+						"y0": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -6 x \\exponentialE^{x^2}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-3e^{x^2}+3"],
+					"variables": {
+						"h": "-3",
+						"y0": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x \\exponentialE^{x^2}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 4$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["e^{x^2}+3"],
+					"variables": {
+						"h": "1",
+						"y0": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -4 x \\exponentialE^{x^2}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -3$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-2e^{x^2}-1"],
+					"variables": {
+						"h": "-2",
+						"y0": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x \\exponentialE^{x^2}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -3$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["2e^{x^2}-5"],
+					"variables": {
+						"h": "2",
+						"y0": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "1..3"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": ["y0 != m^2"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=4x(x^2+{{eval:m}})$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+				"reponses_brutes": [
+					"(x^2+{{eval:m}})^2{{if:y0-m^2>0|+{{eval:y0-m^2}}}}{{if:y0-m^2<0|{{eval:y0-m^2}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 31,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 31,
+						"exemples": [
+							"(x^2+1)^2-1",
+							"(x^2+1)^2-3",
+							"(x^2+1)^2-4",
+							"(x^2+3)^2-12",
+							"(x^2+1)^2+1",
+							"(x^2+1)^2+4",
+							"(x^2+2)^2-6",
+							"(x^2+3)^2-13",
+							"(x^2+3)^2-7",
+							"(x^2+2)^2-3",
+							"(x^2+2)^2-9",
+							"(x^2+2)^2-4"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 14,
+							"nb_distinctes": 14,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 14,
+				"nb_distinctes": 14,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 14,
+				"nb_distinctes": 20,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (14)",
+					"graine": 37,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x \\left( x^2 + 3 \\right)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -5$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["(x^2+3)^2-14"],
+					"variables": {
+						"m": "3",
+						"y0": "-5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 13,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x \\left( x^2 + 2 \\right)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -5$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["(x^2+2)^2-9"],
+					"variables": {
+						"m": "2",
+						"y0": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x \\left( x^2 + 1 \\right)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["(x^2+1)^2-1"],
+					"variables": {
+						"m": "1",
+						"y0": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x \\left( x^2 + 1 \\right)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -2$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["(x^2+1)^2-3"],
+					"variables": {
+						"m": "1",
+						"y0": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x \\left( x^2 + 1 \\right)$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -3$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["(x^2+1)^2-4"],
+					"variables": {
+						"m": "1",
+						"y0": "-3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "x0",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:1-a*x0}}"
+					},
+					{
+						"name": "h",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$ par $f(x)={{if:h<0|-}}\\dfrac{{{eval:abs(h)*a}}}{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$ telle que $F({{eval:x0}})={{eval:y0}}$.\n\n$F(x)=?$",
+				"reponses_brutes": [
+					"{{if:h==1|\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h==-1|-\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h!=1 && h!=-1|{{eval:h}}\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 229,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-11, -8, -7, -5, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 229,
+						"exemples": [
+							"3\\ln(2x-3)+5",
+							"\\ln(2x-1)+4",
+							"-3\\ln(2x-3)+3",
+							"-3\\ln(2x-1)-3",
+							"\\ln(4x-3)-5",
+							"-2\\ln(2x-3)",
+							"2\\ln(2x-5)",
+							"2\\ln(3x-2)+1",
+							"2\\ln(4x-3)+2",
+							"2\\ln(4x-11)",
+							"\\ln(3x-5)+4",
+							"3\\ln(2x-3)-4"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [-3, -2, 1, 2, 3, 4, 5, 7, 8, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 12,
+				"nb_distinctes": 17,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -3,
+				"max": 11,
+				"nb_distinctes": 10,
+				"valeurs": [-3, -2, 1, 2, 3, 4, 5, 7, 8, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 12,
+				"nb_distinctes": 17,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4],
+				"denominateur_min": 2,
+				"denominateur_max": 4,
+				"numerateur_min": 1,
+				"numerateur_max": 11,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 24,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{3}{4}\\,;+\\infty\\right[$ par $f(x)=-\\dfrac{12}{4x-3}$.\n\nDétermine la primitive $F$ de $f$ sur $\\left]\\dfrac{3}{4}\\,;+\\infty\\right[$ telle que $F\\left( 1 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-3\\ln(4x-3)"],
+					"variables": {
+						"a": "4",
+						"x0": "1",
+						"b": "-3",
+						"h": "-3",
+						"y0": "0"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{3}{4}\\,;+\\infty\\right[$ par $f(x)=\\dfrac{4}{4x-3}$.\n\nDétermine la primitive $F$ de $f$ sur $\\left]\\dfrac{3}{4}\\,;+\\infty\\right[$ telle que $F\\left( 1 \\right) = -5$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\ln(4x-3)-5"],
+					"variables": {
+						"a": "4",
+						"x0": "1",
+						"b": "-3",
+						"h": "1",
+						"y0": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{3}{2}\\,;+\\infty\\right[$ par $f(x)=\\dfrac{6}{2x-3}$.\n\nDétermine la primitive $F$ de $f$ sur $\\left]\\dfrac{3}{2}\\,;+\\infty\\right[$ telle que $F\\left( 2 \\right) = 5$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["3\\ln(2x-3)+5"],
+					"variables": {
+						"a": "2",
+						"x0": "2",
+						"b": "-3",
+						"h": "3",
+						"y0": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{1}{2}\\,;+\\infty\\right[$ par $f(x)=\\dfrac{2}{2x-1}$.\n\nDétermine la primitive $F$ de $f$ sur $\\left]\\dfrac{1}{2}\\,;+\\infty\\right[$ telle que $F\\left( 1 \\right) = 4$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\ln(2x-1)+4"],
+					"variables": {
+						"a": "2",
+						"x0": "1",
+						"b": "-1",
+						"h": "1",
+						"y0": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{3}{2}\\,;+\\infty\\right[$ par $f(x)=-\\dfrac{6}{2x-3}$.\n\nDétermine la primitive $F$ de $f$ sur $\\left]\\dfrac{3}{2}\\,;+\\infty\\right[$ telle que $F\\left( 2 \\right) = 3$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-3\\ln(2x-3)+3"],
+					"variables": {
+						"a": "2",
+						"x0": "2",
+						"b": "-3",
+						"h": "-3",
+						"y0": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "h",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "y0",
+						"expression": "-5..5"
+					}
+				],
+				"conditions": ["y0 != h"],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:a*h==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a*h==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:a*h!=1 && a*h!=-1|{{eval:a*h}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F(0)={{eval:y0}}$.\n\n$F(x)=?$",
+				"reponses_brutes": [
+					"{{if:h==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:h==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-h>0|+{{eval:y0-h}}}}{{if:y0-h<0|{{eval:y0-h}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 227,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 227,
+						"exemples": [
+							"e^{-5x}+4",
+							"-2e^{-3x}+2",
+							"-e^{-5x}-4",
+							"-2e^{-3x}-3",
+							"-2e^{4x}+3",
+							"e^{-5x}-4",
+							"3e^{-5x}-1",
+							"-2e^{3x}+4",
+							"-3e^{4x}+7",
+							"2e^{5x}+1",
+							"e^{4x}-6",
+							"-3e^{-3x}-2"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 8,
+							"nb_distinctes": 12,
+							"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -15,
+				"max": 15,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-15, -12, -10, -9, -8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 8,
+				"nb_distinctes": 12,
+				"valeurs": [-5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -15,
+				"max": 15,
+				"nb_distinctes": 24,
+				"valeurs": [
+					-15, -12, -10, -9, -8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (15)",
+					"graine": 27,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 15 \\exponentialE^{-5 x}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -4$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-3e^{-5x}-1"],
+					"variables": {
+						"a": "-5",
+						"h": "-3",
+						"y0": "-4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-15)",
+					"graine": 7,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -15 \\exponentialE^{-5 x}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 2$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["3e^{-5x}-1"],
+					"variables": {
+						"a": "-5",
+						"h": "3",
+						"y0": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -5 \\exponentialE^{-5 x}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 5$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["e^{-5x}+4"],
+					"variables": {
+						"a": "-5",
+						"h": "1",
+						"y0": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 6 \\exponentialE^{-3 x}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = 0$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-2e^{-3x}+2"],
+					"variables": {
+						"a": "-3",
+						"h": "-2",
+						"y0": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 5 \\exponentialE^{-5 x}$.\n\nDétermine la primitive $F$ de $f$ sur $\\mathbb{R}$ telle que $F\\left( 0 \\right) = -5$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-e^{-5x}-4"],
+					"variables": {
+						"a": "-5",
+						"h": "-1",
+						"y0": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "h",
+						"expression": "1..3;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)={{if:2*h==1|x}}{{if:2*h==-1|-x}}{{if:2*h!=1 && 2*h!=-1|{{eval:2*h}}x}}e^{x^2}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+				"reponses_brutes": [
+					"{{if:h==1|e^{x^2}}}{{if:h==-1|-e^{x^2}}}{{if:h!=1 && h!=-1|{{eval:h}}e^{x^2}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 6,
+			"variables": [
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 6,
+						"valeurs": ["-2e^{x^2}", "-3e^{x^2}", "-e^{x^2}", "2e^{x^2}", "3e^{x^2}", "e^{x^2}"],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 3,
+							"nb_distinctes": 4,
+							"valeurs": [-3, -2, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 6,
+				"valeurs": [-6, -4, -2, 2, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -3,
+				"max": 3,
+				"nb_distinctes": 4,
+				"valeurs": [-3, -2, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 8,
+				"valeurs": [-6, -4, -3, -2, 2, 3, 4, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["primitive"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 9,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 6 x \\exponentialE^{x^2}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["3e^{x^2}"],
+					"variables": {
+						"h": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -6 x \\exponentialE^{x^2}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-3e^{x^2}"],
+					"variables": {
+						"h": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = -4 x \\exponentialE^{x^2}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-2e^{x^2}"],
+					"variables": {
+						"h": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x \\exponentialE^{x^2}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["2e^{x^2}"],
+					"variables": {
+						"h": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 2 x \\exponentialE^{x^2}$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["e^{x^2}"],
+					"variables": {
+						"h": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "1..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f(x)=4x(x^2+{{eval:m}})$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F(x)=?$",
+				"reponses_brutes": ["(x^2+{{eval:m}})^2"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 3,
+						"valeurs": ["(x^2+1)^2", "(x^2+2)^2", "(x^2+3)^2"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 3,
+							"nb_distinctes": 3,
+							"valeurs": [1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 4,
+				"nb_distinctes": 4,
+				"valeurs": [1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 3,
+				"nb_distinctes": 3,
+				"valeurs": [1, 2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 4,
+				"nb_distinctes": 4,
+				"valeurs": [1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["primitive"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x \\left( x^2 + 1 \\right)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["(x^2+1)^2"],
+					"variables": {
+						"m": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x \\left( x^2 + 3 \\right)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["(x^2+3)^2"],
+					"variables": {
+						"m": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Soit $f$ la fonction définie sur $\\mathbb{R}$ par $f\\left( x \\right) = 4 x \\left( x^2 + 2 \\right)$.\n\nDonne une primitive $F$ de $f$ sur $\\mathbb{R}$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["(x^2+2)^2"],
+					"variables": {
+						"m": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "x0",
+						"expression": "1..3"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:1-a*x0}}"
+					},
+					{
+						"name": "h",
+						"expression": "1..3;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Soit $f$ la fonction définie sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$ par $f(x)={{if:h<0|-}}\\dfrac{{{eval:abs(h)*a}}}{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}}}$.\n\nDonne une primitive $F$ de $f$ sur $\\left]{{eval:-b/a}}\\,;+\\infty\\right[$.\n\n$F(x)=?$",
+				"reponses_brutes": [
+					"{{if:h==1|\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h==-1|-\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}{{if:h!=1 && h!=-1|{{eval:h}}\\ln({{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:b>0|+{{eval:b}}}}{{if:b<0|{{eval:b}}}})}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 53,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-11, -8, -7, -5, -3, -2, -1]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 53,
+						"exemples": [
+							"3\\ln(2x-3)",
+							"\\ln(2x-1)",
+							"-3\\ln(2x-3)",
+							"-3\\ln(2x-1)",
+							"\\ln(4x-3)",
+							"-2\\ln(2x-3)",
+							"2\\ln(2x-5)",
+							"2\\ln(3x-2)",
+							"2\\ln(4x-3)",
+							"2\\ln(4x-11)",
+							"\\ln(3x-5)",
+							"-3\\ln(3x-2)"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [-3, -2, 1, 2, 3, 4, 5, 7, 8, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -3,
+				"max": 11,
+				"nb_distinctes": 10,
+				"valeurs": [-3, -2, 1, 2, 3, 4, 5, 7, 8, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -3,
+				"max": 12,
+				"nb_distinctes": 13,
+				"valeurs": [-3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4],
+				"denominateur_min": 2,
+				"denominateur_max": 4,
+				"numerateur_min": 1,
+				"numerateur_max": 11,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["primitive"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 24,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{3}{4}\\,;+\\infty\\right[$ par $f(x)=-\\dfrac{12}{4x-3}$.\n\nDonne une primitive $F$ de $f$ sur $\\left]\\dfrac{3}{4}\\,;+\\infty\\right[$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-3\\ln(4x-3)"],
+					"variables": {
+						"a": "4",
+						"x0": "1",
+						"b": "-3",
+						"h": "-3"
+					}
+				},
+				{
+					"role": "plus petite valeur (-3)",
+					"graine": 3,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{3}{2}\\,;+\\infty\\right[$ par $f(x)=-\\dfrac{6}{2x-3}$.\n\nDonne une primitive $F$ de $f$ sur $\\left]\\dfrac{3}{2}\\,;+\\infty\\right[$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-3\\ln(2x-3)"],
+					"variables": {
+						"a": "2",
+						"x0": "2",
+						"b": "-3",
+						"h": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{3}{2}\\,;+\\infty\\right[$ par $f(x)=\\dfrac{6}{2x-3}$.\n\nDonne une primitive $F$ de $f$ sur $\\left]\\dfrac{3}{2}\\,;+\\infty\\right[$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["3\\ln(2x-3)"],
+					"variables": {
+						"a": "2",
+						"x0": "2",
+						"b": "-3",
+						"h": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{1}{2}\\,;+\\infty\\right[$ par $f(x)=\\dfrac{2}{2x-1}$.\n\nDonne une primitive $F$ de $f$ sur $\\left]\\dfrac{1}{2}\\,;+\\infty\\right[$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["\\ln(2x-1)"],
+					"variables": {
+						"a": "2",
+						"x0": "1",
+						"b": "-1",
+						"h": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Soit $f$ la fonction définie sur $\\left]\\dfrac{1}{2}\\,;+\\infty\\right[$ par $f(x)=-\\dfrac{6}{2x-1}$.\n\nDonne une primitive $F$ de $f$ sur $\\left]\\dfrac{1}{2}\\,;+\\infty\\right[$.\n\n$F\\left( x \\right) = [?]$",
+					"reponse": ["-3\\ln(2x-1)"],
+					"variables": {
+						"a": "2",
+						"x0": "1",
+						"b": "-1",
+						"h": "-3"
+					}
+				}
+			]
+		}
+	]
+}

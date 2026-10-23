@@ -1,0 +1,565 @@
+{
+	"template_id": "0495289a-abb1-4fed-b058-5e924a5f05ed",
+	"titre": "Calculer un terme",
+	"sous_titre": "A l'aide d'une formule de récurrence qui dépend aussi de n",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Apprivoiser > Calculer un terme",
+	"mis_a_jour": "2026-10-01T20:22:24.039352+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-223",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "a",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..5;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "u1",
+						"expression": "eval:a+c"
+					},
+					{
+						"name": "u2",
+						"expression": "eval:u1+b+c"
+					},
+					{
+						"name": "u3",
+						"expression": "eval:u2+2*b+c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule le terme demandé.\n\n$u_0={{a}}$ et $u_{n+1}=u_n{{eval:b*n+c;+}}$\n\n$u_3=?$",
+				"reponses_brutes": ["{{u3}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 251,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 23,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -21,
+						"max": 21,
+						"negatif_possible": true,
+						"nb_distinctes": 41
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -36,
+						"max": 36,
+						"negatif_possible": true,
+						"nb_distinctes": 66
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -36,
+						"max": 36,
+						"negatif_possible": true,
+						"nb_distinctes": 66
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -36,
+				"max": 36,
+				"nb_distinctes": 66,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -36,
+				"max": 36,
+				"nb_distinctes": 66,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "70/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (36)",
+					"graine": 160,
+					"enonce": "Calcule le terme demandé.\n\n$u_0 = 6$ et $u_{n + 1} = u_n + 5 n + 5$\n\n$u_3 = [?]$",
+					"reponse": ["36"],
+					"variables": {
+						"n": "n",
+						"a": "6",
+						"b": "5",
+						"c": "5",
+						"u1": "11",
+						"u2": "21",
+						"u3": "36"
+					}
+				},
+				{
+					"role": "plus petite valeur (-36)",
+					"graine": 13,
+					"enonce": "Calcule le terme demandé.\n\n$u_0 = -6$ et $u_{n + 1} = u_n - 5 n - 5$\n\n$u_3 = [?]$",
+					"reponse": ["-36"],
+					"variables": {
+						"n": "n",
+						"a": "-6",
+						"b": "-5",
+						"c": "-5",
+						"u1": "-11",
+						"u2": "-21",
+						"u3": "-36"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule le terme demandé.\n\n$u_0 = 1$ et $u_{n + 1} = u_n + 5 n + 5$\n\n$u_3 = [?]$",
+					"reponse": ["31"],
+					"variables": {
+						"n": "n",
+						"a": "1",
+						"b": "5",
+						"c": "5",
+						"u1": "6",
+						"u2": "16",
+						"u3": "31"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule le terme demandé.\n\n$u_0 = -3$ et $u_{n + 1} = u_n + 2 n + 4$\n\n$u_3 = [?]$",
+					"reponse": ["15"],
+					"variables": {
+						"n": "n",
+						"a": "-3",
+						"b": "2",
+						"c": "4",
+						"u1": "1",
+						"u2": "7",
+						"u3": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule le terme demandé.\n\n$u_0 = -1$ et $u_{n + 1} = u_n + 3 - 5 n$\n\n$u_3 = [?]$",
+					"reponse": ["-7"],
+					"variables": {
+						"n": "n",
+						"a": "-1",
+						"b": "-5",
+						"c": "3",
+						"u1": "2",
+						"u2": "0",
+						"u3": "-7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "n|n"
+					},
+					{
+						"name": "a",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "b",
+						"expression": "2|-2|3"
+					},
+					{
+						"name": "c",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "u1",
+						"expression": "eval:b*(a)"
+					},
+					{
+						"name": "u2",
+						"expression": "eval:b*(u1)+(c)"
+					},
+					{
+						"name": "u3",
+						"expression": "eval:b*(u2)+2*(c)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule le terme demandé.\n\n$u_0={{a}}$ et $u_{n+1}={{b}}u_n{{eval:c*n;+}}$\n\n$u_3=?$",
+				"reponses_brutes": ["{{u3}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 125,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["n"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 3,
+						"valeurs": [-2, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "u1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-12, -9, -8, -6, -4, -3, -2, 2, 3, 4, 6, 8, 9, 12]
+					}
+				},
+				{
+					"nom": "u2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -39,
+						"max": 39,
+						"negatif_possible": true,
+						"nb_distinctes": 59
+					}
+				},
+				{
+					"nom": "u3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -123,
+						"max": 123,
+						"negatif_possible": true,
+						"nb_distinctes": 59
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -123,
+						"max": 123,
+						"negatif_possible": true,
+						"nb_distinctes": 59
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 4,
+				"nb_distinctes": 9,
+				"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -123,
+				"max": 123,
+				"nb_distinctes": 59,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -123,
+				"max": 123,
+				"nb_distinctes": 65,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (123)",
+					"graine": 160,
+					"enonce": "Calcule le terme demandé.\n\n$u_0 = 4$ et $u_{n + 1} = 3 u_n + 3 n$\n\n$u_3 = [?]$",
+					"reponse": ["123"],
+					"variables": {
+						"n": "n",
+						"a": "4",
+						"b": "3",
+						"c": "3",
+						"u1": "12",
+						"u2": "39",
+						"u3": "123"
+					}
+				},
+				{
+					"role": "plus petite valeur (-123)",
+					"graine": 53,
+					"enonce": "Calcule le terme demandé.\n\n$u_0 = -4$ et $u_{n + 1} = 3 u_n - 3 n$\n\n$u_3 = [?]$",
+					"reponse": ["-123"],
+					"variables": {
+						"n": "n",
+						"a": "-4",
+						"b": "3",
+						"c": "-3",
+						"u1": "-12",
+						"u2": "-39",
+						"u3": "-123"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule le terme demandé.\n\n$u_0 = 1$ et $u_{n + 1} = 3 u_n + 3 n$\n\n$u_3 = [?]$",
+					"reponse": ["42"],
+					"variables": {
+						"n": "n",
+						"a": "1",
+						"b": "3",
+						"c": "3",
+						"u1": "3",
+						"u2": "12",
+						"u3": "42"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule le terme demandé.\n\n$u_0 = -2$ et $u_{n + 1} = -2 u_n + 3 n$\n\n$u_3 = [?]$",
+					"reponse": ["16"],
+					"variables": {
+						"n": "n",
+						"a": "-2",
+						"b": "-2",
+						"c": "3",
+						"u1": "4",
+						"u2": "-5",
+						"u3": "16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule le terme demandé.\n\n$u_0 = -1$ et $u_{n + 1} = 2 u_n + 2 n$\n\n$u_3 = [?]$",
+					"reponse": ["0"],
+					"variables": {
+						"n": "n",
+						"a": "-1",
+						"b": "2",
+						"c": "2",
+						"u1": "-2",
+						"u2": "-2",
+						"u3": "0"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,282 @@
+{
+	"template_id": "f57c0a5a-c76f-402d-8c94-49718f112ac2",
+	"titre": "Réduire une expression avec des racines carrées",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Racines carrées > Manipuler > Réduire",
+	"mis_a_jour": "2026-10-04T23:04:42.818696+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-271",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2|3|5|10"
+					},
+					{
+						"name": "b",
+						"expression": "2|3|5|10!a"
+					},
+					{
+						"name": "c",
+						"expression": "2|3|5"
+					},
+					{
+						"name": "expression1",
+						"expression": "sqrt({{eval:a*a*c}})+sqrt({{eval:b*b*c}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réduis sous la forme $a\\sqrt{b}$, avec $b$ le plus petit possible.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:(a+b)*sqrt(c)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 36,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 10]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 5, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 5]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 36,
+						"exemples": [
+							"sqrt(20)+sqrt(125)",
+							"sqrt(27)+sqrt(12)",
+							"sqrt(8)+sqrt(50)",
+							"sqrt(18)+sqrt(8)",
+							"sqrt(300)+sqrt(12)",
+							"sqrt(20)+sqrt(500)",
+							"sqrt(125)+sqrt(20)",
+							"sqrt(500)+sqrt(20)",
+							"sqrt(500)+sqrt(125)",
+							"sqrt(75)+sqrt(27)",
+							"sqrt(27)+sqrt(75)",
+							"sqrt(12)+sqrt(300)"
+						],
+						"nombres_contenus": {
+							"min": 8,
+							"max": 500,
+							"nb_distinctes": 12,
+							"valeurs": [8, 12, 18, 20, 27, 45, 50, 75, 125, 200, 300, 500],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 18,
+						"valeurs": [
+							"12 \\sqrt{2}",
+							"12 \\sqrt{3}",
+							"12 \\sqrt{5}",
+							"13 \\sqrt{2}",
+							"13 \\sqrt{3}",
+							"13 \\sqrt{5}",
+							"15 \\sqrt{2}",
+							"15 \\sqrt{3}",
+							"15 \\sqrt{5}",
+							"5 \\sqrt{2}",
+							"5 \\sqrt{3}",
+							"5 \\sqrt{5}",
+							"7 \\sqrt{2}",
+							"7 \\sqrt{3}",
+							"7 \\sqrt{5}",
+							"8 \\sqrt{2}",
+							"8 \\sqrt{3}",
+							"8 \\sqrt{5}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 15,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 5, 7, 8, 12, 13, 15],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 8,
+				"max": 500,
+				"nb_distinctes": 12,
+				"valeurs": [8, 12, 18, 20, 27, 45, 50, 75, 125, 200, 300, 500],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 15,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 5, 7, 8, 12, 13, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 500,
+				"nb_distinctes": 18,
+				"valeurs": [2, 3, 5, 7, 8, 12, 13, 15, 18, 20, 27, 45, 50, 75, 125, 200, 300, 500],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"racine": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (500)",
+					"graine": 7,
+					"enonce": "Réduis sous la forme $a\\sqrt{b}$, avec $b$ le plus petit possible.\n\n$$\\sqrt{20} + \\sqrt{500} = [?]$$",
+					"reponse": ["12 \\sqrt{5}"],
+					"variables": {
+						"a": "2",
+						"b": "10",
+						"c": "5",
+						"expression1": "sqrt(20)+sqrt(500)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 3,
+					"enonce": "Réduis sous la forme $a\\sqrt{b}$, avec $b$ le plus petit possible.\n\n$$\\sqrt{8} + \\sqrt{50} = [?]$$",
+					"reponse": ["7 \\sqrt{2}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "2",
+						"expression1": "sqrt(8)+sqrt(50)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réduis sous la forme $a\\sqrt{b}$, avec $b$ le plus petit possible.\n\n$$\\sqrt{20} + \\sqrt{125} = [?]$$",
+					"reponse": ["7 \\sqrt{5}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "5",
+						"expression1": "sqrt(20)+sqrt(125)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réduis sous la forme $a\\sqrt{b}$, avec $b$ le plus petit possible.\n\n$$\\sqrt{27} + \\sqrt{12} = [?]$$",
+					"reponse": ["5 \\sqrt{3}"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "3",
+						"expression1": "sqrt(27)+sqrt(12)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Réduis sous la forme $a\\sqrt{b}$, avec $b$ le plus petit possible.\n\n$$\\sqrt{18} + \\sqrt{8} = [?]$$",
+					"reponse": ["5 \\sqrt{2}"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "2",
+						"expression1": "sqrt(18)+sqrt(8)"
+					}
+				}
+			]
+		}
+	]
+}

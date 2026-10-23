@@ -1,0 +1,628 @@
+{
+	"template_id": "91db0034-86d4-49bf-b190-0884db19e9b7",
+	"titre": "Inégalité de concentration : majorant et taille d'échantillon",
+	"sous_titre": "P(|Mₙ − μ| ⩾ δ) ⩽ V/(nδ²) : majorant pour n donné, plus petit n pour un risque α donné (pièges : V/(nδ), oubli de n, arrondi par défaut)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Concentration et loi des grands nombres > Inégalité de concentration",
+	"mis_a_jour": "2026-10-04T20:32:56.756995+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-533",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "100|200|400|500|1000"
+					},
+					{
+						"name": "v",
+						"expression": "1..10"
+					},
+					{
+						"name": "d",
+						"expression": "2|4|5|10"
+					}
+				],
+				"conditions": ["v*d^2 < n"],
+				"enonce_brut": "$M$ est la moyenne d'un échantillon de taille $n={{n}}$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant ?$",
+				"reponses_brutes": ["{{eval:v*d^2/n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 127,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 1000,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [100, 200, 400, 500, 1000]
+					}
+				},
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 4, 5, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.004,
+						"max": 0.96,
+						"negatif_possible": false,
+						"denominateurs": [2, 4, 5, 8, 10, 16, 20, 25, 40, 50, 100, 125, 250],
+						"denominateur_min": 2,
+						"denominateur_max": 250,
+						"nb_distinctes": 63
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.1,
+				"max": 1000,
+				"nb_distinctes": 19,
+				"valeurs": [0.1, 0.2, 0.25, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 200, 400, 500, 1000],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 250,
+				"nb_distinctes": 24,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 24, 25, 28, 36, 40, 50, 100, 125, 250
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.1,
+				"max": 1000,
+				"nb_distinctes": 32,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 4, 5, 8, 10, 16, 20, 25, 40, 50, 100, 125, 250],
+				"denominateur_min": 2,
+				"denominateur_max": 250,
+				"numerateur_min": 1,
+				"numerateur_max": 36,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 1,
+					"enonce": "$M$ est la moyenne d'un échantillon de taille $n = 1\\,000$ d'une loi d'espérance $\\mu$ et de variance $V = 3$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant 0{,}2\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant 0{,}2\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{3}{40}"],
+					"variables": {
+						"n": "1000",
+						"v": "3",
+						"d": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.1)",
+					"graine": 9,
+					"enonce": "$M$ est la moyenne d'un échantillon de taille $n = 1\\,000$ d'une loi d'espérance $\\mu$ et de variance $V = 2$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant 0{,}1\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant 0{,}1\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{1}{5}"],
+					"variables": {
+						"n": "1000",
+						"v": "2",
+						"d": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$M$ est la moyenne d'un échantillon de taille $n = 200$ d'une loi d'espérance $\\mu$ et de variance $V = 3$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant 0{,}2\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant 0{,}2\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{3}{8}"],
+					"variables": {
+						"n": "200",
+						"v": "3",
+						"d": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$M$ est la moyenne d'un échantillon de taille $n = 100$ d'une loi d'espérance $\\mu$ et de variance $V = 5$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant 0{,}5\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant 0{,}5\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{1}{5}"],
+					"variables": {
+						"n": "100",
+						"v": "5",
+						"d": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$M$ est la moyenne d'un échantillon de taille $n = 200$ d'une loi d'espérance $\\mu$ et de variance $V = 3$.\n\nDonne le majorant de $P\\left(\\left|M-\\mu\\right|\\geqslant 0{,}5\\right)$ fourni par l'inégalité de concentration (nombre décimal).\n\n$P\\left(\\left|M-\\mu\\right|\\geqslant 0{,}5\\right)\\leqslant [?]$",
+					"reponse": ["\\dfrac{3}{50}"],
+					"variables": {
+						"n": "200",
+						"v": "3",
+						"d": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "v",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "2|4|5|10"
+					},
+					{
+						"name": "a",
+						"expression": "3|4|5|10"
+					},
+					{
+						"name": "x",
+						"expression": "{{eval:v*d^2*100/a}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$M_n$ est la moyenne d'un échantillon de taille $n$ d'une loi d'espérance $\\mu$ et de variance $V={{v}}$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|M_n-\\mu\\right|\\geqslant {{eval:1/d;d}}\\right)\\leqslant {{eval:a/100;d}}$.\n\n$n=?$",
+				"reponses_brutes": ["{{eval:-floor(-x)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 127,
+			"variables": [
+				{
+					"nom": "v",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 4, 5, 10]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [3, 4, 5, 10]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.8233333333333334,
+						"nb_distinctes": 86,
+						"exemples": [
+							"250",
+							"960",
+							"\\dfrac{1600}{3}",
+							"400",
+							"560",
+							"\\dfrac{2500}{3}",
+							"2000",
+							"1920",
+							"320",
+							"2250",
+							"2500",
+							"1600"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 80000,
+							"nb_distinctes": 75,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 5
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 40,
+						"max": 30000,
+						"negatif_possible": false,
+						"nb_distinctes": 86
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.03,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [0.03, 0.04, 0.05, 0.1, 0.2, 0.25, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 40,
+				"max": 30000,
+				"nb_distinctes": 86,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.03,
+				"max": 30000,
+				"nb_distinctes": 102,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 25,
+					"max": 25
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30000)",
+					"graine": 209,
+					"enonce": "$M_n$ est la moyenne d'un échantillon de taille $n$ d'une loi d'espérance $\\mu$ et de variance $V = 9$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|M_n-\\mu\\right|\\geqslant 0{,}1\\right)\\leqslant 0{,}03$.\n\n$n = [?]$",
+					"reponse": ["30000"],
+					"variables": {
+						"v": "9",
+						"d": "10",
+						"a": "3",
+						"x": "30000"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.03)",
+					"graine": 3,
+					"enonce": "$M_n$ est la moyenne d'un échantillon de taille $n$ d'une loi d'espérance $\\mu$ et de variance $V = 1$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|M_n-\\mu\\right|\\geqslant 0{,}25\\right)\\leqslant 0{,}03$.\n\n$n = [?]$",
+					"reponse": ["534"],
+					"variables": {
+						"v": "1",
+						"d": "4",
+						"a": "3",
+						"x": "\\dfrac{1600}{3}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$M_n$ est la moyenne d'un échantillon de taille $n$ d'une loi d'espérance $\\mu$ et de variance $V = 1$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|M_n-\\mu\\right|\\geqslant 0{,}2\\right)\\leqslant 0{,}1$.\n\n$n = [?]$",
+					"reponse": ["250"],
+					"variables": {
+						"v": "1",
+						"d": "5",
+						"a": "10",
+						"x": "250"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$M_n$ est la moyenne d'un échantillon de taille $n$ d'une loi d'espérance $\\mu$ et de variance $V = 3$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|M_n-\\mu\\right|\\geqslant 0{,}25\\right)\\leqslant 0{,}05$.\n\n$n = [?]$",
+					"reponse": ["960"],
+					"variables": {
+						"v": "3",
+						"d": "4",
+						"a": "5",
+						"x": "960"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$M_n$ est la moyenne d'un échantillon de taille $n$ d'une loi d'espérance $\\mu$ et de variance $V = 3$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|M_n-\\mu\\right|\\geqslant 0{,}5\\right)\\leqslant 0{,}03$.\n\n$n = [?]$",
+					"reponse": ["400"],
+					"variables": {
+						"v": "3",
+						"d": "2",
+						"a": "3",
+						"x": "400"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "t",
+						"expression": "1..9"
+					},
+					{
+						"name": "x",
+						"expression": "{{eval:t*(10-t)*20}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On lance $n$ fois une pièce qui tombe sur pile avec la probabilité ${{eval:t/10;d}}$, et on note $F_n$ la fréquence de pile : c'est la moyenne d'un échantillon de la loi de Bernoulli de paramètre $p={{eval:t/10;d}}$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|F_n-{{eval:t/10;d}}\\right|\\geqslant 0.1\\right)\\leqslant 0.05$.\n\n$n=?$",
+				"reponses_brutes": ["{{eval:-floor(-x)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 180,
+						"max": 500,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [180, 320, 420, 480, 500]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 180,
+						"max": 500,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [180, 320, 420, 480, 500]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.05,
+				"max": 0.9,
+				"nb_distinctes": 10,
+				"valeurs": [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 180,
+				"max": 500,
+				"nb_distinctes": 5,
+				"valeurs": [180, 320, 420, 480, 500],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.05,
+				"max": 500,
+				"nb_distinctes": 15,
+				"valeurs": [0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 180, 320, 420, 480, 500],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 43,
+					"max": 43
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (500)",
+					"graine": 11,
+					"enonce": "On lance $n$ fois une pièce qui tombe sur pile avec la probabilité $0{,}5$, et on note $F_n$ la fréquence de pile : c'est la moyenne d'un échantillon de la loi de Bernoulli de paramètre $p = 0{,}5$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|F_n-0{,}5\\right|\\geqslant 0{,}1\\right)\\leqslant 0{,}05$.\n\n$n = [?]$",
+					"reponse": ["500"],
+					"variables": {
+						"t": "5",
+						"x": "500"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.05)",
+					"graine": 1,
+					"enonce": "On lance $n$ fois une pièce qui tombe sur pile avec la probabilité $0{,}1$, et on note $F_n$ la fréquence de pile : c'est la moyenne d'un échantillon de la loi de Bernoulli de paramètre $p = 0{,}1$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|F_n-0{,}1\\right|\\geqslant 0{,}1\\right)\\leqslant 0{,}05$.\n\n$n = [?]$",
+					"reponse": ["180"],
+					"variables": {
+						"t": "1",
+						"x": "180"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On lance $n$ fois une pièce qui tombe sur pile avec la probabilité $0{,}3$, et on note $F_n$ la fréquence de pile : c'est la moyenne d'un échantillon de la loi de Bernoulli de paramètre $p = 0{,}3$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|F_n-0{,}3\\right|\\geqslant 0{,}1\\right)\\leqslant 0{,}05$.\n\n$n = [?]$",
+					"reponse": ["420"],
+					"variables": {
+						"t": "3",
+						"x": "420"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On lance $n$ fois une pièce qui tombe sur pile avec la probabilité $0{,}7$, et on note $F_n$ la fréquence de pile : c'est la moyenne d'un échantillon de la loi de Bernoulli de paramètre $p = 0{,}7$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|F_n-0{,}7\\right|\\geqslant 0{,}1\\right)\\leqslant 0{,}05$.\n\n$n = [?]$",
+					"reponse": ["420"],
+					"variables": {
+						"t": "7",
+						"x": "420"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On lance $n$ fois une pièce qui tombe sur pile avec la probabilité $0{,}6$, et on note $F_n$ la fréquence de pile : c'est la moyenne d'un échantillon de la loi de Bernoulli de paramètre $p = 0{,}6$.\n\nÀ l'aide de l'inégalité de concentration, détermine le plus petit entier $n$ qui garantit $P\\left(\\left|F_n-0{,}6\\right|\\geqslant 0{,}1\\right)\\leqslant 0{,}05$.\n\n$n = [?]$",
+					"reponse": ["480"],
+					"variables": {
+						"t": "6",
+						"x": "480"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,2273 @@
+{
+	"template_id": "bf5dadf6-ba11-4fbb-a527-014f59e3145a",
+	"titre": "Angle de deux vecteurs",
+	"sous_titre": "Calculer le cosinus de l'angle de deux vecteurs à partir de leurs coordonnées ou de leurs normes, puis une mesure de l'angle",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Angles et longueurs",
+	"mis_a_jour": "2026-10-20T20:27:04.902801+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-319",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "q",
+						"expression": "-5..5!0"
+					},
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "x",
+						"expression": "{{eval:k*(p-q)}}"
+					},
+					{
+						"name": "y",
+						"expression": "{{eval:k*(p+q)}}"
+					},
+					{
+						"name": "S",
+						"expression": "{{eval:p^2+q^2}}"
+					}
+				],
+				"conditions": ["abs(p) != abs(q)", "abs(x) <= 9", "abs(y) <= 9"],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte, dénominateur sans racine), puis déduis-en $\\theta$.\n\n$\\cos\\theta=?$\n\n$\\theta=?$",
+				"reponses_brutes": ["\\frac{\\sqrt{2}}{2}", "45"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 91,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "S",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 41,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [5, 10, 13, 17, 20, 25, 26, 29, 34, 41]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{\\sqrt{2}}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2,
+							"nb_distinctes": 1,
+							"valeurs": [2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 45,
+						"max": 45,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [45]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 180,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 180],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 45,
+				"nb_distinctes": 2,
+				"valeurs": [2, 45],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 180,
+				"nb_distinctes": 12,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 45, 180],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "186/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (180)",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-2\\\\1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-6\\\\-2\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte, dénominateur sans racine), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\frac{\\sqrt{2}}{2}", "45"],
+					"variables": {
+						"p": "-2",
+						"q": "1",
+						"k": "2",
+						"x": "-6",
+						"y": "-2",
+						"S": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}4\\\\1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}3\\\\5\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte, dénominateur sans racine), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\frac{\\sqrt{2}}{2}", "45"],
+					"variables": {
+						"p": "4",
+						"q": "1",
+						"k": "1",
+						"x": "3",
+						"y": "5",
+						"S": "17"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}3\\\\4\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-1\\\\7\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte, dénominateur sans racine), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\frac{\\sqrt{2}}{2}", "45"],
+					"variables": {
+						"p": "3",
+						"q": "4",
+						"k": "1",
+						"x": "-1",
+						"y": "7",
+						"S": "25"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-2\\\\-3\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}1\\\\-5\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte, dénominateur sans racine), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\frac{\\sqrt{2}}{2}", "45"],
+					"variables": {
+						"p": "-2",
+						"q": "-3",
+						"k": "1",
+						"x": "1",
+						"y": "-5",
+						"S": "13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}3\\\\2\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}1\\\\5\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte, dénominateur sans racine), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\frac{\\sqrt{2}}{2}", "45"],
+					"variables": {
+						"p": "3",
+						"q": "2",
+						"k": "1",
+						"x": "1",
+						"y": "5",
+						"S": "13"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "xa",
+						"expression": "-3..3"
+					},
+					{
+						"name": "ya",
+						"expression": "-3..3"
+					},
+					{
+						"name": "p",
+						"expression": "-4..4!0"
+					},
+					{
+						"name": "q",
+						"expression": "-4..4!0"
+					},
+					{
+						"name": "k",
+						"expression": "1..2"
+					},
+					{
+						"name": "dx",
+						"expression": "{{eval:-k*(p+q)}}"
+					},
+					{
+						"name": "dy",
+						"expression": "{{eval:k*(p-q)}}"
+					},
+					{
+						"name": "xb",
+						"expression": "{{eval:xa+p}}"
+					},
+					{
+						"name": "yb",
+						"expression": "{{eval:ya+q}}"
+					},
+					{
+						"name": "xc",
+						"expression": "{{eval:xa+dx}}"
+					},
+					{
+						"name": "yc",
+						"expression": "{{eval:ya+dy}}"
+					},
+					{
+						"name": "S",
+						"expression": "{{eval:p^2+q^2}}"
+					}
+				],
+				"conditions": ["abs(p) != abs(q)", "abs(xc) <= 9", "abs(yc) <= 9"],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$, $B({{xb}}\\,;{{yb}})$ et $C({{xc}}\\,;{{yc}})$.\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, dénominateur sans racine), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=?$\n\n$\\widehat{BAC}=?$",
+				"reponses_brutes": ["-\\frac{\\sqrt{2}}{2}", "135"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 287,
+			"variables": [
+				{
+					"nom": "xa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "ya",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 7,
+						"valeurs": [-3, -2, -1, 0, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "dx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -10,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-10, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12]
+					}
+				},
+				{
+					"nom": "dy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [-12, -10, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12]
+					}
+				},
+				{
+					"nom": "xb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "yb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 15,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "xc",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "yc",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "S",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 10, 13, 17, 20, 25]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\frac{\\sqrt{2}}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2,
+							"nb_distinctes": 1,
+							"valeurs": [2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 135,
+						"max": 135,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [135]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 19,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 135,
+				"nb_distinctes": 2,
+				"valeurs": [2, 135],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 135,
+				"nb_distinctes": 20,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 135],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (135)",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(1\\,;2)$, $B(0\\,;6)$ et $C(-2\\,;-3)$.\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, dénominateur sans racine), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["-\\frac{\\sqrt{2}}{2}", "135"],
+					"variables": {
+						"xa": "1",
+						"ya": "2",
+						"p": "-1",
+						"q": "4",
+						"k": "1",
+						"dx": "-3",
+						"dy": "-5",
+						"xb": "0",
+						"yb": "6",
+						"xc": "-2",
+						"yc": "-3",
+						"S": "17"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-3\\,;3)$, $B(-2\\,;5)$ et $C(-9\\,;1)$.\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, dénominateur sans racine), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["-\\frac{\\sqrt{2}}{2}", "135"],
+					"variables": {
+						"xa": "-3",
+						"ya": "3",
+						"p": "1",
+						"q": "2",
+						"k": "2",
+						"dx": "-6",
+						"dy": "-2",
+						"xb": "-2",
+						"yb": "5",
+						"xc": "-9",
+						"yc": "1",
+						"S": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-1\\,;-2)$, $B(2\\,;-1)$ et $C(-5\\,;0)$.\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, dénominateur sans racine), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["-\\frac{\\sqrt{2}}{2}", "135"],
+					"variables": {
+						"xa": "-1",
+						"ya": "-2",
+						"p": "3",
+						"q": "1",
+						"k": "1",
+						"dx": "-4",
+						"dy": "2",
+						"xb": "2",
+						"yb": "-1",
+						"xc": "-5",
+						"yc": "0",
+						"S": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-3\\,;0)$, $B(-7\\,;2)$ et $C(-1\\,;-6)$.\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, dénominateur sans racine), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["-\\frac{\\sqrt{2}}{2}", "135"],
+					"variables": {
+						"xa": "-3",
+						"ya": "0",
+						"p": "-4",
+						"q": "2",
+						"k": "1",
+						"dx": "2",
+						"dy": "-6",
+						"xb": "-7",
+						"yb": "2",
+						"xc": "-1",
+						"yc": "-6",
+						"S": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(2\\,;-2)$, $B(3\\,;-6)$ et $C(8\\,;8)$.\n\nCalcule $\\cos\\widehat{BAC}$ (valeur exacte, dénominateur sans racine), puis déduis-en la mesure en degrés de l'angle $\\widehat{BAC}$.\n\n$\\cos\\widehat{BAC}=[?]$\n\n$\\widehat{BAC}=[?]$",
+					"reponse": ["-\\frac{\\sqrt{2}}{2}", "135"],
+					"variables": {
+						"xa": "2",
+						"ya": "-2",
+						"p": "1",
+						"q": "-4",
+						"k": "2",
+						"dx": "6",
+						"dy": "10",
+						"xb": "3",
+						"yb": "-6",
+						"xc": "8",
+						"yc": "8",
+						"S": "17"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..8"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "s",
+						"expression": "-1..1!0"
+					}
+				],
+				"conditions": ["mod(a*b,2) == 0"],
+				"enonce_brut": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{eval:s*a*b/2}}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$, puis déduis-en $\\theta$.\n\n$\\cos\\theta=?$\n\n$\\theta=?$",
+				"reponses_brutes": ["{{eval:s/2}}", "{{eval:90-30*s}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 80,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["-\\dfrac{1}{2}", "\\dfrac{1}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 60,
+						"max": 120,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [60, 120]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -32,
+				"max": 180,
+				"nb_distinctes": 40,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 120,
+				"nb_distinctes": 4,
+				"valeurs": [1, 2, 60, 120],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -32,
+				"max": 180,
+				"nb_distinctes": 43,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 24,
+					"max": 24
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (180)",
+					"graine": 1,
+					"enonce": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et $\\vec{u}\\cdot\\vec{v}=5$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$, puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\dfrac{1}{2}", "60"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"s": "1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-32)",
+					"graine": 73,
+					"enonce": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|=8$, $\\|\\vec{v}\\|=8$ et $\\vec{u}\\cdot\\vec{v}=-32$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$, puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["-\\dfrac{1}{2}", "120"],
+					"variables": {
+						"a": "8",
+						"b": "8",
+						"s": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|=4$, $\\|\\vec{v}\\|=3$ et $\\vec{u}\\cdot\\vec{v}=6$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$, puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\dfrac{1}{2}", "60"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"s": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=5$ et $\\vec{u}\\cdot\\vec{v}=-5$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$, puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["-\\dfrac{1}{2}", "120"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"s": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|=4$, $\\|\\vec{v}\\|=3$ et $\\vec{u}\\cdot\\vec{v}=-6$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$, puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["-\\dfrac{1}{2}", "120"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"s": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "q",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "x",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "y",
+						"expression": "-6..6!0"
+					},
+					{
+						"name": "P",
+						"expression": "{{eval:p*x+q*y}}"
+					},
+					{
+						"name": "Q",
+						"expression": "{{eval:(p^2+q^2)*(x^2+y^2)}}"
+					},
+					{
+						"name": "D",
+						"expression": "{{eval:arccos(P/sqrt(Q))*180/\\pi}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:round(D)}}"
+					}
+				],
+				"conditions": ["p*y-q*x != 0", "P != 0", "abs(abs(D-round(D))-0.5) > 0.1"],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{p}}\\\\{{q}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{x}}\\\\{{y}}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\theta$, arrondi au degré.\n\n$\\theta\\approx ?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "y",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "P",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -66,
+						"max": 50,
+						"negatif_possible": true,
+						"nb_distinctes": 81
+					}
+				},
+				{
+					"nom": "Q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 25,
+						"max": 4392,
+						"negatif_possible": false,
+						"nb_distinctes": 119
+					}
+				},
+				{
+					"nom": "D",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.03666666666666667,
+						"nb_distinctes": 175,
+						"exemples": [
+							"\\dfrac{180 \\arccos\\left( \\dfrac{17 \\sqrt{370}}{370} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{13 \\sqrt{205}}{205} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{11 \\sqrt{185}}{185} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{\\sqrt{122}}{122} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{7 \\sqrt{58}}{58} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{13 \\sqrt{170}}{170} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( -\\dfrac{9}{41} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{3 \\sqrt{130}}{130} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{\\sqrt{2}}{10} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{18 \\sqrt{493}}{493} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( \\dfrac{5 \\sqrt{34}}{34} \\right)}{\\pi}",
+							"\\dfrac{180 \\arccos\\left( -\\dfrac{41 \\sqrt{2257}}{2257} \\right)}{\\pi}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2501,
+							"nb_distinctes": 75,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 178,
+						"negatif_possible": false,
+						"nb_distinctes": 130
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 178,
+						"negatif_possible": false,
+						"nb_distinctes": 130
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 180,
+				"nb_distinctes": 8,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 180],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 178,
+				"nb_distinctes": 130,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 180,
+				"nb_distinctes": 133,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"≈": "300/300",
+					"−": "215/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (180)",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}1\\\\3\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-1\\\\6\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\theta$, arrondi au degré.\n\n$\\theta\\approx [?]$",
+					"reponse": ["28"],
+					"variables": {
+						"p": "1",
+						"q": "3",
+						"x": "-1",
+						"y": "6",
+						"P": "17",
+						"Q": "370",
+						"D": "\\dfrac{180 \\arccos\\left( \\dfrac{17 \\sqrt{370}}{370} \\right)}{\\pi}",
+						"R": "28"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-2\\\\4\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-5\\\\4\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\theta$, arrondi au degré.\n\n$\\theta\\approx [?]$",
+					"reponse": ["25"],
+					"variables": {
+						"p": "-2",
+						"q": "4",
+						"x": "-5",
+						"y": "4",
+						"P": "26",
+						"Q": "820",
+						"D": "\\dfrac{180 \\arccos\\left( \\dfrac{13 \\sqrt{205}}{205} \\right)}{\\pi}",
+						"R": "25"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-6\\\\-1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-6\\\\3\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\theta$, arrondi au degré.\n\n$\\theta\\approx [?]$",
+					"reponse": ["36"],
+					"variables": {
+						"p": "-6",
+						"q": "-1",
+						"x": "-6",
+						"y": "3",
+						"P": "33",
+						"Q": "1665",
+						"D": "\\dfrac{180 \\arccos\\left( \\dfrac{11 \\sqrt{185}}{185} \\right)}{\\pi}",
+						"R": "36"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-5\\\\6\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}2\\\\2\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\theta$, arrondi au degré.\n\n$\\theta\\approx [?]$",
+					"reponse": ["85"],
+					"variables": {
+						"p": "-5",
+						"q": "6",
+						"x": "2",
+						"y": "2",
+						"P": "2",
+						"Q": "488",
+						"D": "\\dfrac{180 \\arccos\\left( \\dfrac{\\sqrt{122}}{122} \\right)}{\\pi}",
+						"R": "85"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}4\\\\-4\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}2\\\\-5\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\theta$, arrondi au degré.\n\n$\\theta\\approx [?]$",
+					"reponse": ["23"],
+					"variables": {
+						"p": "4",
+						"q": "-4",
+						"x": "2",
+						"y": "-5",
+						"P": "28",
+						"Q": "928",
+						"D": "\\dfrac{180 \\arccos\\left( \\dfrac{7 \\sqrt{58}}{58} \\right)}{\\pi}",
+						"R": "23"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "U",
+						"expression": "0..1"
+					},
+					{
+						"name": "k1",
+						"expression": "1..3"
+					},
+					{
+						"name": "k2",
+						"expression": "1..3"
+					},
+					{
+						"name": "e1",
+						"expression": "-1..1!0"
+					},
+					{
+						"name": "e2",
+						"expression": "-1..1!0"
+					},
+					{
+						"name": "h1",
+						"expression": "-1..1!0"
+					},
+					{
+						"name": "h2",
+						"expression": "-1..1!0"
+					},
+					{
+						"name": "XU",
+						"expression": "{{eval:e1*k1*sqrt(3-2*U)}}"
+					},
+					{
+						"name": "YU",
+						"expression": "{{eval:e2*k1*sqrt(1+2*U)}}"
+					},
+					{
+						"name": "XV",
+						"expression": "{{eval:h1*k2*sqrt(1+2*U)}}"
+					},
+					{
+						"name": "YV",
+						"expression": "{{eval:h2*k2*sqrt(3-2*U)}}"
+					},
+					{
+						"name": "D",
+						"expression": "{{eval:XU*XV+YU*YV}}"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:sign(D)}}"
+					}
+				],
+				"conditions": ["e1*h1 == e2*h2"],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{eval:XU}}\\\\{{eval:YU}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{eval:XV}}\\\\{{eval:YV}}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=?$\n\n$\\theta=?$",
+				"reponses_brutes": ["{{eval:c*sqrt(3)/2}}", "{{eval:90-60*c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 129,
+			"variables": [
+				{
+					"nom": "U",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "k1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "k2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "e1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "e2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "h1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "h2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "XU",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.49333333333333335,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-2 \\sqrt{3}",
+							"-3",
+							"-3 \\sqrt{3}",
+							"-\\sqrt{3}",
+							"1",
+							"2",
+							"2 \\sqrt{3}",
+							"3",
+							"3 \\sqrt{3}",
+							"\\sqrt{3}"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 3,
+							"nb_distinctes": 6,
+							"valeurs": [-3, -2, -1, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "YU",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.5066666666666667,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-2 \\sqrt{3}",
+							"-3",
+							"-3 \\sqrt{3}",
+							"-\\sqrt{3}",
+							"1",
+							"2",
+							"2 \\sqrt{3}",
+							"3",
+							"3 \\sqrt{3}",
+							"\\sqrt{3}"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 3,
+							"nb_distinctes": 6,
+							"valeurs": [-3, -2, -1, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "XV",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.5066666666666667,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-2 \\sqrt{3}",
+							"-3",
+							"-3 \\sqrt{3}",
+							"-\\sqrt{3}",
+							"1",
+							"2",
+							"2 \\sqrt{3}",
+							"3",
+							"3 \\sqrt{3}",
+							"\\sqrt{3}"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 3,
+							"nb_distinctes": 6,
+							"valeurs": [-3, -2, -1, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "YV",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.49333333333333335,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-2 \\sqrt{3}",
+							"-3",
+							"-3 \\sqrt{3}",
+							"-\\sqrt{3}",
+							"1",
+							"2",
+							"2 \\sqrt{3}",
+							"3",
+							"3 \\sqrt{3}",
+							"\\sqrt{3}"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 3,
+							"nb_distinctes": 6,
+							"valeurs": [-3, -2, -1, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "D",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"-12 \\sqrt{3}",
+							"-18 \\sqrt{3}",
+							"-2 \\sqrt{3}",
+							"-4 \\sqrt{3}",
+							"-6 \\sqrt{3}",
+							"-8 \\sqrt{3}",
+							"12 \\sqrt{3}",
+							"18 \\sqrt{3}",
+							"2 \\sqrt{3}",
+							"4 \\sqrt{3}",
+							"6 \\sqrt{3}",
+							"8 \\sqrt{3}"
+						],
+						"nombres_contenus": {
+							"min": -18,
+							"max": 18,
+							"nb_distinctes": 13,
+							"valeurs": [-18, -12, -8, -6, -4, -2, 2, 3, 4, 6, 8, 12, 18],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["-\\dfrac{\\sqrt{3}}{2}", "\\dfrac{\\sqrt{3}}{2}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 3,
+							"nb_distinctes": 2,
+							"valeurs": [2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 150,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [30, 150]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 180,
+				"nb_distinctes": 5,
+				"valeurs": [0, 1, 2, 3, 180],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 150,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 30, 150],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 180,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 30, 150, 180],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "203/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 33,
+					"max": 33
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (180)",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}\\sqrt{3}\\\\-1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-1\\\\\\sqrt{3}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["-\\dfrac{\\sqrt{3}}{2}", "150"],
+					"variables": {
+						"U": "0",
+						"k1": "1",
+						"k2": "1",
+						"e1": "1",
+						"e2": "-1",
+						"h1": "-1",
+						"h2": "1",
+						"XU": "\\sqrt{3}",
+						"YU": "-1",
+						"XV": "-1",
+						"YV": "\\sqrt{3}",
+						"D": "-2 \\sqrt{3}",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-2 \\sqrt{3}\\\\2\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}3\\\\-3 \\sqrt{3}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["-\\dfrac{\\sqrt{3}}{2}", "150"],
+					"variables": {
+						"U": "0",
+						"k1": "2",
+						"k2": "3",
+						"e1": "-1",
+						"e2": "1",
+						"h1": "1",
+						"h2": "-1",
+						"XU": "-2 \\sqrt{3}",
+						"YU": "2",
+						"XV": "3",
+						"YV": "-3 \\sqrt{3}",
+						"D": "-12 \\sqrt{3}",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}3 \\sqrt{3}\\\\-3\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}2\\\\-2 \\sqrt{3}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\dfrac{\\sqrt{3}}{2}", "30"],
+					"variables": {
+						"U": "0",
+						"k1": "3",
+						"k2": "2",
+						"e1": "1",
+						"e2": "-1",
+						"h1": "1",
+						"h2": "-1",
+						"XU": "3 \\sqrt{3}",
+						"YU": "-3",
+						"XV": "2",
+						"YV": "-2 \\sqrt{3}",
+						"D": "12 \\sqrt{3}",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-\\sqrt{3}\\\\-1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}1\\\\\\sqrt{3}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["-\\dfrac{\\sqrt{3}}{2}", "150"],
+					"variables": {
+						"U": "0",
+						"k1": "1",
+						"k2": "1",
+						"e1": "-1",
+						"e2": "-1",
+						"h1": "1",
+						"h2": "1",
+						"XU": "-\\sqrt{3}",
+						"YU": "-1",
+						"XV": "1",
+						"YV": "\\sqrt{3}",
+						"D": "-2 \\sqrt{3}",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-1\\\\\\sqrt{3}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}2 \\sqrt{3}\\\\-2\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["-\\dfrac{\\sqrt{3}}{2}", "150"],
+					"variables": {
+						"U": "1",
+						"k1": "1",
+						"k2": "2",
+						"e1": "-1",
+						"e2": "1",
+						"h1": "1",
+						"h2": "-1",
+						"XU": "-1",
+						"YU": "\\sqrt{3}",
+						"XV": "2 \\sqrt{3}",
+						"YV": "-2",
+						"D": "-4 \\sqrt{3}",
+						"c": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "U",
+						"expression": "0..1"
+					},
+					{
+						"name": "k1",
+						"expression": "1..3"
+					},
+					{
+						"name": "k2",
+						"expression": "1..3"
+					},
+					{
+						"name": "e1",
+						"expression": "-1..1!0"
+					},
+					{
+						"name": "e2",
+						"expression": "-1..1!0"
+					},
+					{
+						"name": "h1",
+						"expression": "-1..1!0"
+					},
+					{
+						"name": "h2",
+						"expression": "-1..1!0"
+					},
+					{
+						"name": "XU",
+						"expression": "{{eval:e1*k1*sqrt(3-2*U)}}"
+					},
+					{
+						"name": "YU",
+						"expression": "{{eval:e2*k1*sqrt(1+2*U)}}"
+					},
+					{
+						"name": "XV",
+						"expression": "{{eval:h1*k2*sqrt(3-2*U)}}"
+					},
+					{
+						"name": "YV",
+						"expression": "{{eval:h2*k2*sqrt(1+2*U)}}"
+					},
+					{
+						"name": "D",
+						"expression": "{{eval:XU*XV+YU*YV}}"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:sign(D)}}"
+					}
+				],
+				"conditions": ["e1*h1 + e2*h2 == 0"],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}{{eval:XU}}\\\\{{eval:YU}}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}{{eval:XV}}\\\\{{eval:YV}}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=?$\n\n$\\theta=?$",
+				"reponses_brutes": ["{{eval:c/2}}", "{{eval:90-30*c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 125,
+			"variables": [
+				{
+					"nom": "U",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "k1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "k2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "e1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "e2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "h1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "h2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				},
+				{
+					"nom": "XU",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.53,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-2 \\sqrt{3}",
+							"-3",
+							"-3 \\sqrt{3}",
+							"-\\sqrt{3}",
+							"1",
+							"2",
+							"2 \\sqrt{3}",
+							"3",
+							"3 \\sqrt{3}",
+							"\\sqrt{3}"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 3,
+							"nb_distinctes": 6,
+							"valeurs": [-3, -2, -1, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "YU",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.47,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-2 \\sqrt{3}",
+							"-3",
+							"-3 \\sqrt{3}",
+							"-\\sqrt{3}",
+							"1",
+							"2",
+							"2 \\sqrt{3}",
+							"3",
+							"3 \\sqrt{3}",
+							"\\sqrt{3}"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 3,
+							"nb_distinctes": 6,
+							"valeurs": [-3, -2, -1, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "XV",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.53,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-2 \\sqrt{3}",
+							"-3",
+							"-3 \\sqrt{3}",
+							"-\\sqrt{3}",
+							"1",
+							"2",
+							"2 \\sqrt{3}",
+							"3",
+							"3 \\sqrt{3}",
+							"\\sqrt{3}"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 3,
+							"nb_distinctes": 6,
+							"valeurs": [-3, -2, -1, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "YV",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.47,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-2 \\sqrt{3}",
+							"-3",
+							"-3 \\sqrt{3}",
+							"-\\sqrt{3}",
+							"1",
+							"2",
+							"2 \\sqrt{3}",
+							"3",
+							"3 \\sqrt{3}",
+							"\\sqrt{3}"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 3,
+							"nb_distinctes": 6,
+							"valeurs": [-3, -2, -1, 1, 2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "D",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -18,
+						"max": 18,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-18, -12, -8, -6, -4, -2, 2, 4, 6, 8, 12, 18]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -1,
+						"max": 1,
+						"negatif_possible": true,
+						"nb_distinctes": 2,
+						"valeurs": [-1, 1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["-\\dfrac{1}{2}", "\\dfrac{1}{2}"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 2,
+							"nb_distinctes": 2,
+							"valeurs": [1, 2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 60,
+						"max": 120,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [60, 120]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 180,
+				"nb_distinctes": 5,
+				"valeurs": [0, 1, 2, 3, 180],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 120,
+				"nb_distinctes": 4,
+				"valeurs": [1, 2, 60, 120],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 180,
+				"nb_distinctes": 7,
+				"valeurs": [0, 1, 2, 3, 60, 120, 180],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "206/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 33,
+					"max": 33
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (180)",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}2 \\sqrt{3}\\\\-2\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}3 \\sqrt{3}\\\\3\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\dfrac{1}{2}", "60"],
+					"variables": {
+						"U": "0",
+						"k1": "2",
+						"k2": "3",
+						"e1": "1",
+						"e2": "-1",
+						"h1": "1",
+						"h2": "1",
+						"XU": "2 \\sqrt{3}",
+						"YU": "-2",
+						"XV": "3 \\sqrt{3}",
+						"YV": "3",
+						"D": "12",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}\\sqrt{3}\\\\1\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-2 \\sqrt{3}\\\\2\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["-\\dfrac{1}{2}", "120"],
+					"variables": {
+						"U": "0",
+						"k1": "1",
+						"k2": "2",
+						"e1": "1",
+						"e2": "1",
+						"h1": "-1",
+						"h2": "1",
+						"XU": "\\sqrt{3}",
+						"YU": "1",
+						"XV": "-2 \\sqrt{3}",
+						"YV": "2",
+						"D": "-4",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}2 \\sqrt{3}\\\\-2\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-\\sqrt{3}\\\\-1\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["-\\dfrac{1}{2}", "120"],
+					"variables": {
+						"U": "0",
+						"k1": "2",
+						"k2": "1",
+						"e1": "1",
+						"e2": "-1",
+						"h1": "-1",
+						"h2": "-1",
+						"XU": "2 \\sqrt{3}",
+						"YU": "-2",
+						"XV": "-\\sqrt{3}",
+						"YV": "-1",
+						"D": "-4",
+						"c": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-2 \\sqrt{3}\\\\2\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}-3 \\sqrt{3}\\\\-3\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\dfrac{1}{2}", "60"],
+					"variables": {
+						"U": "0",
+						"k1": "2",
+						"k2": "3",
+						"e1": "-1",
+						"e2": "1",
+						"h1": "-1",
+						"h2": "-1",
+						"XU": "-2 \\sqrt{3}",
+						"YU": "2",
+						"XV": "-3 \\sqrt{3}",
+						"YV": "-3",
+						"D": "12",
+						"c": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les vecteurs $\\vec{u}\\begin{pmatrix}-3\\\\-3 \\sqrt{3}\\end{pmatrix}$ et $\\vec{v}\\begin{pmatrix}2\\\\-2 \\sqrt{3}\\end{pmatrix}$. On note $\\theta$ la mesure en degrés, comprise entre $0^\\circ$ et $180^\\circ$, de l'angle géométrique formé par $\\vec{u}$ et $\\vec{v}$.\n\nCalcule $\\cos\\theta$ (valeur exacte), puis déduis-en $\\theta$.\n\n$\\cos\\theta=[?]$\n\n$\\theta = [?]$",
+					"reponse": ["\\dfrac{1}{2}", "60"],
+					"variables": {
+						"U": "1",
+						"k1": "3",
+						"k2": "2",
+						"e1": "-1",
+						"e2": "-1",
+						"h1": "1",
+						"h2": "-1",
+						"XU": "-3",
+						"YU": "-3 \\sqrt{3}",
+						"XV": "2",
+						"YV": "-2 \\sqrt{3}",
+						"D": "12",
+						"c": "1"
+					}
+				}
+			]
+		}
+	]
+}

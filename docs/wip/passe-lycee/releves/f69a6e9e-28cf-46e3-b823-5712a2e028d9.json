@@ -1,0 +1,932 @@
+{
+	"template_id": "f69a6e9e-28cf-46e3-b823-5712a2e028d9",
+	"titre": "Calculer les racines avec le discriminant (Δ carré parfait)",
+	"sous_titre": "Racines entières ou fractionnaires par la formule",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Polynôme du second degré > Discriminant",
+	"mis_a_jour": "2026-10-01T08:36:38.557806+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-248",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "r",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "s",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "a",
+						"expression": "1"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-(r+s)"
+					},
+					{
+						"name": "c",
+						"expression": "eval:r*s"
+					}
+				],
+				"conditions": ["r != s && r != -s"],
+				"enonce_brut": "Détermine les racines du polynôme $P(x)={{eval:ax^2+bx+c}}$ à l'aide du discriminant.\n\nLes racines sont $x_1=?$ et $x_2=?$.",
+				"reponses_brutes": [
+					"{{eval:(-b-sqrt(b^2-4*a*c))/(2*a)}}",
+					"{{eval:(-b+sqrt(b^2-4*a*c))/(2*a)}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 60,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 11,
+						"negatif_possible": true,
+						"nb_distinctes": 22,
+						"valeurs": [
+							-11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+						]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -30,
+						"max": 30,
+						"negatif_possible": true,
+						"nb_distinctes": 26,
+						"valeurs": [
+							-30, -24, -20, -18, -15, -12, -10, -8, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 8, 10, 12,
+							15, 18, 20, 24, 30
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 30,
+				"nb_distinctes": 17,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 20, 24, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 30,
+				"nb_distinctes": 23,
+				"valeurs": [
+					-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 20, 24, 30
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "234/300",
+					"−": "132/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (30)",
+					"graine": 13,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = x^2 + 11 x + 30$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["-6", "-5"],
+					"variables": {
+						"x": "x",
+						"r": "-6",
+						"s": "-5",
+						"a": "1",
+						"b": "11",
+						"c": "30"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 3,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = x^2 + 7 x + 6$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["-6", "-1"],
+					"variables": {
+						"x": "x",
+						"r": "-1",
+						"s": "-6",
+						"a": "1",
+						"b": "7",
+						"c": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = x^2 - 7 x + 6$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["1", "6"],
+					"variables": {
+						"x": "x",
+						"r": "1",
+						"s": "6",
+						"a": "1",
+						"b": "-7",
+						"c": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = x^2 + 2 x - 3$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["-3", "1"],
+					"variables": {
+						"x": "x",
+						"r": "-3",
+						"s": "1",
+						"a": "1",
+						"b": "2",
+						"c": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = x^2 + 10 x + 24$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["-6", "-4"],
+					"variables": {
+						"x": "x",
+						"r": "-4",
+						"s": "-6",
+						"a": "1",
+						"b": "10",
+						"c": "24"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "2..3;±"
+					},
+					{
+						"name": "r",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "s",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-a*(r+s)"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*r*s"
+					}
+				],
+				"conditions": ["r != s && r != -s"],
+				"enonce_brut": "Détermine les racines du polynôme $P(x)={{eval:ax^2+bx+c}}$ à l'aide du discriminant.\n\nLes racines sont $x_1=?$ et $x_2=?$.",
+				"reponses_brutes": [
+					"{{eval:(-b-sqrt(b^2-4*a*c))/(2*a)}}",
+					"{{eval:(-b+sqrt(b^2-4*a*c))/(2*a)}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 135,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-3, -2, 2, 3]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -27,
+						"max": 24,
+						"negatif_possible": true,
+						"nb_distinctes": 29,
+						"valeurs": [
+							-27, -24, -21, -18, -16, -15, -14, -12, -10, -9, -8, -6, -4, -3, -2, 2, 3, 4, 6, 8, 9,
+							10, 12, 14, 15, 16, 18, 21, 24
+						]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -60,
+						"max": 60,
+						"negatif_possible": true,
+						"nb_distinctes": 32
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -3,
+				"max": 60,
+				"nb_distinctes": 24,
+				"valeurs": [
+					-3, -2, 1, 2, 3, 4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 30, 36, 40, 45, 60
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 10,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 60,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 27, 30,
+					36, 40, 45, 60
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "139/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "231/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (60)",
+					"graine": 43,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = -3 x^2 - 3 x + 60$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["4", "-5"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"r": "-5",
+						"s": "4",
+						"b": "-3",
+						"c": "60"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 3,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = -2 x^2 - 4 x + 30$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["3", "-5"],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"r": "-5",
+						"s": "3",
+						"b": "-4",
+						"c": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = 2 x^2 - 4 x - 6$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["-1", "3"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"r": "3",
+						"s": "-1",
+						"b": "-4",
+						"c": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = -2 x^2 + 10 x - 8$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["4", "1"],
+					"variables": {
+						"x": "x",
+						"a": "-2",
+						"r": "1",
+						"s": "4",
+						"b": "10",
+						"c": "-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = -3 x^2 - 24 x - 45$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["-3", "-5"],
+					"variables": {
+						"x": "x",
+						"a": "-3",
+						"r": "-5",
+						"s": "-3",
+						"b": "-24",
+						"c": "-45"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "x",
+						"expression": "x|x"
+					},
+					{
+						"name": "a",
+						"expression": "2|3"
+					},
+					{
+						"name": "q",
+						"expression": "1..7;±"
+					},
+					{
+						"name": "r",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "eval:-(a*r+q)"
+					},
+					{
+						"name": "c",
+						"expression": "eval:q*r"
+					}
+				],
+				"conditions": ["mod(q,a) != 0"],
+				"enonce_brut": "Détermine les racines du polynôme $P(x)={{eval:ax^2+bx+c}}$ à l'aide du discriminant.\n\nLes racines sont $x_1=?$ et $x_2=?$.",
+				"reponses_brutes": [
+					"{{eval:(-b-sqrt(b^2-4*a*c))/(2*a)}}",
+					"{{eval:(-b+sqrt(b^2-4*a*c))/(2*a)}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 149,
+			"variables": [
+				{
+					"nom": "x",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["x"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-7, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 7]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -22,
+						"max": 22,
+						"negatif_possible": true,
+						"nb_distinctes": 36
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -35,
+						"max": 35,
+						"negatif_possible": true,
+						"nb_distinctes": 38
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.47333333333333333,
+						"nb_distinctes": 26,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-3",
+							"-4",
+							"-5",
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{1}{3}",
+							"-\\dfrac{2}{3}",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{4}{3}",
+							"-\\dfrac{5}{2}",
+							"-\\dfrac{5}{3}",
+							"-\\dfrac{7}{2}",
+							"-\\dfrac{7}{3}",
+							"1",
+							"2",
+							"3",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{4}{3}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{5}{3}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{7}{3}"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 7,
+							"nb_distinctes": 11,
+							"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.5266666666666666,
+						"nb_distinctes": 26,
+						"valeurs": [
+							"-1",
+							"-2",
+							"-3",
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{1}{3}",
+							"-\\dfrac{2}{3}",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{4}{3}",
+							"-\\dfrac{5}{2}",
+							"-\\dfrac{5}{3}",
+							"-\\dfrac{7}{2}",
+							"-\\dfrac{7}{3}",
+							"1",
+							"2",
+							"3",
+							"4",
+							"5",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{4}{3}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{5}{3}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{7}{3}"
+						],
+						"nombres_contenus": {
+							"min": -3,
+							"max": 7,
+							"nb_distinctes": 9,
+							"valeurs": [-3, -2, -1, 1, 2, 3, 4, 5, 7],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 35,
+				"nb_distinctes": 24,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 25, 28, 35
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 7,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 7],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 35,
+				"nb_distinctes": 29,
+				"valeurs": [
+					-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21,
+					22, 25, 28, 35
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3],
+				"denominateur_min": 2,
+				"denominateur_max": 3,
+				"numerateur_min": 1,
+				"numerateur_max": 7,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "227/300",
+					"−": "133/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (35)",
+					"graine": 1,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = 3 x^2 - 22 x + 35$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["\\dfrac{7}{3}", "5"],
+					"variables": {
+						"x": "x",
+						"a": "3",
+						"q": "7",
+						"r": "5",
+						"b": "-22",
+						"c": "35"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 13,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = 2 x^2 + 17 x + 35$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["-5", "-\\dfrac{7}{2}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"q": "-7",
+						"r": "-5",
+						"b": "17",
+						"c": "35"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = 2 x^2 - 9 x + 4$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["\\dfrac{1}{2}", "4"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"q": "1",
+						"r": "4",
+						"b": "-9",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = 2 x^2 + 11 x + 15$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["-3", "-\\dfrac{5}{2}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"q": "-5",
+						"r": "-3",
+						"b": "11",
+						"c": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Détermine les racines du polynôme $P \\left( x \\right) = 2 x^2 - 11 x + 14$ à l'aide du discriminant.\n\nLes racines sont $x_1 = [?]$ et $x_2 = [?]$.",
+					"reponse": ["2", "\\dfrac{7}{2}"],
+					"variables": {
+						"x": "x",
+						"a": "2",
+						"q": "7",
+						"r": "2",
+						"b": "-11",
+						"c": "14"
+					}
+				}
+			]
+		}
+	]
+}

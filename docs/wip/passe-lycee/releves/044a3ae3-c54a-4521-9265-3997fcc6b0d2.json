@@ -1,0 +1,1159 @@
+{
+	"template_id": "044a3ae3-c54a-4521-9265-3997fcc6b0d2",
+	"titre": "Cercle de diamètre [AB]",
+	"sous_titre": "Reconnaître l'ensemble des points M tels que MA·MB = 0 et en donner le centre et le rayon",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Lieux de points",
+	"mis_a_jour": "2026-10-04T23:06:22.7151+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-323",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "xa",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ya",
+						"expression": "-5..5"
+					},
+					{
+						"name": "p",
+						"expression": "-4..4!0"
+					},
+					{
+						"name": "q",
+						"expression": "-4..4!0"
+					},
+					{
+						"name": "xb",
+						"expression": "{{eval:xa+2*p}}"
+					},
+					{
+						"name": "yb",
+						"expression": "{{eval:ya+2*q}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:4*(p^2+q^2)}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:sqrt(p^2+q^2)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$ et $B({{xb}}\\,;{{yb}})$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I=?$\n\n$y_I=?$\n\n$r=?$",
+				"reponses_brutes": ["{{eval:(xa+xb)/2}}", "{{eval:(ya+yb)/2}}", "{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "xa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ya",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "xb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "yb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 128,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [8, 20, 32, 40, 52, 68, 72, 80, 100, 128]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.13666666666666666,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"2 \\sqrt{2}",
+							"2 \\sqrt{5}",
+							"3 \\sqrt{2}",
+							"4 \\sqrt{2}",
+							"5",
+							"\\sqrt{10}",
+							"\\sqrt{13}",
+							"\\sqrt{17}",
+							"\\sqrt{2}",
+							"\\sqrt{5}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 17,
+							"nb_distinctes": 7,
+							"valeurs": [2, 3, 4, 5, 10, 13, 17],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.13666666666666666,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"2 \\sqrt{2}",
+							"2 \\sqrt{5}",
+							"3 \\sqrt{2}",
+							"4 \\sqrt{2}",
+							"5",
+							"\\sqrt{10}",
+							"\\sqrt{13}",
+							"\\sqrt{17}",
+							"\\sqrt{2}",
+							"\\sqrt{5}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 17,
+							"nb_distinctes": 7,
+							"valeurs": [2, 3, 4, 5, 10, 13, 17],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -13,
+				"max": 13,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+					11, 12, 13
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 17,
+				"nb_distinctes": 22,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -13,
+				"max": 17,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+					11, 12, 13, 17
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 41,
+					"max": 41
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (17)",
+					"graine": 5,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(3\\,;-3)$ et $B(5\\,;-11)$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["4", "-7", "\\sqrt{17}"],
+					"variables": {
+						"xa": "3",
+						"ya": "-3",
+						"p": "1",
+						"q": "-4",
+						"xb": "5",
+						"yb": "-11",
+						"N": "68",
+						"R": "\\sqrt{17}"
+					}
+				},
+				{
+					"role": "plus petite valeur (-13)",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-5\\,;0)$ et $B(-13\\,;4)$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-9", "2", "2 \\sqrt{5}"],
+					"variables": {
+						"xa": "-5",
+						"ya": "0",
+						"p": "-4",
+						"q": "2",
+						"xb": "-13",
+						"yb": "4",
+						"N": "80",
+						"R": "2 \\sqrt{5}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-5\\,;0)$ et $B(3\\,;8)$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-1", "4", "4 \\sqrt{2}"],
+					"variables": {
+						"xa": "-5",
+						"ya": "0",
+						"p": "4",
+						"q": "4",
+						"xb": "3",
+						"yb": "8",
+						"N": "128",
+						"R": "4 \\sqrt{2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-2)$ et $B(4\\,;0)$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["1", "-1", "\\sqrt{10}"],
+					"variables": {
+						"xa": "-2",
+						"ya": "-2",
+						"p": "3",
+						"q": "1",
+						"xb": "4",
+						"yb": "0",
+						"N": "40",
+						"R": "\\sqrt{10}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-3)$ et $B(-10\\,;-7)$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-6", "-5", "2 \\sqrt{5}"],
+					"variables": {
+						"xa": "-2",
+						"ya": "-3",
+						"p": "-4",
+						"q": "-2",
+						"xb": "-10",
+						"yb": "-7",
+						"N": "80",
+						"R": "2 \\sqrt{5}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "xa",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ya",
+						"expression": "-5..5"
+					},
+					{
+						"name": "dx",
+						"expression": "-7..7!0"
+					},
+					{
+						"name": "dy",
+						"expression": "-7..7!0"
+					},
+					{
+						"name": "xb",
+						"expression": "{{eval:xa+dx}}"
+					},
+					{
+						"name": "yb",
+						"expression": "{{eval:ya+dy}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:dx^2+dy^2}}"
+					}
+				],
+				"conditions": [
+					"mod(abs(dx)*abs(dy),2) == 1 || mod(abs(dx)+abs(dy),2) == 1",
+					"mod(N,4) != 0",
+					"mod(N,9) != 0",
+					"mod(N,25) != 0",
+					"mod(N,49) != 0"
+				],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$ et $B({{xb}}\\,;{{yb}})$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I=?$\n\n$y_I=?$\n\n$r=?$",
+				"reponses_brutes": [
+					"{{eval:(xa+xb)/2}}",
+					"{{eval:(ya+yb)/2}}",
+					"\\frac{\\sqrt{ {{N}} }}{2}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "xa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ya",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "dx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "dy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -7,
+						"max": 7,
+						"negatif_possible": true,
+						"nb_distinctes": 14,
+						"valeurs": [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "xb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12
+						]
+					}
+				},
+				{
+					"nom": "yb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -12,
+						"max": 12,
+						"negatif_possible": true,
+						"nb_distinctes": 25,
+						"valeurs": [
+							-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+							11, 12
+						]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 85,
+						"negatif_possible": false,
+						"nb_distinctes": 16,
+						"valeurs": [2, 5, 10, 13, 17, 26, 29, 34, 37, 41, 53, 58, 61, 65, 74, 85]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.29333333333333333,
+						"nb_distinctes": 35,
+						"exemples": [
+							"-\\dfrac{1}{2}",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{1}{2}",
+							"-7",
+							"-\\dfrac{7}{2}",
+							"\\dfrac{5}{2}",
+							"\\dfrac{13}{2}",
+							"\\dfrac{15}{2}",
+							"-6",
+							"-2"
+						],
+						"nombres_contenus": {
+							"min": -8,
+							"max": 17,
+							"nb_distinctes": 22,
+							"valeurs": [
+								-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15, 17
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.3433333333333333,
+						"nb_distinctes": 35,
+						"exemples": [
+							"\\dfrac{1}{2}",
+							"1",
+							"-2",
+							"-4",
+							"5",
+							"\\dfrac{5}{2}",
+							"\\dfrac{9}{2}",
+							"-\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"\\dfrac{3}{2}",
+							"\\dfrac{7}{2}",
+							"-\\dfrac{7}{2}"
+						],
+						"nombres_contenus": {
+							"min": -8,
+							"max": 17,
+							"nb_distinctes": 22,
+							"valeurs": [
+								-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15, 17
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 16,
+						"valeurs": [
+							"\\frac{\\sqrt{ 10 }}{2}",
+							"\\frac{\\sqrt{ 13 }}{2}",
+							"\\frac{\\sqrt{ 17 }}{2}",
+							"\\frac{\\sqrt{ 2 }}{2}",
+							"\\frac{\\sqrt{ 26 }}{2}",
+							"\\frac{\\sqrt{ 29 }}{2}",
+							"\\frac{\\sqrt{ 34 }}{2}",
+							"\\frac{\\sqrt{ 37 }}{2}",
+							"\\frac{\\sqrt{ 41 }}{2}",
+							"\\frac{\\sqrt{ 5 }}{2}",
+							"\\frac{\\sqrt{ 53 }}{2}",
+							"\\frac{\\sqrt{ 58 }}{2}",
+							"\\frac{\\sqrt{ 61 }}{2}",
+							"\\frac{\\sqrt{ 65 }}{2}",
+							"\\frac{\\sqrt{ 74 }}{2}",
+							"\\frac{\\sqrt{ 85 }}{2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 85,
+							"nb_distinctes": 16,
+							"valeurs": [2, 5, 10, 13, 17, 26, 29, 34, 37, 41, 53, 58, 61, 65, 74, 85],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -12,
+				"max": 12,
+				"nb_distinctes": 25,
+				"valeurs": [
+					-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+					12
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -8,
+				"max": 85,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -12,
+				"max": 85,
+				"nb_distinctes": 39,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 409,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 17,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 41,
+					"max": 41
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (85)",
+					"graine": 28,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-1)$ et $B(-8\\,;6)$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-5", "\\dfrac{5}{2}", "\\frac{\\sqrt{ 85 }}{2}"],
+					"variables": {
+						"xa": "-2",
+						"ya": "-1",
+						"dx": "-6",
+						"dy": "7",
+						"xb": "-8",
+						"yb": "6",
+						"N": "85"
+					}
+				},
+				{
+					"role": "plus petite valeur (-12)",
+					"graine": 29,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-5\\,;2)$ et $B(-12\\,;4)$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-\\dfrac{17}{2}", "3", "\\frac{\\sqrt{ 53 }}{2}"],
+					"variables": {
+						"xa": "-5",
+						"ya": "2",
+						"dx": "-7",
+						"dy": "2",
+						"xb": "-12",
+						"yb": "4",
+						"N": "53"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;1)$ et $B(1\\,;0)$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-\\dfrac{1}{2}", "\\dfrac{1}{2}", "\\frac{\\sqrt{ 10 }}{2}"],
+					"variables": {
+						"xa": "-2",
+						"ya": "1",
+						"dx": "3",
+						"dy": "-1",
+						"xb": "1",
+						"yb": "0",
+						"N": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-2)$ et $B(-1\\,;4)$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-\\dfrac{3}{2}", "1", "\\frac{\\sqrt{ 37 }}{2}"],
+					"variables": {
+						"xa": "-2",
+						"ya": "-2",
+						"dx": "1",
+						"dy": "6",
+						"xb": "-1",
+						"yb": "4",
+						"N": "37"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(0\\,;0)$ et $B(-5\\,;-4)$.\n\nL'ensemble des points $M$ du plan tels que $\\overrightarrow{MA}\\cdot\\overrightarrow{MB}=0$ est un cercle. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-\\dfrac{5}{2}", "-2", "\\frac{\\sqrt{ 41 }}{2}"],
+					"variables": {
+						"xa": "0",
+						"ya": "0",
+						"dx": "-5",
+						"dy": "-4",
+						"xb": "-5",
+						"yb": "-4",
+						"N": "41"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "xa",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ya",
+						"expression": "-5..5"
+					},
+					{
+						"name": "p",
+						"expression": "-4..4!0"
+					},
+					{
+						"name": "q",
+						"expression": "-4..4!0"
+					},
+					{
+						"name": "xb",
+						"expression": "{{eval:xa+2*p}}"
+					},
+					{
+						"name": "yb",
+						"expression": "{{eval:ya+2*q}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:4*(p^2+q^2)}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:sqrt(p^2+q^2)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le plan est muni d'un repère orthonormé. On considère les points $A({{xa}}\\,;{{ya}})$ et $B({{xb}}\\,;{{yb}})$.\n\nL'ensemble des points $M$ du plan, distincts de $A$ et de $B$, tels que le triangle $AMB$ soit rectangle en $M$ est un cercle privé des points $A$ et $B$. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I=?$\n\n$y_I=?$\n\n$r=?$",
+				"reponses_brutes": ["{{eval:(xa+xb)/2}}", "{{eval:(ya+yb)/2}}", "{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "xa",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ya",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "xb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "yb",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -13,
+						"max": 13,
+						"negatif_possible": true,
+						"nb_distinctes": 27,
+						"valeurs": [
+							-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+							10, 11, 12, 13
+						]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 128,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [8, 20, 32, 40, 52, 68, 72, 80, 100, 128]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.13666666666666666,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"2 \\sqrt{2}",
+							"2 \\sqrt{5}",
+							"3 \\sqrt{2}",
+							"4 \\sqrt{2}",
+							"5",
+							"\\sqrt{10}",
+							"\\sqrt{13}",
+							"\\sqrt{17}",
+							"\\sqrt{2}",
+							"\\sqrt{5}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 17,
+							"nb_distinctes": 7,
+							"valeurs": [2, 3, 4, 5, 10, 13, 17],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 19,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.13666666666666666,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"2 \\sqrt{2}",
+							"2 \\sqrt{5}",
+							"3 \\sqrt{2}",
+							"4 \\sqrt{2}",
+							"5",
+							"\\sqrt{10}",
+							"\\sqrt{13}",
+							"\\sqrt{17}",
+							"\\sqrt{2}",
+							"\\sqrt{5}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 17,
+							"nb_distinctes": 7,
+							"valeurs": [2, 3, 4, 5, 10, 13, 17],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -13,
+				"max": 13,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+					11, 12, 13
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 17,
+				"nb_distinctes": 22,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 17],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -13,
+				"max": 17,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+					11, 12, 13, 17
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 54,
+					"max": 54
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (17)",
+					"graine": 5,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(3\\,;-3)$ et $B(5\\,;-11)$.\n\nL'ensemble des points $M$ du plan, distincts de $A$ et de $B$, tels que le triangle $AMB$ soit rectangle en $M$ est un cercle privé des points $A$ et $B$. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["4", "-7", "\\sqrt{17}"],
+					"variables": {
+						"xa": "3",
+						"ya": "-3",
+						"p": "1",
+						"q": "-4",
+						"xb": "5",
+						"yb": "-11",
+						"N": "68",
+						"R": "\\sqrt{17}"
+					}
+				},
+				{
+					"role": "plus petite valeur (-13)",
+					"graine": 3,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-5\\,;0)$ et $B(-13\\,;4)$.\n\nL'ensemble des points $M$ du plan, distincts de $A$ et de $B$, tels que le triangle $AMB$ soit rectangle en $M$ est un cercle privé des points $A$ et $B$. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-9", "2", "2 \\sqrt{5}"],
+					"variables": {
+						"xa": "-5",
+						"ya": "0",
+						"p": "-4",
+						"q": "2",
+						"xb": "-13",
+						"yb": "4",
+						"N": "80",
+						"R": "2 \\sqrt{5}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-5\\,;0)$ et $B(3\\,;8)$.\n\nL'ensemble des points $M$ du plan, distincts de $A$ et de $B$, tels que le triangle $AMB$ soit rectangle en $M$ est un cercle privé des points $A$ et $B$. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-1", "4", "4 \\sqrt{2}"],
+					"variables": {
+						"xa": "-5",
+						"ya": "0",
+						"p": "4",
+						"q": "4",
+						"xb": "3",
+						"yb": "8",
+						"N": "128",
+						"R": "4 \\sqrt{2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-2)$ et $B(4\\,;0)$.\n\nL'ensemble des points $M$ du plan, distincts de $A$ et de $B$, tels que le triangle $AMB$ soit rectangle en $M$ est un cercle privé des points $A$ et $B$. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["1", "-1", "\\sqrt{10}"],
+					"variables": {
+						"xa": "-2",
+						"ya": "-2",
+						"p": "3",
+						"q": "1",
+						"xb": "4",
+						"yb": "0",
+						"N": "40",
+						"R": "\\sqrt{10}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le plan est muni d'un repère orthonormé. On considère les points $A(-2\\,;-3)$ et $B(-10\\,;-7)$.\n\nL'ensemble des points $M$ du plan, distincts de $A$ et de $B$, tels que le triangle $AMB$ soit rectangle en $M$ est un cercle privé des points $A$ et $B$. Détermine les coordonnées $(x_I\\,;y_I)$ du centre $I$ de ce cercle et son rayon $r$. Donne $r$ sous sa forme exacte la plus simple.\n\n$x_I = [?]$\n\n$y_I = [?]$\n\n$r = [?]$",
+					"reponse": ["-6", "-5", "2 \\sqrt{5}"],
+					"variables": {
+						"xa": "-2",
+						"ya": "-3",
+						"p": "-4",
+						"q": "-2",
+						"xb": "-10",
+						"yb": "-7",
+						"N": "80",
+						"R": "2 \\sqrt{5}"
+					}
+				}
+			]
+		}
+	]
+}

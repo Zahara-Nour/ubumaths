@@ -1,0 +1,720 @@
+{
+	"template_id": "31a77ba9-520c-4f35-82b3-066492b512c1",
+	"titre": "Valeur renvoyée par une fonction Python qui calcule un terme",
+	"sous_titre": "Boucle for : compter les tours, puis calculer les termes",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Suites > Seuil et algorithmes > Algorithmes",
+	"mis_a_jour": "2026-10-01T20:56:12.217817+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-236",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..3"
+					},
+					{
+						"name": "c",
+						"expression": "1..5"
+					},
+					{
+						"name": "p",
+						"expression": "eval:b*a+c"
+					},
+					{
+						"name": "s",
+						"expression": "eval:b*p+c"
+					},
+					{
+						"name": "w",
+						"expression": "eval:b*s+c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la fonction Python suivante.\n\n```python\ndef terme(n):\n    u = {{a}}\n    for i in range(n):\n        u = {{b}} * u + {{c}}\n    return u\n```\n\nQue renvoie `terme(3)` ?\n\nLa valeur renvoyée est $?$.",
+				"reponses_brutes": ["{{w}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 50,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 18,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 65,
+						"negatif_possible": false,
+						"nb_distinctes": 39
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 15,
+				"max": 200,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 200,
+				"nb_distinctes": 49,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"python": 300
+				},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (200)",
+					"graine": 10,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 5\n    for i in range(n):\n        u = 3 * u + 5\n    return u\n[/figure]\n\nQue renvoie terme(3) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["200"],
+					"variables": {
+						"a": "5",
+						"b": "3",
+						"c": "5",
+						"p": "20",
+						"s": "65",
+						"w": "200"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 1,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 1\n    for i in range(n):\n        u = 3 * u + 5\n    return u\n[/figure]\n\nQue renvoie terme(3) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["92"],
+					"variables": {
+						"a": "1",
+						"b": "3",
+						"c": "5",
+						"p": "8",
+						"s": "29",
+						"w": "92"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 2\n    for i in range(n):\n        u = 2 * u + 3\n    return u\n[/figure]\n\nQue renvoie terme(3) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["37"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "3",
+						"p": "7",
+						"s": "17",
+						"w": "37"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 1\n    for i in range(n):\n        u = 2 * u + 1\n    return u\n[/figure]\n\nQue renvoie terme(3) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["15"],
+					"variables": {
+						"a": "1",
+						"b": "2",
+						"c": "1",
+						"p": "3",
+						"s": "7",
+						"w": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 2\n    for i in range(n):\n        u = 2 * u + 1\n    return u\n[/figure]\n\nQue renvoie terme(3) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["23"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "1",
+						"p": "5",
+						"s": "11",
+						"w": "23"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5"
+					},
+					{
+						"name": "b",
+						"expression": "2..3"
+					},
+					{
+						"name": "c",
+						"expression": "1..5"
+					},
+					{
+						"name": "p",
+						"expression": "eval:b*a-c"
+					},
+					{
+						"name": "s",
+						"expression": "eval:b*p-c"
+					},
+					{
+						"name": "w",
+						"expression": "eval:b*s-c"
+					}
+				],
+				"conditions": ["c != (b-1)*a", "p != 0", "s != 0", "w != 0"],
+				"enonce_brut": "On considère la fonction Python suivante.\n\n```python\ndef terme(n):\n    u = {{a}}\n    for i in range(n + 1):\n        u = {{b}} * u - {{c}}\n    return u\n```\n\nQue renvoie `terme(2)` ?\n\nLa valeur renvoyée est $?$.",
+				"reponses_brutes": ["{{w}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 39,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 14,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -11,
+						"max": 41,
+						"negatif_possible": true,
+						"nb_distinctes": 31
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -38,
+						"max": 122,
+						"negatif_possible": true,
+						"nb_distinctes": 38
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -38,
+						"max": 122,
+						"negatif_possible": true,
+						"nb_distinctes": 38
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -38,
+				"max": 122,
+				"nb_distinctes": 38,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -38,
+				"max": 122,
+				"nb_distinctes": 39,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"python": 300
+				},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (122)",
+					"graine": 31,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 5\n    for i in range(n + 1):\n        u = 3 * u - 1\n    return u\n[/figure]\n\nQue renvoie terme(2) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["122"],
+					"variables": {
+						"a": "5",
+						"b": "3",
+						"c": "1",
+						"p": "14",
+						"s": "41",
+						"w": "122"
+					}
+				},
+				{
+					"role": "plus petite valeur (-38)",
+					"graine": 1,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 1\n    for i in range(n + 1):\n        u = 3 * u - 5\n    return u\n[/figure]\n\nQue renvoie terme(2) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["-38"],
+					"variables": {
+						"a": "1",
+						"b": "3",
+						"c": "5",
+						"p": "-2",
+						"s": "-11",
+						"w": "-38"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 2\n    for i in range(n + 1):\n        u = 2 * u - 3\n    return u\n[/figure]\n\nQue renvoie terme(2) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["-5"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "3",
+						"p": "1",
+						"s": "-1",
+						"w": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 4\n    for i in range(n + 1):\n        u = 2 * u - 3\n    return u\n[/figure]\n\nQue renvoie terme(2) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["11"],
+					"variables": {
+						"a": "4",
+						"b": "2",
+						"c": "3",
+						"p": "5",
+						"s": "7",
+						"w": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 2\n    for i in range(n + 1):\n        u = 2 * u - 1\n    return u\n[/figure]\n\nQue renvoie terme(2) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["9"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "1",
+						"p": "3",
+						"s": "5",
+						"w": "9"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..20"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "w",
+						"expression": "eval:a+10*b"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère la fonction Python suivante.\n\n```python\ndef terme(n):\n    u = {{a}}\n    for k in range(1, n + 1):\n        u = u + {{b}} * k\n    return u\n```\n\nQue renvoie `terme(4)` ?\n\nLa valeur renvoyée est $?$.",
+				"reponses_brutes": ["{{w}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 130,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 21,
+						"max": 110,
+						"negatif_possible": false,
+						"nb_distinctes": 84
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 21,
+						"max": 110,
+						"negatif_possible": false,
+						"nb_distinctes": 84
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 4,
+				"nb_distinctes": 1,
+				"valeurs": [4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 21,
+				"max": 110,
+				"nb_distinctes": 84,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 4,
+				"max": 110,
+				"nb_distinctes": 85,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"python": 300
+				},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (110)",
+					"graine": 115,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 20\n    for k in range(1, n + 1):\n        u = u + 9 * k\n    return u\n[/figure]\n\nQue renvoie terme(4) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["110"],
+					"variables": {
+						"a": "20",
+						"b": "9",
+						"w": "110"
+					}
+				},
+				{
+					"role": "plus petite valeur (4)",
+					"graine": 1,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 1\n    for k in range(1, n + 1):\n        u = u + 6 * k\n    return u\n[/figure]\n\nQue renvoie terme(4) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["61"],
+					"variables": {
+						"a": "1",
+						"b": "6",
+						"w": "61"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 7\n    for k in range(1, n + 1):\n        u = u + 4 * k\n    return u\n[/figure]\n\nQue renvoie terme(4) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["47"],
+					"variables": {
+						"a": "7",
+						"b": "4",
+						"w": "47"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 1\n    for k in range(1, n + 1):\n        u = u + 5 * k\n    return u\n[/figure]\n\nQue renvoie terme(4) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["51"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"w": "51"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère la fonction Python suivante.\n\n[figure python]\ndef terme(n):\n    u = 7\n    for k in range(1, n + 1):\n        u = u + 3 * k\n    return u\n[/figure]\n\nQue renvoie terme(4) ?\n\nLa valeur renvoyée est $[?]$.",
+					"reponse": ["37"],
+					"variables": {
+						"a": "7",
+						"b": "3",
+						"w": "37"
+					}
+				}
+			]
+		}
+	]
+}

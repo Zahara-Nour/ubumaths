@@ -1,0 +1,1923 @@
+{
+	"template_id": "d192da3e-534d-4c3e-b30e-68c9f166b8a9",
+	"titre": "Espace : équation cartésienne d'un plan (calculer d)",
+	"sous_titre": "Plan passant par un point, de vecteur normal donné (aussi plan médiateur, plan parallèle) : a, b, c imposés, l'élève calcule d (pièges : signe de d, z oublié, A au lieu du milieu)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Représentations paramétriques et équations cartésiennes > Équation cartésienne d'un plan",
+	"mis_a_jour": "2026-10-04T23:06:03.968905+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-367",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "-5..5"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "ax",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ay",
+						"expression": "-5..5"
+					},
+					{
+						"name": "az",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "dd",
+						"expression": "{{eval:-(a*ax+b*ay+c*az)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le vecteur $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$ a une équation de la forme ${{a}}x+({{b}})y+({{c}})z+d=0$. Détermine $d$.\n\n$d=?$",
+				"reponses_brutes": ["{{eval:-(a*ax+b*ay+c*az)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "dd",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -60,
+						"max": 52,
+						"negatif_possible": true,
+						"nb_distinctes": 76
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -60,
+						"max": 52,
+						"negatif_possible": true,
+						"nb_distinctes": 76
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -60,
+				"max": 52,
+				"nb_distinctes": 76,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -60,
+				"max": 52,
+				"nb_distinctes": 76,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "152/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 27,
+					"max": 27
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (52)",
+					"graine": 294,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(4\\,;\\,-4\\,;\\,3)$ et le vecteur $\\vec{n}\\begin{pmatrix}-5\\\\5\\\\-4\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$ a une équation de la forme $-5 x + 5 y - 4 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["52"],
+					"variables": {
+						"a": "-5",
+						"b": "5",
+						"c": "-4",
+						"ax": "4",
+						"ay": "-4",
+						"az": "3",
+						"dd": "52"
+					}
+				},
+				{
+					"role": "plus petite valeur (-60)",
+					"graine": 13,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(-5\\,;\\,-5\\,;\\,-5)$ et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-5\\\\-5\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$ a une équation de la forme $-2 x - 5 y - 5 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["-60"],
+					"variables": {
+						"a": "-2",
+						"b": "-5",
+						"c": "-5",
+						"ax": "-5",
+						"ay": "-5",
+						"az": "-5",
+						"dd": "-60"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(5\\,;\\,-2\\,;\\,2)$ et le vecteur $\\vec{n}\\begin{pmatrix}-5\\\\0\\\\5\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$ a une équation de la forme $-5 x + 5 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["15"],
+					"variables": {
+						"a": "-5",
+						"b": "0",
+						"c": "5",
+						"ax": "5",
+						"ay": "-2",
+						"az": "2",
+						"dd": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(4\\,;\\,1\\,;\\,-1)$ et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-2\\\\1\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$ a une équation de la forme $-2 x - 2 y + z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["11"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "1",
+						"ax": "4",
+						"ay": "1",
+						"az": "-1",
+						"dd": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(3\\,;\\,0\\,;\\,-1)$ et le vecteur $\\vec{n}\\begin{pmatrix}-5\\\\0\\\\-5\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$ a une équation de la forme $-5 x - 5 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["10"],
+					"variables": {
+						"a": "-5",
+						"b": "0",
+						"c": "-5",
+						"ax": "3",
+						"ay": "0",
+						"az": "-1",
+						"dd": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "ax",
+						"expression": "-4..4"
+					},
+					{
+						"name": "ay",
+						"expression": "-4..4"
+					},
+					{
+						"name": "az",
+						"expression": "-4..4"
+					},
+					{
+						"name": "w1",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "w2",
+						"expression": "-2..2"
+					},
+					{
+						"name": "w3",
+						"expression": "1..2;±"
+					},
+					{
+						"name": "n1",
+						"expression": "{{eval:2*w1}}"
+					},
+					{
+						"name": "n2",
+						"expression": "{{eval:2*w2}}"
+					},
+					{
+						"name": "n3",
+						"expression": "{{eval:2*w3}}"
+					},
+					{
+						"name": "bx",
+						"expression": "{{eval:ax+n1}}"
+					},
+					{
+						"name": "by",
+						"expression": "{{eval:ay+n2}}"
+					},
+					{
+						"name": "bz",
+						"expression": "{{eval:az+n3}}"
+					},
+					{
+						"name": "ix",
+						"expression": "{{eval:ax+w1}}"
+					},
+					{
+						"name": "iy",
+						"expression": "{{eval:ay+w2}}"
+					},
+					{
+						"name": "iz",
+						"expression": "{{eval:az+w3}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère les points $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et $B({{bx}}\\,;\\,{{by}}\\,;\\,{{bz}})$.\n\nLe plan médiateur de $[AB]$ a une équation de la forme ${{n1}}x+({{n2}})y+({{n3}})z+d=0$. Détermine $d$.\n\n$d=?$",
+				"reponses_brutes": ["{{eval:-(n1*ix+n2*iy+n3*iz)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-4, -3, -2, -1, 0, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "w1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "w2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-2, -1, 0, 1, 2]
+					}
+				},
+				{
+					"nom": "w3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -2,
+						"max": 2,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-2, -1, 1, 2]
+					}
+				},
+				{
+					"nom": "n1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-4, -2, 2, 4]
+					}
+				},
+				{
+					"nom": "n2",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 5,
+						"valeurs": [-4, -2, 0, 2, 4]
+					}
+				},
+				{
+					"nom": "n3",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 4,
+						"valeurs": [-4, -2, 2, 4]
+					}
+				},
+				{
+					"nom": "bx",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "by",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "bz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -8,
+						"max": 8,
+						"negatif_possible": true,
+						"nb_distinctes": 17,
+						"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "ix",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "iy",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "iz",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 13,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -60,
+						"max": 20,
+						"negatif_possible": true,
+						"nb_distinctes": 38
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -8,
+				"max": 8,
+				"nb_distinctes": 17,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -60,
+				"max": 20,
+				"nb_distinctes": 38,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -60,
+				"max": 20,
+				"nb_distinctes": 46,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 294,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-4\\,;\\,4\\,;\\,-3)$ et $B(0\\,;\\,0\\,;\\,1)$.\n\nLe plan médiateur de $\\left[ AB \\right]$ a une équation de la forme $4 x - 4 y + 4 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["20"],
+					"variables": {
+						"ax": "-4",
+						"ay": "4",
+						"az": "-3",
+						"w1": "2",
+						"w2": "-2",
+						"w3": "2",
+						"n1": "4",
+						"n2": "-4",
+						"n3": "4",
+						"bx": "0",
+						"by": "0",
+						"bz": "1",
+						"ix": "-2",
+						"iy": "2",
+						"iz": "-1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-60)",
+					"graine": 13,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-1\\,;\\,-4\\,;\\,-4)$ et $B(-5\\,;\\,-8\\,;\\,-8)$.\n\nLe plan médiateur de $\\left[ AB \\right]$ a une équation de la forme $-4 x - 4 y - 4 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["-60"],
+					"variables": {
+						"ax": "-1",
+						"ay": "-4",
+						"az": "-4",
+						"w1": "-2",
+						"w2": "-2",
+						"w3": "-2",
+						"n1": "-4",
+						"n2": "-4",
+						"n3": "-4",
+						"bx": "-5",
+						"by": "-8",
+						"bz": "-8",
+						"ix": "-3",
+						"iy": "-6",
+						"iz": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-4\\,;\\,0\\,;\\,4)$ et $B(0\\,;\\,-2\\,;\\,6)$.\n\nLe plan médiateur de $\\left[ AB \\right]$ a une équation de la forme $4 x - 2 y + 2 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["-4"],
+					"variables": {
+						"ax": "-4",
+						"ay": "0",
+						"az": "4",
+						"w1": "2",
+						"w2": "-1",
+						"w3": "1",
+						"n1": "4",
+						"n2": "-2",
+						"n3": "2",
+						"bx": "0",
+						"by": "-2",
+						"bz": "6",
+						"ix": "-2",
+						"iy": "-1",
+						"iz": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-2\\,;\\,-2\\,;\\,0)$ et $B(2\\,;\\,0\\,;\\,-2)$.\n\nLe plan médiateur de $\\left[ AB \\right]$ a une équation de la forme $4 x + 2 y - 2 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["0"],
+					"variables": {
+						"ax": "-2",
+						"ay": "-2",
+						"az": "0",
+						"w1": "2",
+						"w2": "1",
+						"w3": "-1",
+						"n1": "4",
+						"n2": "2",
+						"n3": "-2",
+						"bx": "2",
+						"by": "0",
+						"bz": "-2",
+						"ix": "0",
+						"iy": "-1",
+						"iz": "-1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère les points $A(-4\\,;\\,0\\,;\\,-4)$ et $B(0\\,;\\,0\\,;\\,-6)$.\n\nLe plan médiateur de $\\left[ AB \\right]$ a une équation de la forme $4 x - 2 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["-2"],
+					"variables": {
+						"ax": "-4",
+						"ay": "0",
+						"az": "-4",
+						"w1": "2",
+						"w2": "0",
+						"w3": "-1",
+						"n1": "4",
+						"n2": "0",
+						"n3": "-2",
+						"bx": "0",
+						"by": "0",
+						"bz": "-6",
+						"ix": "-2",
+						"iy": "0",
+						"iz": "-5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "-5..5"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "ax",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ay",
+						"expression": "-5..5"
+					},
+					{
+						"name": "az",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "q",
+						"expression": "1..9;±"
+					}
+				],
+				"conditions": ["a*ax+b*ay+c*az+q != 0"],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le plan $\\mathcal{Q}$ d'équation ${{a}}x+({{b}})y+({{c}})z+({{q}})=0$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et parallèle à $\\mathcal{Q}$ a une équation de la forme ${{a}}x+({{b}})y+({{c}})z+d=0$. Détermine $d$.\n\n$d=?$",
+				"reponses_brutes": ["{{eval:-(a*ax+b*ay+c*az)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -60,
+						"max": 52,
+						"negatif_possible": true,
+						"nb_distinctes": 76
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 9,
+				"nb_distinctes": 15,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -60,
+				"max": 52,
+				"nb_distinctes": 76,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -60,
+				"max": 52,
+				"nb_distinctes": 76,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (52)",
+					"graine": 294,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(4\\,;\\,-4\\,;\\,3)$ et le plan $\\mathcal{Q}$ d'équation $-5 x + 5 y - 4 z - 7 = 0$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et parallèle à $\\mathcal{Q}$ a une équation de la forme $-5 x + 5 y - 4 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["52"],
+					"variables": {
+						"a": "-5",
+						"b": "5",
+						"c": "-4",
+						"ax": "4",
+						"ay": "-4",
+						"az": "3",
+						"q": "-7"
+					}
+				},
+				{
+					"role": "plus petite valeur (-60)",
+					"graine": 13,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(-5\\,;\\,-5\\,;\\,-5)$ et le plan $\\mathcal{Q}$ d'équation $-2 x - 5 y - 5 z - 3 = 0$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et parallèle à $\\mathcal{Q}$ a une équation de la forme $-2 x - 5 y - 5 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["-60"],
+					"variables": {
+						"a": "-2",
+						"b": "-5",
+						"c": "-5",
+						"ax": "-5",
+						"ay": "-5",
+						"az": "-5",
+						"q": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(5\\,;\\,-2\\,;\\,2)$ et le plan $\\mathcal{Q}$ d'équation $-5 x + 5 z + 4 = 0$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et parallèle à $\\mathcal{Q}$ a une équation de la forme $-5 x + 5 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["15"],
+					"variables": {
+						"a": "-5",
+						"b": "0",
+						"c": "5",
+						"ax": "5",
+						"ay": "-2",
+						"az": "2",
+						"q": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(4\\,;\\,1\\,;\\,-1)$ et le plan $\\mathcal{Q}$ d'équation $-2 x - 2 y + z - 3 = 0$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et parallèle à $\\mathcal{Q}$ a une équation de la forme $-2 x - 2 y + z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["11"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "1",
+						"ax": "4",
+						"ay": "1",
+						"az": "-1",
+						"q": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(3\\,;\\,0\\,;\\,-1)$ et le plan $\\mathcal{Q}$ d'équation $-5 x - 5 z - 7 = 0$.\n\nLe plan $\\mathcal{P}$ passant par $A$ et parallèle à $\\mathcal{Q}$ a une équation de la forme $-5 x - 5 z + d = 0$. Détermine $d$.\n\n$d = [?]$",
+					"reponse": ["10"],
+					"variables": {
+						"a": "-5",
+						"b": "0",
+						"c": "-5",
+						"ax": "3",
+						"ay": "0",
+						"az": "-1",
+						"q": "-7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "-5..5"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "ax",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ay",
+						"expression": "-5..5"
+					},
+					{
+						"name": "az",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "dd",
+						"expression": "{{eval:-(a*ax+b*ay+c*az)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le vecteur $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.\n\nDonne une équation cartésienne du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $?$",
+				"reponses_brutes": ["{{a}}x+({{b}})y+({{c}})z+({{dd}})=0"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "dd",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -60,
+						"max": 52,
+						"negatif_possible": true,
+						"nb_distinctes": 76
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 299,
+						"exemples": [
+							"-5x+5z+15=0",
+							"-2x-2y+z+11=0",
+							"-5x-5z+10=0",
+							"-2x-3y-5z-31=0",
+							"3x-3y+2z+12=0",
+							"-5x+2y-3z-5=0",
+							"-5x+5y+2z+7=0",
+							"2x-2y+2z-12=0",
+							"4x-4y+4z+12=0",
+							"5x+2y+4z+14=0",
+							"x+y+z+1=0",
+							"-5x+y+5z-25=0"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 60,
+							"nb_distinctes": 48,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 60,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 60,
+				"nb_distinctes": 49,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["equation"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"−": "152/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 25,
+					"max": 25
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (60)",
+					"graine": 13,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(-5\\,;\\,-5\\,;\\,-5)$ et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-5\\\\-5\\end{pmatrix}$.\n\nDonne une équation cartésienne du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-2x-5y-5z-60=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-5",
+						"c": "-5",
+						"ax": "-5",
+						"ay": "-5",
+						"az": "-5",
+						"dd": "-60"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(5\\,;\\,-2\\,;\\,2)$ et le vecteur $\\vec{n}\\begin{pmatrix}-5\\\\0\\\\5\\end{pmatrix}$.\n\nDonne une équation cartésienne du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-5x+5z+15=0"],
+					"variables": {
+						"a": "-5",
+						"b": "0",
+						"c": "5",
+						"ax": "5",
+						"ay": "-2",
+						"az": "2",
+						"dd": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(4\\,;\\,1\\,;\\,-1)$ et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-2\\\\1\\end{pmatrix}$.\n\nDonne une équation cartésienne du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-2x-2y+z+11=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "1",
+						"ax": "4",
+						"ay": "1",
+						"az": "-1",
+						"dd": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(3\\,;\\,0\\,;\\,-1)$ et le vecteur $\\vec{n}\\begin{pmatrix}-5\\\\0\\\\-5\\end{pmatrix}$.\n\nDonne une équation cartésienne du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-5x-5z+10=0"],
+					"variables": {
+						"a": "-5",
+						"b": "0",
+						"c": "-5",
+						"ax": "3",
+						"ay": "0",
+						"az": "-1",
+						"dd": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(-3\\,;\\,0\\,;\\,-5)$ et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-3\\\\-5\\end{pmatrix}$.\n\nDonne une équation cartésienne du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-2x-3y-5z-31=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "-5",
+						"ax": "-3",
+						"ay": "0",
+						"az": "-5",
+						"dd": "-31"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "b",
+						"expression": "-5..5"
+					},
+					{
+						"name": "c",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "ax",
+						"expression": "-5..5"
+					},
+					{
+						"name": "ay",
+						"expression": "-5..5"
+					},
+					{
+						"name": "az",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "dd",
+						"expression": "{{eval:-(a*ax+b*ay+c*az)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère le point $A({{ax}}\\,;\\,{{ay}}\\,;\\,{{az}})$ et le vecteur $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.\n\nDonne une équation cartésienne, sous la forme $ax+by+cz+d=0$, du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $?$",
+				"reponses_brutes": ["{{a}}x+({{b}})y+({{c}})z+({{dd}})=0"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ax",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "ay",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 11,
+						"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "az",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "dd",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -60,
+						"max": 52,
+						"negatif_possible": true,
+						"nb_distinctes": 76
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 299,
+						"exemples": [
+							"-5x+5z+15=0",
+							"-2x-2y+z+11=0",
+							"-5x-5z+10=0",
+							"-2x-3y-5z-31=0",
+							"3x-3y+2z+12=0",
+							"-5x+2y-3z-5=0",
+							"-5x+5y+2z+7=0",
+							"2x-2y+2z-12=0",
+							"4x-4y+4z+12=0",
+							"5x+2y+4z+14=0",
+							"x+y+z+1=0",
+							"-5x+y+5z-25=0"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 60,
+							"nb_distinctes": 48,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 11,
+				"valeurs": [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 60,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 60,
+				"nb_distinctes": 49,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["equation"],
+				"forme_exigee": ["cartesienne"],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "152/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 28,
+					"max": 28
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (60)",
+					"graine": 13,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(-5\\,;\\,-5\\,;\\,-5)$ et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-5\\\\-5\\end{pmatrix}$.\n\nDonne une équation cartésienne, sous la forme $a x + b y + c z + d = 0$, du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-2x-5y-5z-60=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-5",
+						"c": "-5",
+						"ax": "-5",
+						"ay": "-5",
+						"az": "-5",
+						"dd": "-60"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(5\\,;\\,-2\\,;\\,2)$ et le vecteur $\\vec{n}\\begin{pmatrix}-5\\\\0\\\\5\\end{pmatrix}$.\n\nDonne une équation cartésienne, sous la forme $a x + b y + c z + d = 0$, du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-5x+5z+15=0"],
+					"variables": {
+						"a": "-5",
+						"b": "0",
+						"c": "5",
+						"ax": "5",
+						"ay": "-2",
+						"az": "2",
+						"dd": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(4\\,;\\,1\\,;\\,-1)$ et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-2\\\\1\\end{pmatrix}$.\n\nDonne une équation cartésienne, sous la forme $a x + b y + c z + d = 0$, du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-2x-2y+z+11=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "1",
+						"ax": "4",
+						"ay": "1",
+						"az": "-1",
+						"dd": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(3\\,;\\,0\\,;\\,-1)$ et le vecteur $\\vec{n}\\begin{pmatrix}-5\\\\0\\\\-5\\end{pmatrix}$.\n\nDonne une équation cartésienne, sous la forme $a x + b y + c z + d = 0$, du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-5x-5z+10=0"],
+					"variables": {
+						"a": "-5",
+						"b": "0",
+						"c": "-5",
+						"ax": "3",
+						"ay": "0",
+						"az": "-1",
+						"dd": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère le point $A(-3\\,;\\,0\\,;\\,-5)$ et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-3\\\\-5\\end{pmatrix}$.\n\nDonne une équation cartésienne, sous la forme $a x + b y + c z + d = 0$, du plan $\\mathcal{P}$ passant par $A$ et de vecteur normal $\\vec{n}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-2x-3y-5z-31=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "-5",
+						"ax": "-3",
+						"ay": "0",
+						"az": "-5",
+						"dd": "-31"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..3;±"
+					},
+					{
+						"name": "c",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "na",
+						"expression": "{{eval:-a}}"
+					},
+					{
+						"name": "x0",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "y0",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "z0",
+						"expression": "1..4;±"
+					},
+					{
+						"name": "dd",
+						"expression": "{{eval:-(a*x0+b*y0+c*z0)}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $\\begin{cases}x={{x0}}{{if:b==1|+t}}{{if:b==-1|-t}}{{if:b>1|+{{b}}t}}{{if:b< -1|{{b}}t}}\\\\y={{y0}}{{if:na==1|+t}}{{if:na==-1|-t}}{{if:na>1|+{{na}}t}}{{if:na< -1|{{na}}t}}\\\\z={{z0}}\\end{cases}$ ($t\\in\\mathbb{R}$) et le vecteur $\\vec{n}\\begin{pmatrix}{{a}}\\\\{{b}}\\\\{{c}}\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ contient la droite $d$ et admet $\\vec{n}$ pour vecteur normal. Donne une équation cartésienne de $\\mathcal{P}$.\n\n$\\mathcal{P}$ : $?$",
+				"reponses_brutes": ["{{a}}x+({{b}})y+({{c}})z+({{dd}})=0"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -3,
+						"max": 3,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-3, -2, -1, 1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "na",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "x0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "y0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "z0",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 8,
+						"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "dd",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -36,
+						"max": 33,
+						"negatif_possible": true,
+						"nb_distinctes": 56
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 292,
+						"exemples": [
+							"-4x+y+4z+14=0",
+							"-2x-2y+z+13=0",
+							"-4x-y-4z+7=0",
+							"-2x-2y-4z-20=0",
+							"3x-2y+z+12=0",
+							"-4x+y-3z-4=0",
+							"-4x+3y+2z+9=0",
+							"2x-2y+2z-10=0",
+							"3x-3y+3z+6=0",
+							"4x+2y+3z+15=0",
+							"x+y+z=0",
+							"-4x+y+4z-16=0"
+						],
+						"nombres_contenus": {
+							"min": -4,
+							"max": 36,
+							"nb_distinctes": 36,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4,
+				"max": 4,
+				"nb_distinctes": 8,
+				"valeurs": [-4, -3, -2, -1, 1, 2, 3, 4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -4,
+				"max": 36,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 36,
+				"nb_distinctes": 37,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["equation"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "234/300",
+					"−": "276/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 31,
+					"max": 31
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (36)",
+					"graine": 13,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $\\begin{cases}x=-4-3t\\\\y=-4+2t\\\\z=-4\\end{cases}$ ($t\\in\\mathbb{R}$) et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-3\\\\-4\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ contient la droite $d$ et admet $\\vec{n}$ pour vecteur normal. Donne une équation cartésienne de $\\mathcal{P}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-2x-3y-4z-36=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-3",
+						"c": "-4",
+						"na": "2",
+						"x0": "-4",
+						"y0": "-4",
+						"z0": "-4",
+						"dd": "-36"
+					}
+				},
+				{
+					"role": "plus petite valeur (-4)",
+					"graine": 1,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $\\begin{cases}x=4+t\\\\y=-2+4t\\\\z=1\\end{cases}$ ($t\\in\\mathbb{R}$) et le vecteur $\\vec{n}\\begin{pmatrix}-4\\\\1\\\\4\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ contient la droite $d$ et admet $\\vec{n}$ pour vecteur normal. Donne une équation cartésienne de $\\mathcal{P}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-4x+y+4z+14=0"],
+					"variables": {
+						"a": "-4",
+						"b": "1",
+						"c": "4",
+						"na": "4",
+						"x0": "4",
+						"y0": "-2",
+						"z0": "1",
+						"dd": "14"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $\\begin{cases}x=4-2t\\\\y=2+2t\\\\z=-1\\end{cases}$ ($t\\in\\mathbb{R}$) et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-2\\\\1\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ contient la droite $d$ et admet $\\vec{n}$ pour vecteur normal. Donne une équation cartésienne de $\\mathcal{P}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-2x-2y+z+13=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "1",
+						"na": "2",
+						"x0": "4",
+						"y0": "2",
+						"z0": "-1",
+						"dd": "13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $\\begin{cases}x=3-t\\\\y=-1+4t\\\\z=-1\\end{cases}$ ($t\\in\\mathbb{R}$) et le vecteur $\\vec{n}\\begin{pmatrix}-4\\\\-1\\\\-4\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ contient la droite $d$ et admet $\\vec{n}$ pour vecteur normal. Donne une équation cartésienne de $\\mathcal{P}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-4x-y-4z+7=0"],
+					"variables": {
+						"a": "-4",
+						"b": "-1",
+						"c": "-4",
+						"na": "4",
+						"x0": "3",
+						"y0": "-1",
+						"z0": "-1",
+						"dd": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans l'espace muni d'un repère orthonormé, on considère la droite $d$ de représentation paramétrique $\\begin{cases}x=-3-2t\\\\y=1+2t\\\\z=-4\\end{cases}$ ($t\\in\\mathbb{R}$) et le vecteur $\\vec{n}\\begin{pmatrix}-2\\\\-2\\\\-4\\end{pmatrix}$.\n\nLe plan $\\mathcal{P}$ contient la droite $d$ et admet $\\vec{n}$ pour vecteur normal. Donne une équation cartésienne de $\\mathcal{P}$.\n\n$\\mathcal{P}$ : $[?]$",
+					"reponse": ["-2x-2y-4z-20=0"],
+					"variables": {
+						"a": "-2",
+						"b": "-2",
+						"c": "-4",
+						"na": "2",
+						"x0": "-3",
+						"y0": "1",
+						"z0": "-4",
+						"dd": "-20"
+					}
+				}
+			]
+		}
+	]
+}

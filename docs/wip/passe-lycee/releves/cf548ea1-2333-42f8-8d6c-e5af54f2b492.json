@@ -1,0 +1,478 @@
+{
+	"template_id": "cf548ea1-2333-42f8-8d6c-e5af54f2b492",
+	"titre": "Tableau croisé : intersection et probabilité d'un événement",
+	"sous_titre": "Lire dans un tableau d'effectifs à double entrée la probabilité d'une intersection et d'un événement (total de ligne ou de colonne)",
+	"consigne": null,
+	"grades": ["2"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Probabilités conditionnelles > Tableaux croisés",
+	"mis_a_jour": "2026-10-04T12:00:48.36428+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "2-395",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "4..60"
+					},
+					{
+						"name": "b",
+						"expression": "4..60"
+					},
+					{
+						"name": "c",
+						"expression": "4..60"
+					},
+					{
+						"name": "d",
+						"expression": "4..60"
+					}
+				],
+				"conditions": ["gcd(a,a+b+c+d) > 1", "gcd(a+b,a+b+c+d) > 1"],
+				"enonce_brut": "On interroge les élèves d'un lycée. On note $A$ l'événement « l'élève pratique un sport en club » et $B$ l'événement « l'élève joue d'un instrument de musique ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n|---|---|---|---|\n| $A$ | ${{a}}$ | ${{b}}$ | ${{eval:a+b}}$ |\n| $\\overline{A}$ | ${{c}}$ | ${{d}}$ | ${{eval:c+d}}$ |\n| Total | ${{eval:a+c}}$ | ${{eval:b+d}}$ | ${{eval:a+b+c+d}}$ |\n\nOn choisit un élève au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cap B)=?$\n\n$P(A)=?$",
+				"reponses_brutes": ["{{eval:a/(a+b+c+d)}}", "{{eval:(a+b)/(a+b+c+d)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 54
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 57
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 57
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.02531645569620253,
+						"max": 0.75,
+						"negatif_possible": false,
+						"denominateur_min": 2,
+						"denominateur_max": 110,
+						"nb_distinctes": 237
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.08695652173913043,
+						"max": 0.84375,
+						"negatif_possible": false,
+						"denominateur_min": 2,
+						"denominateur_max": 107,
+						"nb_distinctes": 238
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 220,
+				"nb_distinctes": 161,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 110,
+				"nb_distinctes": 96,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 220,
+				"nb_distinctes": 164,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateur_min": 2,
+				"denominateur_max": 110,
+				"numerateur_min": 1,
+				"numerateur_max": 57,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 47,
+					"max": 47
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (220)",
+					"graine": 203,
+					"enonce": "On interroge les élèves d'un lycée. On note $A$ l'événement « l'élève pratique un sport en club » et $B$ l'événement « l'élève joue d'un instrument de musique ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $58$ | $47$ | $105$ |\n| $\\overline{A}$ | $55$ | $60$ | $115$ |\n| Total | $113$ | $107$ | $220$ |\n\nOn choisit un élève au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cap B)=[?]$\n\n$P \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{29}{110}", "\\dfrac{21}{44}"],
+					"variables": {
+						"a": "58",
+						"b": "47",
+						"c": "55",
+						"d": "60"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "On interroge les élèves d'un lycée. On note $A$ l'événement « l'élève pratique un sport en club » et $B$ l'événement « l'élève joue d'un instrument de musique ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $4$ | $34$ | $38$ |\n| $\\overline{A}$ | $59$ | $59$ | $118$ |\n| Total | $63$ | $93$ | $156$ |\n\nOn choisit un élève au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cap B)=[?]$\n\n$P \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{39}", "\\dfrac{19}{78}"],
+					"variables": {
+						"a": "4",
+						"b": "34",
+						"c": "59",
+						"d": "59"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On interroge les élèves d'un lycée. On note $A$ l'événement « l'élève pratique un sport en club » et $B$ l'événement « l'élève joue d'un instrument de musique ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $57$ | $29$ | $86$ |\n| $\\overline{A}$ | $40$ | $60$ | $100$ |\n| Total | $97$ | $89$ | $186$ |\n\nOn choisit un élève au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cap B)=[?]$\n\n$P \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{19}{62}", "\\dfrac{43}{93}"],
+					"variables": {
+						"a": "57",
+						"b": "29",
+						"c": "40",
+						"d": "60"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On interroge les élèves d'un lycée. On note $A$ l'événement « l'élève pratique un sport en club » et $B$ l'événement « l'élève joue d'un instrument de musique ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $4$ | $4$ | $8$ |\n| $\\overline{A}$ | $31$ | $53$ | $84$ |\n| Total | $35$ | $57$ | $92$ |\n\nOn choisit un élève au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cap B)=[?]$\n\n$P \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{23}", "\\dfrac{2}{23}"],
+					"variables": {
+						"a": "4",
+						"b": "4",
+						"c": "31",
+						"d": "53"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On interroge les élèves d'un lycée. On note $A$ l'événement « l'élève pratique un sport en club » et $B$ l'événement « l'élève joue d'un instrument de musique ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $32$ | $8$ | $40$ |\n| $\\overline{A}$ | $59$ | $39$ | $98$ |\n| Total | $91$ | $47$ | $138$ |\n\nOn choisit un élève au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(A\\cap B)=[?]$\n\n$P \\left( A \\right) = [?]$",
+					"reponse": ["\\dfrac{16}{69}", "\\dfrac{20}{69}"],
+					"variables": {
+						"a": "32",
+						"b": "8",
+						"c": "59",
+						"d": "39"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "4..60"
+					},
+					{
+						"name": "b",
+						"expression": "4..60"
+					},
+					{
+						"name": "c",
+						"expression": "4..60"
+					},
+					{
+						"name": "d",
+						"expression": "4..60"
+					}
+				],
+				"conditions": ["gcd(c,a+b+c+d) > 1", "gcd(a+c,a+b+c+d) > 1"],
+				"enonce_brut": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n|---|---|---|---|\n| $A$ | ${{a}}$ | ${{b}}$ | ${{eval:a+b}}$ |\n| $\\overline{A}$ | ${{c}}$ | ${{d}}$ | ${{eval:c+d}}$ |\n| Total | ${{eval:a+c}}$ | ${{eval:b+d}}$ | ${{eval:a+b+c+d}}$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(\\overline{A}\\cap B)=?$\n\n$P(B)=?$",
+				"reponses_brutes": ["{{eval:c/(a+b+c+d)}}", "{{eval:(a+c)/(a+b+c+d)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 55
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 57
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 46
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 57
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.03076923076923077,
+						"max": 0.5490196078431373,
+						"negatif_possible": false,
+						"denominateur_min": 2,
+						"denominateur_max": 103,
+						"nb_distinctes": 234
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1111111111111111,
+						"max": 0.9166666666666666,
+						"negatif_possible": false,
+						"denominateur_min": 2,
+						"denominateur_max": 103,
+						"nb_distinctes": 245
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 206,
+				"nb_distinctes": 167,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 103,
+				"nb_distinctes": 95,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 206,
+				"nb_distinctes": 170,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 600,
+				"denominateur_min": 2,
+				"denominateur_max": 103,
+				"numerateur_min": 1,
+				"numerateur_max": 56,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"tableau": 300
+				},
+				"mots_hors_maths": {
+					"min": 46,
+					"max": 46
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (206)",
+					"graine": 60,
+					"enonce": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $54$ | $38$ | $92$ |\n| $\\overline{A}$ | $54$ | $60$ | $114$ |\n| Total | $108$ | $98$ | $206$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(\\overline{A}\\cap B)=[?]$\n\n$P \\left( B \\right) = [?]$",
+					"reponse": ["\\dfrac{27}{103}", "\\dfrac{54}{103}"],
+					"variables": {
+						"a": "54",
+						"b": "38",
+						"c": "54",
+						"d": "60"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 15,
+					"enonce": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $41$ | $57$ | $98$ |\n| $\\overline{A}$ | $21$ | $7$ | $28$ |\n| Total | $62$ | $64$ | $126$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(\\overline{A}\\cap B)=[?]$\n\n$P \\left( B \\right) = [?]$",
+					"reponse": ["\\dfrac{1}{6}", "\\dfrac{31}{63}"],
+					"variables": {
+						"a": "41",
+						"b": "57",
+						"c": "21",
+						"d": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $47$ | $12$ | $59$ |\n| $\\overline{A}$ | $22$ | $27$ | $49$ |\n| Total | $69$ | $39$ | $108$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(\\overline{A}\\cap B)=[?]$\n\n$P \\left( B \\right) = [?]$",
+					"reponse": ["\\dfrac{11}{54}", "\\dfrac{23}{36}"],
+					"variables": {
+						"a": "47",
+						"b": "12",
+						"c": "22",
+						"d": "27"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $7$ | $11$ | $18$ |\n| $\\overline{A}$ | $14$ | $4$ | $18$ |\n| Total | $21$ | $15$ | $36$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(\\overline{A}\\cap B)=[?]$\n\n$P \\left( B \\right) = [?]$",
+					"reponse": ["\\dfrac{7}{18}", "\\dfrac{7}{12}"],
+					"variables": {
+						"a": "7",
+						"b": "11",
+						"c": "14",
+						"d": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans une entreprise, on note $A$ l'événement « le salarié vient au travail en transports en commun » et $B$ l'événement « le salarié habite en ville ». Le tableau donne les effectifs.\n\n|  | $B$ | $\\overline{B}$ | Total |\n| $A$ | $18$ | $54$ | $72$ |\n| $\\overline{A}$ | $6$ | $52$ | $58$ |\n| Total | $24$ | $106$ | $130$ |\n\nOn choisit un salarié au hasard. Réponds par une fraction irréductible ou par un nombre décimal exact.\n\n$P(\\overline{A}\\cap B)=[?]$\n\n$P \\left( B \\right) = [?]$",
+					"reponse": ["\\dfrac{3}{65}", "\\dfrac{12}{65}"],
+					"variables": {
+						"a": "18",
+						"b": "54",
+						"c": "6",
+						"d": "52"
+					}
+				}
+			]
+		}
+	]
+}

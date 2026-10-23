@@ -6,19 +6,19 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, étape b close : page à cocher entièrement reportée._
+_Mis à jour le 2026-10-23, étape c faite (relevé des modèles)._
 
-- **État** : étape b finie. Bornes des 1 507 points (`passe-lycee/bornes/<programme>.{md,json}`) ; 61/61 questions
-  tranchées (`decision`, `decide_le`) et traduites en bornes générales force `décision` (+ 6 bornes de point en
-  2de) ; 15/15 libellés tranchés (`decision_libelle`). Page à cocher (archive) :
-  https://claude.ai/artifact/NqFNoysc54WHsSjopUcSDy.
-- **Prochaine action** : étape c, relevé des modèles (cf. « Les 5 étapes »).
-- **En attente de David** : rien.
+- **État** : étapes a, b, c faites. Relevé : `passe-lycee/releves/` (432 modèles de niveau lycée, 300 tirages par
+  variation, `LISEZMOI.md`). Bornes : `passe-lycee/bornes/<programme>.json`.
+- **Prochaine action** : étape d, verdicts en inclusion stricte (consigne du collège,
+  `arbre-notions/analyse/CONSIGNE.md`, à adapter au lycée).
+- **En attente de David** : périmètre des programmes candidats à l'étape d (voir le journal du 2026-10-23).
 - **Pièges en cours** : migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031, `libelle_corrige`)
   et 2 points neufs (exponentielle, à côté de TSPE-444 et TCOMP-236, `point_neuf`). Automatisme 1re spé
   « déterminer graphiquement … son tableau de variations » (BO l. 274) sans point. 85 points techno sans borne ;
-  1SPE-244 à re-ranger ; `undoLaterMigrations` à compléter. Générateurs `bornes/generateurs/` non relançables :
-  JSON corrigés à la main, puis `pnpm format` (tabulations).
+  1SPE-244 à re-ranger ; `undoLaterMigrations` à compléter. Générateurs `bornes/generateurs/` non relançables.
+  Modèle `9a6087c5` (systèmes, Tle expertes) : 2 % d'échecs de génération. Instantané des modèles : MCP seulement
+  (clé de service refusée par le classifieur).
 - **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes` (sans commit propre, en
   retard sur `main` : les commits partent sur `main`).
 
@@ -100,3 +100,8 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   programme (l1t-1, l1t-3 : 1re et Tle techno), titre + option choisie (l1s-3, l1s-6, l1s-7 reformulées pour se lire
   seules) ; remarques qui citent une question suffixées « → décision X : choix ». Script :
   scratchpad de session (non gardé), reproductible depuis la collection `reponses`.
+- **2026-10-23 — Étape c : relevé des modèles.** Lot = les 432 modèles de niveau lycée en prod (420 tagués au lycée,
+  dont 52 TSPE + TCOMP et 1 sur 2de + 1SPE ; 12 sans point ; 365 brouillons). Instantané pris par le MCP en lecture
+  seule (la clé anonyme ne voit pas les brouillons ; la clé de service a été refusée par le classifieur du mode auto).
+  `releve.ts` du collège copié dans `passe-lycee/releves/` : 1 638 variations × 300 tirages en 114 s, 0 erreur de
+  conversion, un seul modèle en échec partiel (`9a6087c5`, 12/600). Aucun modèle de niveau 1re ES ni techno.

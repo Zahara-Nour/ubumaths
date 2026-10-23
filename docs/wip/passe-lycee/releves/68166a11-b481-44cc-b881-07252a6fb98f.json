@@ -1,0 +1,583 @@
+{
+	"template_id": "68166a11-b481-44cc-b881-07252a6fb98f",
+	"titre": "Valeurs et signe de l'exponentielle",
+	"sous_titre": "QCM : e⁰ = 1, eˣ > 0 pour tout x, valeur approchée de e",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonction exponentielle > Propriétés algébriques",
+	"mis_a_jour": "2026-10-02T04:20:47.942967+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-292",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Que vaut $e^0$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$0$"
+					},
+					{
+						"content": "$1$"
+					},
+					{
+						"content": "$e$"
+					},
+					{
+						"content": "Ce nombre n'existe pas."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 1,
+				"nb_distinctes": 2,
+				"valeurs": [0, 1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 6,
+					"max": 6
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Que vaut $\\exponentialE^0$ ?\n\n- A. $0$\n- B. $1$\n- C. $e$\n- D. Ce nombre n'existe pas.",
+					"reponse": ["B. $1$"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Vrai ou faux ? Pour tout réel $x$, $e^x>0$.",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Vrai"
+					},
+					{
+						"content": "Faux"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Vrai"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					">": "300/300",
+					"puissance": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Vrai ou faux ? Pour tout réel $x$, $\\exponentialE^x > 0$.\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["A. Vrai"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "-9..-1"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Vrai ou faux ? Le nombre $e^{ {{a}} }$ est négatif.",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Vrai"
+					},
+					{
+						"content": "Faux"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 9,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Faux"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": -1,
+				"nb_distinctes": 9,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": -1,
+				"nb_distinctes": 9,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-1)",
+					"graine": 10,
+					"enonce": "Vrai ou faux ? Le nombre $\\exponentialE^{-1}$ est négatif.\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "-1"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Vrai ou faux ? Le nombre $\\exponentialE^{-9}$ est négatif.\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "-9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Vrai ou faux ? Le nombre $\\exponentialE^{-7}$ est négatif.\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "-7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Vrai ou faux ? Le nombre $\\exponentialE^{-3}$ est négatif.\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Vrai ou faux ? Le nombre $\\exponentialE^{-4}$ est négatif.\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {
+						"a": "-4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Vrai ou faux ? Pour tout réel $x$, $e^x\\geqslant1$.",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Vrai"
+					},
+					{
+						"content": "Faux"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Faux"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Vrai ou faux ? Pour tout réel $x$, $e^x\\geqslant1$.\n\n- A. Vrai\n- B. Faux",
+					"reponse": ["B. Faux"],
+					"variables": {}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quelle est la valeur approchée de $e=e^1$ au millième près ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$2{,}718$"
+					},
+					{
+						"content": "$3{,}142$"
+					},
+					{
+						"content": "$2{,}178$"
+					},
+					{
+						"content": "$1{,}414$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 2.718,
+						"max": 2.718,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2.718]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2.718,
+				"max": 2.718,
+				"nb_distinctes": 1,
+				"valeurs": [2.718],
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1.414,
+				"max": 3.142,
+				"nb_distinctes": 4,
+				"valeurs": [1.414, 2.178, 2.718, 3.142],
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 3.142,
+				"nb_distinctes": 5,
+				"valeurs": [1, 1.414, 2.178, 2.718, 3.142],
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3.142)",
+					"graine": 1,
+					"enonce": "Quelle est la valeur approchée de $\\exponentialE = \\exponentialE^1$ au millième près ?\n\n- A. $2{,}718$\n- B. $3{,}142$\n- C. $2{,}178$\n- D. $1{,}414$",
+					"reponse": ["A. $2{,}718$"],
+					"variables": {}
+				}
+			]
+		}
+	]
+}

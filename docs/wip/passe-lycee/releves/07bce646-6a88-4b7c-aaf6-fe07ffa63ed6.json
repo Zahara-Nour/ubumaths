@@ -1,0 +1,6684 @@
+{
+	"template_id": "07bce646-6a88-4b7c-aaf6-fe07ffa63ed6",
+	"titre": "Opérations sur les limites",
+	"sous_titre": "En utilisant les règles de calcul sur les limites",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "multiple_choice",
+	"theme": "Suites > Limites > Déterminer une limite",
+	"mis_a_jour": "2026-10-01T20:32:12.58063+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-382",
+			"statut": "published"
+		}
+	],
+	"nb_variations": 42,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{+\\infty}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Forme indéterminée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["D. Forme indéterminée"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-\\infty}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Forme indéterminée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["D. Forme indéterminée"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-\\infty}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Forme indéterminée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["D. Forme indéterminée"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{+\\infty}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Forme indéterminée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["D. Forme indéterminée"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{+\\infty}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{-\\infty}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{0}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^+}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 8,
+			"graines": "1..300 (modèle réduit à la variation 8)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^+}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 9,
+			"graines": "1..300 (modèle réduit à la variation 9)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^-}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 10,
+			"graines": "1..300 (modèle réduit à la variation 10)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^-}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 11,
+			"graines": "1..300 (modèle réduit à la variation 11)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{+\\infty}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{9}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{1}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{3}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{7}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{6}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 12,
+			"graines": "1..300 (modèle réduit à la variation 12)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{+\\infty}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": -1,
+				"nb_distinctes": 9,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -9,
+				"max": 0,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-1}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-9}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-3}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-7}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-6}{+\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 13,
+			"graines": "1..300 (modèle réduit à la variation 13)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{-\\infty}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{9}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{1}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{3}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{7}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{6}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 14,
+			"graines": "1..300 (modèle réduit à la variation 14)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{-\\infty}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": -1,
+				"nb_distinctes": 9,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -9,
+				"max": 0,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-1}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-9}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-3}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-7}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-6}{-\\infty}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["C. $$0$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 15,
+			"graines": "1..300 (modèle réduit à la variation 15)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{{{a}}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{9}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{1}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{3}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{7}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{6}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 16,
+			"graines": "1..300 (modèle réduit à la variation 16)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-{{a}}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": -1,
+				"nb_distinctes": 9,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -9,
+				"max": 0,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-1}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-9}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-3}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-7}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{+\\infty}{-6}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 17,
+			"graines": "1..300 (modèle réduit à la variation 17)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{{{a}}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{9}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{1}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{3}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{7}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{6}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 18,
+			"graines": "1..300 (modèle réduit à la variation 18)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-{{a}}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": -1,
+				"nb_distinctes": 9,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -9,
+				"max": 0,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-1}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-9}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-3}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-7}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-\\infty}{-6}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 19,
+			"graines": "1..300 (modèle réduit à la variation 19)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times 0$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Forme indéterminée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times 0$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["D. Forme indéterminée"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 20,
+			"graines": "1..300 (modèle réduit à la variation 20)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times 0$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Forme indéterminée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times 0$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["D. Forme indéterminée"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 21,
+			"graines": "1..300 (modèle réduit à la variation 21)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(+\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 22,
+			"graines": "1..300 (modèle réduit à la variation 22)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(-\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 23,
+			"graines": "1..300 (modèle réduit à la variation 23)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(-\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 24,
+			"graines": "1..300 (modèle réduit à la variation 24)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(+\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 25,
+			"graines": "1..300 (modèle réduit à la variation 25)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(+\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$9\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$1\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$3\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$7\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$6\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 26,
+			"graines": "1..300 (modèle réduit à la variation 26)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(+\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-9\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-1\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-3\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-7\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-6\\times(+\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 27,
+			"graines": "1..300 (modèle réduit à la variation 27)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$${{a}}\\times(-\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$9\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$1\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$3\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$7\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$6\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 28,
+			"graines": "1..300 (modèle réduit à la variation 28)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$-{{a}}\\times(-\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-9\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-1\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-3\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-7\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-6\\times(-\\infty)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 29,
+			"graines": "1..300 (modèle réduit à la variation 29)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(+\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\left( +\\infty \\right) + \\left( +\\infty \\right)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 30,
+			"graines": "1..300 (modèle réduit à la variation 30)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)+(-\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Forme indéterminée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\left( +\\infty \\right) + \\left( -\\infty \\right)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["D. Forme indéterminée"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 31,
+			"graines": "1..300 (modèle réduit à la variation 31)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(-\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\left( -\\infty \\right) + \\left( -\\infty \\right)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 32,
+			"graines": "1..300 (modèle réduit à la variation 32)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)+(+\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Forme indéterminée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\left( -\\infty \\right) + \\left( +\\infty \\right)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["D. Forme indéterminée"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 33,
+			"graines": "1..300 (modèle réduit à la variation 33)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(+\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Forme indéterminée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\left( +\\infty \\right) - \\left( +\\infty \\right)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["D. Forme indéterminée"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 34,
+			"graines": "1..300 (modèle réduit à la variation 34)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(+\\infty)-(-\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\left( +\\infty \\right) - \\left( -\\infty \\right)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 35,
+			"graines": "1..300 (modèle réduit à la variation 35)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(-\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Forme indéterminée"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\left( -\\infty \\right) - \\left( -\\infty \\right)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["D. Forme indéterminée"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 36,
+			"graines": "1..300 (modèle réduit à la variation 36)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$(-\\infty)-(+\\infty)$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\left( -\\infty \\right) - \\left( +\\infty \\right)$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 37,
+			"graines": "1..300 (modèle réduit à la variation 37)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty+{{a}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty + 9$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty + 1$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty + 3$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty + 7$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$+\\infty + 6$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 38,
+			"graines": "1..300 (modèle réduit à la variation 38)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty+{{a}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty + 9$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty + 1$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty + 3$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty + 7$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$-\\infty + 6$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 39,
+			"graines": "1..300 (modèle réduit à la variation 39)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^+}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{9}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{1}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{3}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{7}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{6}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 40,
+			"graines": "1..300 (modèle réduit à la variation 40)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^+}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 0,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -9,
+				"max": 0,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-1}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-9}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-3}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-7}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-6}{0^+}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 41,
+			"graines": "1..300 (modèle réduit à la variation 41)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{{{a}}}{0^-}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["-\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{9}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{1}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{3}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{7}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{6}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["B. $$-\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 42,
+			"graines": "1..300 (modèle réduit à la variation 42)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-{{a}}}{0^-}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$+\\infty$$"
+					},
+					{
+						"content": "$$-\\infty$$"
+					},
+					{
+						"content": "$$0$$"
+					},
+					{
+						"content": "Forme indéterminée"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["+\\infty"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 0,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": -9,
+				"max": 0,
+				"nb_distinctes": 10,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"+": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-1}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "1",
+						"b": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 10,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-9}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "9",
+						"b": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-3}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "3",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-7}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "7",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Détermine le résultat de cette opération sur les limites.\n\n$$\\dfrac{-6}{0^-}$$\n\n- A. $$+\\infty$$\n- B. $$-\\infty$$\n- C. $$0$$\n- D. Forme indéterminée",
+					"reponse": ["A. $$+\\infty$$"],
+					"variables": {
+						"a": "6",
+						"b": "4"
+					}
+				}
+			]
+		}
+	]
+}

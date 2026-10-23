@@ -1,0 +1,538 @@
+{
+	"template_id": "0feeabaf-e90d-45a1-b5f1-997b3da067a7",
+	"titre": "« Exactement » : produit de combinaisons",
+	"sous_titre": "Choisir dans deux groupes à la fois : comité de a filles et b garçons, main avec exactement k cœurs, tirage avec exactement 2 rouges (pièges : additionner, choisir les a + b dans le groupe entier)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > Dénombrer avec des contraintes",
+	"mis_a_jour": "2026-10-05T08:35:45.070179+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-319",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "f",
+						"expression": "8..15"
+					},
+					{
+						"name": "g",
+						"expression": "8..15"
+					},
+					{
+						"name": "a",
+						"expression": "2..3"
+					},
+					{
+						"name": "b",
+						"expression": "2..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une classe compte ${{f}}$ filles et ${{g}}$ garçons. On forme un groupe de travail de ${{a}}$ filles et ${{b}}$ garçons.\n\nCombien de groupes différents sont possibles ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(f,a)*binom(g,b)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 176,
+			"variables": [
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 8,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1260,
+						"max": 207025,
+						"negatif_possible": false,
+						"nb_distinctes": 109
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 15,
+				"nb_distinctes": 10,
+				"valeurs": [2, 3, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1260,
+				"max": 207025,
+				"nb_distinctes": 109,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 207025,
+				"nb_distinctes": 119,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (207025)",
+					"graine": 127,
+					"enonce": "Une classe compte $15$ filles et $15$ garçons. On forme un groupe de travail de $3$ filles et $3$ garçons.\n\nCombien de groupes différents sont possibles ?\n\n$[?]$",
+					"reponse": ["207025"],
+					"variables": {
+						"f": "15",
+						"g": "15",
+						"a": "3",
+						"b": "3"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 3,
+					"enonce": "Une classe compte $8$ filles et $11$ garçons. On forme un groupe de travail de $2$ filles et $3$ garçons.\n\nCombien de groupes différents sont possibles ?\n\n$[?]$",
+					"reponse": ["4620"],
+					"variables": {
+						"f": "8",
+						"g": "11",
+						"a": "2",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une classe compte $8$ filles et $12$ garçons. On forme un groupe de travail de $3$ filles et $3$ garçons.\n\nCombien de groupes différents sont possibles ?\n\n$[?]$",
+					"reponse": ["12320"],
+					"variables": {
+						"f": "8",
+						"g": "12",
+						"a": "3",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une classe compte $10$ filles et $10$ garçons. On forme un groupe de travail de $3$ filles et $3$ garçons.\n\nCombien de groupes différents sont possibles ?\n\n$[?]$",
+					"reponse": ["14400"],
+					"variables": {
+						"f": "10",
+						"g": "10",
+						"a": "3",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une classe compte $10$ filles et $9$ garçons. On forme un groupe de travail de $2$ filles et $2$ garçons.\n\nCombien de groupes différents sont possibles ?\n\n$[?]$",
+					"reponse": ["1620"],
+					"variables": {
+						"f": "10",
+						"g": "9",
+						"a": "2",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "1..3"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On tire une main de $5$ cartes dans un jeu de $32$ cartes, qui contient $8$ cœurs.\n\nCombien de mains contiennent **exactement** ${{k}}$ cœur{{if:k>1|s|}} ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(8,k)*binom(24,5-k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 15456,
+						"max": 85008,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [15456, 56672, 85008]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 32,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 5, 8, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 15456,
+				"max": 85008,
+				"nb_distinctes": 3,
+				"valeurs": [15456, 56672, 85008],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 85008,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 5, 8, 32, 15456, 56672, 85008],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (85008)",
+					"graine": 1,
+					"enonce": "On tire une main de $5$ cartes dans un jeu de $32$ cartes, qui contient $8$ cœurs.\n\nCombien de mains contiennent exactement $1$ cœur ?\n\n$[?]$",
+					"reponse": ["85008"],
+					"variables": {
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On tire une main de $5$ cartes dans un jeu de $32$ cartes, qui contient $8$ cœurs.\n\nCombien de mains contiennent exactement $3$ cœurs ?\n\n$[?]$",
+					"reponse": ["15456"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On tire une main de $5$ cartes dans un jeu de $32$ cartes, qui contient $8$ cœurs.\n\nCombien de mains contiennent exactement $2$ cœurs ?\n\n$[?]$",
+					"reponse": ["56672"],
+					"variables": {
+						"k": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "4..8"
+					},
+					{
+						"name": "w",
+						"expression": "3..7"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Une urne contient ${{r}}$ boules rouges et ${{w}}$ boules blanches. On tire simultanément $3$ boules.\n\nCombien de tirages comportent **exactement** $2$ boules rouges ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(r,2)*w}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 25,
+			"variables": [
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "w",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [3, 4, 5, 6, 7]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 18,
+						"max": 196,
+						"negatif_possible": false,
+						"nb_distinctes": 21,
+						"valeurs": [
+							18, 24, 30, 36, 40, 42, 45, 50, 60, 63, 70, 75, 84, 90, 105, 112, 126, 140, 147, 168,
+							196
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 18,
+				"max": 196,
+				"nb_distinctes": 21,
+				"valeurs": [
+					18, 24, 30, 36, 40, 42, 45, 50, 60, 63, 70, 75, 84, 90, 105, 112, 126, 140, 147, 168, 196
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 196,
+				"nb_distinctes": 28,
+				"valeurs": [
+					2, 3, 4, 5, 6, 7, 8, 18, 24, 30, 36, 40, 42, 45, 50, 60, 63, 70, 75, 84, 90, 105, 112,
+					126, 140, 147, 168, 196
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (196)",
+					"graine": 73,
+					"enonce": "Une urne contient $8$ boules rouges et $7$ boules blanches. On tire simultanément $3$ boules.\n\nCombien de tirages comportent exactement $2$ boules rouges ?\n\n$[?]$",
+					"reponse": ["196"],
+					"variables": {
+						"r": "8",
+						"w": "7"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Une urne contient $4$ boules rouges et $5$ boules blanches. On tire simultanément $3$ boules.\n\nCombien de tirages comportent exactement $2$ boules rouges ?\n\n$[?]$",
+					"reponse": ["30"],
+					"variables": {
+						"r": "4",
+						"w": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Une urne contient $5$ boules rouges et $4$ boules blanches. On tire simultanément $3$ boules.\n\nCombien de tirages comportent exactement $2$ boules rouges ?\n\n$[?]$",
+					"reponse": ["40"],
+					"variables": {
+						"r": "5",
+						"w": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Une urne contient $7$ boules rouges et $4$ boules blanches. On tire simultanément $3$ boules.\n\nCombien de tirages comportent exactement $2$ boules rouges ?\n\n$[?]$",
+					"reponse": ["84"],
+					"variables": {
+						"r": "7",
+						"w": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Une urne contient $4$ boules rouges et $6$ boules blanches. On tire simultanément $3$ boules.\n\nCombien de tirages comportent exactement $2$ boules rouges ?\n\n$[?]$",
+					"reponse": ["36"],
+					"variables": {
+						"r": "4",
+						"w": "6"
+					}
+				}
+			]
+		}
+	]
+}

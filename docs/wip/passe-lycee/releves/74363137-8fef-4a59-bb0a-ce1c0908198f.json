@@ -1,0 +1,977 @@
+{
+	"template_id": "74363137-8fef-4a59-bb0a-ce1c0908198f",
+	"titre": "Norme d'une somme ou d'une différence",
+	"sous_titre": "Utiliser le développement de ‖u+v‖² et ‖u−v‖² pour calculer une norme ou un produit scalaire",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Géométrie > Produit scalaire > Propriétés",
+	"mis_a_jour": "2026-10-04T23:06:22.204521+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-315",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "p",
+						"expression": "{{eval:max(-9,1-a*b)}}..{{eval:min(9,a*b-1)}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:a^2+2*p+b^2}}"
+					}
+				],
+				"conditions": ["p != 0", "abs(p) < a*b"],
+				"enonce_brut": "On donne $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\|\\vec{u}+\\vec{v}\\|^2$.\n\n$\\|\\vec{u}+\\vec{v}\\|^2=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 215,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 88,
+						"negatif_possible": false,
+						"nb_distinctes": 75
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 88,
+						"negatif_possible": false,
+						"nb_distinctes": 75
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 88,
+				"nb_distinctes": 75,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 88,
+				"nb_distinctes": 85,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (88)",
+					"graine": 265,
+					"enonce": "On donne $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=6$ et $\\vec{u}\\cdot\\vec{v}=8$.\n\nCalcule $\\|\\vec{u}+\\vec{v}\\|^2$.\n\n$\\|\\vec{u}+\\vec{v}\\|^2=[?]$",
+					"reponse": ["88"],
+					"variables": {
+						"a": "6",
+						"b": "6",
+						"p": "8",
+						"R": "88"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 26,
+					"enonce": "On donne $\\|\\vec{u}\\|=5$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=-9$.\n\nCalcule $\\|\\vec{u}+\\vec{v}\\|^2$.\n\n$\\|\\vec{u}+\\vec{v}\\|^2=[?]$",
+					"reponse": ["23"],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"p": "-9",
+						"R": "23"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On donne $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=7$.\n\nCalcule $\\|\\vec{u}+\\vec{v}\\|^2$.\n\n$\\|\\vec{u}+\\vec{v}\\|^2=[?]$",
+					"reponse": ["34"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"p": "7",
+						"R": "34"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On donne $\\|\\vec{u}\\|=3$, $\\|\\vec{v}\\|=3$ et $\\vec{u}\\cdot\\vec{v}=1$.\n\nCalcule $\\|\\vec{u}+\\vec{v}\\|^2$.\n\n$\\|\\vec{u}+\\vec{v}\\|^2=[?]$",
+					"reponse": ["20"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"p": "1",
+						"R": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On donne $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=-6$.\n\nCalcule $\\|\\vec{u}+\\vec{v}\\|^2$.\n\n$\\|\\vec{u}+\\vec{v}\\|^2=[?]$",
+					"reponse": ["8"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"p": "-6",
+						"R": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "p",
+						"expression": "{{eval:max(-9,1-a*b)}}..{{eval:min(9,a*b-1)}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:a^2-2*p+b^2}}"
+					}
+				],
+				"conditions": ["p != 0", "abs(p) < a*b"],
+				"enonce_brut": "On donne $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|^2$.\n\n$\\|\\vec{u}-\\vec{v}\\|^2=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 215,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 75
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 75
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 90,
+				"nb_distinctes": 75,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 90,
+				"nb_distinctes": 86,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (90)",
+					"graine": 70,
+					"enonce": "On donne $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=6$ et $\\vec{u}\\cdot\\vec{v}=-9$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|^2$.\n\n$\\|\\vec{u}-\\vec{v}\\|^2=[?]$",
+					"reponse": ["90"],
+					"variables": {
+						"a": "6",
+						"b": "6",
+						"p": "-9",
+						"R": "90"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 26,
+					"enonce": "On donne $\\|\\vec{u}\\|=5$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=-9$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|^2$.\n\n$\\|\\vec{u}-\\vec{v}\\|^2=[?]$",
+					"reponse": ["59"],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"p": "-9",
+						"R": "59"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On donne $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=7$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|^2$.\n\n$\\|\\vec{u}-\\vec{v}\\|^2=[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"p": "7",
+						"R": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On donne $\\|\\vec{u}\\|=3$, $\\|\\vec{v}\\|=3$ et $\\vec{u}\\cdot\\vec{v}=1$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|^2$.\n\n$\\|\\vec{u}-\\vec{v}\\|^2=[?]$",
+					"reponse": ["16"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"p": "1",
+						"R": "16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On donne $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=-6$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|^2$.\n\n$\\|\\vec{u}-\\vec{v}\\|^2=[?]$",
+					"reponse": ["32"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"p": "-6",
+						"R": "32"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:(c^2-a^2-b^2)/2}}"
+					}
+				],
+				"conditions": ["c > abs(a-b)", "c < a+b", "c^2 != a^2+b^2"],
+				"enonce_brut": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\|\\vec{u}+\\vec{v}\\|={{c}}$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$. Donne la valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 115,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.43333333333333335,
+						"nb_distinctes": 51,
+						"exemples": [
+							"-\\dfrac{9}{2}",
+							"-18",
+							"-8",
+							"-7",
+							"1",
+							"-\\dfrac{63}{2}",
+							"\\dfrac{9}{2}",
+							"\\dfrac{15}{2}",
+							"-17",
+							"\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"4"
+						],
+						"nombres_contenus": {
+							"min": -34,
+							"max": 63,
+							"nb_distinctes": 40,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.43333333333333335,
+						"nb_distinctes": 51,
+						"exemples": [
+							"-\\dfrac{9}{2}",
+							"-18",
+							"-8",
+							"-7",
+							"1",
+							"-\\dfrac{63}{2}",
+							"\\dfrac{9}{2}",
+							"\\dfrac{15}{2}",
+							"-17",
+							"\\dfrac{3}{2}",
+							"-\\dfrac{5}{2}",
+							"4"
+						],
+						"nombres_contenus": {
+							"min": -34,
+							"max": 63,
+							"nb_distinctes": 40,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -34,
+				"max": 63,
+				"nb_distinctes": 40,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -34,
+				"max": 63,
+				"nb_distinctes": 41,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 170,
+				"denominateurs": [2],
+				"denominateur_min": 2,
+				"denominateur_max": 2,
+				"numerateur_min": 1,
+				"numerateur_max": 63,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (63)",
+					"graine": 6,
+					"enonce": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=6$ et $\\|\\vec{u}+\\vec{v}\\|=3$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$. Donne la valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-\\dfrac{63}{2}"],
+					"variables": {
+						"a": "6",
+						"b": "6",
+						"c": "3",
+						"R": "-\\dfrac{63}{2}"
+					}
+				},
+				{
+					"role": "plus petite valeur (-34)",
+					"graine": 184,
+					"enonce": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=6$ et $\\|\\vec{u}+\\vec{v}\\|=2$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$. Donne la valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-34"],
+					"variables": {
+						"a": "6",
+						"b": "6",
+						"c": "2",
+						"R": "-34"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=3$ et $\\|\\vec{u}+\\vec{v}\\|=6$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$. Donne la valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-\\dfrac{9}{2}"],
+					"variables": {
+						"a": "6",
+						"b": "3",
+						"c": "6",
+						"R": "-\\dfrac{9}{2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=5$ et $\\|\\vec{u}+\\vec{v}\\|=5$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$. Donne la valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-18"],
+					"variables": {
+						"a": "6",
+						"b": "5",
+						"c": "5",
+						"R": "-18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Deux vecteurs $\\vec{u}$ et $\\vec{v}$ vérifient $\\|\\vec{u}\\|=5$, $\\|\\vec{v}\\|=4$ et $\\|\\vec{u}+\\vec{v}\\|=5$.\n\nCalcule $\\vec{u}\\cdot\\vec{v}$. Donne la valeur exacte.\n\n$\\vec{u}\\cdot\\vec{v}=[?]$",
+					"reponse": ["-8"],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"c": "5",
+						"R": "-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..6"
+					},
+					{
+						"name": "b",
+						"expression": "2..6"
+					},
+					{
+						"name": "p",
+						"expression": "{{eval:max(-9,1-a*b)}}..{{eval:min(9,a*b-1)}}"
+					},
+					{
+						"name": "N",
+						"expression": "{{eval:a^2-2*p+b^2}}"
+					},
+					{
+						"name": "R",
+						"expression": "{{eval:sqrt(N)}}"
+					}
+				],
+				"conditions": ["p != 0", "abs(p) < a*b", "sqrt(N) != round(sqrt(N))"],
+				"enonce_brut": "On donne $\\|\\vec{u}\\|={{a}}$, $\\|\\vec{v}\\|={{b}}$ et $\\vec{u}\\cdot\\vec{v}={{p}}$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\|\\vec{u}-\\vec{v}\\|=?$",
+				"reponses_brutes": ["{{R}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 213,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "N",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 71
+					}
+				},
+				{
+					"nom": "R",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 71,
+						"exemples": [
+							"\\sqrt{6}",
+							"4 \\sqrt{3}",
+							"4 \\sqrt{2}",
+							"\\sqrt{30}",
+							"\\sqrt{41}",
+							"\\sqrt{26}",
+							"2 \\sqrt{7}",
+							"2 \\sqrt{11}",
+							"\\sqrt{37}",
+							"\\sqrt{23}",
+							"\\sqrt{38}",
+							"\\sqrt{34}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 82,
+							"nb_distinctes": 49,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 71,
+						"exemples": [
+							"\\sqrt{6}",
+							"4 \\sqrt{3}",
+							"4 \\sqrt{2}",
+							"\\sqrt{30}",
+							"\\sqrt{41}",
+							"\\sqrt{26}",
+							"2 \\sqrt{7}",
+							"2 \\sqrt{11}",
+							"\\sqrt{37}",
+							"\\sqrt{23}",
+							"\\sqrt{38}",
+							"\\sqrt{34}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 82,
+							"nb_distinctes": 49,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 82,
+				"nb_distinctes": 49,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 82,
+				"nb_distinctes": 61,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"racine": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (82)",
+					"graine": 290,
+					"enonce": "On donne $\\|\\vec{u}\\|=6$, $\\|\\vec{v}\\|=6$ et $\\vec{u}\\cdot\\vec{v}=-5$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\|\\vec{u}-\\vec{v}\\|=[?]$",
+					"reponse": ["\\sqrt{82}"],
+					"variables": {
+						"a": "6",
+						"b": "6",
+						"p": "-5",
+						"N": "82",
+						"R": "\\sqrt{82}"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 26,
+					"enonce": "On donne $\\|\\vec{u}\\|=5$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=-9$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\|\\vec{u}-\\vec{v}\\|=[?]$",
+					"reponse": ["\\sqrt{59}"],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"p": "-9",
+						"N": "59",
+						"R": "\\sqrt{59}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On donne $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=7$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\|\\vec{u}-\\vec{v}\\|=[?]$",
+					"reponse": ["\\sqrt{6}"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"p": "7",
+						"N": "6",
+						"R": "\\sqrt{6}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On donne $\\|\\vec{u}\\|=3$, $\\|\\vec{v}\\|=5$ et $\\vec{u}\\cdot\\vec{v}=-7$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\|\\vec{u}-\\vec{v}\\|=[?]$",
+					"reponse": ["4 \\sqrt{3}"],
+					"variables": {
+						"a": "3",
+						"b": "5",
+						"p": "-7",
+						"N": "48",
+						"R": "4 \\sqrt{3}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On donne $\\|\\vec{u}\\|=2$, $\\|\\vec{v}\\|=4$ et $\\vec{u}\\cdot\\vec{v}=-6$.\n\nCalcule $\\|\\vec{u}-\\vec{v}\\|$. Donne sa valeur exacte sous la forme $k\\sqrt{n}$, où $k$ et $n$ sont des entiers et $n$ est le plus petit possible.\n\n$\\|\\vec{u}-\\vec{v}\\|=[?]$",
+					"reponse": ["4 \\sqrt{2}"],
+					"variables": {
+						"a": "2",
+						"b": "4",
+						"p": "-6",
+						"N": "32",
+						"R": "4 \\sqrt{2}"
+					}
+				}
+			]
+		}
+	]
+}

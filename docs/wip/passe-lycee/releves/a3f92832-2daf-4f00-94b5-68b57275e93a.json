@@ -1,0 +1,656 @@
+{
+	"template_id": "a3f92832-2daf-4f00-94b5-68b57275e93a",
+	"titre": "Interpréter une espérance",
+	"sous_titre": "Choisir l'interprétation correcte d'une espérance : valeur moyenne sur un grand nombre de répétitions",
+	"consigne": null,
+	"grades": ["1_SPE"],
+	"type": "multiple_choice",
+	"theme": "Probabilités > Variables aléatoires > Espérance",
+	"mis_a_jour": "2026-10-02T21:39:27.66795+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "1SPE-349",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "m",
+						"expression": "-49..49"
+					}
+				],
+				"conditions": ["mod(m,10) != 0", "abs(m) >= 3"],
+				"enonce_brut": "Dans un jeu de hasard, on note $G$ le gain algébrique (en euros) d'un joueur pour une partie. On a calculé $E(G)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Sur un grand nombre de parties, le joueur {{if:m > 0|gagne|perd}} en moyenne environ ${{eval:abs(m)/10;d}}$ € par partie."
+					},
+					{
+						"content": "À chaque partie, le joueur {{if:m > 0|gagne|perd}} exactement ${{eval:abs(m)/10;d}}$ €."
+					},
+					{
+						"content": "Le gain le plus probable pour une partie est ${{eval:m/10;d}}$ €."
+					},
+					{
+						"content": "Sur $100$ parties, le joueur est certain de {{if:m > 0|gagner|perdre}} exactement ${{eval:10*abs(m)}}$ €."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 283,
+			"variables": [
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -49,
+						"max": 49,
+						"negatif_possible": true,
+						"nb_distinctes": 82
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 82,
+						"exemples": [
+							"Sur un grand nombre de parties, le joueur perd en moyenne environ $4.9$ € par partie.",
+							"Sur un grand nombre de parties, le joueur perd en moyenne environ $1.7$ € par partie.",
+							"Sur un grand nombre de parties, le joueur perd en moyenne environ $4.6$ € par partie.",
+							"Sur un grand nombre de parties, le joueur gagne en moyenne environ $2.7$ € par partie.",
+							"Sur un grand nombre de parties, le joueur perd en moyenne environ $4.3$ € par partie.",
+							"Sur un grand nombre de parties, le joueur gagne en moyenne environ $1.2$ € par partie.",
+							"Sur un grand nombre de parties, le joueur gagne en moyenne environ $3.5$ € par partie.",
+							"Sur un grand nombre de parties, le joueur gagne en moyenne environ $4.1$ € par partie.",
+							"Sur un grand nombre de parties, le joueur gagne en moyenne environ $0.3$ € par partie.",
+							"Sur un grand nombre de parties, le joueur perd en moyenne environ $4.2$ € par partie.",
+							"Sur un grand nombre de parties, le joueur perd en moyenne environ $1.4$ € par partie.",
+							"Sur un grand nombre de parties, le joueur perd en moyenne environ $0.7$ € par partie."
+						],
+						"nombres_contenus": {
+							"min": 0.3,
+							"max": 4.9,
+							"nb_distinctes": 43,
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -4.9,
+				"max": 4.9,
+				"nb_distinctes": 82,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0.3,
+				"max": 4.9,
+				"nb_distinctes": 43,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 0.3,
+				"max": 490,
+				"nb_distinctes": 87,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_tous": {
+				"min": -4.9,
+				"max": 490,
+				"nb_distinctes": 126,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 63,
+					"max": 63
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (490)",
+					"graine": 1,
+					"enonce": "Dans un jeu de hasard, on note $G$ le gain algébrique (en euros) d'un joueur pour une partie. On a calculé $E \\left( G \\right) = -4{,}9$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Sur un grand nombre de parties, le joueur perd en moyenne environ $4{,}9$ € par partie.\n- B. À chaque partie, le joueur perd exactement $4{,}9$ €.\n- C. Sur $100$ parties, le joueur est certain de perdre exactement $490$ €.\n- D. Le gain le plus probable pour une partie est $-4{,}9$ €.",
+					"reponse": [
+						"A. Sur un grand nombre de parties, le joueur perd en moyenne environ $4{,}9$ € par partie."
+					],
+					"variables": {
+						"m": "-49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans un jeu de hasard, on note $G$ le gain algébrique (en euros) d'un joueur pour une partie. On a calculé $E \\left( G \\right) = -1{,}7$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Sur un grand nombre de parties, le joueur perd en moyenne environ $1{,}7$ € par partie.\n- B. Le gain le plus probable pour une partie est $-1{,}7$ €.\n- C. Sur $100$ parties, le joueur est certain de perdre exactement $170$ €.\n- D. À chaque partie, le joueur perd exactement $1{,}7$ €.",
+					"reponse": [
+						"A. Sur un grand nombre de parties, le joueur perd en moyenne environ $1{,}7$ € par partie."
+					],
+					"variables": {
+						"m": "-17"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans un jeu de hasard, on note $G$ le gain algébrique (en euros) d'un joueur pour une partie. On a calculé $E \\left( G \\right) = -4{,}6$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Le gain le plus probable pour une partie est $-4{,}6$ €.\n- B. Sur $100$ parties, le joueur est certain de perdre exactement $460$ €.\n- C. Sur un grand nombre de parties, le joueur perd en moyenne environ $4{,}6$ € par partie.\n- D. À chaque partie, le joueur perd exactement $4{,}6$ €.",
+					"reponse": [
+						"C. Sur un grand nombre de parties, le joueur perd en moyenne environ $4{,}6$ € par partie."
+					],
+					"variables": {
+						"m": "-46"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Dans un jeu de hasard, on note $G$ le gain algébrique (en euros) d'un joueur pour une partie. On a calculé $E \\left( G \\right) = -1{,}7$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. À chaque partie, le joueur perd exactement $1{,}7$ €.\n- B. Le gain le plus probable pour une partie est $-1{,}7$ €.\n- C. Sur $100$ parties, le joueur est certain de perdre exactement $170$ €.\n- D. Sur un grand nombre de parties, le joueur perd en moyenne environ $1{,}7$ € par partie.",
+					"reponse": [
+						"D. Sur un grand nombre de parties, le joueur perd en moyenne environ $1{,}7$ € par partie."
+					],
+					"variables": {
+						"m": "-17"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans un jeu de hasard, on note $G$ le gain algébrique (en euros) d'un joueur pour une partie. On a calculé $E \\left( G \\right) = 2{,}7$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Le gain le plus probable pour une partie est $2{,}7$ €.\n- B. Sur $100$ parties, le joueur est certain de gagner exactement $270$ €.\n- C. À chaque partie, le joueur gagne exactement $2{,}7$ €.\n- D. Sur un grand nombre de parties, le joueur gagne en moyenne environ $2{,}7$ € par partie.",
+					"reponse": [
+						"D. Sur un grand nombre de parties, le joueur gagne en moyenne environ $2{,}7$ € par partie."
+					],
+					"variables": {
+						"m": "27"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "h",
+						"expression": "7..18"
+					},
+					{
+						"name": "m",
+						"expression": "11..49"
+					}
+				],
+				"conditions": ["mod(m,10) != 0"],
+				"enonce_brut": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre ${{h}}$ h et ${{eval:h+1}}$ h. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Sur un grand nombre de minutes, il entre en moyenne environ ${{eval:m/10;d}}$ clients par minute."
+					},
+					{
+						"content": "Il entre exactement ${{eval:m/10;d}}$ clients chaque minute."
+					},
+					{
+						"content": "La valeur de $X$ la plus probable est ${{eval:m/10;d}}$."
+					},
+					{
+						"content": "Pendant la moitié des minutes, il entre plus de ${{eval:m/10;d}}$ clients."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 297,
+			"variables": [
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 7,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 49,
+						"negatif_possible": false,
+						"nb_distinctes": 36
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 36,
+						"exemples": [
+							"Sur un grand nombre de minutes, il entre en moyenne environ $3.1$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $2.2$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $2.8$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $1.9$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $3.6$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $4.9$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $1.6$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $3.7$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $3.4$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $3.3$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $1.3$ clients par minute.",
+							"Sur un grand nombre de minutes, il entre en moyenne environ $1.8$ clients par minute."
+						],
+						"nombres_contenus": {
+							"min": 1.1,
+							"max": 4.9,
+							"nb_distinctes": 36,
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1.1,
+				"max": 19,
+				"nb_distinctes": 49,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1.1,
+				"max": 4.9,
+				"nb_distinctes": 36,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": {
+				"min": 1.1,
+				"max": 4.9,
+				"nb_distinctes": 36,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_tous": {
+				"min": 1.1,
+				"max": 19,
+				"nb_distinctes": 49,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 61,
+					"max": 61
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (19)",
+					"graine": 10,
+					"enonce": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre $18$ h et $19$ h. On a calculé $E \\left( X \\right) = 3{,}7$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. La valeur de $X$ la plus probable est $3{,}7$.\n- B. Sur un grand nombre de minutes, il entre en moyenne environ $3{,}7$ clients par minute.\n- C. Il entre exactement $3{,}7$ clients chaque minute.\n- D. Pendant la moitié des minutes, il entre plus de $3{,}7$ clients.",
+					"reponse": [
+						"B. Sur un grand nombre de minutes, il entre en moyenne environ $3{,}7$ clients par minute."
+					],
+					"variables": {
+						"h": "18",
+						"m": "37"
+					}
+				},
+				{
+					"role": "plus petite valeur (1.1)",
+					"graine": 27,
+					"enonce": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre $7$ h et $8$ h. On a calculé $E \\left( X \\right) = 1{,}1$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Il entre exactement $1{,}1$ clients chaque minute.\n- B. Pendant la moitié des minutes, il entre plus de $1{,}1$ clients.\n- C. La valeur de $X$ la plus probable est $1{,}1$.\n- D. Sur un grand nombre de minutes, il entre en moyenne environ $1{,}1$ clients par minute.",
+					"reponse": [
+						"D. Sur un grand nombre de minutes, il entre en moyenne environ $1{,}1$ clients par minute."
+					],
+					"variables": {
+						"h": "7",
+						"m": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre $7$ h et $8$ h. On a calculé $E \\left( X \\right) = 3{,}1$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Il entre exactement $3{,}1$ clients chaque minute.\n- B. Sur un grand nombre de minutes, il entre en moyenne environ $3{,}1$ clients par minute.\n- C. La valeur de $X$ la plus probable est $3{,}1$.\n- D. Pendant la moitié des minutes, il entre plus de $3{,}1$ clients.",
+					"reponse": [
+						"B. Sur un grand nombre de minutes, il entre en moyenne environ $3{,}1$ clients par minute."
+					],
+					"variables": {
+						"h": "7",
+						"m": "31"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre $10$ h et $11$ h. On a calculé $E \\left( X \\right) = 2{,}2$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Sur un grand nombre de minutes, il entre en moyenne environ $2{,}2$ clients par minute.\n- B. Il entre exactement $2{,}2$ clients chaque minute.\n- C. Pendant la moitié des minutes, il entre plus de $2{,}2$ clients.\n- D. La valeur de $X$ la plus probable est $2{,}2$.",
+					"reponse": [
+						"A. Sur un grand nombre de minutes, il entre en moyenne environ $2{,}2$ clients par minute."
+					],
+					"variables": {
+						"h": "10",
+						"m": "22"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On note $X$ le nombre de clients qui entrent dans une boulangerie pendant une minute, entre $7$ h et $8$ h. On a calculé $E \\left( X \\right) = 2{,}8$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Il entre exactement $2{,}8$ clients chaque minute.\n- B. Pendant la moitié des minutes, il entre plus de $2{,}8$ clients.\n- C. La valeur de $X$ la plus probable est $2{,}8$.\n- D. Sur un grand nombre de minutes, il entre en moyenne environ $2{,}8$ clients par minute.",
+					"reponse": [
+						"D. Sur un grand nombre de minutes, il entre en moyenne environ $2{,}8$ clients par minute."
+					],
+					"variables": {
+						"h": "7",
+						"m": "28"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "4|6|8|10|12"
+					},
+					{
+						"name": "m",
+						"expression": "11..{{eval:10*n-1}}"
+					}
+				],
+				"conditions": ["mod(m,10) != 0", "m != 5*(n+1)"],
+				"enonce_brut": "Un dé à ${{n}}$ faces, numérotées de $1$ à ${{n}}$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E(X)={{eval:m/10;d}}$.\n\nQuelle phrase interprète correctement ce résultat ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de ${{eval:m/10;d}}$."
+					},
+					{
+						"content": "Le résultat le plus fréquent est ${{eval:round(m/10)}}$, l'arrondi de ${{eval:m/10;d}}$."
+					},
+					{
+						"content": "À chaque lancer, on obtient un résultat proche de ${{eval:m/10;d}}$."
+					},
+					{
+						"content": "La moitié des lancers donne un résultat supérieur à ${{eval:m/10;d}}$."
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 291,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [4, 6, 8, 10, 12]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 119,
+						"negatif_possible": false,
+						"nb_distinctes": 83
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 83,
+						"exemples": [
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2.6$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2.4$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2.1$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $1.8$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $3.7$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $3.9$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $8.6$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $5.2$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2.7$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $1.4$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $4.6$.",
+							"Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $3.8$."
+						],
+						"nombres_contenus": {
+							"min": 1.1,
+							"max": 11.9,
+							"nb_distinctes": 83,
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 89,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1.1,
+				"max": 11.9,
+				"nb_distinctes": 83,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 95,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 95,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 4,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 63,
+					"max": 63
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (12)",
+					"graine": 9,
+					"enonce": "Un dé à $12$ faces, numérotées de $1$ à $12$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E \\left( X \\right) = 2{,}6$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2{,}6$.\n- B. Le résultat le plus fréquent est $3$, l'arrondi de $2{,}6$.\n- C. À chaque lancer, on obtient un résultat proche de $2{,}6$.\n- D. La moitié des lancers donne un résultat supérieur à $2{,}6$.",
+					"reponse": [
+						"A. Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2{,}6$."
+					],
+					"variables": {
+						"n": "12",
+						"m": "26"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Un dé à $4$ faces, numérotées de $1$ à $4$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E \\left( X \\right) = 2{,}6$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Le résultat le plus fréquent est $3$, l'arrondi de $2{,}6$.\n- B. Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2{,}6$.\n- C. À chaque lancer, on obtient un résultat proche de $2{,}6$.\n- D. La moitié des lancers donne un résultat supérieur à $2{,}6$.",
+					"reponse": [
+						"B. Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2{,}6$."
+					],
+					"variables": {
+						"n": "4",
+						"m": "26"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un dé à $6$ faces, numérotées de $1$ à $6$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E \\left( X \\right) = 2{,}4$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2{,}4$.\n- B. Le résultat le plus fréquent est $2$, l'arrondi de $2{,}4$.\n- C. La moitié des lancers donne un résultat supérieur à $2{,}4$.\n- D. À chaque lancer, on obtient un résultat proche de $2{,}4$.",
+					"reponse": [
+						"A. Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2{,}4$."
+					],
+					"variables": {
+						"n": "6",
+						"m": "24"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un dé à $4$ faces, numérotées de $1$ à $4$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E \\left( X \\right) = 2{,}4$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. Le résultat le plus fréquent est $2$, l'arrondi de $2{,}4$.\n- B. La moitié des lancers donne un résultat supérieur à $2{,}4$.\n- C. À chaque lancer, on obtient un résultat proche de $2{,}4$.\n- D. Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2{,}4$.",
+					"reponse": [
+						"D. Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2{,}4$."
+					],
+					"variables": {
+						"n": "4",
+						"m": "24"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Un dé à $6$ faces, numérotées de $1$ à $6$, est truqué. On note $X$ le résultat d'un lancer. On a calculé $E \\left( X \\right) = 2{,}1$.\n\nQuelle phrase interprète correctement ce résultat ?\n\n- A. À chaque lancer, on obtient un résultat proche de $2{,}1$.\n- B. Le résultat le plus fréquent est $2$, l'arrondi de $2{,}1$.\n- C. La moitié des lancers donne un résultat supérieur à $2{,}1$.\n- D. Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2{,}1$.",
+					"reponse": [
+						"D. Si on lance ce dé un grand nombre de fois, la moyenne des résultats obtenus est proche de $2{,}1$."
+					],
+					"variables": {
+						"n": "6",
+						"m": "21"
+					}
+				}
+			]
+		}
+	]
+}

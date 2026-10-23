@@ -1,0 +1,1176 @@
+{
+	"template_id": "968f4295-08a9-44a4-8327-9087de7efd85",
+	"titre": "Solution de y′ = ay vérifiant une condition initiale",
+	"sous_titre": "Résoudre y′ = ay (ou une forme équivalente : y′ + ay = 0, py′ = qy) avec une condition f(0) ou f(1) : réponse unique Ce^{ax}",
+	"consigne": null,
+	"grades": ["T_SPE", "T_COMP"],
+	"type": "fill_in_blanks",
+	"theme": "Primitives et équations différentielles > Équations différentielles > Équation y′ = ay",
+	"mis_a_jour": "2026-10-04T10:14:56.515045+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TCOMP-253",
+			"statut": "draft"
+		},
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-464",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "k",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f(0)={{eval:k}}$.\n\n$f(x)=?$",
+				"reponses_brutes": [
+					"{{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 109,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 109,
+						"exemples": [
+							"e^{-5x}",
+							"-3e^{-2x}",
+							"-e^{-5x}",
+							"-4e^{-2x}",
+							"-4e^{3x}",
+							"2e^{-5x}",
+							"6e^{-5x}",
+							"-3e^{2x}",
+							"-5e^{4x}",
+							"3e^{5x}",
+							"2e^{x}",
+							"-6e^{-2x}"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 6,
+							"nb_distinctes": 10,
+							"valeurs": [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 10,
+				"valeurs": [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 7,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-5y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = 6$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["6e^{-5x}"],
+					"variables": {
+						"a": "-5",
+						"k": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 13,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-2y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = -6$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-6e^{-2x}"],
+					"variables": {
+						"a": "-2",
+						"k": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-5y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = 1$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["e^{-5x}"],
+					"variables": {
+						"a": "-5",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-2y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = -3$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-3e^{-2x}"],
+					"variables": {
+						"a": "-2",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-5y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = -1$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-e^{-5x}"],
+					"variables": {
+						"a": "-5",
+						"k": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "k",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère l'équation différentielle $(E) : y'{{if:a==1|+y}}{{if:a==-1|-y}}{{if:a>0 && a!=1|+{{eval:a}}y}}{{if:a<0 && a!=-1|{{eval:a}}y}}=0$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f(0)={{eval:k}}$.\n\n$f(x)=?$",
+				"reponses_brutes": [
+					"{{if:k==1|e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k==-1|-e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 109,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 109,
+						"exemples": [
+							"e^{5x}",
+							"-3e^{2x}",
+							"-e^{5x}",
+							"-4e^{2x}",
+							"-4e^{-3x}",
+							"2e^{5x}",
+							"6e^{5x}",
+							"-3e^{-2x}",
+							"-5e^{-4x}",
+							"3e^{-5x}",
+							"2e^{-x}",
+							"-6e^{2x}"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 6,
+							"nb_distinctes": 10,
+							"valeurs": [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 10,
+				"valeurs": [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 13,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 7,
+					"enonce": "On considère l'équation différentielle $(E) : y'-5y=0$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = 6$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["6e^{5x}"],
+					"variables": {
+						"a": "-5",
+						"k": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 13,
+					"enonce": "On considère l'équation différentielle $(E) : y'-2y=0$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = -6$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-6e^{2x}"],
+					"variables": {
+						"a": "-2",
+						"k": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère l'équation différentielle $(E) : y'-5y=0$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = 1$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["e^{5x}"],
+					"variables": {
+						"a": "-5",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère l'équation différentielle $(E) : y'-2y=0$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = -3$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-3e^{2x}"],
+					"variables": {
+						"a": "-2",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère l'équation différentielle $(E) : y'-5y=0$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = -1$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-e^{5x}"],
+					"variables": {
+						"a": "-5",
+						"k": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "k",
+						"expression": "1..6;±"
+					},
+					{
+						"name": "p",
+						"expression": "2..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère l'équation différentielle $(E) : {{eval:p}}y'={{if:p*a==1|y}}{{if:p*a==-1|-y}}{{if:p*a!=1 && p*a!=-1|{{eval:p*a}}y}}$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f(0)={{eval:k}}$.\n\n$f(x)=?$",
+				"reponses_brutes": [
+					"{{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 200,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 109,
+						"exemples": [
+							"e^{-5x}",
+							"-3e^{-2x}",
+							"-e^{-5x}",
+							"-4e^{-2x}",
+							"-4e^{3x}",
+							"2e^{-5x}",
+							"6e^{-5x}",
+							"-3e^{2x}",
+							"-5e^{4x}",
+							"3e^{5x}",
+							"2e^{x}",
+							"-6e^{-2x}"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 6,
+							"nb_distinctes": 10,
+							"valeurs": [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -20,
+				"max": 20,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-20, -16, -15, -12, -10, -9, -8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8, 9, 10,
+					12, 15, 16, 20
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 10,
+				"valeurs": [-6, -5, -4, -3, -2, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -20,
+				"max": 20,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-20, -16, -15, -12, -10, -9, -8, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 8, 9, 10,
+					12, 15, 16, 20
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 10,
+					"enonce": "On considère l'équation différentielle $(E) : 4y'=20y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = 3$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["3e^{5x}"],
+					"variables": {
+						"a": "5",
+						"k": "3",
+						"p": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (-20)",
+					"graine": 1,
+					"enonce": "On considère l'équation différentielle $(E) : 4y'=-20y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = 1$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["e^{-5x}"],
+					"variables": {
+						"a": "-5",
+						"k": "1",
+						"p": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère l'équation différentielle $(E) : 3y'=-6y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = -3$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-3e^{-2x}"],
+					"variables": {
+						"a": "-2",
+						"k": "-3",
+						"p": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère l'équation différentielle $(E) : 2y'=-10y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = -1$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-e^{-5x}"],
+					"variables": {
+						"a": "-5",
+						"k": "-1",
+						"p": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "On considère l'équation différentielle $(E) : 2y'=-4y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 0 \\right) = -4$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-4e^{-2x}"],
+					"variables": {
+						"a": "-2",
+						"k": "-4",
+						"p": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					},
+					{
+						"name": "k",
+						"expression": "1..6;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f(1)={{eval:k}}$.\n\n$f(x)=?$",
+				"reponses_brutes": [
+					"{{if:k==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a>0|+{{eval:-a}}}}{{if:-a<0|{{eval:-a}}}}}}}{{if:k==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a>0|+{{eval:-a}}}}{{if:-a<0|{{eval:-a}}}}}}}{{if:k!=1 && k!=-1|{{eval:k}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}{{if:-a>0|+{{eval:-a}}}}{{if:-a<0|{{eval:-a}}}}}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 109,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -6,
+						"max": 6,
+						"negatif_possible": true,
+						"nb_distinctes": 12,
+						"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 109,
+						"exemples": [
+							"e^{-5x+5}",
+							"-3e^{-2x+2}",
+							"-e^{-5x+5}",
+							"-4e^{-2x+2}",
+							"-4e^{3x-3}",
+							"2e^{-5x+5}",
+							"6e^{-5x+5}",
+							"-3e^{2x-2}",
+							"-5e^{4x-4}",
+							"3e^{5x-5}",
+							"2e^{x-1}",
+							"-6e^{-2x+2}"
+						],
+						"nombres_contenus": {
+							"min": -6,
+							"max": 6,
+							"nb_distinctes": 11,
+							"valeurs": [-6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 11,
+				"valeurs": [-6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -6,
+				"max": 6,
+				"nb_distinctes": 12,
+				"valeurs": [-6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6)",
+					"graine": 7,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-5y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 1 \\right) = 6$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["6e^{-5x+5}"],
+					"variables": {
+						"a": "-5",
+						"k": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (-6)",
+					"graine": 13,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-2y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 1 \\right) = -6$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-6e^{-2x+2}"],
+					"variables": {
+						"a": "-2",
+						"k": "-6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-5y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 1 \\right) = 1$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["e^{-5x+5}"],
+					"variables": {
+						"a": "-5",
+						"k": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-2y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 1 \\right) = -3$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-3e^{-2x+2}"],
+					"variables": {
+						"a": "-2",
+						"k": "-3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-5y$.\n\nDétermine la solution $f$ de cette équation définie sur $\\mathbb{R}$ telle que $f\\left( 1 \\right) = -1$.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["-e^{-5x+5}"],
+					"variables": {
+						"a": "-5",
+						"k": "-1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$.\n\nDonne toutes les solutions de l'équation $(E)$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f(x)=?$",
+				"reponses_brutes": ["Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"Ce^{-2x}",
+							"Ce^{-3x}",
+							"Ce^{-4x}",
+							"Ce^{-5x}",
+							"Ce^{-x}",
+							"Ce^{2x}",
+							"Ce^{3x}",
+							"Ce^{4x}",
+							"Ce^{5x}",
+							"Ce^{x}"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 8,
+							"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["solution-ed"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 10,
+					"enonce": "On considère l'équation différentielle $(E) : y'=5y$.\n\nDonne toutes les solutions de l'équation $E$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["Ce^{5x}"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 1,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-5y$.\n\nDonne toutes les solutions de l'équation $E$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["Ce^{-5x}"],
+					"variables": {
+						"a": "-5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère l'équation différentielle $(E) : y'=-2y$.\n\nDonne toutes les solutions de l'équation $E$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["Ce^{-2x}"],
+					"variables": {
+						"a": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère l'équation différentielle $(E) : y'=3y$.\n\nDonne toutes les solutions de l'équation $E$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["Ce^{3x}"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On considère l'équation différentielle $(E) : y'=2y$.\n\nDonne toutes les solutions de l'équation $E$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["Ce^{2x}"],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..5;±"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On considère l'équation différentielle $(E) : y'{{if:a==1|+y}}{{if:a==-1|-y}}{{if:a>0 && a!=1|+{{eval:a}}y}}{{if:a<0 && a!=-1|{{eval:a}}y}}=0$.\n\nDonne toutes les solutions de l'équation $(E)$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f(x)=?$",
+				"reponses_brutes": [
+					"Ce^{{{if:-a==1|x}}{{if:-a==-1|-x}}{{if:-a!=1 && -a!=-1|{{eval:-a}}x}}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -5,
+						"max": 5,
+						"negatif_possible": true,
+						"nb_distinctes": 10,
+						"valeurs": [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"Ce^{-2x}",
+							"Ce^{-3x}",
+							"Ce^{-4x}",
+							"Ce^{-5x}",
+							"Ce^{-x}",
+							"Ce^{2x}",
+							"Ce^{3x}",
+							"Ce^{4x}",
+							"Ce^{5x}",
+							"Ce^{x}"
+						],
+						"nombres_contenus": {
+							"min": -5,
+							"max": 5,
+							"nb_distinctes": 8,
+							"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 5,
+				"nb_distinctes": 5,
+				"valeurs": [0, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 8,
+				"valeurs": [-5, -4, -3, -2, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -5,
+				"max": 5,
+				"nb_distinctes": 9,
+				"valeurs": [-5, -4, -3, -2, 0, 2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["solution-ed"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (5)",
+					"graine": 1,
+					"enonce": "On considère l'équation différentielle $(E) : y'-5y=0$.\n\nDonne toutes les solutions de l'équation $E$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["Ce^{5x}"],
+					"variables": {
+						"a": "-5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-5)",
+					"graine": 10,
+					"enonce": "On considère l'équation différentielle $(E) : y'+5y=0$.\n\nDonne toutes les solutions de l'équation $E$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["Ce^{-5x}"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "On considère l'équation différentielle $(E) : y'-2y=0$.\n\nDonne toutes les solutions de l'équation $E$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["Ce^{2x}"],
+					"variables": {
+						"a": "-2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "On considère l'équation différentielle $(E) : y'+3y=0$.\n\nDonne toutes les solutions de l'équation $E$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["Ce^{-3x}"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On considère l'équation différentielle $(E) : y'+2y=0$.\n\nDonne toutes les solutions de l'équation $E$ sur $\\mathbb{R}$, en notant $C$ la constante réelle.\n\n$f\\left( x \\right) = [?]$",
+					"reponse": ["Ce^{-2x}"],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		}
+	]
+}

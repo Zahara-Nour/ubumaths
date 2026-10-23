@@ -1,0 +1,720 @@
+{
+	"template_id": "3edf49f2-16e4-4deb-940d-42c01fa61519",
+	"titre": "Petit théorème de Fermat : reste d'une puissance modulo p",
+	"sous_titre": "Utiliser aᵖ⁻¹ ≡ 1 [p] (p premier, a non multiple de p) et aᵖ ≡ a [p] pour réduire un exposant (pièges : répondre 1 pour toute puissance, a multiple de p, p non premier)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Arithmétique > Nombres premiers > Nombres premiers",
+	"mis_a_jour": "2026-10-05T16:06:50.923825+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-283",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "5|7|11|13"
+					},
+					{
+						"name": "a",
+						"expression": "2..30"
+					},
+					{
+						"name": "m",
+						"expression": "3..20"
+					},
+					{
+						"name": "r",
+						"expression": "1..11"
+					}
+				],
+				"conditions": ["mod(a,p) != 0", "r <= p-2", "mod(mod(a,p)^r,p) != 1"],
+				"enonce_brut": "${{p}}$ est premier. Quel est le reste de la division euclidienne de ${{a}}^{ {{eval:m*(p-1)+r}} }$ par ${{p}}$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:mod(mod(a,p)^r,p)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [5, 7, 11, 13]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 29,
+						"valeurs": [
+							2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+							25, 26, 27, 28, 29, 30
+						]
+					}
+				},
+				{
+					"nom": "m",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 18,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 249,
+				"nb_distinctes": 169,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 249,
+				"nb_distinctes": 169,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (249)",
+					"graine": 36,
+					"enonce": "$13$ est premier. Quel est le reste de la division euclidienne de $18^{249}$ par $13$ ?\n\n$[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"p": "13",
+						"a": "18",
+						"m": "20",
+						"r": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 17,
+					"enonce": "$5$ est premier. Quel est le reste de la division euclidienne de $17^{21}$ par $5$ ?\n\n$[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"p": "5",
+						"a": "17",
+						"m": "5",
+						"r": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$7$ est premier. Quel est le reste de la division euclidienne de $19^{95}$ par $7$ ?\n\n$[?]$",
+					"reponse": ["3"],
+					"variables": {
+						"p": "7",
+						"a": "19",
+						"m": "15",
+						"r": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$11$ est premier. Quel est le reste de la division euclidienne de $16^{99}$ par $11$ ?\n\n$[?]$",
+					"reponse": ["9"],
+					"variables": {
+						"p": "11",
+						"a": "16",
+						"m": "9",
+						"r": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$11$ est premier. Quel est le reste de la division euclidienne de $7^{48}$ par $11$ ?\n\n$[?]$",
+					"reponse": ["9"],
+					"variables": {
+						"p": "11",
+						"a": "7",
+						"m": "4",
+						"r": "8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "5|7|11|13"
+					},
+					{
+						"name": "a",
+						"expression": "2..40"
+					}
+				],
+				"conditions": ["mod(a,p) >= 2"],
+				"enonce_brut": "${{p}}$ est premier. Quel est le reste de la division euclidienne de ${{a}}^{ {{p}} }$ par ${{p}}$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:mod(a,p)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 113,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [5, 7, 11, 13]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 40,
+						"negatif_possible": false,
+						"nb_distinctes": 39
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 40,
+				"nb_distinctes": 39,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 12,
+				"nb_distinctes": 11,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 40,
+				"nb_distinctes": 39,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (40)",
+					"graine": 70,
+					"enonce": "$7$ est premier. Quel est le reste de la division euclidienne de $40^7$ par $7$ ?\n\n$[?]$",
+					"reponse": ["5"],
+					"variables": {
+						"p": "7",
+						"a": "40"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "$5$ est premier. Quel est le reste de la division euclidienne de $22^5$ par $5$ ?\n\n$[?]$",
+					"reponse": ["2"],
+					"variables": {
+						"p": "5",
+						"a": "22"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$7$ est premier. Quel est le reste de la division euclidienne de $13^7$ par $7$ ?\n\n$[?]$",
+					"reponse": ["6"],
+					"variables": {
+						"p": "7",
+						"a": "13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$5$ est premier. Quel est le reste de la division euclidienne de $19^5$ par $5$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"p": "5",
+						"a": "19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$7$ est premier. Quel est le reste de la division euclidienne de $10^7$ par $7$ ?\n\n$[?]$",
+					"reponse": ["3"],
+					"variables": {
+						"p": "7",
+						"a": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "5|7|11|13"
+					},
+					{
+						"name": "t",
+						"expression": "2..6"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le reste de la division euclidienne de ${{eval:p*t}}^{ {{eval:p-1}} }$ par ${{p}}$ ?\n\n$?$",
+				"reponses_brutes": ["0"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 20,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 13,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [5, 7, 11, 13]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 78,
+				"nb_distinctes": 27,
+				"valeurs": [
+					4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 20, 21, 22, 25, 26, 28, 30, 33, 35, 39, 42, 44, 52,
+					55, 65, 66, 78
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 78,
+				"nb_distinctes": 28,
+				"valeurs": [
+					0, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 20, 21, 22, 25, 26, 28, 30, 33, 35, 39, 42, 44, 52,
+					55, 65, 66, 78
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (78)",
+					"graine": 73,
+					"enonce": "Quel est le reste de la division euclidienne de $78^{12}$ par $13$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "13",
+						"t": "6"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Quel est le reste de la division euclidienne de $20^4$ par $5$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "5",
+						"t": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le reste de la division euclidienne de $21^6$ par $7$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "7",
+						"t": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le reste de la division euclidienne de $39^{12}$ par $13$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "13",
+						"t": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Quel est le reste de la division euclidienne de $25^4$ par $5$ ?\n\n$[?]$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "5",
+						"t": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "n",
+						"expression": "9|15|21|25"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le reste de la division euclidienne de $2^{ {{eval:n-1}} }$ par ${{n}}$ ?\n\n$?$",
+				"reponses_brutes": ["{{eval:mod(2^(n-1),n)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 4,
+			"variables": [
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 9,
+						"max": 25,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [9, 15, 21, 25]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 16,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [4, 16]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 25,
+				"nb_distinctes": 9,
+				"valeurs": [2, 8, 9, 14, 15, 20, 21, 24, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 16,
+				"nb_distinctes": 2,
+				"valeurs": [4, 16],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 25,
+				"nb_distinctes": 11,
+				"valeurs": [2, 4, 8, 9, 14, 15, 16, 20, 21, 24, 25],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (25)",
+					"graine": 5,
+					"enonce": "Quel est le reste de la division euclidienne de $2^{24}$ par $25$ ?\n\n$[?]$",
+					"reponse": ["16"],
+					"variables": {
+						"n": "25"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Quel est le reste de la division euclidienne de $2^8$ par $9$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"n": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le reste de la division euclidienne de $2^{14}$ par $15$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"n": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le reste de la division euclidienne de $2^{20}$ par $21$ ?\n\n$[?]$",
+					"reponse": ["4"],
+					"variables": {
+						"n": "21"
+					}
+				}
+			]
+		}
+	]
+}

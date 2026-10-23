@@ -1,0 +1,603 @@
+{
+	"template_id": "4a1deda8-d1a1-4222-8763-453750dc8412",
+	"titre": "« Au moins un » : compter par le complémentaire",
+	"sous_titre": "Total moins les cas sans : comité avec au moins une fille, code avec un chiffre répété, main avec au moins un as, mot avec au moins une voyelle (pièges : oublier de retirer, compter plusieurs fois en fixant « une fille » puis le reste)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Dénombrement > Dénombrer avec des contraintes",
+	"mis_a_jour": "2026-10-05T08:35:44.88944+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-319",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "g",
+						"expression": "6..12"
+					},
+					{
+						"name": "f",
+						"expression": "5..10"
+					},
+					{
+						"name": "k",
+						"expression": "3..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un club compte ${{g}}$ garçons et ${{f}}$ filles. On forme un comité de ${{k}}$ membres (sans rôle particulier).\n\nCombien de comités comportent **au moins une** fille ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(g+f,k)-binom(g,k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 84,
+			"variables": [
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 145,
+						"max": 6820,
+						"negatif_possible": false,
+						"nb_distinctes": 81
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 12,
+				"nb_distinctes": 10,
+				"valeurs": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 145,
+				"max": 6820,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 6820,
+				"nb_distinctes": 91,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (6820)",
+					"graine": 127,
+					"enonce": "Un club compte $12$ garçons et $10$ filles. On forme un comité de $4$ membres (sans rôle particulier).\n\nCombien de comités comportent au moins une fille ?\n\n$[?]$",
+					"reponse": ["6820"],
+					"variables": {
+						"g": "12",
+						"f": "10",
+						"k": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 3,
+					"enonce": "Un club compte $6$ garçons et $7$ filles. On forme un comité de $3$ membres (sans rôle particulier).\n\nCombien de comités comportent au moins une fille ?\n\n$[?]$",
+					"reponse": ["266"],
+					"variables": {
+						"g": "6",
+						"f": "7",
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Un club compte $6$ garçons et $8$ filles. On forme un comité de $4$ membres (sans rôle particulier).\n\nCombien de comités comportent au moins une fille ?\n\n$[?]$",
+					"reponse": ["986"],
+					"variables": {
+						"g": "6",
+						"f": "8",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un club compte $8$ garçons et $6$ filles. On forme un comité de $4$ membres (sans rôle particulier).\n\nCombien de comités comportent au moins une fille ?\n\n$[?]$",
+					"reponse": ["931"],
+					"variables": {
+						"g": "8",
+						"f": "6",
+						"k": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Un club compte $8$ garçons et $6$ filles. On forme un comité de $3$ membres (sans rôle particulier).\n\nCombien de comités comportent au moins une fille ?\n\n$[?]$",
+					"reponse": ["308"],
+					"variables": {
+						"g": "8",
+						"f": "6",
+						"k": "3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "3..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un code est formé de ${{k}}$ chiffres de $0$ à $9$.\n\nCombien de codes comportent **au moins deux chiffres égaux** ?\n\n$?$",
+				"reponses_brutes": ["{{eval:10^k-factorial(10)/factorial(10-k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 280,
+						"max": 69760,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [280, 4960, 69760]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 5,
+				"valeurs": [0, 3, 4, 5, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 280,
+				"max": 69760,
+				"nb_distinctes": 3,
+				"valeurs": [280, 4960, 69760],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 69760,
+				"nb_distinctes": 8,
+				"valeurs": [0, 3, 4, 5, 9, 280, 4960, 69760],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (69760)",
+					"graine": 5,
+					"enonce": "Un code est formé de $5$ chiffres de $0$ à $9$.\n\nCombien de codes comportent au moins deux chiffres égaux ?\n\n$[?]$",
+					"reponse": ["69760"],
+					"variables": {
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Un code est formé de $3$ chiffres de $0$ à $9$.\n\nCombien de codes comportent au moins deux chiffres égaux ?\n\n$[?]$",
+					"reponse": ["280"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Un code est formé de $4$ chiffres de $0$ à $9$.\n\nCombien de codes comportent au moins deux chiffres égaux ?\n\n$[?]$",
+					"reponse": ["4960"],
+					"variables": {
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "3..5"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "On tire une main de ${{k}}$ cartes dans un jeu de $32$ cartes, qui contient $4$ as.\n\nCombien de mains contiennent **au moins un** as ?\n\n$?$",
+				"reponses_brutes": ["{{eval:binom(32,k)-binom(28,k)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1684,
+						"max": 103096,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1684, 15485, 103096]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 32,
+				"nb_distinctes": 4,
+				"valeurs": [3, 4, 5, 32],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1684,
+				"max": 103096,
+				"nb_distinctes": 3,
+				"valeurs": [1684, 15485, 103096],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 103096,
+				"nb_distinctes": 7,
+				"valeurs": [3, 4, 5, 32, 1684, 15485, 103096],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 22,
+					"max": 22
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (103096)",
+					"graine": 5,
+					"enonce": "On tire une main de $5$ cartes dans un jeu de $32$ cartes, qui contient $4$ as.\n\nCombien de mains contiennent au moins un as ?\n\n$[?]$",
+					"reponse": ["103096"],
+					"variables": {
+						"k": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 1,
+					"enonce": "On tire une main de $3$ cartes dans un jeu de $32$ cartes, qui contient $4$ as.\n\nCombien de mains contiennent au moins un as ?\n\n$[?]$",
+					"reponse": ["1684"],
+					"variables": {
+						"k": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "On tire une main de $4$ cartes dans un jeu de $32$ cartes, qui contient $4$ as.\n\nCombien de mains contiennent au moins un as ?\n\n$[?]$",
+					"reponse": ["15485"],
+					"variables": {
+						"k": "4"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "k",
+						"expression": "2..4"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "L'alphabet compte $26$ lettres, dont $6$ voyelles (a, e, i, o, u, y).\n\nCombien de « mots » de ${{k}}$ lettres (ayant un sens ou non, lettres répétées permises) contiennent **au moins une** voyelle ?\n\n$?$",
+				"reponses_brutes": ["{{eval:26^k-20^k}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 3,
+			"variables": [
+				{
+					"nom": "k",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 276,
+						"max": 296976,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [276, 9576, 296976]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 26,
+				"nb_distinctes": 5,
+				"valeurs": [2, 3, 4, 6, 26],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 276,
+				"max": 296976,
+				"nb_distinctes": 3,
+				"valeurs": [276, 9576, 296976],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 296976,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 6, 26, 276, 9576, 296976],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (296976)",
+					"graine": 5,
+					"enonce": "L'alphabet compte $26$ lettres, dont $6$ voyelles (a, e, i, o, u, y).\n\nCombien de « mots » de $4$ lettres (ayant un sens ou non, lettres répétées permises) contiennent au moins une voyelle ?\n\n$[?]$",
+					"reponse": ["296976"],
+					"variables": {
+						"k": "4"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "L'alphabet compte $26$ lettres, dont $6$ voyelles (a, e, i, o, u, y).\n\nCombien de « mots » de $2$ lettres (ayant un sens ou non, lettres répétées permises) contiennent au moins une voyelle ?\n\n$[?]$",
+					"reponse": ["276"],
+					"variables": {
+						"k": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "L'alphabet compte $26$ lettres, dont $6$ voyelles (a, e, i, o, u, y).\n\nCombien de « mots » de $3$ lettres (ayant un sens ou non, lettres répétées permises) contiennent au moins une voyelle ?\n\n$[?]$",
+					"reponse": ["9576"],
+					"variables": {
+						"k": "3"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,969 @@
+{
+	"template_id": "c7d06dad-757d-4f44-ad7a-faa84a7871f0",
+	"titre": "Chaîne de Markov : matrice de transition et graphe pondéré",
+	"sous_titre": "Écrire la matrice de transition d'une chaîne de Markov à deux ou trois états, donnée par un énoncé ou par son graphe orienté pondéré (pièges : matrice transposée — lignes et colonnes inversées —, probabilité de rester oubliée, ligne de somme différente de 1)",
+	"consigne": null,
+	"grades": ["T_EXP"],
+	"type": "fill_in_blanks",
+	"theme": "Graphes et matrices > Chaînes de Markov > Chaînes de Markov",
+	"mis_a_jour": "2026-10-05T18:23:44.710465+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TEXP-331",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["p != q", "p != 10-q"],
+				"enonce_brut": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité ${{eval:p/10;d}}$ ; un client de $B$ passe chez $A$ avec la probabilité ${{eval:q/10;d}}$.\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+				"reponses_brutes": [
+					"{{eval:(10-p)/10}}",
+					"{{eval:p/10}}",
+					"{{eval:q/10}}",
+					"{{eval:(10-q)/10}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 63,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{9}{10}"
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{9}{10}"
+						]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{9}{10}"
+						]
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{9}{10}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.1,
+				"max": 22,
+				"nb_distinctes": 13,
+				"valeurs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 11, 12, 21, 22],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 7, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.1,
+				"max": 22,
+				"nb_distinctes": 21,
+				"valeurs": [
+					0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 3, 4, 5, 7, 9, 10, 11, 12, 21, 22
+				],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 1200,
+				"denominateurs": [2, 5, 10],
+				"denominateur_min": 2,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 4,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 36,
+					"max": 36
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (22)",
+					"graine": 1,
+					"enonce": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité $0{,}1$ ; un client de $B$ passe chez $A$ avec la probabilité $0{,}5$.\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["\\dfrac{9}{10}", "\\dfrac{1}{10}", "\\dfrac{1}{2}", "\\dfrac{1}{2}"],
+					"variables": {
+						"p": "1",
+						"q": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité $0{,}5$ ; un client de $B$ passe chez $A$ avec la probabilité $0{,}8$.\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["\\dfrac{1}{2}", "\\dfrac{1}{2}", "\\dfrac{4}{5}", "\\dfrac{1}{5}"],
+					"variables": {
+						"p": "5",
+						"q": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité $0{,}3$ ; un client de $B$ passe chez $A$ avec la probabilité $0{,}2$.\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["\\dfrac{7}{10}", "\\dfrac{3}{10}", "\\dfrac{1}{5}", "\\dfrac{4}{5}"],
+					"variables": {
+						"p": "3",
+						"q": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité $0{,}7$ ; un client de $B$ passe chez $A$ avec la probabilité $0{,}2$.\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["\\dfrac{3}{10}", "\\dfrac{7}{10}", "\\dfrac{1}{5}", "\\dfrac{4}{5}"],
+					"variables": {
+						"p": "7",
+						"q": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité $0{,}1$ ; un client de $B$ passe chez $A$ avec la probabilité $0{,}6$.\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["\\dfrac{9}{10}", "\\dfrac{1}{10}", "\\dfrac{3}{5}", "\\dfrac{2}{5}"],
+					"variables": {
+						"p": "1",
+						"q": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["p != q", "p != 10-q"],
+				"enonce_brut": "Une chaîne de Markov à deux états $A$ et $B$ a pour graphe pondéré :\n\n```figure\nfenetre: -1.8 ; 7.8 ; -1.4 ; 1.6\ntaille: petite\ndescription: Graphe orienté pondéré à deux états A et B : boucle sur A de poids 0,{{eval:10-p}}, arc de A vers B de poids 0,{{p}}, arc de B vers A de poids 0,{{q}}, boucle sur B de poids 0,{{eval:10-q}}.\n---\nA = point(0, 0, etiquette=\"bas\")\nB = point(6, 0, etiquette=\"bas\")\nP1 = point(0.9, 0.35, visible=faux)\nP2 = point(5.1, 0.35, visible=faux)\nQ1 = point(5.1, -0.35, visible=faux)\nQ2 = point(0.9, -0.35, visible=faux)\nvecteur(P1, P2)\nvecteur(Q1, Q2)\nO1 = point(-0.7, 0, visible=faux)\nO2 = point(6.7, 0, visible=faux)\ncercle(O1, rayon=0.7)\ncercle(O2, rayon=0.7)\ntexte(3, 0.8, \"0.{{p}}\")\ntexte(3, -0.8, \"0.{{q}}\")\ntexte(-0.7, 1.1, \"0.{{eval:10-p}}\")\ntexte(6.7, 1.1, \"0.{{eval:10-q}}\")\n```\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{21}=?$\n\n$c_{22}=?$",
+				"reponses_brutes": [
+					"{{eval:(10-p)/10}}",
+					"{{eval:p/10}}",
+					"{{eval:q/10}}",
+					"{{eval:(10-q)/10}}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{9}{10}"
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{9}{10}"
+						]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{9}{10}"
+						]
+					}
+				},
+				{
+					"case": 4,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.9,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{7}{10}",
+							"\\dfrac{9}{10}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 11,
+				"max": 22,
+				"nb_distinctes": 4,
+				"valeurs": [11, 12, 21, 22],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 7, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 22,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 3, 4, 5, 7, 9, 10, 11, 12, 21, 22],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 1200,
+				"denominateurs": [2, 5, 10],
+				"denominateur_min": 2,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 4,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"figure": 300
+				},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (22)",
+					"graine": 1,
+					"enonce": "Une chaîne de Markov à deux états $A$ et $B$ a pour graphe pondéré :\n\n[figure]\n\nOn note $P = \\begin{pmatrix} c_{11} & c_{12} \\\\ c_{21} & c_{22} \\end{pmatrix}$ sa matrice de transition (état $A$ puis état $B$).\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{21} = [?]$\n\n$c_{22} = [?]$",
+					"reponse": ["\\dfrac{9}{10}", "\\dfrac{1}{10}", "\\dfrac{1}{2}", "\\dfrac{1}{2}"],
+					"variables": {
+						"p": "1",
+						"q": "5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..6"
+					},
+					{
+						"name": "b",
+						"expression": "1..6"
+					}
+				],
+				"conditions": ["a + b <= 9", "a != b"],
+				"enonce_brut": "Un robot se déplace chaque minute entre trois salles $1$, $2$, $3$. Depuis la salle $1$, il va en salle $2$ avec la probabilité ${{eval:a/10;d}}$, en salle $3$ avec la probabilité ${{eval:b/10;d}}$, et reste sinon en salle $1$.\n\nComplète la première ligne $\\begin{pmatrix} c_{11} & c_{12} & c_{13} \\end{pmatrix}$ de la matrice de transition.\n\n$c_{11}=?$\n\n$c_{12}=?$\n\n$c_{13}=?$",
+				"reponses_brutes": ["{{eval:(10-a-b)/10}}", "{{eval:a/10}}", "{{eval:b/10}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 26,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [1, 2, 3, 4, 5, 6]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.7,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 7,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{7}{10}"
+						]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.6,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}"
+						]
+					}
+				},
+				{
+					"case": 3,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.6,
+						"negatif_possible": false,
+						"denominateurs": [2, 5, 10],
+						"denominateur_min": 2,
+						"denominateur_max": 10,
+						"nb_distinctes": 6,
+						"valeurs": [
+							"\\dfrac{1}{10}",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{3}{10}",
+							"\\dfrac{3}{5}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.1,
+				"max": 13,
+				"nb_distinctes": 12,
+				"valeurs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 1, 2, 3, 11, 12, 13],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 6,
+				"valeurs": [1, 2, 3, 5, 7, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.1,
+				"max": 13,
+				"nb_distinctes": 15,
+				"valeurs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 1, 2, 3, 5, 7, 10, 11, 12, 13],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 900,
+				"denominateurs": [2, 5, 10],
+				"denominateur_min": 2,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 7,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 3,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 38,
+					"max": 38
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (13)",
+					"graine": 1,
+					"enonce": "Un robot se déplace chaque minute entre trois salles $1$, $2$, $3$. Depuis la salle $1$, il va en salle $2$ avec la probabilité $0{,}1$, en salle $3$ avec la probabilité $0{,}4$, et reste sinon en salle $1$.\n\nComplète la première ligne $\\begin{pmatrix} c_{11} & c_{12} & c_{13} \\end{pmatrix}$ de la matrice de transition.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{13} = [?]$",
+					"reponse": ["\\dfrac{1}{2}", "\\dfrac{1}{10}", "\\dfrac{2}{5}"],
+					"variables": {
+						"a": "1",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un robot se déplace chaque minute entre trois salles $1$, $2$, $3$. Depuis la salle $1$, il va en salle $2$ avec la probabilité $0{,}4$, en salle $3$ avec la probabilité $0{,}3$, et reste sinon en salle $1$.\n\nComplète la première ligne $\\begin{pmatrix} c_{11} & c_{12} & c_{13} \\end{pmatrix}$ de la matrice de transition.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{13} = [?]$",
+					"reponse": ["\\dfrac{3}{10}", "\\dfrac{2}{5}", "\\dfrac{3}{10}"],
+					"variables": {
+						"a": "4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Un robot se déplace chaque minute entre trois salles $1$, $2$, $3$. Depuis la salle $1$, il va en salle $2$ avec la probabilité $0{,}1$, en salle $3$ avec la probabilité $0{,}3$, et reste sinon en salle $1$.\n\nComplète la première ligne $\\begin{pmatrix} c_{11} & c_{12} & c_{13} \\end{pmatrix}$ de la matrice de transition.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{13} = [?]$",
+					"reponse": ["\\dfrac{3}{5}", "\\dfrac{1}{10}", "\\dfrac{3}{10}"],
+					"variables": {
+						"a": "1",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Un robot se déplace chaque minute entre trois salles $1$, $2$, $3$. Depuis la salle $1$, il va en salle $2$ avec la probabilité $0{,}1$, en salle $3$ avec la probabilité $0{,}2$, et reste sinon en salle $1$.\n\nComplète la première ligne $\\begin{pmatrix} c_{11} & c_{12} & c_{13} \\end{pmatrix}$ de la matrice de transition.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{13} = [?]$",
+					"reponse": ["\\dfrac{7}{10}", "\\dfrac{1}{10}", "\\dfrac{1}{5}"],
+					"variables": {
+						"a": "1",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un robot se déplace chaque minute entre trois salles $1$, $2$, $3$. Depuis la salle $1$, il va en salle $2$ avec la probabilité $0{,}5$, en salle $3$ avec la probabilité $0{,}2$, et reste sinon en salle $1$.\n\nComplète la première ligne $\\begin{pmatrix} c_{11} & c_{12} & c_{13} \\end{pmatrix}$ de la matrice de transition.\n\n$c_{11} = [?]$\n\n$c_{12} = [?]$\n\n$c_{13} = [?]$",
+					"reponse": ["\\dfrac{3}{10}", "\\dfrac{1}{2}", "\\dfrac{1}{5}"],
+					"variables": {
+						"a": "5",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..9"
+					},
+					{
+						"name": "q",
+						"expression": "1..9"
+					}
+				],
+				"conditions": ["p != q", "p != 10-q"],
+				"enonce_brut": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité ${{eval:p/10;d}}$ ; un client de $B$ passe chez $A$ avec la probabilité ${{eval:q/10;d}}$.\n\nÉcris la matrice de transition $P$ de cette chaîne de Markov (état $A$ puis état $B$).\n\n$P=?$",
+				"reponses_brutes": [
+					"\\begin{pmatrix}{{eval:(10-p)/10}}&{{eval:p/10}}\\\\{{eval:q/10}}&{{eval:(10-q)/10}}\\end{pmatrix}"
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 63,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 63,
+						"exemples": [
+							"\\begin{pmatrix}\\dfrac{9}{10}&\\dfrac{1}{10}\\\\\\dfrac{1}{2}&\\dfrac{1}{2}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{1}{2}&\\dfrac{1}{2}\\\\\\dfrac{4}{5}&\\dfrac{1}{5}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{7}{10}&\\dfrac{3}{10}\\\\\\dfrac{1}{5}&\\dfrac{4}{5}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{3}{10}&\\dfrac{7}{10}\\\\\\dfrac{1}{5}&\\dfrac{4}{5}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{9}{10}&\\dfrac{1}{10}\\\\\\dfrac{3}{5}&\\dfrac{2}{5}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{3}{10}&\\dfrac{7}{10}\\\\\\dfrac{1}{2}&\\dfrac{1}{2}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{2}{5}&\\dfrac{3}{5}\\\\\\dfrac{3}{10}&\\dfrac{7}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{1}{5}&\\dfrac{4}{5}\\\\\\dfrac{7}{10}&\\dfrac{3}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{1}{10}&\\dfrac{9}{10}\\\\\\dfrac{7}{10}&\\dfrac{3}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{1}{2}&\\dfrac{1}{2}\\\\\\dfrac{3}{5}&\\dfrac{2}{5}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{3}{5}&\\dfrac{2}{5}\\\\\\dfrac{1}{10}&\\dfrac{9}{10}\\end{pmatrix}",
+							"\\begin{pmatrix}\\dfrac{3}{5}&\\dfrac{2}{5}\\\\\\dfrac{1}{2}&\\dfrac{1}{2}\\end{pmatrix}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 8,
+							"valeurs": [1, 2, 3, 4, 5, 7, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.1,
+				"max": 0.9,
+				"nb_distinctes": 9,
+				"valeurs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 7, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.1,
+				"max": 10,
+				"nb_distinctes": 17,
+				"valeurs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 2, 3, 4, 5, 7, 9, 10],
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 1200,
+				"denominateurs": [2, 5, 10],
+				"denominateur_min": 2,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": ["matrice"],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 40,
+					"max": 40
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 1,
+					"enonce": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité $0{,}1$ ; un client de $B$ passe chez $A$ avec la probabilité $0{,}5$.\n\nÉcris la matrice de transition $P$ de cette chaîne de Markov (état $A$ puis état $B$).\n\n$P = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\dfrac{9}{10}&\\dfrac{1}{10}\\\\\\dfrac{1}{2}&\\dfrac{1}{2}\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "1",
+						"q": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité $0{,}5$ ; un client de $B$ passe chez $A$ avec la probabilité $0{,}8$.\n\nÉcris la matrice de transition $P$ de cette chaîne de Markov (état $A$ puis état $B$).\n\n$P = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\dfrac{1}{2}&\\dfrac{1}{2}\\\\\\dfrac{4}{5}&\\dfrac{1}{5}\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "5",
+						"q": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité $0{,}3$ ; un client de $B$ passe chez $A$ avec la probabilité $0{,}2$.\n\nÉcris la matrice de transition $P$ de cette chaîne de Markov (état $A$ puis état $B$).\n\n$P = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\dfrac{7}{10}&\\dfrac{3}{10}\\\\\\dfrac{1}{5}&\\dfrac{4}{5}\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "3",
+						"q": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité $0{,}7$ ; un client de $B$ passe chez $A$ avec la probabilité $0{,}2$.\n\nÉcris la matrice de transition $P$ de cette chaîne de Markov (état $A$ puis état $B$).\n\n$P = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\dfrac{3}{10}&\\dfrac{7}{10}\\\\\\dfrac{1}{5}&\\dfrac{4}{5}\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "7",
+						"q": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Chaque semaine, un client choisit l'enseigne $A$ ou l'enseigne $B$. Un client de $A$ passe chez $B$ la semaine suivante avec la probabilité $0{,}1$ ; un client de $B$ passe chez $A$ avec la probabilité $0{,}6$.\n\nÉcris la matrice de transition $P$ de cette chaîne de Markov (état $A$ puis état $B$).\n\n$P = [?]$",
+					"reponse": [
+						"\\begin{pmatrix}\\dfrac{9}{10}&\\dfrac{1}{10}\\\\\\dfrac{3}{5}&\\dfrac{2}{5}\\end{pmatrix}"
+					],
+					"variables": {
+						"p": "1",
+						"q": "6"
+					}
+				}
+			]
+		}
+	]
+}

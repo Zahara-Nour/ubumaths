@@ -1,0 +1,490 @@
+{
+	"template_id": "5072030d-8036-4621-a92b-75df54d371f9",
+	"titre": "Lire la période sur la courbe d'une fonction trigonométrique",
+	"sous_titre": "Écart entre deux motifs identiques consécutifs sur la courbe de cos(ax), sin(3x), cos(x/2), sin(πx) (pièges : demi-période, 2π recopié, deux zéros consécutifs)",
+	"consigne": null,
+	"grades": ["T_SPE"],
+	"type": "fill_in_blanks",
+	"theme": "Fonctions > Fonctions trigonométriques > Parité et périodicité",
+	"mis_a_jour": "2026-10-05T09:32:00.25016+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG_ACTUEL",
+			"code": "TSPE-456",
+			"statut": "draft"
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2|4"
+					},
+					{
+						"name": "c",
+						"expression": "1..2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: -3 ; 3\ngrille: pi/4 ; 1\nf(x) = {{c}}*cos({{a}}*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f périodique tracée pour x de −2π à 2π.\n```\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T=?$",
+				"reponses_brutes": ["{{if:a==2|\\pi|\\frac{\\pi}{2}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 4]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["\\frac{\\pi}{2}", "\\pi"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 2,
+							"nb_distinctes": 1,
+							"valeurs": [2],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 5,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n[courbe]\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T = [?]$",
+					"reponse": ["\\frac{\\pi}{2}"],
+					"variables": {
+						"a": "4",
+						"c": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n```courbe\nx: -2*pi ; 2*pi\ny: -3 ; 3\ngrille: pi/3 ; 1\nf(x) = {{c}}*sin(3*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f périodique tracée pour x de −2π à 2π.\n```\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T=?$",
+				"reponses_brutes": ["\\frac{2\\pi}{3}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["\\frac{2\\pi}{3}"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 3,
+							"nb_distinctes": 2,
+							"valeurs": [2, 3],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 3,
+				"nb_distinctes": 2,
+				"valeurs": [2, 3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (3)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n[courbe]\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T = [?]$",
+					"reponse": ["\\frac{2\\pi}{3}"],
+					"variables": {
+						"c": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4*pi ; 4*pi\ny: -3 ; 3\ngrille: pi ; 1\nf(x) = {{c}}*cos(x/2)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f périodique tracée pour x de −4π à 4π.\n```\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T=?$",
+				"reponses_brutes": ["4\\pi"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["4\\pi"],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 4,
+							"nb_distinctes": 1,
+							"valeurs": [4],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 4,
+				"max": 4,
+				"nb_distinctes": 1,
+				"valeurs": [4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 4,
+				"max": 4,
+				"nb_distinctes": 1,
+				"valeurs": [4],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (4)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n[courbe]\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T = [?]$",
+					"reponse": ["4\\pi"],
+					"variables": {
+						"c": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "1..2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n```courbe\nx: -4 ; 4\ny: -3 ; 3\ngrille: 0.5 ; 1\nf(x) = {{c}}*sin(pi*x)   bleu   nom=C_f\ntaille: moyenne\ndescription: Courbe d'une fonction f périodique tracée pour x de −4 à 4.\n```\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T=?$",
+				"reponses_brutes": ["2"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 1,
+			"variables": [
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {
+					"courbe": 300
+				},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (2)",
+					"graine": 1,
+					"enonce": "La courbe $\\mathcal{C}_f$ ci-dessous représente une fonction $f$ périodique définie sur $\\mathbb{R}$.\n\n[courbe]\n\nPar lecture graphique, donne sa plus petite période strictement positive.\n\n$T = [?]$",
+					"reponse": ["2"],
+					"variables": {
+						"c": "1"
+					}
+				}
+			]
+		}
+	]
+}
