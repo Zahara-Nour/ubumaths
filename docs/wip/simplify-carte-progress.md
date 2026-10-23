@@ -2,16 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1624 (lot 4b) et les réponses Q8, Q9 (§ 38)._
+_Mis à jour le 2026-10-23, après #1625 (lot 4b-bis)._
 
-- **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), 4b un décimal reste décimal (#1624, § 37). Rien en prod tant que David n'a pas lancé `deploy:prod`.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — **à jour après #1624 et Q8/Q9**. La tenir à jour **à chaque merge, avant le `/clear`**. Pour la modifier : `Artifact read`, éditer une copie du fichier rendu, republier sur la même `url`.
-- **Ordre des lots** (§ 29, § 35, § 38) : ~~4a~~ → ~~4b~~ → **4b-bis Q8/Q9** → 4c `order: 'kept'` (S2) → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 4b-bis (§ 39) en PR ; après merge, 4c (relire S2 § 6 et D3 § 19).
-- **En attente de David** : rien ; vérification manuelle de #1624 notée.
-- **Pièges en cours** : mineurs connus du 4a (§ 36) ; `x^{0,5} → x^{1/2}` laissé (§ 37) ; dérivées : les chemins bouton/commande/latex-péda écrivent encore `x−3/2` (lot 5) ; suite client locale coupée par `rpc is closed`, la CI tranche ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `fix/simplify-carte-q8-q9`.
-- **À proposer à David** : bug d'équivalence `√(1/3) ≢ √3/3` (§ 39), hors lot.
+- **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), 4b décimaux (#1624), **4b-bis Q8/Q9 (#1625, § 39)** : `√0,5 → √2/2`, décimaux gardés sous un dénominateur à variable. Rien en prod tant que David n'a pas lancé `deploy:prod`.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1625. La republier **à chaque merge, avant le `/clear`** (`Artifact read`, éditer une copie, republier sur la même `url`).
+- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → **4c `order: 'kept'` (S2)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : lot 4c, nouveau worktree ; relire S2 (§ 6) et D3 (§ 19) avant les tests rouges.
+- **En attente de David** : bug d'équivalence `√(1/3) ≢ √3/3`, `√(3/2) ≢ √6/2` (§ 39, touche le juge) : lot à part avant le 4c, ou après ? Vérification manuelle de #1625 notée.
+- **Pièges en cours** : `0,5/x·x/2 → 0,25x/x` laissé (§ 39) ; `x^{0,5} → x^{1/2}` laissé (§ 37) ; dérivées : chemins bouton/commande/latex-péda en `x−3/2` (lot 5) ; banc des 1 008 modèles : `modeles.json` + `tirages.mts` dans le scratchpad de la session du 4b (`/private/tmp/claude-501/…/6cd97bf0…/scratchpad`), à réexporter s'il a disparu ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun ; nouveau worktree au 4c.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
