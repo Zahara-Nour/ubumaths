@@ -6,13 +6,13 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, étape c faite (relevé des modèles)._
+_Mis à jour le 2026-10-23, étape d lancée._
 
 - **État** : étapes a, b, c faites. Relevé : `passe-lycee/releves/` (432 modèles de niveau lycée, 300 tirages par
   variation, `LISEZMOI.md`). Bornes : `passe-lycee/bornes/<programme>.json`.
-- **Prochaine action** : étape d, verdicts en inclusion stricte (consigne du collège,
-  `arbre-notions/analyse/CONSIGNE.md`, à adapter au lycée).
-- **En attente de David** : périmètre des programmes candidats à l'étape d (voir le journal du 2026-10-23).
+- **Prochaine action** : étape d en cours, 6 agents Opus (`passe-lycee/analyse/CONSIGNE.md`, `lots.csv`) ; à la
+  fin : consolider les CSV, contrôler, puis page à cocher (étape e).
+- **En attente de David** : rien.
 - **Pièges en cours** : migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031, `libelle_corrige`)
   et 2 points neufs (exponentielle, à côté de TSPE-444 et TCOMP-236, `point_neuf`). Automatisme 1re spé
   « déterminer graphiquement … son tableau de variations » (BO l. 274) sans point. 85 points techno sans borne ;
@@ -105,3 +105,7 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   seule (la clé anonyme ne voit pas les brouillons ; la clé de service a été refusée par le classifieur du mode auto).
   `releve.ts` du collège copié dans `passe-lycee/releves/` : 1 638 variations × 300 tirages en 114 s, 0 erreur de
   conversion, un seul modèle en échec partiel (`9a6087c5`, 12/600). Aucun modèle de niveau 1re ES ni techno.
+- **2026-10-23 — Étape d : programmes candidats, option A (David).** Un modèle est jugé contre tous les programmes du
+  lycée où sa tâche existe (1re ES, techno compris), au plus un point par programme, en inclusion stricte contre les
+  bornes de chacun. Consigne `passe-lycee/analyse/CONSIGNE.md` (celle du collège, adaptée) ; 6 lots (`lots.csv`) :
+  2de 37, 1re spé 101 + 101, Tle spé 71, Tle spé + compl. 65, Tle expertes 57.
