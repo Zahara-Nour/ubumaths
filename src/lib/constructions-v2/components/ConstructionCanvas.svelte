@@ -18,7 +18,8 @@
 		partialCircleSVGPath,
 		drawingTipPosition,
 		compassDrawAngle,
-		visibleInstruments as visibleInstrumentsFor
+		visibleInstruments as visibleInstrumentsFor,
+		fadeInProgress
 	} from '../core/render-helpers';
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
 	import {
@@ -94,11 +95,15 @@
 		return ids;
 	});
 
+	// Fondu des points et des droites : joué au début du pas, puis immobile
+	// pendant la pause de lecture d'une sous-étape (`fadeInProgress`).
+	let fadeProgress = $derived(animation ? fadeInProgress(animation.drawProgress, animation) : 1);
+
 	// Line fade-in : opacity 0 → 1 quickly (by t=0.4), then stays at 1 so the
 	// bump (next derived value) is fully visible and not muted by translucency.
 	let lineFadeOpacity = $derived.by(() => {
 		if (!animation || animation.animatingLineIds.size === 0) return 1;
-		const t = animation.drawProgress;
+		const t = fadeProgress;
 		if (t >= 0.4) return 1;
 		return easeInOut(t / 0.4);
 	});
@@ -107,7 +112,7 @@
 	// Overshoot at t=0.5 then settles to normal width.
 	let lineStrokeWidthMultiplier = $derived.by(() => {
 		if (!animation || animation.animatingLineIds.size === 0) return 1;
-		const t = easeInOut(animation.drawProgress);
+		const t = easeInOut(fadeProgress);
 		if (t <= 0.5) return t * 2 * 3; // 0 → 3
 		return 3 - (t - 0.5) * 2 * 2; // 3 → 1.0
 	});
@@ -116,7 +121,7 @@
 	// grows in and settles, matching the visual feel of point labels.
 	let lineLabelScale = $derived.by(() => {
 		if (!animation || animation.animatingLineIds.size === 0) return 1;
-		const t = easeInOut(animation.drawProgress);
+		const t = easeInOut(fadeProgress);
 		if (t <= 0.5) return t * 2 * 1.3; // 0 → 1.3
 		return 1.3 - (t - 0.5) * 2 * 0.3; // 1.3 → 1.0
 	});
@@ -216,7 +221,7 @@
 	// Point animation: fade-in + bump (scale 0 → 1.3 → 1)
 	let pointAnimProgress = $derived.by(() => {
 		if (!animation || animation.animatingPointIds.size === 0) return 1;
-		return easeInOut(animation.drawProgress);
+		return easeInOut(fadeProgress);
 	});
 	// Bump: overshoot to 1.3 at progress 0.5, settle to 1.0 at progress 1.0
 	let pointScale = $derived.by(() => {

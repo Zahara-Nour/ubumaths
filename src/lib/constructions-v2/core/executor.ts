@@ -1345,20 +1345,20 @@ export class ConstructionExecutor {
 	} {
 		const PPU = 40;
 
-		// Fade-in sub-steps (no instrument, no progressive trace) use the
-		// short default duration + auto-pause to let the user notice the
-		// elements settle into place.
+		// Fade-in sub-steps (no instrument, no progressive trace) : short fade,
+		// then the reading pause. The fade ends at `drawPhaseEnd` ; the canvas
+		// holds the elements still during the pause (`fadeInProgress`).
 		if (subStep.kind === 'point-fade-in' || subStep.kind === 'line-fade-in') {
 			const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
-			const stepDur =
-				Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + readingPauseMs(subStep.instruction);
+			const fade = Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
+			const stepDur = fade + readingPauseMs(subStep.instruction);
 			return {
 				totalDuration: stepDur,
 				phases: {
 					movePhaseEnd: 0,
 					drawPhaseStart: 0,
-					drawPhaseEnd: 1,
-					pausePhaseStart: 1,
+					drawPhaseEnd: fade / stepDur,
+					pausePhaseStart: fade / stepDur,
 					moveDurationMs: 0
 				},
 				newInstrumentPos: null

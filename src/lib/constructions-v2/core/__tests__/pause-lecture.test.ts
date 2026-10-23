@@ -5,6 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor, readingPauseMs } from '../executor';
+import { fadeInProgress } from '../render-helpers';
 import { AUTO_PAUSE_BETWEEN_STEPS, DEFAULT_STEP_DURATION } from '../../constants';
 
 describe('readingPauseMs', () => {
@@ -45,5 +46,36 @@ describe('durées des sous-étapes', () => {
 		// Pause de lecture = la part de la sous-étape après le geste
 		const pause = exec.stepDurations[2] * (1 - exec.pausePhaseStart);
 		expect(pause).toBeCloseTo(60 * consigne.length);
+	});
+});
+
+describe('fondu puis pause de lecture', () => {
+	it('fondu d’une sous-étape : joué sur DEFAULT_STEP_DURATION, puis la pause', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(['A = point(0, 0)', 'B = point(6.4, 0)', 'I = milieu(A, B) @mesure'].join('\n'));
+		for (let i = 0; i < 5; i++) exec.step(); // A, B, règle, crayon, fondu de I
+		const total = DEFAULT_STEP_DURATION + 1500;
+		expect(exec.drawPhaseEnd).toBeCloseTo(DEFAULT_STEP_DURATION / total);
+		expect(exec.pausePhaseStart).toBeCloseTo(DEFAULT_STEP_DURATION / total);
+	});
+});
+
+describe('fadeInProgress', () => {
+	const fade = { movePhaseEnd: 0, drawPhaseStart: 0, drawPhaseEnd: 0.25 };
+
+	it('le fondu se joue avant la pause, puis reste complet', () => {
+		expect(fadeInProgress(0.125, fade)).toBeCloseTo(0.5);
+		expect(fadeInProgress(0.25, fade)).toBe(1);
+		expect(fadeInProgress(0.9, fade)).toBe(1);
+	});
+
+	it('étape sans phase de fondu (fondu hérité, drawPhaseEnd = 1) : avancement brut', () => {
+		expect(fadeInProgress(0.4, { movePhaseEnd: 0, drawPhaseStart: 0, drawPhaseEnd: 1 })).toBe(0.4);
+	});
+
+	it('geste d’instrument : avancement brut', () => {
+		expect(fadeInProgress(0.4, { movePhaseEnd: 0.3, drawPhaseStart: 0.3, drawPhaseEnd: 0.6 })).toBe(
+			0.4
+		);
 	});
 });

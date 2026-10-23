@@ -393,3 +393,19 @@ export function visibleInstruments(
 	}
 	return all;
 }
+
+/**
+ * Avancement du fondu d'un point ou d'une droite (0 → 1). Un fondu de
+ * sous-étape (`point-fade-in`, `line-fade-in`) se joue sur [0, `drawPhaseEnd`]
+ * puis l'élément reste en place pendant la pause de lecture ; une étape sans
+ * phases de fondu (`drawPhaseEnd` = 1, ou geste d'instrument) garde
+ * l'avancement brut du pas.
+ */
+export function fadeInProgress(
+	stepProgress: number,
+	phases: Pick<DrawAnimationState, 'movePhaseEnd' | 'drawPhaseStart' | 'drawPhaseEnd'>
+): number {
+	const isFade = phases.movePhaseEnd === 0 && phases.drawPhaseStart === 0;
+	if (!isFade || phases.drawPhaseEnd <= 0 || phases.drawPhaseEnd >= 1) return stepProgress;
+	return Math.min(1, stepProgress / phases.drawPhaseEnd);
+}
