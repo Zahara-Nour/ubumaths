@@ -6,19 +6,20 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1654._
+_Mis à jour le 2026-10-24, #1657 ouverte, CI bloquée par `main`._
 
-- **État** : scissions CLOSES : PR 3 (H) = #1654 mergée et jouée en prod (`db:migrate` par David le 2026-10-23),
-  prod relue par le MCP : 19/19 conformes (PR 1 = #1646, PR 2 = #1651).
-- **Prochaine action** : à décider avec David : les « Laissé » ci-dessous, puis versement (fin de chantier).
-- **En attente de David** : la suite du chantier.
-- **Laissé de #1651** (brouillons) : 2 conclusions de corrigé sans gras (f3100c29, 70e682f9 v2) ; « ≠ » implicite
-  (d1010214 v0-v1) ; descriptions de specs S6 de l'ancienne question ; rollback trop strict sur les 2 origines intactes.
-- **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion → R2 ou retrait forcé ; neufs :
-  niveau au-dessus du plus haut pris dans la catégorie ; `question:specs --file` : convertir par `toQuestionTemplate`
-  (retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync` avant tout `tsx` ;
-  `REECRIRE_MIGRATION=1` pour une migration jamais jouée ; `db:migrate` refusé par le mode auto → David le lance.
-- **Worktree / branche** : aucun (worktree `passe-lycee` retiré après #1654).
+- **État** : scissions CLOSES (#1646, #1651, #1654 jouées, prod 19/19). #1657 (retouches de forme de 5 brouillons
+  de #1651, aucun neuf ni tag) : revues Opus sans bloquant, CI verte SAUF « Server Tests 1/4 » :
+  `derivatives-oracle.test.ts`, hook > 10 s, rouge aussi sur `main` depuis #1656 (simplify-carte), vert en local.
+- **Prochaine action** : `main` réparé → mettre la branche à jour, CI verte, merge, `db:migrate` (par David),
+  relecture prod (MCP) ; puis versement (fin de chantier). Rollbacks « trop stricts » de #1651 / #1654 : classés
+  sans suite (David, 2026-10-23), à noter au versement.
+- **En attente** : réparation de l'oracle sur `main` par la session simplify-carte (décision de David, prévenue le
+  2026-10-24) ; `db:migrate` par David après merge (refusé au mode auto).
+- **Pièges en cours** : un modèle a au plus un point par programme (trigger) ; `question:specs --file` : convertir par
+  `toQuestionTemplate` (retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync` avant
+  tout `tsx` ; `REECRIRE_MIGRATION=1` pour une migration jamais jouée.
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `fix/passe-lycee-retouches`.
 
 ## Les 5 étapes
 
@@ -311,3 +312,19 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   aucun test joué). `db:migrate` à lancer par David.
 - **2026-10-23 — `db:migrate` de #1654 fait (par David).** Prod (MCP) : 19 modèles (10 origines, 9 neufs) en
   brouillon, 4 en T_SPE, 15 en 2de ; un tag chacun, 19/19 sur le point du plan (TSPE-457/458/597/598, 2-205 à 2-491).
+- **2026-10-23 — Reprise : les « Laissé » de #1651 tranchés par David.** Retouches de forme des brouillons : petite
+  PR ; rollbacks trop stricts (#1651, #1654) : classés sans suite (migrations jouées et relues).
+- **2026-10-23 — PR des retouches écrite et prouvée (worktree `passe-lycee`, branche `fix/passe-lycee-retouches`).**
+  Prod relue par le MCP : empreintes md5 des 5 modèles = celles posées par #1651, brouillons, 1 tag chacun, 0 donnée
+  d'élève ; relevé dans `analyse/etat-prod-2026-10-23c/`. `analyse/lot-retouches.py` : conclusions en gras
+  (70e682f9 V3, f3100c29 V3) ; « u₁² ≠ u₀ × u₂ » écrit en clair (d1010214 V1-V2, et le cas frère f3100c29 V1 et V3,
+  vrai sur toutes les valeurs tirables) ; descriptions de specs de 0dee4515 / 88a4432e réduites à leur case.
+  `scissions_outils.py` : lot sans neuf ni tag posé (ni bloc `$retour_neufs$`, ni `insert … values` vide) ; #1646,
+  #1651, #1654 se régénèrent à l'identique. Banc : pour un lot sans tag posé, « un tag déjà posé » pose un point d'un
+  AUTRE programme (le trigger refuse un 2e point du même). Specs 43/43, tirages 4 800/4 800. Intégration : 13 verts ;
+  sans l'étape 4, la suite nominale tombe à sa mise en place et le rollback rougit ; les 10 suites du banc vertes
+  (176 tests). `check:incremental` 0 erreur, cliquet tenu, `lint:fast` propre.
+- **2026-10-23 — Revues Opus de #1657.** `security-auditor` : aucun bloquant (seules les 5 lignes touchées, aucun
+  accès ouvert, rollback sûr). `code-reviewer` : aucun bloquant (« ≠ » vrais sur toutes les valeurs tirables,
+  4 migrations régénérées à l'identique) ; corrigé : le test « tag déjà posé », d'abord sauté pour ce lot, y tourne
+  avec un point de 1re générale / techno (cas réel : un tag 1GEN posé entre relevé et migration).
