@@ -15,6 +15,7 @@
 import { z } from 'zod';
 import type { CellValue } from './formula';
 import { columnLetter, columnOfLetter, GRID_COLUMNS, GRID_ROWS } from './grid';
+import { groupNumberText } from '$lib/mathAST/digit-grouping';
 
 // =============================================================================
 // Types
@@ -321,7 +322,9 @@ export function sameFormats(a: readonly FormatZone[], b: readonly FormatZone[]):
 /**
  * Une valeur écrite selon son format de nombre (Q-MF-1), arrondie à la moitié
  * loin de zéro comme ARRONDI : `0,33`, `12,5 %`, `12,50 €`. `null` : pas de
- * format, ou ce n'est pas un nombre — la case garde son écriture.
+ * format, ou ce n'est pas un nombre — la case garde son écriture. Chiffres
+ * groupés par trois dès 5 chiffres (BIPM, `digit-grouping.ts`) : `1234,5`,
+ * `12 345,00 €` ; `Intl` groupe dès 4, d'où `useGrouping: false`.
  */
 export function formatShown(value: CellValue, style: CellStyle): string | null {
 	if (value.kind !== 'number' || style.number === undefined) return null;
@@ -332,19 +335,16 @@ export function formatShown(value: CellValue, style: CellStyle): string | null {
 	const options: Intl.NumberFormatOptions = {
 		minimumFractionDigits: decimals,
 		maximumFractionDigits: decimals,
-		roundingMode: 'halfExpand'
+		roundingMode: 'halfExpand',
+		useGrouping: false
 	};
-	if (kind === 'percent') {
-		return new Intl.NumberFormat('fr-FR', { ...options, style: 'percent' }).format(shown);
-	}
-	if (kind === 'currency') {
-		return new Intl.NumberFormat('fr-FR', {
-			...options,
-			style: 'currency',
-			currency: 'EUR'
-		}).format(shown);
-	}
-	return new Intl.NumberFormat('fr-FR', options).format(shown);
+	const styled: Intl.NumberFormatOptions =
+		kind === 'percent'
+			? { ...options, style: 'percent' }
+			: kind === 'currency'
+				? { ...options, style: 'currency', currency: 'EUR' }
+				: options;
+	return groupNumberText(new Intl.NumberFormat('fr-FR', styled).format(shown), '\u202f');
 }
 
 /** Le format arrondit-il cette valeur ? (`1/3` à 2 décimales : oui ; `2` : non.) */

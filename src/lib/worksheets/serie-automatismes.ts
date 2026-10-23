@@ -23,6 +23,8 @@ import { templateGenericFunctions } from '$lib/questions/generic-functions';
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { toLatex } from '$lib/mathAST';
 import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
+import { withDigitGrouping } from '$lib/utils/french-math';
+import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '$lib/mathAST/digit-grouping';
 
 export type SerieItem = { templateId: string; seed: number };
 /**
@@ -64,13 +66,16 @@ const TOKEN = /\uE000(\d+)\uE000/g;
  * parseur, comme un exercice sans liste) et le sens de `AB` de l'instance (absent :
  * produit). Même écriture que l'écran et le PDF
  * (`toLatex`, nombres au point : la langue s'applique au rendu, comme avant).
- * Le reste du texte est rendu à l'octet près.
+ * Le reste du texte est rendu à l'octet près. `minDigits` : modèle réglé « Espaces dès
+ * 4 chiffres » — les formules reçoivent leurs espaces fines ici, le rendu appliquant
+ * sinon le BIPM (E2, simplify-carte § 43).
  */
 function customMathToLatex(
 	texte: string,
 	genericFunctions: GenericFunctionConfig | undefined,
 	templateId: string,
-	capitalPairs?: CapitalPairs
+	capitalPairs?: CapitalPairs,
+	minDigits?: number
 ): string {
 	const zones: string[] = [];
 	let masque = texte;
@@ -88,6 +93,7 @@ function customMathToLatex(
 				const latex = toLatex(lue.ast);
 				remplacement = block ? `$$${latex}$$` : `$${latex}$`;
 			}
+			if (minDigits !== undefined) remplacement = withDigitGrouping(remplacement, minDigits);
 			zones.push(remplacement);
 			return `\uE000${zones.length - 1}\uE000`;
 		});
@@ -101,14 +107,19 @@ function customMathToLatex(
 }
 
 /** Réponse attendue d'une case, dans la forme de son contexte (formule ou texte) */
-function reponse(instance: QuestionInstance, index: number, dansFormule: boolean): string {
+function reponse(
+	instance: QuestionInstance,
+	index: number,
+	dansFormule: boolean,
+	minDigits?: number
+): string {
 	const blank = instance.blanks?.[index];
 	if (!blank) throw new Error(`case ${index} sans réponse attendue`);
+	const brute = blank.expectedAnswerLatex ?? blank.expectedAnswer;
+	const latex = minDigits === undefined ? brute : withDigitGrouping(brute, minDigits);
 	// En gras, dans la formule comme dans le texte : la réponse se repère d'un coup d'œil
-	if (dansFormule) return `\\mathbf{${blank.expectedAnswerLatex ?? blank.expectedAnswer}}`;
-	return blank.type === 'math'
-		? `$\\mathbf{${blank.expectedAnswerLatex ?? blank.expectedAnswer}}$`
-		: `**${blank.expectedAnswer}**`;
+	if (dansFormule) return `\\mathbf{${latex}}`;
+	return blank.type === 'math' ? `$\\mathbf{${latex}}$` : `**${blank.expectedAnswer}**`;
 }
 
 /** Énoncé et corrigé d'une instance, en markdown libre (avant mise en liste) */
@@ -117,8 +128,13 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 	const fonctions = templateGenericFunctions(template.shared?.genericFunctions);
 	// … et avec le sens de `AB` résolu pour l'instance (longueur ou produit, lot 5 des
 	// longueurs de segments) : la fiche écrit comme l'écran
+	// Espaces dès 4 chiffres si le modèle le demande (sinon le rendu applique le BIPM)
+	const minDigits =
+		template.options?.constraints?.spacesFromFourDigits === true
+			? SCHOOL_MIN_DIGITS_FOR_GROUPING
+			: undefined;
 	const enLatex = (texte: string) =>
-		customMathToLatex(texte, fonctions, template.id, instance.capitalPairs);
+		customMathToLatex(texte, fonctions, template.id, instance.capitalPairs, minDigits);
 	// Marqueurs de détail GARDÉS (ADR 0017, lot 3) : la fiche choisit concise ou
 	// détaillée à l'impression (`correctionForPrint`), même après la création de
 	// la série ; les écrans montrent la détaillée (`detailedCorrection`)
@@ -151,8 +167,8 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 		.replace(PLACEHOLDER, `\\text{${BLANK_TEXT}}`)
 		.replace(TEXT_BLANK, BLANK_TEXT);
 	let corrige = texte
-		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true))
-		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false));
+		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
+		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 
 	const choix = (instance.choices ?? []).map((c) => ({ ...c, content: enLatex(c.content) }));
 	if (choix.length > 0) {

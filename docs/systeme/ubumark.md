@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23.
 
 ## À quoi ça sert
 
@@ -55,17 +55,18 @@ Hors périmètre : les **QCM** (choix, mélange) ne sont pas de la notation ubum
 
 ### Rendu écran — `src/lib/components/markdown/`
 
-| Fichier                                                 | Rôle                                                                                                                                                                                |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MarkdownRenderer.svelte`                               | Orchestrateur : cache d'AST (`src/lib/utils/markdown-cache.ts`), mode restreint, mots cliquables, aiguillage par type.                                                              |
-| `nodes/*.svelte`                                        | Un composant par nœud : `VariationTable`, `ProbabilityTree`, `TrigCircle`, `NumberLine`, `Courbe`, `FigureBlock`, `StatChart`, `QrBlock`, `MathInline`, `MathPrompt`, `BlankInput`… |
-| `nodes/ListNode.svelte`, `nodes/StaticBlockNode.svelte` | Rendent les blocs **dans un item de liste** : chaque nouveau bloc doit y être aussi.                                                                                                |
-| `utils/math-utils.ts`                                   | `expressionToLatex` / `expressionToRawLatex` : `~…~` → LaTeX via `parseCustomSafe` de `mathAST` ; erreur → LaTeX rouge.                                                             |
-| `content-locale.ts`                                     | Langue du document (virgule FR / point EN des décimaux).                                                                                                                            |
-| `content-capital-pairs.ts`                              | Sens de `AB` (longueur ou produit) des formules maison, posé par la carte d'une question ou d'un exercice ; `clearCapitalPairs` le coupe (chat).                                    |
-| `authoring-errors.ts`                                   | Le prof voit le message d'erreur d'un bloc, l'élève un cadre neutre.                                                                                                                |
-| `render-budget.ts`                                      | `DOCUMENT_FIGURE_LIMITS` : plafond de figures/courbes par document.                                                                                                                 |
-| `restricted-rendering.ts`                               | Mode restreint du chat élève (`restrictDocument`, `stripFenceLanguages`).                                                                                                           |
+| Fichier                                                 | Rôle                                                                                                                                                                                                |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MarkdownRenderer.svelte`                               | Orchestrateur : cache d'AST (`src/lib/utils/markdown-cache.ts`), mode restreint, mots cliquables, aiguillage par type.                                                                              |
+| `nodes/*.svelte`                                        | Un composant par nœud : `VariationTable`, `ProbabilityTree`, `TrigCircle`, `NumberLine`, `Courbe`, `FigureBlock`, `StatChart`, `QrBlock`, `MathInline`, `MathPrompt`, `BlankInput`…                 |
+| `nodes/ListNode.svelte`, `nodes/StaticBlockNode.svelte` | Rendent les blocs **dans un item de liste** : chaque nouveau bloc doit y être aussi.                                                                                                                |
+| `utils/math-utils.ts`                                   | `expressionToLatex` / `expressionToRawLatex` : `~…~` → LaTeX via `parseCustomSafe` de `mathAST` ; erreur → LaTeX rouge.                                                                             |
+| `content-locale.ts`                                     | Langue du document (virgule FR / point EN des décimaux).                                                                                                                                            |
+| `content-capital-pairs.ts`                              | Sens de `AB` (longueur ou produit) des formules maison, posé par la carte d'une question ou d'un exercice ; `clearCapitalPairs` le coupe (chat).                                                    |
+| `content-digit-grouping.ts`                             | Seuil des espaces de groupement (4 pour un modèle « Espaces dès 4 chiffres », sinon le BIPM, 5), posé par la carte d'une question, lu par `MathInline`, `MathBlock`, `MathPrompt`, `ParagraphNode`. |
+| `authoring-errors.ts`                                   | Le prof voit le message d'erreur d'un bloc, l'élève un cadre neutre.                                                                                                                                |
+| `render-budget.ts`                                      | `DOCUMENT_FIGURE_LIMITS` : plafond de figures/courbes par document.                                                                                                                                 |
+| `restricted-rendering.ts`                               | Mode restreint du chat élève (`restrictDocument`, `stripFenceLanguages`).                                                                                                                           |
 
 ### Ailleurs
 
@@ -415,6 +416,11 @@ Points à retenir :
    limites par bloc (`FIGURE_LIMITS`, `COURBE_LIMITS`) : au-delà, cadre neutre.
 10. **Langue du document** : décimaux « 0,3 » en français, « 0.3 » en anglais, à l'écran
     (`content-locale.ts`) comme au PDF (option `language` de `generateTypst`, `toLocaleDecimal`).
+    Espaces fines de groupement dès 5 chiffres, chaque côté de la virgule à part (`1024`,
+    `30\,000`, `0{,}123\,45` ; règle du BIPM, `mathAST/digit-grouping.ts`) ; dès 4 pour une
+    question réglée « Espaces dès 4 chiffres » (`content-digit-grouping.ts`). Même règle pour les nombres
+    des légendes et résumés de simulation (`simulation-scene.ts`, `stat-chart-scene.ts`) et pour
+    `\np` à l'import LaTeX (`importers/latex/converters/`).
 11. **`builders/` ne calcule rien** : le tableau affiché vient de la grille de `mathAST` qui écrit
     aussi la conclusion ; recalculer les ferait diverger.
 

@@ -3,8 +3,9 @@
  *
  * Repris de l'ancien test de `checkSpaces` (questions/constraint-validators),
  * enveloppe morte supprimée : ces cas sont la couverture fine de la détection
- * qu'utilise `checkForm`. Comportement actuel (4 chiffres = espace exigée), à
- * revoir avec la décision E2 du chantier simplify-carte.
+ * qu'utilise `checkForm`. Règle du BIPM (décision E2, simplify-carte § 15) : à
+ * 4 chiffres l'espace est facultative, dès 5 elle est exigée ; chaque côté de la
+ * virgule compte à part. Une espace mal placée reste une faute.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -18,8 +19,15 @@ describe('checkSpacesViolation', () => {
 			expect(checkSpacesViolation('123')).toBe(false);
 		});
 
-		it('should require spacing for 4+ digits (French math convention)', () => {
-			expect(checkSpacesViolation('1234')).toBe(true);
+		it('4 chiffres : espace facultative', () => {
+			expect(checkSpacesViolation('1024')).toBe(false);
+			expect(checkSpacesViolation('1 024')).toBe(false);
+			expect(checkSpacesViolation('1\\,024')).toBe(false);
+			expect(checkSpacesViolation('-1024')).toBe(false);
+		});
+
+		it('dès 5 chiffres : espace exigée', () => {
+			expect(checkSpacesViolation('30000')).toBe(true);
 			expect(checkSpacesViolation('12345')).toBe(true);
 			expect(checkSpacesViolation('123456')).toBe(true);
 		});
@@ -40,6 +48,8 @@ describe('checkSpacesViolation', () => {
 		it('should detect incorrect space positions in integer part', () => {
 			// Wrong spacing positions (should be groups of 3 from right)
 			expect(checkSpacesViolation('12 34')).toBe(true);
+			expect(checkSpacesViolation('10 24')).toBe(true);
+			expect(checkSpacesViolation('1234 567')).toBe(true);
 		});
 
 		it('should allow large numbers with proper spacing', () => {
@@ -54,10 +64,17 @@ describe('checkSpacesViolation', () => {
 			expect(checkSpacesViolation('0{,}123')).toBe(false); // French LaTeX comma
 		});
 
-		it('should require spacing for 4+ decimal digits (French math convention)', () => {
-			expect(checkSpacesViolation('0.1234')).toBe(true);
-			expect(checkSpacesViolation('0{,}1234')).toBe(true);
+		it('4 décimales : espace facultative', () => {
+			expect(checkSpacesViolation('0.1234')).toBe(false);
+			expect(checkSpacesViolation('0{,}1234')).toBe(false);
+			expect(checkSpacesViolation('0{,}123 4')).toBe(false);
+			expect(checkSpacesViolation('0{,}123\\,4')).toBe(false);
+		});
+
+		it('dès 5 décimales : espace exigée', () => {
 			expect(checkSpacesViolation('0.12345')).toBe(true);
+			expect(checkSpacesViolation('0{,}12345')).toBe(true);
+			expect(checkSpacesViolation('0{,}123 45')).toBe(false);
 		});
 
 		it('should allow correct decimal spacing (groups of 3 from left)', () => {
@@ -68,24 +85,28 @@ describe('checkSpacesViolation', () => {
 
 		it('should detect incorrect decimal spacing', () => {
 			expect(checkSpacesViolation('0.1234 56')).toBe(true);
+			expect(checkSpacesViolation('0{,}12 34')).toBe(true);
 		});
 
 		it('should handle both integer and decimal parts', () => {
 			expect(checkSpacesViolation('1 234.567')).toBe(false);
 			expect(checkSpacesViolation('1 234.567 890')).toBe(false);
+			// Chaque côté compté à part : 4 + 4, rien d'exigé
+			expect(checkSpacesViolation('1234{,}5678')).toBe(false);
+			expect(checkSpacesViolation('12345{,}6')).toBe(true);
 		});
 	});
 
 	describe('French Decimal Separator', () => {
 		it('should recognize {,} as French decimal comma', () => {
 			expect(checkSpacesViolation('3{,}14159')).toBe(true); // 5 decimal digits
-			expect(checkSpacesViolation('3{,}1234')).toBe(true); // 4 decimal digits
+			expect(checkSpacesViolation('3{,}1234')).toBe(false); // 4 decimal digits
 			expect(checkSpacesViolation('3{,}141')).toBe(false); // 3 decimal digits
 		});
 
 		it('should recognize , as decimal separator in digit,digit pattern', () => {
 			expect(checkSpacesViolation('3,14159')).toBe(true); // 5 decimal digits
-			expect(checkSpacesViolation('3,1234')).toBe(true); // 4 decimal digits
+			expect(checkSpacesViolation('3,1234')).toBe(false); // 4 decimal digits
 			expect(checkSpacesViolation('3,141')).toBe(false); // 3 decimal digits
 		});
 	});
@@ -108,5 +129,35 @@ describe('checkSpacesViolation', () => {
 		it('should handle multiple spaces (normalize them)', () => {
 			expect(checkSpacesViolation('1  234')).toBe(false); // Multiple spaces should be normalized
 		});
+	});
+});
+
+// Réglage de modèle « Espaces dès 4 chiffres » (option C de E2) : la règle de l'école
+// pour la numération, l'espace exigée dès 4 chiffres
+describe('checkSpacesViolation — espaces dès 4 chiffres', () => {
+	it.each([
+		['7900', true],
+		['7 900', false],
+		['7\\,900', false],
+		['79 00', true],
+		['123', false],
+		['0{,}1234', true],
+		['0{,}123\\,4', false],
+		['30000', true],
+		['30\\,000', false]
+	])('%s → faute : %s', (latex, violation) => {
+		expect(checkSpacesViolation(latex, 4)).toBe(violation);
+	});
+});
+
+// Revue du lot 4d : un code couleur n'est pas un nombre (défaut antérieur)
+describe('checkSpacesViolation — codes couleur', () => {
+	it.each([
+		['\\textcolor{#123456}{7}', 5, false],
+		['\\textcolor{#1234ab}{7}', 4, false],
+		['\\textcolor{#123456}{30000}', 5, true],
+		['\\textcolor{#FF5722}{7\\,900}', 4, false]
+	])('%s (seuil %i) → faute : %s', (latex, minDigits, violation) => {
+		expect(checkSpacesViolation(latex, minDigits)).toBe(violation);
 	});
 });

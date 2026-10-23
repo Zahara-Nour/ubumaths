@@ -4,6 +4,11 @@
 	"reviewer": "claude",
 	"template": {
 		"title": "Calculer un produit d'entiers",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Un facteur à $3$ chiffres",
 		"shared": {
 			"variables": [

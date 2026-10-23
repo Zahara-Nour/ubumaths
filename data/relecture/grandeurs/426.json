@@ -5,6 +5,11 @@
 	"editNotes": "Unités de l'énoncé déclarées entre crochets (a[km] = ?[m]) : la conversion les écrivait « a km », lu comme le produit k·m (affiché « 7 k m » en italique). Facteurs de conversion vérifiés sur toutes les variations ; réponse attendue forcée en décimal exact (;d). Case numérique, unité écrite après la case.",
 	"template": {
 		"title": "Convertir dans une autre unité",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Conversion vers l'unité de référence",
 		"shared": {
 			"variables": [

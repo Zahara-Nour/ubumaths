@@ -11,7 +11,7 @@ couvre:
 
 # Statistiques et probabilités (`src/lib/statistics/`)
 
-> Vérifié contre le code le 2026-10-10. Usage dans l'atelier : [atelier.md](atelier.md)
+> Vérifié contre le code le 2026-10-10 ; espaces de groupement le 2026-10-23. Usage dans l'atelier : [atelier.md](atelier.md)
 > (§ « Liens avec `mathAST` et `statistics` ») ; syntaxe des blocs statistiques :
 > [ubumark.md](ubumark.md) (genres de `stat-chart`). Cette doc ne décrit que le **calcul**.
 
@@ -137,7 +137,8 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   `simulateRunningMean` / `simulateLawRunningMean` (loi des grands nombres),
   `simulateSamples` / `simulateLawSamples` (N échantillons de taille n, nombre de moyennes à
   au plus 2σ/√n de μ). Bornes : `SIMULATION_LIMITS` (100 000 tirages, 10 000 pour la moyenne
-  courante, 1 000 × 1 000 pour les échantillons).
+  courante, 1 000 × 1 000 pour les échantillons). Les nombres des messages sont groupés par
+  trois dès 5 chiffres (`100 000`, mais `1000`, règle du BIPM, `mathAST/digit-grouping.ts`).
 - Le hasard vient d'une `RandomSource` : avec une graine (`createRandomSource(seed)`), les
   mêmes tirages à chaque fois (un atelier partagé montre ce qu'a vu l'élève).
 

@@ -5,6 +5,11 @@
 	"editNotes": "Correction, dernière ligne : accolade de \\textcolor non fermée (déjà dans TinyMath) → « \\textcolor{…}{b+d=n\\text{ décimales}} ».",
 	"template": {
 		"title": "Calculer un produit",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Multiplier deux nombres décimaux inférieurs à $1$",
 		"variations": [
 			{

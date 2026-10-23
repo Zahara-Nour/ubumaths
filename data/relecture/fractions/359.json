@@ -5,6 +5,11 @@
 	"editNotes": "« Ecris » → « Écris ». Tirages vérifiés (numérateur à 2–4 chiffres sur 10, 100 ou 1000). Specs : dixièmes, centièmes, millièmes justes, virgule acceptée ; décalage de rang refusé ; zéro inutile perfectible.",
 	"template": {
 		"title": "Forme décimale d'une fraction",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Fraction décimale jusqu'au millième",
 		"variations": [
 			{

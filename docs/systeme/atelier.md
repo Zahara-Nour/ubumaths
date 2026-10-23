@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; espaces de groupement dès 5 chiffres, 2026-10-23).
 
 ## À quoi ça sert
 
@@ -974,7 +974,8 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   collé redevient un rectangle, un geste sans effet n'est pas noté (`sameFormats`). Revue de la PR 1 :
   les zones s'empilaient (400 par collage, « Effacer » refusé au plafond, lien trop long). `false`/
   `null` d'un patch ramène au défaut (`CLEAR_PATCH`). Elle ne change que l'AFFICHAGE (`formatShown`,
-  `Intl.NumberFormat` fr-FR, moitié loin de zéro, jamais `-0,00`) : une formule cite la valeur. Une
+  `Intl.NumberFormat` fr-FR sans groupement, puis espaces dès 5 chiffres, règle du BIPM — `1234,5`,
+  `12 345,00 €` —, moitié loin de zéro, jamais `-0,00`) : une formule cite la valeur. Une
   case vide se met en forme d'avance ; la vider garde sa mise en forme. Un geste de la grille
   (une étape, Ctrl+Z) ; la recopie et le copier-coller interne l'emportent (`patchOf`,
   Q-MF-4), et sont refusés ENTIERS si elle dépasserait le plafond (jugé avant d'écrire). Rangée dans
@@ -1328,7 +1329,8 @@ plus `{1/3}\pi`) — y compris dans le texte brut du moteur.
 **Résultat exact trop long** (lot « lenteur des grandes fractions », option A de David du 2026-10-12,
 `mathAST/cli/exact-size.ts`) : au-delà de **1 000 caractères**, le mode exact **garde l'écriture
 tapée** (`(1+1/1000)^{1000}`, `1.01^{365}`, `2^{100000}`) — comme `1000!` le faisait déjà — avec une
-note (« Valeur exacte trop longue (environ 6 000 chiffres) : elle reste écrite telle quelle. ») ; la
+note (« Valeur exacte trop longue (environ 6000 chiffres) : elle reste écrite telle quelle. », espace
+fine dès 5 chiffres, règle du BIPM) ; la
 valeur approchée reste au bouton ≈ et en mode décimal. Deux temps (lot « défauts des grandes
 fractions », 2026-10-12) :
 

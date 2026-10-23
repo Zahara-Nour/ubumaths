@@ -4,6 +4,11 @@
 	"reviewer": "claude",
 	"template": {
 		"title": "Compléter une soustraction à trou",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Soustraire des dizaines entières, des centaines entières ou des milliers entiers à un nombre",
 		"variations": [
 			{

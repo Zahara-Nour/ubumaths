@@ -12,6 +12,7 @@
  */
 
 import type { ContentLocale } from '$lib/types/locale';
+import { groupNumberText } from '$lib/mathAST/digit-grouping';
 import type { StatChartDatum, StatChartSpec } from '../types/stat-chart';
 import { computeGridStep } from '$lib/geometry-core/viewport/grid';
 import { COURBE_PIXEL_WIDTH, formatTick } from './courbe-scene';
@@ -69,9 +70,11 @@ const TICK_TARGET_PX = 40;
 // FONCTIONS
 // ============================================================================
 
-/** 5000 → « 5 000 », ou « 5,000 » dans un document anglais */
+/** 50000 → « 50 000 », 5000 → « 5000 » (BIPM), ou « 5,000 » dans un document anglais */
 function grouped(value: number, locale: ContentLocale = 'fr'): string {
-	return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, locale === 'en' ? ',' : ' ');
+	return locale === 'en'
+		? String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+		: groupNumberText(String(value), ' ');
 }
 
 /** Un réel arrondi au millième, écrit selon la langue */

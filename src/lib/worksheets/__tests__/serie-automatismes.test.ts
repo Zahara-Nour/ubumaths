@@ -440,3 +440,39 @@ describe('buildSerie — sens de AB (longueurs de segments)', () => {
 		expect(serie.statement).toContain('A B^2');
 	});
 });
+
+// Réglage « Espaces dès 4 chiffres » (E2, option C) : la fiche écrit comme l'écran
+describe('buildSerie — espaces de groupement du modèle', () => {
+	const numeration = (spacesFromFourDigits: boolean) =>
+		({
+			...base,
+			id: 'numeration',
+			options: spacesFromFourDigits ? { constraints: { spacesFromFourDigits: true } } : {},
+			variations: [
+				{
+					statement: 'Calcule $7\\times1000+900$ et ~2000+0.1234~.\n\n$$?$$',
+					variables: [],
+					blanks: [{ expectedAnswer: '7900' }],
+					correction: { steps: ['On trouve $7900$.'] }
+				}
+			]
+		}) as unknown as QuestionTemplate;
+
+	it('modèle réglé : espaces dès 4 chiffres, dans les formules seulement, point gardé', () => {
+		const serie = buildSerie(new Map([['numeration', numeration(true)]]), [
+			{ templateId: 'numeration', seed: 1 }
+		]);
+		expect(serie.statement).toContain('$7\\times1\\,000+900$');
+		expect(serie.statement).toContain('$2\\,000 + 0.123\\,4$');
+		expect(serie.solution).toContain('\\mathbf{7\\,900}');
+		expect(serie.solution).toContain('On trouve $7\\,900$.');
+	});
+
+	it('modèle non réglé : rien n’est ajouté (le rendu applique le BIPM)', () => {
+		const serie = buildSerie(new Map([['numeration', numeration(false)]]), [
+			{ templateId: 'numeration', seed: 1 }
+		]);
+		expect(serie.statement).toContain('$7\\times1000+900$');
+		expect(serie.solution).toContain('\\mathbf{7900}');
+	});
+});

@@ -8,6 +8,11 @@
 		"level": 6,
 		"theme": "Entiers",
 		"title": "Décomposer l'écriture décimale un nombre",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"domain": "Apprivoiser",
 		"grades": ["CE2"],
 		"status": "draft",

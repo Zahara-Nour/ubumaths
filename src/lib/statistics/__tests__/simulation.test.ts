@@ -180,11 +180,11 @@ describe('simulateSamples — N échantillons de taille n (1SPE-173)', () => {
 		expect(simulateSamples(COIN, HALVES, 1000, 1000, createRandomSource(1)).ok).toBe(true);
 		expect(simulateSamples(COIN, HALVES, 1001, 10, createRandomSource(1))).toEqual({
 			ok: false,
-			message: 'N doit être un entier entre 1 et 1 000'
+			message: 'N doit être un entier entre 1 et 1000'
 		});
 		expect(simulateSamples(COIN, HALVES, 10, 1001, createRandomSource(1))).toEqual({
 			ok: false,
-			message: 'n doit être un entier entre 1 et 1 000'
+			message: 'n doit être un entier entre 1 et 1000'
 		});
 	});
 

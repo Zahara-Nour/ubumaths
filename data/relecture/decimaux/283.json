@@ -5,6 +5,11 @@
 	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Variables renommées sans « _ » (c_int → p, c_dec → q) : un nom souligné est lu comme un indice dans les conditions. Specs : juste sur les 6 variations (espace des milliers, virgule, point) ; sans espace perfectible ; ×10 au lieu de ×100 refusé.",
 	"template": {
 		"title": "Calculer astucieusement un produit",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Utiliser $2$ facteurs dont le produit est $100$",
 		"shared": {
 			"variables": [

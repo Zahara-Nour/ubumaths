@@ -478,3 +478,19 @@ describe('applyValidationToInputStates', () => {
 		expect(result[1].isCorrect).toBeNull();
 	});
 });
+
+// Réglage « Espaces dès 4 chiffres » (E2, option C) : la valeur préremplie suit le seuil
+describe('buildInputStates — seuil des espaces de groupement', () => {
+	it('BIPM par défaut : 7900 sans espace, 30000 groupé', () => {
+		const blanks = [
+			makeBlank({ expectedAnswer: '1', type: 'math', prefilled: '7900' }),
+			makeBlank({ expectedAnswer: '1', type: 'math', prefilled: '30000' })
+		];
+		expect(buildInputStates(blanks).map((s) => s.value)).toEqual(['7900', '30\\,000']);
+	});
+
+	it('seuil 4 : 7 900', () => {
+		const blanks = [makeBlank({ expectedAnswer: '1', type: 'math', prefilled: '7900' })];
+		expect(buildInputStates(blanks, 4)[0].value).toBe('7\\,900');
+	});
+});

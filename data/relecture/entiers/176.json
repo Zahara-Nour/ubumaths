@@ -4,6 +4,11 @@
 	"reviewer": "claude",
 	"template": {
 		"title": "Compléter une multiplication à trou",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Les $2$ facteurs sont des multiples de $10$, $100$ ou $1000$",
 		"shared": {
 			"variables": [

@@ -21,6 +21,7 @@ import { formatFraction, formatStatNumber } from '$lib/statistics/format';
 import { roundNumber } from '$lib/statistics/rounding';
 import { simulateCounts, simulateRunningMean, simulateSamples } from '$lib/statistics/simulation';
 import { createRandomSource } from '$lib/utils/random';
+import { groupNumberText } from '$lib/mathAST/digit-grouping';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { buildRunningMeanScene, buildSampleMeansScene } from '$lib/ubumark/utils/simulation-scene';
 import { lawMismatchMessage } from './pairs';
@@ -101,9 +102,9 @@ function listNamed(atelier: Atelier, name: string): ListObject | null {
 	return object !== undefined && isList(object) ? object : null;
 }
 
-/** 100000 → « 100 000 », comme les messages du moteur */
+/** 100000 → « 100 000 », 1000 → « 1000 » (BIPM), comme les messages du moteur */
 function grouped(value: number): string {
-	return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+	return groupNumberText(String(value), ' ');
 }
 
 /** Une fréquence en français, au millième : 0,173 */

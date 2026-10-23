@@ -3,7 +3,7 @@
  *
  * Converts decimal numbers in LaTeX expressions to French notation:
  * - Decimal point → comma with proper LaTeX spacing: {,}
- * - Thin spaces every 3 digits (if >= 4 digits): \,
+ * - Thin spaces every 3 digits (if >= 5 digits, BIPM): \,
  *
  * Un document en anglais garde le point décimal (décision du 2026-09-25) mais
  * groupe aussi par espaces fines : voir {@link toLocaleDecimal}.
@@ -12,6 +12,11 @@
  */
 
 import type { ContentLocale } from '$lib/types/locale';
+import {
+	groupDecimalDigits,
+	groupIntegerDigits,
+	MIN_DIGITS_FOR_GROUPING
+} from '$lib/mathAST/digit-grouping';
 
 // =============================================================================
 // Types
@@ -19,13 +24,19 @@ import type { ContentLocale } from '$lib/types/locale';
 
 export interface FrenchDecimalOptions {
 	/**
-	 * Add thin spaces every 3 digits when >= 4 digits present.
+	 * Add thin spaces every 3 digits when >= 5 digits present (règle du BIPM,
+	 * `mathAST/digit-grouping.ts`) ; each side of the decimal comma counts apart.
 	 * - Integer part: spaces from right to left (1234567 → 1\,234\,567)
 	 * - Decimal part: spaces from left to right (89012345 → 890\,123\,45)
 	 *
 	 * @default true
 	 */
 	formatSpaces?: boolean;
+	/**
+	 * Seuil de groupement : 5 chiffres par défaut (BIPM), 4 pour un modèle de
+	 * question réglé « Espaces dès 4 chiffres » (règle de l'école).
+	 */
+	minDigits?: number;
 }
 
 // =============================================================================
@@ -33,46 +44,22 @@ export interface FrenchDecimalOptions {
 // =============================================================================
 
 const DEFAULT_OPTIONS: Required<FrenchDecimalOptions> = {
-	formatSpaces: true
+	formatSpaces: true,
+	minDigits: MIN_DIGITS_FOR_GROUPING
 };
-
-/** Minimum digits to apply spacing (4 or more digits triggers spacing) */
-const MIN_DIGITS_FOR_SPACING = 4;
 
 // =============================================================================
 // Internal Helpers
 // =============================================================================
 
-/**
- * Format integer part with thin spaces from right to left.
- * Only applies spacing if >= MIN_DIGITS_FOR_SPACING digits.
- *
- * @example
- * formatIntegerPart("1234567") → "1\\,234\\,567"
- * formatIntegerPart("123") → "123"
- */
-function formatIntegerPart(intPart: string, applySpaces: boolean): string {
-	if (!applySpaces || intPart.length < MIN_DIGITS_FOR_SPACING) {
-		return intPart;
-	}
-	// Insert \, every 3 digits from the right
-	return intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+/** Partie entière groupée par espaces fines depuis la droite, dès le seuil. */
+function formatIntegerPart(intPart: string, options: Required<FrenchDecimalOptions>): string {
+	return options.formatSpaces ? groupIntegerDigits(intPart, '\\,', options.minDigits) : intPart;
 }
 
-/**
- * Format decimal part with thin spaces from left to right.
- * Only applies spacing if >= MIN_DIGITS_FOR_SPACING digits.
- *
- * @example
- * formatDecimalPart("14159265") → "141\\,592\\,65"
- * formatDecimalPart("14") → "14"
- */
-function formatDecimalPart(decPart: string, applySpaces: boolean): string {
-	if (!applySpaces || decPart.length < MIN_DIGITS_FOR_SPACING) {
-		return decPart;
-	}
-	// Insert \, every 3 digits from the left
-	return decPart.replace(/(\d{3})(?=\d)/g, '$1\\,');
+/** Partie décimale groupée par espaces fines depuis la virgule, dès le seuil. */
+function formatDecimalPart(decPart: string, options: Required<FrenchDecimalOptions>): string {
+	return options.formatSpaces ? groupDecimalDigits(decPart, '\\,', options.minDigits) : decPart;
 }
 
 /**
@@ -94,7 +81,7 @@ function formatSingleNumber(
 	const [, intPart = '', decPart] = match;
 
 	// Handle case where number starts with decimal (e.g., ".5")
-	const formattedInt = intPart ? formatIntegerPart(intPart, options.formatSpaces) : '';
+	const formattedInt = intPart ? formatIntegerPart(intPart, options) : '';
 
 	// No decimal part - return integer only
 	if (!decPart) {
@@ -102,7 +89,7 @@ function formatSingleNumber(
 	}
 
 	// Format decimal part
-	const formattedDec = formatDecimalPart(decPart, options.formatSpaces);
+	const formattedDec = formatDecimalPart(decPart, options);
 
 	// `{,}` en français : espacement LaTeX correct (pas d'espace après la virgule)
 	return `${formattedInt}${separator}${formattedDec}`;
@@ -117,7 +104,7 @@ function formatSingleNumber(
  *
  * Finds standalone numbers in the LaTeX string and converts them:
  * - Decimal point → comma: 3.14 → 3{,}14
- * - Thin spaces every 3 digits (if >= 4 digits)
+ * - Thin spaces every 3 digits (if >= 5 digits)
  *
  * Preserves LaTeX commands and structure.
  *
@@ -129,8 +116,8 @@ function formatSingleNumber(
  * // Basic conversion
  * toFrenchDecimal("x = 3.14") → "x = 3{,}14"
  *
- * // With spacing (>= 4 digits)
- * toFrenchDecimal("1234.5678") → "1\\,234{,}567\\,8"
+ * // With spacing (>= 5 digits)
+ * toFrenchDecimal("12345.67891") → "12\\,345{,}678\\,91"
  *
  * // Preserves LaTeX
  * toFrenchDecimal("\\frac{3.14}{2}") → "\\frac{3{,}14}{2}"
@@ -148,11 +135,11 @@ const DECIMAL_SEPARATORS: Record<ContentLocale, string> = { fr: '{,}', en: '.' }
 /**
  * Nombres d'une formule LaTeX mis en forme selon la langue du document :
  * virgule en français (`3{,}14`), point en anglais (`3.14`) ; groupement par
- * espaces fines dès 4 chiffres dans les deux langues (`12\,500`, `3.141\,59`).
+ * espaces fines dès 5 chiffres dans les deux langues (`12\,500`, `3.141\,59`).
  * Une langue inconnue est traitée en français, comme les libellés du document.
  *
  * @example
- * toLocaleDecimal("1234.5678", "en") → "1\\,234.567\\,8"
+ * toLocaleDecimal("12345.67891", "en") → "12\\,345.678\\,91"
  */
 export function toLocaleDecimal(
 	latex: string,
@@ -173,8 +160,26 @@ export function toLocaleDecimal(
 		/(#[0-9A-Fa-f]{3,8}(?![0-9A-Za-z]))|(\{,\})?(\d+(?:\.\d+)?)/g,
 		(match, hexColor, latexComma, numStr) => {
 			if (hexColor) return hexColor;
-			if (latexComma) return `{,}${formatDecimalPart(numStr, opts.formatSpaces)}`;
+			if (latexComma) return `{,}${formatDecimalPart(numStr, opts)}`;
 			return formatSingleNumber(numStr, opts, separator);
+		}
+	);
+}
+
+/**
+ * Espaces fines de groupement posées dès `minDigits` chiffres, SANS toucher au
+ * séparateur décimal (`3.14159` → `3.141\,59` au seuil 4) : pour un texte figé
+ * dont la langue s'applique au rendu (série d'automatismes). Les espaces déjà
+ * écrites restent ; le rendu (`toLocaleDecimal`) ne les défait pas.
+ */
+export function withDigitGrouping(latex: string, minDigits: number): string {
+	return latex.replace(
+		/(#[0-9A-Fa-f]{3,8}(?![0-9A-Za-z]))|(\{,\}|\.)?(\d+)/g,
+		(match, hexColor, decimalSeparator: string | undefined, digits: string) => {
+			if (hexColor) return hexColor;
+			return decimalSeparator
+				? `${decimalSeparator}${groupDecimalDigits(digits, '\\,', minDigits)}`
+				: groupIntegerDigits(digits, '\\,', minDigits);
 		}
 	);
 }

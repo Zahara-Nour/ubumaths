@@ -4,6 +4,11 @@
 	"reviewer": "claude",
 	"template": {
 		"title": "Calculer une somme",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Somme d’un nombre ayant au plus trois chiffres et d’un nombre ayant un seul chiffre non nul",
 		"variations": [
 			{

@@ -454,12 +454,12 @@ describe('simple converters', () => {
 
 		it('should format decimal part with comma (left to right)', () => {
 			const token = createCommandToken('np', ['12345,6789']);
-			expect(convertNumprint(token, ctx)).toBe('12\\,345,678\\,9');
+			expect(convertNumprint(token, ctx)).toBe('12\\,345,6789'); // 4 décimales : pas d'espace (BIPM)
 		});
 
 		it('should format decimal part with period (left to right)', () => {
 			const token = createCommandToken('np', ['12345.6789']);
-			expect(convertNumprint(token, ctx)).toBe('12\\,345.678\\,9');
+			expect(convertNumprint(token, ctx)).toBe('12\\,345.6789');
 		});
 
 		it('should format large number with long decimal part', () => {

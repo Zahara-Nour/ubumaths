@@ -43,6 +43,10 @@
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import {
+		digitGroupingOf,
+		provideDigitGrouping
+	} from '$lib/components/markdown/content-digit-grouping';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { RotateCw, Check, X, AlertCircle, TriangleAlert } from '@lucide/svelte';
@@ -155,6 +159,12 @@
 	// Sens de `AB` de l'instance (longueur ou produit) : posé pour toutes les formules
 	// en syntaxe maison rendues dans cette carte ; absent (instance d'avant) : produit
 	provideCapitalPairs(() => instance.capitalPairs);
+	// Seuil des espaces de groupement : « Espaces dès 4 chiffres » du modèle, sinon BIPM
+	provideDigitGrouping(() => digitGroupingOf(instance));
+	const prefilledGrouping = () => {
+		const minDigits = digitGroupingOf(instance);
+		return minDigits === undefined ? {} : { minDigits };
+	};
 
 	// Choix dans l'ordre affiché, chacun marqué juste ou faux À SA POSITION AFFICHÉE
 	// (sans `isCorrect`, le choix coché était toujours barré après validation)
@@ -220,10 +230,14 @@
 	$effect(() => {
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
 			fillBlankValues = instance.blanks.map((b) =>
-				b.prefilled ? (b.type === 'math' ? toFrenchDecimal(b.prefilled) : b.prefilled) : ''
+				b.prefilled
+					? b.type === 'math'
+						? toFrenchDecimal(b.prefilled, prefilledGrouping())
+						: b.prefilled
+					: ''
 			);
 			fillBlankValuesLatex = instance.blanks.map((b) =>
-				b.prefilled && b.type === 'math' ? toFrenchDecimal(b.prefilled) : ''
+				b.prefilled && b.type === 'math' ? toFrenchDecimal(b.prefilled, prefilledGrouping()) : ''
 			);
 			blankValidationResults = instance.blanks.map(() => null);
 			blankUnoptimalResults = [];

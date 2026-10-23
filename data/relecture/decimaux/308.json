@@ -5,6 +5,11 @@
 	"editNotes": "Titre « a trou » → « à trou ». « digits:0 » donnait 0 (? : 1000 = 0) : nombre de chiffres tiré dans 1..4.",
 	"template": {
 		"title": "Compléter une division à trou",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Diviser par $1000$",
 		"variations": [
 			{

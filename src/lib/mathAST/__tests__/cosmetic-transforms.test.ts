@@ -102,8 +102,10 @@ describe('checkSpacesViolation', () => {
 		expect(checkSpacesViolation('42')).toBe(false);
 	});
 
-	it('returns true for 4+ digits without spacing', () => {
-		expect(checkSpacesViolation('1234')).toBe(true);
+	// BIPM (E2) : espace exigée dès 5 chiffres, dès 4 pour un modèle « Espaces dès 4 chiffres »
+	it('returns true for 5+ digits without spacing (4+ with the school threshold)', () => {
+		expect(checkSpacesViolation('1234')).toBe(false);
+		expect(checkSpacesViolation('1234', 4)).toBe(true);
 		expect(checkSpacesViolation('12345')).toBe(true);
 	});
 
@@ -113,8 +115,10 @@ describe('checkSpacesViolation', () => {
 		expect(checkSpacesViolation('1\\,234')).toBe(false);
 	});
 
-	it('returns true for 4+ decimal digits without spacing', () => {
-		expect(checkSpacesViolation('0.1234')).toBe(true);
+	it('returns true for 5+ decimal digits without spacing (4+ with the school threshold)', () => {
+		expect(checkSpacesViolation('0.1234')).toBe(false);
+		expect(checkSpacesViolation('0.1234', 4)).toBe(true);
+		expect(checkSpacesViolation('0.12345')).toBe(true);
 	});
 
 	it('returns false for correctly spaced decimals', () => {

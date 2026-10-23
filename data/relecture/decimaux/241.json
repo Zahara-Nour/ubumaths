@@ -112,6 +112,7 @@
 		],
 		"options": {
 			"constraints": {
+				"spacesFromFourDigits": true,
 				"nullTerms": "off",
 				"brackets": "off",
 				"factorZero": "off",

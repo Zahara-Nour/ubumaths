@@ -25,7 +25,7 @@ describe('Calcul : la valeur exacte trop longue', () => {
 		const line = runInput(session(), '(1+1/1000)^1000');
 
 		expect(line.kind === 'calcul' && line.note).toBe(
-			'Valeur exacte trop longue (environ 6\u202f000 chiffres) : elle reste écrite telle quelle.'
+			'Valeur exacte trop longue (environ 6000 chiffres) : elle reste écrite telle quelle.'
 		);
 	});
 

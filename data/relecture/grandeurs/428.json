@@ -5,6 +5,11 @@
 	"editNotes": "Liste de grandeurs réparée : éléments « a km » (produit, a jamais substitué, génération en échec) remplacés par « {{a}}[km] » ; unités déclarées entre crochets (b[m], ?[m]) ; espace initiale de la consigne retirée.",
 	"template": {
 		"title": "Calculer avec des unités",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"variations": [
 			{
 				"statement": "Complète.\n\n$${{expression1}}$$",

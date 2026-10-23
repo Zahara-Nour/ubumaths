@@ -49,6 +49,8 @@ export function genericFunctionsConfig(
  *   - GenericFunctionConfig: Custom configuration
  * @param capitalPairs - Sens de `AB` (longueur ou produit) de la question affichée ;
  *   absent : défaut du parseur, le produit (écriture d'avant)
+ * @param minDigits - Seuil des espaces de groupement de la question affichée (4 :
+ *   « Espaces dès 4 chiffres ») ; absent : 5, BIPM
  * @returns LaTeX string suitable for MathLive rendering
  */
 export function expressionToLatex(
@@ -56,12 +58,13 @@ export function expressionToLatex(
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null,
 	locale?: string,
-	capitalPairs?: CapitalPairs
+	capitalPairs?: CapitalPairs,
+	minDigits?: number
 ): string {
 	// `\unit` (siunitx) n'existe ni dans MathLive ni dans le préambule de
 	// l'export `.tex` : on l'affiche en LaTeX de base.
 	return displayUnitsInLatex(
-		expressionToRawLatex(expression, syntax, genericFunctions, locale, capitalPairs)
+		expressionToRawLatex(expression, syntax, genericFunctions, locale, capitalPairs, minDigits)
 	);
 }
 
@@ -75,7 +78,8 @@ export function expressionToRawLatex(
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null,
 	locale?: string,
-	capitalPairs?: CapitalPairs
+	capitalPairs?: CapitalPairs,
+	minDigits?: number
 ): string {
 	let latex: string;
 
@@ -94,8 +98,9 @@ export function expressionToRawLatex(
 	}
 
 	// Nombres selon la langue du document : virgule en français, point en anglais
-	// (espaces fines de groupement dans les deux). Sans langue : français.
-	return toLocaleDecimal(latex, locale);
+	// (espaces fines de groupement dans les deux). Sans langue : français. Seuil de
+	// groupement : celui de la question (« Espaces dès 4 chiffres »), sinon le BIPM.
+	return toLocaleDecimal(latex, locale, minDigits === undefined ? {} : { minDigits });
 }
 
 /**
@@ -226,9 +231,17 @@ export function expressionToFlashLatex(
 	syntax: 'latex' | 'custom',
 	genericFunctions?: GenericFunctionConfig | null,
 	locale?: string,
-	capitalPairs?: CapitalPairs
+	capitalPairs?: CapitalPairs,
+	minDigits?: number
 ): string {
-	const latex = expressionToLatex(expression, syntax, genericFunctions, locale, capitalPairs);
+	const latex = expressionToLatex(
+		expression,
+		syntax,
+		genericFunctions,
+		locale,
+		capitalPairs,
+		minDigits
+	);
 	return latex.replace(/\\placeholder\[\d+\]\{[^}]*\}/g, '\\boxed{?}');
 }
 

@@ -24,6 +24,7 @@
 	import { expressionToLatex, extractPromptIndices } from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
 	import { readCapitalPairs } from '../content-capital-pairs';
+	import { readDigitGrouping } from '../content-digit-grouping';
 	import { isRefusedRestrictedFormula, readRestrictedRendering } from '../restricted-rendering';
 
 	/**
@@ -91,6 +92,8 @@
 	// posé par la carte de la question
 	const contextCapitalPairs = readCapitalPairs();
 	const writingCapitalPairs = () => capitalPairs ?? contextCapitalPairs();
+	// Seuil des espaces de groupement de la question affichée, posé par sa carte
+	const digitGrouping = readDigitGrouping();
 
 	// Convert to LaTeX for rendering, embedding prefilled values in placeholder syntax
 	let latex = $derived.by(() => {
@@ -99,7 +102,8 @@
 			syntax,
 			genericFunctions,
 			contentLocale(),
-			writingCapitalPairs()
+			writingCapitalPairs(),
+			digitGrouping()
 		);
 		if (prefilledValues && !correctValues) {
 			for (const [id, value] of Object.entries(prefilledValues)) {

@@ -13,6 +13,7 @@
 		"status": "draft",
 		"options": {
 			"constraints": {
+				"spacesFromFourDigits": true,
 				"brackets": "off",
 				"factorOne": "off"
 			}

@@ -82,12 +82,12 @@ describe('cas nominal', () => {
 });
 
 describe('lecture de n et affichage (revue)', () => {
-	it('« 1 000 » avec une espace : 1 000 tirages, en-tête « 1 000 tirages »', () => {
+	it('« 1 000 » avec une espace : 1 000 tirages, en-tête « 1000 tirages » (4 chiffres, BIPM)', () => {
 		const s = session(DIE);
 		const result = runInput(s, '.simuler L M 1 000');
 
 		expect(listNamed(s, 'N').values.reduce((a, b) => a + b, 0)).toBe(1000);
-		expect(result.kind === 'commande' && result.output.startsWith('1 000 tirages de L')).toBe(true);
+		expect(result.kind === 'commande' && result.output.startsWith('1000 tirages de L')).toBe(true);
 	});
 
 	it('n = 1 : « 1 tirage », au singulier', () => {

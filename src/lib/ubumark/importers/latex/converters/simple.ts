@@ -12,6 +12,7 @@ import type {
 	ConversionContext,
 	ConverterFn
 } from '../types';
+import { groupDecimalDigits, groupIntegerDigits } from '$lib/mathAST/digit-grouping';
 
 // ===========================
 // Math Converters (Trivial - Pass-through)
@@ -249,6 +250,7 @@ export function convertDashes(text: string): string {
  * Uses the LaTeX thin-space command `\,` as the thousands separator (unified
  * with the math path, see math-to-custom.ts formatFrenchNumber).
  *
+ * Dès 5 chiffres de chaque côté de la virgule (BIPM, `mathAST/digit-grouping.ts`) :
  * - Integer part: spaces from right to left (1234567 -> 1\,234\,567)
  * - Decimal part: spaces from left to right (89012345 -> 890\,123\,45)
  */
@@ -260,14 +262,14 @@ function formatFrenchNumber(numStr: string): string {
 	const [, intPart, separator, decPart] = decimalMatch;
 
 	// Add thin-space separators to integer part (from right to left)
-	const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+	const formattedInt = groupIntegerDigits(intPart, '\\,');
 
 	if (!separator) {
 		return formattedInt;
 	}
 
 	// Add thin-space separators to decimal part (from left to right, every 3 digits)
-	const formattedDec = decPart.replace(/(\d{3})(?=\d)/g, '$1\\,');
+	const formattedDec = groupDecimalDigits(decPart, '\\,');
 
 	return `${formattedInt}${separator}${formattedDec}`;
 }

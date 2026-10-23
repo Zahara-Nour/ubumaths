@@ -25,7 +25,9 @@ const typst = (md: string, language?: string) =>
 describe('toLocaleDecimal', () => {
 	it('anglais : point décimal, espaces fines de groupement', () => {
 		expect(toLocaleDecimal('x = 0.3', 'en')).toBe('x = 0.3');
-		expect(toLocaleDecimal('1234.5678', 'en')).toBe('1\\,234.567\\,8');
+		// BIPM (E2) : groupement dès 5 chiffres, chaque côté du séparateur à part
+		expect(toLocaleDecimal('1234.5678', 'en')).toBe('1234.5678');
+		expect(toLocaleDecimal('12345.67891', 'en')).toBe('12\\,345.678\\,91');
 		expect(toLocaleDecimal('12500', 'en')).toBe('12\\,500');
 	});
 

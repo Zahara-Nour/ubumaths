@@ -56,6 +56,7 @@ import {
 	type ExportFormat
 } from './history-export';
 import { termsOf } from './engine';
+import { groupNumberText } from '$lib/mathAST/digit-grouping';
 import { isFunction, isList, isQualitative, type AtelierObject, type ListObject } from './types';
 import { wordsReason } from './actions';
 import { lawFractions } from './simulate';
@@ -300,7 +301,7 @@ function actionStepLabel(actionId: string, name: string): string {
 	return `${verbs[root] ?? 'action sur'} ${shown}`;
 }
 
-/** Six chiffres significatifs, la virgule (comme le reste de l'atelier). */
+/** Six chiffres significatifs, la virgule (comme le reste de l'atelier) ; groupés à part (BIPM). */
 const TERM_FORMAT = new Intl.NumberFormat('fr-FR', {
 	maximumSignificantDigits: 6,
 	useGrouping: false
@@ -1045,7 +1046,9 @@ export class CalcDesk {
 		}
 		this.#push({
 			label: `Premiers termes de ${name}`,
-			text: result.terms.map((t) => `${name}(${t.n}) = ${TERM_FORMAT.format(t.value)}`).join(' ; '),
+			text: result.terms
+				.map((t) => `${name}(${t.n}) = ${groupNumberText(TERM_FORMAT.format(t.value), '\u202f')}`)
+				.join(' ; '),
 			failed: false
 		});
 	}

@@ -4,6 +4,11 @@
 	"reviewer": "claude",
 	"template": {
 		"title": "Multiplier par 20",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Nombre à $2$ chiffres",
 		"shared": {
 			"variables": [

@@ -5,6 +5,11 @@
 	"editNotes": "Les décimaux « digits:… » pouvaient finir par 0 (ou valoir 0 / un entier déguisé) : conditions ajoutées (dernier chiffre non nul, partie entière du bon nombre de chiffres) ; variables a_int/a_dec renommées m/q (un nom à « _ » n'est pas lisible dans une condition).",
 	"template": {
 		"title": "Calculer un quotient",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Diviser par $0,1$ ; $0,01$ ou $0,001$",
 		"shared": {
 			"variables": [

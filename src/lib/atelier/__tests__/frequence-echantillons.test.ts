@@ -46,12 +46,12 @@ describe('les commandes se découvrent', () => {
 });
 
 describe('.fréquence — loi des grands nombres (Q74)', () => {
-	it('pièce, 5 000 tirages : texte, courbe, aucune liste créée', () => {
+	it('pièce, 5000 tirages : texte, courbe, aucune liste créée', () => {
 		const s = session(COIN);
 		const result = commande(s, '.fréquence L M 5000');
 		const lines = result.output.split('\n');
 
-		expect(lines[0]).toBe('5 000 tirages de L avec probabilités M (graine 4821)');
+		expect(lines[0]).toBe('5000 tirages de L avec probabilités M (graine 4821)');
 		expect(lines[1]).toMatch(/^moyenne des tirages : 0,\d+ — espérance E = 1\/2$/);
 		expect(result.chart?.kind).toBe('moyenne-selon-n');
 		expect(s.atelier.objects).toHaveLength(2);
@@ -109,8 +109,8 @@ describe('.échantillons — N échantillons de taille n (Q75)', () => {
 	});
 
 	it.each([
-		['.échantillons L M 1001 10', 'N doit être un entier entre 1 et 1 000'],
-		['.échantillons L M 10 1001', 'n doit être un entier entre 1 et 1 000'],
+		['.échantillons L M 1001 10', 'N doit être un entier entre 1 et 1000'],
+		['.échantillons L M 10 1001', 'n doit être un entier entre 1 et 1000'],
 		[
 			'.échantillons L M 10',
 			'Écris la commande ainsi : .échantillons L M 50 100 (valeurs, probabilités, nombre d’échantillons, taille).'

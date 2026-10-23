@@ -42,6 +42,7 @@
 	} from '../utils/math-utils';
 	import { readContentLocale } from '../content-locale';
 	import { readCapitalPairs } from '../content-capital-pairs';
+	import { readDigitGrouping } from '../content-digit-grouping';
 
 	interface Props {
 		children: InlineNode[];
@@ -116,6 +117,8 @@
 	// posé par la carte de la question
 	const contextCapitalPairs = readCapitalPairs();
 	const writingCapitalPairs = () => capitalPairs ?? contextCapitalPairs();
+	// Seuil des espaces de groupement de la question affichée, posé par sa carte
+	const digitGrouping = readDigitGrouping();
 
 	/**
 	 * Check if adjacent node is inline-block (math, blank, hint, or internal-link) for whitespace handling
@@ -193,7 +196,8 @@
 							child.syntax,
 							genericFunctions,
 							contentLocale(),
-							writingCapitalPairs()
+							writingCapitalPairs(),
+							digitGrouping()
 						)}
 					{@const flashLatex = prefilledValues
 						? replacePromptsWithPrefilled(baseLatex, prefilledValues)
@@ -203,7 +207,8 @@
 								child.syntax,
 								genericFunctions,
 								contentLocale(),
-								writingCapitalPairs()
+								writingCapitalPairs(),
+								digitGrouping()
 							))}
 					{#key flashLatex}
 						<MathInline expression={flashLatex} syntax="latex" />
@@ -214,7 +219,8 @@
 						child.syntax,
 						genericFunctions,
 						contentLocale(),
-						writingCapitalPairs()
+						writingCapitalPairs(),
+						digitGrouping()
 					)}
 					{@const filledLatex = replacePromptsWithValues(latex, correctValues)}
 					{#key filledLatex}

@@ -5,6 +5,11 @@
 	"editNotes": "Correction : second facteur en jaune (illisible sur fond blanc) → {{color:primary.1}}.",
 	"template": {
 		"title": "Multiplier deux multiples de $10$",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"variations": [
 			{
 				"statement": "Calcule.\n\n$${{expression1}}$$",

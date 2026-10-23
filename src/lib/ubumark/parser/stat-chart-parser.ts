@@ -36,6 +36,7 @@
  */
 
 import { bodyOpensParagraph } from './block-closure';
+import { groupNumberText } from '$lib/mathAST/digit-grouping';
 import {
 	CLASS_CHART_KINDS,
 	CROSS_TABLE_DISPLAYS,
@@ -863,7 +864,7 @@ function checkSimulationOptions(
 		const line = Math.max(optionLines.echantillons ?? 0, optionLines.taille ?? 0);
 		return at(
 			line,
-			`échantillons × taille : au plus 100 000 tirages (ici ${String(total).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')})`
+			`échantillons × taille : au plus 100 000 tirages (ici ${groupNumberText(String(total), ' ')})`
 		);
 	}
 	return null;

@@ -239,6 +239,17 @@ describe('« Premiers termes »', () => {
 		expect(line?.text).toContain('u(3) = 8');
 	});
 
+	it('groupe les chiffres par trois dès 5 chiffres (BIPM, E2)', () => {
+		const atelier = recurrence('2u_n', '5000');
+		const desk = new CalcDesk(atelier);
+
+		desk.runFromPanel('terms', 'u');
+
+		const line = desk.entries.at(-1);
+		expect(line?.text).toContain('u(0) = 5000');
+		expect(line?.text).toContain('u(1) = 10\u202f000');
+	});
+
 	it('dit pourquoi quand la suite ne peut rien produire', () => {
 		const atelier = recurrence('2u_n', 'b');
 		const desk = new CalcDesk(atelier);

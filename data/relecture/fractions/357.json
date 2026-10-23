@@ -5,6 +5,11 @@
 	"editNotes": "« Ecris » → « Écris ». Numérateur 0..9 → 1..9 : le tirage 0/1000 donnait une question dégénérée (réponse 0). Specs : juste aux bornes ; confusion de rang et recopie refusées ; zéro inutile perfectible.",
 	"template": {
 		"title": "Forme décimale d'une fraction",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Millièmes",
 		"variations": [
 			{

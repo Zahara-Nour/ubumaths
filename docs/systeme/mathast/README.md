@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23).
 
 ## À quoi ça sert
 
@@ -39,22 +39,23 @@ test, ~14 000 cas (`it(`/`test(`).
 
 ### Fichiers racine
 
-| Fichier                                 | Rôle                                                                                                                                                                                                                                                   |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `types.ts`                              | l'union `MathNode` (29 variantes), `NodeMetadata`, styles d'affichage                                                                                                                                                                                  |
-| `factory.ts`                            | constructeurs de nœuds, regroupés dans l'espace de noms `MathAST`                                                                                                                                                                                      |
-| `guards.ts`                             | prédicats de type (`isAddition`, `isDelimiter`, `isFraction`, `isMinusOne`…)                                                                                                                                                                           |
-| `transforms.ts`                         | `mapNode`, `mapNodeTopDown`, `findNodes`, `findFirst`, `replaceNode`, `withMetadata`, `getChildren`, `cloneNode`, `countNodes`, `getDepth`, `stripUnnecessaryBrackets`                                                                                 |
-| `visitor.ts`                            | `visitAST`, `transformAST`                                                                                                                                                                                                                             |
-| `flatten.ts`                            | `flattenSumShallow/Deep`, `flattenProductShallow/Deep`, `unflattenSum`, `unflattenProduct`, `unflattenRelationChain`, `flipSign`                                                                                                                       |
-| `equivalence.ts`, `equivalence-core.ts` | `areEquivalent` : le **décideur** de la correction                                                                                                                                                                                                     |
-| `assumptions.ts`                        | hypothèses de l'énoncé (« x > 0 », « n entier », ADR 0012) traduites pour le décideur                                                                                                                                                                  |
-| `cosmetic-transforms.ts`                | `checkForm` et ses transformations (contraintes de forme de la correction) ; tests d'écriture d'un nombre (`isSimpleNumberLatex`, `isNumberOrNumberFractionLatex`, `isQuantityValueLatex` : fraction écrite `\frac` seulement, `6\div2` est un calcul) |
-| `decimal-comma.ts`                      | la virgule décimale nue (`3,14`) : nombre ou séparateur                                                                                                                                                                                                |
-| `latex-generator.ts`                    | `toLatex`, `LatexGenerator` (options `renderMetadata`, `preserveHoles`) ; `\times` d'un produit implicite qui ne se relirait pas (`3 \times 3x^2`, `x \times 3^x`, `juxtaposesDigits`)                                                                 |
-| `custom-generator.ts`                   | `toCustom`, `CustomGenerator` (syntaxe maison)                                                                                                                                                                                                         |
-| `pretty-print.ts`                       | `prettyPrint` (débogage)                                                                                                                                                                                                                               |
-| `index.ts`                              | point d'entrée `$lib/mathAST`                                                                                                                                                                                                                          |
+| Fichier                                 | Rôle                                                                                                                                                                                                                                                                 |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `types.ts`                              | l'union `MathNode` (29 variantes), `NodeMetadata`, styles d'affichage                                                                                                                                                                                                |
+| `factory.ts`                            | constructeurs de nœuds, regroupés dans l'espace de noms `MathAST`                                                                                                                                                                                                    |
+| `guards.ts`                             | prédicats de type (`isAddition`, `isDelimiter`, `isFraction`, `isMinusOne`…)                                                                                                                                                                                         |
+| `transforms.ts`                         | `mapNode`, `mapNodeTopDown`, `findNodes`, `findFirst`, `replaceNode`, `withMetadata`, `getChildren`, `cloneNode`, `countNodes`, `getDepth`, `stripUnnecessaryBrackets`                                                                                               |
+| `visitor.ts`                            | `visitAST`, `transformAST`                                                                                                                                                                                                                                           |
+| `flatten.ts`                            | `flattenSumShallow/Deep`, `flattenProductShallow/Deep`, `unflattenSum`, `unflattenProduct`, `unflattenRelationChain`, `flipSign`                                                                                                                                     |
+| `equivalence.ts`, `equivalence-core.ts` | `areEquivalent` : le **décideur** de la correction                                                                                                                                                                                                                   |
+| `assumptions.ts`                        | hypothèses de l'énoncé (« x > 0 », « n entier », ADR 0012) traduites pour le décideur                                                                                                                                                                                |
+| `digit-grouping.ts`                     | **la** règle des espaces de groupement (BIPM : facultative jusqu'à 4 chiffres, exigée dès 5, chaque côté de la virgule à part ; `SCHOOL_MIN_DIGITS_FOR_GROUPING` = 4 pour un modèle « Espaces dès 4 chiffres »), partagée par le juge, `french-math.ts` et l'atelier |
+| `cosmetic-transforms.ts`                | `checkForm` et ses transformations (contraintes de forme de la correction) ; tests d'écriture d'un nombre (`isSimpleNumberLatex`, `isNumberOrNumberFractionLatex`, `isQuantityValueLatex` : fraction écrite `\frac` seulement, `6\div2` est un calcul)               |
+| `decimal-comma.ts`                      | la virgule décimale nue (`3,14`) : nombre ou séparateur                                                                                                                                                                                                              |
+| `latex-generator.ts`                    | `toLatex`, `LatexGenerator` (options `renderMetadata`, `preserveHoles`) ; `\times` d'un produit implicite qui ne se relirait pas (`3 \times 3x^2`, `x \times 3^x`, `juxtaposesDigits`)                                                                               |
+| `custom-generator.ts`                   | `toCustom`, `CustomGenerator` (syntaxe maison)                                                                                                                                                                                                                       |
+| `pretty-print.ts`                       | `prettyPrint` (débogage)                                                                                                                                                                                                                                             |
+| `index.ts`                              | point d'entrée `$lib/mathAST`                                                                                                                                                                                                                                        |
 
 ### Sous-dossiers
 
@@ -138,8 +139,9 @@ Ni `simplify` ni `pedagogical-simplify` ne sont sur ce chemin.
 
 **`checkForm(réponse, attendu, contraintes, options?)`** (`cosmetic-transforms.ts`) :
 
-1. chaîne : `removeZeros` (contrainte `zeros`), `checkSpacesViolation` (`spaces`),
-   `removeSpaces`, `normalizeDecimalComma` ;
+1. chaîne : `removeZeros` (contrainte `zeros`), `checkSpacesViolation` (`spaces` : espace
+   exigée dès 5 chiffres, dès 4 avec l'option `spacesFromFourDigits` ; une espace mal placée,
+   `10 24`, est toujours une faute — `digit-grouping.ts`), `removeSpaces`, `normalizeDecimalComma` ;
 2. `parseLatexSafe` ;
 3. arbre, dans cet ordre (`buildASTPipeline`) : unifications de notation sans contrainte
    (`e` : forme unique `euler()`, `\exp(u)` lu `e^{u}` ; `∞`, angles en π, complexes, fractions de monômes, `|x|` sous hypothèse) →

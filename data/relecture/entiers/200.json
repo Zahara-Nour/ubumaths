@@ -4,6 +4,11 @@
 	"reviewer": "claude",
 	"template": {
 		"title": "Utiliser la distributivité",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "$99$ fois plus $1$ fois",
 		"shared": {
 			"variables": [

@@ -37,7 +37,8 @@ describe('atelier — mêmes textes que sur main (graine 4821)', () => {
 
 	it('.fréquence L M 1000', () => {
 		expect(textOf(frequencyCommand(dieAtelier(), 'L M 1000', 4821))).toBe(
-			'1 000 tirages de L avec probabilités M (graine 4821)\nmoyenne des tirages : 3,593 — espérance E = 7/2'
+			// « 1000 » sans espace depuis E2 (BIPM : 4 chiffres, pas d'espace) ; « 1 000 » relevé sur main
+			'1000 tirages de L avec probabilités M (graine 4821)\nmoyenne des tirages : 3,593 — espérance E = 7/2'
 		);
 	});
 
