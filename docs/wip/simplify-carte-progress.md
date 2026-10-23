@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1655 (Q19 mergé, pas en prod)._
+_Mis à jour le 2026-10-23, après #1656 (5a mergé, pas en prod)._
 
-- **État** : lot 5 lancé. Phase 0 validée (§ 49-50 : Q18 oui, Q19 à part, Q20 reportée, ordre Q19 → 5a → 5b → 5c → 5d → 5e → 5f). Q19 mergé (#1655, § 51-52) : la dérivée garde le décimal tapé (`x − 1,5`), `tidyTerms` suit Q3 sous une barre (`2x/1,5 → 4x/3`).
+- **État** : lot 5. ~~Q19~~ (#1655) et ~~5a D1 + Q18~~ (#1656, § 53-54) mergés : f′ finit par `finalDerivative` (`pedagogical-differentiation/final-form.ts`) sur les corrections, `.dériver`, le bouton et la carte.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → **5a D1** → 5b D2 → 5c valeur exacte → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5a (D1 + Q18), worktree neuf depuis `origin/main`. Dernière étape « On réduit » de f′ (`withTidyStep`) : numérateur `auto`, dénominateur gardé, division par le facteur commun si le domaine de f le permet ; seule l'exponentielle commune en facteur ; ordre canonique sans − en tête ; bug `(eˣ)²` / `e^{2x}` non regroupés par `auto` (quot-04), test rouge d'abord. Mesure : l'oracle (`KNOWN_FORM_DIFF`).
-- **En attente de David** : la vérification manuelle des espaces (#1642) sur chiph.re.
-- **Pièges en cours** : `(x^{0,5})′` écrit `0,5/x^{1/2}` (mixte, juste, laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-5a-d1` (5a en cours).
+- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a D1~~ → **5b D2** → 5c valeur exacte → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : 5b (D2), worktree neuf depuis `origin/main`. `reducedDerivative` (variations) : numérateur par `factoriser` (lycée), étape « On factorise pour étudier le signe », Q18 aussi (§ 49-50). Repartir de `finalDerivative` (même division par le facteur commun, même signe que `tidy`).
+- **En attente de David** : vérifications manuelles des espaces (#1642) et de f′ (#1656) ; choix pour `pnpm math` (supprimer avec `/calc`, ou brancher sur l'Atelier, § 54).
+- **Pièges en cours** : ne plus sonder avec `pnpm math` (`.diff` garde `tidyTerms`, David) ; `(x^{0,5})′` écrit `0,5/x^{1/2}` (laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; `sqrt-product` ne regarde pas l'indice `power` ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -754,3 +754,11 @@ Revue `code-reviewer` (opus) : aucune valeur fausse. Corrigés avant le merge : 
 ## 53. Lot 5a lancé (branche `feat/simplify-carte-5a-d1`, 2026-10-23)
 
 D1 révisée (§ 17) + Q18 (§ 50) dans `withTidyStep` ; bug quot-04 d'abord en test rouge. Codé par `mathast-expert`.
+
+## 54. Lot 5a mergé (#1656, 2026-10-23)
+
+`finalDerivative` (`final-form.ts`) : quotient → facteur commun cherché sur le numérateur BRUT (Q18, domaine de f), puis `auto`, gardé si plus court ; exponentielle commune seule en facteur (`\exp` compris) ; sinon `auto` ; signe d'un quotient par `tidy` (David : « oui », cohérence avec la règle du 2026-10-20) ; un coefficient devant un quotient tapé (`2x/(x²−9)` lu `2·(x/(x²−9))`) entre au numérateur. La carte f′ (`derivativeAstOf`) la calcule une fois, après substitution : même forme que le bouton.
+
+Décisions de David en route : `8x + 4`, `18x + 6`, `−sin x`, `e^{eˣ+x}` acceptées (« les formes ont l'air bien » ; corpus mis à jour) ; exponentielles différentes laissées (`eˣ + 2e^{2x}`) ; `.diff` de `pnpm math` NON aligné (`/calc` à supprimer) ; ne plus sonder avec `pnpm math` — à trancher plus tard : la supprimer avec `/calc`, ou la brancher sur l'Atelier (console Calcul en CLI).
+
+Corrigés en route (rouges d'abord) : `auto` regroupe `(eˣ)²` et `e^{2x}` (identités d'Euler repassées après développement, `normalize.ts`) ; valeur fausse `sqrt-square`/`square-sqrt`/`sqrt-quotient` sur une racine n-ième (`∛(x²) → |x|`). Revue `code-reviewer` (opus) : aucune valeur fausse (41 fonctions sondées) ; ses 3 points traités. Oracle : 0 faux, ~35 fonctions rejoignent la forme de classe, aucune ajoutée. Carte : 3 ms au pire sur le corpus. CI verte (16/16).
