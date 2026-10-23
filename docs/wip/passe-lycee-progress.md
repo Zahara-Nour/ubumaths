@@ -6,17 +6,18 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR 2 en cours (branche `feat/passe-lycee-libelles`)._
+_Mis à jour le 2026-10-23, après #1635 et son `db:migrate`._
 
-- **État** : PR 2 écrite — migration `20261023220000_passe_lycee_libelles_points.sql` (4 libellés, TSPE-626 et
-  TCOMP-379), test `passe-lycee-libelles.test.ts`, fixtures des seeds ; 103 tests verts, preuve rouge faite.
-- **Prochaine action** : PR, CI, revues (`security-auditor` + `code-reviewer`), merge, puis `db:migrate`.
-- **En attente de David** : rien (question d'accès tranchée : personne ne gagne d'accès).
-- **Pièges en cours** : base locale : `20261022200000` et `20261023150000` notées jouées (`migration repair
---local`, leurs policies étaient déjà en place) ; `db push --local` passe de nouveau. Automatisme 1re spé BO
-  l. 274 sans point ; 85 points techno sans borne ; 1SPE-244 à re-ranger (puis taguer eae2ff6a) ; `9a6087c5` 2 %
-  d'échecs. Lot à part : MODIFIER + scissions des TAG_PAR_VARIATION.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-libelles`.
+- **État** : étape e close. #1632 (tags) et #1635 (4 libellés, TSPE-626 et TCOMP-379) mergées et **jouées en prod**,
+  vérifiées par le MCP (libellés, places 201 et 53, grades numérotés 1..326 et 1..179). Worktree supprimé.
+- **Prochaine action** : à choisir par David parmi les restes : lot MODIFIER + scissions des TAG_PAR_VARIATION ;
+  1SPE-244 à re-ranger sur « racines » puis taguer eae2ff6a ; automatisme 1re spé BO l. 274 sans point ; 85
+  points techno sans borne ; `9a6087c5` 2 % d'échecs.
+- **En attente de David** : ce choix ; vérification #1635 notée dans `verifications-manuelles.md`.
+- **Pièges en cours** : instantané `analyse/etat-prod-2026-10-23/` périmé (tags, nœuds, points) : en reprendre un
+  avant tout nouveau lot. Base locale : `20261022200000` et `20261023150000` notées jouées (`migration repair
+--local`, policies déjà en place).
+- **Worktree / branche** : aucun.
 
 ## Les 5 étapes
 
@@ -162,3 +163,5 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   la vérification finale contrôle `rang` ; `passe-points-lycee` importe `PASSE_LYCEE`. Laissé : refus du rollback
   prouvé sur une seule des 6 tables d'usages (les 6 sont lues par la garde) ; après un rollback, le numéro
   automatique max + 1 redonnerait TSPE-626 / TCOMP-379.
+- **2026-10-23 — #1635 mergée, `db:migrate` fait.** CI verte ; seule migration en attente en prod ; vérifiée par le
+  MCP (4 libellés, TSPE-626 en 201, TCOMP-379 en 53, nœud exponentielle > propriétés algébriques, grades 1..N).
