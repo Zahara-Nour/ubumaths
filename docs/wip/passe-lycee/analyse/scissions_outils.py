@@ -11,7 +11,9 @@ sont jouées en prod et se régénèrent à l'identique) :
   modèle neuf les reçoit s'ils figurent dans sa liste ;
 - dédoublement (PR 2 des scissions) : une variation peut aller dans plusieurs parts, réécrite par la
   retouche de chacune ; une origine peut rester intacte (contenu et `updated_at` inchangés, aucun tag
-  posé), ses modèles neufs emportant seuls la réécriture.
+  posé), ses modèles neufs emportant seuls la réécriture ;
+- passe lycée, H (PR 3 des scissions) : un modèle peut changer de niveau scolaire (`grades`, vers son
+  vrai programme ; ses neufs le copient) et un modèle MODIFIER n'a qu'une part, sans modèle neuf.
 
 Un script de lot décrit chaque origine par une liste de parts : la première est l'origine, les
 suivantes ses modèles neufs. Chaque part = variations gardées (base 0), codes de ses points, titre,
@@ -64,7 +66,7 @@ def partager(avant: dict, garder: list[int], titre: str, sous_titre: str, retouc
 
 def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, migration: str, fixture: str,
             prefixe: str, entete: str, retouches_avant: dict | None = None, dedoubles: set[str] | None = None,
-            intactes: set[str] | None = None) -> None:
+            intactes: set[str] | None = None, grades_apres: dict[str, list[str]] | None = None) -> None:
     """`lot` : court (8 caractères) → liste de parts `(variations, codes, titre, sous_titre[, retouche])`,
     l'origine d'abord, puis ses neufs ; un neuf porte en plus son UUID fixé, en tête :
     `(uuid, variations, codes, titre, sous_titre[, retouche])`.
@@ -76,11 +78,15 @@ def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, mig
     variation réécrite qui reste sur l'origine).
     `dedoubles` : origines dont une variation peut aller dans plusieurs parts (chacune la réécrit).
     `intactes` : origines (parmi `dedoubles`) dont le contenu ne change pas : la mise à jour et le
-    rollback ne les touchent pas (`tag_seul` de la fixture, `updated_at` gardé)."""
+    rollback ne les touchent pas (`tag_seul` de la fixture, `updated_at` gardé).
+    `grades_apres` : court → niveaux scolaires du modèle après la migration (son vrai programme) ; ses
+    neufs naissent avec eux, ses tags y sont pris."""
     sortie_modeles = sys.argv[1] if len(sys.argv) > 1 else None
     retouches_avant = retouches_avant or {}
     dedoubles = dedoubles or set()
     intactes = intactes or set()
+    grades_apres = grades_apres or {}
+    assert set(grades_apres) <= set(lot) and not set(grades_apres) & intactes, grades_apres
     assert dedoubles <= set(lot) and intactes <= dedoubles, (dedoubles, intactes)
     noeuds = {n['id']: n for n in json.load(open(etat + 'nodes.json'))}
     tous_points = json.load(open(etat + 'points.json'))
@@ -114,7 +120,8 @@ def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, mig
     for court in sorted(lot, key=lambda c: releves[c]['id']):
         t = releves[court]
         parts = lot[court]
-        assert len(parts) >= 2, court
+        # Une seule part : un MODIFIER (contenu réécrit, aucun modèle neuf ; garde plus bas).
+        assert parts and (len(parts) >= 2 or court not in intactes), court
         avant = {k: t[k] for k in CHAMPS}
         base = copy.deepcopy(avant)
         if court in retouches_avant:
@@ -131,13 +138,15 @@ def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, mig
         categorie = {k: t[k] for k in ('theme', 'domain', 'subdomain', 'level', 'status')}
         cle = (t['theme'], t['domain'], t['subdomain'] or '')
         avant_tags = sorted(tags_releves.get(t['id'], []), key=lambda x: (x['grade'], x['code']))
+        grades = grades_apres.get(court, t['grades'])
+        assert grades != t['grades'] or court not in grades_apres, court
 
         def verifier_tags(codes: list[str]) -> list[dict]:
             tags = [tag(c) for c in codes]
             assert len({x['code'] for x in tags}) == len(tags), (court, codes)
             for x in tags:
                 # Un tag d'avant d'un autre programme (1re techno) est gardé sans son niveau scolaire.
-                assert x['grade'] in t['grades'] or x in avant_tags, (court, x, t['grades'])
+                assert x['grade'] in grades or x in avant_tags, (court, x, grades)
                 assert (x['grade'], x['code']) in points, (court, x)
             # Un tag par niveau scolaire du modèle, au plus (deux programmes : Tle spé et Tle compl.).
             assert len({x['grade'] for x in tags}) == len(tags), (court, codes)
@@ -171,6 +180,8 @@ def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, mig
         }
         if noeud_apres != noeud:
             m['noeud_apres'] = chemin(noeud_apres)
+        if court in grades_apres:
+            m['grades_apres'] = grades
         if court in intactes:
             m['tag_seul'] = True
         for uuid, variations, codes, titre, sous_titre, *r in parts[1:]:
@@ -247,6 +258,8 @@ def ecrire_migration(modeles: list[dict], prefixe: str, entete: str) -> str:
                   'chemin': x.get('noeud', m.get('noeud_apres', m['noeud']))}
              for m in modeles for x in m['neufs']]
     deplaces = [m for m in modeles if 'noeud_apres' in m]
+    # Changements de niveau scolaire (H) : rien n'est écrit quand il n'y en a pas (migrations jouées).
+    changent = [m for m in modeles if 'grades_apres' in m]
     k = len(neufs)
     tags_neufs = [(x['id'], t) for x in neufs for t in x['tags']]
     kt = len(tags_neufs)
@@ -334,6 +347,16 @@ def ecrire_migration(modeles: list[dict], prefixe: str, entete: str) -> str:
             f"-- \t\traise exception 'rollback : % modèle(s) déplacé(s) sur {len(deplaces)} sont encore sur le nœud de la migration', v_intacts;",
             "-- \tend if;",
         ] if deplaces else []),
+        *([
+            "-- \t-- Origines changées de niveau scolaire : encore au niveau posé par la migration.",
+            "-- \tselect count(*) into v_intacts from public.question_templates q join (values",
+            *valeurs([f"('{m['id']}'::uuid, {tableau(m['grades_apres'])})" for m in changent]),
+            "-- \t) as r(id, grades) on r.id = q.id",
+            "-- \t where q.grades = r.grades;",
+            f"-- \tif v_intacts <> {len(changent)} then",
+            f"-- \t\traise exception 'rollback : % modèle(s) sur {len(changent)} sont encore au niveau scolaire de la migration', v_intacts;",
+            "-- \tend if;",
+        ] if changent else []),
         "-- end $retour$;",
         f"-- delete from public.question_templates where id in ({liste_neufs});",
         "-- delete from public.question_template_points q",
@@ -352,6 +375,14 @@ def ecrire_migration(modeles: list[dict], prefixe: str, entete: str) -> str:
             "--   left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = r.sous_notion",
             "--  where q.id = r.id;",
         ] if deplaces else []),
+        *([
+            "-- update public.question_templates q",
+            "--    set grades = r.grades",
+            "--   from (values",
+            *valeurs([f"('{m['id']}'::uuid, {tableau(m['grades'])})" for m in changent], '--   '),
+            "--   ) as r(id, grades)",
+            "--  where q.id = r.id;",
+        ] if changent else []),
         "-- update public.question_templates q",
         "--    set title = r.c->>'title', description = r.c->>'description', variations = r.c->'variations',",
         "--        shared = nullif(r.c->'shared', 'null'::jsonb), test_specs = nullif(r.c->'test_specs', 'null'::jsonb)",
@@ -378,12 +409,15 @@ create temporary table {tmp}_modeles (
 	statut text not null,
 	avant jsonb not null, apres jsonb not null,
 	-- Nœud d'arrivée (R2 : les points du modèle vivent ailleurs) ; null : il ne bouge pas.
-	branche_apres text, notion_apres text, sous_notion_apres text
+	branche_apres text, notion_apres text, sous_notion_apres text''' + (''',
+	-- Niveaux scolaires après la migration (son vrai programme) ; null : ils ne changent pas.
+	grades_apres text[]''' if changent else '') + '''
 );''']
     for m in modeles:
         o.append(f"insert into {tmp}_modeles values ('{m['id']}', {ch(m['noeud'])}, {tableau(m['grades'])}, "
                  f"'{m['categorie']['status']}',\n"
-                 f"  {contenu(m['avant'])},\n  {contenu(m['apres'])},\n  {ch(m.get('noeud_apres'))});")
+                 f"  {contenu(m['avant'])},\n  {contenu(m['apres'])},\n  {ch(m.get('noeud_apres'))}"
+                 + (f", {tableau(m['grades_apres']) if 'grades_apres' in m else 'null'}" if changent else '') + ');')
     o.append(f'''
 -- Tags des origines : ceux qu'elles portent déjà (relevé, exigés à l'identique et laissés) et ceux
 -- que la migration pose.
@@ -548,7 +582,14 @@ update public.question_templates q
   from {tmp}_resolus x
  where q.id = x.id and x.deplace;
 
-insert into public.question_template_points (template_id, point_id)
+''' + (f'''-- Niveau scolaire : le modèle passe dans son vrai programme, AVANT ses modèles neufs (qui le
+-- copient).
+update public.question_templates q
+   set grades = r.grades_apres
+  from {tmp}_modeles r
+ where q.id = r.id and r.grades_apres is not null;
+
+''' if changent else '') + f'''insert into public.question_template_points (template_id, point_id)
 select x.id, x.point_id
   from {tmp}_resolus_tags x
   join public.question_templates q on q.id = x.id
@@ -579,7 +620,8 @@ begin
 	select count(*) into v_ok from {tmp}_modeles r
 	  join {tmp}_resolus x on x.id = r.id
 	  join public.question_templates q on q.id = r.id
-	 where {EMPREINTE} = r.apres and q.classification_node_id = x.noeud_apres;
+	 where {EMPREINTE} = r.apres and q.classification_node_id = x.noeud_apres''' + (
+        '\n   and q.grades = coalesce(r.grades_apres, r.grades)' if changent else '') + f''';
 	select count(*) into v_tags from {tmp}_resolus_tags x
 	  join public.question_template_points q on q.template_id = x.id and q.point_id = x.point_id;
 	select count(*) into v_tous from public.question_template_points q join {tmp}_modeles r on r.id = q.template_id;
