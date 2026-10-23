@@ -662,3 +662,25 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 ## 45. Lot 4d en prod (2026-10-23)
 
 `deploy:prod` → v0.45.0 (#1642, #1645, avec #1646 et #1647 d'autres sessions). Simulation du marquage aussitôt après : **refus**, un 56e modèle sélectionné hors liste, `103cf8d9` « Valeur d'un placement à intérêts simples » (brouillon 1re spé créé à 14 h 09 par la scission de `27d77564`, #1646), même spec `2300` sans espace. Même traitement que les brouillons de lycée : **#1648** (liste à 5 brouillons), CI verte, mergée ; simulation 56/56. `--publier` lancé par David : 56 écrits (51 `options`, 5 `test_specs`), vérifié en base (51 marqués, 5 brouillons sans spec `spaces`) et par relance (56 déjà traités, rien à écrire). La garde des listes figées a servi : sans elle, le brouillon scindé serait resté avec une spec rouge.
+
+## 46. Lot 4e, phase 0 : sonde (2026-10-23, à valider par David)
+
+Sondé sur `main` (sonde jetable retirée). **Découverte qui révise le § 16** : `tidy` n'applique aucune règle une à une. Il décompose en termes (`collect.ts` : coefficient rationnel + facteurs), puis reconstruit (`build.ts`). Les signes doubles, `1·x`, `0·x`, `+0`, fractions et racines non réduites disparaissent **par construction** : il n'y a rien à « appliquer en silence ». Seule `stripUnnecessaryBrackets` est appelée, et elle est déjà commune.
+
+Mesuré : 29 écritures fautives, au moins une par règle (`0x+3`, `--x`, `x+(-3)`, `\frac{-x}{-2}`, `\frac{4}{6}`, `\sqrt{12}`, `3\sqrt8`, `2\times x`, `((x+1))`, `\frac{\sqrt8}{2}`…) : le juge nomme la bonne faute, et ce que `tidy` en fait passe le juge sans remarque, **29 / 29**.
+
+Ce qui est vraiment écrit en double :
+
+- **Une règle du juge vit à 5 endroits** : identifiant (`constraint-constants.ts`, `types.ts`, `template-schema.ts` ×2), libellé (`CONSTRAINT_LABELS`), message (`feedback.ts`), transformation (`buildASTPipeline`, `cosmetic-transforms.ts:1516`).
+- **« Extraire un carré d'une racine » est écrit deux fois** : `squareFactorOf` (juge, boucle, plafond 10⁹) et `extractPerfectPower` (`normal/radical.ts`, utilisé par `tidy`, plafond 10¹²).
+
+Proposition (comportement élève : **aucun changement**) :
+
+1. **Registre unique des règles de superflu** (`mathAST/superflu/`) : `{ id, libellé, message, transformation }` pour les 8 règles AST (`reducedRadicals`, `reducedFractions`, `factorZero`, `nullTerms`, `brackets`, `signs`, `factorOne`, `products`). `buildASTPipeline`, `coefficientCleanupSteps`, les libellés, les messages et le schéma Zod lisent ce registre.
+2. **`tidy` n'appelle pas le registre** : le lien écrire ↔ juger est un **test**, pas un appel. Le test E1 devient une garde par règle : pour chaque règle du registre, au moins un cas fautif ; le juge nomme cette règle, et `tidy` de ce cas passe le juge. Une règle ajoutée sans cas → test rouge.
+3. Le juge extrait les carrés avec `extractPerfectPower`.
+
+Questions :
+
+- **Q16** : accepter la révision du § 16, c'est-à-dire que `tidy` reste structurel et que la garde est le test ? Recommandation : oui. Le faire appeler les règles ajouterait 8 passes qui ne changent rien.
+- **Q17** : `zeros` et `spaces` (règles sur la chaîne tapée, pas sur l'arbre) entrent-elles dans le registre (libellé + message seulement) ? Recommandation : oui, pour qu'une règle n'ait qu'une seule fiche.
