@@ -8,7 +8,7 @@ couvre:
   - src/lib/mathAST/cosmetic-transforms.ts
   - 'src/lib/migration/review/**'
   - 'src/lib/types/{question-display,question-template}.ts'
-  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,grading-budget,corrected-detail}.ts'
+  - 'src/lib/server/{evaluation-attempts,questions-bulk-status,template-publication,template-fact-sheet,grading-budget,corrected-detail}.ts'
   - src/lib/server/exercise-search-indexed.ts
   - src/lib/server/validation/questions.ts
   - 'src/lib/components/questions/**'
@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23.
 
 ## À quoi ça sert
 
@@ -73,7 +73,7 @@ le SRS ([srs.md](srs.md)).
 | QCM                                                              | `choices.ts` (positions affichées ↔ indices d'origine), `single-answer.ts` (`keepFirstCorrectChoice`).                                                                                                                                                                                                                                                                                                                     |
 | Cours                                                            | `course-card.ts` (`excludeCourseCards`), `course-question.ts`.                                                                                                                                                                                                                                                                                                                                                             |
 | Séries et évaluations                                            | `series-items.ts` (`drawSeriesQuestions`, `buildSeriesItems`), `grading.ts` (`gradeQuestion`, `gradeOutOf20`), `public-question.ts` (`toPublicQuestion`, `toDisplayInstance`), `submission.ts`.                                                                                                                                                                                                                            |
-| Catalogue, éditeur, publication                                  | `category-*.ts`, `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images).                                                                                                                                                                                                                                            |
+| Catalogue, éditeur, publication                                  | `category-*.ts`, `cart-preview.ts`, `form-options.ts`, `template-put-body.ts`, `bulk-status.ts`, `test-spec-runner.ts` (`runAllTestSpecs`), `constants.ts` (bucket des images), `template-fact-sheet.ts` (fiche du modèle : types, réglages en mots, chemin dans l'arbre).                                                                                                                                                 |
 
 ### Hors du dossier
 
@@ -137,6 +137,16 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   graine, choix de la variation, taille d'affichage) et `QuestionTemplateHelpDialogs` (sept fenêtres d'aide statiques).
 - Liste admin (`dashboard/admin/questions/`) : une `QuestionTemplateCard` par modèle (badge de
   type, « Cours », niveaux ; aperçu, édition, duplication, suppression).
+- Fiche du modèle (`components/questions/TemplateFactSheet.svelte`) : en tête de `[id]/preview`
+  (complète) et de `[id]/edit` (courte : sans points ni réglages, qui s'éditent plus bas). Statut,
+  type, classes, chemin dans l'arbre des notions (« (archivé) » signalé), points du programme
+  posés, ou « aucun » en alerte avec sa raison (N points possibles à poser, ou aucun point de la
+  plus basse classe du modèle ou d'une classe suivante sur le nœud ni sa notion), réglages de
+  validation qui s'écartent du défaut, dans les mots de l'éditeur (`describeValidationSettings`).
+  Lectures : `$lib/server/template-fact-sheet` (`loadTemplateFactSheet`, `buildTemplateFactSheet`),
+  qui réutilise `loadNodesWithAncestors` et `loadTemplateProgrammeTags`. Sur l'aperçu, une lecture
+  en échec affiche « Fiche illisible : … » et laisse l'aperçu utilisable, jamais « aucun » ;
+  l'éditeur reste en 500.
 - Automaths : `QuestionPreviewCard` (tuile du catalogue = la flash-card, plus l'ajout au panier),
   `CartFloatingButton` (vers `/automaths/panier`), `CartQuestionCard` (tuile d'une catégorie du
   panier : durée par pas de 5 s entre 5 et 300 s, nombre de questions).
