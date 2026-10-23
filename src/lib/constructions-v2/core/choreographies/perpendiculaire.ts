@@ -67,7 +67,7 @@ import type {
 	TraceTag
 } from './types';
 import { revealHiddenUsedPoints } from './reveal-points';
-import { de, en, lineFormRoles, mesure, nom } from './names';
+import { de, en, labelAux, lineFormRoles, mesure, nom } from './names';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total
@@ -197,6 +197,8 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 	figure.hideElement(Bprime);
 	const Q = figure.createComputedPoint({ scalarRef: QxScalar }, { scalarRef: QyScalar });
 	figure.hideElement(Q);
+	const nB = labelAux(ctx, Bprime, 'B′');
+	const nQ = labelAux(ctx, Q, 'Q');
 
 	// Angles réactifs pour les 3 arcs courts.
 	const angleToBpScalar = figure.createScalarExpression(
@@ -369,7 +371,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcAtP],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: `On trace un petit arc qui coupe ${nom(N.d)} en B'`
+			instruction: `On trace un petit arc qui coupe ${nom(N.d)} en ${nB}`
 		},
 		// SS3 : B' fade-in.
 		{
@@ -378,7 +380,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Bprime],
 			animateLineIds: [],
-			instruction: `B' apparaît : un autre point ${de(N.d)}, équidistant ${de(N.P)} comme ${nom(N.A)}`
+			instruction: `${nB} apparaît : un autre point ${de(N.d)}, équidistant ${de(N.P)} comme ${nom(N.A)}`
 		},
 		// SS4 : compass à A, petit arc orienté vers Q (même ouverture |PA|).
 		{
@@ -402,7 +404,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcAtBp],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "On reporte en B' : les deux petits arcs se croisent"
+			instruction: `On reporte en ${nB} : les deux petits arcs se croisent`
 		},
 		// SS6 : Q fade-in.
 		{
@@ -411,7 +413,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Q],
 			animateLineIds: [],
-			instruction: `Les arcs se croisent en Q (symétrique ${de(N.P)} par rapport à ${nom(N.d)})`
+			instruction: `Les arcs se croisent en ${nQ} (symétrique ${de(N.P)} par rapport à ${nom(N.d)})`
 		},
 		// SS7 : ruler trace de la perpendiculaire (P, Q).
 		{
@@ -423,7 +425,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: `Règle par ${nom(N.P)} et Q : on trace la perpendiculaire`
+			instruction: `Règle par ${nom(N.P)} et ${nQ} : on trace la perpendiculaire`
 		}
 	];
 
@@ -632,6 +634,9 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 	figure.hideElement(Bstar);
 	const Q = figure.createComputedPoint({ scalarRef: QxScalar }, { scalarRef: QyScalar });
 	figure.hideElement(Q);
+	const nA = labelAux(ctx, Astar, 'A*');
+	const nB = labelAux(ctx, Bstar, 'B*');
+	const nQ = labelAux(ctx, Q, 'Q');
 
 	// Reactive angles for the 4 small arcs.
 	const angleToAstarScalar = figure.createScalarExpression(
@@ -811,7 +816,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcAtPtoAstar],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: `Compas ${en(N.P)}, on trace un petit arc qui coupe ${nom(N.d)} en A*`
+			instruction: `Compas ${en(N.P)}, on trace un petit arc qui coupe ${nom(N.d)} en ${nA}`
 		},
 		// SS2 : petit arc en P côté B*.
 		{
@@ -823,7 +828,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcAtPtoBstar],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: `Même ouverture, second petit arc qui coupe ${nom(N.d)} en B*`
+			instruction: `Même ouverture, second petit arc qui coupe ${nom(N.d)} en ${nB}`
 		},
 		// SS3 : A* et B* apparaissent.
 		{
@@ -832,7 +837,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Astar, Bstar],
 			animateLineIds: [],
-			instruction: `A* et B* apparaissent (équidistants ${de(N.P)})`
+			instruction: `${nA} et ${nB} apparaissent (équidistants ${de(N.P)})`
 		},
 		// SS4 : petit arc en A* (même ouverture) vers Q.
 		{
@@ -844,7 +849,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcAtAstar],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'On reporte la même ouverture en A* et on trace un petit arc'
+			instruction: `On reporte la même ouverture en ${nA} et on trace un petit arc`
 		},
 		// SS5 : petit arc en B* vers Q.
 		{
@@ -856,7 +861,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcAtBstar],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'On reporte en B* : les deux petits arcs se croisent'
+			instruction: `On reporte en ${nB} : les deux petits arcs se croisent`
 		},
 		// SS6 : Q fade-in.
 		{
@@ -865,7 +870,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Q],
 			animateLineIds: [],
-			instruction: `Les arcs se croisent en Q (symétrique ${de(N.P)} par rapport à ${nom(N.d)})`
+			instruction: `Les arcs se croisent en ${nQ} (symétrique ${de(N.P)} par rapport à ${nom(N.d)})`
 		},
 		// SS7 : règle P→Q.
 		{
@@ -877,7 +882,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: `Règle par ${nom(N.P)} et Q : on trace la perpendiculaire`
+			instruction: `Règle par ${nom(N.P)} et ${nQ} : on trace la perpendiculaire`
 		}
 	];
 
@@ -1283,7 +1288,7 @@ export const VOIES_PERPENDICULAIRE_EUCLIDE: readonly Voie[] = [
 		nom_humain: "Arcs égaux d'Euclide",
 		source: 'Construction canonique',
 		description:
-			"Le compas en `P` ouvert à `|PA|` trace un petit arc qui coupe `(AB)` en `B'`. La même ouverture reportée en `A` puis en `B'` produit deux arcs qui se croisent en `Q`, symétrique de `P` par rapport à `(AB)`. La droite `(PQ)` est la perpendiculaire à `(AB)` passant par `P`. Variante compacte mais peu lisible si `A` est loin du pied de la perpendiculaire.",
+			'Le compas en `P` ouvert à `|PA|` trace un petit arc qui coupe `(AB)` en `B′`. La même ouverture reportée en `A` puis en `B′` produit deux arcs qui se croisent en `Q`, symétrique de `P` par rapport à `(AB)`. La droite `(PQ)` est la perpendiculaire à `(AB)` passant par `P`. Variante compacte mais peu lisible si `A` est loin du pied de la perpendiculaire.',
 		defaut: false,
 		choreography: arcsEgauxChoreography
 	}

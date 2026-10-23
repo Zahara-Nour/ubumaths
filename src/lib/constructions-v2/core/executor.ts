@@ -42,7 +42,7 @@ import type {
 import { ChoreographyError } from './choreographies/types';
 import { CHOREOGRAPHED_BUILTINS } from './choreographies/registry';
 import { applyFinalVisibility } from './choreographies/visibility';
-import { shownName } from './choreographies/names';
+import { createAuxLabeler, shownName } from './choreographies/names';
 
 /**
  * A single entry in the timeline plan.
@@ -146,9 +146,39 @@ function expandLineArgument(
 	return unchanged;
 }
 
+/**
+ * Noms déclarés par le script (affectations, y compris dans les boucles et
+ * les `si`) : une lettre de point auxiliaire ne doit pas les reprendre,
+ * même quand la déclaration vient après la construction.
+ */
+function declaredNames(statements: readonly DslStatement[], out = new Set<string>()): Set<string> {
+	for (const stmt of statements) {
+		if (stmt.kind === 'assignment') out.add(stmt.name);
+		else if (stmt.kind === 'destructuring') for (const name of stmt.names) out.add(name);
+		else if (stmt.kind === 'forRange' || stmt.kind === 'forIn') declaredNames(stmt.body, out);
+		else if (stmt.kind === 'if') {
+			declaredNames(stmt.body, out);
+			if (stmt.elseBody) declaredNames(stmt.elseBody, out);
+		}
+	}
+	return out;
+}
+
 export class ConstructionExecutor {
 	private stepper: DslStepper | null = null;
 	private _program: ReturnType<typeof parseDsl> | null = null;
+	/** Noms déclarés par le script (`declaredNames`), calculés au chargement. */
+	private _scriptNames: ReadonlySet<string> = new Set();
+	/**
+	 * Points auxiliaires que le script nomme lui-même plus loin (id → nom du
+	 * script, ex. `O = centre(c)`) : relevés par une première pré-passe,
+	 * ils gardent le nom de l'auteur dans les consignes et sur la figure.
+	 */
+	private _auxScriptNamed: ReadonlyMap<string, string> = new Map();
+	/** Noms rendus par `ctx.auxLabel` pendant la pré-passe (id → nom). */
+	private _auxGiven = new Map<string, string>();
+	/** Points auxiliaires renommés par le script pendant la dernière pré-passe. */
+	private _auxRenamed = new Map<string, string>();
 	private _emptyFigure = new Figure();
 	private _stepDurations: number[] = [];
 	private _instrumentStates = new Map<InstrumentType, InstrumentState>();
@@ -241,6 +271,7 @@ export class ConstructionExecutor {
 	load(script: string): void {
 		this._loadError = null;
 		this._program = parseDsl(script);
+		this._scriptNames = declaredNames(this._program.statements);
 		this._currentInstruction = null;
 		this._instrumentStates.clear();
 		this._lastStepNewElementIds = [];
@@ -260,7 +291,15 @@ export class ConstructionExecutor {
 			this.handleDirective(name, args);
 		};
 		this.stepper = createStepper(this._program, undefined, handler);
+		this._auxScriptNamed = new Map();
 		this._stepDurations = this.calculateStepDurations();
+		// Un point auxiliaire renommé par le script (`O = centre(c)`) : la
+		// frise est refaite avec le nom de l'auteur.
+		if (this._auxRenamed.size > 0) {
+			this._auxScriptNamed = this._auxRenamed;
+			this._loadError = null;
+			this._stepDurations = this.calculateStepDurations();
+		}
 	}
 
 	/** Runtime error captured during load(), or null if the script pre-executed cleanly. */
@@ -493,12 +532,19 @@ export class ConstructionExecutor {
 		const resolved = this.resolveCallArgsOn(callArgs, stepper);
 		if (!resolved) return null;
 		const args = lineName ? { ...resolved, lineName } : resolved;
+		const auxLabel = createAuxLabeler(
+			stepper.figure,
+			this._scriptNames,
+			this._auxScriptNamed,
+			this._auxGiven
+		);
 		const ctx: ChoreographyCtx = {
 			figure: stepper.figure,
 			args,
 			principalId: principalEntry.figureId,
 			visibilite: triple.visibilite,
-			sub: this.buildSubChoreographyFn(stepper.figure)
+			auxLabel,
+			sub: this.buildSubChoreographyFn(stepper.figure, auxLabel)
 		};
 		try {
 			return voie.choreography(ctx);
@@ -530,7 +576,10 @@ export class ConstructionExecutor {
 	 * surfaced silently (the parent's chorégraphie can choose to handle or
 	 * ignore them).
 	 */
-	private buildSubChoreographyFn(figure: Figure): ChoreographyCtx['sub'] {
+	private buildSubChoreographyFn(
+		figure: Figure,
+		auxLabel: ChoreographyCtx['auxLabel']
+	): ChoreographyCtx['sub'] {
 		const sub: ChoreographyCtx['sub'] = (subBuiltin, subArgs, subPrincipalId, subDecorators) => {
 			const subVoie = lookupVoie(subDecorators, subBuiltin);
 			if (!subVoie) {
@@ -544,6 +593,7 @@ export class ConstructionExecutor {
 				args: subArgs,
 				principalId: subPrincipalId,
 				visibilite: subDecorators.visibilite,
+				auxLabel,
 				sub
 			};
 			return subVoie.choreography(subCtx);
@@ -1069,6 +1119,7 @@ export class ConstructionExecutor {
 			}
 		};
 		const tempStepper = createStepper(this._program, undefined, tempHandler);
+		this._auxGiven = new Map();
 
 		const durations: number[] = [];
 		this._stepPhases = [];
@@ -1226,6 +1277,13 @@ export class ConstructionExecutor {
 				};
 				break;
 			}
+		}
+
+		// Étiquette provisoire remplacée par le nom du script (`labelElement`).
+		this._auxRenamed = new Map();
+		for (const [id, name] of this._auxGiven) {
+			const label = tempStepper.figure.getElementById(id)?.label;
+			if (label && label !== name) this._auxRenamed.set(id, label);
 		}
 
 		return durations;

@@ -2089,6 +2089,8 @@ describe('consignes : vrais noms', () => {
 	 * deux corrections voulues : la 2e médiatrice de `cercle_circonscrit`
 	 * (« Compas en B / C » au lieu de « A / B ») et `transporte` (V' s'appelle
 	 * Vp dans le script ; α, β sans nom affiché → « l'angle », « le nouvel angle »).
+	 * Lot 9 : les points auxiliaires prennent le prime typographique (B′, A″),
+	 * comme leur étiquette sur la figure.
 	 */
 	const EXPECTED: Record<string, string[]> = {
 		'mediatrice @arcs_egaux': [
@@ -2110,17 +2112,17 @@ describe('consignes : vrais noms', () => {
 		'bissectrice @arcs_egaux': [
 			'Compas en V, petit arc qui coupe (VA)',
 			'Compas en V (même ouverture), petit arc qui coupe (VB)',
-			"Les arcs coupent les côtés en A' et B'",
-			"Compas en A', petit arc en direction du croisement",
-			"Compas en B' (même ouverture), petit arc qui croise le précédent",
+			'Les arcs coupent les côtés en A′ et B′',
+			'Compas en A′, petit arc en direction du croisement',
+			'Compas en B′ (même ouverture), petit arc qui croise le précédent',
 			'Les arcs se coupent en P',
 			'Règle de V à P : on trace la bissectrice'
 		],
 		'bissectrice @arc_milieu': [
 			'Compas en V, petit arc qui coupe (VA)',
 			'Compas en V (même ouverture), petit arc qui coupe (VB)',
-			"Les arcs coupent les côtés en A' et B'",
-			"On marque le milieu M de [A'B']",
+			'Les arcs coupent les côtés en A′ et B′',
+			'On marque le milieu M de [A′B′]',
 			'Règle de V à M : on trace la bissectrice'
 		],
 		'parallele @parallelogramme': [
@@ -2171,10 +2173,10 @@ describe('consignes : vrais noms', () => {
 		],
 		'perpendiculaire @arcs_egaux': [
 			'Compas en P, on prend la mesure |PA|',
-			"On trace un petit arc qui coupe (AB) en B'",
-			"B' apparaît : un autre point de (AB), équidistant de P comme A",
+			'On trace un petit arc qui coupe (AB) en B′',
+			'B′ apparaît : un autre point de (AB), équidistant de P comme A',
 			'On reporte cette ouverture en A et on trace un petit arc',
-			"On reporte en B' : les deux petits arcs se croisent",
+			'On reporte en B′ : les deux petits arcs se croisent',
 			'Les arcs se croisent en Q (symétrique de P par rapport à (AB))',
 			'Règle par P et Q : on trace la perpendiculaire'
 		],
@@ -2216,11 +2218,11 @@ describe('consignes : vrais noms', () => {
 		transporte: [
 			"Compas en V, on trace l'arc qui coupe les côtés",
 			'Compas en Vp (même ouverture), petit arc sur la direction',
-			"On marque A', B' (sur les côtés de l'angle) et A'' (sur la direction)",
-			"Compas en A', on prend la mesure |A'B'|",
-			"On reporte cette ouverture en A'' et on trace un arc",
-			"Les deux arcs se coupent en B''",
-			"Règle de Vp à B'' : on trace le second côté du nouvel angle"
+			"On marque A′, B′ (sur les côtés de l'angle) et A″ (sur la direction)",
+			'Compas en A′, on prend la mesure |A′B′|',
+			'On reporte cette ouverture en A″ et on trace un arc',
+			'Les deux arcs se coupent en B″',
+			'Règle de Vp à B″ : on trace le second côté du nouvel angle'
 		]
 	};
 
@@ -2248,7 +2250,7 @@ describe('consignes : vrais noms', () => {
 				'T = point(5, 0)',
 				'N = point(6, 1)'
 			],
-			absent: ['A', 'B', 'V', 'Vp', "V'", 'P']
+			absent: ['A', 'B', 'V', 'Vp', 'V′', 'P']
 		}
 	};
 	const RENAMED_CALLS: readonly { family: string; call: string }[] = [
@@ -2280,10 +2282,10 @@ describe('consignes : vrais noms', () => {
 		return out;
 	}
 
-	/** La lettre `letter` comme mot, hors A*, B', A'' (points auxiliaires). */
+	/** La lettre `letter` comme mot, hors A*, B′, A″ (points auxiliaires). */
 	function mentions(text: string, letter: string): boolean {
 		const escaped = letter.replace(/'/g, "\\'");
-		return new RegExp(`(?<![\\w'’*])${escaped}(?![\\w'’*])`).test(text);
+		return new RegExp(`(?<![\\w'’*′″])${escaped}(?![\\w'’*′″])`).test(text);
 	}
 
 	for (const [key, lines] of Object.entries(REF)) {
@@ -2371,7 +2373,7 @@ describe('consignes : vrais noms', () => {
 		const texts = consignes([...RENAMED.transporte.script, 'be = transporte(al, T, N) @euclide']);
 		expect(texts[0]).toBe("Compas en S, on trace l'arc qui coupe les côtés");
 		expect(texts[1]).toBe('Compas en T (même ouverture), petit arc sur la direction');
-		expect(texts.at(-1)).toBe("Règle de T à B'' : on trace le second côté du nouvel angle");
+		expect(texts.at(-1)).toBe('Règle de T à B″ : on trace le second côté du nouvel angle');
 		const shown = consignes([
 			'C = point(3, 0)',
 			'S = point(0, 0)',
@@ -2381,8 +2383,8 @@ describe('consignes : vrais noms', () => {
 			'N = point(6, 1)',
 			'be = transporte(al, T, N) @euclide'
 		]);
-		expect(shown[2]).toBe("On marque A', B' (sur les côtés de al) et A'' (sur la direction)");
-		expect(shown.at(-1)).toBe("Règle de T à B'' : on trace le second côté de be");
+		expect(shown[2]).toBe('On marque A′, B′ (sur les côtés de al) et A″ (sur la direction)');
+		expect(shown.at(-1)).toBe('Règle de T à B″ : on trace le second côté de be');
 	});
 
 	// ─── Forme (P, d) ───
@@ -2407,8 +2409,8 @@ describe('consignes : vrais noms', () => {
 			'm = perpendiculaire(M, s) @euclide @arcs_egaux'
 		]);
 		expect(texts[0]).toBe('Compas en M, on prend la mesure |MC|');
-		expect(texts[1]).toBe("On trace un petit arc qui coupe s en B'");
-		expect(texts[2]).toBe("B' apparaît : un autre point de s, équidistant de M comme C");
+		expect(texts[1]).toBe('On trace un petit arc qui coupe s en B′');
+		expect(texts[2]).toBe('B′ apparaît : un autre point de s, équidistant de M comme C');
 	});
 
 	it('parallele(M, d) @equerre @pose_equerre : bord sur d', () => {
@@ -2502,9 +2504,9 @@ describe('consignes : vrais noms', () => {
 		expect(texts).toEqual([
 			'Compas sur le sommet, petit arc qui coupe le premier côté',
 			'Compas sur le sommet (même ouverture), petit arc qui coupe le second côté',
-			"Les arcs coupent les côtés en A' et B'",
-			"Compas en A', petit arc en direction du croisement",
-			"Compas en B' (même ouverture), petit arc qui croise le précédent",
+			'Les arcs coupent les côtés en A′ et B′',
+			'Compas en A′, petit arc en direction du croisement',
+			'Compas en B′ (même ouverture), petit arc qui croise le précédent',
 			'Les arcs se coupent en P',
 			'Règle du sommet à P : on trace la bissectrice'
 		]);
@@ -2519,8 +2521,8 @@ describe('consignes : vrais noms', () => {
 		expect(texts).toEqual([
 			'Compas en S, petit arc qui coupe (SC)',
 			'Compas en S (même ouverture), petit arc qui coupe le second côté',
-			"Les arcs coupent les côtés en A' et B'",
-			"On marque le milieu M de [A'B']",
+			'Les arcs coupent les côtés en A′ et B′',
+			'On marque le milieu M de [A′B′]',
 			'Règle de S à M : on trace la bissectrice'
 		]);
 	});
@@ -2571,10 +2573,10 @@ describe('consignes : vrais noms', () => {
 		]);
 		expect(texts).toEqual([
 			"Compas sur le point de passage, on prend l'écart jusqu'à C",
-			"On trace un petit arc qui coupe (CD) en B'",
-			"B' apparaît : un autre point de (CD), équidistant du point de passage comme C",
+			'On trace un petit arc qui coupe (CD) en B′',
+			'B′ apparaît : un autre point de (CD), équidistant du point de passage comme C',
 			'On reporte cette ouverture en C et on trace un petit arc',
-			"On reporte en B' : les deux petits arcs se croisent",
+			'On reporte en B′ : les deux petits arcs se croisent',
 			'Les arcs se croisent en Q (symétrique du point de passage par rapport à (CD))',
 			'Règle par le point de passage et Q : on trace la perpendiculaire'
 		]);
@@ -2589,10 +2591,10 @@ describe('consignes : vrais noms', () => {
 		expect(texts).toEqual([
 			'On choisit un point de la droite',
 			"Compas en M, on prend l'écart jusqu'au point choisi",
-			"On trace un petit arc qui coupe d en B'",
-			"B' apparaît : un autre point de d, équidistant de M comme le point choisi",
+			'On trace un petit arc qui coupe d en B′',
+			'B′ apparaît : un autre point de d, équidistant de M comme le point choisi',
 			'On reporte cette ouverture sur le point choisi et on trace un petit arc',
-			"On reporte en B' : les deux petits arcs se croisent",
+			'On reporte en B′ : les deux petits arcs se croisent',
 			'Les arcs se croisent en Q (symétrique de M par rapport à d)',
 			'Règle par M et Q : on trace la perpendiculaire'
 		]);
@@ -2612,11 +2614,11 @@ describe('consignes : vrais noms', () => {
 		expect(texts).toEqual([
 			"Compas sur le sommet de l'angle, on trace l'arc qui coupe les côtés",
 			'Compas en T (même ouverture), petit arc sur la direction',
-			"On marque A', B' (sur les côtés de l'angle) et A'' (sur la direction)",
-			"Compas en A', on prend la mesure |A'B'|",
-			"On reporte cette ouverture en A'' et on trace un arc",
-			"Les deux arcs se coupent en B''",
-			"Règle de T à B'' : on trace le second côté du nouvel angle"
+			"On marque A′, B′ (sur les côtés de l'angle) et A″ (sur la direction)",
+			'Compas en A′, on prend la mesure |A′B′|',
+			'On reporte cette ouverture en A″ et on trace un arc',
+			'Les deux arcs se coupent en B″',
+			'Règle de T à B″ : on trace le second côté du nouvel angle'
 		]);
 	});
 

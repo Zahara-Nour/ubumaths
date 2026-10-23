@@ -148,8 +148,23 @@ en C, on prend la mesure |CD| » ; forme `(P, d)` → « parallèle à d » (nom
 `args.lineName`, rempli par `expandLineArgument`, qui suit `ctx.sub`). Argument caché, sans
 étiquette ou au nom masqué → tournure neutre (« le point choisi », « le point de passage », « le
 sommet », « la droite ») ; un angle n'est nommé que si son nom s'affiche (`showLabel`), sinon
-« l'angle ». Les points auxiliaires (Q, R, C\*, A′, B′…) et la droite `e` gardent leurs lettres. Les
-champs `description` des voies (doc) gardent A, B, P. Étiquettes écrites brutes (`A_1` tel quel).
+« l'angle ». Les champs `description` des voies (doc) gardent A, B, P. Étiquettes écrites brutes
+(`A_1` tel quel).
+**Points auxiliaires nommés** (`ctx.auxLabel`, `createAuxLabeler` de `names.ts`). Chaque point
+auxiliaire que cite une consigne (Q, R, C\*, D\*, A\*, B\*, A′, B′, A″, B″, M, O, le P de
+`bissectrice @arcs_egaux`) et la droite `e` reçoivent cette lettre comme **étiquette provisoire**
+(`Figure.setProvisionalLabel`) : elle s'affiche tant que l'élément est visible (charnières en
+`@squelette`/`@complet`, autres points en `@complet`, rien en `@epure`). Ordre de choix du nom :
+(1) le nom que le script donne lui-même à ce point plus loin — `O = centre(c)` (le O de
+`cercle_circonscrit` est le centre du builtin), `D = cote(be, 2)` (A″, B″ de `transporte` sont les
+points de β) : l'interpréteur remplace l'étiquette provisoire (`labelElement`), l'exécuteur le
+détecte en fin de pré-passe (`_auxRenamed`) et refait la pré-passe avec ce nom (`_auxScriptNamed`) ;
+(2) la lettre si elle est libre ; (3) sinon un prime de plus (Q → Q′ → Q″), la consigne écrivant la
+même. Sont pris les étiquettes de la figure, les noms affectés par le script même plus loin
+(`declaredNames` de `executor.ts`, boucles et `si` compris ; pas `Q[i]`, qui ne pose pas
+d'étiquette) et les noms déjà rendus pendant l'instruction (sous-chorégraphies comprises). Primes
+typographiques (′ ″ ‴), sur la figure comme dans les consignes. Auxiliaires qu'aucune consigne ne
+nomme (pied F de l'équerre, croisements des médiatrices) : sans étiquette.
 Nombres vérifiés par `core/__tests__/choreographies-integration.test.ts` (« int. ») et
 `transporte-choreography.test.ts`.
 
@@ -271,18 +286,19 @@ Avertissements pour : tracé à main levée (`:324`), compas `lever/coucher/reto
 21 ignorés (228)**, 1,4 s. Les 21 ignorés : les trois `describe.skipIf(!hasFixtures)` de
 `converter.test.ts` (`:274`, `:330`, `:369`), faute du dossier `extern/instrumenpoche-main`.
 
-| Fichier (sous `constructions-v2`)                   | Cas (≈) | Couvre                                                                                                                                                                                                     |
-| --------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `core/__tests__/choreographies-integration.test.ts` | 130     | décorateurs dans l'exécuteur, nombre et suite des sous-étapes de chaque voie, étiquettes, `double_perpendiculaire` (géométrie, 3 visibilités, `P ∈ (AB)`), `bissectrice(α)`, `transporte`, formes `(P, d)` |
-| `core/__tests__/transporte-choreography.test.ts`    | 7       | 4 modes de direction, angle plat, angle aigu, mesure conservée                                                                                                                                             |
-| `core/__tests__/choreographies-resolve.test.ts`     | 23      | `resolveDecorators` (nominal, erreurs, mode direct), `lookupVoie`                                                                                                                                          |
-| `core/__tests__/visibility.test.ts`                 | 10      | `applyFinalVisibility` pure, branchement dans l'exécuteur, modificateurs                                                                                                                                   |
-| `core/__tests__/executor.test.ts`                   | 16      | chargement, directives, durées, déplacement depuis la dernière position, `reset`                                                                                                                           |
-| `core/__tests__/timeline.test.ts`                   | 18      | navigation, défilement, vitesse, rappels, formatage                                                                                                                                                        |
-| `core/__tests__/animator.test.ts`                   | 23      | `partialSegment`, `partialCircle`, `partialArc`, assouplissements                                                                                                                                          |
-| `core/__tests__/render-helpers.test.ts`             | 15      | tracés SVG partiels, pointe du crayon                                                                                                                                                                      |
-| `core/__tests__/converter.test.ts`                  | 35      | conversion XML → DSL, point masqué / montré (dont 21 sur fixtures, ignorés)                                                                                                                                |
-| `instruments/__tests__/positioning.test.ts`         | 8       | `rulerPosition`, `compassPosition`, `applyPosition`                                                                                                                                                        |
+| Fichier (sous `constructions-v2`)                   | Cas (≈) | Couvre                                                                                                                                                                                                                                                            |
+| --------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core/__tests__/choreographies-integration.test.ts` | 130     | décorateurs dans l'exécuteur, nombre et suite des sous-étapes de chaque voie, étiquettes, `double_perpendiculaire` (géométrie, 3 visibilités, `P ∈ (AB)`), `bissectrice(α)`, `transporte`, formes `(P, d)`                                                        |
+| `core/__tests__/choreographies-auxiliaires.test.ts` | 33      | points auxiliaires : lettre de la consigne = étiquette de la figure (9 voies), visibilité selon le mode, primes en cas de collision (script avant / après, deux et trois constructions, sous-chorégraphies), nom donné par le script (`centre(c)`, `cote(be, 2)`) |
+| `core/__tests__/transporte-choreography.test.ts`    | 7       | 4 modes de direction, angle plat, angle aigu, mesure conservée                                                                                                                                                                                                    |
+| `core/__tests__/choreographies-resolve.test.ts`     | 23      | `resolveDecorators` (nominal, erreurs, mode direct), `lookupVoie`                                                                                                                                                                                                 |
+| `core/__tests__/visibility.test.ts`                 | 10      | `applyFinalVisibility` pure, branchement dans l'exécuteur, modificateurs                                                                                                                                                                                          |
+| `core/__tests__/executor.test.ts`                   | 16      | chargement, directives, durées, déplacement depuis la dernière position, `reset`                                                                                                                                                                                  |
+| `core/__tests__/timeline.test.ts`                   | 18      | navigation, défilement, vitesse, rappels, formatage                                                                                                                                                                                                               |
+| `core/__tests__/animator.test.ts`                   | 23      | `partialSegment`, `partialCircle`, `partialArc`, assouplissements                                                                                                                                                                                                 |
+| `core/__tests__/render-helpers.test.ts`             | 15      | tracés SVG partiels, pointe du crayon                                                                                                                                                                                                                             |
+| `core/__tests__/converter.test.ts`                  | 35      | conversion XML → DSL, point masqué / montré (dont 21 sur fixtures, ignorés)                                                                                                                                                                                       |
+| `instruments/__tests__/positioning.test.ts`         | 8       | `rulerPosition`, `compassPosition`, `applyPosition`                                                                                                                                                                                                               |
 
 Ailleurs : `geometry-core/dsl/__tests__/directives.test.ts` (21), `parser-decorators.test.ts` (22),
 `stepper.test.ts` (19) ; `components/geometry/__tests__/GeometryCanvas.theme.svelte.test.ts`
@@ -292,7 +308,9 @@ Composant : `components/__tests__/ConstructionPlayer-consignes.svelte.test.ts` (
 l'auteur et des sous-étapes, 5, `pnpm test:client`) et
 `ConstructionPlayer-double-perpendiculaire.svelte.test.ts` (les deux voies jouées jusqu'au bout,
 `P ∈ (AB)` interrompu, 3) et `ConstructionPlayer-arret-execution.svelte.test.ts` (ligne
-d'arrêt au dernier pas seulement, frise vide, script corrigé, 6). **Aucun** test de composant pour
+d'arrêt au dernier pas seulement, frise vide, script corrigé, 6) et
+`ConstructionPlayer-points-auxiliaires.svelte.test.ts` (lettres Q, Q′, e et R écrites sur la figure, 3).
+**Aucun** test de composant pour
 `ConstructionCanvas` ni `ScriptEditor`.
 
 ## 9. Écarts et reste à faire

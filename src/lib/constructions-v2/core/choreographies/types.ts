@@ -218,6 +218,16 @@ export interface ChoreographyCtx {
 	};
 	readonly principalId: string;
 	readonly visibilite: Visibilite;
+	/**
+	 * Nomme l'élément auxiliaire `id` (« Q », « C* », « A′ », « e »), pose
+	 * ce nom comme étiquette provisoire et le rend pour la consigne : le nom
+	 * que le script donne plus loin à ce même élément s'il en donne un
+	 * (`O = centre(c)`), sinon `base` s'il est libre, sinon `base` suivi de
+	 * primes (Q′, Q″…). Sont pris les étiquettes de la figure, les noms
+	 * déclarés par le script (même plus loin) et les noms déjà rendus pendant
+	 * cette instruction. Partagé avec les sous-chorégraphies.
+	 */
+	readonly auxLabel: (id: string, base: string) => string;
 	readonly sub: (
 		builtin: string,
 		args: ChoreographyCtx['args'],
