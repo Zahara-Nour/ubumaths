@@ -6,13 +6,15 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR des retouches en cours._
+_Mis à jour le 2026-10-24, #1657 ouverte, CI bloquée par `main`._
 
-- **État** : scissions CLOSES (#1646, #1651, #1654 jouées, prod 19/19). PR des retouches (branche
-  `fix/passe-lycee-retouches`) : 5 brouillons de #1651 retouchés sur la forme, aucun neuf ni tag ; tests verts.
-- **Prochaine action** : revues Opus, CI, merge, `db:migrate` (par David), relecture prod ; puis versement (fin de
-  chantier). Rollbacks « trop stricts » de #1651 / #1654 : classés sans suite (David, 2026-10-23), à noter au versement.
-- **En attente de David** : `db:migrate` après merge (refusé au mode auto).
+- **État** : scissions CLOSES (#1646, #1651, #1654 jouées, prod 19/19). #1657 (retouches de forme de 5 brouillons
+  de #1651, aucun neuf ni tag) : revues Opus sans bloquant, CI verte SAUF « Server Tests 1/4 » :
+  `derivatives-oracle.test.ts`, hook > 10 s, rouge aussi sur `main` depuis #1656 (simplify-carte), vert en local.
+- **Prochaine action** : `main` réparé → mettre la branche à jour, CI verte, merge, `db:migrate` (par David),
+  relecture prod (MCP) ; puis versement (fin de chantier). Rollbacks « trop stricts » de #1651 / #1654 : classés
+  sans suite (David, 2026-10-23), à noter au versement.
+- **En attente de David** : qui répare l'oracle sur `main` ; `db:migrate` après merge (refusé au mode auto).
 - **Pièges en cours** : un modèle a au plus un point par programme (trigger) ; `question:specs --file` : convertir par
   `toQuestionTemplate` (retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync` avant
   tout `tsx` ; `REECRIRE_MIGRATION=1` pour une migration jamais jouée.
