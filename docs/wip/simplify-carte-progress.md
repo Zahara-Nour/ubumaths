@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1620 (lot 4a)._
+_Mis à jour le 2026-10-23, après #1624 (lot 4b)._
 
-- **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), **4a `tidy` ne perd plus le domaine (#1620, § 35-36)** : options `typeCtx` et `domain` (les dérivées passent f), `factoriser` simplifie une fraction en étape. Rien en prod tant que David n'a pas lancé `deploy:prod`.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1620 (lot 4a ; bugs sondés du lot 1 reclassés). Pour la modifier : `Artifact read`, Edit du fichier rendu, republier sur la même `url`.
-- **Ordre des lots** (§ 29, § 35) : ~~4a domaine~~ → **4b décimaux (S1)** → 4c `order: 'kept'` (S2) → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, variante `{ result, conditions }`, Q2 du § 35) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 4b en cours (branche `feat/simplify-carte-decimaux`, § 37) : revue `code-reviewer` opus, puis PR.
-- **En attente de David** : rien (vérification manuelle de #1620 notée dans `verifications-manuelles.md`).
-- **Pièges en cours** : mineurs connus du 4a (§ 36 : `1/(1/x) → x`, `domain: [x^n]`, `reduceFractionOfSums` ignore `domain`) ; la suite client locale plante parfois (`rpc is closed`) sans test rouge, la CI tranche ; **pas de `Claude-Session:` dans les commits** (CLAUDE.md) ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `feat/simplify-carte-decimaux`.
+- **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), **4b un décimal reste décimal (#1624, § 37)** : registre suivi terme par terme dans `tidy`, gardes des appelants retirées ; 1 008 modèles de prod sans différence. Rien en prod tant que David n'a pas lancé `deploy:prod`.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1620, **pas encore après #1624**. Pour la modifier : `Artifact read`, Edit du fichier rendu, republier sur la même `url`.
+- **Ordre des lots** (§ 29, § 35) : ~~4a~~ → ~~4b~~ → **4c `order: 'kept'` (S2)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : lot 4c, nouveau worktree ; relire S2 (§ 6) et D3 (§ 19) avant les tests rouges.
+- **En attente de David** : Q8 `√0,5 → 0,5√2` (lettre de S1) ou `√2/2` ? Q9 `(0,5x+0,5)/(x+1)` reste tel quel, alors que `(0,5x+1)/(x+1) → (x+2)/(2(x+1))` : aligner ? (§ 37) ; vérification manuelle de #1624 notée.
+- **Pièges en cours** : mineurs connus du 4a (§ 36) ; `x^{0,5} → x^{1/2}` laissé (§ 37) ; dérivées : les chemins bouton/commande/latex-péda écrivent encore `x−3/2` (lot 5) ; suite client locale coupée par `rpc is closed`, la CI tranche ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun (celui du 4b est supprimé) ; nouveau worktree au 4c.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -561,7 +561,7 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 - **Laissés (connus, déjà sur `main` ou sans cas réel)** : `1/(1/x) → x` (un `x⁻¹` sous une barre échappe au suivi) ; `domain: [x^n]` dit x ≠ 0 même si n est un paramètre entier ; puissance paire déclarée ≥ 0 même pour une variable complexe ; `reduceFractionOfSums` ignore `domain` (`(2x−2)/(x−1)` reste) ; `1/(2x+2)` dans `domain` ne dit pas `x+1 ≠ 0`.
 - Suite client : deux passages locaux interrompus par le navigateur de test (`rpc is closed`, `wrapDynamicImport`), 0 test rouge ; la CI tranche.
 
-## 37. Lot 4b en cours (branche `feat/simplify-carte-decimaux`)
+## 37. Lot 4b fait (#1624, branche `feat/simplify-carte-decimaux`)
 
 - Tests rouges (`tidy-decimaux.test.ts`, 22 rouges sur 54) puis correctif. Registre suivi terme par terme : `Accumulator.decimal` (un littéral non entier lu, ou sous un radical) et `.fraction` (une `division` lue, Q3) ; `TidyTerm.decimal` = décimal lu, aucune fraction, écriture finie ; recalculé par groupe dans `collectLikeTerms` (un terme à coefficient fractionnaire rend le groupe fraction). Rendu dans `buildTermMagnitude`.
 - Sans barre, un coefficient décimal ne déclenche ni `reduceFractionOfSums` (`0,5(x+1)` inchangé) ni `flipNumerator` (`−0,5(x−1)` inchangé) : `hasFractionBar`. Un nombre commun qui laisse un entier se simplifie toujours (`0,5(2x+4) → x+2`).
