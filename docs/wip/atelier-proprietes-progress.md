@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR 1 ouverte._
+_Mis à jour le 2026-10-23, après #1627._
 
-- **État** : PR 1 (cartes allégées + point de couleur + console qui défile) ouverte.
-- **Prochaine action** : PR 2 — entrée « Propriétés » du menu ⋮ et Renommer.
+- **État** : PR 1 mergée (#1627 : point de couleur, cartes sans nature ni mesure, console qui défile, noms en couleur du texte). PR 2 en cours.
+- **Prochaine action** : PR 2 — panneau « Propriétés » déplié sous la carte (nom ✎ via `atelier.rename`, dépendances, mesures, style) ; mesures des droites et cercles par `geometry-expert` (`figure-properties.ts`).
 - **En attente de David** : rien.
-- **Pièges en cours** : entre la PR 1 et la PR 2, les coordonnées d'un point construit, l'équation d'une droite et la longueur d'un segment ne se lisent plus nulle part : **ne pas lancer `deploy:prod` entre les deux**, ou le dire à David.
-- **Worktree / branche** : `../ubumaths-wt-atelier-proprietes` · `feat/atelier-proprietes`.
+- **Pièges en cours** : tant que la PR 2 n'est pas mergée, les mesures d'une construction ne se lisent nulle part : **pas de `deploy:prod` avant**.
+- **Worktree / branche** : `../ubumaths-wt-atelier-proprietes` · `feat/atelier-proprietes-panneau`.
 
 ## Décisions de David (2026-10-23)
 
