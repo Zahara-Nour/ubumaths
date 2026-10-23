@@ -309,7 +309,7 @@ d = mediatrice(A, B) @euclide @arcs_egaux @complet -arcs
 
 | Builtin              | `@euclide`                                  | `@equerre`                               | `@mesure`       |
 | -------------------- | ------------------------------------------- | ---------------------------------------- | --------------- |
-| `mediatrice`         | `arcs_egaux`, `cercles_rayon_ab`            | —                                        | —               |
+| `mediatrice`         | `arcs_egaux`, `cercles_rayon_ab`            | —                                        | `regle_equerre` |
 | `bissectrice`        | `arcs_egaux`, `arc_milieu`                  | —                                        | `rapporteur`    |
 | `perpendiculaire`    | `rayon_libre`, `arcs_egaux`                 | `pose_equerre`                           | —               |
 | `parallele`          | `parallelogramme`, `double_perpendiculaire` | `pose_equerre`, `double_perpendiculaire` | —               |
