@@ -11,8 +11,8 @@ _Mis à jour le 2026-10-23, PR 2 des scissions (réécritures) en cours._
 - **État** : lots A, B, C et scissions PR 1 en prod. PR 2 écrite (worktree `passe-lycee`) : 7 modèles, 10 neufs,
   18 tags ; preuves faites (specs, tirages, intégration verte et rouge sans la migration). Reste PR 3 (H : 10
   modèles dans leur vrai programme).
-- **Prochaine action** : typecheck, commit, PR, revues Opus (`code-reviewer` + `security-auditor`), merge,
-  `db:migrate`, vérification MCP ; puis PR 3.
+- **Prochaine action** : commit poussé (typecheck 0 erreur, cliquet tenu, lint rapide propre) ; ouvrir la PR,
+  revues Opus (`code-reviewer` + `security-auditor`), merge, `db:migrate`, vérification MCP ; puis PR 3.
 - **En attente de David** : rien. À reposer pour chaque PR : la question d'accès.
 - **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion → R2 ou retrait forcé ; neufs :
   niveau au-dessus du plus haut pris dans la catégorie ; `question:specs --file` : convertir par
