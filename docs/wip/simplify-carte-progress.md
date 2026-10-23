@@ -7,10 +7,10 @@ _Mis à jour le 2026-10-23, après #1631._
 - **État** : lots mergés jusqu'à #1631. **4c mergé (#1631)** (§ 41) : `tidy({ order: 'kept' })` + `tidyTerms` reconstruit dessus ; revue opus : une régression corrigée (clé de regroupement triée). Rien en prod tant que David n'a pas lancé `deploy:prod`.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1631. La republier **à chaque merge, avant le `/clear`** (`Artifact read`, éditer une copie, republier sur la même `url`).
 - **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~équivalence racines~~ → ~~4c `order: 'kept'`~~ → **4c-bis ordre des facteurs (Q13, ordre et découpage validés le 2026-10-23)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 4c-bis (Q13, ordre des facteurs validé, § 41) : phase 0 (comportements, cas « entre deux parenthèses » à vérifier) puis tests rouges ; nouveau worktree `../ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-ordre-facteurs`.
+- **Prochaine action** : lot 4c-bis en cours (§ 42, Q14 et Q15 validées) : tests rouges, correctif, revue opus, PR.
 - **En attente de David** : rien.
 - **Pièges en cours** : bug de `tidy` (somme sans nœud de parenthèse après un −, distribuée) contourné dans `tidyTerms` seulement (§ 41) ; `rat-04 @ carte` quitte la forme de classe (lot 5) ; banc des 1 008 modèles AVEUGLE à `tidyTerms` (témoin) ; banc copié dans `/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/effec7c4-4847-44a7-8ea8-a18dcc986d3e/scratchpad` (`tirages.mts`, `modeles.json`, `banc-main.txt`) ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun (retiré après #1631) ; à recréer pour 4c-bis.
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `feat/simplify-carte-ordre-facteurs`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -612,3 +612,14 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 - **Banc des 1 008 modèles × 8 tirages : 0 différence, mais aveugle** : le témoin (`tidyTerms` remplacé par `tidy` rangé) ne change rien non plus, les modèles ne passent pas par `tidyTerms`.
 - **Suite serveur complète** (59 882 tests) : 1 rouge, `∫(1/x + 1/(x+1) + 1/x)` → `2 ln|x| + ln|x+1|` (regroupé à la place du premier, ordre de l'énoncé) au lieu de `ln|x+1| + 2 ln|x|` : attendu mis à jour, **différence à montrer à David (Q12)**. Docs : `tidy-spec.md` (§A.2 écart connu, §G.1 `order` et `tidyTerms`, §H) et `mathast/README.md` mis à jour ; garde `docs:check-a-jour` verte.
 - **Revue `code-reviewer` (opus)** : aucune valeur fausse (signe, coefficient, idempotence). **Régression corrigée** : en `kept`, `eˣ(1+x) − eˣ(x+1)` restait tel quel (défaut : `0`) — `compareFactors` départage `(1+x)` et `eˣ` (même catégorie) sur l'écriture gardée, et la clé de regroupement enchaînait les facteurs dans l'ordre trié. Clé désormais **triée** (`factorsKey`, partagée par `collectLikeTerms` et `collectWithSigns`) ; `flipNumerator` et `withoutDoubleSign` passent par `factorKey`. 4 tests ajoutés (rouges avant), suite serveur verte (59 870). Laissé en l'état (mineur) : la branche « négatif en tête » de `tidyTerms` (`terms.ts`) n'applique pas `withImpliedParentheses` — valeur juste, ira avec le bug de `tidy` (lot 4e/5). `(1+x)eˣ` en `kept` ≠ `eˣ(x+1)` du défaut : réglé par 4c-bis (Q13).
+
+## 42. Lot 4c-bis : ordre des facteurs (Q13, David, 2026-10-23 : « je valide Q14 et Q15 » ; branche `feat/simplify-carte-ordre-facteurs`)
+
+**Sonde (prototype jetable, suite serveur complète)** : 9 rouges sur 59 980. Idempotence vérifiée sur 42 cas dans les deux modes, l'ordre écrit gardé entre deux parenthèses compris.
+
+**Comportements validés** :
+
+- Catégories, dans cet ordre : constantes (`e`, `i`, `π`) ; lettres et leurs puissances (`x`, `x²`, `xⁿ`, `x^x`) ; parenthèses (sommes, `(x+1)²`, `(x+1)ⁿ`) ; fonctions (`ln x`, `sin x`, `√x`, `|x|`, `ln 2`) ; exponentielles (`eˣ`, `e^{2x}`, `2ˣ`) ; le reste. `(x+1)eˣ`, `x(x+1)eˣ`, `(x+1)ln x`, `(2x+1)cos x`, `(x+1)√x`.
+- **Entre deux parenthèses : l'ordre écrit** (idempotent, regroupement par clé triée) : `(x−1)(x+2)` reste, `(1−i)(−2+i)` reste, `2(x−1)(x+1)+3(x+1)(x−1) → 5(x−1)(x+1)`. Ordre de `factoriser` (Q3) inchangé.
+- **Q14** : dans le groupe « fonctions et exponentielles », les fonctions d'abord (ordre alphabétique), les exponentielles ensuite : `ln(2)·2ˣ`, `2cos(x)e^{sin x}`, `ln(x)eˣ`.
+- **Q15** : bug du générateur LaTeX (déjà sur `main`) : `x·3ˣ` s'écrivait `x 3^x`, illisible à la relecture. Corrigé dans ce lot : `\times` devant une puissance de base numérique.
