@@ -7,10 +7,11 @@ _Mis à jour le 2026-10-23, après #1624 (lot 4b) et les réponses Q8, Q9 (§ 38
 - **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), 4b un décimal reste décimal (#1624, § 37). Rien en prod tant que David n'a pas lancé `deploy:prod`.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — **à jour après #1624 et Q8/Q9**. La tenir à jour **à chaque merge, avant le `/clear`**. Pour la modifier : `Artifact read`, éditer une copie du fichier rendu, republier sur la même `url`.
 - **Ordre des lots** (§ 29, § 35, § 38) : ~~4a~~ → ~~4b~~ → **4b-bis Q8/Q9** → 4c `order: 'kept'` (S2) → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 4b-bis (§ 38), nouveau worktree, tests rouges d'abord ; puis 4c (relire S2 § 6 et D3 § 19).
+- **Prochaine action** : lot 4b-bis (§ 39) en PR ; après merge, 4c (relire S2 § 6 et D3 § 19).
 - **En attente de David** : rien ; vérification manuelle de #1624 notée.
 - **Pièges en cours** : mineurs connus du 4a (§ 36) ; `x^{0,5} → x^{1/2}` laissé (§ 37) ; dérivées : les chemins bouton/commande/latex-péda écrivent encore `x−3/2` (lot 5) ; suite client locale coupée par `rpc is closed`, la CI tranche ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun ; nouveau worktree au 4b-bis.
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `fix/simplify-carte-q8-q9`.
+- **À proposer à David** : bug d'équivalence `√(1/3) ≢ √3/3` (§ 39), hors lot.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -575,3 +576,11 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 - **Q8** : `√0,5 → √2/2`, pas `0,5√2`. Le résultat est irrationnel, sans écriture décimale finie : exception de S1, donc fraction. `√0,25 → 0,5` inchangé.
 - **Q9** : Q3 (« une barre compte comme opérande fraction ») ne vaut que pour un dénominateur **numérique**. Dénominateur avec variable → décimaux gardés : `(0,5x+1)/(x+1)` et `(0,5x+0,5)/(x+1)` inchangés. Restent : `0,5/2 → 1/4`, `2,5x/5 → x/2`, `(0,5x+1)/3 → (x+2)/6`. Raison : `(x+2)/(2(x+1))` transforme (piste A) ; l'autre alignement `(x+1)/(2(x+1))` montre une simplification interdite par S3.
 - Livrées en **lot 4b-bis**, avant le 4c, tests rouges d'abord.
+
+## 39. Lot 4b-bis fait (branche `fix/simplify-carte-q8-q9`)
+
+- Portée tranchée par David avant les tests (sonde) : **Q8** = un décimal **sous** la racine (`√0,2 → √5/5`, `√1,5 → √6/2`, `√0,5·x → x√2/2`), un décimal **devant** reste (`0,5√2`, `0,5π`) ; **Q9** = tous les dénominateurs avec variable gardent les décimaux (`0,5/x`, `1,5/x`, `0,5/(x+1)`, `(x+0,5)/(x−1)`, `x/(0,5x+1)`, `0,5x/x`), pas seulement `(0,5x+1)/(x+1)`.
+- Tests rouges (17) puis correctif dans `collect.ts` : `Accumulator.bar` (barre lue) distinct de `.fraction` ; `readsFraction` ne compte la barre que si aucun facteur n'est dessous ; `isRationalRoot` décide le registre du radicande ; `reduceFractionOfSums` ne chasse pas les décimaux d'une somme sous un dénominateur à variable. `writesDecimal` ne regarde plus les facteurs : `0,5·x⁻¹ → 0,5/x`, relu `0,5/x` (idempotent, cas B1 du 4b gardé dans les invariants).
+- **Bug trouvé en chemin, hors lot** : `areEquivalent` dit faux `√(1/2) ≡ √2/2`, `√(1/3) ≡ √3/3`, `√(3/2) ≡ √6/2`, `√(1/2) ≡ 1/√2` (vrais : `√(1/8) ≡ √2/4`, `√(3/4) ≡ √3/2`, `1/√2 ≡ √2/2`). Touche le juge : un élève qui tape `√(1/3)` pour `√3/3` est refusé. D'où l'invariant « valeur conservée » non testé sur les cas Q8 (idempotence seulement).
+- **Revue `code-reviewer` opus** : corrigés, test rouge d'abord — (1) `√0,5·√0,5` donnait `1/2` : le registre d'une racine se décide sur le terme fini (`Accumulator.decimalRoot`, `hasRootFactor`), plus racine par racine ; (2) `(x/3+0,5)/x` gardait `x/3` sous la barre : une somme qui contient aussi une division se chasse. **Laissé** (mineur, sans cas réel) : `0,5/x·x/2 → 0,25x/x` (les bases `x` gardées des deux côtés, S3, comptent comme dénominateur à variable).
+- Mesures : suite serveur complète verte (59 701 après revue) ; `check:incremental` 0 ; cliquet tenu ; **1 008 modèles de prod × 8 tirages (banc du 4b) : 0 différence**. Témoin non construit : `{{eval}}` d'un décimal sous racine rend une valeur approchée et les variables sont évaluées, donc Q8/Q9 n'atteignent pas les modèles par ces chemins.
