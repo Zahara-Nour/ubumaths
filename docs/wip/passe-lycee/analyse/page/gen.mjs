@@ -154,7 +154,7 @@ const NIVEAUX = ORDRE_NIVEAUX.map((g) => ({ g, m: MODELES.filter((m) => m.g === 
 const style = fs.readFileSync('style.html', 'utf8');
 const j = (o) => JSON.stringify(o).replace(/</g, '\\u003c');
 
-const html = `<title>Verdicts des modèles</title>
+const html = `<title>Verdicts modèles lycée</title>
 ${style}
 <style>
 .vd { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
@@ -196,7 +196,7 @@ textarea.c { width: 100%; font: inherit; font-size: 13px; border: 1px solid var(
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <div class="wrap">
   <header>
-    <h1>Verdicts des modèles</h1>
+    <h1>Verdicts des modèles du lycée</h1>
     <p class="lede">Chaque modèle du lycée confronté aux bornes validées des points, à partir de 300 tirages par variation, dans tous les programmes où sa tâche existe (option A) : un modèle peut donc apparaître dans plusieurs programmes. Inclusion stricte : une seule question hors bornes refuse le tag. Tranche d'abord les questions, puis relis les verdicts programme par programme. Chaque réponse est enregistrée aussitôt.</p>
   </header>
   <div class="status" role="status">

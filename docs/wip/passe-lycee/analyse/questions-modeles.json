@@ -1,0 +1,1083 @@
+[
+	{
+		"id": "m-2de-1",
+		"lot": "2de",
+		"info": false,
+		"titre": "Retirer la valeur absolue d'une expression littérale de signe connu, en 2de",
+		"question": "Le modèle de 2de « Calculer une valeur absolue » fait retirer les barres d'une expression littérale dont le signe est donné. V1-V4 : |kx| ou |−kx|, k de 1 à 3, « si x ⩾ 0 » ou « si x ⩽ 0 » (ex. « Calcule cette expression si x ⩽ 0 : |−3x| » → −3x). V5-V8 : |x + a| ou |x − a|, a de 1 à 3, « si x ⩾ −a » ou « si x ⩽ a » (ex. « si x ⩽ 3 : |x − 3| » → 3 − x). Le BO de 2de réserve la notation |a| à la distance et aux intervalles de centre donné (« Toute autre utilisation est hors programme »). Peut-on taguer ce modèle en 2de, et sur quel point ?",
+		"citations": "BO 2de : « Toute autre utilisation est hors programme ». Décision l2-1 : sont gardés la fonction x ↦ |x| (définition, courbe, signe, variations, |x| = k, |x| < k) et √a² = |a| ; sont exclus |2x − 1| < 3, |ab| = |a||b| et les expressions à plusieurs valeurs absolues. Retirer les barres d'une expression littérale de signe connu n'est dans aucune des deux listes. Tag actuel : 2-245 « Notation en valeur absolue |a| pour la distance de a à 0 ».",
+		"options": [
+			[
+				"tag",
+				"Taguer 2-245 « Notation en valeur absolue |a| pour la distance de a à 0 » : |A| = A si A ⩾ 0 et −A sinon, c'est la définition appliquée à un réel A de signe connu"
+			],
+			[
+				"variation",
+				"Scinder : V1-V4 sur 2-245 « Notation en valeur absolue |a| pour la distance de a à 0 », V5-V8 sur 2-420 « Distance entre deux nombres réels » (|x − 3| est la distance de x à 3)"
+			],
+			[
+				"hors",
+				"Hors programme en 2de : calculer sur |expression littérale| est une « autre utilisation »"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "Le modèle n'utilise que la définition de |a|, sans propriété ni équation : aucune « autre utilisation » au sens du BO. Si tu lis « toute autre utilisation » strictement, l'option hors.",
+		"consequence": "tag : 1 modèle tagué 2-245 (valeur absolue, distance à 0), inchangé. variation : 1 modèle à scinder en deux (4 variations chacun), puis 2-245 et 2-420 (distance entre deux réels). hors : 1 modèle sans point en 2de.",
+		"modeles": ["d6a810f4-aa45-46b3-853a-c276a22870e7"],
+		"verdict_provisoire": "A_TRANCHER en 2de (2de.csv), point pressenti 2-245 « Notation en valeur absolue |a| pour la distance de a à 0 » ; sans tag en attendant.",
+		"court": {
+			"ex": "2de : « si x ⩽ 3, calcule |x − 3| » → 3 − x",
+			"q": "Retirer les barres d'une expression de signe connu : taguer 2-245 (valeur absolue, distance à 0) ?",
+			"ch": {
+				"tag": "Oui, 2-245 (valeur absolue)",
+				"variation": "Scinder : 2-245 (valeur absolue, distance à 0) et 2-420 (distance)",
+				"hors": "Hors programme en 2de"
+			},
+			"r": "Seule la définition de |a| sert : 2-245 (valeur absolue, distance à 0)."
+		}
+	},
+	{
+		"id": "m-2de-2",
+		"lot": "2de",
+		"info": false,
+		"titre": "Signe de kx ou de x ± a quand on connaît le signe de x, en 2de",
+		"question": "Deux QCM de 2de « Signe d'une expression » (x positif ; x négatif) font choisir positif, négatif ou « On ne peut pas savoir ». V1-V2 : kx et −kx, k de 1 à 4 (ex. « Si x est négatif, quel est le signe de −3x ? » → positif). V3-V4 : x + a et x − a, a de 1 à 4 (ex. « Si x est positif, quel est le signe de x − 3 ? » → on ne peut pas savoir). Le tag actuel 2-263 « Somme d'inégalités » ne justifie que V3-V4 ; V1-V2 relèvent de 2-424 « Produit d'une inégalité par un réel positif, négatif, en liaison avec le sens de variation d'une fonction affine ». Quel point unique leur donner ?",
+		"citations": "Un modèle ne porte qu'un point par programme. 2-328 « Signe d'une fonction affine » couvrirait les quatre variations (kx et x ± a sont affines, lues sur une demi-droite).",
+		"options": [
+			["tag", "Taguer 2-328 « Signe d'une fonction affine » les deux modèles"],
+			[
+				"variation",
+				"Scinder chaque modèle : 2-424 « Produit d'une inégalité par un réel positif, négatif, en liaison avec le sens de variation d'une fonction affine » pour V1-V2, 2-263 « Somme d'inégalités » pour V3-V4"
+			],
+			[
+				"modifier",
+				"Garder 2-263 « Somme d'inégalités » et retirer V1-V2 (ou les déplacer dans un modèle tagué 2-424 (produit d'une inégalité))"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "Un seul point par modèle, sans rien retirer ; le raisonnement attendu (règles des inégalités) reste celui que le BO lie au sens de variation d'une fonction affine.",
+		"consequence": "tag : 2 modèles tagués 2-328 (signe d'une fonction affine), au lieu de 2-263 (somme d'inégalités). variation : 2 modèles scindés en 4. modifier : 2 modèles amputés de V1-V2, tagués 2-263.",
+		"modeles": ["4cc21ccd-03d9-4e62-b669-f5ca03a1cc9a", "c7cdca01-326b-487f-8400-ba25d382de74"],
+		"verdict_provisoire": "A_TRANCHER en 2de (2de.csv), point pressenti 2-328 « Signe d'une fonction affine » ; sans tag en attendant (tag actuel 2-263 (somme d'inégalités)).",
+		"court": {
+			"ex": "2de : « x négatif : signe de −3x ? » → positif",
+			"q": "Quel point pour ces 2 QCM de signe : 2-328 (signe d'une fonction affine) ?",
+			"ch": {
+				"tag": "2-328 (signe d'une fonction affine)",
+				"variation": "Scinder : 2-424 (produit d'inégalité) et 2-263 (somme)",
+				"modifier": "Garder 2-263 (somme d'inégalités), retirer kx"
+			},
+			"r": "Un point pour tout le modèle : 2-328 (signe d'une fonction affine)."
+		}
+	},
+	{
+		"id": "m-2de-3",
+		"lot": "2de",
+		"info": false,
+		"titre": "Équation |x − a| = b en 2de",
+		"question": "Le modèle de 2de « Résoudre une équation avec une valeur absolue » pose |x − a| = b, a de −9 à 9 non nul, b de 1 à 9, |a| ≠ b ; deux solutions a + b et a − b (ex. « |x − 9| = 8 » → x = 17 ou x = 1 ; « |x + 8| = 9 » → x = 1 ou x = −17). Aucun point de 2de ne nomme cette équation : est-elle au programme ?",
+		"citations": "2-340 « Fonction valeur absolue : résoudre graphiquement une équation du type f(x) = k » et 2-458 « Fonction valeur absolue : résoudre algébriquement une équation du type f(x) = k » portent sur f(x) = |x| seulement (|x| = k, décision l2-1) ; 2-246 « Inéquation du type |x − a| ⩽ r ; représentation graphique des solutions, intervalle [a − r ; a + r] » sur l'inéquation. La décision l2-1 exclut |2x − 1| < 3 (coefficient de x différent de 1) mais ne dit rien de |x − a| = b. Tag actuel : 2-340.",
+		"options": [
+			[
+				"tag",
+				"Taguer 2-420 « Distance entre deux nombres réels » : les x dont la distance à a vaut b"
+			],
+			["hors", "Hors programme en 2de : seule l'inéquation |x − a| ⩽ r est au BO"]
+		],
+		"reco": "tag",
+		"pourquoi": "La lecture « distance de x à a » est exactement celle que le BO donne à |x − a|, et la résolution n'utilise rien d'autre.",
+		"consequence": "tag : 1 modèle tagué 2-420 (distance entre deux réels), au lieu de 2-340 (|x| = k, graphiquement). hors : 1 modèle sans point en 2de.",
+		"modeles": ["939153b6-9aa8-4a59-809e-071a7d3b8b77"],
+		"verdict_provisoire": "A_TRANCHER en 2de (2de.csv), point pressenti 2-420 « Distance entre deux nombres réels » ; sans tag en attendant.",
+		"court": {
+			"ex": "2de : « |x − 9| = 8 » → x = 17 ou x = 1",
+			"q": "|x − a| = b : taguer 2-420 (distance entre deux réels) ?",
+			"ch": {
+				"tag": "Oui, 2-420 (distance)",
+				"hors": "Hors programme en 2de"
+			},
+			"r": "Les points à distance b de a : c'est la lecture du BO."
+		}
+	},
+	{
+		"id": "m-2de-4",
+		"lot": "2de",
+		"info": false,
+		"titre": "Probabilités conditionnelles hors d'un tableau croisé d'effectifs (texte, pourcentages), en 2de",
+		"question": "Deux modèles de 2de. « Parmi les… : modéliser un tableau croisé ou un sondage » : V1 tableau d'effectifs 2 × 3 (ex. 116 demi-pensionnaires en seconde sur 390 → p₁ = 58/195) ; V2 sondage en texte, sans tableau (« 600 élèves, 180 prennent le bus, 112 habitent à plus de 10 km, 66 les deux » → p₁ = 33/56, p₂ = 11/30) ; V3 tableau en pourcentages de l'ensemble (P(fille | club) = 6/13). « Tableau croisé : probabilité de A sachant B » : V1 tableau d'effectifs 2 × 2 ; V2 tableau en pourcentages (A ∩ B = 5 %, B = 35 % → P_B(A) = 1/7). 2-396 « Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs » ne parle que de tableaux d'effectifs. Jusqu'où accepter les autres présentations ?",
+		"citations": "Décision l2-10 (sur la construction, 2-394 « Construire un tableau croisé d'effectifs en lien avec une situation donnée ») : « le tableau de probabilités n'a pas de point en 2de ». Le tag actuel du premier modèle, 2-395 « Traduire un énoncé en langage naturel à l'aide des notations des probabilités (P(A), Ā, P(A ∩ B), P_A(B)) », ne convient pas : aucune notation n'est demandée, les réponses s'appellent p₁ et p₂. En Tle compl., les deux modèles reçoivent dans tous les cas TCOMP-302 « Calculer des probabilités dans des situations faisant intervenir des probabilités conditionnelles ».",
+		"options": [
+			[
+				"large",
+				"Premier modèle sur 2-390 « Probabilité conditionnelle d'un évènement B sachant un évènement A de probabilité non nulle ; notation P_A(B) » (la notion, sans contrainte de présentation) ; second gardé sur 2-396 « Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs » avec ses pourcentages"
+			],
+			[
+				"strict",
+				"Dans la ligne de l2-10 : 2-396 « Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs » pour les deux, en retirant le texte et les pourcentages (V2-V3 du premier, V2 du second)"
+			],
+			[
+				"pourcentages",
+				"Pourcentages de la population acceptés comme effectifs ramenés à 100 dans 2-396 « Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs » ; retirer seulement le sondage en texte (V2 du premier)"
+			],
+			[
+				"mixte",
+				"Premier modèle sur 2-390 « Probabilité conditionnelle d'un évènement B sachant un évènement A de probabilité non nulle ; notation P_A(B) » tel quel ; second sur 2-396 « Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs » en retirant sa V2 (pourcentages)"
+			]
+		],
+		"reco": "mixte",
+		"pourquoi": "2-390 (probabilité conditionnelle) est la notion même : le « parmi les… » qui fixe l'univers est la définition, quelle que soit la présentation. Pour le modèle « tableau croisé », rester cohérent avec l2-10 (pas de tableau de probabilités). Si tu préfères une seule règle pour les deux, strict.",
+		"consequence": "large : 2 modèles tagués tels quels (2-390 (probabilité conditionnelle), 2-396 (tableau croisé d'effectifs)). strict : 2 modèles à modifier (3 variations retirées), 2-396. pourcentages : 1 variation retirée, 2-396 pour les deux. mixte : 1 variation retirée (2-396), l'autre modèle sur 2-390.",
+		"modeles": ["77d6fedc-1643-4451-a685-2451dc1616cb", "f3e68e4b-9855-4e91-bc0d-7363b7650b86"],
+		"verdict_provisoire": "A_TRANCHER en 2de (2de.csv), points pressentis 2-390 « Probabilité conditionnelle d'un évènement B sachant un évènement A de probabilité non nulle ; notation P_A(B) » (premier modèle) et 2-396 « Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs » (second) ; sans tag en attendant.",
+		"court": {
+			"ex": "2de : « A ∩ B = 5 %, B = 35 % : P_B(A) ? » → 1/7",
+			"q": "Texte et pourcentages dans 2-396 (tableau croisé d'effectifs) ?",
+			"ch": {
+				"large": "Tout accepter (2-390 (probabilité conditionnelle) / 2-396 (tableau croisé d'effectifs))",
+				"strict": "Effectifs seulement : retirer 3 variations",
+				"pourcentages": "Pourcentages oui, texte non",
+				"mixte": "2-390 (probabilité conditionnelle) pour le sondage, effectifs seuls pour 2-396 (tableau croisé d'effectifs)"
+			},
+			"r": "Notion pour le sondage (2-390 (probabilité conditionnelle)), effectifs seuls pour le tableau (l2-10)."
+		}
+	},
+	{
+		"id": "m-1spe-a-1",
+		"lot": "1spe-a",
+		"info": false,
+		"titre": "La construction en escalier d'une suite récurrente, en 1re spé ?",
+		"question": "Deux modèles de 1re spé tracent la courbe de f, la droite y = x et l'escalier qui part de u₀, pour u(n+1) = 0,5u(n) + b, 2u(n) − c ou −0,5u(n) + b. « Comportement d'une suite sur l'escalier » fait choisir le comportement (ex. u(n+1) = 0,5u(n) + 3, u₀ = 1 → « (uₙ) semble croissante et converger » ; cinq réponses possibles). « Lire un terme sur l'escalier » fait lire u₁ ou u₂ (entiers de 0 à 10). L'escalier n'est écrit nulle part dans le BO : est-il au programme de 1re spé ?",
+		"citations": "BO 1re spé : « utiliser le registre de la langue naturelle, le registre algébrique, le registre graphique, et passer de l'un à l'autre » (1SPE-221 « Passer d'un registre à l'autre pour une suite : de l'expression algébrique à la représentation graphique (nuage de points) et inversement », libellé « nuage de points » laissé par toi le 2026-10-23) ; « conjecturer, dans des cas simples, la limite éventuelle d'une suite » (1SPE-231 « Conjecturer, dans des cas simples, la limite éventuelle d'une suite », borne : calculs numériques, algorithme de seuil). Le mode u(n+1) = f(u(n)) est au programme (1SPE-368 « Exemples de modes de génération d'une suite : par une relation de récurrence uₙ₊₁ = f(uₙ) »). Aucun point de Tle ne porte l'escalier.",
+		"options": [
+			[
+				"tag",
+				"L'escalier est une forme du registre graphique : lecture de terme → 1SPE-221 « Passer d'un registre à l'autre pour une suite : de l'expression algébrique à la représentation graphique (nuage de points) et inversement », comportement → 1SPE-231 « Conjecturer, dans des cas simples, la limite éventuelle d'une suite »"
+			],
+			[
+				"hors",
+				"Pas au programme (le registre graphique d'une suite, c'est le nuage de points) : les deux modèles sans point de 1re spé"
+			],
+			[
+				"partiel",
+				"Comme tag, mais le modèle « comportement » porte aussi le sens de variation (1SPE-219 « Sens de variation d'une suite ») : 1SPE-231 (conjecturer une limite) en acceptant la couverture partielle"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "Le registre graphique n'est pas restreint par le BO, la récurrence u(n+1) = f(u(n)) est au programme, et les fonctions tracées sont affines à coefficients simples (0,5, 2, −0,5).",
+		"consequence": "tag ou partiel : 2 modèles tagués (1SPE-221 (passer d'un registre à l'autre), 1SPE-231 (conjecturer une limite)). hors : 2 modèles sans point, ni en 1re ni en Tle.",
+		"modeles": ["146a7c79-ad5c-443c-85a1-c8d0014c2ad8", "baefb288-6fb4-4fad-8e71-114145799ab6"],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-a.csv), points pressentis 1SPE-231 « Conjecturer, dans des cas simples, la limite éventuelle d'une suite » et 1SPE-221 « Passer d'un registre à l'autre pour une suite : de l'expression algébrique à la représentation graphique (nuage de points) et inversement » ; sans tag en attendant.",
+		"court": {
+			"ex": "1re spé : escalier de u(n+1) = 0,5u(n) + 3 → « croissante et converge »",
+			"q": "L'escalier est-il au programme de 1re spé ?",
+			"ch": {
+				"tag": "Oui : 1SPE-221 (registres) et 1SPE-231 (limite)",
+				"hors": "Non, pas de point",
+				"partiel": "Oui, 1SPE-231 (conjecturer une limite) en couverture partielle"
+			},
+			"r": "Registre graphique non restreint par le BO : oui."
+		}
+	},
+	{
+		"id": "m-1spe-a-2",
+		"lot": "1spe-a",
+		"info": false,
+		"titre": "cos x = cos α avec α non remarquable, et cos x = k avec |k| > 1, en Tle spé",
+		"question": "Le modèle « Équations trigonométriques : aucune solution, cos x = cos α, sin x = sin α » (classé 1re spé, hors programme en 1re, sans équation trigonométrique) est examiné contre la Tle spé. V1-V2 : « Résous dans ]−π ; π] l'équation cos x = 5 » → ∅ ; « sin x = 3/2 sur [0 ; 2π[ » → ∅. V3-V4 : « cos x = cos(8π/9) » → {−8π/9 ; 8π/9} (n ∈ {5, 7, 8, 9, 10, 12}). V5 : « sin x = sin(3π/7) sur [0 ; 2π[ » → {3π/7 ; 4π/7}. La décision lts-3 dit « a parmi les valeurs remarquables, solutions exactes ». Le modèle entre-t-il dans TSPE-457 « Résoudre une équation du type cos(x) = a » ?",
+		"citations": "Décision lts-3 (2026-10-23) : « a parmi les valeurs remarquables, solutions exactes ». cos(8π/9) n'est pas une valeur remarquable ; 5 et 3/2 non plus, mais l'équation n'a alors aucune solution à écrire. Voir aussi m-tspe-2 (cos(2x) = a), autre question sur la portée de TSPE-457 (cos(x) = a).",
+		"options": [
+			[
+				"tag",
+				"lts-3 borne les solutions à calculer : cos x = cos α se résout sans connaître cos α, et |a| > 1 donne ∅ → TSPE-457 « Résoudre une équation du type cos(x) = a » pour tout le modèle"
+			],
+			[
+				"modifier",
+				"lts-3 stricte pour cos x = cos α, |a| > 1 admis : retirer V3-V5, garder V1-V2 → TSPE-457 « Résoudre une équation du type cos(x) = a »"
+			],
+			["hors", "lts-3 stricte partout : retirer V1-V5, le modèle n'a plus de point"]
+		],
+		"reco": "modifier",
+		"pourquoi": "La décision lts-3 a été prise pour fixer les valeurs de a ; cos x = cos(8π/9) en sort à la lettre. Le cas |a| > 1 ne demande aucune valeur et reste dans le sens de la borne.",
+		"consequence": "tag : 1 modèle tagué TSPE-457 (cos(x) = a) en Tle spé. modifier : 3 variations retirées, puis TSPE-457. hors : le modèle reste sans point (1re et Tle).",
+		"modeles": ["99c772c0-3a0c-4f63-b01e-a7da4de812c4"],
+		"verdict_provisoire": "A_TRANCHER en Tle spé (1spe-a.csv), point pressenti TSPE-457 « Résoudre une équation du type cos(x) = a » ; HORS_PROGRAMME en 1re spé ; sans tag en attendant.",
+		"court": {
+			"ex": "Tle spé : « cos x = cos(8π/9) sur ]−π ; π] » → {−8π/9 ; 8π/9}",
+			"q": "cos x = cos α avec α non remarquable : dans TSPE-457 (cos(x) = a) malgré lts-3 ?",
+			"ch": {
+				"tag": "Oui, tout le modèle",
+				"modifier": "Retirer cos α non remarquable, garder |a| > 1",
+				"hors": "Retirer tout, plus de point"
+			},
+			"r": "cos(8π/9) sort de lts-3 ; ∅ pour |a| > 1 y reste."
+		}
+	},
+	{
+		"id": "m-1spe-a-3",
+		"lot": "1spe-a",
+		"info": false,
+		"titre": "« Arithmétique, géométrique ou ni l'un ni l'autre ? » : quel point en 1re spé ?",
+		"question": "Cinq modèles de 1re spé font choisir entre arithmétique, géométrique et ni l'un ni l'autre : à partir des premiers termes (« −5 ; −15 ; −45 ; −135 ; −405 » → géométrique ; « 9 ; 10 ; 13 ; 18 ; 25 » → ni l'un ni l'autre), de la forme explicite (uₙ = 9 − 5n → arithmétique ; uₙ = 3ⁿ + 9 → ni l'un ni l'autre), de la récurrence (uₙ₊₁ = −2uₙ → géométrique), d'un nuage de points (u₀ à u₈ de b + rn, a·2ⁿ, (n − c)² + d), et en contexte (« Intérêts simples ou composés : nature de la suite » : simples → arithmétique, composés → géométrique, taux puis frais fixes → ni l'un ni l'autre). Chaque question mobilise les deux définitions ; aucun point de 1re spé ne décrit « reconnaître la nature d'une suite ». Que faire ?",
+		"citations": "Tags actuels : 1SPE-213 « Suites arithmétiques : exemples, définition » (trois premiers), 1SPE-214 « Suites arithmétiques : lien avec l'étude d'évolutions successives à accroissements constants » (nuage, à retirer dans tous les cas : le nuage ne parle pas d'accroissements constants), 1SPE-230 « Modéliser un phénomène discret à croissance linéaire par une suite arithmétique » (intérêts). La réponse « géométrique » relève de 1SPE-216 « Suites géométriques : exemples, définition », en contexte de 1SPE-379 « Modéliser un phénomène discret à croissance exponentielle par une suite géométrique ». En 1re techno, 1TECHNO-045 « Conjecturer, à partir de sa représentation graphique, la nature arithmétique ou géométrique d'une suite » porte le nuage et 1TECHNO-042 « Reconnaitre si une situation relève d'un modèle discret de variation linéaire ou exponentielle » le modèle d'intérêts, en entier.",
+		"options": [
+			[
+				"jumelage",
+				"Tolérer le jumelage : 1SPE-213 « Suites arithmétiques : exemples, définition » pour les trois premiers, 1SPE-221 « Passer d'un registre à l'autre pour une suite : de l'expression algébrique à la représentation graphique (nuage de points) et inversement » pour le nuage, 1SPE-230 « Modéliser un phénomène discret à croissance linéaire par une suite arithmétique » pour les intérêts"
+			],
+			[
+				"hors",
+				"Inclusion stricte : aucun point de 1re spé ; les modèles restent sur leur nœud (le nuage garde 1TECHNO-045 (nature d'une suite sur sa courbe), les intérêts 1TECHNO-042 (modèle linéaire ou exponentiel))"
+			],
+			[
+				"scinder",
+				"Scinder chaque modèle en deux : « arithmétique ou non » (1SPE-213 « Suites arithmétiques : exemples, définition », en contexte 1SPE-230 (croissance linéaire, suite arithmétique)) et « géométrique ou non » (1SPE-216 « Suites géométriques : exemples, définition », en contexte 1SPE-379 (croissance exponentielle, suite géométrique))"
+			]
+		],
+		"reco": "scinder",
+		"pourquoi": "Une question à réponse « géométrique » n'est pas dans 1SPE-213 (suites arithmétiques, définition) : le jumelage contredit l'inclusion stricte. Scinder garde ces modèles dans le parcours de 1re spé, chaque moitié dans un seul point, la réponse « ni l'un ni l'autre » restant possible. Si tu ne tiens pas à ces modèles en 1re spé, hors.",
+		"consequence": "jumelage : 5 modèles tagués tels quels. hors : 5 modèles sans point de 1re spé (2 gardent un point de 1re techno). scinder : 5 modèles à dédoubler (10 modèles), chacun sur un point.",
+		"modeles": [
+			"61e2ac1f-c21d-46ce-b5e2-57a72b9680af",
+			"d2943133-ebf7-424d-946a-8fed6cfa76be",
+			"f63408c5-ec96-4a17-92bc-15796e0b9a61",
+			"d2067413-da43-42bb-a24c-642d2a3cc5e8",
+			"c90fa022-9493-4812-adb7-c785babee9d4"
+		],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-a.csv), points pressentis 1SPE-213 « Suites arithmétiques : exemples, définition » (×3), 1SPE-221 « Passer d'un registre à l'autre pour une suite : de l'expression algébrique à la représentation graphique (nuage de points) et inversement » (nuage), 1SPE-230 « Modéliser un phénomène discret à croissance linéaire par une suite arithmétique » (intérêts) ; sans tag en attendant.",
+		"court": {
+			"ex": "1re spé : « −5 ; −15 ; −45 ; −135 » → géométrique",
+			"q": "Ces 5 QCM « arithmétique, géométrique ou ni l'un ni l'autre » mêlent deux points : que faire ?",
+			"ch": {
+				"jumelage": "Garder, sur 1SPE-213 (arithmétique) par convention",
+				"hors": "Pas de point en 1re spé",
+				"scinder": "Scinder : 1SPE-213 (arithm.) / 1SPE-216 (géom.)"
+			},
+			"r": "Scinder : chaque moitié reste dans un seul point."
+		}
+	},
+	{
+		"id": "m-1spe-a-4",
+		"lot": "1spe-a",
+		"info": false,
+		"titre": "Récurrence qui dépend aussi de n (uₙ₊₁ = uₙ + 2n + c) : dans 1SPE-377 (termes d'une suite récurrente) ?",
+		"question": "Deux modèles de 1re spé « Calculer un terme » : le premier n'a que des récurrences qui dépendent de n (« u₀ = 6 et uₙ₊₁ = uₙ + 5n + 5, calcule u₃ » → 36 ; « u₀ = 4 et uₙ₊₁ = 3uₙ + 3n » → 123) ; le second a V1 uₙ₊₁ = 3uₙ + 2 (forme f(uₙ)), V2 uₙ₊₁ = uₙ + 2n + 5 et V3 uₙ₊₁ = 2uₙ − n. Tous deux portent aujourd'hui 1SPE-223 « Calculer des termes d'une suite définie explicitement », faux (ce sont des récurrences). La borne de 1SPE-377 « Calculer des termes d'une suite définie par récurrence » dit « uₙ₊₁ = f(uₙ) » : la présence de n en exclut-elle ces modèles ?",
+		"citations": "Borne de 1SPE-377 (termes d'une suite récurrente), de force déduite : « Termes d'une suite définie par une récurrence uₙ₊₁ = f(uₙ) », remarque « le seul mode de récurrence écrit au BO est uₙ₊₁ = f(uₙ) », écrite pour exclure l'ordre 2. Le BO écrit en contenu « par une relation de récurrence uₙ₊₁ = f(uₙ) » et en capacité « Calculer des termes d'une suite définie explicitement, par récurrence ou par un algorithme », sans forme. En 1re techno, les deux modèles reçoivent 1TECHNO-118 « Calculer un terme de rang donné d'une suite définie par une relation de récurrence ».",
+		"options": [
+			[
+				"tag",
+				"La capacité ne restreint pas la forme : 1SPE-377 « Calculer des termes d'une suite définie par récurrence » pour les deux modèles"
+			],
+			[
+				"strict",
+				"Lecture stricte uₙ₊₁ = f(uₙ) : second modèle réduit à V1 puis 1SPE-377 (termes d'une suite récurrente) ; premier modèle sans point de 1re spé"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "La remarque de la borne vise l'ordre 2 (Fibonacci), pas la présence de n ; la capacité « par récurrence » est générale, et l'élève calcule pas à pas sans connaissance nouvelle.",
+		"consequence": "tag : 2 modèles tagués 1SPE-377 (termes d'une suite récurrente). strict : 1 modèle amputé de 2 variations (1SPE-377), 1 modèle sans point en 1re spé.",
+		"modeles": ["0495289a-abb1-4fed-b058-5e924a5f05ed", "1239554b-d442-4be6-8867-d9dc38311999"],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-a.csv), point pressenti 1SPE-377 « Calculer des termes d'une suite définie par récurrence » ; sans tag en attendant (tag actuel 1SPE-223 (termes d'une suite explicite)).",
+		"court": {
+			"ex": "1re spé : « u₀ = 6, uₙ₊₁ = uₙ + 5n + 5 : u₃ ? » → 36",
+			"q": "uₙ₊₁ dépendant de n : dans 1SPE-377 (termes d'une suite récurrente) ?",
+			"ch": {
+				"tag": "Oui, 1SPE-377 (termes d'une suite récurrente) pour les deux",
+				"strict": "Non : uₙ₊₁ = f(uₙ) seulement"
+			},
+			"r": "La borne vise l'ordre 2, pas n : oui."
+		}
+	},
+	{
+		"id": "m-1spe-a-5",
+		"lot": "1spe-a",
+		"info": false,
+		"titre": "Seuil d'une suite arithmétique « par le calcul » : quel point en 1re spé ?",
+		"question": "Le modèle de 1re spé « Seuil d'une suite arithmétique par le calcul » : « (uₙ) est la suite arithmétique de premier terme u₀ = 6 et de raison r = 9. Détermine le plus petit entier n tel que uₙ > 498 » → 55 (rangs de 9 à 192, raisons de ±3 à ±9). L'élève écrit 6 + 9n > 498 et résout. Le seul point de 1re spé qui nomme le seuil est rangé dans les exemples d'algorithme. Où le ranger ?",
+		"citations": "Tag actuel 1SPE-237 « Calcul de seuil », borne : « Algorithme de seuil : premier rang à partir duquel uₙ dépasse (ou passe sous) une valeur ; pas de résolution algébrique de qⁿ > A (logarithme : terminale) ». En 1re ES, 1GEN-021 « Résoudre un problème de seuil dans le cas d'une croissance linéaire » le porte exactement (retenu).",
+		"options": [
+			[
+				"tag",
+				"1SPE-237 « Calcul de seuil » : la borne vise le rang de seuil et n'exclut que le logarithme"
+			],
+			[
+				"terme",
+				"1SPE-224 « Pour une suite arithmétique, calculer le terme général » : l'élève écrit le terme général puis résout une inéquation de 2de"
+			],
+			["hors", "Pas de point en 1re spé (le seuil par le calcul n'est pas un contenu de 1re)"]
+		],
+		"reco": "tag",
+		"pourquoi": "1SPE-237 (calcul de seuil) décrit le résultat cherché (le rang de seuil) ; sa borne n'exclut que la résolution par logarithme. 1SPE-224 (terme général arithmétique) tague un savoir dont la question ne demande pas le résultat.",
+		"consequence": "tag : 1 modèle tagué 1SPE-237 (calcul de seuil), inchangé. terme : 1 modèle sur 1SPE-224 (terme général arithmétique). hors : sans point en 1re spé (garde 1GEN-021 (seuil, croissance linéaire) en 1re ES).",
+		"modeles": ["eb9517ed-85ed-4702-b8d0-e155f5a5d474"],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-a.csv), point pressenti 1SPE-237 « Calcul de seuil » ; TAG 1GEN-021 « Résoudre un problème de seuil dans le cas d'une croissance linéaire » en 1re ES.",
+		"court": {
+			"ex": "1re spé : « u₀ = 6, r = 9 : plus petit n tel que uₙ > 498 » → 55",
+			"q": "Seuil d'une suite arithmétique par une inéquation : quel point ?",
+			"ch": {
+				"tag": "1SPE-237 (calcul de seuil)",
+				"terme": "1SPE-224 (terme général arithmétique)",
+				"hors": "Pas de point en 1re spé"
+			},
+			"r": "1SPE-237 (calcul de seuil) décrit le rang cherché ; seul le logarithme est exclu."
+		}
+	},
+	{
+		"id": "m-1spe-a-6",
+		"lot": "1spe-a",
+		"info": false,
+		"titre": "Somme et produit des racines dans la même question, en 1re spé",
+		"question": "Le modèle de 1re spé « Somme et produit des racines » : « Le polynôme P(x) = 2x² + 9x + 9 a deux racines x₁ et x₂. Sans les calculer, détermine leur somme et leur produit » → x₁ + x₂ = −9/2 et x₁ × x₂ = 9/2 (a de −5 à 5, b et c de −9 à 9, Δ > 0). Le BO l'écrit en une phrase, mais l'arbre en fait deux points : 1SPE-245 « Expression de la somme des racines » et 1SPE-383 « Expression du produit des racines ». Chaque question demande les deux.",
+		"citations": "BO 1re spé : « Racines, signe, expression de la somme et du produit des racines ». Tag actuel : 1SPE-245 (somme des racines). Un modèle ne porte qu'un point par programme.",
+		"options": [
+			[
+				"tag",
+				"Garder 1SPE-245 « Expression de la somme des racines », la case « produit » débordant sur le point jumeau"
+			],
+			[
+				"scinder",
+				"Scinder en deux (variations ou modèles) : somme → 1SPE-245 « Expression de la somme des racines », produit → 1SPE-383 « Expression du produit des racines »"
+			],
+			["hors", "Pas de point (inclusion stricte), le modèle reste sur son nœud"]
+		],
+		"reco": "scinder",
+		"pourquoi": "Les deux expressions sont deux points de l'arbre ; une question qui les demande ensemble sort de chacun. Si tu préfères garder le modèle tel quel, tag est le moindre mal (même phrase du BO).",
+		"consequence": "tag : 1 modèle tagué 1SPE-245 (somme des racines), inchangé. scinder : 1 modèle en 2, sur 1SPE-245 et 1SPE-383 (produit des racines). hors : 1 modèle sans point.",
+		"modeles": ["0dee4515-8030-441c-bd7c-f1b7418e664b"],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-a.csv), point pressenti 1SPE-245 « Expression de la somme des racines » ; sans tag en attendant.",
+		"court": {
+			"ex": "1re spé : « 2x² + 9x + 9 : somme et produit des racines ? » → −9/2 et 9/2",
+			"q": "Somme et produit demandés ensemble : un point ou deux modèles ?",
+			"ch": {
+				"tag": "Garder sur 1SPE-245 (somme)",
+				"scinder": "Scinder : 1SPE-245 (somme) et 1SPE-383 (produit)",
+				"hors": "Pas de point"
+			},
+			"r": "Deux points dans l'arbre : scinder."
+		}
+	},
+	{
+		"id": "m-1spe-a-7",
+		"lot": "1spe-a",
+		"info": false,
+		"titre": "Axe de symétrie d'une parabole donnée sous forme développée ou factorisée, en 1re spé",
+		"question": "Le modèle de 1re spé « Déterminer l'équation de l'axe de symétrie de la parabole » : V1 f(x) = 5 + (x − 5)² → x = 5 (forme canonique) ; V2 f(x) = x² + 6x + 6 → x = −3, avec a de 1 à 3 et b de −6 à 6, donc aussi x = −5/6 ou −1/3 (forme développée) ; V3 f(x) = −2(x + 5)(x + 6) → x = −11/2 (forme factorisée, milieu des racines). Tag actuel 1SPE-247 « Calcul des coordonnées du sommet d'une parabole » (le sommet). Quel point, et faut-il restreindre ?",
+		"citations": "1SPE-384 « Axe de symétrie d'une parabole », borne déduite « Axe de symétrie x = α, lu sur la forme canonique » ; la formule x = −b/(2a) n'est pas au BO. 1SPE-247 (sommet d'une parabole) admet le sommet « lu sur la forme canonique, ou obtenu par l'extrémum en lien avec la dérivation ». Décision l1s-2 : forme canonique seulement si b/(2a) est entier ou demi-entier.",
+		"options": [
+			[
+				"voisin",
+				"Garder 1SPE-247 « Calcul des coordonnées du sommet d'une parabole » : l'axe est x = abscisse du sommet, et la borne admet toutes les voies"
+			],
+			[
+				"modifier",
+				"1SPE-384 « Axe de symétrie d'une parabole » après modification : garder V1, restreindre V2 à b/(2a) entier ou demi-entier, retirer V3"
+			],
+			[
+				"tag",
+				"1SPE-384 « Axe de symétrie d'une parabole » tel quel, en lisant « lu sur la forme canonique » comme un exemple et non une limite"
+			]
+		],
+		"reco": "modifier",
+		"pourquoi": "La question porte sur l'axe (1SPE-384 (axe de symétrie)), pas sur le sommet ; la borne déduite de 1SPE-384 et la décision l1s-2 fixent la voie (forme canonique en cas simple). Garder 1SPE-247 (sommet d'une parabole) tague un point voisin.",
+		"consequence": "voisin : 1 modèle sur 1SPE-247 (sommet d'une parabole), inchangé. modifier : V2 restreinte, V3 retirée, puis 1SPE-384 (axe de symétrie). tag : 1 modèle sur 1SPE-384, inchangé.",
+		"modeles": ["9f00da01-a030-4697-8d69-20c380fa0b78"],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-a.csv), point pressenti 1SPE-384 « Axe de symétrie d'une parabole » ; sans tag en attendant (tag actuel 1SPE-247 (sommet d'une parabole)).",
+		"court": {
+			"ex": "1re spé : « axe de x² + 6x + 6 » → x = −3 ; « axe de −2(x + 5)(x + 6) » → x = −11/2",
+			"q": "Axe sur forme développée ou factorisée : quel point, et faut-il restreindre ?",
+			"ch": {
+				"voisin": "Garder 1SPE-247 (sommet)",
+				"modifier": "1SPE-384 (axe), canonique simple seulement",
+				"tag": "1SPE-384 (axe) tel quel"
+			},
+			"r": "Le point de l'axe, restreint à la forme canonique simple."
+		}
+	},
+	{
+		"id": "m-1spe-a-2de-1",
+		"lot": "1spe-a-2de",
+		"info": false,
+		"titre": "« Racines d'un polynôme du second degré » en 2de quand la tâche est un produit nul",
+		"question": "Trois modèles de 1re spé « Déterminer les racines d'un polynôme du second degré » sont jugés contre la 2de. Forme factorisée : « Détermine les racines de ce polynôme du second degré. P(x) = (4x − 7)(x − 6) » → 7/4 et 6 ; forme pas complètement factorisée : (−5x − 25)(x + 2) → −5 et −2 ; graphiquement : « Détermine graphiquement les racines du polynôme représenté par cette parabole » → deux entiers de −4 à 4. La tâche est de 2de, mais le mot « racine » (d'un polynôme) n'est qu'au BO de 1re. Faut-il leur donner un point de 2de ?",
+		"citations": "En 2de : 2-267 « Équation de la forme A(x)B(x) = 0 (équation produit nul) » (borne : A(x) et B(x) du premier degré) décrit le calcul des deux premiers ; 2-336 « Résoudre une équation du type f(x) = k, en choisissant une méthode adaptée : graphique, algébrique, logicielle » décrit la lecture du troisième (k = 0). Les bornes générales de 2de excluent le « polynôme du second degré général ». « Racine » est le vocabulaire de 1re (1SPE-244 « Fonction polynôme du second degré donnée sous forme factorisée ; racines »).",
+		"options": [
+			[
+				"hors",
+				"Pas de point en 2de : l'énoncé repose sur un vocabulaire de 1re ; les modèles de produit nul de 2de portent la tâche"
+			],
+			[
+				"tag",
+				"Lire le sens de la tâche : deux modèles sur 2-267 « Équation de la forme A(x)B(x) = 0 (équation produit nul) », le graphique sur 2-336 « Résoudre une équation du type f(x) = k, en choisissant une méthode adaptée : graphique, algébrique, logicielle »"
+			],
+			[
+				"jumeaux",
+				"Comme hors, et créer plus tard des jumeaux de 2de (« Résous P(x) = 0 ») si ces formes manquent"
+			]
+		],
+		"reco": "hors",
+		"pourquoi": "Inclusion stricte : un mot que l'élève de 2de n'a pas appris suffit à sortir la question des bornes. Jumeaux seulement si le repérage montre un manque de modèles de produit nul en 2de.",
+		"consequence": "hors : 3 modèles sans point de 2de (ils gardent leur point de 1re spé). tag : 3 modèles reçoivent aussi un point de 2de. jumeaux : idem hors, plus des modèles à écrire.",
+		"modeles": [
+			"18e26873-dca0-4c73-bc23-f181e0164a66",
+			"1b1a6d7b-d776-491b-b2bc-b2bc9fe629fe",
+			"eae2ff6a-5e46-445b-bfa6-02cadb6d956a"
+		],
+		"verdict_provisoire": "A_TRANCHER en 2de (1spe-a-2de.csv), points pressentis 2-267 « Équation de la forme A(x)B(x) = 0 (équation produit nul) » (×2) et 2-336 « Résoudre une équation du type f(x) = k, en choisissant une méthode adaptée : graphique, algébrique, logicielle » ; aucun point de 2de en attendant.",
+		"court": {
+			"ex": "2de ? « Racines de P(x) = (4x − 7)(x − 6) » → 7/4 et 6",
+			"q": "Un énoncé « racines d'un polynôme » (vocabulaire de 1re) peut-il recevoir un point de 2de ?",
+			"ch": {
+				"hors": "Non, pas de point en 2de",
+				"tag": "Oui : 2-267 (produit nul) et 2-336 (f(x) = k)",
+				"jumeaux": "Non, et créer des jumeaux de 2de"
+			},
+			"r": "Vocabulaire de 1re : pas de point en 2de."
+		}
+	},
+	{
+		"id": "m-1spe-a-2de-2",
+		"lot": "1spe-a-2de",
+		"info": false,
+		"titre": "« Tangente » en 2de quand la tâche est la lecture d'une droite",
+		"question": "Le modèle de 1re spé « Lire l'équation d'une tangente sur un graphique », jugé contre la 2de : « La courbe C_f d'une fonction f et sa tangente T au point A d'abscisse 4 sont tracées. La tangente T a pour équation y = mx + p. Lis son coefficient directeur m et son ordonnée à l'origine p. » → m = 1/2, p = −4 (m entier ou demi-entier de −3 à 3, p entier de −4 à 4). Lire m et p sur une droite tracée est de la 2de, mais la tangente à une courbe est une notion de 1re. Faut-il lui donner un point de 2de ?",
+		"citations": "En 2de : 2-315 « Déterminer la pente d'une droite donnée par une représentation graphique » et 2-474 « Pour une fonction affine donnée par f(x) = mx + p, interprétation de p comme ordonnée à l'origine » ; la tangente est en 1re (1SPE-261 « Tangente à la courbe représentative d'une fonction en un point, comme « limite des sécantes » ; pente ») ; au BO de 2de, « tangente » ne désigne que la ligne trigonométrique. Le modèle demande m et p, deux points de 2de. Les modèles de 2de « Déterminer le coefficient directeur graphiquement » sont déjà tagués 2-347 « Pour une fonction affine donnée par f(x) = mx + p, interprétation de m comme taux d'accroissement ».",
+		"options": [
+			["hors", "Pas de point en 2de : l'objet de la question (la tangente) est de 1re"],
+			[
+				"tag",
+				"2-315 « Déterminer la pente d'une droite donnée par une représentation graphique » : on lit la droite tracée, le mot « tangente » ne sert pas au calcul"
+			],
+			["scinder", "Scinder les deux cases (m, p) si l'on veut un point de 2de"]
+		],
+		"reco": "hors",
+		"pourquoi": "Même raison que m-1spe-a-2de-1 : vocabulaire de 1re dans l'énoncé, tâche déjà couverte en 2de.",
+		"consequence": "hors : 1 modèle sans point de 2de (il garde son point de 1re spé). tag : 1 modèle reçoit aussi 2-315 (pente lue sur un graphique). scinder : 1 modèle en 2.",
+		"modeles": ["ed8444bb-dfa3-4b6c-8414-27afb3066d2b"],
+		"verdict_provisoire": "A_TRANCHER en 2de (1spe-a-2de.csv), point pressenti 2-315 « Déterminer la pente d'une droite donnée par une représentation graphique » ; aucun point de 2de en attendant.",
+		"court": {
+			"ex": "2de ? « Tangente T en A tracée : lis m et p » → m = 1/2, p = −4",
+			"q": "Une « tangente » (notion de 1re) peut-elle recevoir un point de 2de ?",
+			"ch": {
+				"hors": "Non, pas de point en 2de",
+				"tag": "Oui, 2-315 (pente lue sur un graphique)",
+				"scinder": "Scinder m et p"
+			},
+			"r": "Notion de 1re dans l'énoncé : pas de point en 2de."
+		}
+	},
+	{
+		"id": "m-1spe-b-1",
+		"lot": "1spe-b",
+		"info": false,
+		"titre": "Équations et inéquations eᵘ = eᵛ, eᵘ < eᵛ : quel point en 1re spé ?",
+		"question": "Cinq modèles de 1re spé résolvent eᵘ = eᶜ, eᵘ = eᵛ, eᵘ < eᶜ, eᵘ ⩽ eᵛ (u, v affines), et la V1 de « Équations particulières avec l'exponentielle » (e^(ax+b) = 1). Ex. : « Résous dans ℝ l'inéquation e^(−5x−9) ⩽ e^(6x+8) » → S = [−17/11 ; +∞[. La borne générale de 1re spé admet ces équations, mais aucun point de la rubrique « Fonction exponentielle » ne parle d'équation. Tag actuel : 1SPE-292 « Signe de la fonction exponentielle », qui ne décrit pas la tâche.",
+		"citations": "Borne générale de 1re spé (déduite) : « seulement celles qui se ramènent à eᵘ = eᵛ ou eᵘ < eᵛ par la stricte croissance ». Le modèle « Équations particulières » est TAG_PAR_VARIATION : V1 suit cette question, V2-V4 (eˣ > 0) restent sur 1SPE-292 (signe de exp).",
+		"options": [
+			[
+				"tag",
+				"1SPE-405 « Sens de variation de la fonction exponentielle » : la stricte croissance est l'outil même de la résolution"
+			],
+			[
+				"hors",
+				"Aucun point de 1re spé : le BO ne contient pas cette capacité ; sans tag pour ce programme"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "La borne générale les déclare dans le programme, et 1SPE-405 (variation de exp) est la propriété qu'on applique.",
+		"consequence": "tag : 4 modèles tagués 1SPE-405 (variation de exp), et la V1 du cinquième rejoint 1SPE-405 (à scinder). hors : 4 modèles sans point de 1re spé, V1 du cinquième à retirer.",
+		"modeles": [
+			"6fe11613-789b-43c1-a38b-0d72bcb0d44e",
+			"7179a3b5-580a-4696-a22e-cd5f89c32c29",
+			"6a5e58da-8015-4d0d-9a1f-6c8e8d9cae4d",
+			"d73d7929-fd39-4234-963c-80038c22f5a3",
+			"9a4592bf-5e79-4a4a-bb1a-698a715a4a34"
+		],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-b.csv), point pressenti 1SPE-405 « Sens de variation de la fonction exponentielle » pour 4 modèles ; TAG_PAR_VARIATION pour le cinquième ; sans tag en attendant.",
+		"court": {
+			"ex": "1re spé : « e^(−5x−9) ⩽ e^(6x+8) » → S = [−17/11 ; +∞[",
+			"q": "eᵘ = eᵛ, eᵘ < eᵛ : taguer 1SPE-405 (sens de variation de exp) ?",
+			"ch": {
+				"tag": "Oui, 1SPE-405 (variation de exp)",
+				"hors": "Non, pas de point"
+			},
+			"r": "La stricte croissance est l'outil : 1SPE-405 (variation de exp)."
+		}
+	},
+	{
+		"id": "m-1spe-b-2",
+		"lot": "1spe-b",
+		"info": false,
+		"titre": "cos²x + sin²x = 1 en 1re spé ?",
+		"question": "Le modèle de 1re spé « Calculer cos x connaissant sin x » : « On sait que sin x = 1/3 et que x ∈ [π/2 ; π]. Calcule la valeur exacte de cos x » → −2√2/3. Les autres variations donnent sin x = 24/25, 2/9…, avec un intervalle pour le signe de cos x. La relation cos²x + sin²x = 1 n'est écrite ni au BO de 1re spé ni dans les bornes. Le modèle a-t-il un point en 1re spé ?",
+		"citations": "Tag actuel 1SPE-305 « Cosinus et sinus d'un nombre réel ; lien avec le sinus et le cosinus dans un triangle rectangle ». BO 1re spé (nouveau programme) : cercle, radian, enroulement, cos et sin d'un réel, valeurs remarquables, angles associés. La décision l1s-3 limite la trigonométrie à des valeurs lues sur le cercle. La relation découle du cercle de rayon 1 et de Pythagore.",
+		"options": [
+			[
+				"tag",
+				"Taguer 1SPE-305 « Cosinus et sinus d'un nombre réel ; lien avec le sinus et le cosinus dans un triangle rectangle » : la relation découle de la définition sur le cercle et du lien avec le triangle rectangle"
+			],
+			[
+				"hors",
+				"Aucun point de 1re spé : relation non écrite au BO, et sin x = 24/25 n'est pas une valeur remarquable"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "Si la relation est une conséquence immédiate de la définition (comme les conséquences de l'exponentielle en l1s-5), tag ; sinon hors. L'agent n'avait pas de préférence forte.",
+		"consequence": "tag : 1 modèle tagué 1SPE-305 (cos et sin d'un réel). hors : 1 modèle sans point de 1re spé.",
+		"modeles": ["ee4e2ac6-c683-47ec-91bd-524409ef241e"],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-b.csv), point pressenti 1SPE-305 « Cosinus et sinus d'un nombre réel ; lien avec le sinus et le cosinus dans un triangle rectangle » ; sans tag en attendant.",
+		"court": {
+			"ex": "1re spé : « sin x = 1/3, x ∈ [π/2 ; π] : cos x ? » → −2√2/3",
+			"q": "cos²x + sin²x = 1, non écrite au BO : taguer 1SPE-305 (cos et sin d'un réel) ?",
+			"ch": {
+				"tag": "Oui, 1SPE-305 (cos et sin d'un réel)",
+				"hors": "Non, pas de point"
+			},
+			"r": "Conséquence immédiate de la définition : oui (préférence faible)."
+		}
+	},
+	{
+		"id": "m-1spe-b-3",
+		"lot": "1spe-b",
+		"info": false,
+		"titre": "Cercle de diamètre [AB] : point-démonstration 1SPE-323 (MA·MB = 0, démonstration) ou 1SPE-317 (transformer MA·MB) ?",
+		"question": "Le modèle de 1re spé « Cercle de diamètre [AB] » : « A(3 ; −3), B(5 ; −11). L'ensemble des points M tels que MA·MB = 0 est un cercle. Détermine son centre et son rayon » → I(4 ; −7), r = √17 ; V3 : « ensemble des M tels que AMB soit rectangle en M ». Le tag actuel 1SPE-323 « Ensemble des points M tels que MA·MB = 0 (démonstration avec le produit scalaire) » est un point-démonstration ; le modèle applique le résultat sans le démontrer.",
+		"citations": "Borne de 1SPE-323 (MA·MB = 0, démonstration) : « ce qui est démontré : … ; pas plus ». Le modèle « cas k ≠ 0 » (MA·MB = k) est tagué 1SPE-317 « Transformation de l'expression MA·MB ».",
+		"options": [
+			[
+				"demo",
+				"Garder 1SPE-323 « Ensemble des points M tels que MA·MB = 0 (démonstration avec le produit scalaire) » : c'est l'énoncé du résultat utilisé"
+			],
+			[
+				"tag",
+				"1SPE-317 « Transformation de l'expression MA·MB » : cas k = 0 de MA·MB = MI² − AB²/4"
+			],
+			[
+				"competence",
+				"1SPE-436 « Utiliser le produit scalaire pour résoudre un problème géométrique » (point-compétence, sans borne propre)"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "Cohérent avec le modèle du cas k ≠ 0 et avec la règle des points-démonstration.",
+		"consequence": "Dans tous les cas 1 modèle tagué ; seul le point change (1SPE-323 (MA·MB = 0, démonstration), 1SPE-317 (transformer MA·MB) ou 1SPE-436 (produit scalaire, problème géométrique)).",
+		"modeles": ["044a3ae3-c54a-4521-9265-3997fcc6b0d2"],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-b.csv), points pressentis 1SPE-323 « Ensemble des points M tels que MA·MB = 0 (démonstration avec le produit scalaire) » ou 1SPE-317 « Transformation de l'expression MA·MB » ; sans tag en attendant.",
+		"court": {
+			"ex": "1re spé : « A(3 ; −3), B(5 ; −11) : MA·MB = 0 » → centre I(4 ; −7), rayon √17",
+			"q": "Appliquer le cercle de diamètre [AB] : sur quel point ?",
+			"ch": {
+				"demo": "1SPE-323 (démonstration)",
+				"tag": "1SPE-317 (transformer MA·MB)",
+				"competence": "1SPE-436 (problème géométrique)"
+			},
+			"r": "1SPE-317 (transformer MA·MB), comme le cas MA·MB = k."
+		}
+	},
+	{
+		"id": "m-1spe-b-4",
+		"lot": "1spe-b",
+		"info": false,
+		"titre": "P(X ⩾ a), P(X < a), P(a ⩽ X ⩽ b) en 1re spé ?",
+		"question": "Le modèle de 1re spé « Probabilité d'un événement du type X ≥ a, X < a ou a ≤ X ≤ b » (et la V2 du modèle qui calcule P(X ⩾ 1)) : tableau de loi sur {−2 ; −1 ; 1 ; 4 ; 6}, « P(−1 ⩽ X ⩽ 4) = ? » → 9/20. Le BO et 1SPE-353 « Interpréter en situation les notations {X = a}, {X ⩽ a}, P(X = a), P(X ⩽ a) » ne nomment que {X = a} et {X ⩽ a}. Jusqu'où étendre en 1re spé ?",
+		"citations": "En 1re techno, même phrase, tu as tranché (l1t-6) : {X > a}, {X ⩾ a}, {X < a} admis comme contraires, écritures d'intervalle {a ⩽ X ⩽ b} hors point. Rien n'est tranché pour la 1re spé.",
+		"options": [
+			[
+				"techno",
+				"Comme en 1re techno : X ⩾ a, X < a dans 1SPE-353 « Interpréter en situation les notations {X = a}, {X ⩽ a}, P(X = a), P(X ⩽ a) », retirer a ⩽ X ⩽ b"
+			],
+			[
+				"large",
+				"Toutes les écritures dans 1SPE-353 « Interpréter en situation les notations {X = a}, {X ⩽ a}, P(X = a), P(X ⩽ a) », intervalle compris"
+			],
+			["strict", "Strict : {X = a} et {X ⩽ a} seulement"]
+		],
+		"reco": "large",
+		"pourquoi": "En spé, {a ⩽ X ⩽ b} n'est qu'une réunion de {X = xₖ} lue sur le tableau, les intervalles sont connus depuis la 2de, et rien dans le BO de spé n'exclut cette écriture. Techno si tu préfères aligner les deux voies.",
+		"consequence": "large : 1 modèle tagué 1SPE-353 (notations {X = a}, {X ⩽ a}) tel quel ; l'autre (arbre pondéré, TAG 1SPE-355 (loi d'une variable aléatoire)) inchangé. techno : 1 variation retirée (a ⩽ X ⩽ b). strict : le premier modèle amputé de la plupart de ses variations, et la V2 du second (P(X ⩾ 1)) à revoir.",
+		"modeles": ["570f91d5-75e6-4af8-b22b-67fae6c4bde1", "d683e906-b1ca-44f0-bed5-8df2a9740b11"],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-b.csv), point pressenti 1SPE-353 « Interpréter en situation les notations {X = a}, {X ⩽ a}, P(X = a), P(X ⩽ a) » ; sans tag en attendant. Le second modèle (« Probabilités de la loi de X à partir d'un arbre pondéré ») est TAG 1SPE-355 « Déterminer la loi de probabilité d'une variable aléatoire », sa V2 dépend de cette question.",
+		"court": {
+			"ex": "1re spé : loi sur {−2 ; −1 ; 1 ; 4 ; 6}, « P(−1 ⩽ X ⩽ 4) ? » → 9/20",
+			"q": "P(X ⩾ a), P(a ⩽ X ⩽ b) dans 1SPE-353 ({X = a}, {X ⩽ a}) ?",
+			"ch": {
+				"techno": "Comme en techno : sans intervalle",
+				"large": "Toutes les écritures",
+				"strict": "{X = a} et {X ⩽ a} seulement"
+			},
+			"r": "Rien n'exclut l'intervalle en spé : tout accepter."
+		}
+	},
+	{
+		"id": "m-1spe-b-5",
+		"lot": "1spe-b",
+		"info": false,
+		"titre": "Réunion, intersection, complémentaire dans la même question, en 2de",
+		"question": "Deux modèles classés 1re spé, sans point de 1re spé, jugés en 2de. « Intersection, réunion et complémentaire d'ensembles finis » : E = {1 ; 4 ; 7 ; … ; 24}, A = {1 ; 7 ; 10 ; 18 ; 21}, B = {4 ; 7 ; 16 ; 21} : « A ∩ B = ? A ∪ B = ? Ā = ? » (chaque variation demande les trois). « Réunion, intersection et complémentaire d'intervalles » : I ∩ J et I ∪ J (V1, V2, V4), deux complémentaires dans ℝ (V3). La 2de a trois points distincts : 2-404 « Notion de réunion », 2-405 « Notion d'intersection », 2-406 « Notion de complémentaire ». Un modèle n'en porte qu'un.",
+		"citations": "Tags actuels : 2-202 « Notion d'ensemble vide » (ensembles finis) et 2-244 « Intervalles de ℝ ; représentation graphique, notations du type [a ; +∞[, ]−∞ ; a], [a ; b] » (intervalles). 2-203 « Symboles de base correspondants : ∅, ∈, ⊂, ∩, ∪, {…} » couvre ∩ et ∪, pas le complémentaire.",
+		"options": [
+			[
+				"scinder",
+				"Scinder chaque modèle (une variation ou un modèle par opération), puis 2-404 (réunion), 2-405 (intersection), 2-406 (complémentaire)"
+			],
+			[
+				"symboles",
+				"Taguer 2-203 « Symboles de base correspondants : ∅, ∈, ⊂, ∩, ∪, {…} » en acceptant que le complémentaire n'y soit pas"
+			],
+			[
+				"mixte",
+				"Intervalles : garder 2-244 « Intervalles de ℝ ; représentation graphique, notations du type [a ; +∞[, ]−∞ ; a], [a ; b] » (écrire le résultat en intervalle) ; ensembles finis : scinder"
+			]
+		],
+		"reco": "mixte",
+		"pourquoi": "Pour les intervalles, la tâche est d'écrire le résultat en notation d'intervalle ; pour les ensembles finis, les trois opérations sont des points distincts du BO.",
+		"consequence": "scinder : 2 modèles à éclater (jusqu'à 6 modèles). symboles : 2 modèles tagués 2-203 (symboles ∩, ∪…) tels quels. mixte : 1 modèle tagué 2-244 (intervalles), 1 modèle éclaté en 3.",
+		"modeles": ["9724dc3d-8df6-4c45-b936-439b18ed4c39", "8c31675a-44af-48df-bb3e-cde85a8d3f35"],
+		"verdict_provisoire": "A_TRANCHER en 2de (1spe-b.csv), points pressentis 2-404 « Notion de réunion » / 2-405 (intersection) / 2-406 (complémentaire) et 2-244 « Intervalles de ℝ ; représentation graphique, notations du type [a ; +∞[, ]−∞ ; a], [a ; b] » ; HORS_PROGRAMME en 1re spé ; sans tag en attendant.",
+		"court": {
+			"ex": "2de : « A = {1 ; 7 ; 10 ; 18 ; 21}, B = {4 ; 7 ; 16 ; 21} : A ∩ B, A ∪ B, Ā ? »",
+			"q": "∩, ∪ et complémentaire dans une même question : trois points de 2de, que faire ?",
+			"ch": {
+				"scinder": "Scinder : 2-404 (réunion) / 2-405 (intersection) / 2-406 (réunion, intersection, complémentaire)",
+				"symboles": "2-203 (symboles ∩, ∪)",
+				"mixte": "Intervalles sur 2-244 (intervalles), ensembles finis scindés"
+			},
+			"r": "Intervalles sur 2-244 (intervalles), ensembles finis scindés."
+		}
+	},
+	{
+		"id": "m-1spe-b-6",
+		"lot": "1spe-b",
+		"info": false,
+		"titre": "Cartes de cours sur la méthode d'étude d'une fonction, en 1re spé",
+		"question": "Deux cartes de cours de 1re spé : « Étude de fonction : par quoi commencer » (verso : « Déterminer son ensemble de définition ») et « Étude de fonction : ce qu'on cherche » (verso : « ses variations ; ses extremums ; ses limites aux bornes de son ensemble de définition ; son signe »). Tag actuel des deux : 1SPE-283 « Étudier les variations d'une fonction », borné aux variations par le signe de la dérivée. L'ensemble de définition est de 2de (2-326 « Recherche de domaine d'étude (ensemble de définition) ») et les limites de fonctions sont exclues de la 1re spé.",
+		"citations": "Borne générale de 1re spé : pas de limite de fonction. Versos lus dans templates.json (absents du relevé). La carte « ce que donne la dérivée » reste taguée 1SPE-283 (variations d'une fonction) sans difficulté.",
+		"options": [
+			[
+				"tag",
+				"Garder 1SPE-283 « Étudier les variations d'une fonction » pour les deux, en retirant « limites aux bornes » de la seconde"
+			],
+			[
+				"mixte",
+				"Première carte sans point (méthode générale) ; seconde corrigée (sans les limites) et taguée 1SPE-283 « Étudier les variations d'une fonction »"
+			],
+			[
+				"hors",
+				"Les deux sans point de 1re spé ; la seconde, telle quelle, relève plutôt de la Tle spé (limites)"
+			]
+		],
+		"reco": "mixte",
+		"pourquoi": "L'ensemble de définition n'est pas une étude de variations : la première carte n'a pas de point ; la seconde, sans les limites, décrit bien 1SPE-283 (variations d'une fonction).",
+		"consequence": "tag : 2 cartes taguées, 1 corrigée. mixte : 1 carte corrigée et taguée, 1 sans point. hors : 2 cartes sans point de 1re spé.",
+		"modeles": ["318ea542-65cb-4040-9b46-1d5803d9dee5", "bb554c62-ed89-4c2f-817b-c5aed549a469"],
+		"verdict_provisoire": "A_TRANCHER en 1re spé (1spe-b.csv), point pressenti 1SPE-283 « Étudier les variations d'une fonction » (avec doute) ; sans tag en attendant.",
+		"court": {
+			"ex": "1re spé : carte « Étude de fonction : ce qu'on cherche » → variations, extremums, limites, signe",
+			"q": "Que faire des 2 cartes de méthode (ensemble de définition ; limites hors 1re) ?",
+			"ch": {
+				"tag": "Les deux sur 1SPE-283 (variations), sans limites",
+				"mixte": "Première sans point, seconde corrigée sur 1SPE-283 (variations d'une fonction)",
+				"hors": "Les deux sans point"
+			},
+			"r": "Ensemble de définition : pas de point ; seconde carte sans limites sur 1SPE-283 (variations d'une fonction)."
+		}
+	},
+	{
+		"id": "m-1spe-b-7",
+		"lot": "1spe-b",
+		"info": false,
+		"titre": "Produit cartésien : la notation A × B est-elle questionnable (2-205 (couple, produit cartésien), et 1re spé) ?",
+		"question": "Deux modèles classés 1re spé emploient la notation A × B : « Un couple appartient-il à A × B ? » (« A = {3 ; 6 ; 9} et B = {13 ; 16}. Quels couples appartiennent à A × B ? » → (6 ; 13), (9 ; 13), (3 ; 16)) et la V4 de « Cardinal d'une réunion et d'un produit cartésien » (« Card(A × B) = ? Card(B × B) = ? »). Les bornes se contredisent : celle de 2-205 « Notion de couple et de produit cartésien de deux ensembles » (force déduite) dit « notion rencontrée seulement, aucune notation E × F citée », alors que la borne générale de 1re spé liste « couple, produit cartésien » parmi les notations ensemblistes. Faut-il admettre la notation A × B ?",
+		"citations": "BO, identique en 2de et en 1re spé : « Ils rencontrent également la notion de couple et celle de produit cartésien de deux ensembles. » Aucun point de 1re spé ne porte le produit cartésien (les deux modèles y sont HORS_PROGRAMME). En Tle spé, TSPE-306 « Principe multiplicatif : nombre d'éléments d'un produit cartésien » emploie Card(A × B) (modèle « Principe multiplicatif », TAG). Le second modèle est TAG_PAR_VARIATION en 2de : V1-V3 sur 2-207 « Notation Card(A) pour le cardinal d'un ensemble fini », V4 sur 2-205 (couple, produit cartésien).",
+		"options": [
+			[
+				"tag",
+				"Admettre la notation A × B dans 2-205 « Notion de couple et de produit cartésien de deux ensembles » et corriger la borne déduite (la borne générale de 1re spé fait foi)"
+			],
+			[
+				"modifier",
+				"Garder la borne de 2-205 (couple, produit cartésien) : écrire « l'ensemble des couples (a ; b) avec a ∈ A et b ∈ B » sans le symbole ×, et Card(A × B) en mots ; retirer « produit cartésien » des notations de la borne générale de 1re spé"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "La borne de 2-205 (couple, produit cartésien) est déduite, pas une décision ; une notion « rencontrée » sans aucun nom ne serait pas questionnable ; et la borne générale de 1re spé dit l'inverse. Trancher aligne les deux bornes.",
+		"consequence": "tag : 1 modèle tagué 2-205 (couple, produit cartésien), la V4 de l'autre aussi (scission 2-207 (Card(A)) / 2-205 toujours à faire) ; borne de 2-205 réécrite. modifier : 2 modèles à réécrire sans le symbole ×, puis 2-205 ; borne générale de 1re spé corrigée.",
+		"modeles": ["db8b5dc8-2d2d-41ed-9af5-a4f5551c6aaa", "0a1ff14f-ac73-4b9e-ab4c-a4d465c78e76"],
+		"verdict_provisoire": "A_TRANCHER en 2de (1spe-b.csv), point pressenti 2-205 « Notion de couple et de produit cartésien de deux ensembles » ; HORS_PROGRAMME en 1re spé ; sans tag en attendant.",
+		"court": {
+			"ex": "2de : « A = {3 ; 6 ; 9}, B = {13 ; 16} : quels couples sont dans A × B ? » → (6 ; 13), (9 ; 13), (3 ; 16)",
+			"q": "La notation A × B est-elle admise en 2de (2-205 (couple, produit cartésien), couple et produit cartésien) ? Deux bornes se contredisent.",
+			"ch": {
+				"tag": "Oui : A × B admis, borne de 2-205 (couple, produit cartésien) corrigée",
+				"modifier": "Non : réécrire sans ×"
+			},
+			"r": "Borne déduite contre borne générale : admettre A × B."
+		}
+	},
+	{
+		"id": "m-tspe-1",
+		"lot": "tspe",
+		"info": false,
+		"titre": "Suite majorée, minorée, bornée : quel point en Tle spé ?",
+		"question": "Le modèle de Tle spé « Suite majorée, minorée ou bornée » (aucun point aujourd'hui) : « Soit (uₙ) la suite définie pour tout entier naturel n par uₙ = n² − 9. Quelle affirmation est vraie ? » A. majorée, pas minorée · B. minorée, pas majorée · C. ni majorée ni minorée · D. bornée (réponse : B). Autres variations : a − bn, a + b/(n + 1), (−q)ⁿ avec q ∈ {2, 3, 4}, a + b(−1)ⁿ. Le BO de Tle spé n'a aucun contenu « suite majorée, minorée, bornée » ; le mot n'apparaît que dans les hypothèses de deux théorèmes.",
+		"citations": "BO Tle spé l. 550 et 559 (hypothèses de théorèmes). Le BO de 1re spé ne le définit pas non plus.",
+		"options": [
+			[
+				"tag",
+				"TSPE-384 « Théorème admis : toute suite croissante majorée (ou décroissante minorée) converge » : la notion sert d'hypothèse à ce théorème, que le modèle exerce (sans jamais l'utiliser)"
+			],
+			[
+				"large",
+				"TSPE-385 « Établir la convergence d'une suite, ou sa divergence vers +∞ ou −∞ » (outils : « monotonie et bornes »), plus large, mais aucune limite n'est établie"
+			],
+			["hors", "Pas de point : le modèle reste dans l'arbre comme prérequis"]
+		],
+		"reco": "tag",
+		"pourquoi": "La notion est exigée de fait par TSPE-384 (croissante majorée converge), dont le libellé la nomme : c'est le point le plus proche de ce que le modèle fait travailler.",
+		"consequence": "tag ou large : 1 modèle tagué. hors : 1 modèle sans point (comme aujourd'hui).",
+		"modeles": ["b59fe450-e57a-4dfc-8aa7-29337b3fa28f"],
+		"verdict_provisoire": "A_TRANCHER en Tle spé (tspe.csv), point pressenti TSPE-384 « Théorème admis : toute suite croissante majorée (ou décroissante minorée) converge » ; sans tag en attendant.",
+		"court": {
+			"ex": "Tle spé : « uₙ = n² − 9 : majorée, minorée, bornée ? » → minorée, pas majorée",
+			"q": "Qualifier une suite de majorée/minorée/bornée : quel point en Tle spé ?",
+			"ch": {
+				"tag": "TSPE-384 (croissante majorée converge)",
+				"large": "TSPE-385 (établir une convergence)",
+				"hors": "Pas de point"
+			},
+			"r": "TSPE-384 (croissante majorée converge) nomme la notion : c'est le plus proche."
+		}
+	},
+	{
+		"id": "m-tspe-2",
+		"lot": "tspe",
+		"info": false,
+		"titre": "Fonctions x ↦ cos(ax + b) et sin(ax + b) dans les points sinus et cosinus, en Tle spé",
+		"question": "Trois modèles de Tle spé. « Période de x ↦ cos(ax + b) et x ↦ sin(ax + b) » : « f(x) = sin(6x − 4). Donne la plus petite période strictement positive de f » → π/3 (aussi cos(x/5) → 10π, 5 sin(πx) → 2). « Lire la période sur la courbe d'une fonction trigonométrique » : courbe de c·cos(4x) sur [−2π ; 2π] → π/2 (aussi sin(3x), cos(x/2), sin(πx)). « Résoudre cos(2x) = a ou sin(2x) = a sur un intervalle » : « cos(2x) = √3/2 sur ]−π ; π] » → {−11π/12 ; −π/12 ; π/12 ; 11π/12}. Le BO ne parle que des fonctions sinus et cosinus elles-mêmes. Admet-on l'argument ax + b ?",
+		"citations": "TSPE-598 « Périodicité des fonctions sinus et cosinus » et TSPE-601 « Traduire graphiquement la périodicité des fonctions sinus et cosinus » sont bornés à « périodicité (2π) » ; pour TSPE-457 « Résoudre une équation du type cos(x) = a », les décisions lts-1 à lts-3 ont tranché le sinus, l'intervalle et les valeurs de a, pas l'argument. Seule ouverture du BO : TSPE-459 « Dans le cadre de la résolution de problème, notamment géométrique, étudier une fonction simple définie à partir de fonctions trigonométriques, pour déterminer des variations, un optimum », mais aucun de ces modèles ne demande variations ou optimum. Voir aussi m-1spe-a-2 (cos x = cos α, même point TSPE-457).",
+		"options": [
+			[
+				"tag",
+				"Admettre cos(ax + b) et sin(ax + b) dans les trois points : période → TSPE-598 (périodicité de sin et cos), courbe → TSPE-601 (périodicité, traduction graphique), équation → TSPE-457 (cos(x) = a)"
+			],
+			["hors", "Sinus et cosinus seulement, comme le texte l'écrit : les trois modèles sans point"],
+			[
+				"equation",
+				"Équation oui (changement de variable, TSPE-457 (cos(x) = a)), période non : deux modèles sans point"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "« Du type » désigne une famille d'équations résolues de la même façon (même lecture que lts-1), et cos(2x) = a est l'exemple le plus courant au baccalauréat. La période de cos(ax) n'est qu'un changement d'échelle. Si tu veux t'en tenir au texte, hors.",
+		"consequence": "tag : 3 modèles tagués. hors : 3 modèles sans point. equation : 1 modèle tagué TSPE-457 (cos(x) = a), 2 sans point.",
+		"modeles": [
+			"7df468d6-647c-4b59-9a6c-026a2279fd86",
+			"5072030d-8036-4621-a92b-75df54d371f9",
+			"42f091c1-35f2-47e4-8fb3-e38c1bbf0dfd"
+		],
+		"verdict_provisoire": "A_TRANCHER en Tle spé (tspe.csv), points pressentis TSPE-598 « Périodicité des fonctions sinus et cosinus », TSPE-601 « Traduire graphiquement la périodicité des fonctions sinus et cosinus », TSPE-457 « Résoudre une équation du type cos(x) = a » ; sans tag en attendant.",
+		"court": {
+			"ex": "Tle spé : « période de sin(6x − 4) » → π/3 ; « cos(2x) = √3/2 sur ]−π ; π] » → 4 solutions",
+			"q": "cos(ax + b), sin(ax + b) : admis dans les points sinus/cosinus de Tle spé ?",
+			"ch": {
+				"tag": "Oui : TSPE-598 (période), TSPE-601 (courbe), TSPE-457 (cos x = a)",
+				"hors": "Non : cos x et sin x seulement",
+				"equation": "Équation oui (TSPE-457 (cos(x) = a)), période non"
+			},
+			"r": "Changement de variable ou d'échelle : tout admettre."
+		}
+	},
+	{
+		"id": "m-tspe-3",
+		"lot": "tspe",
+		"info": false,
+		"titre": "Variables aléatoires indépendantes « données » sans expérience, en Tle spé",
+		"question": "Le modèle de Tle spé « Somme de variables aléatoires : espérance et variance » : « Deux variables aléatoires indépendantes X et Y vérifient V(X) = 9 et V(Y) = 7. Calcule V(4X + 3Y). » → 207. Autres variations : V(X + Y) avec variances décimales, V(X − Y), σ(X + Y) avec σ(X) = 8 et σ(Y) = 15 (→ 17) ; et une variation sans indépendance, E(4X + 5Y). La borne générale de Tle spé dit que les variables indépendantes sont « toujours envisagées dans le cadre de la succession d'épreuves indépendantes ». L'indépendance déclarée sans expérience est-elle dans la borne ?",
+		"citations": "Borne générale de Tle spé : toute question qui fait justifier l'indépendance de variables données a priori est hors programme. TSPE-520 « Dans le cadre de la succession d'épreuves indépendantes, exemples de variables indépendantes X, Y et relation d'additivité V(X + Y) = V(X) + V(Y) » est borné à « X, Y indépendantes issues d'une succession d'épreuves indépendantes ». Ici rien n'est à justifier, mais le cadre est absent.",
+		"options": [
+			[
+				"tag",
+				"Accepter : TSPE-527 « Calculer la variance d'une variable aléatoire, notamment en l'exprimant comme somme de variables aléatoires indépendantes » pour V2-V5, en séparant V1 (espérance, TSPE-526 « Calculer l'espérance d'une variable aléatoire, notamment en utilisant la propriété de linéarité »)"
+			],
+			[
+				"modifier",
+				"Habiller V2-V5 d'une succession d'épreuves (« X gain du premier jeu, Y du second, joué indépendamment »), puis TSPE-527 « Calculer la variance d'une variable aléatoire, notamment en l'exprimant comme somme de variables aléatoires indépendantes »"
+			],
+			["hors", "Refuser V2-V5 : sans cadre, pas de point"]
+		],
+		"reco": "tag",
+		"pourquoi": "La borne vise le cadre dans lequel on rencontre l'indépendance et interdit de la faire justifier ; une donnée « X et Y indépendantes » n'est pas une justification, et l'habillage ne changerait pas le calcul. Si tu lis « toujours envisagées dans le cadre » comme une obligation d'énoncé, modifier.",
+		"consequence": "tag : 1 modèle à scinder (V1 sur TSPE-526 (espérance, linéarité), V2-V5 sur TSPE-527 (variance d'une somme)). modifier : 4 énoncés réécrits, plus la même scission. hors : 4 variations retirées, V1 seule sur TSPE-526.",
+		"modeles": ["71cb8ab7-664a-45f6-83b0-6b0739ebb5a1"],
+		"verdict_provisoire": "A_TRANCHER en Tle spé (tspe.csv), point pressenti TSPE-527 « Calculer la variance d'une variable aléatoire, notamment en l'exprimant comme somme de variables aléatoires indépendantes » ; sans tag en attendant.",
+		"court": {
+			"ex": "Tle spé : « X, Y indépendantes, V(X) = 9, V(Y) = 7 : V(4X + 3Y) ? » → 207",
+			"q": "Indépendance déclarée sans succession d'épreuves : dans TSPE-527 (variance d'une somme) ?",
+			"ch": {
+				"tag": "Oui, TSPE-527 (variance d'une somme), V1 à part",
+				"modifier": "Habiller d'une succession d'épreuves",
+				"hors": "Non, retirer V2-V5"
+			},
+			"r": "Une donnée n'est pas une justification : accepter."
+		}
+	},
+	{
+		"id": "m-tspe-tcomp-1",
+		"lot": "tspe-tcomp",
+		"info": false,
+		"titre": "Suites arithmético-géométriques en Tle spé : quel point, ou hors programme ?",
+		"question": "Deux modèles de Tle spé et Tle compl. : « Suite arithmético-géométrique : solution constante et limite » (« u₀ = 110 et uₙ₊₁ = 0,2 uₙ + 72. Détermine la limite de (uₙ). » → 90 ; « ℓ = 2ℓ + 9 » → −9) et « … expression de uₙ en fonction de n » (« On pose vₙ = uₙ − 90 et on admet que (vₙ) est géométrique de raison 0,2. Exprime uₙ » → 20 × 0,2ⁿ + 90). En Tle compl., ils sont tagués sans difficulté (TCOMP-208 « Suites arithmético-géométriques », TCOMP-214 « Pour une récurrence arithmético-géométrique : utiliser une suite constante solution particulière pour déterminer toutes les solutions »). La Tle spé n'a aucun point « arithmético-géométrique ». Quel point en Tle spé ?",
+		"citations": "Point le plus proche : TSPE-432 « Pour une fonction continue f d'un intervalle dans lui-même, étudier une suite définie par une relation de récurrence uₙ₊₁ = f(uₙ) », rangé dans la rubrique « Continuité » (où l'on attend le théorème du point fixe). Ici f(x) = ax + b, continue de ℝ dans ℝ, ℓ en est le point fixe.",
+		"options": [
+			[
+				"tag",
+				"TSPE-432 « Pour une fonction continue f d'un intervalle dans lui-même, étudier une suite définie par une relation de récurrence uₙ₊₁ = f(uₙ) » pour les deux : f affine continue ; la suite auxiliaire n'utilise que les suites géométriques de 1re spé"
+			],
+			[
+				"hors",
+				"Hors programme en Tle spé : le BO ne nomme pas la méthode ; les modèles restent en Tle compl. seulement"
+			],
+			[
+				"partiel",
+				"Au cas par cas : les limites (V4-V5 du premier) vers TSPE-385 « Établir la convergence d'une suite, ou sa divergence vers +∞ ou −∞ », le reste hors programme (scinder)"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "C'est l'usage des sujets de Tle spé, et la borne de TSPE-432 (suite uₙ₊₁ = f(uₙ), f continue) est respectée (f continue d'un intervalle dans lui-même).",
+		"consequence": "tag : 2 modèles tagués TSPE-432 (suite uₙ₊₁ = f(uₙ), f continue) en plus de leur point de Tle compl. hors : seulement Tle compl. partiel : 1 modèle scindé, 1 sans point de Tle spé.",
+		"modeles": ["81ff485d-b40a-4778-bb95-43c3c17818f2", "9f14d672-e460-4161-a9bf-da2b06f734f3"],
+		"verdict_provisoire": "A_TRANCHER en Tle spé (tspe-tcomp.csv), point pressenti TSPE-432 « Pour une fonction continue f d'un intervalle dans lui-même, étudier une suite définie par une relation de récurrence uₙ₊₁ = f(uₙ) » ; TAG en Tle compl.",
+		"court": {
+			"ex": "Tle spé : « u₀ = 110, uₙ₊₁ = 0,2uₙ + 72 : limite ? » → 90",
+			"q": "Suites arithmético-géométriques : un point en Tle spé (TSPE-432 (suite uₙ₊₁ = f(uₙ), f continue), récurrence uₙ₊₁ = f(uₙ)) ?",
+			"ch": {
+				"tag": "Oui, TSPE-432 (suite uₙ₊₁ = f(uₙ), f continue)",
+				"hors": "Non, Tle compl. seulement",
+				"partiel": "Limites seules sur TSPE-385 (convergence)"
+			},
+			"r": "Usage des sujets de Tle spé, borne respectée : TSPE-432 (suite uₙ₊₁ = f(uₙ), f continue)."
+		}
+	},
+	{
+		"id": "m-tspe-tcomp-2",
+		"lot": "tspe-tcomp",
+		"info": false,
+		"titre": "Seuil par le logarithme : un modèle « ln » peut-il viser la Tle techno ?",
+		"question": "Le modèle de Tle spé et Tle compl. « Seuil : plus petit entier n tel que qⁿ dépasse une valeur (logarithme) », jugé contre la Tle techno. V1 : « Détermine le plus petit entier naturel n tel que 0,9ⁿ < 0,001. » → 66. V2 : « Cₙ = 5 000 × 1,03ⁿ. Plus petit n tel que Cₙ ⩾ 10 000 ? » → 24. V3 : « uₙ = 90 − 29 × 0,9ⁿ ; plus petit n tel que uₙ > 89 » → 32. Les énoncés ne citent aucun logarithme et entrent dans TTECHNO-085 « Utiliser le logarithme décimal pour résoudre une inéquation du type aⁿ < b d'inconnue n entier naturel » ; mais le titre dit « (logarithme) » et le sous-titre « qⁿ < s ⟺ n > ln(s)/ln(q) », alors que la voie techno n'a ni exp ni ln.",
+		"citations": "Borne générale de Tle techno : ni exp ni ln. Le relevé ne montre pas le corrigé ; s'il passe par ln, l'élève de techno voit une fonction qu'il ne connaît pas. En Tle spé, le modèle est tagué TSPE-596 (inéquation par le logarithme).",
+		"options": [
+			[
+				"tag",
+				"Taguer TTECHNO-085 « Utiliser le logarithme décimal pour résoudre une inéquation du type aⁿ < b d'inconnue n entier naturel » tel quel : l'énoncé est neutre, l'élève peut résoudre au log"
+			],
+			[
+				"jumeau",
+				"Ne pas taguer en Tle techno ; écrire un modèle jumeau « au logarithme décimal », tagué TTECHNO-085 « Utiliser le logarithme décimal pour résoudre une inéquation du type aⁿ < b d'inconnue n entier naturel »"
+			],
+			[
+				"corrige",
+				"Corrigé à deux voies (ln ou log), puis TTECHNO-085 « Utiliser le logarithme décimal pour résoudre une inéquation du type aⁿ < b d'inconnue n entier naturel »"
+			]
+		],
+		"reco": "jumeau",
+		"pourquoi": "Si le corrigé passe par ln (à vérifier dans le modèle), un jumeau en log évite de montrer ln en techno ; sinon, tag.",
+		"consequence": "tag : 1 modèle reçoit en plus TTECHNO-085 (logarithme décimal, aⁿ < b). jumeau : 1 modèle à écrire (Tle techno). corrige : 1 corrigé à réécrire, puis TTECHNO-085.",
+		"modeles": ["f1963ef2-4618-4ae7-9491-9955dacd0258"],
+		"verdict_provisoire": "A_TRANCHER en Tle techno (tspe-tcomp.csv), point pressenti TTECHNO-085 « Utiliser le logarithme décimal pour résoudre une inéquation du type aⁿ < b d'inconnue n entier naturel » ; aucun point de Tle techno en attendant.",
+		"court": {
+			"ex": "Tle techno ? « plus petit n tel que 0,9ⁿ < 0,001 » → 66",
+			"q": "Un modèle de seuil titré « ln » peut-il porter TTECHNO-085 (logarithme décimal) ?",
+			"ch": {
+				"tag": "Oui, tel quel",
+				"jumeau": "Non : jumeau en log pour la techno",
+				"corrige": "Corrigé ln ou log, puis TTECHNO-085 (logarithme décimal, aⁿ < b)"
+			},
+			"r": "Pas de ln en techno : un jumeau en log."
+		}
+	},
+	{
+		"id": "m-tspe-tcomp-3",
+		"lot": "tspe-tcomp",
+		"info": false,
+		"titre": "Intégrales de signe quelconque en Tle compl. : Chasles, valeurs négatives, bornes inversées",
+		"question": "Le modèle de Tle compl. « Relation de Chasles pour les intégrales » : V2 « ∫₋₄³ f = 9 et ∫₋₄¹ f = −8 ; ∫₁³ f = ? » → 17 ; V3 « ∫₋₃⁴ f = 9 ; ∫₄⁻³ f = ? » → −9. En Tle compl., l'intégrale est définie pour une fonction continue et positive, et le signe quelconque n'est qu'une « présentation ». Le modèle tire des intégrales négatives (p, q, r de −9 à 9) et V3 inverse les bornes, ce que le BO de Tle compl. n'écrit nulle part. La même réponse vaut pour la V1 de « Encadrer une intégrale ou une valeur moyenne » (m de −3 à 3 dans m ⩽ f ⩽ M) et la V1 de « Calculer une intégrale à l'aide d'une primitive » (intégrales de mx + p, négatives possibles).",
+		"citations": "TCOMP-266 « Définition de l'intégrale d'une fonction continue et positive sur [a, b] comme aire sous la courbe. Notation ∫ₐᵇ f(x) dx » ; TCOMP-267 « Relation de Chasles » sur la même ligne du BO ; TCOMP-271 « Présentation de l'intégrale des fonctions continues de signe quelconque » ; TCOMP-272 « Théorème : si f est continue sur [a, b], la fonction F définie sur [a, b] par F(x) = ∫ₐˣ f(t) dt est dérivable sur [a, b] et a pour dérivée f » et TCOMP-273 « Calcul d'intégrales à l'aide de primitives : si F est une primitive de f, alors ∫ₐᵇ f(x) dx = F(b) − F(a) » parlent d'une fonction continue, sans condition de signe.",
+		"options": [
+			[
+				"tag",
+				"Taguer TCOMP-267 « Relation de Chasles » tel quel : le signe quelconque est présenté dans l'année, et F(b) − F(a) donne aussitôt les valeurs négatives et l'inversion des bornes"
+			],
+			[
+				"modifier",
+				"Intégrales positives seulement : p, q > 0 et r > p, retirer V3 ; restreindre de même m ⩾ 0 (encadrement) et l'intégrande positif (primitive)"
+			],
+			["mixte", "Garder les valeurs négatives (V1, V2), retirer V3 (bornes inversées)"]
+		],
+		"reco": "tag",
+		"pourquoi": "La « présentation » du signe quelconque rend ces calculs naturels, et la Tle compl. calcule F(b) − F(a) sans condition de signe. Si tu préfères la lettre du BO : mixte.",
+		"consequence": "tag : 3 modèles tagués tels quels (TCOMP-267 (relation de Chasles) ; les deux autres gardent leur verdict). modifier : 3 modèles restreints, 1 variation retirée. mixte : 1 variation retirée.",
+		"modeles": [
+			"3b396d9c-5e35-42dd-8c21-f63323418f37",
+			"dd0ee69a-2203-47a3-b2b8-af70a77281d3",
+			"b52c53d8-df28-48a3-b494-56fb1cd72009"
+		],
+		"verdict_provisoire": "A_TRANCHER en Tle compl. (tspe-tcomp.csv), point pressenti TCOMP-267 « Relation de Chasles » ; les deux autres modèles sont TAG / TAG_PAR_VARIATION sous réserve de cette question.",
+		"court": {
+			"ex": "Tle compl. : « ∫₋₃⁴ f = 9 ; ∫₄⁻³ f ? » → −9",
+			"q": "Intégrales négatives et bornes inversées en Tle compl. (intégrale définie pour f positive) ?",
+			"ch": {
+				"tag": "Tout accepter (TCOMP-267 (relation de Chasles), Chasles)",
+				"modifier": "Intégrales positives seulement",
+				"mixte": "Négatives oui, bornes inversées non"
+			},
+			"r": "Le signe quelconque est présenté dans l'année : tout accepter."
+		}
+	},
+	{
+		"id": "m-texp-1",
+		"lot": "texp",
+		"info": false,
+		"titre": "Argument non remarquable obtenu par calcul, en Tle expertes",
+		"question": "Le modèle de Tle expertes « Produit, quotient, puissance et inverse sous forme exponentielle » : « Soit z₁ = 9e^{−iπ/12} et z₂ = 3e^{−2iπ/3}. Écris z₁/z₂ sous forme exponentielle, avec l'argument principal » → 3e^{7iπ/12}. V1 (produit), V2 (quotient) et V4 (inverse) tirent des arguments kπ/12, k de −11 à 11 (π/12, 5π/12, 7π/12, 11π/12) ; V3 (puissance, multiples de π/6) n'est pas concernée. Même situation dans la V4 de « Racines n-ièmes de l'unité et polygones réguliers » (« ω = e^{2iπ/7}. Argument principal de ω¹⁰ ? » → 6π/7, n de 5 à 8). La décision lte-2 s'applique-t-elle ?",
+		"citations": "Décision lte-2 : « Argument exact attendu seulement quand cos θ et sin θ sont des valeurs remarquables (multiples de π/6 et π/4) ». Ici l'argument n'est pas lu sur cos θ et sin θ : il est donné, et s'obtient par somme ou différence. Point visé : TEXP-239 « Effectuer des calculs sur des nombres complexes en choisissant une forme adaptée, en particulier dans le cadre de la résolution de problèmes » ; pour les racines de l'unité, TEXP-257 « Racines n-ièmes de l'unité. Description de l'ensemble 𝕌ₙ des racines n-ièmes de l'unité ». L'argument π/12 est au programme par ailleurs (cos π/12 par la formule d'addition).",
+		"options": [
+			[
+				"tag",
+				"lte-2 ne vise que l'argument à déterminer à partir de cos θ et sin θ : TEXP-239 « Effectuer des calculs sur des nombres complexes en choisissant une forme adaptée, en particulier dans le cadre de la résolution de problèmes » tel quel, et la V4 des racines de l'unité reste dans TEXP-257 (racines n-ièmes de l'unité)"
+			],
+			[
+				"modifier",
+				"lte-2 vaut pour tout argument exact attendu : arguments multiples de π/6 et π/4 seulement (données et résultats) ; racines de l'unité avec n ∈ {3, 4, 6, 8}"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "La décision répond à « quelles valeurs exactes de cos et sin connaître » ; ajouter π/3 et −π/4 ne demande aucune trigonométrie.",
+		"consequence": "tag : 1 modèle tagué TEXP-239 (calculs sur les complexes), l'autre inchangé. modifier : 2 modèles à restreindre (3 variations et 1 variation).",
+		"modeles": ["bbd211a5-536a-4d7a-bc3e-4d578d9caf68", "2bf66851-c1e0-4531-b2eb-153803a573bf"],
+		"verdict_provisoire": "A_TRANCHER en Tle expertes (texp.csv), point pressenti TEXP-239 « Effectuer des calculs sur des nombres complexes en choisissant une forme adaptée, en particulier dans le cadre de la résolution de problèmes » ; le second modèle est TAG_PAR_VARIATION ; sans tag en attendant.",
+		"court": {
+			"ex": "Tle expertes : « 9e^{−iπ/12} / 3e^{−2iπ/3} » → 3e^{7iπ/12}",
+			"q": "Arguments en π/12 obtenus par calcul : dans TEXP-239 (calculs sur les complexes) malgré lte-2 (valeurs remarquables) ?",
+			"ch": {
+				"tag": "Oui : lte-2 ne vise que l'argument lu sur cos et sin",
+				"modifier": "Non : multiples de π/6 et π/4 seulement"
+			},
+			"r": "Aucune trigonométrie en jeu : accepter."
+		}
+	},
+	{
+		"id": "m-texp-2",
+		"lot": "texp",
+		"info": false,
+		"titre": "« P à coefficients réels : si z est racine, z̄ l'est aussi », en Tle expertes",
+		"question": "Deux modèles de Tle expertes visent TEXP-246 « Un polynôme de degré n admet au plus n racines » (borne : « un polynôme de degré n a au plus n racines »). « Racines d'un polynôme : compter les solutions… », V1 : « P est un polynôme de degré 4 à coefficients réels tel que P(−4 + 3i) = 0 et P(5i) = 0. Donne ses deux autres racines » → −4 − 3i et −5i. « Nombre de racines d'un polynôme, racines conjuguées », V3 (QCM) : « P à coefficients RÉELS, P(−4 + 5i) = 0. Quel autre nombre est forcément une racine ? » → −4 − 5i ; V4 : « P de degré 7 à coefficients RÉELS. Que peut-on affirmer ? » → « P a au moins une racine réelle ». La propriété des racines conjuguées n'est écrite au BO que pour le degré 2.",
+		"citations": "TEXP-243 « Solutions complexes d'une équation du second degré à coefficients réels » (degré 2 seulement). La propriété générale se démontre avec TEXP-203 « Conjugaison. Propriétés algébriques de la conjugaison », mais n'est ni un contenu ni une capacité. Degré impair ⇒ racine réelle en découle (ou du TVI de Tle spé). Indépendamment de la question : la V1 du second modèle écrit « P de degré n à coefficients complexes », hors borne générale (coefficients complexes : TEXP-364 « Équation du second degré à coefficients complexes ») ; à corriger dans tous les cas en « à coefficients réels ». Précédent : la décision lte-7 fait rappeler la formule ad − bc.",
+		"options": [
+			[
+				"tag",
+				"Propriété admise comme application directe de la conjugaison : premier modèle TEXP-246 « Un polynôme de degré n admet au plus n racines » tel quel ; second modifié (V1 seulement) puis TEXP-246"
+			],
+			[
+				"hors",
+				"Hors programme : retirer la V1 du premier ; second avec V1 corrigée, V3 et V4 retirées"
+			],
+			[
+				"rappel",
+				"Admise seulement si l'énoncé rappelle la propriété (« on admet que… le conjugué d'une racine est racine ») ; V4 retirée ou munie du même rappel"
+			]
+		],
+		"reco": "rappel",
+		"pourquoi": "Garde les variations utiles sans exiger un résultat que le BO ne nomme pas, comme lte-7 pour ad − bc.",
+		"consequence": "tag : 2 modèles tagués TEXP-246 (au plus n racines), avec 1 correction de V1. hors : 2 modèles amputés (1 et 2 variations). rappel : 3 énoncés à compléter d'un rappel (ou V4 retirée), V1 corrigée, puis TEXP-246.",
+		"modeles": ["293f8225-0268-48bc-8487-52c6bf5b01e3", "6ff00846-f06d-49f3-b6cb-336821ea8649"],
+		"verdict_provisoire": "A_TRANCHER en Tle expertes (texp.csv), point pressenti TEXP-246 « Un polynôme de degré n admet au plus n racines » ; sans tag en attendant.",
+		"court": {
+			"ex": "Tle expertes : « P réel de degré 4, P(−4 + 3i) = P(5i) = 0 : autres racines ? » → −4 − 3i et −5i",
+			"q": "Racines conjuguées au-delà du degré 2 (non écrit au BO) : dans TEXP-246 (au plus n racines) ?",
+			"ch": {
+				"tag": "Oui, propriété admise",
+				"hors": "Non, retirer ces variations",
+				"rappel": "Oui, si l'énoncé la rappelle"
+			},
+			"r": "Avec un rappel dans l'énoncé, comme ad − bc."
+		}
+	},
+	{
+		"id": "m-texp-3",
+		"lot": "texp",
+		"info": false,
+		"titre": "Modèles de modélisation sur un point-compétence, en Tle expertes",
+		"question": "Trois modèles de Tle expertes visent TEXP-335 « Modéliser une situation par un graphe » et TEXP-336 « Modéliser une situation par une matrice », dont la borne dit : « Point-compétence (modéliser) : pas de grain questionnable propre, il se travaille dans les autres points ; aucune borne. » Exemples : « Dans un groupe de 7 personnes, chacune affirme avoir exactement 3 amis (l'amitié est réciproque). Est-ce possible ? » → non (somme des degrés impaire) ; cinq villes reliées par 7 lignes de bus → ordre 5, degré de B 4, 7 arêtes, 3 lignes à ajouter pour un graphe complet ; « u_{n+2} = 3u_{n+1} − 2u_n ; avec X_n = (u_{n+1} ; u_n), donne A telle que X_{n+1} = AX_n ». Toutes les variations restent dans les bornes générales. Seule question : quel point les porte ?",
+		"citations": "Points de savoir voisins : TEXP-312 « Graphe, sommets, arêtes », TEXP-313 « Exemple du graphe complet », TEXP-314 « Degré », TEXP-324 « Représentation matricielle des systèmes linéaires », TEXP-325 « Représentation matricielle des suites récurrentes ».",
+		"options": [
+			[
+				"tag",
+				"Garder TEXP-335 (modéliser par un graphe) et TEXP-336 (modéliser par une matrice) : la tâche est de traduire une situation"
+			],
+			[
+				"savoir",
+				"Retaguer sur les points de savoir : graphe → TEXP-312 (graphe, sommets, arêtes) / 313 / 314 par variation, matrice → TEXP-324 (matrices et systèmes) / 325 ; deux modèles deviennent TAG_PAR_VARIATION, le réseau de villes seul TEXP-314 (degré)"
+			]
+		],
+		"reco": "tag",
+		"pourquoi": "Les modèles sont construits autour de la traduction d'une situation, et l'option savoir disperse chacun sur deux ou trois points. La note de la borne s'écrivait sans modèle en vue.",
+		"consequence": "tag : 3 modèles tagués TEXP-335 (modéliser par un graphe) ou TEXP-336 (modéliser par une matrice). savoir : 2 modèles à scinder (2 à 3 points chacun), 1 tagué TEXP-314 (degré).",
+		"modeles": [
+			"1f88d29a-086b-4fc9-9b28-debca396c697",
+			"41eb477b-89b6-487c-9951-a5393caacc46",
+			"7d094336-5d95-4530-9374-7d767348f456"
+		],
+		"verdict_provisoire": "A_TRANCHER en Tle expertes (texp.csv), points pressentis TEXP-335 « Modéliser une situation par un graphe » (×2) et TEXP-336 « Modéliser une situation par une matrice » ; sans tag en attendant.",
+		"court": {
+			"ex": "Tle expertes : « 7 personnes ayant chacune 3 amis : possible ? » → non",
+			"q": "Modèles de modélisation : sur le point-compétence TEXP-335 (modéliser par un graphe) / 336 (modéliser) malgré sa borne ?",
+			"ch": {
+				"tag": "Oui, TEXP-335 (graphe) / TEXP-336 (matrice)",
+				"savoir": "Non : points de savoir (graphe, degré, représentation matricielle)"
+			},
+			"r": "La tâche est de modéliser : garder TEXP-335 (modéliser par un graphe) / 336."
+		}
+	},
+	{
+		"id": "m-transversal-1",
+		"lot": "transversal",
+		"info": true,
+		"titre": "Raisonnements de 1re spé : le BO en cite quatre, l'arbre n'en a qu'un (information)",
+		"question": "Pas de question. Le BO de 1re spé écrit que les élèves « produisent des raisonnements par disjonction des cas, par l'absurde, par contraposée, et en découvrent la structure », et cite le contre-exemple. Mais le seul point de raisonnement de 1re spé dans l'arbre est 1SPE-205 « Produire un raisonnement par contraposée » (point-compétence). Les autres types n'ont de point qu'en 2de : 2-212 « Mobiliser un contre-exemple pour montrer qu'une proposition est fausse », 2-216 « Produire un raisonnement par disjonction des cas », 2-217 « Produire un raisonnement par l'absurde ». Conséquence dans la passe : trois modèles classés 1re spé sont HORS_PROGRAMME en 1re spé et ne reçoivent qu'un point de 2de (ou aucun) : « Reconnaître un type de raisonnement » (direct, absurde, contraposée, disjonction des cas, contre-exemple : 1SPE-205 ne couvre qu'une des cinq réponses), « Donner un contre-exemple » (TAG 2-212 « Mobiliser un contre-exemple pour montrer qu'une proposition est fausse » en 2de), « Implication, réciproque, contraposée » (seule la V4, contraposée, toucherait 1SPE-205).",
+		"citations": "Justifications de 1spe-a.csv et 1spe-b.csv. Principe de l'ADR 0020 : le BO est immuable, un point par phrase du BO.",
+		"options": [],
+		"reco": "",
+		"pourquoi": "Information : un écart entre le BO de 1re spé et les points de l'arbre, pas entre un modèle et ses bornes.",
+		"consequence": "Aucune dans cette passe. Si tu veux ces raisonnements en 1re spé, il faudrait créer des points (disjonction des cas, absurde, contre-exemple) dans le programme de 1re spé, ce qui est une décision sur l'arbre, à prendre à part.",
+		"modeles": [
+			"93f9ecdf-9166-486d-8fca-42e380a664f2",
+			"f98164b1-031d-4ff9-8d16-8c97ebe485f6",
+			"5426cead-c0c2-48d3-a10b-2e46714f9129"
+		],
+		"verdict_provisoire": "HORS_PROGRAMME en 1re spé pour les trois ; en 2de : 2-212 (contre-exemple) pour le contre-exemple."
+	},
+	{
+		"id": "m-transversal-2",
+		"lot": "transversal",
+		"info": true,
+		"titre": "Les tags actuels sont souvent posés sur un point voisin (information)",
+		"question": "Pas de question. Sur les 351 lignes où les agents ont confirmé un TAG dans un programme où le modèle avait déjà un tag, 75 (21 %) retiennent un autre point que le tag actuel : 3 sur 31 en 2de, 39 sur 147 en 1re spé (lots 1spe-a et 1spe-b), 31 sur 135 en Tle spé et Tle compl., 2 sur 38 en Tle expertes. Le plus souvent, le tag actuel est un point voisin de la même rubrique. Trois exemples. (1) Calcul de termes d'une suite récurrente en 1re spé : 4 modèles « Calculer un terme » portent 1SPE-223 « Calculer des termes d'une suite définie explicitement » alors que ce sont des récurrences (1SPE-377 « Calculer des termes d'une suite définie par récurrence ») ; 2 sont TAG 1SPE-377, les 2 autres attendent m-1spe-a-4. (2) Équations du second degré en 1re spé : 4 modèles (racine double, nombre de racines, racines par le discriminant) portent 1SPE-248 « Discriminant d'une fonction polynôme du second degré » au lieu de 1SPE-386 « Résolution d'une équation du second degré ». (3) Exponentielle en 1re spé : 4 modèles de tangente ou de dérivée portent 1SPE-289 « Définition de la fonction exponentielle comme unique fonction dérivable sur ℝ vérifiant f′ = f et f(0) = 1 (existence et unicité admises) ; notation exp(x) » au lieu de 1SPE-272 « Déterminer l'équation de la tangente en un point à la courbe représentative d'une fonction » ou 1SPE-274 « Dans des cas simples, calculer une fonction dérivée en utilisant les propriétés des opérations sur les fonctions dérivables ». Autre cas typique, en Tle spé : lire un vecteur normal sur une équation de plan est tagué TSPE-368 « Reconnaitre un plan donné par une équation cartésienne » au lieu de TSPE-565 « Préciser un vecteur normal à un plan donné par une équation cartésienne ».",
+		"citations": "Comptage sur les colonnes code et tags_actuels de 2de.csv, 1spe-a.csv, 1spe-b.csv, tspe.csv, tspe-tcomp.csv, texp.csv (lignes TAG, même programme que le tag actuel). Les tags actuels datent de l'étape 2 de l'ancien chantier, antérieure aux principes du 2026-10-17 (CONSIGNE.md).",
+		"options": [],
+		"reco": "",
+		"pourquoi": "Information : confirme que les tags actuels ne sont qu'une piste ; les nouveaux points sont dans les CSV, à valider par programme.",
+		"consequence": "Aucune question : ces 75 retags passent par la validation des verdicts de chaque programme (partie 2 de la page).",
+		"modeles": [
+			"79d69593-e815-496c-b429-637a1cd68b4d",
+			"f36ce3ff-9ae5-435e-b6c2-affe0ad902ec",
+			"0495289a-abb1-4fed-b058-5e924a5f05ed",
+			"1239554b-d442-4be6-8867-d9dc38311999",
+			"25a7549a-34f5-4afc-a97d-d61c0a9efe4d",
+			"32993a13-829a-4876-bfe2-965c4a404d03",
+			"c2e70ba1-08e2-4d6e-ba97-9194e2d2109d",
+			"f69a6e9e-28cf-46e3-b823-5712a2e028d9",
+			"15d3aaa0-5eef-4c08-a38c-5b5c8d5ed6e1",
+			"496f958d-4733-45a2-be3c-243dc9f7dd66",
+			"9765d776-cc70-4472-95e9-1c0d05396584",
+			"cffdd283-49ee-4292-b8ca-b6096b8b1ae2",
+			"91c7b083-8714-4559-9a6e-8e9fe86b59bd"
+		],
+		"verdict_provisoire": "TAG sur le nouveau point dans les CSV (à valider avec les verdicts du programme)."
+	}
+]

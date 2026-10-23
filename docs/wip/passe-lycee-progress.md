@@ -6,19 +6,20 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, étape d lancée._
+_Mis à jour le 2026-10-23, étape d faite, page à cocher de l'étape e publiée._
 
-- **État** : étapes a, b, c faites. Relevé : `passe-lycee/releves/` (432 modèles de niveau lycée, 300 tirages par
-  variation, `LISEZMOI.md`). Bornes : `passe-lycee/bornes/<programme>.json`.
-- **Prochaine action** : étape d en cours, 6 agents Opus (`passe-lycee/analyse/CONSIGNE.md`, `lots.csv`) ; à la
-  fin : consolider les CSV, contrôler, puis page à cocher (étape e).
-- **En attente de David** : rien.
-- **Pièges en cours** : migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031, `libelle_corrige`)
-  et 2 points neufs (exponentielle, à côté de TSPE-444 et TCOMP-236, `point_neuf`). Automatisme 1re spé
-  « déterminer graphiquement … son tableau de variations » (BO l. 274) sans point. 85 points techno sans borne ;
-  1SPE-244 à re-ranger ; `undoLaterMigrations` à compléter. Générateurs `bornes/generateurs/` non relançables.
-  Modèle `9a6087c5` (systèmes, Tle expertes) : 2 % d'échecs de génération. Instantané des modèles : MCP seulement
-  (clé de service refusée par le classifieur).
+- **État** : étapes a-d faites. Verdicts : `passe-lycee/analyse/<lot>.csv` (7 CSV, 650 lignes modèle × programme,
+  contrôlés : couverture, codes, programme) ; 31 questions dans `analyse/questions-modeles.json`. Page à cocher :
+  https://claude.ai/artifact/7b9nk1aKzy8xMwNPpr5a3A (générateur `analyse/page/gen.mjs`, collections `questions`,
+  `niveaux` = programmes, `modeles` = `<template_id>__<programme>`).
+- **Prochaine action** : lire les réponses de David (ArtifactData `list` des 3 collections), les reporter dans les CSV,
+  puis lister les modifications de modèles et préparer la migration des tags (étape e).
+- **En attente de David** : la page à cocher.
+- **Pièges en cours** : migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031) et 2 points neufs
+  (exponentielle, à côté de TSPE-444 et TCOMP-236). Automatisme 1re spé BO l. 274 sans point. 85 points techno sans
+  borne ; 1SPE-244 à re-ranger ; `undoLaterMigrations` à compléter. Modèle `9a6087c5` : 2 % d'échecs. Instantané des
+  modèles : MCP seulement (clé de service refusée par le classifieur). Points de raisonnement absents en 1re spé
+  (question m-transversal-1).
 - **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes` (sans commit propre, en
   retard sur `main` : les commits partent sur `main`).
 
@@ -109,3 +110,13 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   lycée où sa tâche existe (1re ES, techno compris), au plus un point par programme, en inclusion stricte contre les
   bornes de chacun. Consigne `passe-lycee/analyse/CONSIGNE.md` (celle du collège, adaptée) ; 6 lots (`lots.csv`) :
   2de 37, 1re spé 101 + 101, Tle spé 71, Tle spé + compl. 65, Tle expertes 57.
+- **2026-10-23 — Étape d : verdicts.** 6 agents Opus + 1 de rattrapage (lot 1re spé a contre la 2de, oublié dans mon
+  brief). 650 lignes : 445 TAG, 72 TAG_PAR_VARIATION, 52 MODIFIER, 46 A_TRANCHER (+4 au rattrapage), 25
+  HORS_PROGRAMME. Contrôles par script : chaque lot couvre exactement ses modèles, une ligne par programme de niveau,
+  aucun doublon, tous les codes existent et sont du bon programme. Constats : 21 % des tags actuels retiennent un
+  autre point (souvent un voisin d'avant le découpage) ; découpage fin → beaucoup de TAG_PAR_VARIATION (Tle compl.
+  surtout) ; bornes contradictoires sur le produit cartésien (question m-1spe-b-7) ; anomalies de modèles notées dans
+  les notes (f796ffc0 V4 choix identiques, e02fb162 V1 signe manquant, 0d2edda7 réponse figée…). Incident : agents en
+  parallèle dans un même dossier temporaire, un a écrasé la liste d'un autre (repris, vérifié).
+- **2026-10-23 — Étape e : page à cocher publiée.** Questions mises en forme par un agent Opus (31 dont 2 pour
+  information, aucune A_TRANCHER orpheline) ; générateur du collège adapté (une ligne par modèle et programme).
