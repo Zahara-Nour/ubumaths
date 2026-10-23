@@ -20,6 +20,11 @@
  * Passe lycée (docs/wip/passe-lycee/analyse/lot-modifier.md) : un modèle peut déjà porter des tags
  * (`tags_avant`), que la migration exige et laisse ; un modèle neuf peut avoir son propre nœud
  * (`scission.noeud`, point sur une sous-notion voisine).
+ *
+ * Lot des scissions de la passe lycée (docs/wip/passe-lycee/analyse/scissions_outils.py) : la
+ * fixture donne `tags` (plusieurs tags posés) et `neufs` (plusieurs modèles neufs, chacun avec ses
+ * `tags`) au lieu de `tag` et `scission`, et une origine peut changer de nœud (`noeud_apres`, R2).
+ * Les deux formes sont ramenées à la seconde (`normaliser`).
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -45,11 +50,43 @@ interface Contenu {
 	options?: unknown;
 }
 
+interface Tag {
+	grade: string;
+	code: string;
+}
+
+/** Modèle de la fixture, sous l'une ou l'autre forme (lots d'avant, ou scissions de la passe lycée). */
+interface ModeleFixture {
+	id: string;
+	noeud: string[];
+	/** Nœud d'arrivée (R2) : les points du modèle vivent ailleurs ; absent : il ne bouge pas. */
+	noeud_apres?: string[];
+	grades: string[];
+	tag?: Tag;
+	tags?: Tag[];
+	tags_avant?: Tag[];
+	tag_seul?: true;
+	avant: Contenu;
+	apres: Contenu;
+	categorie?: Categorie;
+	scission?: NeufFixture & { tag: Tag };
+	neufs?: (NeufFixture & { tags: Tag[] })[];
+}
+
+interface NeufFixture {
+	id: string;
+	niveau: number;
+	contenu: Contenu;
+	noeud?: string[];
+}
+
 interface Modele {
 	id: string;
 	noeud: string[];
+	noeud_apres?: string[];
 	grades: string[];
-	tag: { grade: string; code: string };
+	/** Tags posés par la migration sur le modèle. */
+	tags: Tag[];
 	/** Tags que le modèle porte déjà (passe lycée) : posés avant, gardés après et au rollback. */
 	tags_avant?: { grade: string; code: string }[];
 	/** Tag posé sans changer le contenu (passe lycée, lot C) : `apres` = `avant`, `updated_at` gardé. */
@@ -61,15 +98,8 @@ interface Modele {
 	 * modèles publiés ne partagent pas une catégorie (idx_question_templates_unique_category).
 	 */
 	categorie?: Categorie;
-	/** Lot de scissions : le modèle neuf qui reçoit l'autre partie du contenu. */
-	scission?: {
-		id: string;
-		niveau: number;
-		tag: { grade: string; code: string };
-		contenu: Contenu;
-		/** Nœud propre (point sur une sous-notion voisine) ; absent : celui de l'origine. */
-		noeud?: string[];
-	};
+	/** Lot de scissions : les modèles neufs qui reçoivent les autres parties du contenu. */
+	neufs: Omit<Neuf, 'origine'>[];
 }
 
 interface Categorie {
@@ -85,14 +115,16 @@ interface Neuf {
 	origine: string;
 	/** Niveau du modèle neuf dans la catégorie de son origine. */
 	niveau: number;
-	tag: { grade: string; code: string };
+	tags: Tag[];
 	contenu: Contenu;
+	/** Nœud propre (point ailleurs que sur le nœud de l'origine) ; absent : celui de l'origine. */
 	noeud?: string[];
 }
 
 interface Etat {
 	contenus: Map<string, Contenu>;
 	dates: Map<string, string>;
+	noeuds: Map<string, string>;
 	tags: string[];
 }
 
@@ -114,6 +146,8 @@ export interface LotModifier {
 	gardeRangementNeufs?: boolean;
 	/** Nombre de modèles tagués sans changer de contenu (`tag_seul` dans la fixture). */
 	tagsSeuls?: number;
+	/** Nombre d'origines qui changent de nœud (R2, `noeud_apres` dans la fixture). */
+	deplaces?: number;
 }
 
 // ============================================================================
@@ -140,6 +174,20 @@ const PROPRES = [
 // ============================================================================
 // FONCTIONS
 // ============================================================================
+
+/** Ramène un modèle de la fixture à la forme des scissions (listes de tags et de neufs). */
+function normaliser(m: ModeleFixture): Modele {
+	const { tag, tags, scission, neufs, ...reste } = m;
+	return {
+		...reste,
+		tags: tags ?? (tag ? [tag] : []),
+		neufs: neufs ?? (scission ? [neufDeScission(scission)] : [])
+	};
+}
+
+function neufDeScission({ tag, ...neuf }: NeufFixture & { tag: Tag }): Omit<Neuf, 'origine'> {
+	return { ...neuf, tags: [tag] };
+}
 
 /** Nœuds actifs par chemin (« branche > notion > sous-notion »). */
 async function noeudsParChemin(pg: Client): Promise<Map<string, string>> {
@@ -220,8 +268,10 @@ function tagsAvant(modeles: Modele[]): string[] {
 }
 
 async function lireEtat(pg: Client, ids: string[], avecOptions: boolean): Promise<Etat> {
-	const q = await pg.query<Contenu & { id: string; updated_at: Date }>(
-		`select id, title, description, variations, shared, test_specs, options, updated_at
+	const q = await pg.query<
+		Contenu & { id: string; updated_at: Date; classification_node_id: string }
+	>(
+		`select id, title, description, variations, shared, test_specs, options, updated_at, classification_node_id
 		   from public.question_templates where id = any($1::uuid[])`,
 		[ids]
 	);
@@ -245,6 +295,7 @@ async function lireEtat(pg: Client, ids: string[], avecOptions: boolean): Promis
 			])
 		),
 		dates: new Map(q.rows.map((r) => [r.id, r.updated_at.toISOString()])),
+		noeuds: new Map(q.rows.map((r) => [r.id, r.classification_node_id])),
 		tags: t.rows.map((r) => `${r.template_id}§${r.grade}§${r.code}`).sort()
 	};
 }
@@ -306,13 +357,14 @@ function ecarts(modeles: Modele[], etat: Etat, attendu: (m: Modele) => Contenu):
 
 /** Les deux suites d'un lot : le chemin nominal (contenu, tags, rollback) et les branches d'échec. */
 export function decrireLotModifier(lot: LotModifier): void {
-	const { modeles }: { modeles: Modele[] } = JSON.parse(readFileSync(lot.fixture, 'utf-8'));
+	const fixture: { modeles: ModeleFixture[] } = JSON.parse(readFileSync(lot.fixture, 'utf-8'));
+	const modeles = fixture.modeles.map(normaliser);
 	const ids = modeles.map((m) => m.id);
 	const n = lot.taille;
 	const avecOptions = modeles.some((m) => 'options' in m.avant);
-	const neufs: Neuf[] = modeles.flatMap((m) =>
-		m.scission ? [{ ...m.scission, origine: m.id }] : []
-	);
+	const neufs: Neuf[] = modeles.flatMap((m) => m.neufs.map((x) => ({ ...x, origine: m.id })));
+	const tagsNeufs = neufs.flatMap((x) => x.tags.map((t) => `${x.id}§${t.grade}§${t.code}`));
+	const deplaces = modeles.filter((m) => m.noeud_apres);
 	const idsNeufs = neufs.map((x) => x.id);
 	const tous = [...ids, ...idsNeufs];
 	const avecNeufs = neufs.length > 0;
@@ -325,6 +377,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 		let apres: Etat;
 		let annule: Etat;
 		let copies: string[];
+		let parChemin: Map<string, string>;
 
 		beforeAll(async () => {
 			await cleanupAllTestData();
@@ -337,6 +390,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 			await pg.query(readFileSync(lot.migration, 'utf-8'));
 			apres = await lireEtat(pg, tous, avecOptions);
 			copies = await colonnesCopiees(pg, neufs);
+			parChemin = await noeudsParChemin(pg);
 			await pg.query(extractRollback(lot.migration));
 			annule = await lireEtat(pg, tous, avecOptions);
 		}, 60_000);
@@ -353,6 +407,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 			).toEqual([]);
 			expect(modeles.filter((m) => m.tag_seul)).toHaveLength(lot.tagsSeuls ?? 0);
 			expect(neufs).toHaveLength(lot.neufs ?? 0);
+			expect(deplaces).toHaveLength(lot.deplaces ?? 0);
 		});
 
 		it('l’état posé est bien celui de la prod (garde du test)', () => {
@@ -380,11 +435,21 @@ export function decrireLotModifier(lot: LotModifier): void {
 		it('les modèles portent EXACTEMENT les tags du lot et ceux d’avant, rien de plus', () => {
 			const attendus = [
 				...avant,
-				...modeles.map((m) => `${m.id}§${m.tag.grade}§${m.tag.code}`),
-				...neufs.map((x) => `${x.id}§${x.tag.grade}§${x.tag.code}`)
+				...modeles.flatMap((m) => m.tags.map((t) => `${m.id}§${t.grade}§${t.code}`)),
+				...tagsNeufs
 			].sort();
 			expect(apres.tags).toEqual(attendus);
 		});
+
+		it.runIf(deplaces.length > 0)(
+			'les origines déplacées (R2) sont sur le nœud de leurs points, les autres restent',
+			() => {
+				const faux = modeles.filter(
+					(m) => apres.noeuds.get(m.id) !== parChemin.get((m.noeud_apres ?? m.noeud).join(' > '))
+				);
+				expect(faux.map((m) => m.id)).toEqual([]);
+			}
+		);
 
 		it('`updated_at` avance là où le contenu change, et seulement là', () => {
 			const seuls = new Set(modeles.filter((m) => m.tag_seul).map((m) => m.id));
@@ -394,6 +459,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 
 		it('le rollback écrit dans la migration rend le contenu d’avant et retire les tags posés', () => {
 			expect(annule.tags).toEqual(avant);
+			expect(ids.map((id) => annule.noeuds.get(id))).toEqual(ids.map((id) => pose.noeuds.get(id)));
 			expect(ecarts(modeles, annule, (m) => m.avant)).toEqual([]);
 			expect(idsNeufs.filter((id) => annule.contenus.has(id))).toEqual([]);
 		});
@@ -472,13 +538,14 @@ export function decrireLotModifier(lot: LotModifier): void {
 		});
 
 		it('un tag déjà posé sur un modèle du lot fait échouer la migration', async () => {
-			const m = modeles[0];
+			// Un modèle qui ne bouge pas : son tag est accepté par le trigger sur le nœud d'avant.
+			const m = modeles.find((x) => x.tags.length > 0 && !x.noeud_apres)!;
 			await echoue(
 				() =>
 					pg.query(
 						`insert into public.question_template_points (template_id, point_id)
 						 select $1, id from public.curriculum_points where grade = $2 and code = $3 and archived_at is null`,
-						[m.id, m.tag.grade, m.tag.code]
+						[m.id, m.tags[0].grade, m.tags[0].code]
 					),
 				/tags déjà posés sur ces modèles : 1/
 			);
@@ -610,7 +677,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 							neufs[0].id
 						]),
 					new RegExp(
-						`rollback : les modèles neufs portent ${neufs.length - 1} tag\\(s\\), dont ${neufs.length - 1} posé\\(s\\)`
+						`rollback : les modèles neufs portent ${tagsNeufs.length - neufs[0].tags.length} tag\\(s\\), dont ${tagsNeufs.length - neufs[0].tags.length} posé\\(s\\)`
 					)
 				);
 			}
@@ -619,16 +686,47 @@ export function decrireLotModifier(lot: LotModifier): void {
 		it.runIf(neufs.some((x) => x.noeud))(
 			'le point d’un modèle neuf déplacé hors de son nœud propre fait échouer la migration',
 			async () => {
-				const x = neufs.find((n) => n.noeud)!;
+				// Un neuf rangé sur le nœud de son premier point, seul à le porter (aucun tag d'avant ne
+				// l'utilise : le déplacer ne casse rien d'autre).
+				const premiers = neufs.filter((n) => n.noeud).map((n) => n.tags[0].code);
+				const x = neufs.find(
+					(n) =>
+						n.noeud &&
+						premiers.filter((c) => c === n.tags[0].code).length === 1 &&
+						!avant.some((a) => a.endsWith(`§${n.tags[0].code}`))
+				)!;
 				const origine = modeles.find((m) => m.id === x.origine)!;
 				await echoue(async () => {
 					const parChemin = await noeudsParChemin(pg);
 					await pg.query(
 						`update public.curriculum_points set node_id = $3
 						  where grade = $1 and code = $2 and archived_at is null`,
-						[x.tag.grade, x.tag.code, parChemin.get(origine.noeud.join(' > '))]
+						[x.tags[0].grade, x.tags[0].code, parChemin.get(origine.noeud.join(' > '))]
 					);
 				}, /points ou nœuds des modèles neufs introuvables : 1/);
+			}
+		);
+
+		it.runIf(deplaces.length > 0)(
+			'le rollback refuse si une origine déplacée a de nouveau changé de nœud',
+			async () => {
+				const m = deplaces[0];
+				await apresMigration(
+					async () => {
+						// Ses tags d'abord : le trigger refuse de déplacer un modèle tagué hors de ses points.
+						const parChemin = await noeudsParChemin(pg);
+						await pg.query('delete from public.question_template_points where template_id = $1', [
+							m.id
+						]);
+						await pg.query(
+							'update public.question_templates set classification_node_id = $2 where id = $1',
+							[m.id, parChemin.get(m.noeud.join(' > '))]
+						);
+					},
+					new RegExp(
+						`rollback : ${deplaces.length - 1} modèle\\(s\\) déplacé\\(s\\) sur ${deplaces.length}`
+					)
+				);
 			}
 		);
 
