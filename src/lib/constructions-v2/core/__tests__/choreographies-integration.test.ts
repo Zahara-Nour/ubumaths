@@ -14,6 +14,7 @@ import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
 import type { SubStep } from '../choreographies/types';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { numeric } from '$lib/geometry-core/types/geo-value';
 
 describe('ConstructionExecutor — decorator wiring (Phase 3)', () => {
 	it('no decorators → currentDecoratorTriple is null after step', () => {
@@ -1063,6 +1064,23 @@ describe('ConstructionExecutor — parallele @equerre @double_perpendiculaire (1
 			expectOnParallelThroughP(exec, s.animateDrawableIds[0]);
 		}
 		expect(steps[9].secondaryInstrument).toBe('pencil');
+	});
+
+	it('P glissé sur (AB) après coup : les tracés restent de vraie longueur, ∥ (AB), par P', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(dpScript('@equerre @double_perpendiculaire @complet'));
+		const steps = playSubSteps(exec);
+		const Pid = exec.figure.getAllElements()[2].id;
+		const onAB: Pt = { x: 8, y: 2 };
+		exec.figure.movePoint(Pid, numeric(onAB.x), numeric(onAB.y));
+		exec.figure.recompute();
+		for (const s of [steps[7], steps[9]]) {
+			const [p1, p2] = carriers(exec, s.animateDrawableIds[0]);
+			const dir = minus(p2, p1);
+			expect(Math.hypot(dir.x, dir.y)).toBeGreaterThan(1);
+			expect(cross(dir, DP_U)).toBeCloseTo(0, 9);
+			expect(cross(minus(p1, onAB), DP_U)).toBeCloseTo(0, 9);
+		}
 	});
 });
 

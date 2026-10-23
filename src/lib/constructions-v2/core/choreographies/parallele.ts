@@ -1242,19 +1242,18 @@ function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyRe
 	const Fy = kit.expr((v) => val(v, Ay) + val(v, proj) * val(v, uy), [Ay, proj, uy]);
 	const F = figure.createComputedPoint({ scalarRef: Fx }, { scalarRef: Fy });
 	figure.hideElement(F);
-	// w = (F→P) unitaire tourné de +90° : direction de la parallèle.
-	const PFlen = kit.expr(
-		(v) => Math.hypot(val(v, Px) - val(v, Fx), val(v, Py) - val(v, Fy)),
-		[Px, Py, Fx, Fy]
+	// w = (F→P) unitaire tourné de +90° = −side·u, où side = côté de P par
+	// rapport à (AB). Tiré de u plutôt que de F→P : exact même quand P frôle
+	// (AB), et jamais nul si P est glissé sur (AB) après coup (side = 1).
+	const side = kit.expr(
+		(v) =>
+			(val(v, Px) - val(v, Ax)) * -val(v, uy) + (val(v, Py) - val(v, Ay)) * val(v, ux) >= 0
+				? 1
+				: -1,
+		[Px, Py, Ax, Ay, ux, uy]
 	);
-	const wx = kit.expr(
-		(v) => -(val(v, Py) - val(v, Fy)) / Math.max(val(v, PFlen), 1e-12),
-		[Py, Fy, PFlen]
-	);
-	const wy = kit.expr(
-		(v) => (val(v, Px) - val(v, Fx)) / Math.max(val(v, PFlen), 1e-12),
-		[Px, Fx, PFlen]
-	);
+	const wx = kit.expr((v) => -val(v, side) * val(v, ux), [side, ux]);
+	const wy = kit.expr((v) => -val(v, side) * val(v, uy), [side, uy]);
 	const along = [Px, Py, wx, wy];
 	const trace1End = kit.point(
 		(v) => val(v, Px) + val(v, wx) * EQUERRE_VERTICAL_MATH_UNITS,
