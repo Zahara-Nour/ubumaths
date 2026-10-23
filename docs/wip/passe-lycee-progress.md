@@ -8,11 +8,10 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 _Mis à jour le 2026-10-23, après #1654._
 
-- **État** : PR 3 (H) = #1654 MERGÉE (f01bcbe4c), dernière PR des scissions (PR 1 = #1646, PR 2 = #1651).
-  Migration `20261024010000_passe_lycee_h.sql` PAS ENCORE JOUÉE en prod.
-- **Prochaine action** : David lance `pnpm db:migrate` depuis le dépôt principal (refusé au mode auto) ; puis relecture
-  de la prod par le MCP (10 modèles : `grades` au vrai programme, neufs en brouillon au même niveau, tags du plan).
-- **En attente de David** : le `db:migrate` ; puis la suite du chantier (les « Laissé » ci-dessous, versement).
+- **État** : scissions CLOSES : PR 3 (H) = #1654 mergée et jouée en prod (`db:migrate` par David le 2026-10-23),
+  prod relue par le MCP : 19/19 conformes (PR 1 = #1646, PR 2 = #1651).
+- **Prochaine action** : à décider avec David : les « Laissé » ci-dessous, puis versement (fin de chantier).
+- **En attente de David** : la suite du chantier.
 - **Laissé de #1651** (brouillons) : 2 conclusions de corrigé sans gras (f3100c29, 70e682f9 v2) ; « ≠ » implicite
   (d1010214 v0-v1) ; descriptions de specs S6 de l'ancienne question ; rollback trop strict sur les 2 origines intactes.
 - **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion → R2 ou retrait forcé ; neufs :
@@ -310,3 +309,5 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
 - **2026-10-23 — #1654 mergée (PR 3, H).** `main` réparé par #1652 (`template-fact-sheet.test.ts`) ; branche mise à
   jour, CI verte (« Client Tests shard 1/2 » relancé : `playwright install --with-deps` bloqué sur le miroir apt,
   aucun test joué). `db:migrate` à lancer par David.
+- **2026-10-23 — `db:migrate` de #1654 fait (par David).** Prod (MCP) : 19 modèles (10 origines, 9 neufs) en
+  brouillon, 4 en T_SPE, 15 en 2de ; un tag chacun, 19/19 sur le point du plan (TSPE-457/458/597/598, 2-205 à 2-491).
