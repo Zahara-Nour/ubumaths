@@ -115,6 +115,19 @@
 	// Runtime errors raised during executor.load() or .step()
 	let runtimeError = $state<RuntimeErrorInfo | null>(null);
 
+	// Arrêt d'exécution signalé sous les consignes, au dernier pas de la frise
+	// seulement : l'instruction fautive n'a aucune sous-étape (erreur levée
+	// avant), donc la consigne du dernier pas joué reste et cette ligne dit
+	// pourquoi la construction s'arrête là.
+	let executionStop = $derived.by(() => {
+		if (!runtimeError || runtimeError.stepIndex === null) return null;
+		if (tl.currentStepIndex !== tl.stepCount - 1) return null;
+		const reason = runtimeError.message.replace(/^Ligne\s+\d+\s*:\s*/i, '');
+		return runtimeError.line === null
+			? `⚠ Arrêt : ${reason}`
+			: `⚠ Arrêt à la ligne ${runtimeError.line} : ${reason}`;
+	});
+
 	// Parse script — $derived for pure computation
 	let parseResult = $derived.by(() => {
 		try {
@@ -365,7 +378,7 @@
 			{/if}
 		</div>
 
-		{#if currentInstruction || currentSubStepInstruction}
+		{#if currentInstruction || currentSubStepInstruction || executionStop}
 			<div class="mt-2 rounded-md bg-muted p-2 text-sm text-muted-foreground">
 				{#if currentInstruction}
 					<p data-testid="consigne-auteur">{currentInstruction}</p>
@@ -374,6 +387,15 @@
 					<p class="text-xs" class:mt-1={currentInstruction}>
 						<span aria-hidden="true">↳</span>
 						<span data-testid="consigne-sous-etape">{currentSubStepInstruction}</span>
+					</p>
+				{/if}
+				{#if executionStop}
+					<p
+						class="text-xs text-destructive"
+						class:mt-1={currentInstruction || currentSubStepInstruction}
+						data-testid="arret-execution"
+					>
+						{executionStop}
 					</p>
 				{/if}
 			</div>
