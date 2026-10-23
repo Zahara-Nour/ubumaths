@@ -162,6 +162,12 @@ export function interpret(
  */
 const RESERVED_NAMES = new Set(['\\pi', 'e']);
 
+/** Message d'erreur par nom réservé : ce que le nom représente, et quoi faire. */
+const RESERVED_NAME_MESSAGES: Record<string, string> = {
+	'\\pi': '"π" est une constante réservée : c\'est le nombre π (≈ 3,14). Choisir un autre nom.',
+	e: '"e" est une constante réservée : c\'est le nombre e (≈ 2,718). Choisir un autre nom, par exemple "k".'
+};
+
 /**
  * Module-level cache for `parseCustom(rawSource) → MathNode`. The mapping is
  * deterministic (same source string always parses to the same AST), so the
@@ -183,7 +189,10 @@ const PARSE_CACHE_MAX = 5_000;
 
 function assertNameNotReserved(name: string, line: number): void {
 	if (RESERVED_NAMES.has(name)) {
-		throw new DslRuntimeError(`"${name}" est une constante réservée`, line);
+		throw new DslRuntimeError(
+			RESERVED_NAME_MESSAGES[name] ?? `"${name}" est une constante réservée`,
+			line
+		);
 	}
 }
 
