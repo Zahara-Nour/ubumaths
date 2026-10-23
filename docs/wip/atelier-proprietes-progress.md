@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1627._
+_Mis à jour le 2026-10-23, après #1630._
 
-- **État** : PR 1 mergée (#1627). PR 2 (panneau Propriétés + Renommer) ouverte, en revue.
-- **Prochaine action** : PR 2 — panneau « Propriétés » déplié sous la carte (nom ✎ via `atelier.rename`, dépendances, mesures, style) ; mesures des droites et cercles par `geometry-expert` (`figure-properties.ts`).
-- **En attente de David** : rien.
-- **Pièges en cours** : tant que la PR 2 n'est pas mergée, les mesures d'une construction ne se lisent nulle part : **pas de `deploy:prod` avant**.
-- **Worktree / branche** : `../ubumaths-wt-atelier-proprietes` · `feat/atelier-proprietes-panneau`.
+- **État** : chantier livré — PR 1 #1627 (point de couleur, cartes sans nature ni mesure, console qui défile, noms en couleur du texte) et PR 2 #1630 (panneau Propriétés, Renommer, retours de revue, formes du cahier) mergées. Pas encore en prod.
+- **Prochaine action** : verser ce journal (`docs/archive/wip/`) quand David clôt le chantier ; les renvois du code vers ce chemin (`properties.ts`, `ObjectProperties.svelte`, tests) suivront dans une PR.
+- **En attente de David** : périmètre et aire en `(2/3)π√3` (coefficient devant) ou `2π√3/3` ? ; vérifications manuelles (`docs/wip/verifications-manuelles.md`).
+- **Pièges en cours** : aucun ; #1627 et #1630 partent ensemble au prochain `deploy:prod`.
+- **Worktree / branche** : supprimés.
 
 ## Décisions de David (2026-10-23)
 
