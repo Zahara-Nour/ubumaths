@@ -14,6 +14,7 @@
  */
 
 import { z } from 'zod';
+import { SUPERFLU_RULE_IDS, bySuperfluRule } from '$lib/mathAST/superflu/rules';
 import { findRulesSufficeBlanksWithoutRules } from './rules-suffice';
 import { answerAssumptionsSchema, refineAssumptionCollisions } from './answer-assumptions';
 import {
@@ -120,17 +121,9 @@ export const correctChoiceIndexSchema = z.union([z.string(), z.array(z.string())
 // === Test Specs ===
 
 export const constraintIdSchema = z.enum([
-	'spaces',
-	'products',
-	'brackets',
-	'zeros',
+	// Règles de superflu (`mathAST/superflu/rules.ts`)
+	...SUPERFLU_RULE_IDS,
 	'form',
-	'nullTerms',
-	'factorOne',
-	'factorZero',
-	'signs',
-	'reducedFractions',
-	'reducedRadicals',
 	'percent',
 	'unit',
 	'intervalForm',
@@ -359,19 +352,11 @@ export const blankSchema = z.object({
 });
 
 export const constraintsSchema = z.object({
-	spaces: constraintModeSchema.optional(),
-	products: constraintModeSchema.optional(),
-	brackets: constraintModeSchema.optional(),
-	zeros: constraintModeSchema.optional(),
+	// Une clé par règle de superflu (`mathAST/superflu/rules.ts`)
+	...bySuperfluRule(() => constraintModeSchema.optional()),
 	form: constraintModeSchema.optional(),
 	allowBracketsInFirstNegativeTerm: z.boolean().optional(),
 	spacesFromFourDigits: z.boolean().optional(),
-	nullTerms: constraintModeSchema.optional(),
-	factorOne: constraintModeSchema.optional(),
-	factorZero: constraintModeSchema.optional(),
-	signs: constraintModeSchema.optional(),
-	reducedFractions: constraintModeSchema.optional(),
-	reducedRadicals: constraintModeSchema.optional(),
 	percent: constraintModeSchema.optional(),
 	unit: constraintModeSchema.optional(),
 	intervalForm: constraintModeSchema.optional()

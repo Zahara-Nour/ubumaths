@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23).
 
 ## À quoi ça sert
 
@@ -51,6 +51,7 @@ test, ~14 000 cas (`it(`/`test(`).
 | `assumptions.ts`                        | hypothèses de l'énoncé (« x > 0 », « n entier », ADR 0012) traduites pour le décideur                                                                                                                                                                                |
 | `digit-grouping.ts`                     | **la** règle des espaces de groupement (BIPM : facultative jusqu'à 4 chiffres, exigée dès 5, chaque côté de la virgule à part ; `SCHOOL_MIN_DIGITS_FOR_GROUPING` = 4 pour un modèle « Espaces dès 4 chiffres »), partagée par le juge, `french-math.ts` et l'atelier |
 | `cosmetic-transforms.ts`                | `checkForm` et ses transformations (contraintes de forme de la correction) ; tests d'écriture d'un nombre (`isSimpleNumberLatex`, `isNumberOrNumberFractionLatex`, `isQuantityValueLatex` : fraction écrite `\frac` seulement, `6\div2` est un calcul)               |
+| `superflu/`                             | Registre des règles de superflu (`rules.ts` : identifiant, libellé, message, transformation) et leurs transformations (`transforms.ts`), lus par `checkForm`, l'éditeur de modèles, les messages et le schéma Zod                                                    |
 | `decimal-comma.ts`                      | la virgule décimale nue (`3,14`) : nombre ou séparateur                                                                                                                                                                                                              |
 | `latex-generator.ts`                    | `toLatex`, `LatexGenerator` (options `renderMetadata`, `preserveHoles`) ; `\times` d'un produit implicite qui ne se relirait pas (`3 \times 3x^2`, `x \times 3^x`, `juxtaposesDigits`)                                                                               |
 | `custom-generator.ts`                   | `toCustom`, `CustomGenerator` (syntaxe maison)                                                                                                                                                                                                                       |
@@ -145,7 +146,9 @@ Ni `simplify` ni `pedagogical-simplify` ne sont sur ce chemin.
 2. `parseLatexSafe` ;
 3. arbre, dans cet ordre (`buildASTPipeline`) : unifications de notation sans contrainte
    (`e` : forme unique `euler()`, `\exp(u)` lu `e^{u}` ; `∞`, angles en π, complexes, fractions de monômes, `|x|` sous hypothèse) →
-   `reduceRadicalsAST` (`reducedRadicals`) → `reduceFractionsAST` (`reducedFractions`) →
+   les règles de superflu, dans l'ordre de leur registre (`superflu/rules.ts`, transformations
+   dans `superflu/transforms.ts`) : `reduceRadicalsAST` (`reducedRadicals`, extraction des
+   carrés par `extractPerfectPower`, comme `tidy`) → `reduceFractionsAST` (`reducedFractions`) →
    `simplifyNullProductsAST` (`factorZero`) → `removeNullTermsAST` (`nullTerms`) →
    `stripUnnecessaryBrackets` (`brackets`) → `removeSignsAST` (`signs`) →
    `removeFactorsOneAST` (`factorOne`) → `removeMultOperatorAST` (`products`) →
@@ -153,8 +156,12 @@ Ni `simplify` ni `pedagogical-simplify` ne sont sur ce chemin.
 4. comparaison des `toLatex` (le signe `*` et `×` sont confondus) ; cas du pourcentage.
 
 Chaque étape qui modifie la réponse lève sa contrainte (`strict`, `warn` ou `off`, défaut
-`warn`). L'ordre est testé par `__tests__/cosmetic-transforms.test.ts` : ne pas le changer
-sans relancer ce fichier.
+`warn`). L'ordre est testé par `__tests__/cosmetic-transforms.test.ts` et
+`superflu/__tests__/registre.test.ts` : ne pas le changer sans relancer ces fichiers.
+
+`tidy` n'appelle pas ces règles : il réécrit l'expression entière. L'accord entre écrire et
+juger est gardé par `tidy/__tests__/tidy-passe-le-juge.test.ts` : pour chaque règle du
+registre, au moins un cas fautif, que le juge nomme et dont la sortie de `tidy` passe le juge.
 
 ### Deux moteurs de simplification, et leur fusion (ADR 0007)
 

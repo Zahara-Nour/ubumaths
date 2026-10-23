@@ -8,6 +8,10 @@
  * de groupement, règle du BIPM, § 15), celle que l'élève lit. Réponse comparée à elle-même : seules les règles de superflu
  * (`brackets`, `signs`, `reducedFractions`…) peuvent parler, pas la contrainte `form`.
  *
+ * Garde par règle (§ 47) : chaque règle du registre `SUPERFLU_RULES` a au moins un
+ * cas fautif ; le juge y nomme la règle, et `tidy` du même cas passe le juge. Une
+ * règle ajoutée au registre sans cas fait échouer le test.
+ *
  * Chantier : docs/wip/simplify-carte-progress.md § 10.
  */
 
@@ -15,7 +19,9 @@ import { describe, it, expect } from 'vitest';
 import { tidy } from '../index';
 import { parseCustom } from '../../parser/custom';
 import { toLatex } from '../../latex-generator';
-import { checkForm } from '../../cosmetic-transforms';
+import { checkForm, cosmeticViolations } from '../../cosmetic-transforms';
+import { parseLatexSafe } from '../../parser';
+import { SUPERFLU_RULES, type SuperfluRuleId } from '../../superflu/rules';
 import { toFrenchDecimal } from '../../../utils/french-math';
 
 // Le panel des invariants de `tidy.test.ts`, puis une entrée par réécriture de `tidy`
@@ -120,5 +126,42 @@ describe('espaces de groupement écrits dans une correction (E2)', () => {
 		['0.12345', '0{,}123\\,45']
 	])('tidy(%s) s’affiche %s', (input, shown) => {
 		expect(toFrenchDecimal(toLatex(tidy(parseCustom(input))))).toBe(shown);
+	});
+});
+
+// Écritures fautives d'élève, en LaTeX : au moins une par règle du registre
+const CAS_FAUTIFS: Record<SuperfluRuleId, readonly string[]> = {
+	zeros: ['3.50', '007'],
+	spaces: ['30000', '0.12345'],
+	reducedRadicals: ['\\sqrt{12}', '3\\sqrt{8}', '\\sqrt{4}'],
+	reducedFractions: ['\\frac{4}{6}', '\\frac{2x}{4}', '\\frac{3x}{6y}'],
+	factorZero: ['0x+3', '0\\times x+2'],
+	nullTerms: ['x+0'],
+	brackets: ['(x)+1', '((x+1))', '-(3)'],
+	signs: ['--x', 'x+(-3)', 'x-(-3)', '\\frac{-x}{-2}'],
+	factorOne: ['1x+2', 'x\\times1'],
+	products: ['2\\times x', 'x\\times\\sqrt{2}']
+};
+
+function violationIds(latex: string): string[] {
+	return cosmeticViolations(latex, {}).map((violation) => violation.id);
+}
+
+describe('garde par règle : le juge nomme la faute, tidy la corrige', () => {
+	it('chaque règle du registre a au moins un cas fautif', () => {
+		for (const rule of SUPERFLU_RULES) {
+			expect(CAS_FAUTIFS[rule.id].length, rule.id).toBeGreaterThan(0);
+		}
+	});
+
+	describe.each(SUPERFLU_RULES.map((rule) => rule.id))('%s', (id) => {
+		it.each(CAS_FAUTIFS[id])('%s', (latex) => {
+			expect(violationIds(latex)).toContain(id);
+			const parsed = parseLatexSafe(latex);
+			expect(parsed.errors).toEqual([]);
+			if (!parsed.ast) throw new Error(`analyse impossible : ${latex}`);
+			const written = toFrenchDecimal(toLatex(tidy(parsed.ast)));
+			expect({ written, violations: violationIds(written) }).toEqual({ written, violations: [] });
+		});
 	});
 });

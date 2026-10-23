@@ -48,6 +48,7 @@ export { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
 // Import from mathAST pedagogical layer (used by Mode B `generatedSteps`)
 import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-renderer-base';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
+import type { SuperfluRuleId } from '$lib/mathAST/superflu/rules';
 
 /**
  * French educational grade levels
@@ -1057,20 +1058,8 @@ export type ConstraintId = ConfigurableConstraintId | 'rounding';
 
 /** Contraintes réglables par modèle (`options.constraints`) */
 export type ConfigurableConstraintId =
-	| 'spaces'
-	| 'products'
-	| 'brackets'
-	| 'zeros'
-	| 'form'
-	| 'nullTerms'
-	| 'factorOne'
-	| 'factorZero'
-	| 'signs'
-	| 'reducedFractions'
-	| 'reducedRadicals'
-	| 'percent'
-	| 'unit'
-	| 'intervalForm';
+	// Règles de superflu (`mathAST/superflu/rules.ts`)
+	SuperfluRuleId | 'form' | 'percent' | 'unit' | 'intervalForm';
 
 /**
  * How to handle constraint violations (ordered by decreasing severity)
@@ -1104,13 +1093,10 @@ export const DEFAULT_FORM_CONSTRAINT_MODE: ConstraintMode = 'strict';
  *
  * All fields are optional. When omitted, the constraint defaults to 'warn'
  * (partial credit penalty). Use 'off' to disable a check, 'strict' to require it.
+ *
+ * Une clé par règle de superflu (`mathAST/superflu/rules.ts`), plus les suivantes.
  */
-export interface ConstraintOptions {
-	// Existing validators (text/regex based)
-	spaces?: ConstraintMode;
-	products?: ConstraintMode;
-	brackets?: ConstraintMode;
-	zeros?: ConstraintMode;
+export interface ConstraintOptions extends Partial<Record<SuperfluRuleId, ConstraintMode>> {
 	form?: ConstraintMode;
 	/** Allow brackets around first negative term: (-5)+3 */
 	allowBracketsInFirstNegativeTerm?: boolean;
@@ -1119,14 +1105,6 @@ export interface ConstraintOptions {
 	 * au lieu de 5 (BIPM) ; l'affichage de la question suit le même seuil.
 	 */
 	spacesFromFourDigits?: boolean;
-	// Contraintes jugées par motifs mathAST (`cosmetic-transforms.ts`)
-	nullTerms?: ConstraintMode;
-	factorOne?: ConstraintMode;
-	factorZero?: ConstraintMode;
-	signs?: ConstraintMode;
-	reducedFractions?: ConstraintMode;
-	/** Racine carrée simplifiable (√12 pour 2√3), décision du 2026-10-04 */
-	reducedRadicals?: ConstraintMode;
 	/** Pourcentage attendu, réponse de même valeur sans le symbole (`0,2` pour `20 %`) */
 	percent?: ConstraintMode;
 	// Unit matching (numerical_with_unit questions)

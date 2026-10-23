@@ -1,36 +1,21 @@
 import type { ConfigurableConstraintId, ConstraintId } from './types';
 import { DEFAULT_CONSTRAINT_MODE, DEFAULT_FORM_CONSTRAINT_MODE } from './types';
+import { SUPERFLU_RULE_IDS, bySuperfluRule } from '$lib/mathAST/superflu/rules';
 
 /** Contraintes réglables par modèle (`rounding`, toujours exigée, n'en est pas) */
 export const CONSTRAINT_IDS: ConfigurableConstraintId[] = [
-	'spaces',
-	'products',
-	'brackets',
-	'zeros',
+	// Règles de superflu, dans l'ordre de leur registre (`mathAST/superflu/rules.ts`)
+	...SUPERFLU_RULE_IDS,
 	'form',
-	'nullTerms',
-	'factorOne',
-	'factorZero',
-	'signs',
-	'reducedFractions',
-	'reducedRadicals',
 	'percent',
 	'unit',
 	'intervalForm'
 ];
 
 export const CONSTRAINT_LABELS: Record<ConstraintId, string> = {
-	spaces: 'Espaces',
-	products: 'Symbole de multiplication',
-	brackets: 'Parenthèses',
-	zeros: 'Zéros inutiles',
+	// Règles de superflu : libellé tiré de leur fiche
+	...bySuperfluRule((rule) => rule.label),
 	form: 'Forme générale',
-	nullTerms: 'Termes nuls (x + 0)',
-	factorOne: 'Facteur 1 (1 * x)',
-	factorZero: 'Facteur 0 (0 * x)',
-	signs: 'Signes (-- = +)',
-	reducedFractions: 'Fractions irréductibles',
-	reducedRadicals: 'Racines simplifiées',
 	percent: 'Pourcentage',
 	unit: 'Unité',
 	intervalForm: 'Écriture d’un ensemble (intervalles)',

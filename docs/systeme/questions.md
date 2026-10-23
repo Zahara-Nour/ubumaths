@@ -66,7 +66,7 @@ le SRS ([srs.md](srs.md)).
 | `src/lib/questions/required-form-validator.ts`                   | `requiredForm` : `checkRequiredForm`, `requiredFormVerdict` (`ok` / `acceptable` / `violated`), `REQUIRED_FORM_FEEDBACK`. Formes complexes : `complex-forms.ts` (base de `re^{iθ}` : la constante `euler()` ; `i` : le nœud `complex(0, 1)`, lettre comme `\imaginaryI`).                                                                                                                                                  |
 | `src/lib/questions/validation-rule-evaluator.ts`                 | `validationRules` : `evaluateRule`, `evaluateRules`, `createEvaluationContext`.                                                                                                                                                                                                                                                                                                                                            |
 | `src/lib/questions/constraint-validators.ts`                     | Ancien jeu de contrôles cosmétiques sur le LaTeX brut. **En service : `checkUnit` et `checkReducedFractions` seulement** (les anciens contrôles, morts, ont été retirés ; le jugement passe par `cosmetic-transforms.ts`).                                                                                                                                                                                                 |
-| `src/lib/questions/feedback.ts`, `constraint-constants.ts`       | Messages français des contraintes (`CONSTRAINT_FEEDBACK`), libellés et modes proposés à l'éditeur (`CONSTRAINT_IDS`, `CONSTRAINT_LABELS`).                                                                                                                                                                                                                                                                                 |
+| `src/lib/questions/feedback.ts`, `constraint-constants.ts`       | Messages français des contraintes (`CONSTRAINT_FEEDBACK`), libellés et modes proposés à l'éditeur (`CONSTRAINT_IDS`, `CONSTRAINT_LABELS`). Ceux des règles de superflu sont tirés de leur fiche (`mathAST/superflu/rules.ts`).                                                                                                                                                                                             |
 | Options de case                                                  | `rounding.ts` (arrondi), `rules-suffice.ts` (`rulesDecide`), `angle-modulo.ts`, `answer-variable-prefix.ts`, `answer-degree-suffix.ts`, `answer-assumptions.ts` (ADR 0012), `generic-functions.ts` (`templateGenericFunctions`), `clean-coefficients.ts` (`cleanCoefficientsAst`), `capital-pairs.ts` (sens de `AB`), `formula-reading.ts` (`readingOf`), `figure-name-check.ts` (garde auteur).                           |
 | Sécurité de la réponse                                           | `answer-complexity.ts` (`isAnswerTooComplex`, garde Q58), `student-answer-safety.ts` (réponse rendue chez le prof).                                                                                                                                                                                                                                                                                                        |
 | Correction                                                       | `expected-result.ts` (`buildExpectedResult`, `fillMarkdown`), `expected-result-markdown.ts`, `correction-card-verdict.ts`, `correction-detail.ts` (`splitCorrectionDetail`, `detailedCorrection`, `correctionForPrint` pour les fiches PDF, ADR 0017), `correction-placeholders.ts`, `grade-level-to-school-level.ts` (`gradeLevelToSchoolLevel`).                                                                         |
@@ -474,11 +474,15 @@ publics dans `public-question.ts` ; l'éditeur (`QuestionTemplateForm.svelte`,
 `SharedFieldsEditor.svelte`). Modèles : les lots `reponse-*` archivés (intervalles, équation,
 vecteur) et `case-primitive-ed-progress.md`.
 
-**Nouvelle contrainte cosmétique** : l'ajouter à `ConfigurableConstraintId` (`types.ts`),
-`constraintIdSchema` (`template-schema.ts`), `CONSTRAINT_IDS` / `CONSTRAINT_LABELS`,
-`CONSTRAINT_FEEDBACK`, la liste de `buildConstraintSeverities` (`answer-validator.ts`) et la
-détection dans `cosmetic-transforms.ts` (coordonner avec l'agent mathast) — **pas** dans
-`constraint-validators.ts`.
+**Nouvelle règle de superflu** (écriture inutile qu'on signale à l'élève) : ajouter sa fiche
+dans le registre `src/lib/mathAST/superflu/rules.ts` (identifiant, libellé, message, et sa
+transformation, écrite dans `superflu/transforms.ts`, si la règle se juge sur l'arbre), puis
+au moins un cas fautif dans `tidy/__tests__/tidy-passe-le-juge.test.ts` (sinon ce test échoue).
+`ConfigurableConstraintId`, `ConstraintOptions`, `constraintIdSchema`, `constraintsSchema`,
+`CONSTRAINT_IDS`, `CONSTRAINT_LABELS`, `CONSTRAINT_FEEDBACK`, `buildConstraintSeverities` et
+le juge (`buildASTPipeline`) lisent le registre. Coordonner avec l'agent mathast. **Autre
+contrainte** (pas du superflu : `form`, `percent`…) : l'ajouter à la main dans chacune de ces
+listes — **pas** dans `constraint-validators.ts`.
 
 **Nouvelle règle de validation** : un membre de l'union `ValidationRule`, son schéma dans
 `validationRuleSchema`, son `case` dans `evaluateRule`, son message français (tests

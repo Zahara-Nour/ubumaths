@@ -28,6 +28,7 @@ import {
 import type { ValidationResult } from '$lib/types/question-display';
 import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
 import { checkUnit } from '$lib/questions/constraint-validators';
+import { SUPERFLU_RULE_IDS } from '$lib/mathAST/superflu/rules';
 import {
 	checkForm as checkFormUnified,
 	type CheckFormOptions,
@@ -87,19 +88,8 @@ function buildConstraintSeverities(
 ): Record<string, ConstraintSeverity> {
 	const severities: Record<string, ConstraintSeverity> = {};
 
-	const constraintIds: ConfigurableConstraintId[] = [
-		'spaces',
-		'products',
-		'brackets',
-		'zeros',
-		'nullTerms',
-		'factorOne',
-		'factorZero',
-		'signs',
-		'reducedFractions',
-		'reducedRadicals',
-		'percent'
-	];
+	// Les règles de superflu du registre, et le pourcentage oublié
+	const constraintIds: ConfigurableConstraintId[] = [...SUPERFLU_RULE_IDS, 'percent'];
 
 	for (const id of constraintIds) {
 		const mode = (constraints[id] as ConstraintMode | undefined) ?? DEFAULT_CONSTRAINT_MODE;

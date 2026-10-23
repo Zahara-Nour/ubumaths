@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après le marquage en prod (v0.45.0, #1648)._
+_Mis à jour le 2026-10-23, lot 4e en PR (branche `refactor/simplify-carte-registre`)._
 
-- **État** : **lot 4d terminé et en prod** : v0.45.0 déployée (#1642 espaces BIPM + réglage, #1645 script), marquage publié par David le 2026-10-23 (51 modèles marqués, 5 brouillons de 1re spé corrigés ; sauvegarde `data/migration-output/backups/marquage-espaces-2026-10-23T14-52-59-666Z.json`) ; relance : 56 déjà traités. #1648 a ajouté `103cf8d9`, scindé de `27d77564` par #1646 (§ 45).
+- **État** : lot 4e codé (§ 46-47) : registre `mathAST/superflu/` (10 fiches), lu par le juge, l'éditeur, les messages, Zod et `buildConstraintSeverities` ; garde par règle dans `tidy-passe-le-juge.test.ts` ; racines par `extractPerfectPower` (identique à l'ancien calcul de 4 à 200 000, sondé). Comportement élève inchangé ; l'ordre des réglages de l'éditeur suit le registre.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~racines~~ → ~~4c~~ → ~~4c-bis~~ → ~~4d~~ → **4e module de règles partagé (§ 10)** → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : vérification manuelle de #1642 en prod (`verifications-manuelles.md`) ; puis lot 4e, phase 0 (comportements à valider), worktree neuf depuis `origin/main`.
-- **En attente de David** : la vérification manuelle des espaces sur chiph.re.
+- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~racines~~ → ~~4c~~ → ~~4c-bis~~ → ~~4d~~ → **4e (en PR)** → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : PR 4e : revue `code-reviewer` (opus), CI, merge ; puis lot 5, phase 0.
+- **En attente de David** : la vérification manuelle des espaces (#1642) sur chiph.re.
 - **Pièges en cours** : un modèle neuf de numération avec une spec `7900` attendra le réglage « Espaces dès 4 chiffres » coché à la main. Bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41) ; `rat-04 @ carte` (lot 5) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `refactor/simplify-carte-registre`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -684,3 +684,12 @@ Questions :
 
 - **Q16** : accepter la révision du § 16, c'est-à-dire que `tidy` reste structurel et que la garde est le test ? Recommandation : oui. Le faire appeler les règles ajouterait 8 passes qui ne changent rien.
 - **Q17** : `zeros` et `spaces` (règles sur la chaîne tapée, pas sur l'arbre) entrent-elles dans le registre (libellé + message seulement) ? Recommandation : oui, pour qu'une règle n'ait qu'une seule fiche.
+
+## 47. Q16 et Q17 tranchées (David, 2026-10-23 : « je suis tes recos » ; branche `refactor/simplify-carte-registre`)
+
+Option 1 retenue :
+
+- **Q16 : oui.** `tidy` ne passe pas par les règles. La garde écrire ↔ juger est un test : chaque règle du registre a au moins un cas fautif ; le juge nomme cette règle, et `tidy` du même cas passe le juge.
+- **Q17 : oui.** `zeros` et `spaces` ont leur fiche (libellé et message, sans transformation).
+
+Plan : `mathAST/superflu/` contient `transforms.ts` (les 8 transformations, retirées de `cosmetic-transforms.ts`, qui les réexporte) et `rules.ts` (le registre, ordonné comme le pipeline). `buildASTPipeline`, `CONSTRAINT_IDS`, `CONSTRAINT_LABELS`, `CONSTRAINT_FEEDBACK`, `ConfigurableConstraintId` et le schéma Zod lisent le registre. Les racines passent par `extractPerfectPower`. Comportement élève inchangé. Seul effet visible : l'ordre des réglages dans l'éditeur de modèle suit désormais le registre.
