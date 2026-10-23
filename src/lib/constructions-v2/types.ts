@@ -30,6 +30,13 @@ export interface InstrumentMove {
 	toRotation: number;
 }
 
+/** Pose d'un instrument en unités math (rotation en degrés). */
+export interface InstrumentPose {
+	x: number;
+	y: number;
+	rotation: number;
+}
+
 /** Animation state for progressive drawing of elements. */
 export interface DrawAnimationState {
 	/** IDs of drawable elements currently being drawn (from the current step). */
@@ -41,8 +48,20 @@ export interface DrawAnimationState {
 	animatingLineIds: Set<string>;
 	/** Progress 0-1 within the current step. */
 	drawProgress: number;
-	/** Instrument types auto-shown for this step (hidden when drawProgress >= 1). */
+	/** Instruments montrés automatiquement pour ce pas. Ils restent affichés
+	 *  une fois le pas fini, jusqu'au pas suivant qui ne s'en sert plus ou
+	 *  jusqu'à la fin de la construction (`constructionFinished`). */
 	autoInstruments: Set<InstrumentType>;
+	/** Instruments automatiques du dernier tracé laissés en place, immobiles,
+	 *  pendant une directive (`@pause`, `@instruction`, `@cacher`…). */
+	heldInstruments: Set<InstrumentType>;
+	/** Pose de fin de geste des instruments automatiques dont la position
+	 *  change pendant le tracé (crayon au bout du trait, compas à la fin de
+	 *  l'arc). La toile les y laisse une fois le pas fini (`drawProgress >= 1`). */
+	instrumentEndPoses: Map<InstrumentType, InstrumentPose>;
+	/** Dernière étape de la construction finie (sans arrêt sur une erreur) :
+	 *  instruments automatiques et laissés en place cachés, figure finale propre. */
+	constructionFinished: boolean;
 	/** Movement animations for instruments (from previous position to new position). */
 	instrumentMoves: Map<InstrumentType, InstrumentMove>;
 	/** Progress value (0-1) at which instrument movement ends. */
