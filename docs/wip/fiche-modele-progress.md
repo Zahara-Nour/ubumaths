@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, avant toute PR._
+_Mis à jour le 2026-10-23, PR ouverte (avant merge)._
 
-- **État** : phase 0 proposée à David, rien de codé.
-- **Prochaine action** : selon ses réponses, tests de rendu (rouges) puis composant + `load` serveur de `[id]/preview`.
-- **En attente de David** : validation des comportements et de la liste ; sens de « niveau » ; bloc dans l'éditeur ou non ; lecture en échec : bloc seul ou page en 500.
-- **Pièges en cours** : `loadTemplateProgrammeTags` ne propose que les programmes de la classe du modèle et des suivantes — le modèle exemple (CM1) a des points CP/CE2 sur sa notion, invisibles pour lui.
+- **État** : phase 0 validée par David (classe seule, échec dans le bloc, version courte dans l'éditeur, phrase de l'éditeur corrigée) ; code + tests + doc `docs/systeme/questions.md` faits, revue `code-reviewer` sans bloquant.
+- **Prochaine action** : CI verte → merge ; nettoyer le worktree.
+- **En attente de David** : test manuel sur http://localhost:5176/dashboard/admin/questions/17a3c039-744d-4108-9b47-49f0183990b7/preview ; règle du référentiel ouverte : un modèle de CM1 peut-il être relié à un point de CE2 (programmes inférieurs) ?
+- **Pièges en cours** : le séparateur `›` perdait ses espaces au rendu (Svelte) → entités `&nbsp;›&#32;`.
 - **Worktree / branche** : `../ubumaths-wt-fiche-modele` · `feat/fiche-modele`.
 
 ## Phase 0 (2026-10-23)

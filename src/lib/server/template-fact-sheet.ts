@@ -76,7 +76,7 @@ function factSheetPoints(row: FactSheetTemplateRow, tags: TemplateProgrammeTags)
 	return {
 		state: 'none',
 		availableCount: tags.programmes.reduce((sum, p) => sum + p.points.length, 0),
-		fromGrade: lowestGradeLabel(row.grades)
+		fromGrade: lowestGradeLabel(row.grades ?? [])
 	};
 }
 
@@ -97,7 +97,7 @@ export function buildTemplateFactSheet(
 		published: row.status === 'published',
 		typeLabel: QUESTION_TYPE_LABELS[type],
 		courseQuestion: isCourseQuestion({ options: row.options }),
-		grades: row.grades.map(gradeLabel),
+		grades: (row.grades ?? []).map(gradeLabel),
 		path: row.classification_node_id === null ? null : nodePath(row.classification_node_id, nodes),
 		points: factSheetPoints(row, tags),
 		settings: describeValidationSettings(row.options)
