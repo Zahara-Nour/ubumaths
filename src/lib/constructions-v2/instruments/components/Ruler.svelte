@@ -19,6 +19,7 @@
 	const MAJOR_TICK_MATH = 12 / 40; // Major tick height in math units
 	const HALF_TICK_MATH = 9 / 40; // Half tick height
 	const MINOR_TICK_MATH = 6 / 40; // Minor tick height
+	const EDGE_GAP_PX = 2; // demi-trait (1 px) + demi-contour (1 px)
 
 	// Types
 	interface Props {
@@ -62,9 +63,12 @@
 	// Calculate internal length in pixels
 	let internalLength = $derived(length * pixelsPerUnit + 15);
 
-	// Main group transform
+	// Main group transform. Le corps est décalé de EDGE_GAP_PX vers son côté :
+	// le crayon trace sur y = 0 (trait de 2 px), le contour de 2 px du corps
+	// commence juste après et ne le recouvre pas. Lecture des graduations
+	// inchangée (décalage perpendiculaire au bord).
 	let mainTransform = $derived(
-		`scale(${scale}) translate(${x / scale}, ${y / scale}) rotate(${rotation})`
+		`scale(${scale}) translate(${x / scale}, ${y / scale}) rotate(${rotation}) translate(0, ${EDGE_GAP_PX})`
 	);
 
 	// Generate graduation marks
