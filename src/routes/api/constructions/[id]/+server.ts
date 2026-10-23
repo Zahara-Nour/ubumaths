@@ -63,15 +63,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Fetch construction
 	const { data, error: queryError } = await locals.supabase
 		.from('constructions')
-		.select(
-			`
-			*,
-			profiles!constructions_author_id_fkey (
-				firstname,
-				lastname
-			)
-		`
-		)
+		.select('*')
 		.eq('id', params.id)
 		.single();
 
