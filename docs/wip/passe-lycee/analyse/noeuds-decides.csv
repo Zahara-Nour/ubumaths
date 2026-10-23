@@ -1,0 +1,50 @@
+template_id;action;programme;code;verdict;noeud_actuel;noeud_cible;regle
+d1648508-035e-4a2f-abce-87592365038f;RETIRER;1_SPE;1SPE-253;TAG;Algèbre > Calcul littéral > identités remarquables;;retrait forcé (groupe B)
+4cc21ccd-03d9-4e62-b669-f5ca03a1cc9a;DEPLACER;2;2-328;TAG;Algèbre > Inégalités > règles de calcul;Fonctions > Fonctions affines > variations et signe;R2 (groupe A)
+c7cdca01-326b-487f-8400-ba25d382de74;DEPLACER;2;2-328;TAG;Algèbre > Inégalités > règles de calcul;Fonctions > Fonctions affines > variations et signe;R2 (groupe A)
+939153b6-9aa8-4a59-809e-071a7d3b8b77;DEPLACER;2;2-420;TAG;Fonctions > Fonction valeur absolue > équations et inéquations;Fonctions > Fonction valeur absolue > définition et distance;R2
+146a7c79-ad5c-443c-85a1-c8d0014c2ad8;DEPLACER;1_SPE;1SPE-231;TAG;Suites > Suites récurrentes > escalier;Suites > Limites de suites > définition;R2 (groupe A)
+baefb288-6fb4-4fad-8e71-114145799ab6;DEPLACER;1_SPE;1SPE-221;TAG;Suites > Suites récurrentes > escalier;Suites > Généralités sur les suites > représentation graphique;R2 (groupe A)
+c23840b6-f01c-4d33-ac40-4c5f9c2b6eab;DEPLACER;1_SPE;1SPE-224;TAG;Suites > Suites arithmétiques > définition;Suites > Suites arithmétiques > terme général;R2
+d2067413-da43-42bb-a24c-642d2a3cc5e8;DEPLACER;1_TECHNO;1TECHNO-045;TAG;Suites > Suites arithmétiques > définition;Suites > Généralités sur les suites > représentation graphique;R2 (groupe A)
+8ed02829-51de-40e2-af77-8fa47d01ea98;RETIRER;1_TECHNO;1TECHNO-118;TAG;Suites > Suites arithmétiques > terme général;;retrait forcé (groupe B)
+aeb1389d-0805-4421-9b25-1fcb4e4f4670;RETIRER;1_GEN;1GEN-056;TAG;Suites > Modèles d'évolution;;retrait forcé (groupe B)
+eae2ff6a-5e46-445b-bfa6-02cadb6d956a;RETIRER;1_TECHNO;1TECHNO-059;TAG;Fonctions > Second degré > racines;;R1
+74d77343-34b9-4259-94c2-c9e2c473b052;DEPLACER;1_SPE;1SPE-265;TAG;Fonctions > Dérivation > fonctions dérivées;Fonctions > Dérivation > opérations sur les dérivées;R2
+9755a856-1059-40aa-abf7-cb531d85cebc;DEPLACER;1_SPE;1SPE-265;TAG;Fonctions > Dérivation > fonctions dérivées;Fonctions > Dérivation > opérations sur les dérivées;R2
+1666b8e9-8225-4e66-8b8c-4d5190806ed1;DEPLACER;1_SPE;1SPE-265;TAG;Fonctions > Dérivation > fonctions dérivées;Fonctions > Dérivation > opérations sur les dérivées;R2
+8b599a53-7e46-44a1-8e48-860c4d501b14;DEPLACER;T_SPE;TSPE-408;TAG;Fonctions > Dérivation > opérations sur les dérivées;Fonctions > Dérivation > fonctions composées;R2
+45e47034-959d-4996-a5d6-ea22fd0ac316;RETIRER;2;2-262;TAG;Fonctions > Second degré > formes;;retrait forcé (groupe B)
+31a77ba9-520c-4f35-82b3-066492b512c1;RETIRER;2;2-232;TAG;Suites > Généralités sur les suites;;retrait forcé (groupe B)
+19961e67-88c4-43bf-a76b-6a2af61dedf3;RETIRER;2;2-232;TAG;Suites > Modèles d'évolution > seuil;;retrait forcé (groupe B)
+27d77564-e109-4681-8a64-13a3ee1729cd;DEPLACER;2;2-368;MODIFIER;Suites > Modèles d'évolution;Proportionnalité > Évolutions > évolutions successives et réciproque;R2 (groupe A)
+0113c53d-ee4a-4da9-9327-537461ffdc85;RETIRER;1_TECHNO;1TECHNO-081;MODIFIER;Fonctions > Second degré > variations;;retrait forcé (groupe B)
+0113c53d-ee4a-4da9-9327-537461ffdc85;RETIRER;1_GEN;1GEN-025;MODIFIER;Fonctions > Second degré > variations;;retrait forcé (groupe B)
+1acb6d47-5d88-4ccf-830f-98dc57d0022c;DEPLACER;1_GEN;1GEN-022;TAG;Fonctions > Second degré > variations;Fonctions > Second degré > parabole;R2
+80489c90-34aa-4212-bf2e-62438ab017a0;DEPLACER;1_SPE;1SPE-248;TAG;Fonctions > Second degré > parabole;Algèbre > Équations : second degré > discriminant;R2 (groupe A)
+15d3aaa0-5eef-4c08-a38c-5b5c8d5ed6e1;DEPLACER;1_SPE;1SPE-272;TAG;Fonctions > Fonction exponentielle > courbe;Fonctions > Dérivation > tangente;R2 (groupe A)
+496f958d-4733-45a2-be3c-243dc9f7dd66;DEPLACER;1_SPE;1SPE-274;TAG;Fonctions > Fonction exponentielle > dérivée;Fonctions > Dérivation > opérations sur les dérivées;R2 (groupe A)
+9765d776-cc70-4472-95e9-1c0d05396584;DEPLACER;1_SPE;1SPE-272;TAG;Fonctions > Fonction exponentielle > courbe;Fonctions > Dérivation > tangente;R2 (groupe A)
+cffdd283-49ee-4292-b8ca-b6096b8b1ae2;DEPLACER;1_SPE;1SPE-274;TAG;Fonctions > Fonction exponentielle > dérivée;Fonctions > Dérivation > opérations sur les dérivées;R2 (groupe A)
+6a5e58da-8015-4d0d-9a1f-6c8e8d9cae4d;DEPLACER;1_SPE;1SPE-405;TAG;Fonctions > Fonction exponentielle > équations et inéquations;Fonctions > Fonction exponentielle > variations;R2
+6fe11613-789b-43c1-a38b-0d72bcb0d44e;DEPLACER;1_SPE;1SPE-405;TAG;Fonctions > Fonction exponentielle > équations et inéquations;Fonctions > Fonction exponentielle > variations;R2
+7179a3b5-580a-4696-a22e-cd5f89c32c29;DEPLACER;1_SPE;1SPE-405;TAG;Fonctions > Fonction exponentielle > équations et inéquations;Fonctions > Fonction exponentielle > variations;R2
+c7b5130d-15f7-4b80-b678-34c3c13dff40;DEPLACER;1_SPE;1SPE-283;TAG;Fonctions > Fonction exponentielle > variations;Fonctions > Dérivation > variations et extremums;R2 (groupe A)
+d73d7929-fd39-4234-963c-80038c22f5a3;DEPLACER;1_SPE;1SPE-405;TAG;Fonctions > Fonction exponentielle > équations et inéquations;Fonctions > Fonction exponentielle > variations;R2
+8b59ca4b-9a09-49df-a10c-4f3772176d46;RETIRER;1_SPE;1SPE-217;TAG;Proportionnalité > Évolutions > évolutions successives et réciproque;;retrait forcé (groupe B)
+2c116f4d-d7ef-4d8c-8114-9f113a983c4c;DEPLACER;1_SPE;1SPE-340;TAG;Probabilités > Probabilités conditionnelles > inversion du conditionnement;Probabilités > Probabilités conditionnelles > probabilités totales;R2
+69a05f98-9dd9-4ce5-b23e-5376e85fbbaf;DEPLACER;1_SPE;1SPE-340;TAG;Probabilités > Probabilités conditionnelles > inversion du conditionnement;Probabilités > Probabilités conditionnelles > probabilités totales;R2
+a9c71276-30e3-406f-8082-248cce389824;DEPLACER;1_SPE;1SPE-340;TAG;Probabilités > Probabilités conditionnelles > inversion du conditionnement;Probabilités > Probabilités conditionnelles > probabilités totales;R2
+b59fe450-e57a-4dfc-8aa7-29337b3fa28f;DEPLACER;T_SPE;TSPE-384;TAG;Suites > Limites de suites > suites majorées, minorées;Suites > Limites de suites > convergence monotone;R2
+294206b9-0b78-412f-9528-505d53b372eb;DEPLACER;T_SPE;TSPE-352;TAG;Géométrie > Orthogonalité et distances dans l'espace > produit scalaire dans l'espace;Géométrie > Orthogonalité et distances dans l'espace > orthogonalité de droites et plans;R2
+e814175b-95f0-4a2d-8689-e76c01ea91e6;RETIRER;T_COMP;TCOMP-261;TAG;Fonctions > Convexité > inégalités de convexité;;retrait forcé (groupe B)
+81ff485d-b40a-4778-bb95-43c3c17818f2;RETIRER;T_SPE;TSPE-432;TAG;Suites > Suites arithmético-géométriques > solution constante;;retrait forcé (groupe B)
+9f14d672-e460-4161-a9bf-da2b06f734f3;RETIRER;T_SPE;TSPE-432;TAG;Suites > Suites arithmético-géométriques > suite auxiliaire;;retrait forcé (groupe B)
+723779c8-23a5-4768-9648-a19cab5558be;DEPLACER;T_SPE;TSPE-414;TAG;Fonctions > Logarithmes > dérivée;Fonctions > Dérivation > opérations sur les dérivées;R2 (groupe A)
+50feeefd-27d8-4b73-9e97-e3226091fb0a;RETIRER;T_COMP;TCOMP-229;TAG;Fonctions > Dérivation > fonctions composées;;retrait forcé (groupe B)
+f1963ef2-4618-4ae7-9491-9955dacd0258;RETIRER;T_SPE;TSPE-596;TAG;Suites > Modèles d'évolution > seuil;;retrait forcé (groupe B)
+624bf511-0830-4aa7-91cc-1d016a94df2b;RETIRER;T_SPE;TSPE-466;TAG;Équations différentielles > Généralités > allure des courbes;;retrait forcé (groupe B)
+dd0ee69a-2203-47a3-b2b8-af70a77281d3;DEPLACER;T_SPE;TSPE-481;TAG;Intégration > Valeur moyenne;Intégration > Calcul d'intégrales > positivité et inégalités;R2 (groupe A)
+4ff9d049-afd9-4fd2-be40-f8e242923af4;RETIRER;T_SPE;TSPE-618;TAG;Probabilités > Loi binomiale > schéma de Bernoulli;;retrait forcé (groupe B)
+2dcb4b3c-e5ad-4b8b-9728-1b4e614bcba1;DEPLACER;T_EXP;TEXP-206;TAG;Nombres complexes > Forme algébrique > inverse et quotient;Nombres complexes > Forme algébrique > calculs;R2
+d400a330-ede5-4167-ab2a-1919eeed2468;DEPLACER;T_EXP;TEXP-365;TAG;Nombres complexes > Interprétation géométrique > alignement et orthogonalité;Nombres complexes > Interprétation géométrique > angles et quotient;R2

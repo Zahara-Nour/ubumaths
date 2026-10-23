@@ -6,15 +6,13 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, recos de la page validées et reportées dans les CSV._
+_Mis à jour le 2026-10-23, nœuds des 54 tags refusés tranchés._
 
 - **État** : étapes a-d faites ; page à cocher validée en bloc par David, recos reportées (`decision`/`decide_le`
   dans `questions-modeles.json` ; 7 CSV finaux : 478 TAG, 60 MODIFIER, 81 TAG_PAR_VARIATION, 31 HORS_PROGRAMME).
-- **Prochaine action** : `python3 compat-noeuds.py liste` (dans `analyse/`, état prod `etat-prod-2026-10-23/`) :
-  538 tags (TAG + MODIFIER) : 484 passent le trigger ; 26 = point sur une sous-notion sœur → R2 (déplacer le
-  modèle) ; 28 = autre notion → liste à faire trancher par David ; 12 modèles ont des points sur des notions
-  différentes (multi-programmes).
-  Ensuite : générateur de migration (modèle : `arbre-notions/analyse/lot-2bis-migration.py`), worktree, PR.
+- **Prochaine action** : générateur de migration (modèle : `arbre-notions/analyse/lot-2bis-migration.py`) qui lit
+  les 7 CSV + `analyse/noeuds-decides.csv` (32 modèles déplacés, 17 tags retirés ; 521 tags posés, 0 refusé par le
+  trigger, contrôle `noeuds-decides.py`), puis worktree avancé sur `origin/main`, PR.
 - **En attente de David** : rien (décisions de migration prises, cf. journal du 2026-10-23).
 - **Pièges en cours** : migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031) et 2 points neufs
   (exponentielle, à côté de TSPE-444 et TCOMP-236). Automatisme 1re spé BO l. 274 sans point. 85 points techno sans
@@ -131,3 +129,12 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   A_TRANCHER ; 650 lignes = 478 TAG, 60 MODIFIER, 81 TAG_PAR_VARIATION, 31 HORS_PROGRAMME. Choix d'application notés
   dans son rapport : m-1spe-a-3 en TAG_PAR_VARIATION sans répartition par variation ; d683e906 laissé sur 1SPE-355.
   Contrôle des nœuds (`compat-noeuds.py`) : 54 tags sur 538 refusés par le trigger en l'état.
+- **2026-10-23 — Nœuds des 54 tags refusés tranchés (David : « je suis tes recos », puis « oui, retrait forcé pour
+  les 3 »).** Règle de l'ADR 0020 § 7 (un nœud par modèle, ses points y appartiennent). DEPLACER (R2) : le modèle
+  passe sur le nœud de son point — sous-notions sœurs, et groupe A (tous ses tags refusés : 14 modèles, dont les
+  tangente/dérivée de exp et dérivée de ln qui quittent leur sous-notion pour Dérivation). RETIRER : eae2ff6a (R1,
+  1TECHNO-059 ; à taguer 1SPE-244 une fois re-rangé sur « racines ») ; groupe B, **retrait forcé** (le point décrit
+  bien le modèle mais vit sur un autre nœud, conflit entre programmes ; le modèle reste sur son point le plus
+  précis) : 12 modèles + 3 détectés au contrôle (e814175b TCOMP-261, 50feeefd TCOMP-229, 4ff9d049 TSPE-618, dont
+  le déplacement R2 cassait l'autre tag). Duplication de modèles citée, non retenue. Points qui perdent leur seul
+  exercice : 2-232, TSPE-432, TSPE-466, TSPE-596 notamment. Bilan : 32 modèles déplacés, 17 tags retirés, 521 posés.
