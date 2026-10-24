@@ -1210,7 +1210,7 @@ export const CORPUS: readonly DerivativeCase[] = [
 		custom: 'log_2(x)',
 		f: (x) => Math.log2(x),
 		points: POINTS_POS,
-		expected: R`\frac{1}{x\ln(2)}`
+		expected: R`\frac{1}{\ln(2)x}`
 	},
 	{
 		id: 'loga-02',
@@ -1219,7 +1219,7 @@ export const CORPUS: readonly DerivativeCase[] = [
 		custom: 'log_10(x)',
 		f: (x) => Math.log10(x),
 		points: POINTS_POS,
-		expected: R`\frac{1}{x\ln(10)}`
+		expected: R`\frac{1}{\ln(10)x}`
 	},
 	{
 		id: 'loga-03',
@@ -1228,7 +1228,7 @@ export const CORPUS: readonly DerivativeCase[] = [
 		custom: 'log(x)',
 		f: (x) => Math.log10(x),
 		points: POINTS_POS,
-		expected: R`\frac{1}{x\ln(10)}`
+		expected: R`\frac{1}{\ln(10)x}`
 	},
 	{
 		id: 'loga-04',
@@ -1285,7 +1285,7 @@ export const CORPUS: readonly DerivativeCase[] = [
 		latex: '2^{x^2}',
 		custom: '2^(x^2)',
 		f: (x) => 2 ** (x * x),
-		expected: R`2x\ln(2)2^{x^2}`
+		expected: R`2\ln(2)x2^{x^2}`
 	},
 	{
 		id: 'loga-11',

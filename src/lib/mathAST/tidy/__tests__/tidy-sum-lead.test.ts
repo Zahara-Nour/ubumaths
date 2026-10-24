@@ -205,7 +205,7 @@ describe('somme sans variable : le rationnel en tête', () => {
 		// degré 1 : les négatifs restent derrière, le rationnel passe devant
 		['\\ln(3)-\\ln(2)+1', '1 + \\ln\\left( 3 \\right) - \\ln\\left( 2 \\right)'],
 		// une somme imbriquée sans variable, dans une expression qui en a une
-		['x\\ln(\\sqrt2+1)', 'x \\ln\\left( 1 + \\sqrt{2} \\right)'],
+		['x\\ln(\\sqrt2+1)', '\\ln\\left( 1 + \\sqrt{2} \\right) x'],
 		// tous négatifs dans un facteur : le signe sort, puis le rationnel en tête
 		['3(-\\sqrt2-1)', '-3 \\left( 1 + \\sqrt{2} \\right)'],
 		['\\dfrac{-1-\\sqrt5}{2}', '-\\dfrac{1 + \\sqrt{5}}{2}']
@@ -230,7 +230,7 @@ describe('somme sans variable : le rationnel en tête', () => {
 		// témoins : une variable, l'ordre ne change pas
 		['x^2+1', 'x^2 + 1'],
 		['1+x', 'x + 1'],
-		['\\sqrt2 x+1', 'x \\sqrt{2} + 1'],
+		['\\sqrt2 x+1', '\\sqrt{2} x + 1'],
 		['x+\\sqrt2+1', '\\sqrt{2} + x + 1'],
 		['u_0+1', 'u_0 + 1'],
 		['\\alpha+1', '\\alpha + 1'],

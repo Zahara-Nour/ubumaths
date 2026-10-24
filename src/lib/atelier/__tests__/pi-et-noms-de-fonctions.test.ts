@@ -143,8 +143,8 @@ describe('(B) un nom de fonction dans un exposant', () => {
 		const result = runInput(session(), '.dériver 3log_2(x)');
 
 		expect(result).toMatchObject({ kind: 'commande' });
-		expect('output' in result ? result.output : '').toBe('d/dx(3log_2(x)) = 3/{xln(2)}');
-		expect(latexOf(result)).toBe('\\dfrac{3}{x \\ln\\left( 2 \\right)}');
+		expect('output' in result ? result.output : '').toBe('d/dx(3log_2(x)) = 3/{ln(2)x}');
+		expect(latexOf(result)).toBe('\\dfrac{3}{\\ln\\left( 2 \\right) x}');
 	});
 });
 

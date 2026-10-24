@@ -89,7 +89,7 @@ describe("tidy — la racine d'un décimal sans écriture décimale finie s'écr
 		['sqrt(0.2)', 'sqrt(5)/5'],
 		['sqrt(1.5)', 'sqrt(6)/2'],
 		['sqrt(0.08)', 'sqrt(2)/5'],
-		['sqrt(0.5)*x', '{xsqrt(2)}/2'],
+		['sqrt(0.5)*x', '{sqrt(2)x}/2'],
 		['sqrt(0.5)+1', '1+sqrt(2)/2'],
 		// Racine rationnelle : le registre décimal reste
 		['sqrt(0.25)', '0.5'],

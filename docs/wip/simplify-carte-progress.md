@@ -863,3 +863,28 @@ Aucun énoncé ne change. Limite : instantané du corpus, pas les modèles modif
 - **Relevé des textes** (tous les modèles de la prod, 6 graines, 19 254 tirages, base contre branche) : 6 tirages changent, tous A-03 v2. Aucun autre énoncé.
 - JSON du dépôt identique à la prod avant `;d` (simulation `create-questions` : « déjà en base », sans différence).
 - Doc : `docs/systeme/mathast/README.md` (registre décimal), `docs/pratiques/fiches-exercices.md` (bloc figure : `{{eval:x;d}}`).
+
+## 61. Lot 5d (D3), phase 0 : sonde (2026-10-24, à valider par David ; worktree `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5d-d3`)
+
+Décision déjà prise au § 19 : une expression littérale tapée dans Calcul est mise au propre, ordre de l'élève gardé. Sondé par le moteur de l'Atelier (`runInput`, 36 saisies, sonde jetable retirée) : aujourd'hui tout ressort tel que tapé (`readable`, `atelier/render.ts:141`, garde « variable »). Candidat : `tidy(ast, { order: 'kept' })` à la place de cette garde.
+
+**Comportements (nominal)** : `3+2*x → 3 + 2x` · `2x+3x → 5x` · `x*2 → 2x` · `x+0`, `1*x`, `x^1`, `-(-x)` → `x` · `1+2x+3x → 1 + 5x` · `2(1+x)+3(x+1) → 5(1+x)` · `3x²+2x²−x → 5x² − x` · `a+b+a → 2a + b` · `2*3x → 6x` · `x*x → x²` · `x²·x³ → x⁵` · `sin x + sin x → 2 sin x` · `x−(−3) → x + 3` · `x/2+x/3 → 5x/6` · `(2x)/2 → x` · `x+1/3+1/6 → x + 1/2`.
+
+**Restent tels que tapés (limites)** : `x/x` (S3) · `0,5x + 1` (S1) · `3 − 2x + x²` (ordre gardé) · `2x − (x+1)` et `2(x+1)` (on ne développe pas) · `x − 1 − (x+1)` · `ln(eˣ)` (identité, S4) · `(x²−1)/(x+1)` (rôle de `.simplifier`/`.factoriser`) · une grandeur (garde « unité » conservée) · un résultat trop long (garde `exactTooLong` conservée).
+
+**Conséquences des règles déjà validées** : `√8·x → 2x√2` (ordre des facteurs, Q13 : lettres avant fonctions) ; le bouton « Copier » part du LaTeX, il suit donc l'affichage.
+
+**Questions** :
+
+- **Q27** — « Garder » range aujourd'hui l'arbre TAPÉ (`promote`, `atelier/calcul.ts:4278`) : après 5d, la ligne afficherait `5x` et l'objet gardé serait `2x+3x`. Reco : ranger ce qui est affiché (même valeur partout, `x/x` restant `x/x`, le domaine n'est pas perdu).
+- **Q28** — `x^0 → 1` (faux en 0 si on tient 0⁰ pour indéfini) : même famille que `x/x` (S3). Reco : garder `x^0` tel quel, comme `x/x`. Le changement serait dans `tidy`, donc pour tous ses appelants. Je vérifie d'abord qui en dépend ; si c'est large, cas reporté en 5f.
+- **Q29** — `eˣ·eˣ → (eˣ)²` (règle `x·x → x²`), alors qu'en classe on écrit `e^{2x}`. Reco : `e^{2x}` (règle des exposants pour une exponentielle). Change aussi `tidy` pour tous : même traitement que Q28 (vérifié d'abord, sinon 5f).
+
+**Plan (une PR)** : tests rouges dans `affichage-calcul.test.ts` (nominal + limites ci-dessus), garde « variable » de `readable` remplacée par `tidy` ordre gardé, « Garder » selon Q27, `docs/systeme/atelier.md` mis à jour. Revue `code-reviewer` (Sonnet).
+
+## 62. Q27-Q30 (David, 2026-10-24)
+
+- **Q27 : oui.** « Garder » range ce qui est affiché (lot 5d).
+- **Q28 : retirée.** Déjà tranchée au lot 4a (§ 35, Q1 : `x⁰ → 1` gardé, convention des polynômes) ; reproposée par erreur, David a suivi la reco sans le rappel. Prototype mesuré (2 tests seulement en dépendaient, `tidy-domaine`, `tidy-review`) puis retiré.
+- **Q29** : reco suivie (`eˣ·eˣ → e^{2x}`) ; précision en attente — seulement quand des facteurs se regroupent, un `(eˣ)²` tapé restant tel quel (`tidy` ne distingue pas les deux aujourd'hui).
+- **Q30 : b** (David, maintenu après le relevé). Une fonction usuelle en un nombre (`√2`, `ln 2`, `sin 1`, `|−3|`) se range comme un coefficient, devant les lettres : `2√2 x`, `√2 (x+1)`, `ln(2) x`, `1/(ln(2) x)`, `2 ln(2) x·2^{x²}`. Une fonction de l'énoncé (`f(2)`) reste une inconnue. Branche `fix/simplify-carte-ordre-valeurs`, PR avant 5d. `order.ts` : catégorie `CATEGORY_VALUE`. Tests : 20 rouges sur 128 sans le correctif (`tidy-ordre-facteurs`). Suite serveur : 4 rouges, tous des attentes de l'ancien ordre, mises à jour. **Corpus des dérivées mis à jour** (David : « il faudra mettre à jour le corpus ») : 4 formes (`log₂`, `log` ×2, `2^{x²}`) — l'oracle compare sans l'ordre des facteurs, il ne l'avait pas vu.

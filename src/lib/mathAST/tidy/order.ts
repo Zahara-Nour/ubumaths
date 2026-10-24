@@ -89,11 +89,17 @@ type TermOrderKey = {
  * `\pi`) passaient derrière `A` et `\alpha` (`A\pi`, `\alpha \imaginaryI`).
  */
 const CATEGORY_CONSTANT = 0;
-const CATEGORY_SYMBOL = 1;
-const CATEGORY_SUM = 2;
-const CATEGORY_FUNCTION = 3;
-const CATEGORY_EXPONENTIAL = 4;
-const CATEGORY_OTHER = 5;
+/**
+ * Une fonction usuelle en un nombre (`√2`, `ln 2`, `sin 1`, `|−3|`) : une
+ * valeur, qui se range comme un coefficient, derrière `e`, `i`, `π` et devant
+ * les lettres (`2√2 x`, `ln(2) x` — Q30, David, 2026-10-24).
+ */
+const CATEGORY_VALUE = 1;
+const CATEGORY_SYMBOL = 2;
+const CATEGORY_SUM = 3;
+const CATEGORY_FUNCTION = 4;
+const CATEGORY_EXPONENTIAL = 5;
+const CATEGORY_OTHER = 6;
 
 /** La constante d'Euler dans une clé d'ordre (voir `writtenForm`). */
 const EULER_ORDER_KEY: MathNode = variable('\\euler');
@@ -154,7 +160,7 @@ function categoryOf(base: MathNode): number {
 		case 'subtraction':
 			return CATEGORY_SUM;
 		case 'function':
-			return CATEGORY_FUNCTION;
+			return containsUnknown(inner) ? CATEGORY_FUNCTION : CATEGORY_VALUE;
 		case 'superscript':
 			return powerCategory(inner.base);
 		default:
