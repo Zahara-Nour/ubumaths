@@ -460,7 +460,12 @@ et `authenticated` n'a que SELECT : seul le serveur écrit (client service), `an
 Cascade depuis `profiles` (effacement RGPD), RESTRICT vers `classification_nodes`. Piège d'écriture :
 un lot d'insertions où une ligne omet `starred_grades` y envoie NULL (union des clés de PostgREST) —
 passer `defaultToNull: false` ou toujours fournir la colonne. Test :
-`tests/integration/mathoux-memoire.test.ts`.
+`tests/integration/mathoux-memoire.test.ts`. Gidouilles des étapes (migration `20261024210000`) :
+`rewarded_stage` (NULL : rien payé) et `rewarded_grades` retiennent ce qui a été payé, lus comme
+le reste de la ligne ; `pay_mathou_milestones` (SECURITY DEFINER, EXECUTE à `service_role` seul,
+garde `auth.role()`) verrouille les lignes de l'élève, verse l'écart (naissance 3, matou 5, grand
+matou 10, étoile 5) sur `profiles.gidouilles` avec une ligne `gidouilles_activity` par étape, et
+ne fait jamais redescendre le payé. Test : `tests/integration/mathoux-gidouilles-etapes.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
 jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible
