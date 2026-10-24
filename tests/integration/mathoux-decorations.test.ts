@@ -37,6 +37,7 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
+import { MATHOU_DECORATIONS, MATHOU_DECORATION_IDS } from '$lib/mathoux/decorations';
 
 // Types
 type Student = { id: string; client: SupabaseClient };
@@ -544,6 +545,22 @@ describe('Décorations de panse des Mathoux', () => {
 	});
 
 	describe('accès', () => {
+		it('le catalogue du code (prix, libellés) est celui de la base, qui débite', async () => {
+			for (const info of MATHOU_DECORATIONS) {
+				const { data, error } = await service.rpc('mathou_decoration_catalog', {
+					p_decoration: info.id
+				});
+				expect(error).toBeNull();
+				expect(data).toEqual([{ price: info.price, label: info.purchaseLabel }]);
+			}
+			// Une clé hors du catalogue n'a pas de prix
+			const { data: unknown } = await service.rpc('mathou_decoration_catalog', {
+				p_decoration: 'crescent'
+			});
+			expect(unknown).toEqual([]);
+			expect(MATHOU_DECORATIONS.map((d) => d.id)).toEqual([...MATHOU_DECORATION_IDS]);
+		});
+
 		it('le catalogue est réservé au serveur', async () => {
 			const student = await newStudent(0);
 			for (const client of [student.client, anon]) {

@@ -206,6 +206,12 @@ export type { FigureNode, FigureHeader, FigureIssue, FigureSize, FigureWindow } 
 export type { QrNode, QrIssue } from './qr';
 
 // ============================================================================
+// HORLOGE (bloc ```horloge)
+// ============================================================================
+
+export type { HorlogeNode, HorlogeIssue, HorlogeSpec, HorlogeTime } from './horloge';
+
+// ============================================================================
 // PARSER TYPES
 // ============================================================================
 

@@ -63,6 +63,7 @@
 				<MathouAvatar
 					raceIndex={news.items[0].raceIndex}
 					stage={news.items[0].stage}
+					decoration={news.items[0].decoration}
 					size={40}
 					label="Un Mathou de la Chatterie"
 				/>
@@ -75,6 +76,7 @@
 						<MathouAvatar
 							raceIndex={item.raceIndex}
 							stage={item.stage}
+							decoration={item.decoration}
 							size={40}
 							label={item.name}
 							reaction={REACTION[item.kind]}

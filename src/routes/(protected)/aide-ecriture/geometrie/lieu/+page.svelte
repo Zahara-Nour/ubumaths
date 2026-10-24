@@ -162,7 +162,7 @@ L = lieu(C, A, couleur="violet")`;
 	<DslDemo
 		dsl={ellipseSimpleDsl}
 		title="2. Milieu avec point fixe"
-		description="A sur le cercle de rayon 4, P fixe. M = milieu(A, P). Deplacez P pour deformer l'ellipse."
+		description="A sur le cercle de rayon 4, P fixe. M = milieu(A, P). Le lieu de M est le cercle de rayon 2 centré au milieu de [OP]. Déplacez P pour le déplacer."
 		width={500}
 		height={400}
 	/>
@@ -238,7 +238,7 @@ L = lieu(C, A, couleur="violet")`;
 	<DslDemo
 		dsl={epicycloidDsl}
 		title="11. Rotation autour du driver"
-		description="A sur le cercle, P fixe. B = rotation(P, centre=A, angle=120). Courbe epicycloide. Deplacez P."
+		description="A sur le cercle, P fixe. B = rotation(P, centre=A, angle=120). Le lieu de B est un cercle. Déplacez P."
 		width={600}
 		height={400}
 	/>
@@ -264,8 +264,8 @@ L = lieu(C, A, couleur="violet")`;
 
 	<DslDemo
 		dsl={epicycloidSliderDsl}
-		title="14. Epicycloide parametrique"
-		description="Slider a controle l'angle de rotation. 120=deltoide, 90=asteroide, 72=5 boucles. Deplacez aussi P (vert)."
+		title="14. Rotation autour du driver, angle variable"
+		description="Le slider a contrôle l'angle de rotation : le lieu reste un cercle, son rayon et son centre changent. Déplacez aussi P (vert)."
 		width={600}
 		height={400}
 		interactive={true}

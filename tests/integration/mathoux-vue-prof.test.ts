@@ -32,6 +32,7 @@ import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
 import { loadMathouCollectionWithNews, readMathouCollection } from '$lib/server/mathoux/collection';
+import { buyMathouDecoration, readOwnedDecorations } from '$lib/server/mathoux/decorations';
 import { loadMathouxCountsByStudent } from '$lib/server/mathoux/teacher';
 import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
 
@@ -309,6 +310,29 @@ describe('Chatterie vue par le professeur', () => {
 
 		const vueProf = await readMathouCollection(prof, eleveId, GRADE);
 		expect(mathouOf(vueProf, notionFractions)?.growth).toBe('grand_matou');
+	});
+
+	it('décoration de panse : l’élève et le prof la voient sur le Mathou, un autre élève rien', async () => {
+		const { error } = await service
+			.from('profiles')
+			.update({ gidouilles: 20 })
+			.eq('id', eleveId)
+			.select('id')
+			.single();
+		if (error) throw new Error(`décor : gidouilles : ${error.message}`);
+		const achat = await buyMathouDecoration(service, eleveId, 'cockade', notionFractions);
+		expect(achat).toEqual({ ok: true, balance: 0 });
+
+		const vueEleve = await loadMathouCollectionWithNews(eleve, eleveId, GRADE);
+		expect(mathouOf(vueEleve.collection, notionFractions)?.decoration).toBe('cockade');
+		expect(mathouOf(vueEleve.collection, notionVecteurs)?.decoration).toBeNull();
+		const vueProf = await readMathouCollection(prof, eleveId, GRADE);
+		expect(mathouOf(vueProf, notionFractions)?.decoration).toBe('cockade');
+
+		expect(await readOwnedDecorations(eleve, eleveId)).toEqual(['cockade']);
+		expect(await readOwnedDecorations(prof, eleveId)).toEqual(['cockade']);
+		// RLS : zéro ligne, sans erreur
+		expect(await readOwnedDecorations(autre, eleveId)).toEqual([]);
 	});
 
 	it('compteurs de classe : la mémoire, sans les notions archivées', async () => {

@@ -116,9 +116,15 @@ const mockMathoux = [
 		best_stage: 'grand_matou',
 		starred_grades: ['2', '1_SPE'],
 		asleep: false,
+		decoration: 'cockade',
 		first_seen_at: '2026-10-01T10:00:00Z',
 		updated_at: '2026-10-18T10:00:00Z'
 	}
+];
+
+// Décorations de panse achetées (lot B des accessoires, 2026-10-24)
+const mockMathouDecorations = [
+	{ decoration: 'cockade', price_paid: 20, purchased_at: '2026-10-24T10:00:00Z' }
 ];
 
 // Palotin de l'élève (une ligne par élève)
@@ -204,6 +210,8 @@ function setupMockSupabase() {
 						return mockTutorConversations;
 					case 'student_mathoux':
 						return mockMathoux;
+					case 'student_mathou_decorations':
+						return mockMathouDecorations;
 					case 'student_buddies':
 						return mockBuddy;
 					case 'student_last_visits':
@@ -416,8 +424,23 @@ describe('GET /api/account/export', () => {
 			expect(appel).toBeGreaterThanOrEqual(0);
 			const chaine = mockSupabase.from.mock.results[appel].value;
 			expect(chaine.select.mock.calls[0][0]).toBe(
-				'notion_id, best_stage, starred_grades, asleep, first_seen_at, updated_at'
+				'notion_id, best_stage, starred_grades, asleep, decoration, first_seen_at, updated_at'
 			);
+			const eq = chaine.select.mock.results[0].value.eq;
+			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
+		});
+
+		test('contient les décorations de panse achetées par l’appelant (catégorie gaming)', async () => {
+			const response = await GET(createMockEvent() as never);
+			const data = await response.json();
+
+			expect(data.gaming.mathou_decorations).toEqual(mockMathouDecorations);
+			const appel = mockSupabase.from.mock.calls.findIndex(
+				(c: unknown[]) => c[0] === 'student_mathou_decorations'
+			);
+			expect(appel).toBeGreaterThanOrEqual(0);
+			const chaine = mockSupabase.from.mock.results[appel].value;
+			expect(chaine.select.mock.calls[0][0]).toBe('decoration, price_paid, purchased_at');
 			const eq = chaine.select.mock.results[0].value.eq;
 			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
 		});
@@ -559,13 +582,15 @@ describe('GET /api/account/export', () => {
 
 	// Un export qui omettrait une table sur une panne serait faux : 500, l'élève réessaie
 	describe('Lecture en échec', () => {
-		test.each(['student_mathoux', 'student_buddies', 'student_last_visits'])(
-			'%s illisible → 500',
-			async (table) => {
-				failingTables.add(table);
-				await expect(GET(createMockEvent() as never)).rejects.toMatchObject({ status: 500 });
-			}
-		);
+		test.each([
+			'student_mathoux',
+			'student_mathou_decorations',
+			'student_buddies',
+			'student_last_visits'
+		])('%s illisible → 500', async (table) => {
+			failingTables.add(table);
+			await expect(GET(createMockEvent() as never)).rejects.toMatchObject({ status: 500 });
+		});
 	});
 
 	describe('Security', () => {

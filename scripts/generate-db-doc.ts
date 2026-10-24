@@ -155,6 +155,7 @@ export const DOMAINS: Domain[] = [
 			'buddy_skins',
 			'student_buddies',
 			'student_mathoux',
+			'student_mathou_decorations',
 			'student_last_visits'
 		]
 	},

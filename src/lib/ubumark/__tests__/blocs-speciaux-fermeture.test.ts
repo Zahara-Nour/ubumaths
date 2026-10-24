@@ -23,7 +23,8 @@ describe('Q66 — un ``` lointain ne ferme pas un bloc séparé par du texte', (
 		['variation', '```variation\nvariable: x\ndomain: -inf, +inf'],
 		['probtree', '```probtree\nRouge:1/2\nBleue:1/2'],
 		['trig', '```trig\npreset: quarters'],
-		['line', '```line\nstart: 0\nend: 5']
+		['line', '```line\nstart: 0\nend: 5'],
+		['horloge', '```horloge\nheure: 9 h']
 	])('%s : le texte intermédiaire est un paragraphe', (_, block) => {
 		const md = `${block}\n\nVoici le texte qui suit le bloc\n\n\`\`\`\n\nfin`;
 		const nodes = children(md);
@@ -44,6 +45,7 @@ describe('une faute de frappe dans un bloc fermé : la suite du document intacte
 	it.each([
 		['trig', '```trig\npreset: quarters\n\npreset all\n```'],
 		['line', '```line\nstart: 0\nend: 5\n\narrows true\n```'],
+		['horloge', '```horloge\nheure: 9 h\n\nchiffres quarts\n```'],
 		['probtree', '```probtree\nRouge:1/2\n\nBoule rouge 3/5\n```'],
 		['variation', '```variation\nvariable: x\ndomain: -inf, +inf\n\nsign f de x\n```']
 	])('%s', (_, block) => {

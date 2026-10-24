@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1701._
+_Mis à jour le 2026-10-24, après #1706._
 
-- **État** : PR 1 à 5, 6a (#1693, `/demo/structure`), 6b (#1695, `/demo/cercle-trigo`), 6c (#1698, `/demo/cartes`), 6d (#1700, `/demo/lexique`) et 6e (#1701, `/demo/corriges`) mergées, pas en prod. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
-- **Prochaine action** : phase 6 suite, une PR par page : géométrie (galerie de 10 figures validée, plus bas), questions, éditeur, diaporama. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main` ; phase 0 de la page à faire valider.
+- **État** : PR 1 à 5, 6a (#1693, `/demo/structure`), 6b (#1695, `/demo/cercle-trigo`), 6c (#1698, `/demo/cartes`), 6d (#1700, `/demo/lexique`), 6e (#1701, `/demo/corriges`) et 6f (#1706, `/demo/geometrie`) mergées, pas en prod. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
+- **Prochaine action** : phase 6 suite, une PR par page : questions, éditeur, diaporama. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main` ; phase 0 de la page à faire valider.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
-- **En attente de David** : le `z` manuscrit de Chiphre Math ressemble à un `2` (« 4z », « z² » dans l'image de `/demo/corriges`) : à regarder ou non, hors chantier.
-- **Pièges en cours** : sous `/dev`, jamais de `+layout@` (saute la garde en navigation client) ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; un test déplacé d'un niveau → recompter ses `../` ; `await render(…)` exigé par `lint:fast` ; limiteur de connexion local (5 connexions / 15 min par IP) : garder l'état de session Playwright ; pnpm 12 refuse `pnpm -s` (l'autofixer ne tourne pas, en silence) ; `VipCardHolo` exige les feuilles `/css/holo-cards/*.css` dans la page ; ligne 4 après le chantier constructions ; une fiche du lexique cumule les définitions des niveaux passés ; worktree neuf → `pnpm exec svelte-kit sync` avant un `pnpm tsx` de `scripts/fiches/` (alias `$lib`) ; commitlint : lignes du corps ≤ 100 caractères.
-- **Worktree / branche** : aucun (PR 6e nettoyée). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **En attente de David** : (1) le `z` manuscrit de Chiphre Math ressemble à un `2` (image de `/demo/corriges`) : à regarder ou non, hors chantier ; (2) `curves`, `point-sur` et `sliders/integrale-improper` (aide géométrie) tracent sin ou cos sans `unite_angle("radians")`, donc sans doute en degrés comme `aire-entre` avant #1706 : à corriger ou non.
+- **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : sin/cos en degrés sans `unite_angle("radians")`, le nom d'une variable s'affiche en étiquette (style en ligne ou `etiquette="aucune"`), `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : importer par chemin relatif, pas `$lib` ; port 5176 souvent pris par un autre worktree ; commitlint : lignes du corps ≤ 100 caractères.
+- **Worktree / branche** : aucun (PR 6f nettoyée). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
@@ -261,3 +261,29 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - `BackLink` vers `/demo`, `noindex`, non reliée avant la phase 7. Pas de revue.
 - Remarqué sur l'image : le `z` manuscrit de Chiphre Math ressemble à un `2` (« 4z », « z² »
   dans l'exercice 1). Signalé à David, rien changé.
+
+## PR 6f — vitrine `/demo/geometrie` (phase 0 : David suit les recommandations de Claude, « je te suis », le 2026-10-24)
+
+- Trois sections (Au collège, Au lycée, Pour le plaisir), 10 figures manipulables, titre et texte
+  de 2-3 lignes, script replié sous « Voir le script ». `BackLink` vers `/demo`, `noindex`.
+- Figure 1 : la droite d'Euler (des 7 de `triangles`).
+- Trouvé en route, vérifié au moteur : `rotation(P, centre=A, angle=a)` avec A sur un cercle trace
+  un **cercle** (B = R_a·P + (I − R_a)·A), pas une épicycloïde ; « 120 = deltoïde, 90 = astroïde »
+  est faux (`sliders/epicycloide`, `lieu` n° 11 et 14). Le « lieu du milieu » (`lieu` n° 2) est un
+  cercle de rayon 2, pas une ellipse. Textes de ces pages d'aide corrigés dans la PR, scripts gardés.
+- Figure 9 : une vraie épicycloïde à 3 arches écrite pour la vitrine (petit cercle qui roule,
+  `trace` + curseur t), au lieu de `sliders/epicycloide`.
+- Textes rendus par le serveur, figures montées dans le navigateur (les sources sont en `ssr = false`).
+- Sur téléphone, la figure se réduit à la largeur de l'écran (canevas à largeur fixe aujourd'hui).
+- Test : chaque figure se construit sans erreur. `koch-dsl.ts` passe dans `$lib`. Pas de revue.
+- Trouvé en route : « Aire entre deux courbes » traçait sin et cos **en degrés** (droites presque
+  plates, aire 3,009 au lieu de 2√2) faute de `unite_angle("radians")`, sur la vitrine comme sur
+  `sliders/aire-entre` : corrigé des deux côtés, test de l'aire vu rouge sans. `curves`,
+  `point-sur` et `sliders/integrale-improper` tracent aussi sin ou cos sans `unite_angle` : pas
+  regardé, signalé à David. `trace` n° 3 (« Épicycloïde ») est une hypotrochoïde à trois lobes, et
+  `trace` n° 6 annonçait une ellipse pour un milieu : textes corrigés aussi.
+- Retouches de lisibilité : triangle d'Euler C(−3, 4) (G, H, O écartés) ; plus de noms internes
+  affichés (`s_rot`, `de`, `chemin`…) : styles en ligne, `etiquette="aucune"`, objets sans nom.
+- Vérifié sans compte sur 5177 (Playwright) : 200, texte dans le HTML du serveur, 10 figures,
+  aucune erreur de console, rien qui déborde à 390 px ; curseurs glissés (épicycloïde complète,
+  spirale déroulée, flocon à l'étape 4, aire 2,828).

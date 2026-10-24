@@ -89,7 +89,24 @@ const carte = {
 	]
 } as unknown as QuestionTemplate;
 
-const modeles = new Map([coefficient, parite, deuxCases, carte].map((t) => [t.id, t]));
+/** QCM d'horloges (chantier horloge, décisions 5 et 6) : chaque choix est un bloc */
+const horloges = {
+	...base,
+	id: 'horloges',
+	variations: [
+		{
+			statement: 'Quelle horloge indique {{h}} heures ?',
+			variables: [{ name: 'h', expression: '3' }],
+			choices: [
+				{ content: '```horloge\nheure: {{h}} h\n```', isCorrect: true },
+				{ content: '```horloge\nheure: 9 h\ntaille: 5cm\n```', isCorrect: false }
+			],
+			correctChoiceIndex: '0'
+		}
+	]
+} as unknown as QuestionTemplate;
+
+const modeles = new Map([coefficient, parite, deuxCases, carte, horloges].map((t) => [t.id, t]));
 
 describe('buildSerie — cas nominaux', () => {
 	it('une question à case : énoncé à trous numéroté, corrigé avec la réponse et la correction', () => {
@@ -140,6 +157,28 @@ describe('buildSerie — cas nominaux', () => {
 			const nested = list.items[0].children.filter((c) => c.type === 'list');
 			expect(nested).toEqual([]);
 		}
+	});
+
+	it('QCM d’horloges : chaque choix reste un bloc, 3 cm sauf taille donnée', () => {
+		const serie = buildSerie(modeles, [{ templateId: 'horloges', seed: 1 }]);
+		const horlogesDe = (texte: string) => {
+			const found: { spec: { times: unknown; sizeCm: number | null } | null }[] = [];
+			const visit = (node: unknown): void => {
+				if (Array.isArray(node)) return node.forEach(visit);
+				if (node === null || typeof node !== 'object') return;
+				const record = node as Record<string, unknown>;
+				if (record.type === 'horloge') found.push(record as never);
+				Object.values(record).forEach(visit);
+			};
+			visit(parseMarkdown(texte));
+			return found;
+		};
+		const enonce = horlogesDe(serie.statement);
+		expect(enonce.map((n) => n.spec?.sizeCm).sort()).toEqual([3, 5]);
+		expect(enonce.map((n) => n.spec?.times)).toContainEqual([{ hours: 3, minutes: 0 }]);
+		// La réponse du corrigé : la lettre seule, sans redessiner le bloc sur la ligne
+		expect(serie.solution).toMatch(/Réponse : \*\*[ab]\)\*\*\s*$/m);
+		expect(serie.solution).not.toMatch(/\*\*[ab]\)\*\* ```/);
 	});
 
 	it('plusieurs cases (texte et formule) : toutes à trous, toutes remplies au corrigé', () => {

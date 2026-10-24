@@ -76,7 +76,8 @@ describe('readMathouMemory', () => {
 					asleep: true,
 					updated_at: T0,
 					rewarded_stage: 'matou',
-					rewarded_grades: ['2']
+					rewarded_grades: ['2'],
+					decoration: 'cockade'
 				},
 				{
 					notion_id: 'n3',
@@ -85,7 +86,9 @@ describe('readMathouMemory', () => {
 					asleep: false,
 					updated_at: T0,
 					rewarded_stage: 'grand_matou',
-					rewarded_grades: ['2']
+					rewarded_grades: ['2'],
+					// Clé inconnue (la base l'interdit) : écartée
+					decoration: 'croissant'
 				},
 				{
 					// Stade corrigé à la main sous le payé : rien à redemander
@@ -123,8 +126,19 @@ describe('readMathouMemory', () => {
 		expect(callOf(queries[0], 'eq')).toEqual(['student_id', STUDENT]);
 		// Un stade inconnu est écarté (la base l'interdit : défense en profondeur).
 		// Payé = stade payé égal au meilleur stade ET toutes les étoiles payées.
+		// Décoration : lue telle quelle, une clé inconnue ou absente → aucune.
 		expect([...memory.entries()]).toEqual([
-			['n1', { bestStage: 'matou', starredGrades: ['2'], asleep: true, updatedAt: T0, paid: true }],
+			[
+				'n1',
+				{
+					bestStage: 'matou',
+					starredGrades: ['2'],
+					asleep: true,
+					updatedAt: T0,
+					paid: true,
+					decoration: 'cockade'
+				}
+			],
 			[
 				'n3',
 				{
@@ -132,11 +146,32 @@ describe('readMathouMemory', () => {
 					starredGrades: ['2', '1_SPE'],
 					asleep: false,
 					updatedAt: T0,
-					paid: false
+					paid: false,
+					decoration: null
 				}
 			],
-			['n5', { bestStage: 'matou', starredGrades: [], asleep: false, updatedAt: T0, paid: true }],
-			['n4', { bestStage: 'chaton', starredGrades: [], asleep: false, updatedAt: T0, paid: false }]
+			[
+				'n5',
+				{
+					bestStage: 'matou',
+					starredGrades: [],
+					asleep: false,
+					updatedAt: T0,
+					paid: true,
+					decoration: null
+				}
+			],
+			[
+				'n4',
+				{
+					bestStage: 'chaton',
+					starredGrades: [],
+					asleep: false,
+					updatedAt: T0,
+					paid: false,
+					decoration: null
+				}
+			]
 		]);
 	});
 

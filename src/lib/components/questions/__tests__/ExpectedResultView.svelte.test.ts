@@ -281,3 +281,43 @@ describe('R5 — QCM : indicateur cohérent avec la saisie (Q109 a)', () => {
 		expect(marks(container)).toEqual(['square-check', 'square']);
 	});
 });
+
+describe('QCM d’horloges (chantier horloge, décision 5)', () => {
+	it('un choix en bloc ```horloge est dessiné, à 3 cm, pas affiché en texte brut', async () => {
+		const clock = (h: number) => `\`\`\`horloge\nheure: ${h} h\n\`\`\`` as ResolvedMarkdown;
+		const result: ExpectedResult = {
+			status: 'incorrect',
+			lines: [
+				{
+					kind: 'choices',
+					multiple: false,
+					choices: [
+						{
+							originalIndex: 0,
+							content: clock(3),
+							checked: false,
+							isCorrect: true,
+							status: 'unoptimal'
+						},
+						{
+							originalIndex: 1,
+							content: clock(9),
+							checked: true,
+							isCorrect: false,
+							status: 'incorrect'
+						}
+					]
+				}
+			]
+		};
+		const { container } = await show(result);
+		const items = [...container.querySelectorAll('[data-kind="choices"] li')];
+		expect(text(items[0])).not.toContain('```');
+		for (const li of items) {
+			const svg = li.querySelector('svg[role="img"]');
+			expect(svg).not.toBeNull();
+			expect(svg!.getBoundingClientRect().width / (96 / 2.54)).toBeCloseTo(3, 1);
+		}
+		expect(text(items[1])).toContain('coché à tort');
+	});
+});

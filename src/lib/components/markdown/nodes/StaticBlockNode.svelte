@@ -29,6 +29,7 @@
 	import StatChart from './StatChart.svelte';
 	import FigureBlock from './FigureBlock.svelte';
 	import QrBlock from './QrBlock.svelte';
+	import Horloge from './Horloge.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -83,4 +84,6 @@
 	<StatChart {node} />
 {:else if node.type === 'qr'}
 	<QrBlock {node} />
+{:else if node.type === 'horloge'}
+	<Horloge {node} />
 {/if}

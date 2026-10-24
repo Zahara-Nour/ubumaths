@@ -66,6 +66,11 @@
 	});
 
 	/** Libellé d'un choix de QCM, selon son statut et s'il est coché */
+	/** Choix qui est un bloc (```horloge) : InlineMarkdown n'en garderait que le texte brut */
+	function isBlockChoice(content: string): boolean {
+		return content.trimStart().startsWith('```');
+	}
+
 	function choiceLabel(choice: ExpectedChoice): string {
 		if (choice.status === 'correct') return 'coché, juste';
 		if (choice.status === 'incorrect') return 'coché à tort';
@@ -167,7 +172,14 @@
 						{:else}
 							<Circle class="choice-box h-4 w-4" aria-hidden="true" data-indicator="circle" />
 						{/if}
-						<span class="min-w-0 flex-1"><InlineMarkdown content={choice.content} /></span>
+						{#if isBlockChoice(choice.content)}
+							<!-- Choix en bloc (```horloge) : dessiné, 3 cm comme dans le QCM -->
+							<div class="min-w-0 flex-1 [--horloge-taille:3cm]">
+								<MarkdownRenderer content={choice.content} />
+							</div>
+						{:else}
+							<span class="min-w-0 flex-1"><InlineMarkdown content={choice.content} /></span>
+						{/if}
 						{#if choiceLabel(choice)}
 							<span class="status-tag {toneClass(choice.status)}">{choiceLabel(choice)}</span>
 						{/if}

@@ -3,7 +3,8 @@
  * des corrigés en base : pour chaque fichier .md d'un dossier, passe chaque formule
  * `~…~` et `$…$` au rendu écran et signale : erreur rouge, lettres découpées (un
  * nom de fonction non déclaré, `CM` lu comme `C·M`), nom grec sans antislash,
- * `\unit` résiduel. Signale aussi les blocs ```courbe et ```figure en erreur ou hors fenêtre.
+ * `\unit` résiduel. Signale aussi les blocs ```courbe et ```figure en erreur ou hors fenêtre,
+ * et les blocs ```horloge en erreur.
  *
  * Les lettres de fonctions sont celles de `generic_functions` de l'exercice ; sans
  * elles, `C'(x)` s'affiche comme un produit.
@@ -20,10 +21,11 @@ import type { CourbeNode } from '$lib/ubumark/types/courbe';
 import { buildCourbeScene } from '$lib/ubumark/utils/courbe-scene';
 import type { FigureNode } from '$lib/ubumark/types/figure';
 import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
+import type { HorlogeNode } from '$lib/ubumark/types/horloge';
 
-type BlocNode = CourbeNode | FigureNode;
+type BlocNode = CourbeNode | FigureNode | HorlogeNode;
 
-/** Blocs ```courbe et ```figure d'un arbre ubumark, listes comprises. */
+/** Blocs ```courbe, ```figure et ```horloge d'un arbre ubumark, listes comprises. */
 function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 	if (Array.isArray(node)) {
 		for (const child of node) blocs(child, found);
@@ -31,6 +33,7 @@ function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 		const record = node as Record<string, unknown>;
 		if (record.type === 'courbe') found.push(node as CourbeNode);
 		else if (record.type === 'figure') found.push(node as FigureNode);
+		else if (record.type === 'horloge') found.push(node as HorlogeNode);
 		else {
 			blocs(record.children, found);
 			blocs(record.items, found);
@@ -45,6 +48,7 @@ function blocMessages(bloc: BlocNode): string[] {
 		const { errors, warnings } = buildFigureScene(bloc);
 		return [...errors, ...warnings].map((m) => m.message);
 	}
+	if (bloc.type === 'horloge') return bloc.errors.map((m) => m.message);
 	return [
 		...bloc.errors,
 		...bloc.warnings,

@@ -242,6 +242,8 @@ function convertBlock(block: BlockNode): JSONContent | null {
 			return convertCodeBlock({ type: 'code-block', language: block.kind, code: block.source });
 		case 'qr':
 			return convertCodeBlock({ type: 'code-block', language: 'qr', code: block.source });
+		case 'horloge':
+			return convertCodeBlock({ type: 'code-block', language: 'horloge', code: block.source });
 
 		default:
 			return null;
@@ -383,6 +385,10 @@ function convertListItem(item: ListItemNode): JSONContent {
 			);
 		} else if (child.type === 'qr') {
 			content.push(convertCodeBlock({ type: 'code-block', language: 'qr', code: child.source }));
+		} else if (child.type === 'horloge') {
+			content.push(
+				convertCodeBlock({ type: 'code-block', language: 'horloge', code: child.source })
+			);
 		} else if (child.type === 'image') {
 			content.push(convertImage(child as ImageNode));
 		} else if (child.type === 'video') {

@@ -6,23 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 1 du lot B (migration) ouverte._
+_Mis à jour le 2026-10-24, après #1704._
 
-- **État** : lot A clos (#1685, #1689). Lot B : migration `20261024235000_mathoux_decorations.sql`
-  écrite (table `student_mathou_decorations`, colonne `student_mathoux.decoration`, fonctions
-  `buy_mathou_decoration` / `set_mathou_decoration`), 23 tests d'intégration rouges sans elle,
-  verts avec ; appliquée en LOCAL seulement.
-- **Prochaine action** : revue + audit sécurité de la PR 1 ; CI verte → merge ; `db:migrate` (les
-  4 conditions) ; `db:types`. Puis PR 2 = code (catalogue TS, dessins dans `MathouAvatar`,
-  Chatterie « Décorer », vitrine Boutique, vue prof, export RGPD — colonnes en dur dans
-  `api/account/export/+server.ts` : ajouter `decoration` et la table des achats —, consentement à la
-  route).
-- **En attente de David** : rien.
-- **Pièges en cours** : rendu serveur de plusieurs `MathouAvatar` = ids `s1-…` répétés ; les prix
-  font foi en SQL (`mathou_decoration_catalog`) : le catalogue TS de la PR 2 doit les recopier
-  (test d'égalité à prévoir) ; poser une décoration change `updated_at` (la mémoire rejoue sa
-  mise à jour conditionnelle, normal) ; après un rebase, `FRESH=1`.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-decorations`.
+- **État** : lot A clos (en prod via migrations ; code au prochain `deploy:prod`). Lot B clos :
+  migration #1699 (prod), code #1704 (sur `main`, pas encore en prod). Revue et audit sans bloquant,
+  findings corrigés.
+- **Prochaine action** : rien d'engagé. Suite possible : colliers (lot suivant, phase 0 à faire :
+  règle pour la fraise du grand matou), puis versement du chantier dans `docs/systeme/mathoux.md`.
+- **En attente de David** : vérification à l'écran de #1704 (`docs/wip/verifications-manuelles.md`) ;
+  dire s'il veut les colliers ou clore le chantier.
+- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ;
+  `ConsentButton` exige un `Tooltip.Provider` ; la base locale n'a pas d'élève de démo.
+- **Worktree / branche** : aucun (worktree supprimé après #1704).
 
 ## Constat (2026-10-24)
 
@@ -119,3 +114,14 @@ _Mis à jour le 2026-10-24, PR 1 du lot B (migration) ouverte._
   des fonctions DEFINER finit par `pg_temp` (garde CI `definer-guard`), rollback complet (catalogue),
   assertion « Élève introuvable » ; tests ajoutés : un achat ne libère pas le plafond, catalogue
   refusé aux clients connectés. Rollback rejoué en local puis migration : 25 + garde verts.
+- 2026-10-24 — #1699 mergée (CI verte) ; `db:migrate` depuis le dépôt principal (seule cette
+  migration en attente, vérifié au `--dry-run`) ; droits relus en prod ; `db:types` sur la branche
+  de la PR 2 (table ajoutée au domaine Mathoux de `generate-db-doc.ts`).
+- 2026-10-24 — PR 2 du lot B : code des décorations (catalogue TS + test d'égalité avec la base,
+  dessins dans `MathouAvatar`, mémoire, routes, « Décorer », vitrine, vue prof, export RGPD).
+  Consentement exigé à l'achat seulement (la pose est gratuite et ne porte que l'acheté). Base
+  locale sans élève de démo : vérification à l'écran laissée à David.
+- 2026-10-24 — revue (Sonnet) et audit (Opus) de #1704 : aucun bloquant. Corrigés : libellé
+  « Retirer … de le Mathou », majuscule du toast, refus (404/409) qui rechargent la page, boutons
+  jamais bloqués, décoration sur la carte de fin de séance (schéma Zod du résumé compris), routes
+  au registre du client service, limite de 30 achats ou poses par minute. #1704 mergée, CI verte.

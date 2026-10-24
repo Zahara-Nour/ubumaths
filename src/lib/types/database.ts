@@ -11544,10 +11544,54 @@ export type Database = {
           },
         ]
       }
+      student_mathou_decorations: {
+        Row: {
+          decoration: string
+          price_paid: number
+          purchased_at: string
+          student_id: string
+        }
+        Insert: {
+          decoration: string
+          price_paid: number
+          purchased_at?: string
+          student_id: string
+        }
+        Update: {
+          decoration?: string
+          price_paid?: number
+          purchased_at?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_mathou_decorations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_mathou_decorations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_mathou_decorations_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       student_mathoux: {
         Row: {
           asleep: boolean
           best_stage: string
+          decoration: string | null
           first_seen_at: string
           notion_id: string
           rewarded_grades: string[]
@@ -11559,6 +11603,7 @@ export type Database = {
         Insert: {
           asleep?: boolean
           best_stage: string
+          decoration?: string | null
           first_seen_at?: string
           notion_id: string
           rewarded_grades?: string[]
@@ -11570,6 +11615,7 @@ export type Database = {
         Update: {
           asleep?: boolean
           best_stage?: string
+          decoration?: string | null
           first_seen_at?: string
           notion_id?: string
           rewarded_grades?: string[]
@@ -11579,6 +11625,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "student_mathoux_decoration_fkey"
+            columns: ["student_id", "decoration"]
+            isOneToOne: false
+            referencedRelation: "student_mathou_decorations"
+            referencedColumns: ["student_id", "decoration"]
+          },
           {
             foreignKeyName: "student_mathoux_notion_id_fkey"
             columns: ["notion_id"]
@@ -14698,6 +14751,14 @@ export type Database = {
           updated_count: number
         }[]
       }
+      buy_mathou_decoration: {
+        Args: {
+          p_decoration: string
+          p_notion_id: string
+          p_student_id: string
+        }
+        Returns: Json
+      }
       calculate_3bv: { Args: { p_grid_state: Json }; Returns: number }
       calculate_elo_change: {
         Args: { p_loser_elo: number; p_winner_elo: number }
@@ -16015,6 +16076,13 @@ export type Database = {
         Args: { p_school_id: string }
         Returns: string[]
       }
+      mathou_decoration_catalog: {
+        Args: { p_decoration: string }
+        Returns: {
+          label: string
+          price: number
+        }[]
+      }
       minesweeper_scoped_leaderboard: {
         Args: { p_limit?: number; p_scope: string }
         Returns: {
@@ -16359,6 +16427,14 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      set_mathou_decoration: {
+        Args: {
+          p_decoration: string
+          p_notion_id: string
+          p_student_id: string
+        }
+        Returns: Json
       }
       set_riddle_of_the_day: {
         Args: { p_date: string; p_riddle_id: string; p_selected_by: string }
