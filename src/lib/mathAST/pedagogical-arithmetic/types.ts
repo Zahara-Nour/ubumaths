@@ -8,8 +8,9 @@
  * Design rationale (post-Phase 6 MVP) — see
  * `docs/wip/pedagogical-arithmetic-prompt.md` :
  *
- * `arithmetic-steps.ts` (legacy) emits one step per binary operation with
- * descriptions per `SchoolLevel`, but cannot adapt the STRUCTURE of the
+ * `step-generator/arithmetic-steps.ts` (legacy, removed with `/calc` on
+ * 2026-10-25) emitted one step per binary operation with descriptions per
+ * `SchoolLevel`, but could not adapt the STRUCTURE of the
  * computation. This pipeline introduces:
  *
  * - Pattern-based rules with `applicableLevels` and per-level descriptions.

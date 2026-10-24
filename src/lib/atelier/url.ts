@@ -113,8 +113,8 @@ async function inflate(bytes: Uint8Array): Promise<string> {
  * Encoder un atelier pour une URL.
  *
  * ⚠️ `withinLimit` se lit **avant** de proposer le lien : le §6 L1 demande de
- * prévenir avant la copie, pas de refuser après coup comme le fait `/calc`
- * aujourd'hui.
+ * prévenir avant la copie, pas de refuser après coup comme le faisait
+ * l'ancienne `/calc`.
  */
 export async function encodeAtelier(state: AtelierState): Promise<Encoded> {
 	// Les formules en relatif : une colonne recopiée se compresse bien mieux (lot 2 §7)

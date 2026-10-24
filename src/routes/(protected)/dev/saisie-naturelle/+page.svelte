@@ -3,7 +3,7 @@
 	==============================================================
 
 	Pour que David juge la FRAPPE, au clavier et au téléphone, avant la phase 0
-	(`docs/wip/atelier-saisie-naturelle.md`, décision 11). Le même champ sert
+	(`docs/archive/wip/atelier-saisie-naturelle.md`, décision 11). Le même champ sert
 	l'atelier depuis le 2026-10-14 (réglage « Écriture mathématique ») ; cette
 	page garde le panneau « sous le capot » : un `CalcDesk` sur un `Atelier`
 	local reçoit le texte que produit le champ, par le chemin de Calcul.

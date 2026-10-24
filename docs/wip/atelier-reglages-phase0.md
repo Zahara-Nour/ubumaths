@@ -9,7 +9,7 @@ status: #1385 et #1388 mergées, en attente du deploy:prod ; suite = le mode mat
 Demande de David du 2026-10-14 : une fenêtre de réglages dans l'atelier, où l'on choisit le mode
 de saisie de Calcul — le mode texte d'aujourd'hui, ou le mode MathLive à venir.
 
-⚠️ **Change la décision 1 du 2026-10-13** ([atelier-saisie-naturelle.md](atelier-saisie-naturelle.md)) :
+⚠️ **Change la décision 1 du 2026-10-13** ([atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.md)) :
 « un seul champ MathLive, aucun mode à choisir ». Le mode texte reste, au choix de l'élève.
 
 ## État des lieux (lu dans le code le 2026-10-14)
@@ -68,7 +68,7 @@ réglages ne voit rien changer. Le passage du défaut à « Écriture mathémati
    « nouveau, en essai » dans la fenêtre. Tests d'abord ; `code-reviewer` et revue a11y (fenêtre,
    boutons radio, focus).
 2. **Ensuite, le mode mathématique lui-même** : la phase 0 de
-   [atelier-saisie-naturelle.md](atelier-saisie-naturelle.md), nourrie de tes essais sur
+   [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.md), nourrie de tes essais sur
    `/test-saisie` et maintenant dans l'atelier ; puis Copier, les étapes d'un calcul simple, le
    retrait de `/test-saisie` et de `/calc`.
 

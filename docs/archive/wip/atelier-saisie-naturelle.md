@@ -1,12 +1,12 @@
 ---
 title: Atelier — une saisie naturelle dans Calcul (MathLive, sans point)
 date: 2026-10-14
-status: décisions de principe prises (2026-10-13) ; prototype jetable en cours ; phase 0 après le prototype
+status: versé dans docs/systeme/atelier.md (« Réglages et écriture mathématique ») le 2026-10-25, au retrait de /calc
 ---
 
 # Atelier — une saisie naturelle dans Calcul
 
-Contexte : l'atelier doit remplacer `/calc` ([atelier-progress.md](atelier-progress.md)). Inventaire de
+Contexte : l'atelier doit remplacer `/calc` ([atelier-progress.md](../../wip/atelier-progress.md)). Inventaire de
 `/calc` du 2026-10-13 : il manque à l'atelier la saisie en écriture mathématique (MathLive) dans Calcul,
 le clavier virtuel, les étapes d'un calcul simple et un bouton « Copier ». Décisions de David du même
 jour : clavier virtuel = celui de MathLive, configuré ; étapes d'un calcul simple : oui ; Copier : oui ;
@@ -77,4 +77,4 @@ morceau ») — David ne veut PAS du point devant les commandes : « une écritu
   `safe-latex.ts`, deux audits de sécurité). `.limite` créée par une autre session ; reste `développer`.
 - 2026-10-14 — **demande de David** : une fenêtre de réglages où l'élève choisit la saisie de Calcul,
   texte (l'actuelle) ou MathLive. Change la décision 1 (« aucun mode à choisir ») : le mode texte
-  reste. Phase 0 : [atelier-reglages-phase0.md](atelier-reglages-phase0.md).
+  reste. Phase 0 : [atelier-reglages-phase0.md](../../wip/atelier-reglages-phase0.md).

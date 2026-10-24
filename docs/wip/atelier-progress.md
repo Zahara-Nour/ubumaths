@@ -12,13 +12,10 @@ _Mis à jour le 2026-10-24, après #1692 (retrait de `/spreadsheet`) et #1697 (�
 
 - **État** : `/spreadsheet` retiré et pont « Ouvrir dans Python » livrés sur `main`, pas en prod.
   Aucun worktree ni PR ouverts pour l'atelier.
-- **Prochaine action (David : « fais 1 »)** : **retirer `/calc`** (décidé le 2026-10-14). D'abord
-  vérifier que l'atelier couvre ce que `/calc` offrait (saisie MathLive, clavier virtuel, étapes d'un
-  calcul simple, « Copier »), puis redirection `/calc` → `/atelier` (modèle `/cas`,
-  `redirectHandle.ts`), retrait du sitemap (`seo/sitemap-pages.ts:76`), suppression de
-  `components/calculator` et `stores/calculator.svelte.ts` **seulement s'ils ne servent nulle part
-  ailleurs** (`atelier.md` les couvre : à vérifier). Verser `atelier-saisie-naturelle.md` (arrêté au
-  2026-10-14) dans l'archive au passage. Worktree `../ubumaths-wt-retrait-calc`.
+- **Fait** : **`/calc` retirée** (2026-10-25, chantier `retrait-calc`, PR 1 #1705 + PR 2) :
+  redirection 308 vers `/atelier`, hors du sitemap, `components/calculator`,
+  `stores/calculator.svelte.ts` et `mathAST/step-generator` supprimés ;
+  `atelier-saisie-naturelle.md` versé dans `atelier.md` et archivé.
 - **Ensuite (proposé, non lancé)** : clore le chantier du tableur — verser
   `atelier-tableur-progress.md` et ses 8 phases 0 dans `docs/archive/wip/` (prod faite, `/spreadsheet`
   retiré ; restent les vérifications manuelles de David).
@@ -49,7 +46,7 @@ _Mis à jour le 2026-10-24, après #1692 (retrait de `/spreadsheet`) et #1697 (�
    utilisait (#1343). Reste `/calc` (publique, dans le sitemap) : ses commandes ne marchent pas — en
    mode commande elle envoie `..diff x^2` et le moteur répond « Commande inconnue : .diff » (constat
    du 2026-10-13, antérieur à #1343). Décision de David (2026-10-13) : l'atelier remplace `/calc` ; il lui manque d'abord une saisie
-   naturelle (MathLive, sans point) → [atelier-saisie-naturelle.md](atelier-saisie-naturelle.md).
+   naturelle (MathLive, sans point) → [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.md).
    Précisé le 2026-10-14 : plus aucun correctif sur `/calc` (V55 sans objet), la page sera supprimée.
    Historique : `/cas` existait toujours (`ReplContainer`), hors barre latérale. Le catalogue de
    l'atelier (`commands.ts`) traduit toutes les commandes du moteur ; 7 sont déclarées indisponibles avec

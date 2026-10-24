@@ -57,7 +57,7 @@ Chaque entrée encore ouverte a été revérifiée (sondes vitest hors dépôt p
 
 ### B. À David
 
-- **Décision ou spécification** : V4 (sort du tableur prof face à celui de l'atelier), V8 (ADR 0007, planning), V35 (`\dfrac{\sqrt3}{2}i` ou `i\dfrac{\sqrt3}{2}`), V39 (lecture de `\ln 5^2` par le parseur), V40 (périmètre), V41 (conditions), V48 (a), V49, V63 (ce que citent `u_n`, `u_0`), L9 (police STIX), L13 (palette d'unités), L20 (précision), M8 (sommeil ou mort), M22 (règles trigo à garder ?), M2 (retirer `'graphical'` du format), D6, D8 + V55 (supprimer `/calc`), D11 + C10 (renommage « capacité »), C14 (renommer `lexicon/`), D20, D21 (+ V31, L32, L33), D10 + L11 (Navadra), C13 (relecture des récits).
+- **Décision ou spécification** : V4 (sort du tableur prof face à celui de l'atelier), V8 (ADR 0007, planning), V35 (`\dfrac{\sqrt3}{2}i` ou `i\dfrac{\sqrt3}{2}`), V39 (lecture de `\ln 5^2` par le parseur), V40 (périmètre), V41 (conditions), V48 (a), V49, V63 (ce que citent `u_n`, `u_0`), L9 (police STIX), L13 (palette d'unités), L20 (précision), M8 (sommeil ou mort), M22 (règles trigo à garder ?), M2 (retirer `'graphical'` du format), D6, ~~D8 + V55 (supprimer `/calc`)~~ fait le 2026-10-25, D11 + C10 (renommage « capacité »), C14 (renommer `lexicon/`), D20, D21 (+ V31, L32, L33), D10 + L11 (Navadra), C13 (relecture des récits).
 - **Destructif** : M4 (table), M11, M20.
 - **RGPD / juridique** : T1, T2, T3, T6, T7, T8, T9, T12, T13, T14, T15 — jamais repris par `rgpd-securite-constats.md`.
 

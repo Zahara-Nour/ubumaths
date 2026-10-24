@@ -65,7 +65,7 @@ export const CALC_HISTORY_STORAGE_KEY = 'chiphre-atelier-historique';
 /** À incrémenter dès que la forme rangée change. */
 export const CALC_HISTORY_VERSION = 1;
 
-/** Les 100 dernières lignes, comme `/calc` (`chiphre-calc-history`). */
+/** Les 100 dernières lignes, comme l'ancienne `/calc` (retirée le 2026-10-25). */
 export const MAX_KEPT_LINES = 100;
 
 /**

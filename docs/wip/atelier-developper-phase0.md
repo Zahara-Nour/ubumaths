@@ -7,7 +7,7 @@ status: livrée — PR 1 (#1372), PR 2 (#1375), PR 3 (#1377) mergées, en attent
 # Atelier — la commande « développer »
 
 Contexte : décision de David du 2026-10-14, après le prototype de saisie
-([atelier-saisie-naturelle.md](atelier-saisie-naturelle.md)) : créer `limite` et `développer`.
+([atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.md)) : créer `limite` et `développer`.
 `limite` est faite par une autre session (#1359, #1366) ; reste `développer`.
 
 - Le registre du moteur n'a pas d'`expand` : comme `factoriser`, la commande est servie par

@@ -49,8 +49,8 @@ import type { PedagogicalArithmeticRule } from '../types';
  * Evaluate a node to its exact form. Returns `null` when the node cannot be
  * reduced (free variables, indeterminate forms, …).
  *
- * Mirrors the helper used by `arithmetic-steps.ts` so the pedagogical and
- * legacy paths agree on what counts as "fully evaluable".
+ * Mirrored the helper of the legacy `arithmetic-steps.ts` (removed with `/calc`
+ * on 2026-10-25).
  */
 function evaluateExact(node: MathNode): MathNode | null {
 	const result = evaluate(node, { mode: 'exact' });
