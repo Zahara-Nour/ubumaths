@@ -62,6 +62,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			testSessionsResult,
 			tutorConversationsResult,
 			mathouxResult,
+			mathouDecorationsResult,
 			buddyResult,
 			lastVisitResult
 		] = await Promise.all([
@@ -191,11 +192,20 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.limit(1000)
 				.limit(5000, { referencedTable: 'tutor_messages' }),
 
-			// Jeux — mémoire des Mathoux (Chatterie) : meilleur stade, étoiles et sieste par notion.
+			// Jeux — mémoire des Mathoux (Chatterie) : meilleur stade, étoiles, sieste et
+			// décoration portée par notion.
 			// Une ligne par notion (440 au plus) : sous le plafond de 1 000 lignes.
 			supabase
 				.from('student_mathoux')
-				.select('notion_id, best_stage, starred_grades, asleep, first_seen_at, updated_at')
+				.select(
+					'notion_id, best_stage, starred_grades, asleep, decoration, first_seen_at, updated_at'
+				)
+				.eq('student_id', userId),
+
+			// Jeux — décorations de panse achetées dans la Chatterie (six au plus)
+			supabase
+				.from('student_mathou_decorations')
+				.select('decoration, price_paid, purchased_at')
 				.eq('student_id', userId),
 
 			// Jeux — le Palotin de l'élève (une ligne par élève ; décision de David, 2026-10-18)
@@ -231,6 +241,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Même règle pour la mémoire des Mathoux.
 		if (mathouxResult.error) {
 			throw new Error(`student_mathoux illisible : ${mathouxResult.error.message}`);
+		}
+
+		if (mathouDecorationsResult.error) {
+			throw new Error(
+				`student_mathou_decorations illisible : ${mathouDecorationsResult.error.message}`
+			);
 		}
 
 		if (buddyResult.error) {
@@ -324,6 +340,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			gaming: {
 				player_stats: gamePlayerResult.data || null,
 				mathoux: mathouxResult.data || [],
+				mathou_decorations: mathouDecorationsResult.data || [],
 				palotin: buddyResult.data || null,
 				dernier_passage: lastVisitResult.data?.last_visit_date ?? null,
 				retour_a_feter: lastVisitResult.data?.welcome_back_on ?? null
