@@ -6,16 +6,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1689._
+_Mis à jour le 2026-10-24, après #1689 (page de dessins du lot B publiée)._
 
 - **État** : lot A COMPLET sur `main` : #1685 (versement) et #1689 (code, +2 de révision sans
   condition de Palotin, plafond 20 / 24 h) mergées ; migrations `20261024210000` et
   `20261024230000` appliquées en prod ; code pas en prod (prochain `deploy:prod`, vérification
   notée dans `verifications-manuelles.md`).
-- **Prochaine action** : lot B — page de dessins des 6 décorations de panse et des 4 races à motif
-  (smoking, marbré, arlequin, Lunaire), à faire choisir par David AVANT toute migration.
-- **En attente de David** : rien.
-- **Pièges en cours** : lignes d'un même versement = même `created_at` ; tests qui paient en
+- **Prochaine action** : lot B — appliquer les choix de David (page de dessins publiée :
+  https://claude.ai/artifact/TEwPyDpsDqbeFVE2B3xwYS, générateur `scripts/mathoux-planches/
+decorations.test.ts`), puis question d'accès et migration (catalogue, achat atomique).
+- **En attente de David** : ses choix sur la page (version A/B et prix de chaque décoration,
+  traitement des 4 races à motif), collés dans la conversation.
+- **Pièges en cours** : rendu serveur de plusieurs `MathouAvatar` sur une page = ids `s1-…`
+  répétés, le générateur les renomme ; lignes d'un même versement = même `created_at` ; tests qui paient en
   plusieurs fois : `ageActivity` ; après un rebase, `FRESH=1` au typecheck.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-decorations`.
 
@@ -71,3 +74,7 @@ _Mis à jour le 2026-10-24, après #1689._
   sans lui (copie de travail, `pg_sleep(0.3)` ajouté pour élargir la course), le test « deux
   versements simultanés » est rouge (36 au lieu de 18) ; vert avec la migration réelle.
 - 2026-10-24 — #1689 mergée ; `db:migrate` du plafond, droits vérifiés en prod. Lot A clos.
+- 2026-10-24 — lot B : page de dessins publiée (6 décorations en deux versions chacune, prix
+  proposés 10 cœur et étoile / 20 gidouille et cocarde / 40 médaille et blason ; options des races
+  à motif). Rendus tirés du vrai `MathouAvatar` par `scripts/mathoux-planches/decorations.test.ts`
+  (`PLANCHE=1`, sauté sinon).
