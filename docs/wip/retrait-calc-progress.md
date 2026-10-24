@@ -6,14 +6,17 @@ status: phase 0 validée (2026-10-24) — PR 1 en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, avant la première PR._
+_Mis à jour le 2026-10-24, PR 1 prête (avant ouverture)._
 
-- **État** : inventaire fait ; `/calc` n'a qu'un manque côté atelier : les **étapes d'un calcul sans lettre**.
-  David (2026-10-24) : **combler d'abord**, puis retirer `/calc` → deux PR.
-- **Prochaine action** : PR 1 « Comment ? » sur un calcul sans lettre (phase 0 C1-C5 + Q1-Q3
-  validées le 2026-10-24) : tests d'abord.
-- **En attente de David** : rien.
-- **Worktree / branche** : `../ubumaths-wt-retrait-calc` · `chore/retrait-calc` (PR 1 renommée au besoin).
+- **État** : PR 1 « Comment ? » sur un calcul sans lettre codée, revue Opus faite (F1 angle en
+  degrés, F2 `3/4*2/9` contre C3, F3 `2:0,5` → corrigés). Serveur de test : `localhost:5176`.
+- **Prochaine action** : merger PR 1, puis PR 2 (retrait de `/calc` + `step-generator`, plan
+  ci-dessous).
+- **En attente de David** : rien. À signaler : en `.mode décimal`, pas d'étapes (réponses
+  arrondies) ; une seule opération (`12/4`) a un « Comment ? » qui redit la ligne (C1).
+- **Pièges** : `simplify-carte` (lot 5f-1) change `tidy` ; elle prévient au merge → rebaser,
+  relancer `calcul-etapes*.test.ts`.
+- **Worktree / branche** : `../ubumaths-wt-retrait-calc` · `chore/retrait-calc`.
 
 ---
 
