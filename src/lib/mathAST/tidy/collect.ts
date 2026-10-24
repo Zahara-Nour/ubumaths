@@ -70,7 +70,13 @@ import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString, hasDecimalLiteral } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
-import { cannotVanish, nonZeroBases } from './sign';
+import {
+	cannotVanish,
+	definedEverywhere,
+	nonZeroBases,
+	positiveBases,
+	powerDefinedEverywhere
+} from './sign';
 import {
 	isPlainTerm,
 	numberFirst,
@@ -91,6 +97,8 @@ type Settings = {
 	readonly typeCtx: TypeContext | undefined;
 	/** Les bases non nulles sur le domaine acquis (`domain`, S3), par leur hash. */
 	readonly nonZero: ReadonlySet<string>;
+	/** Les bases strictement positives sur ce domaine (arguments de `ln`…), par leur hash. */
+	readonly positive: ReadonlySet<string>;
 	/** L'ordre des termes d'une somme (S2). */
 	readonly order: TermOrder;
 };
@@ -1310,7 +1318,7 @@ function collectWithSigns(terms: readonly TidyTerm[], settings: Settings): TidyT
 		const flipped = flipNumerator(term, settings);
 		return flipped !== null && factorsKey(flipped) < factorsKey(term) ? flipped : term;
 	});
-	return collectLikeTerms(canonical).map((term) =>
+	return collectLikeTerms(canonical, settings).map((term) =>
 		isNegativeRational(term.coefficient) ? (flipNumerator(term, settings) ?? term) : term
 	);
 }
@@ -1347,7 +1355,19 @@ type TermGroup = {
 	/** Le registre des termes réunis (S1) : un décimal lu, une fraction lue. */
 	decimal: boolean;
 	fraction: boolean;
+	/** Les termes réunis, réécrits tels quels si leur somme nulle perdait le domaine. */
+	members: TidyTerm[];
 };
+
+/** Chaque facteur du terme est défini pour toute valeur des variables (S3). */
+function termDefinedEverywhere(term: TidyTerm, settings: Settings): boolean {
+	const { typeCtx } = settings;
+	return term.factors.every(
+		({ base, exponent, key }) =>
+			definedEverywhere(base, typeCtx, settings) &&
+			powerDefinedEverywhere(base, exponent, typeCtx, settings, key)
+	);
+}
 
 /** Le coefficient peut-il s'écrire en décimal (S1) ? Il faut une écriture finie. */
 function writesDecimal(coefficient: Rational): boolean {
@@ -1405,7 +1425,7 @@ function switchToBase(group: TermGroup, quantity: TidyQuantity): void {
  * Deux grandeurs de même **dimension** sont semblables même écrites dans des
  * unités différentes (§D.3) : `12[km]+500[m]` fait un seul terme.
  */
-function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
+function collectLikeTerms(terms: readonly TidyTerm[], settings: Settings): TidyTerm[] {
 	const groups = new Map<string, TermGroup>();
 
 	terms.forEach((term, index) => {
@@ -1426,10 +1446,12 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 				term,
 				inBase: false,
 				decimal: term.decimal,
-				fraction: isFractionTerm(term)
+				fraction: isFractionTerm(term),
+				members: [term]
 			});
 			return;
 		}
+		existing.members.push(term);
 		existing.decimal ||= term.decimal;
 		existing.fraction ||= isFractionTerm(term);
 
@@ -1457,10 +1479,18 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 	});
 
 	const result: TidyTerm[] = [];
-	for (const { coefficient, term, decimal, fraction } of groups.values()) {
-		// Un coefficient nul efface le terme — sauf s'il divise par zéro : `0/0`
-		// n'est pas `0` (finding C2).
-		if (isZeroRational(coefficient) && !dividesByZero(term)) continue;
+	for (const { coefficient, term, decimal, fraction, members } of groups.values()) {
+		if (isZeroRational(coefficient) && !dividesByZero(term)) {
+			// S3 : des termes qui s'annulent n'effacent pas leur domaine
+			// (`ln(x) − ln(x)`, `1/x − 1/x` restent ; David, 2026-10-24). Un terme
+			// seul de coefficient nul (`0·ln(x)`, `0/x`) n'est pas une annulation
+			if (members.length > 1 && !termDefinedEverywhere(term, settings)) {
+				result.push(...members);
+			}
+			// Un coefficient nul efface le terme — sauf s'il divise par zéro : `0/0`
+			// n'est pas `0` (finding C2).
+			continue;
+		}
 		// S1 : décimal si un décimal est lu, aucune fraction, et l'écriture finie
 		// (`0,5x + 0,25x → 0,75x`, `0,5x + x/3 → 5x/6`)
 		result.push({
@@ -1658,6 +1688,7 @@ function settingsOf(options: InnerOptions | undefined): Settings {
 		unitChoice: options?.unitChoice ?? 'school',
 		typeCtx: options?.typeCtx,
 		nonZero: domain.length === 0 ? NO_BASE : nonZeroBases(domain, (n) => tidyExpression(n)),
+		positive: domain.length === 0 ? NO_BASE : positiveBases(domain, (n) => tidyExpression(n)),
 		order: options?.order ?? 'canonical'
 	};
 }
@@ -1677,6 +1708,7 @@ function innerOptions(settings: Settings): InnerOptions | undefined {
 		settings.unitChoice === 'school' &&
 		settings.typeCtx === undefined &&
 		settings.nonZero.size === 0 &&
+		settings.positive.size === 0 &&
 		settings.order === 'canonical';
 	return isDefault ? undefined : { settings };
 }
@@ -1851,7 +1883,7 @@ function narrateSum(
 	};
 
 	const united = chooseUnits(terms, settings);
-	const collected = collectLikeTerms(terms);
+	const collected = collectLikeTerms(terms, settings);
 	const signed = collectWithSigns(terms, settings);
 	const unitedCollected = chooseUnits(signed, settings);
 

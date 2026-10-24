@@ -51,7 +51,12 @@ forme canonique du Compute Engine, qui est une expression).
   elle reste des deux côtés de la barre, seuls les nombres se simplifient :
   `x/x`, `x²/x`, `√x/√x` inchangés, `(2x)/(4x) → x/(2x)`,
   `(−x−1)/(x+1) → −(x+1)/(x+1)`. Exception gardée : `x⁰ → 1` (convention des
-  polynômes). Les options `typeCtx` et `domain` (§G.1) lèvent la restriction.
+  polynômes). De même, des termes semblables de somme nulle ne disparaissent
+  que s'ils sont définis partout (David, 2026-10-24 ; `definedEverywhere`,
+  `tidy/sign.ts`) : `x − x`, `eˣ − eˣ`, `ln(x²+1) − ln(x²+1)` → `0`, mais
+  `ln(x) − ln(x)`, `1/x − 1/x`, `√x − √x`, `tan(x) − tan(x)` restent écrits.
+  Un terme seul de coefficient nul n'est pas une annulation (`0/x`, `0·ln(x)`
+  → `0`). Les options `typeCtx` et `domain` (§G.1) lèvent la restriction.
 - **Ne lève jamais d'exception** : ce qu'il ne sait pas traiter ressort tel
   quel, enfants mis au propre. Seul un débordement de pile est rattrapé
   (l'entrée est rendue) ; toute autre exception est un bug et remonte.
@@ -529,3 +534,6 @@ des termes notamment).
 - 2026-10-23 : S3, plus de simplification qui perd le domaine (`x/x` reste) ;
   options `typeCtx` et `domain` (chantier simplify-carte, lot 4a) ; option
   `order: 'kept'` et `tidyTerms` reconstruit dessus (lot 4c).
+- 2026-10-24 : S3 étendue aux sommes, des termes à domaine restreint ne
+  s'annulent pas (`ln(x) − ln(x)` reste) ; la primitive de l'intégration
+  pédagogique est mise au propre sur son propre domaine (`ln|x| − ln|x| → 0`).
