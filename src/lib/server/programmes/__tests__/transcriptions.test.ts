@@ -2,8 +2,8 @@
  * Transcriptions des programmes officiels (2026-10-24).
  *
  *   - tous les niveaux qui ont des maths sont transcrits, titrés comme le BO ;
- *   - un niveau de cycle n'a que sa partie de chaque domaine (titre du niveau
- *     tel que le BO l'écrit, jamais celui d'un autre niveau du cycle) ;
+ *   - un niveau de cycle a sa partie de chaque domaine, titrée comme le BO
+ *     (une fois par domaine), jamais celle d'un autre niveau du cycle ;
  *   - le texte ne crée aucun nœud interactif ou accidentel (trou, #hashtag,
  *     @mention, renvoi d'aide, bloc de code) : c'est du texte à lire ;
  *   - la terminale générale non plus (pas de programme) ;
@@ -82,15 +82,19 @@ describe('getTranscription', () => {
 
 	describe.each(CYCLE_LEVEL_HEADINGS.flat())('%s (cycle)', (grade, heading) => {
 		it('sa partie de chaque domaine, aucune de celle des autres niveaux', () => {
-			const headings = new Set(
-				(getTranscription(grade) ?? '').split('\n').filter((line) => line.startsWith('### '))
+			const headings = (getTranscription(grade) ?? '')
+				.split('\n')
+				.filter((line) => line.startsWith('### '));
+			const levelParts = (OFFICIAL_PROGRAMMES[grade]?.transcription ?? []).filter((name) =>
+				name.split('/')[1]?.startsWith(`${grade}-`)
 			);
 			const others = CYCLE_LEVEL_HEADINGS.flat()
 				.filter(([other]) => other !== grade)
 				.map(([, title]) => `### ${title}`);
 
-			expect(headings.has(`### ${heading}`)).toBe(true);
-			expect(others.filter((title) => headings.has(title))).toEqual([]);
+			expect(headings.filter((line) => line === `### ${heading}`)).toHaveLength(levelParts.length);
+			expect(levelParts.length).toBeGreaterThan(0);
+			expect(others.filter((title) => headings.includes(title))).toEqual([]);
 		});
 	});
 
