@@ -1,3 +1,8 @@
+<!--
+	Diapositives de démonstration de `/dev/diaporama`, écrites une fois pour
+	ses deux affichages (plein écran, dans un cadre). Reprises de `/slides/demo`
+	et `/slides/demo-embedded`, qui en étaient deux copies.
+-->
 <script lang="ts">
 	import {
 		Deck,
@@ -6,6 +11,7 @@
 		UbuMarkSlide,
 		WhiteboardSlide,
 		Code,
+		type DeckConfig,
 		type SlideChangedEvent
 	} from '$lib/slides';
 	import type { QuestionInstance } from '$lib/questions/types';
@@ -13,6 +19,8 @@
 	import type { Page } from '$lib/whiteboard/types/document';
 	import { resolvedMarkdown } from '$lib/ubumark';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
+
+	let { config = {} }: { config?: Partial<DeckConfig> } = $props();
 
 	let currentSlide = $state({ h: 0, v: 0 });
 
@@ -136,12 +144,8 @@ Integrale definie : $\\int_0^1 x^2 \\, dx = \\frac{1}{3}$
 </button>`;
 </script>
 
-<svelte:head>
-	<title>UbuSlides Demo</title>
-</svelte:head>
-
 <div class="deck-container">
-	<Deck onslidechanged={handleSlideChanged}>
+	<Deck {config} onslidechanged={handleSlideChanged}>
 		<!-- ============================================ -->
 		<!-- INTRO -->
 		<!-- ============================================ -->
@@ -605,11 +609,9 @@ console.log(x, y);`}
 
 <style>
 	.deck-container {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100vw;
-		height: 100vh;
+		position: relative;
+		width: 100%;
+		height: 100%;
 		overflow: hidden;
 		background: #000;
 	}

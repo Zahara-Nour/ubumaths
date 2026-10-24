@@ -75,7 +75,17 @@ describe('redirectHandle — pages de démo et de debug rangées sous /dev', () 
 		['/dashboard/admin/debug/typst-preview', '/dev/pdf-typst'],
 		['/dashboard/admin/debug/latex-preview', '/dev/pdf-latex'],
 		['/dashboard/admin/debug/latex-transpiler', '/dev/latex-vers-ubumark'],
-		['/dashboard/admin/debug/database', '/dashboard/admin/integrite-donnees']
+		['/dashboard/admin/debug/database', '/dashboard/admin/integrite-donnees'],
+		['/dashboard/admin/debug/question-display', '/dev/carte-question'],
+		['/demo/question-display-demo', '/dev/carte-question'],
+		['/dashboard/admin/debug/rich-text', '/dev/editeur-riche'],
+		['/demo/rich-text-editor-demo', '/dev/editeur-riche'],
+		['/slides/demo', '/dev/diaporama'],
+		['/slides/demo-embedded', '/dev/diaporama'],
+		['/slides/test-transitions', '/dev/diaporama'],
+		['/test-structure', '/dev/structure'],
+		['/demo/vip-cards-demo', '/dev/cartes'],
+		['/demo/mots-cliquables', '/dev/mots-cliquables']
 	])('%s mène à %s, en 308', async (from, to) => {
 		expect(await redirectionOf(from)).toEqual({ status: 308, location: to });
 	});
@@ -89,6 +99,10 @@ describe('redirectHandle — pages de démo et de debug rangées sous /dev', () 
 			status: 308,
 			location: '/dev/erreurs/page/plantage'
 		});
+		expect(await redirectionOf('/demo/vip-cards-demo/examples')).toEqual({
+			status: 308,
+			location: '/dev/cartes/exemples'
+		});
 	});
 
 	it('les images de /test-font/ restent servies, sans redirection', async () => {
@@ -99,8 +113,8 @@ describe('redirectHandle — pages de démo et de debug rangées sous /dev', () 
 		expect(await redirectionOf('/test-cadresX')).toBeNull();
 		expect(await redirectionOf('/dashboard/admin/errors')).toBeNull();
 		expect(await redirectionOf('/dashboard/admin/errors/42')).toBeNull();
-		expect(await redirectionOf('/dashboard/admin/debug/question-display')).toBeNull();
-		expect(await redirectionOf('/dashboard/admin/debug/rich-text')).toBeNull();
+		expect(await redirectionOf('/slides/demox')).toBeNull();
+		expect(await redirectionOf('/demo/trig-circle-demo')).toBeNull();
 		expect(await redirectionOf('/demo')).toBeNull();
 	});
 });

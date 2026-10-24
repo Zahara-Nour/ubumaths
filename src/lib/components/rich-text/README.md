@@ -459,7 +459,7 @@ All styles use semantic color variables from the app theme, ensuring automatic d
 
 ## Demo
 
-View the full interactive demo at: `/rich-text-editor-demo`
+View the full interactive demo at: `/dev/editeur-riche` (admin)
 
 The demo includes:
 

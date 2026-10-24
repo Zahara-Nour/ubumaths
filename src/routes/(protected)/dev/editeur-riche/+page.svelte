@@ -18,8 +18,10 @@
 		Code,
 		Settings,
 		Beaker,
-		ArrowRightLeft
+		ArrowRightLeft,
+		MessageSquare
 	} from '@lucide/svelte';
+	import Messagerie from './Messagerie.svelte';
 	import { markdownToTipTap } from '$lib/components/rich-text/markdown-import';
 	import { tipTapToMarkdown } from '$lib/components/rich-text/markdown-export';
 	import type { MathTemplateLevel, RichTextMode } from '$lib/components/rich-text/types';
@@ -1482,10 +1484,15 @@ Le plus petit titre.`
 	];
 </script>
 
-<div class="space-y-8">
+<svelte:head>
+	<title>Éditeur riche · Pages de dev</title>
+	<meta name="robots" content="noindex" />
+</svelte:head>
+
+<div class="container mx-auto space-y-8 px-4 py-8">
 	<!-- Header -->
 	<div>
-		<h2 class="mb-2 text-3xl! font-bold">RichTextEditor Debug</h2>
+		<h1 class="mb-2 text-3xl font-bold">Éditeur riche</h1>
 		<p class="text-muted-foreground">
 			Page de test du composant unifié <code>RichTextEditor</code> avec support des modes
 			<Badge variant="outline">chat</Badge> et <Badge variant="outline">form</Badge>.
@@ -1501,6 +1508,10 @@ Le plus petit titre.`
 			<Tabs.Trigger value="import-export" class="flex items-center gap-2">
 				<ArrowRightLeft class="h-4 w-4" />
 				Import/Export
+			</Tabs.Trigger>
+			<Tabs.Trigger value="messagerie" class="flex items-center gap-2">
+				<MessageSquare class="h-4 w-4" />
+				Messagerie
 			</Tabs.Trigger>
 		</Tabs.List>
 
@@ -2327,6 +2338,13 @@ Le plus petit titre.`
 					{/if}
 				</Card.Content>
 			</Card.Root>
+		</Tabs.Content>
+
+		<!-- ============================================ -->
+		<!-- Tab 3: Messagerie (ancienne démo publique) -->
+		<!-- ============================================ -->
+		<Tabs.Content value="messagerie">
+			<Messagerie />
 		</Tabs.Content>
 	</Tabs.Root>
 </div>

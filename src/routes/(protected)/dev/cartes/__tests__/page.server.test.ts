@@ -1,14 +1,14 @@
 /**
- * Démo des cartes VIP — le visiteur voit la page, sans le catalogue
- * ================================================================
+ * Cartes VIP (`/dev/cartes`) — le catalogue n'est lu qu'avec une session
+ * =====================================================================
  *
- * La démo est publique, mais `vip_card_templates` n'est lisible qu'avec une
- * session. Sans connexion, le chargement ne doit ni interroger la base, ni
- * échouer (un refus de privilège ferait lever `getAllTemplates` → 500).
+ * La garde de `/dev` arrête le visiteur en amont ; le chargement garde sa
+ * propre défense : sans session, il ne doit ni interroger la base, ni échouer
+ * (un refus de privilège ferait lever `getAllTemplates` → 500).
  */
 import { describe, it, expect, vi } from 'vitest';
 import { load as loadDemo } from '../+page.server';
-import { load as loadExamples } from '../examples/+page.server';
+import { load as loadExamples } from '../exemples/+page.server';
 
 // ============================================================================
 // TYPES
@@ -23,8 +23,8 @@ type LoadFn = typeof loadDemo | typeof loadExamples;
 const TEMPLATE = { id: 'carte-1', sort_order: 1, is_enabled: true };
 
 const PAGES: Array<[string, LoadFn]> = [
-	['/demo/vip-cards-demo', loadDemo],
-	['/demo/vip-cards-demo/examples', loadExamples]
+	['/dev/cartes', loadDemo],
+	['/dev/cartes/exemples', loadExamples]
 ];
 
 // ============================================================================

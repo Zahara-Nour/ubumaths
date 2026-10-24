@@ -1,5 +1,5 @@
 /**
- * Page de test des mots cliquables et des indices (/demo/mots-cliquables) :
+ * Page de test des mots cliquables et des indices (/dev/mots-cliquables) :
  * la question, l'indice et les phrases d'essai soulignent bien leurs mots, et
  * le niveau choisi est celui de la question réelle.
  */

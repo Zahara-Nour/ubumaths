@@ -165,7 +165,7 @@ export type CapitalPairs = 'length' | 'product';
 /**
  * Sens par défaut de deux majuscules collées, quand l'appelant ne dit rien : le
  * produit d'avant (décision Q-M du 2026-10-12). Seuls les questions (déclaration →
- * contexte → longueur) et `/test-structure` demandent `'length'` explicitement ;
+ * contexte → longueur) et `/dev/structure` demandent `'length'` explicitement ;
  * l'atelier, le grapheur, `pnpm math` et les autres appelants gardent le produit.
  */
 export const DEFAULT_CAPITAL_PAIRS: CapitalPairs = 'product';

@@ -27,7 +27,7 @@ couvre:
   - 'src/routes/(protected)/dashboard/admin/vip-cards/**'
   - 'src/routes/(protected)/games/**'
   - 'src/routes/(public)/games/**'
-  - 'src/routes/(public)/demo/vip-cards-demo/**'
+  - 'src/routes/(protected)/dev/cartes/**'
   - 'src/routes/api/{vip-cards,games,marketplace,riddles,rewards,achievements}/**'
   - 'src/routes/api/cron/riddle-of-the-day/**'
   - 'src/routes/api/teacher/rewards/**'

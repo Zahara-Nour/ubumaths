@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1677._
+_Mis à jour le 2026-10-24, PR 3 en cours (pas encore ouverte)._
 
-- **État** : PR 1 (socle, #1675) et PR 2 (déplacements vers `/dev`, #1677) mergées, pas en prod. 18 pages sous `/dev`, `database` → `/dashboard/admin/integrite-donnees`, redirections 308 (`MOVED_PAGES`).
-- **Prochaine action** : PR 3, fusions (lignes 7, 8, 15) et parts dev des lignes 1, 5, 6, 10. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main`.
+- **État** : PR 3 (fusions 7, 8, 15 ; parts dev 1, 5, 6, 10) codée et commitée sur `feat/demo-debug-fusions`, pas poussée. Typecheck 0, cliquet tenu, `lint:fast` propre, `docs:check-a-jour` vert, tests ciblés verts, accès vérifiés sur 5178 (admin 200 / élève 403 / visiteur → connexion).
+- **Prochaine action** : (1) revue `code-reviewer` (Sonnet) sur le diff — relancer si son résultat est perdu ; corriger ses constats ; (2) vérifier les interactions sur 5178 (script dans le scratchpad perdu au `/clear` : plein écran et « Quitter » de `/dev/diaporama`, onglet Transitions, question « QCM : valeur de π » de `/dev/carte-question`, onglet « Messagerie » de `/dev/editeur-riche`) ; (3) push, PR, CI, merge ; noter la vérification manuelle.
 - **En attente de David** : rien.
-- **Pièges en cours** : sous `/dev`, jamais de donnée sensible par un load universel ni par Supabase dans le navigateur ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES` ; une page sortie du tableau de bord doit porter son `<h1>` (test `chaque-page-a-un-titre`) et ses marges ; chaque page déplacée → `couvre:` d'une doc (garde de couverture au `pre-push`) ; `question-display` et `rich-text` encore sous `admin/debug` ; `/test-font` redirigée à l'adresse exacte seulement ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : aucun (PR 2 nettoyée).
+- **Pièges en cours** : limiteur de connexion local par IP (15 min) après des connexions répétées → garder l'état de session Playwright (`storageState`) ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; pas de `+layout@` sous `/dev` (saute la garde en navigation client) ; serveur de test 5178 lancé depuis le worktree (le tuer par son port) ; ligne 4 après le chantier constructions.
+- **Worktree / branche** : `../ubumaths-wt-demo-debug` · `feat/demo-debug-fusions`.
 
 ## Décisions de David (2026-10-24)
 
@@ -164,3 +164,12 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - `/dev/erreurs/surveillance` traduite en français. Carte « Test de Thème » retirée du carrefour `/demo` (page désormais admin). Exclusion sitemap `/blockly/**` retirée (plus de page).
 - Retour de CI : 10 pages tenaient leur `<h1>` du layout de debug → titre et marges ajoutés. Garde de couverture : `couvre:` de `surveillance-des-erreurs.md` étendu, `trous` Blockly repointé.
 - Vérifié sur 5178 (Playwright) : 20 pages en 200 pour l'admin, redirections justes, élève 403, anonyme → connexion. Erreurs de console déjà présentes avant (clés en double dans `rls` et `correction-generee`, boutons imbriqués dans `theme`, CSP de la feuille Swagger) : laissées telles quelles.
+
+## PR 3 — fusions et parts dev (phase 0 validée par David le 2026-10-24)
+
+- **Fusions** : ligne 7 → `/dev/carte-question` (page admin + les 4 questions de la démo, énoncés en français) ; ligne 8 → `/dev/editeur-riche` (page admin + onglet « Messagerie » repris de la démo) ; ligne 15 → `/dev/diaporama` (diapositives écrites une fois, bascule plein écran / dans un cadre aux 4 tailles / transitions ; pas de `+layout@`, qui sauterait la garde de `/dev` en navigation client).
+- **Parts dev** : ligne 1 → `/dev/structure` en entier (la formule sera recopiée vers `/demo/structure` en phase 6) ; ligne 5 → `/dev/cartes` + `/dev/cartes/exemples` ; ligne 6 → `/dev/mots-cliquables` ; ligne 10 → `/dev/bancs-essai` (champ MathLive, carte retournable, logger, toasts).
+- Anciennes adresses publiques → 308 vers `/dev` (le visiteur tombe sur la connexion jusqu'aux pages vitrine). Carrefour `/demo` jusqu'à la phase 7 : seulement les cartes vers des pages encore publiques (cercle trigo, Mathémo, Trio). Layout `admin/debug` supprimé. `<select>` et cases natives des pages fusionnées → `MySelect` / `MyCheckbox`.
+- **Fait** : 8 pages sous `/dev` (`carte-question`, `editeur-riche`, `diaporama`, `structure`, `mots-cliquables`, `cartes` + `exemples`, `bancs-essai`), 12 redirections de plus dans `MOVED_PAGES`. Questions de la démo : 3 reprises, la 4ᵉ (`x^2 - 9`) était déjà dans la page admin. Exclusions du sitemap `/slides/**` et `/test-*` retirées (plus aucune page à couvrir).
+- Trouvé en route : `MySelect` ignore son `id` → un `<Label for>` ne le nomme pas ; nom accessible par `triggerAriaLabel` (avec la valeur choisie). Le chemin relatif de la fixture du dictionnaire dans les tests de `/dev/structure` avait un niveau de trop peu après le déplacement (test client rouge, corrigé).
+- Vérifié sur 5178 (Playwright) : 10 pages en 200 pour l'admin, 403 pour l'élève, connexion pour le visiteur, anciennes adresses comprises. Erreur de console déjà présente : images des cartes VIP sur le stockage de la prod refusées par la CSP locale.

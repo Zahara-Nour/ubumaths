@@ -11,6 +11,7 @@ couvre:
   - src/lib/utils/sanitize.ts
   - src/lib/utils/sanitize-configs.ts
   - src/lib/utils/html-escape.ts
+  - 'src/routes/(protected)/dev/editeur-riche/*.svelte'
 ---
 
 # Éditeur riche (TipTap) et affichage sûr du contenu écrit
@@ -21,6 +22,8 @@ couvre:
 > (`markdown-import.ts`, `markdown-export.ts`) et les extensions de `src/lib/extensions/` sont
 > dans [ubumark.md](ubumark.md). `src/lib/components/rich-text/README.md` (en anglais) décrit
 > la barre d'outils en détail.
+> Banc d'essai (admin seul) : `/dev/editeur-riche` — modes chat et form côte à côte, réglages,
+> import et export Markdown, onglet « Messagerie » (`Messagerie.svelte`, ex-`/demo/rich-text-editor-demo`).
 
 ## À quoi ça sert
 
@@ -137,5 +140,3 @@ de tête retirés, tabulations et retours à la ligne supprimés partout (`java\
   `src/lib/mathAST/cli/web/output-formatter-web.ts`, `src/lib/whiteboard/core/pdf-export.ts`.
 - `config.ts` et `RichTextEditor.svelte` citent encore `FormRichTextEditor.svelte`, fusionné
   dans `RichTextEditor` et absent du dépôt.
-- Le README du dossier renvoie à `/rich-text-editor-demo` ; la page est
-  `/demo/rich-text-editor-demo` (voir [utilitaires-et-demos.md](utilitaires-et-demos.md)).

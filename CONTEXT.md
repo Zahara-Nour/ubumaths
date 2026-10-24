@@ -160,10 +160,10 @@ une note. → [ADR 0001](docs/adr/0001-correction-cote-client.md)
 
 ## La structure d'une expression
 
-| Terme                          | Sens                                                                                                                                          | Code / note                                                     |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| **Structure d'une expression** | Outil où l'élève explore une expression : la plus petite sous-expression sous le pointeur est encadrée et nommée. Héritier d'Algebria.        | à créer (démo : route `/test-structure`, branche non fusionnée) |
-| **Sous-expression**            | Partie d'une expression qui est elle-même une expression : un terme, un facteur, le contenu de parenthèses, un numérateur… Mot vu de l'élève. | « nœud » dans le code (AST), jamais montré                      |
+| Terme                          | Sens                                                                                                                                          | Code / note                                                                        |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| **Structure d'une expression** | Outil où l'élève explore une expression : la plus petite sous-expression sous le pointeur est encadrée et nommée. Héritier d'Algebria.        | page de mise au point `/dev/structure` (admin) ; vitrine `/demo/structure` à venir |
+| **Sous-expression**            | Partie d'une expression qui est elle-même une expression : un terme, un facteur, le contenu de parenthèses, un numérateur… Mot vu de l'élève. | « nœud » dans le code (AST), jamais montré                                         |
 
 ## Le moteur mathématique (`src/lib/mathAST/`)
 
