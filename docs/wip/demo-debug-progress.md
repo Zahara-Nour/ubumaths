@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-24, avant toute PR._
 
-- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 16 tranchées (tableau ci-dessous).
+- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 17 tranchées (tableau ci-dessous).
 - **Prochaine action** : poursuivre la revue au premier `?` du tableau « Revue page par page ».
-- **En attente de David** : le sort des lignes 17 à 19. Rien n'est codé : le plan viendra à la fin de la revue.
+- **En attente de David** : le sort des lignes 18 et 19. Rien n'est codé : le plan viendra à la fin de la revue.
 - **Pièges en cours** : rien ne se supprime pour l'instant ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` sont de vraies fonctionnalités, hors chantier.
 - **Worktree / branche** : aucun (rien de codé) ; journal commité sur `main`.
 
@@ -17,7 +17,7 @@ _Mis à jour le 2026-10-24, avant toute PR._
    la coquille du tableau de bord (pages en plein écran). `/dashboard/admin/debug/*` y passe
    aussi. Anciennes adresses redirigées un temps.
 3. **Une vitrine publique** (`/demo/…`), au contenu choisi page par page avec David.
-4. **Aucune suppression pour l'instant**, sauf fusion de doublons demandée par David (lignes 7, 8, 15).
+4. **Aucune suppression pour l'instant**, sauf fusion de doublons demandée par David (lignes 7, 8, 15) et `/test-exercises` (ligne 17).
 5. **Contenu pédagogique = prof, jamais l'admin** (règle générale). D'où une 3ᵉ catégorie :
    **aide à l'écriture**, réservée au prof, dans un espace unique `/aide-ecriture/…` (pages pour
    essayer et apprendre à écrire scripts, blocs, figures). Exception : l'éditeur de constructions
@@ -72,7 +72,7 @@ Sort : **vitrine** (`/demo/…`, public) · **aide** (`/aide-ecriture/…`, prof
 | 14  | `/test-erreur`                  | dev                     | → `/dev/erreurs/page` telle quelle, avec `[code]` et `plantage` ; rien en vitrine (le clin d'œil de π se découvre par hasard) ; voisine de la ligne 19 (`/dev/erreurs/surveillance`)                                                                                                                                                                                                      |
 | 15  | `/slides/*` (3 pages)           | dev (fusion) + vitrine  | fusion des 3 → `/dev/diaporama` (bascule plein écran / dans un cadre, taille réglable, section transitions) ; vitrine `/demo/diaporama` : diaporama qui se présente lui-même, façon démo reveal.js + atouts Chiphre (plan ci-dessous)                                                                                                                                                     |
 | 16  | `/blockly/playground`           | dev                     | → `/dev/blockly` tel quel ; rien en vitrine (fonctionnalité pas encore ouverte aux élèves) ; deviendra une vraie fonctionnalité plus tard (David)                                                                                                                                                                                                                                         |
-| 17  | `/test-exercises`               | ?                       |                                                                                                                                                                                                                                                                                                                                                                                           |
+| 17  | `/test-exercises`               | **supprimée** (David)   | avec ses orphelins : `ExerciseMarkdownEditor.svelte`, `exercises/services/image-markdown-editor.ts` + son test. GARDER `ExerciseMarkdownPreview` (sert à `LaTeXImportDialog` → `ExerciseForm`), `ImageAttributePanel`, `image-upload.ts`, `MarkdownEditor`. Re-greper avant de supprimer                                                                                                  |
 | 18  | `/dashboard/admin/debug/*` (14) | ?                       |                                                                                                                                                                                                                                                                                                                                                                                           |
 | 19  | `/dashboard/admin/errors/test`  | ?                       |                                                                                                                                                                                                                                                                                                                                                                                           |
 
