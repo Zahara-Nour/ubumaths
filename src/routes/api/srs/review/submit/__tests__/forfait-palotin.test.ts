@@ -24,17 +24,13 @@ const rewardFinishedReviewSession = vi.hoisted(() =>
 			userId: string,
 			deckId: string,
 			dayStartIso: string
-		) => Promise<BuddyXpFromExerciseResult | null>
+		) => Promise<{ buddyXp: BuddyXpFromExerciseResult | null; gidouilles: number } | null>
 	>()
 );
 
 vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
 vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard: vi.fn() }));
 vi.mock('$lib/server/srs/review-session-reward', () => ({ rewardFinishedReviewSession }));
-const creditStudentGidouilles = vi.hoisted(() => vi.fn());
-vi.mock('$lib/server/achievements/credit-gidouilles', () => ({ creditStudentGidouilles }));
-const SERVICE = vi.hoisted(() => ({ service: true }));
-vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => SERVICE }));
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireAuth: async () => ({ user: { id: ELEVE }, profile: { role: role.current } })
 }));
@@ -131,8 +127,7 @@ describe('POST /api/srs/review/submit — forfait du Palotin', () => {
 			nextReview: new Date().toISOString(),
 			totalReviews: 1
 		});
-		rewardFinishedReviewSession.mockReset().mockResolvedValue(GAIN);
-		creditStudentGidouilles.mockReset().mockResolvedValue(null);
+		rewardFinishedReviewSession.mockReset().mockResolvedValue({ buddyXp: GAIN, gidouilles: 2 });
 		role.current = 'student';
 	});
 
@@ -162,37 +157,29 @@ describe('POST /api/srs/review/submit — forfait du Palotin', () => {
 		expect(body.buddy_xp).toBeNull();
 	});
 
-	it('forfait donné : +2 gidouilles au client service pour l’élève de la session', async () => {
+	it('séance récompensée : les gidouilles sont rendues sous `review_gidouilles`', async () => {
+		expect((await reviser()).review_gidouilles).toBe(2);
+	});
+
+	it('sans Palotin : pas de `buddy_xp`, mais les gidouilles de la séance', async () => {
+		rewardFinishedReviewSession.mockResolvedValue({ buddyXp: null, gidouilles: 2 });
 		const body = await reviser();
-		expect(creditStudentGidouilles).toHaveBeenCalledTimes(1);
-		expect(creditStudentGidouilles).toHaveBeenCalledWith(
-			SERVICE,
-			ELEVE,
-			2,
-			'Révision du jour terminée'
-		);
+		expect(body.buddy_xp).toBeNull();
 		expect(body.review_gidouilles).toBe(2);
 	});
 
-	it('pas de forfait : aucune gidouille', async () => {
+	it('rien de donné : `buddy_xp` null, aucune gidouille', async () => {
 		rewardFinishedReviewSession.mockResolvedValue(null);
 		const body = await reviser();
-		expect(creditStudentGidouilles).not.toHaveBeenCalled();
+		expect(body.buddy_xp).toBeNull();
 		expect(body.review_gidouilles).toBe(0);
 	});
 
-	it('crédit en échec : la révision reste enregistrée (200), aucune gidouille annoncée', async () => {
-		creditStudentGidouilles.mockResolvedValue({ message: 'refusé' });
-		const body = await reviser();
-		expect(body.success).toBe(true);
-		expect(body.buddy_xp).toEqual(GAIN);
-		expect(body.review_gidouilles).toBe(0);
-	});
-
-	it('compte non élève (prof qui révise) : aucune gidouille, même avec un forfait', async () => {
+	it('compte non élève (prof qui révise) : aucune récompense demandée', async () => {
 		role.current = 'teacher';
 		const body = await reviser();
-		expect(creditStudentGidouilles).not.toHaveBeenCalled();
+		expect(rewardFinishedReviewSession).not.toHaveBeenCalled();
+		expect(body.buddy_xp).toBeNull();
 		expect(body.review_gidouilles).toBe(0);
 	});
 });

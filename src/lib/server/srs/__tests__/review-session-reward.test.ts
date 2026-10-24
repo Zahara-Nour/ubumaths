@@ -11,9 +11,9 @@
  * serveur seul, Q171 : l'élève ne peut pas la forger).
  *
  * « Une fois par jour » sans migration : `srs_review_sessions.completed_at`
- * marque la séance qui a rapporté le forfait. On ne la réclame qu'au moment de
- * créditer (plafond déjà atteint → rien), et on la relâche si le crédit échoue
- * ou rapporte 0.
+ * marque la séance récompensée. Gidouilles (décision de David, 2026-10-24) : +2
+ * pour la séance terminée, avec ou sans Palotin, plafond d'XP atteint ou non ; la
+ * réclamation n'est relâchée que si RIEN n'a été donné (ni XP ni gidouilles).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -34,6 +34,8 @@ const getStudentBuddy = vi.hoisted(() =>
 );
 vi.mock('$lib/server/buddy-xp-service', () => ({ addBuddyXpFromReviewSession }));
 vi.mock('$lib/server/buddy-queries', () => ({ getStudentBuddy }));
+const creditStudentGidouilles = vi.hoisted(() => vi.fn());
+vi.mock('$lib/server/achievements/credit-gidouilles', () => ({ creditStudentGidouilles }));
 // Réclamation et relâche au client SERVICE (l'élève n'écrit pas `completed_at`)
 const service = vi.hoisted(() => ({ current: null as unknown }));
 vi.mock('$lib/server/serviceRoleClient', () => ({
@@ -171,6 +173,7 @@ describe('rewardFinishedReviewSession', () => {
 		rpcCalls = [];
 		getStudentBuddy.mockReset().mockResolvedValue(buddy());
 		addBuddyXpFromReviewSession.mockReset().mockResolvedValue(REWARD);
+		creditStudentGidouilles.mockReset().mockResolvedValue(null);
 	});
 
 	it('les seuils : 10 cartes tous paquets, 3 cartes et paquet vidé', () => {
@@ -179,7 +182,7 @@ describe('rewardFinishedReviewSession', () => {
 	});
 
 	it('(b) paquet vidé après 3 cartes du jour : séance réclamée, forfait crédité', async () => {
-		expect(await reward()).toEqual(REWARD);
+		expect(await reward()).toEqual({ buddyXp: REWARD, gidouilles: 2 });
 		expect(rpcCalls).toEqual([
 			['get_due_cards_for_deck', { p_user_id: STUDENT, p_deck_id: DECK, p_all: false }]
 		]);
@@ -221,7 +224,7 @@ describe('rewardFinishedReviewSession', () => {
 	it('(a) 10 cartes du jour : forfait même s’il reste des cartes dues, sans lire l’échéancier', async () => {
 		reviewedToday(REVIEW_REWARD_CARDS_ANY_DECK);
 		dueCards = { data: [{ card_id: 'c2' }], error: null };
-		expect(await reward()).toEqual(REWARD);
+		expect(await reward()).toEqual({ buddyXp: REWARD, gidouilles: 2 });
 		expect(rpcCalls).toEqual([]);
 	});
 
@@ -234,11 +237,11 @@ describe('rewardFinishedReviewSession', () => {
 		expect(updates()).toEqual([]);
 	});
 
-	it('plafond du jour déjà atteint : la séance n’est pas réclamée', async () => {
+	it('plafond du jour déjà atteint : pas d’XP, mais la séance rapporte ses gidouilles', async () => {
 		getStudentBuddy.mockResolvedValue(buddy({ xp_earned_today: DAILY_XP_CAP }));
 		reviewedToday(REVIEW_REWARD_CARDS_ANY_DECK);
-		expect(await reward()).toBeNull();
-		expect(updates()).toEqual([]);
+		expect(await reward()).toEqual({ buddyXp: null, gidouilles: 2 });
+		expect(updates()).toHaveLength(1);
 		expect(addBuddyXpFromReviewSession).not.toHaveBeenCalled();
 	});
 
@@ -246,20 +249,60 @@ describe('rewardFinishedReviewSession', () => {
 		getStudentBuddy.mockResolvedValue(
 			buddy({ xp_earned_today: DAILY_XP_CAP, last_xp_date: '2000-01-01' })
 		);
-		expect(await reward()).toEqual(REWARD);
+		expect(await reward()).toEqual({ buddyXp: REWARD, gidouilles: 2 });
 	});
 
-	it('élève sans Palotin : rien, la séance n’est pas réclamée', async () => {
+	it('élève sans Palotin : la séance est réclamée et rapporte ses gidouilles', async () => {
 		getStudentBuddy.mockResolvedValue(null);
-		expect(await reward()).toBeNull();
-		expect(updates()).toEqual([]);
+		expect(await reward()).toEqual({ buddyXp: null, gidouilles: 2 });
+		expect(updates()).toHaveLength(1);
 	});
 
-	it('crédit nul : la réclamation est relâchée (completed_at remis à null, vérifié)', async () => {
+	it('gidouilles : +2 au client service, pour l’élève de la session, une seule fois', async () => {
+		await reward();
+		expect(creditStudentGidouilles).toHaveBeenCalledTimes(1);
+		expect(creditStudentGidouilles).toHaveBeenCalledWith(
+			service.current,
+			STUDENT,
+			2,
+			'Révision du jour terminée'
+		);
+	});
+
+	it('gidouilles en échec, XP donnée : la réclamation est gardée, gidouilles à 0', async () => {
+		creditStudentGidouilles.mockResolvedValue({ message: 'refusé' });
+		expect(await reward()).toEqual({ buddyXp: REWARD, gidouilles: 0 });
+		expect(updates()).toHaveLength(1);
+	});
+
+	it('séance déjà récompensée, déjà réclamée ou effort insuffisant : aucune gidouille', async () => {
+		results['srs_review_sessions:select'] = [{ data: [{ id: 'session-0' }], error: null }];
+		expect(await reward()).toBeNull();
+		reviewedToday(1);
+		results['srs_review_sessions:select'] = [{ data: [], error: null }];
+		expect(await reward()).toBeNull();
+		results['srs_review_sessions:select'] = [{ data: [], error: null }];
+		reviewedToday(REVIEW_REWARD_CARDS_ANY_DECK);
+		results['srs_review_sessions:update'] = [{ data: [], error: null }];
+		expect(await reward()).toBeNull();
+		expect(creditStudentGidouilles).not.toHaveBeenCalled();
+	});
+
+	it('XP nulle : les gidouilles suffisent, la réclamation est gardée', async () => {
 		addBuddyXpFromReviewSession.mockResolvedValue({
 			...REWARD,
 			xpResult: { ...REWARD.xpResult, xp_gained: 0 }
 		});
+		expect(await reward()).toEqual({ buddyXp: null, gidouilles: 2 });
+		expect(updates()).toHaveLength(1);
+	});
+
+	it('rien de donné (XP nulle ET gidouilles en échec) : la réclamation est relâchée (vérifié)', async () => {
+		addBuddyXpFromReviewSession.mockResolvedValue({
+			...REWARD,
+			xpResult: { ...REWARD.xpResult, xp_gained: 0 }
+		});
+		creditStudentGidouilles.mockResolvedValue({ message: 'refusé' });
 		expect(await reward()).toBeNull();
 		const [, release] = updates();
 		expect(release.chain[0]).toEqual(['update', [{ completed_at: null }]]);
@@ -273,8 +316,15 @@ describe('rewardFinishedReviewSession', () => {
 		);
 	});
 
-	it('crédit en erreur : la réclamation est relâchée', async () => {
+	it('XP en erreur, gidouilles versées : la réclamation est gardée (pas de second versement)', async () => {
 		addBuddyXpFromReviewSession.mockRejectedValue(new Error('panne'));
+		expect(await reward()).toEqual({ buddyXp: null, gidouilles: 2 });
+		expect(updates()).toHaveLength(1);
+	});
+
+	it('XP en erreur ET gidouilles en échec : la réclamation est relâchée', async () => {
+		addBuddyXpFromReviewSession.mockRejectedValue(new Error('panne'));
+		creditStudentGidouilles.mockResolvedValue({ message: 'refusé' });
 		expect(await reward()).toBeNull();
 		expect(updates()).toHaveLength(2);
 		expect(updates()[1].chain[0]).toEqual(['update', [{ completed_at: null }]]);

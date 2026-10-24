@@ -207,9 +207,13 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
    aucune gidouille (seulement l'XP du Palotin). Deux sources :
    - **étapes de la Chatterie** : naissance +3, matou +5, grand matou +10, étoile +5, une fois
      chacune, par `pay_mathou_milestones` (voir [mathoux.md § Mémoire](mathoux.md)) ;
-   - **révision du jour** : +2 avec le forfait de révision du Palotin (au plus une fois par jour),
-     `creditStudentGidouilles` (`credit-gidouilles.ts`), libellé « Révision du jour terminée »,
-     rendues par `POST /api/srs/review/submit` sous `review_gidouilles`.
+   - **révision du jour** : +2 quand la séance de révision du jour est terminée (règle du forfait :
+     10 cartes du jour, ou paquet vidé après 3), au plus une fois par jour, **avec ou sans
+     Palotin**, plafond d'XP atteint ou non (`rewardFinishedReviewSession`,
+     `src/lib/server/srs/review-session-reward.ts`) ; élèves seulement ; `creditStudentGidouilles`
+     (`credit-gidouilles.ts`), libellé « Révision du jour terminée », rendues par
+     `POST /api/srs/review/submit` sous `review_gidouilles`. La séance réclamée n'est relâchée que
+     si rien n'a été donné (ni XP ni gidouilles).
 8. **Toute écriture de gidouilles passe par `gidouilles_activity`**, d'où le journal
    (`reward_events`) — sauf Navadra (voir plus haut) et les fonctions citées dans Doutes.
 
