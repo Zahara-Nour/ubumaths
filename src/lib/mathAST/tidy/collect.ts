@@ -53,6 +53,7 @@ import {
 } from '../normal/rational';
 import {
 	func,
+	multiply,
 	number,
 	opposite,
 	subscript,
@@ -71,6 +72,7 @@ import { decimalString, hasDecimalLiteral } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
 import { cannotVanish, nonZeroBases } from './sign';
 import {
+	containsUnknown,
 	isPlainTerm,
 	numberFirst,
 	orderUnderMinus,
@@ -116,6 +118,8 @@ type MutableFactor = {
 	 * `keepDomain` qui dira si elle se simplifie, donc si le geste se nomme.
 	 */
 	crossed: boolean;
+	/** Deux facteurs de cette base se sont rejoints (`eˣ·eˣ`, Q29). */
+	grouped: boolean;
 };
 
 /**
@@ -482,9 +486,10 @@ function addFactor(acc: Accumulator, base: MathNode, exponent: Rational): void {
 
 	if (existing === undefined) {
 		if (isZeroRational(exponent)) return;
-		acc.factors.set(key, { base, exponent, key, denominator, crossed: false });
+		acc.factors.set(key, { base, exponent, key, denominator, crossed: false, grouped: false });
 		return;
 	}
+	existing.grouped = true;
 
 	// Deux facteurs de même base se rejoignent : « on regroupe les facteurs ».
 	// De part et d'autre de la barre, le geste n'est nommé que s'il a lieu (S3).
@@ -518,7 +523,39 @@ function keepDomain(factor: MutableFactor, settings: Settings, watch: FamilyWatc
 		];
 	}
 	if (factor.crossed) watch?.add('factors');
-	return isZeroRational(exponent) ? [] : [{ base, exponent, key }];
+	if (isZeroRational(exponent)) return [];
+	return [
+		factor.grouped ? withExponentRule(base, exponent, key, settings) : { base, exponent, key }
+	];
+}
+
+/**
+ * Q29 (David, 2026-10-24) — des exponentielles identiques regroupées s'écrivent
+ * avec la règle des exposants, comme en classe : `eˣ·eˣ → e^{2x}`, `(eˣ)²·eˣ →
+ * e^{3x}`, et non `(eˣ)²`. Une exponentielle : base sans inconnue (`e`, `2`),
+ * exposant non rationnel. Une puissance tapée seule (`(eˣ)²`) ne passe pas ici ;
+ * deux exposants différents (`eˣ·e^{−x}`) non plus : c'est `réduire` (Q31, S4).
+ */
+function withExponentRule(
+	base: MathNode,
+	exponent: Rational,
+	key: string,
+	settings: Settings
+): TidyFactor {
+	const unchanged = { base, exponent, key };
+	if (base.type !== 'superscript' || extractRational(base.superscript) !== null) return unchanged;
+	if (containsUnknown(base.base) || !isIntegerRational(exponent)) return unchanged;
+	const times = absRational(exponent);
+	if (isOneRational(times)) return unchanged;
+	const power = tidyAtom(
+		superscript(base.base, multiply(number(times.n.toString()), base.superscript, 'implicit')),
+		settings
+	);
+	return {
+		base: power,
+		exponent: isNegativeRational(exponent) ? negRational(ONE) : ONE,
+		key: factorKey(power, settings)
+	};
 }
 
 /**
