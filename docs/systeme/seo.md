@@ -64,7 +64,7 @@ Deux appelants :
 
 ### Ce qui n'est pas dans `src/lib/seo/`
 
-- `static/robots.txt` : interdit `/dashboard/`, `/auth/`, `/api/`, et les pages de démo
+- `static/robots.txt` : interdit `/dashboard/`, `/auth/`, `/api/`, `/dev`, `/aide-ecriture`, et les pages de démo
   (`/demo`, `/geometry-demo`, `/construction-demo`, `/test-`, `/slides/`, `/blockly`) ; annonce `https://www.chiph.re/sitemap.xml`.
 - En-tête HTTP `X-Robots-Tag: noindex, nofollow` posé par les pages à jeton (cahier de textes,
   cours : `src/routes/(public)/cahier/[token]/`, `src/routes/(public)/cours/[token]/`).

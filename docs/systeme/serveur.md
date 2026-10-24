@@ -29,7 +29,7 @@ Vocabulaire du domaine : [CONTEXT.md](../../CONTEXT.md). Vue d'ensemble des rout
 
 ## 1. Conventions d'un endpoint et d'une action
 
-Avant tout handler, `src/hooks.server.ts` a déjà tourné : `handle = sequence(requestIdHandle, maintenanceHandle, supabaseHandle, redirectHandle, userProfileHandle, accountStatusHandle, passwordChangeHandle, studentPresenceHandle, adminElevationHandle, csrfHandle, securityHeadersHandle, errorMonitoringHandle)`. Le détail de la chaîne est dans [auth.md § La chaîne de handles](auth.md#la-chaîne-de-handles) ; un endpoint reçoit `locals.user`, `locals.profile`, `locals.supabase` (et `locals.adminSupabase` si élévation).
+Avant tout handler, `src/hooks.server.ts` a déjà tourné : `handle = sequence(requestIdHandle, maintenanceHandle, supabaseHandle, redirectHandle, userProfileHandle, accountStatusHandle, passwordChangeHandle, studentPresenceHandle, adminElevationHandle, reservedAreasHandle, csrfHandle, securityHeadersHandle, errorMonitoringHandle)`. Le détail de la chaîne est dans [auth.md § La chaîne de handles](auth.md#la-chaîne-de-handles) ; un endpoint reçoit `locals.user`, `locals.profile`, `locals.supabase` (et `locals.adminSupabase` si élévation).
 
 Ordre d'un handler, tel que le code le pratique (exemple réel : `src/routes/api/admin/cron/trigger/+server.ts`) :
 

@@ -8,6 +8,7 @@ import { handle as supabaseHandle } from '$lib/server/supabase';
 import { maintenanceHandle } from '$lib/server/maintenance';
 import { adminElevationHandle } from '$lib/server/adminElevation';
 import { redirectHandle } from '$lib/server/redirectHandle';
+import { reservedAreasHandle } from '$lib/server/reservedAreasHandle';
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle } from '@sveltejs/kit';
 import { logError, getUserContext } from '$lib/server/errorMonitoring';
@@ -391,7 +392,8 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 // Order matters: Request ID -> Maintenance -> Supabase auth -> Redirects -> User/Profile loading
 // -> Account status (non-approved: 403 on API and writes, B6) -> Student presence (Palotin « tu m'as manqué »,
 // once a day, pages only) -> Admin elevation (reads the elevation cookie, builds locals.adminSupabase; AFTER profile
-// loading so DB role is available, BEFORE CSRF) -> CSRF validation -> Security Headers -> Error monitoring
+// loading so DB role is available, BEFORE CSRF) -> Reserved areas (/dev admin, /aide-ecriture teacher,
+// needs the elevation state) -> CSRF validation -> Security Headers -> Error monitoring
 export const handle: Handle = sequence(
 	requestIdHandle,
 	maintenanceHandle,
@@ -402,6 +404,7 @@ export const handle: Handle = sequence(
 	passwordChangeHandle,
 	studentPresenceHandle,
 	adminElevationHandle,
+	reservedAreasHandle,
 	csrfHandle,
 	securityHeadersHandle,
 	errorMonitoringHandle

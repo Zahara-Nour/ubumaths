@@ -9,6 +9,8 @@ couvre:
   - 'src/lib/server/auth/**'
   - 'src/lib/server/middleware/**'
   - src/lib/server/adminElevation.ts
+  - src/lib/server/reservedAreasHandle.ts
+  - src/lib/server/elevation-redirect.ts
   - src/lib/server/serviceRoleClient.ts
   - src/lib/server/rateLimiter.ts
   - src/lib/server/response-floor.ts
@@ -197,9 +199,10 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
 7. `passwordChangeHandle` — mot de passe provisoire à changer : pages → `/auth/update-password`, API et écritures → 403 (voir « Mots de passe des élèves »).
 8. `studentPresenceHandle` — élève connecté au compte approuvé, toute page hors `/api/*` : présence du jour notée au client service, au plus une fois par jour et par instance (mémoire locale, sans cookie) ; sert au « tu m'as manqué » du Palotin ([buddy-palotins.md](buddy-palotins.md#retour-apres-une-longue-absence-2026-10-21)).
 9. `adminElevationHandle` — `locals.adminSupabase`, `locals.adminElevation`.
-10. `csrfHandle` — `Origin` doit correspondre à `Host` pour POST/PUT/PATCH/DELETE.
-11. `securityHeadersHandle` — CSP, HSTS (prod), `X-Frame-Options`, `Cache-Control: private, no-store` si connecté ou cookie posé.
-12. `errorMonitoringHandle` — erreurs et requêtes lentes (> 3 s) vers `error_logs`.
+10. `reservedAreasHandle` (`src/lib/server/reservedAreasHandle.ts`) — espaces réservés, par identifiant de route : `/dev` admin seul (vrai compte admin ou prof élevé ; prof non élevé → `/dashboard/elevate?redirect=…`), `/aide-ecriture` prof seul (un vrai compte admin reçoit 403) ; visiteur → `/auth/login` (401 en écriture), sinon 403. Dans le hook et non dans un layout : ni les loads de page parallèles ni les actions n'y échappent (chantier demo-debug, 2026-10-24).
+11. `csrfHandle` — `Origin` doit correspondre à `Host` pour POST/PUT/PATCH/DELETE.
+12. `securityHeadersHandle` — CSP, HSTS (prod), `X-Frame-Options`, `Cache-Control: private, no-store` si connecté ou cookie posé.
+13. `errorMonitoringHandle` — erreurs et requêtes lentes (> 3 s) vers `error_logs`.
 
 ### Session et cookies SSR
 
@@ -455,7 +458,8 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
    **sans** jeton de rafraîchissement). Pas de chiffrement : l'intégrité vient de la signature
    du JWT, revérifiée à chaque requête. Le nom ne commence pas par `sb-` : `@supabase/ssr`
    l'ignore et la racine ne le transmet pas au client.
-3. `adminElevationHandle` ne travaille que sous `/dashboard/admin*` et `/api/admin*`.
+3. `adminElevationHandle` ne travaille que sous `/dashboard/admin*`, `/api/admin*` et `/dev`
+   (pages de dev, gardées par l'élévation : `reservedAreasHandle`).
    **Sans session, ou avec la session d'un autre compte que `elevatedBy`, jamais d'élévation** :
    le cookie est effacé, le jeton n'est pas vérifié (poste partagé : logout, session expirée,
    élève connecté ensuite sur le même navigateur ; constat B4, 2026-10-10). Sinon : décode,
@@ -471,7 +475,8 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
    saisie.
 
 La section `/dashboard/admin` redirige un prof non élevé vers `/dashboard/elevate?redirect=…`
-(redirection bornée à `/dashboard/admin/*`), sauf `friendships` et `users`, ouverts au prof.
+(retour borné à `/dashboard/admin/*` et `/dev/*` : `safeElevationRedirect`,
+`src/lib/server/elevation-redirect.ts`), sauf `friendships` et `users`, ouverts au prof.
 Un élève reçoit 403.
 
 ## Processus 2 — l'autorisation Google Classroom
@@ -555,6 +560,7 @@ d'intégration obligatoires, et relire [rls-echecs-silencieux](../pratiques/rls-
 | Où                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Quoi                                                                                                                                                        |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/server/__tests__/adminElevation.test.ts`, `adminElevationHandle.test.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Cookie (encode/décode/expiration) ; handle : pas d'élévation sans session.                                                                                  |
+| `src/lib/server/__tests__/reservedAreasHandle.test.ts`, `elevation-redirect.test.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `/dev` et `/aide-ecriture` par compte (visiteur, élève, prof, prof élevé, admin) ; retour d'élévation borné.                                                |
 | `src/routes/(public)/auth/logout/__tests__/logout.test.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Le logout efface et révoque l'élévation.                                                                                                                    |
 | `src/lib/utils/__tests__/session-cookies.test.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Plafond de 30 jours (400 → 30 j, effacement `Max-Age=0` intact) ; écriture navigateur sur `document.cookie`.                                                |
 | `src/routes/api/admin/elevate/__tests__/elevate.test.ts`, `revoke/__tests__/revoke.test.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                              | Endpoints d'élévation.                                                                                                                                      |

@@ -215,8 +215,14 @@ export function createAdminElevationHandle(
 		// stale/forged cookie can't make every unrelated request pay a getUser() +
 		// DB round-trip. The elevate endpoint lives under /api/admin, so the handle
 		// still runs there (fine: the cookie isn't set yet on that request).
+		// Les pages de dev (`/dev`) sont gardées par l'élévation (`reservedAreasHandle`).
 		const { pathname } = event.url;
-		if (!pathname.startsWith('/dashboard/admin') && !pathname.startsWith('/api/admin')) {
+		const isDevPath = pathname === '/dev' || pathname.startsWith('/dev/');
+		if (
+			!pathname.startsWith('/dashboard/admin') &&
+			!pathname.startsWith('/api/admin') &&
+			!isDevPath
+		) {
 			event.locals.adminElevation = null;
 			return resolve(event);
 		}

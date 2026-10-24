@@ -43,7 +43,7 @@ function adminClient() {
 	};
 }
 
-function eventAvecCookie(user: { id: string } | null) {
+function eventAvecCookie(user: { id: string } | null, chemin = '/api/admin/schools') {
 	const cookie = encodeElevationCookie({
 		adminUserId: ADMIN_ID,
 		accessToken: 'jeton-admin',
@@ -56,7 +56,7 @@ function eventAvecCookie(user: { id: string } | null) {
 	};
 	const locals: Record<string, unknown> = { user };
 	const event = {
-		url: new URL('http://localhost/api/admin/schools'),
+		url: new URL(`http://localhost${chemin}`),
 		cookies,
 		locals
 	} as unknown as RequestEvent;
@@ -114,4 +114,35 @@ describe('createAdminElevationHandle — session exigée', () => {
 		expect(locals.adminSupabase).toBe(client);
 		expect(cookies.delete).not.toHaveBeenCalled();
 	});
+});
+
+describe('createAdminElevationHandle — sections où l’élévation compte', () => {
+	// Les pages de dev (`/dev`, chantier demo-debug) sont gardées par l'élévation
+	// (`reservedAreasHandle`) : le handle doit y lire le cookie.
+	it.each(['/dev', '/dev/polices'])('%s : un cookie valide donne l’élévation', async (chemin) => {
+		const client = adminClient();
+		const verifyToken = vi.fn().mockResolvedValue({ userId: ADMIN_ID, client });
+		const handle = createAdminElevationHandle({ verifyToken: verifyToken as never });
+		const { event, locals } = eventAvecCookie({ id: TEACHER_ID }, chemin);
+
+		await handle({ event, resolve: vi.fn().mockResolvedValue(new Response()) });
+
+		expect(locals.adminElevation).toMatchObject({ active: true, adminUserId: ADMIN_ID });
+		expect(locals.adminSupabase).toBe(client);
+	});
+
+	it.each(['/devoirs', '/aide-ecriture', '/atelier'])(
+		'%s : hors section, le cookie n’est pas lu',
+		async (chemin) => {
+			const verifyToken = vi.fn().mockResolvedValue({ userId: ADMIN_ID, client: adminClient() });
+			const handle = createAdminElevationHandle({ verifyToken: verifyToken as never });
+			const { event, cookies, locals } = eventAvecCookie({ id: TEACHER_ID }, chemin);
+
+			await handle({ event, resolve: vi.fn().mockResolvedValue(new Response()) });
+
+			expect(locals.adminElevation).toBeNull();
+			expect(cookies.get).not.toHaveBeenCalled();
+			expect(verifyToken).not.toHaveBeenCalled();
+		}
+	);
 });

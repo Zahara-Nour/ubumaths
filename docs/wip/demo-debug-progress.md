@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, avant toute PR._
+_Mis à jour le 2026-10-24, PR 1 (socle) en cours._
 
-- **État** : revue page par page FINIE (19 lignes tranchées) ; plan en phases écrit (§ « Plan en phases »), à faire valider.
-- **Prochaine action** : faire valider le plan, puis phase 0 de la PR 1 (comportements en français, attendre la validation avant de coder).
-- **En attente de David** : la validation du plan (découpage, ordre).
-- **Pièges en cours** : aucune suppression hors fusions (7, 8, 15) et ligne 17 ; `/test-font` intact (rien de « KaTeX » renommé) ; règle « contenu pédagogique = prof » ; chantier constructions en cours ailleurs → ligne 4 après ses merges ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` = vraies fonctionnalités, hors chantier.
-- **Worktree / branche** : aucun (rien de codé) ; journal commité sur `main`. Au premier code : `../ubumaths-wt-demo-debug`.
+- **État** : plan validé par David ; PR 1 (socle) codée sur `feat/demo-debug` : garde `reservedAreasHandle` dans le hook, accueils `/dev` et `/aide-ecriture` vides, robots, élévation lue sous `/dev`, retour d'élévation admis vers `/dev`.
+- **Prochaine action** : revues (`code-reviewer` + `security-auditor`), PR, CI, merge. Puis PR 2 (déplacements « telles quelles » vers `/dev`).
+- **En attente de David** : rien.
+- **Pièges en cours** : un refus levé dans le hook s'affiche sur la page d'erreur minimale de SvelteKit, pas sur `+error.svelte` (choix assumé : garde dans le hook) ; `adminElevationHandle` ne lit le cookie que sous `/dashboard/admin`, `/api/admin`, `/dev` ; aucune suppression hors fusions (7, 8, 15) et ligne 17 ; `/test-font` intact ; ligne 4 après le chantier constructions.
+- **Worktree / branche** : `../ubumaths-wt-demo-debug` · `feat/demo-debug`.
 
 ## Décisions de David (2026-10-24)
 
@@ -106,7 +106,7 @@ automatique ($(x+1)^2$ développé pas à pas) · **propre à Chiphre** : 6 form
 À vérifier avant de coder : `trig` et figures dans une diapositive ubumark, question sans compte ;
 si l'une ne marche pas, le dire à David plutôt que contourner.
 
-## Plan en phases (proposé le 2026-10-24, à valider)
+## Plan en phases (validé par David le 2026-10-24)
 
 Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« un temps »).
 
@@ -124,6 +124,18 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
    `/parents`, `/eleves` et le pied de page.
 8. **Ligne 4 (constructions)**, après les merges du chantier constructions : `/constructions/essais`,
    `/demo/constructions` ; puis PR à part du retrait d'accès admin sur `construction-demo-scripts`.
+
+## PR 1 — socle (phase 0 validée par David le 2026-10-24)
+
+- **Garde dans le hook** (choix de David, reco) : `src/lib/server/reservedAreasHandle.ts`, après
+  `adminElevationHandle`, par identifiant de route (`/(protected)/dev…`, `/(protected)/aide-ecriture…`).
+- `/dev` : admin ou prof élevé → passe ; prof non élevé → `/dashboard/elevate?redirect=…` (lecture),
+  403 (écriture) ; élève → 403 ; visiteur → `/auth/login` (lecture), 401 (écriture).
+- `/aide-ecriture` : prof (élevé ou non) → passe ; vrai compte admin → 403 ; élève → 403 ; visiteur → connexion.
+- Trouvé en route : `adminElevationHandle` ne lisait le cookie que sous `/dashboard/admin` et
+  `/api/admin` → un prof élevé aurait été refusé sur `/dev`. Étendu à `/dev` (test rouge d'abord).
+  `safeRedirect` de l'écran d'élévation sorti en `src/lib/server/elevation-redirect.ts`, admet `/dev`.
+- Vérifié sur le serveur local (5176), comptes `student`, `teacher`, `teacher` élevé, `admin` : conforme.
 
 ## Hors chantier, à faire plus tard (noté le 2026-10-24)
 
