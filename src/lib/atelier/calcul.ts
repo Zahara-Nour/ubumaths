@@ -4177,10 +4177,11 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		input,
 		output: rendered.text,
 		...(rendered.latex && { latex: approximatedLatex(result, rendered.latex) }),
-		// « Garder » range la grandeur exacte, pas son écriture juxtaposée (`2 h 30 min`)
+		// « Garder » range la grandeur exacte, pas son écriture juxtaposée (`2 h 30 min`) ;
+		// sinon l'écriture affichée (Q27, lot 5d : `2x+3x` se garde `5x`)
 		...(result.success &&
-			(result.quantityAst ?? result.ast) !== undefined && {
-				ast: result.quantityAst ?? result.ast
+			(result.quantityAst ?? rendered.ast ?? result.ast) !== undefined && {
+				ast: result.quantityAst ?? rendered.ast ?? result.ast
 			}),
 		...calculationAlternative(result),
 		...notesOf(...reading.notes, tooLongNote(result))

@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR de l'annulation des termes (§ 64) avant 5d._
+_Mis à jour le 2026-10-24, après #1682 (annulation des termes, § 64) ; PR de 5d ouverte._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674) mergés. **5d codé et commité** sur `feat/simplify-carte-5d-d3` (pas poussé, journal § 64 de cette branche à renuméroter § 65 au rebase). En cours : `fix/simplify-carte-annulation-domaine` (§ 64 : `ln(x) − ln(x)` ne s'annule plus). Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682) mergés. **5d** (§ 65) : PR ouverte, revue faite. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (… → ~~Q29~~ → **annulation-domaine** → **5d D3** → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : merger la PR annulation-domaine ; puis rebaser 5d sur `main`, ajouter le test « Garder `ln(x) − ln(x)` reste une fonction », pousser, PR, revue.
-- **En attente de David** : à lui montrer, l'affichage de 5d : `sin^2(x) → sin(x)^2`, `x m → m x`, `2πr m → 2πmr` ; `eˣ·eˣ·e^{−x} → e^{−x}e^{2x}` (conforme à Q31) ; vérifications manuelles de #1670, #1663, #1642, #1656, #1658/#1660 ; choix pour `pnpm math` (§ 54) ; futur chantier : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
-- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc des modèles : script jetable (prod en lecture), échange de fichiers avec un TABLEAU zsh et une copie vérifiée (§ 64) ; l'oracle des dérivées ignore l'ordre des facteurs ; 5f : `réduire` fait-il `eˣ·e^{−x} → 1` ? ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `fix/simplify-carte-annulation-domaine` (depuis `origin/main`) ; 5d sur `feat/simplify-carte-5d-d3`.
+- **Ordre des lots** : … → **5** (… → ~~Q29~~ → ~~annulation-domaine~~ → **5d D3** → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : merger 5d dès la CI verte ; republier la page de synthèse ; puis 5e D4 (phase 0).
+- **En attente de David** : à lui montrer, l'affichage de 5d : `sin^2(x) → sin(x)^2`, `x m → m x`, `2πr m → 2πmr` ; `eˣ·eˣ·e^{−x} → e^{−x}e^{2x}` (conforme à Q31) ; vérifications manuelles de #1670, #1663, #1642, #1656, #1658/#1660 ; choix pour `pnpm math` (§ 54) ; futur chantier : LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
+- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc des modèles : script jetable (prod en lecture), échange de fichiers avec un TABLEAU zsh et une copie vérifiée (§ 64) ; 5f : ordre canonique des termes gardés, récit en aller-retour (§ 64), `réduire` fait-il `eˣ·e^{−x} → 1` ? ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-5d-d3` (rebasée sur `main` après #1682).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -903,3 +903,11 @@ Décision déjà prise au § 19 : une expression littérale tapée dans Calcul e
 - Tests : `tidy-annulation-domaine.test.ts`, 15 rouges sur 35 sans le correctif. Suite serveur verte (60 762). Banc des modèles de la prod (19 254 tirages, base contre branche) : aucun changement.
 - **Revue `code-reviewer` (opus), corrigé** : (1) `nonZero` (« ≠ 0 ») servait de « > 0 » — sur le domaine de `1/x`, `ln(-x)` ou `ln(x²)`, `ln(x) − ln(x)` s'annulait ; ensemble à part `positive` (`positiveBases` : arguments de logarithme, bases d'exposant variable), `AcquiredDomain` dans `sign.ts`. (2) `arccosh`, `arctanh`, `factorial` ajoutés aux fonctions restreintes. 9 rouges avant correctif. Suite serveur verte (60 774), banc inchangé, `check:incremental` 0 erreur. **Laissés (mineurs, notés pour 5f)** : en ordre canonique, les termes gardés sont triés séparément (`3 − ln x + x + ln x → ln(x) + x + 3 − ln(x)`, l'Atelier est en ordre gardé) ; le récit d'étapes de `ln(x)+3−ln(x)` fait un aller-retour (regroupement puis tri) ; `cbrt(x) − cbrt(x)` reste écrit (prudent).
 - ⚠️ Piège du banc : en zsh, `F="a b c"` ne se découpe pas (`for f in $F` = un seul tour) — un tableau `F=(a b c)` ; et sauvegarder AVANT d'écraser, en vérifiant la copie (`collect.ts` perdu puis réécrit depuis les scripts de la session).
+
+## 65. Lot 5d (D3) codé (branche `feat/simplify-carte-5d-d3`, 2026-10-24)
+
+- `readable` (`atelier/render.ts`) : une expression à variables passe par `tidy(ast, { order: 'kept' })` au lieu de ressortir telle que tapée ; garde « unité » avant, garde `exactTooLong` conservée. `RenderedResult.ast` = l'arbre affiché ; `runInput` le range dans `CalcResult.ast` → « Garder » range ce qui est affiché (Q27), sauf une grandeur (`quantityAst`).
+- Tests : 26 rouges sur 32 nouveaux sans le correctif (`affichage-calcul.test.ts` : nominal § 61, limites, Garder `5x` et `x/x`). Le test du lot B « ni simplifiée ni réordonnée » remplacé (ses deux cas sont dans les limites).
+- 3 attentes de l'ancien affichage brut mises à jour (lecture juste, but inchangé) : `sin^2(x) → sin(x)^2` (forme unique de `tidy`), `x m → m x`, `2πr m → 2πmr` (lettres dans l'ordre alphabétique). **À montrer à David.**
+- Suite serveur verte (60 676), client Atelier vert (645), `check:incremental` 0 erreur.
+- **Revue `code-reviewer` (sonnet)** : un finding, corrigé par #1682 (§ 64) — `ln(x) − ln(x)`, `1/x − 1/x` s'affichaient `0` et se gardaient en valeur. Rebasé sur `main` après #1682 ; tests ajoutés : « Garder » `ln(x) − ln(x)` et `1/x − 1/x` range une fonction, `x − x` la valeur 0. Suite serveur verte (60 822), client Atelier vert, `check:incremental` 0 erreur.

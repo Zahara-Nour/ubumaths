@@ -123,7 +123,8 @@ describe('les écritures justes restent lues', () => {
 		['2 ln(x)', 'text', '2 \\ln\\left( x \\right)'],
 		['\\ln x', 'mathfield', '\\ln\\left( x \\right)'],
 		['\\sin x', 'mathfield', '\\sin\\left( x \\right)'],
-		['sin^2(x)', 'text', '\\sin^2\\left( x \\right)'],
+		// Mis au propre par `tidy` (lot 5d) : une seule forme, l'exposant du facteur
+		['sin^2(x)', 'text', '\\sin\\left( x \\right)^2'],
 		['sqrt[3](8)', 'text', '2'],
 		['log_2(8)', 'text', '3']
 	] as const)('« %s » (%s)', (text, provenance, latex) => {

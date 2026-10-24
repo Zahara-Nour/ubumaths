@@ -19,6 +19,7 @@ import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
+import { tidy } from '$lib/mathAST/tidy';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { findNodes } from '$lib/mathAST/transforms';
 import { isUnit } from '$lib/mathAST/guards';
@@ -34,6 +35,8 @@ export interface RenderedResult {
 	readonly latex?: string;
 	/** Ce qu'on affiche sinon — et ce qu'on copie toujours. */
 	readonly text: string;
+	/** L'arbre affiché : ce que « Garder » range (Q27, lot 5d). */
+	readonly ast?: MathNode;
 }
 
 // =============================================================================
@@ -139,13 +142,13 @@ function cleanText(output: string): string {
  * décimal) restent tels quels.
  */
 function readable(ast: MathNode): MathNode {
-	// Une expression à variables libres : `tidy` y simplifierait `x/x` en 1
-	// (faux en 0, et autre chose que ce que « Garder » range) et réordonnerait
-	// `3-2x+x^2` (revue du lot B). Sa cible est π, √, e, ln — sans variable
-	if (getVariables(ast).size > 0) return ast;
 	// Une grandeur est déjà mise au propre par la console (`quantities.ts`) :
 	// `tidy` recalculerait l'écriture juxtaposée `2 h 30 min` en une seule unité (lot C)
 	if (findNodes(ast, isUnit).length > 0) return ast;
+	// Une expression littérale est mise au propre dans l'ordre de l'élève (lot 5d,
+	// D3) : `2x+3x → 5x`, mais `3-2x+x^2` n'est pas réordonnée et `x/x` reste
+	// `x/x` (S3, faux en 0). `exactValueToShow` choisirait l'écriture canonique
+	if (getVariables(ast).size > 0) return tidy(ast, { order: 'kept' });
 	return exactValueToShow(ast);
 }
 
@@ -186,7 +189,7 @@ export function renderResult(
 		// Une écriture gardée (résultat exact trop long) : `tidy` la développerait — le
 		// calcul de 13 s que le garde-fou évite
 		const ast = result.exactTooLong === undefined ? readable(result.ast) : result.ast;
-		return { latex: displayUnitsInLatex(toLatex(ast)), text };
+		return { latex: displayUnitsInLatex(toLatex(ast)), text, ast };
 	}
 
 	return { text };
