@@ -232,7 +232,7 @@ describe('les commandes se découvrent', () => {
 
 		const liste = container.querySelector('.commandes');
 		expect(liste).toBeTruthy();
-		// Bien plus que les 8 écrites en dur dans /calc
+		// Bien plus que les 8 écrites en dur dans l'ancienne /calc
 		expect(liste!.querySelectorAll('button').length).toBeGreaterThan(4);
 	});
 

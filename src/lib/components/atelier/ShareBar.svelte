@@ -53,8 +53,8 @@
 	/**
 	 * Fabriquer le lien.
 	 *
-	 * ⚠️ La taille est annoncée **avant** la copie (§6 L1) : `/calc` refuse
-	 * aujourd'hui après coup, ce qui fait perdre le geste à l'élève.
+	 * ⚠️ La taille est annoncée **avant** la copie (§6 L1) : l'ancienne `/calc`
+	 * refusait après coup, ce qui fait perdre le geste à l'élève.
 	 */
 	export async function share() {
 		if (busy) return;

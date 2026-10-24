@@ -13,7 +13,7 @@
  * operations match what a student does on paper. So we introduce a separate
  * pipeline that walks the equation pedagogically (move x-terms one side,
  * constants the other, divide by coefficient) — analogous to
- * `step-generator/arithmetic-steps.ts` for arithmetic but using a richer
+ * `pedagogical-arithmetic/` for arithmetic but using a richer
  * structured step type adapted to the bilateral nature of equations.
  *
  * @module mathAST/pedagogical-solve/types

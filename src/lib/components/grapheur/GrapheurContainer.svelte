@@ -46,9 +46,8 @@ Features:
 		/**
 		 * L'instance de grapheur à piloter.
 		 *
-		 * Sans elle, c'est le singleton — donc `/grapheur` et `/calc` gardent
-		 * l'état partagé qu'ils ont toujours eu. Un atelier qui veut le sien
-		 * passe la sienne.
+		 * Sans elle, c'est le singleton, qu'aucune page ne monte plus depuis le
+		 * retrait de `/calc` (2026-10-25) : l'atelier passe toujours la sienne.
 		 */
 		store?: GrapheurStore;
 	} = $props();

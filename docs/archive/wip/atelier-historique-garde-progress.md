@@ -1,6 +1,6 @@
 # Lignes de Calcul gardées au rechargement — progression
 
-Décision de David du 2026-10-13 (« option 1 », [atelier-saisie-naturelle.md](../../wip/atelier-saisie-naturelle.md)) :
+Décision de David du 2026-10-13 (« option 1 », [atelier-saisie-naturelle.md](atelier-saisie-naturelle.md)) :
 les lignes de la vue Calcul reviennent au rechargement, comme les cartes. Branche
 `feat/atelier-historique-garde`, worktree `../ubumaths-wt-historique-garde`.
 

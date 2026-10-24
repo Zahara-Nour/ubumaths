@@ -1,7 +1,7 @@
 /**
  * La saisie « Écriture mathématique » de Calcul, sans point (en essai)
  *
- * Décisions de David du 2026-10-13 (`docs/wip/atelier-saisie-naturelle.md`) :
+ * Décisions de David du 2026-10-13 (`docs/archive/wip/atelier-saisie-naturelle.md`) :
  * le premier mot décide (commande ou calcul), les petits mots ne sont des mots
  * que dans une commande, un mot devient texte quand il est FINI, une unité ne
  * se lit qu'après « nombre + espace ». Depuis le 2026-10-14, l'élève choisit

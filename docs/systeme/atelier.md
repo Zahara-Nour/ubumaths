@@ -2,11 +2,8 @@
 couvre:
   - 'src/lib/atelier/**'
   - 'src/lib/components/atelier/**'
-  - 'src/lib/components/calculator/**'
-  - src/lib/stores/calculator.svelte.ts
   - src/lib/mathAST/cli/web/web-repl-engine.ts
   - 'src/routes/(public)/atelier/**'
-  - 'src/routes/(public)/calc/**'
   - 'src/routes/(public)/grapheur/**'
 ---
 
@@ -56,11 +53,9 @@ Ceux du code et de l'interface :
   dans le code et les messages, « Calcul » la désigne encore souvent ;
 - **historique** : les lignes de la console (saisies et réponses) ;
 - **mode éphémère** : un atelier reçu par lien, qui ne lit ni n'écrit l'atelier personnel.
-- voisin hors atelier : `/calc` (`src/routes/(public)/calc/+page.svelte`, grapheur singleton).
-  Sa saisie (`UnifiedInput.svelte`) a un **mode commande** : un « . » dans le champ vide ouvre une
-  zone de commande, qui garde son point (`.eval`) ; le store (`calculator.svelte.ts`) retire un
-  point initial avant de rebâtir `.commande expression` pour `WebReplEngine` (V54 : il le doublait,
-  et toutes les commandes répondaient « Commande inconnue »).
+- anciennes pages remplacées par l'atelier : `/calc` (calculatrice) est **retirée** depuis le
+  2026-10-25 ; l'adresse mène à `/atelier` en 308, sans sa query (ses liens `?share=` n'ont pas
+  d'équivalent) ; son historique (`chiphre-calc-history`) n'est pas repris.
   `/cas` (ancien REPL web) est **retirée** depuis le 2026-10-13 : l'adresse mène à `/atelier` en
   308 (`redirectHandle`, `src/lib/server/redirectHandle.ts`).
 
@@ -1894,8 +1889,30 @@ recalcule), jamais dans un lien. **« Saisie dans Calcul »** : **Texte** (le ch
 devant les commandes ; le défaut) ou **Écriture mathématique** (MathLive, sans point, marquée « en
 essai »). Le choix prend effet tout de suite et reste dans le navigateur (`chiphre-atelier-saisie`,
 à part de l'atelier) : ni dans un lien, ni dans un export ; présent aussi sur un atelier reçu.
-Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règles de frappe :
-[atelier-saisie-naturelle.md](../wip/atelier-saisie-naturelle.md) (décisions 2 à 9).
+Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; journal des règles de
+frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.md).
+
+**Règles de frappe** (décisions de David du 2026-10-13, `natural-input.ts`) :
+
+- **Le premier mot décide** : une ligne qui commence par un mot du vocabulaire des commandes
+  (résoudre, dériver, factoriser, développer, simplifier, variations, limite, intégrer, réciproque,
+  domaine, aide… ; accents facultatifs ; formes conjuguées « résous », « dérive ») est une commande ;
+  sinon un calcul ou une définition. Aucun point à taper ; un point tapé reste accepté sans bruit.
+- **Les petits mots** (de, à, en, sur, pour, dans, et, ordre, par) ne sont des mots **que** dans une
+  commande (et « sur » après le `=` d'une définition), jamais dans un calcul.
+- **Un mot devient texte quand il est fini** (espace, caractère mathématique, ou choix dans la
+  liste), pas dès que ses lettres correspondent (sinon « de » dans « deriver ») ; retour aux maths
+  automatique.
+- **Texte libre** (modalités `fille ; garçon`) : reste dans Données et les cartes.
+- **Modèles à trous** : choisir une commande insère « intégrer ▢ de ▢ à ▢ » (`\placeholder{}`) ;
+  onglet « Commandes » du clavier virtuel.
+- **Unités** : « un nombre, une espace, une unité » (même `mathModeSpace` que les cartes) ; une
+  unité reconnue s'affiche en romain (5 km).
+- **Complétion** : commandes dès les premières lettres d'une ligne, unités après « nombre +
+  espace » ; fonctions et lettres grecques par les raccourcis de MathLive ; déclenchée sur `input`
+  (clavier virtuel compris). Liste ouverte : **Entrée calcule, Tab choisit**.
+- Une fraction ne se quitte pas toute seule quand on tape un opérateur : on en sort par → ou Tab,
+  comme partout dans MathLive (2026-10-14).
 
 - **Les mêmes réponses** : le champ mathématique envoie au moteur le texte que lit `runInput`
   (`calcTextOf`) ; une case vide d'un modèle est refusée avant (la ligne reste, la raison s'affiche).
@@ -2938,7 +2955,6 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
-- `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
 - dettes connues : action « Renommer » encore désactivée (« prochain lot »), saisie des unités
   sans palette. `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
   poste (< 0,1 ms ; voir « Ce qui se recalcule, et ce qui est gardé »).

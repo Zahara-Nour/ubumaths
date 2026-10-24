@@ -6,8 +6,8 @@
  * (`pnpm repl`), où l'anglais a sa place ; les alias français s'ajoutent, les
  * anglais continuent de marcher.
  *
- * Le défaut que ça répare est mesuré : `/calc` propose **8 commandes écrites en
- * dur** sur 34 réelles, et 24 des 26 descriptions du registre sont en anglais.
+ * Le défaut que ça répare était mesuré : `/calc` (retirée depuis) proposait **8 commandes
+ * écrites en dur** sur 34 réelles, et 24 des 26 descriptions du registre sont en anglais.
  * Un élève ne peut pas savoir que `.variations` existe.
  *
  * @module atelier/commands

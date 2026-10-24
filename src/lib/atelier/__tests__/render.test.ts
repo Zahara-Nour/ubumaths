@@ -1,7 +1,7 @@
 /**
  * Le rendu du résultat — §3 et §6 ter.
  *
- * Aujourd'hui ni `/calc` ni `/cas` ne rendent le résultat en mathématiques :
+ * Avant l'atelier, ni `/calc` ni `/cas` (retirées depuis) ne rendaient le résultat en mathématiques :
  * l'un affiche le texte brut en `font-mono` (avec le commentaire « will be
  * replaced by proper LaTeX rendering » resté en place), l'autre du HTML échappé.
  * Le champ `latex` de `ReplExecutionResult` existe mais n'est JAMAIS rempli.
@@ -74,7 +74,7 @@ describe('ce qui ne se rend PAS en mathématiques', () => {
 
 describe('les grandeurs gardent leur unité', () => {
 	// ⚠️ Mesuré : le moteur rend « \dfrac{123}{10} km » DANS le champ texte —
-	// du LaTeX mélangé à du texte, que /calc affiche littéralement en font-mono.
+	// du LaTeX mélangé à du texte, que /calc affichait littéralement en font-mono.
 	// L'AST, lui, a perdu l'unité : il ne rend que \dfrac{123}{10}.
 	it('n’efface pas l’unité du résultat', () => {
 		const rendered = render('12[km] + 300[m]');

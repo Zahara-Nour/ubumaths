@@ -1,7 +1,7 @@
 /**
  * Atelier — rendre un résultat lisible
  *
- * §3 et §6 ter. Aujourd'hui ni `/calc` ni `/cas` ne rendent le résultat en
+ * §3 et §6 ter. Avant l'atelier, ni `/calc` ni `/cas` (retirées depuis) ne rendaient le résultat en
  * mathématiques : l'un affiche le texte brut en `font-mono` — le commentaire
  * « will be replaced by proper LaTeX rendering » est toujours dans le code —
  * l'autre du HTML échappé. Et le champ `latex` de `ReplExecutionResult`, qui

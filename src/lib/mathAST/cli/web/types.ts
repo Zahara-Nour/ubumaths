@@ -27,8 +27,8 @@ export interface ReplExecutionResult {
 	/**
 	 * HTML-formatted output for browser display.
 	 *
-	 * Seul lecteur hors des tests : le store de `/calc` (`calculator.svelte.ts`),
-	 * qui le recopie dans son historique sans l'afficher (relevé le 2026-10-13).
+	 * Aucun lecteur hors des tests depuis le retrait de `/calc` (2026-10-25), dont le
+	 * store le recopiait dans son historique sans l'afficher.
 	 */
 	readonly outputHtml?: string;
 

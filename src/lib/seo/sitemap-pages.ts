@@ -73,7 +73,6 @@ export const SITEMAP_PAGES: SitemapPage[] = [
 	{ path: '/glossaire', title: 'Glossaire', priority: 0.7, changefreq: 'monthly' },
 	{ path: '/atelier', title: 'Atelier', priority: 0.8, changefreq: 'monthly' },
 	{ path: '/grapheur', title: 'Grapheur', priority: 0.7, changefreq: 'monthly' },
-	{ path: '/calc', title: 'Calculatrice', priority: 0.6, changefreq: 'monthly' },
 	{
 		path: '/upsilon',
 		title: 'Calculatrice graphique Upsilon',

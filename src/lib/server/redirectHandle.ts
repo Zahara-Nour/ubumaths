@@ -156,6 +156,13 @@ export const redirectHandle: Handle = async ({ event, resolve }) => {
 		throw redirect(308, '/atelier' + event.url.search);
 	}
 
+	// `/calc` (calculatrice) retirée le 2026-10-25 : l'atelier fait tout ce qu'elle
+	// faisait, « Comment ? » d'un calcul compris (`docs/wip/retrait-calc-progress.md`).
+	// Ses liens de partage (`?share=`) n'ont pas d'équivalent dans l'atelier : ils tombent.
+	if (pathname === '/calc' || pathname === '/calc/') {
+		throw redirect(308, '/atelier');
+	}
+
 	// `/spreadsheet` (tableur V4) retiré le 2026-10-24 : la grille de l'atelier le
 	// remplace (formules, CSV, mise en forme). Un tableur enregistré n'a pas
 	// d'équivalent dans l'atelier : son identifiant tombe.
