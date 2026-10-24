@@ -6,23 +6,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 1 du lot B (migration) ouverte._
+_Mis à jour le 2026-10-24, après #1699 (migration du lot B, `db:migrate` + `db:types` faits)._
 
-- **État** : lot A clos (#1685, #1689). Lot B : migration `20261024235000_mathoux_decorations.sql`
-  écrite (table `student_mathou_decorations`, colonne `student_mathoux.decoration`, fonctions
-  `buy_mathou_decoration` / `set_mathou_decoration`), 23 tests d'intégration rouges sans elle,
-  verts avec ; appliquée en LOCAL seulement.
-- **Prochaine action** : revue + audit sécurité de la PR 1 ; CI verte → merge ; `db:migrate` (les
-  4 conditions) ; `db:types`. Puis PR 2 = code (catalogue TS, dessins dans `MathouAvatar`,
-  Chatterie « Décorer », vitrine Boutique, vue prof, export RGPD — colonnes en dur dans
-  `api/account/export/+server.ts` : ajouter `decoration` et la table des achats —, consentement à la
-  route).
+- **État** : lot A clos. Lot B : migration des décorations mergée (#1699), appliquée en prod
+  (droits vérifiés : `authenticated` SELECT seul, fonctions à `service_role` seul), types régénérés
+  sur `feat/mathoux-decorations-code` (premier commit de la PR 2). Rien de l'interface codé.
+- **Prochaine action** : PR 2 = code. Catalogue TS (prix recopiés de `mathou_decoration_catalog`,
+  test d'égalité), dessins dans `MathouAvatar` (planche : `scripts/mathoux-planches/decorations.test.ts`,
+  races à motif par-dessus, Lunaire dans le creux), Chatterie « Décorer » (achat + pose, routes Zod,
+  consentement comme la boutique VIP), vitrine dans l'onglet Boutique, vue prof, export RGPD
+  (colonnes en dur dans `api/account/export/+server.ts`). Phase 0 déjà validée.
 - **En attente de David** : rien.
-- **Pièges en cours** : rendu serveur de plusieurs `MathouAvatar` = ids `s1-…` répétés ; les prix
-  font foi en SQL (`mathou_decoration_catalog`) : le catalogue TS de la PR 2 doit les recopier
-  (test d'égalité à prévoir) ; poser une décoration change `updated_at` (la mémoire rejoue sa
-  mise à jour conditionnelle, normal) ; après un rebase, `FRESH=1`.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-decorations`.
+- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; poser
+  une décoration change `updated_at` (la mémoire rejoue sa mise à jour conditionnelle) ; réponses
+  des fonctions = `{ok, reason, missing?, balance?}` ; le worktree n'est pas lié à Supabase
+  (`db:migrate` depuis le dépôt principal) ; après un rebase, `FRESH=1`.
+- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-decorations-code`.
 
 ## Constat (2026-10-24)
 
@@ -119,3 +118,6 @@ _Mis à jour le 2026-10-24, PR 1 du lot B (migration) ouverte._
   des fonctions DEFINER finit par `pg_temp` (garde CI `definer-guard`), rollback complet (catalogue),
   assertion « Élève introuvable » ; tests ajoutés : un achat ne libère pas le plafond, catalogue
   refusé aux clients connectés. Rollback rejoué en local puis migration : 25 + garde verts.
+- 2026-10-24 — #1699 mergée (CI verte) ; `db:migrate` depuis le dépôt principal (seule cette
+  migration en attente, vérifié au `--dry-run`) ; droits relus en prod ; `db:types` sur la branche
+  de la PR 2 (table ajoutée au domaine Mathoux de `generate-db-doc.ts`).
