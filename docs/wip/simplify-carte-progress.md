@@ -917,3 +917,13 @@ Décision déjà prise au § 19 : une expression littérale tapée dans Calcul e
 - **Affichage de 5d** (David : « ok pour l'affichage de 5d ») : `sin^2(x) → sin(x)^2`, `x m → m x`, `2πr m → 2πmr` acceptés.
 - **Sonde D4** (code sur `origin/main`, prod en lecture) : la forme finale n'est réglable que pour `generatedSteps` de `kind: 'simplify'` (`intent`, `template-schema.ts:220, 493`) ; `differentiate` (`renderDifferentiate`, `correction-generator.ts:606`, toujours `withTidyStep` → `finalDerivative`) et `integrate` n'ont aucun réglage. **Aucun des 1 102 modèles de la prod n'utilise `generatedSteps`** (Mode B), quel que soit le `kind`. Les 41 modèles de dérivée et de primitive (4 publiés) écrivent leur correction à la main avec `{{eval}}` (39 sur 41) ; aucun n'a de `requiredForm`. Le réglage de D4 (§ 20) et sa garde E1 n'auraient donc **aucun appelant** aujourd'hui (même cas que Q20, reportée).
 - **Q32** — 5e : (a) le reporter jusqu'au premier modèle de dérivée ou de primitive en Mode B (reco, comme Q20) ; (b) le coder maintenant (Zod strict et souple, éditeur `MySelect`, `renderDifferentiate`/`renderIntegrate`, test E1 sur un modèle d'essai).
+
+## 67. Q32 : b (David, 2026-10-24 : « on fait le b ; sur les modèles existants on verra plus tard pour faire la bascule ») — phase 0 de 5e
+
+Sondé (deux tests jetables, retirés ; 14 dérivées et 12 primitives de lycée) :
+
+- **Dérivée, factorisée** : la forme du tableau de variations (D2, `displayedDerivatives().factored`) donne `3x(x − 2)`, `(x − 1)(x + 3)eˣ`, `6(x − 1)(x − 2)`, `(1 − x)(1 + x)/(x² + 1)²` ; ce qui ne se factorise pas reste tel quel (`2x − 4 + 1/x`, `(2 − x)/x³`).
+- **Développée** : la politique `developper` brute développe aussi le dénominateur (`−7/(x² − 6x + 9)`), met une somme au même dénominateur (`(2x² − 4x + 1)/x`), perd les décimaux (`x − 3/2`, S1) et écrit `(1/3)x³`. Numérateur seul + `tidy` : `xeˣ + eˣ`, `4x³ + 12x² + 12x + 4`, `(1 − x²)/(x² + 1)²` ; restent à régler : décimaux, `(x+1)³/3 → (x³ + 3x² + 3x + 1)/3`, `−7/(x − 3)²` (le signe devant la barre cache le quotient).
+- **Primitive, factorisée** (règle du tableau) : `x(x − 1)²`, `x²(x − 1)(x + 1)`, `(x + 1)eˣ`, `x(x − 2√3)(x + 2√3)` ; mais `x(x²/3 + 1)` et `x(3x/10 + 1,2)`.
+- **Réduite** = la forme par défaut, au rangement près : valeur inutile.
+- **Trouvé en route** : (1) le formulaire de modèle n'a aucun champ de correction automatique (mode JSON seulement) et, enregistré en mode formulaire, il **réécrit la correction en `{ steps }`** (`QuestionTemplateForm.svelte:734`) : `generatedSteps` et `feedback` effacés — 7 modèles publiés ont un `feedback`. (2) primitive par défaut de `0,6x + 1,2` : `3x²/10 + 1,2x` (écart S1, à mettre en 5f).
