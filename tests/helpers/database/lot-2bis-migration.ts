@@ -609,7 +609,8 @@ export function decrireLotModifier(lot: LotModifier): void {
 							]
 						);
 				// Aucun point d'un autre programme sur ces nœuds (retouches 2) : on en fabrique un, de 1re
-				// générale, sur le nœud du premier modèle (défait avec la transaction du test).
+				// générale, sur le nœud du premier modèle qui n'en porte pas déjà un (défait avec la
+				// transaction du test).
 				if (!m && r.rowCount === 0) {
 					const x = autres.find((y) => !y.tags_avant!.some((t) => t.grade === '1_GEN'))!;
 					const fabrique = await pg.query(

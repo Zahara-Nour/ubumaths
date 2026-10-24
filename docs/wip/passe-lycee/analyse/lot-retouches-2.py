@@ -53,7 +53,7 @@ def equation_signe(t: dict) -> None:
     t['test_specs'].append({
         'answers': ['2e^{2x}-x+1'], 'expected': {'status': 'correct'},
         'variables': {'a': '2', 'p': '-1', 'q': '1', 'y0': '3'},
-        'description': "v0 : y'=2y+2x−1 (terme en x positif), g=−x+1 → 2e^{2x}−x+1", 'variationIndex': 0})
+        'description': "v0 : y'=2y+2x−3 (terme en x positif), g=−x+1 → 2e^{2x}−x+1", 'variationIndex': 0})
 
 
 def desserts_n_sup_k(t: dict) -> None:

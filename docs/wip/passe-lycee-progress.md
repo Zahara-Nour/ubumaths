@@ -346,7 +346,7 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   Question d'accès tranchée par David : personne ne gagne d'accès. Prod relue par le MCP : empreintes md5 des 3 =
   relevé de l'étape c (aucun n'a bougé), 0 donnée d'élève, tags 2-261 / TSPE-470 / TSPE-318 ; nœuds et points
   concernés = `etat-prod-2026-10-23c/` (copiés dans `etat-prod-2026-10-24/`). `analyse/lot-retouches-2.py` :
-  e02fb162 V1 terme en x avec son signe + (spec ajoutée : −ap > 0) ; f796ffc0 V4 `n > k` ; 0d2edda7 V3
+  e02fb162 V1 terme en x avec son signe + (spec ajoutée : −ap > 0 ; description corrigée après la revue : y′ = 2y + 2x − 3) ; f796ffc0 V4 `n > k` ; 0d2edda7 V3
   « √a × √b = √(a + b) » faux (condition ab ≠ a + b : a = b = 2 la rendait vraie), V4 « √a + √a = 2√a » vrai.
   Specs 100 % vertes, tirages 3 000/3 000, audit du rendu sans défaut, signes relus à l'œil (l'audit ne voit pas
   « 3y9x »). Banc : « reclassé » prend le premier modèle qui n'est pas déjà en 2de ; « tag déjà posé » cherche un

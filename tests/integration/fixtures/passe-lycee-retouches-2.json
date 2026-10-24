@@ -826,7 +826,7 @@
 							"q": "1",
 							"y0": "3"
 						},
-						"description": "v0 : y'=2y+2x−1 (terme en x positif), g=−x+1 → 2e^{2x}−x+1",
+						"description": "v0 : y'=2y+2x−3 (terme en x positif), g=−x+1 → 2e^{2x}−x+1",
 						"variationIndex": 0
 					}
 				]
