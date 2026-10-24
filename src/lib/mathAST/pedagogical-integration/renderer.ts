@@ -240,6 +240,11 @@ function formatExpressionLatex(step: PedagogicalIntegrationStep): string {
 			return `${raw} = ${afterLatex}`;
 		}
 
+		case 'factor-result':
+		case 'expand-result':
+			// Forme demandée par l'énoncé (D4) : une ligne, simplifiée = demandée
+			return `${beforeLatex} = ${afterLatex}`;
+
 		case 'add-constant': {
 			// Single-line narrative : antiderivative + C.
 			return `\\textcolor{blue}{${afterLatex} + C}`;

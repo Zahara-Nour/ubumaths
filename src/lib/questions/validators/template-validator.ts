@@ -152,6 +152,16 @@ function validateVariation(
 		}
 	}
 
+	// Q36 (D4) : la réponse d'une intégrale à bornes est un nombre, sans forme à demander
+	const generatedSteps = (variation.correction ?? shared?.correction)?.generatedSteps;
+	if (
+		generatedSteps?.kind === 'integrate' &&
+		generatedSteps.definite !== undefined &&
+		generatedSteps.finalForm !== undefined
+	) {
+		errors.push(`${prefix} generatedSteps.finalForm is not allowed on a definite integral`);
+	}
+
 	// Validate variable names (no duplicates within variation)
 	if (variation.variables) {
 		const varNames = new Set<string>();

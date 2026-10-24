@@ -87,6 +87,8 @@ import type { Rational } from '../normal/types';
 import { toLatex } from '../latex-generator';
 import { factorPolynomial, factorizationToNode, integerLinearFactorNode } from '../factor';
 import { tidyTerms } from '../tidy/terms';
+import { requestedForm } from '../requested-form';
+import type { RequestedForm } from '../requested-form';
 import { flattenProductShallow } from '../flatten';
 import { isEulerConstant } from '../guards';
 import { nodesEqual } from '../normal/hash';
@@ -186,7 +188,7 @@ export function generatePedagogicalIntegrationSteps(
 	if (options.definite) {
 		return generateDefiniteSteps(integrand, ctx, options.definite);
 	}
-	return generateIndefiniteSteps(integrand, ctx);
+	return generateIndefiniteSteps(integrand, ctx, options.finalForm);
 }
 
 /**
@@ -257,7 +259,8 @@ function collectVariableNames(node: MathNode): readonly string[] {
 
 function generateIndefiniteSteps(
 	integrand: MathNode,
-	ctx: DispatchContext
+	ctx: DispatchContext,
+	finalForm?: RequestedForm
 ): PedagogicalIntegrationResult {
 	const steps: PedagogicalIntegrationStep[] = [];
 
@@ -274,7 +277,11 @@ function generateIndefiniteSteps(
 
 	const { antiderivative: raw, steps: coreSteps } = integrateNode(integrand, ctx);
 	steps.push(...coreSteps);
-	const antiderivative = pushSimplifyStep(steps, raw, ctx);
+	const simplified = pushSimplifyStep(steps, raw, ctx);
+	const antiderivative =
+		finalForm === undefined
+			? simplified
+			: pushRequestedFormStep(steps, simplified, finalForm, integrand, ctx);
 
 	if (ctx.strategy.includeAddConstant) {
 		steps.push(
@@ -447,6 +454,31 @@ function pushSimplifyStep(
 		})
 	);
 	return tidied;
+}
+
+/**
+ * L'étape « On factorise » / « On développe » (D4, lot 5e) : la primitive
+ * simplifiée passée à la forme demandée par l'énoncé, quand l'écriture change.
+ * Rend la primitive à retenir.
+ */
+function pushRequestedFormStep(
+	steps: PedagogicalIntegrationStep[],
+	simplified: MathNode,
+	form: RequestedForm,
+	integrand: MathNode,
+	ctx: DispatchContext
+): MathNode {
+	const result = requestedForm(simplified, form, { f: integrand, kind: 'antiderivative' });
+	if (toLatex(result) === toLatex(simplified)) return simplified;
+	steps.push(
+		buildStep(ctx, {
+			rule: form === 'factorisee' ? 'factor-result' : 'expand-result',
+			before: simplified,
+			after: result,
+			variable: ctx.variable
+		})
+	);
+	return result;
 }
 
 interface SimplifyRewriting {

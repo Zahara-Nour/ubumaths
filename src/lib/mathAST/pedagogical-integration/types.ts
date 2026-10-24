@@ -39,6 +39,7 @@ import type { MathNode } from '../types';
 import type { BaseStep } from '../common/step-recorder-base';
 import type { SchoolLevel } from '../common/step-renderer-base';
 import type { Verbosity } from '../common/verbosity';
+import type { RequestedForm } from '../requested-form';
 
 // =============================================================================
 // Rule Names
@@ -103,7 +104,10 @@ export type PedagogicalIntegrationRule =
 	| 'apply-partial-fractions' // ∫(A/(x-r₁) + B/(x-r₂)) dx = A·ln|x-r₁| + B·ln|x-r₂|
 	// ---- Final ----
 	| 'add-constant' // « + C »
-	| 'simplify-result';
+	| 'simplify-result'
+	// ---- Forme demandée par l'énoncé (D4, simplify-carte lot 5e) ----
+	| 'factor-result' // « On factorise »
+	| 'expand-result'; // « On développe »
 
 // =============================================================================
 // Bindings
@@ -292,6 +296,13 @@ export interface PedagogicalIntegrationOptions {
 	 * `simplify-bounds-result` step.
 	 */
 	readonly definite?: { readonly lower: MathNode; readonly upper: MathNode };
+
+	/**
+	 * Forme de la primitive demandée par l'énoncé (D4, simplify-carte lot 5e) :
+	 * une étape `factor-result` / `expand-result` suit « On simplifie », avant
+	 * « + C ». Ignorée avec des bornes (Q36 : la vérification du modèle la refuse).
+	 */
+	readonly finalForm?: RequestedForm;
 
 	/**
 	 * Verbosity level — affects which steps are emitted.

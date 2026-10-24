@@ -221,6 +221,10 @@ function defaultDescription(rule: PedagogicalIntegrationRule): string {
 			return "Constante d'intégration";
 		case 'simplify-result':
 			return 'Simplification';
+		case 'factor-result':
+			return 'Forme factorisée';
+		case 'expand-result':
+			return 'Forme développée';
 		default: {
 			const _exhaustive: never = rule;
 			return `Règle: ${String(_exhaustive)}`;
