@@ -1419,6 +1419,36 @@ function switchToBase(group: TermGroup, quantity: TidyQuantity): void {
 	group.inBase = true;
 }
 
+/** La clé de regroupement d'un terme ; un terme opaque ou singulier ne se regroupe avec rien. */
+function likeKey(term: TidyTerm, index: number): string {
+	if (term.verbatim || dividesByZero(term)) return `!${index}`;
+	const unitKey =
+		term.quantity !== null
+			? `D:${term.quantity.dimension}`
+			: term.unit === null
+				? ''
+				: `U:${hashUnit(term.unit)}`;
+	return `${factorsKey(term)}|${unitKey}`;
+}
+
+/**
+ * Les termes rangés, ceux qu'une annulation a gardés pour le domaine côte à
+ * côte (Q41, lot 5f-1) : `3 − ln x + x + ln x → ln(x) − ln(x) + x + 3`, pas
+ * `ln(x) + x + 3 − ln(x)`. Après le regroupement, deux termes de même clé ne
+ * peuvent être que ceux-là ; chacun suit le précédent de sa clé. Le résultat
+ * ne dépend que de l'ensemble des termes : idempotent.
+ */
+function sortKeepingCancelled(terms: readonly TidyTerm[]): TidyTerm[] {
+	const runs = new Map<string, TidyTerm[]>();
+	sortTerms(terms).forEach((term, index) => {
+		const key = likeKey(term, index);
+		const run = runs.get(key);
+		if (run === undefined) runs.set(key, [term]);
+		else run.push(term);
+	});
+	return [...runs.values()].flat();
+}
+
 /**
  * Étape 5 — termes semblables : même clé structurelle, coefficients repliés.
  *
@@ -1429,16 +1459,7 @@ function collectLikeTerms(terms: readonly TidyTerm[], settings: Settings): TidyT
 	const groups = new Map<string, TermGroup>();
 
 	terms.forEach((term, index) => {
-		// Un terme opaque ou singulier ne se regroupe avec rien : clé unique.
-		const groupable = !term.verbatim && !dividesByZero(term);
-		const unitKey =
-			term.quantity !== null
-				? `D:${term.quantity.dimension}`
-				: term.unit === null
-					? ''
-					: `U:${hashUnit(term.unit)}`;
-		const key = groupable ? `${factorsKey(term)}|${unitKey}` : `!${index}`;
-
+		const key = likeKey(term, index);
 		const existing = groups.get(key);
 		if (existing === undefined) {
 			groups.set(key, {
@@ -1695,7 +1716,7 @@ function settingsOf(options: InnerOptions | undefined): Settings {
 
 /** Les termes dans l'ordre réglé : rangés, ou tels qu'écrits (S2). */
 function ordered(terms: readonly TidyTerm[], settings: Settings): readonly TidyTerm[] {
-	return settings.order === 'kept' ? terms : sortTerms(terms);
+	return settings.order === 'kept' ? terms : sortKeepingCancelled(terms);
 }
 
 /**
@@ -1914,7 +1935,7 @@ function narrateSum(
 	// L'ordre écrit (S2) : rien ne se range, donc rien à raconter
 	if (settings.order === 'kept') return step('tidy-terms', buildSum(unitedCollected));
 	step('tidy-number-first', buildSum(numberFirst(unitedCollected)));
-	return step('tidy-sort-terms', buildSum(sortTerms(unitedCollected)));
+	return step('tidy-sort-terms', buildSum(sortKeepingCancelled(unitedCollected)));
 }
 
 /**

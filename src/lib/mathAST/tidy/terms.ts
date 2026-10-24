@@ -23,7 +23,7 @@
  */
 
 import type { MathNode } from '../types';
-import { parentheses } from '../factory';
+import { flattenSumShallow, unflattenSum } from '../flatten';
 import { isOpposite } from '../guards';
 import { mapNode } from '../transforms';
 import { tidy } from './index';
@@ -60,17 +60,11 @@ export function tidyTerms(node: MathNode, options?: TidyOptions): MathNode {
 }
 
 /**
- * Les parenthèses que la priorité impose, écrites. Un arbre construit par le
- * moteur (règle du quotient) porte `u′v − (uv′)` sans nœud de parenthèse :
- * `tidy` y distribuait alors le signe (`x(2x+1) − x² − x − 1`), ce que son
- * contrat interdit pour `−(x+2)` écrit.
+ * La somme au sommet ouverte : `a − (b + c)` sans nœud de parenthèse devient
+ * `a − b − c`. Une parenthèse écrite (`delimiter`) reste fermée.
  */
-function withImpliedParentheses(node: MathNode): MathNode {
-	return mapNode(node, (n) => {
-		if (n.type === 'subtraction' && isSum(n.right)) return { ...n, right: parentheses(n.right) };
-		if (n.type === 'opposite' && isSum(n.operand)) return { ...n, operand: parentheses(n.operand) };
-		return n;
-	});
+function openImpliedParentheses(node: MathNode): MathNode {
+	return unflattenSum(flattenSumShallow(node)) ?? node;
 }
 
 function isSum(node: MathNode): boolean {
@@ -79,12 +73,12 @@ function isSum(node: MathNode): boolean {
 
 /**
  * La somme mise au propre dans l'ordre écrit, ses parenthèses sous-entendues
- * gardées (`u′v − (uv′)`) — sauf si les ouvrir regroupe des termes
- * (`x − 1 − (x + 1)` → `−2`) : regrouper l'emporte.
+ * gardées (`u′v − (uv′)`, `tidy` les lit comme écrites) — sauf si les ouvrir
+ * regroupe des termes (`x − 1 − (x + 1)` → `−2`) : regrouper l'emporte.
  */
 function keptWithGroups(node: MathNode, options: TidyOptions | undefined): MathNode {
-	const grouped = tidySafe(withImpliedParentheses(node), { ...options, order: 'kept' });
-	const opened = tidySafe(node, { ...options, order: 'kept' });
+	const grouped = tidySafe(node, { ...options, order: 'kept' });
+	const opened = tidySafe(openImpliedParentheses(node), { ...options, order: 'kept' });
 	return countTerms(opened) < countTerms(grouped) ? opened : grouped;
 }
 
@@ -97,7 +91,7 @@ function tidyGrouped(node: MathNode, options: TidyOptions | undefined): MathNode
 			numerator: tidyGrouped(node.numerator, options),
 			denominator: tidySafe(node.denominator, { ...options, order: 'kept' })
 		};
-		const full = tidySafe(withImpliedParentheses(node), { ...options, order: 'kept' });
+		const full = tidySafe(node, { ...options, order: 'kept' });
 		// Un décimal sous la barre suit Q3 (S1) : la barre compte comme opérande
 		// fraction, `2x/1,5` → `4x/3` comme dans `tidy`, même à nombre de nœuds égal
 		if (hasDecimal(ordered) && !hasDecimal(full)) return full;

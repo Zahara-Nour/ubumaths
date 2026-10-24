@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { tidy } from '../index';
+import { tidy, TidyStepRecorder } from '../index';
 import { parseCustom } from '../../parser/custom';
 import { toCustom } from '../../custom-generator';
 import { areEquivalent } from '../../equivalence';
@@ -44,8 +44,7 @@ describe('des termes à domaine restreint ne s’annulent pas', () => {
 
 	it.each([
 		['ln(x)-ln(x)', 'ln(x)-ln(x)'],
-		['1/x-1/x', '1/x-1/x'],
-		['ln(x)+3-ln(x)', 'ln(x)+3-ln(x)']
+		['1/x-1/x', '1/x-1/x']
 	])('%s → %s (rien ne change)', (input, expected) => {
 		expect(t(input)).toBe(written(expected));
 	});
@@ -143,4 +142,46 @@ describe('fonctions hors de ℝ entier', () => {
 			expect(t(input)).not.toBe('0');
 		}
 	);
+});
+
+// Lot 5f-1 (R3, Q41 tranchée par David le 2026-10-24, journal § 71-72)
+describe('une racine d’indice impair est définie partout', () => {
+	it.each(['sqrt[3](x)-sqrt[3](x)', 'sqrt[5](x)-sqrt[5](x)', 'sqrt[3](x)+2-sqrt[3](x)'])(
+		'%s : ∛x s’annule',
+		(input) => {
+			expect(t(input)).not.toContain('sqrt');
+		}
+	);
+
+	it.each(['sqrt(x)-sqrt(x)', 'sqrt[4](x)-sqrt[4](x)', 'sqrt[3](ln(x))-sqrt[3](ln(x))'])(
+		'%s reste écrit',
+		(input) => {
+			expect(t(input)).not.toBe('0');
+		}
+	);
+});
+
+describe('en ordre rangé, les termes gardés pour le domaine restent côte à côte', () => {
+	it.each([
+		['3-ln(x)+x+ln(x)', 'ln(x)-ln(x)+x+3'],
+		['ln(x)+3-ln(x)', 'ln(x)-ln(x)+3'],
+		['x+ln(x)+3-ln(x)', 'ln(x)-ln(x)+x+3'],
+		['1/x+x-1/x', 'x+1/x-1/x']
+	])('%s → %s', (input, expected) => {
+		expect(t(input)).toBe(written(expected));
+	});
+
+	it.each(['3-ln(x)+x+ln(x)', 'ln(x)+3-ln(x)', '1/x+x-1/x'])('%s : idempotent', (input) => {
+		const once = tidy(parseCustom(input));
+		expect(toCustom(tidy(once))).toBe(toCustom(once));
+	});
+
+	it('ln(x) + 3 − ln(x) : le récit ne revient pas à l’écriture de départ', () => {
+		const recorder = new TidyStepRecorder();
+		const source = parseCustom('ln(x)+3-ln(x)');
+		tidy(source, { recorder });
+		const afters = recorder.getSteps().map((step) => toCustom(step.after));
+		expect(afters).not.toContain(toCustom(source));
+		expect(afters.at(-1)).toBe(written('ln(x)-ln(x)+3'));
+	});
 });

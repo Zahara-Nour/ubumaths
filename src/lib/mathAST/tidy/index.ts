@@ -14,7 +14,8 @@
  */
 
 import type { MathNode } from '../types';
-import { stripUnnecessaryBrackets } from '../transforms';
+import { parentheses } from '../factory';
+import { findNodes, mapNode, stripUnnecessaryBrackets } from '../transforms';
 import { tidyNode } from './collect';
 import type { TidyOptions } from './step-recorder';
 
@@ -38,11 +39,39 @@ export function tidy(node: MathNode, options?: TidyOptions): MathNode {
 		// ⚠️ Le 3ᵉ argument est l'expression TELLE QUE L'ÉLÈVE L'A ÉCRITE. Sans lui,
 		// la chaîne partirait du nœud déjà dépouillé de ses parenthèses : `(3x+2x)`
 		// commencerait à `3x+2x`, une réécriture qu'il ne voit jamais.
-		return tidyNode(stripUnnecessaryBrackets(node), options, node);
+		const written = withImpliedParentheses(node);
+		return tidyNode(stripUnnecessaryBrackets(written), options, written);
 	} catch (error) {
 		// Seul un débordement de pile (expression pathologiquement profonde) est
 		// rattrapé : toute autre exception est un bug de `tidy` et doit remonter.
 		if (error instanceof RangeError) return node;
 		throw error;
 	}
+}
+
+/**
+ * Les parenthèses que la priorité impose, écrites (Q40, lot 5f-1). Un arbre
+ * construit par le moteur (règle du quotient, substitution) porte
+ * `u′v − (uv′)` sans nœud de parenthèse : `tidy` y distribuait alors le signe
+ * (`x(2x+1) − x² − x − 1`), ce que son contrat interdit pour `−(x+2)` écrit.
+ */
+function withImpliedParentheses(node: MathNode): MathNode {
+	// Le cas courant n'en a aucune : on ne recopie pas l'arbre pour rien
+	if (findNodes(node, impliesParentheses).length === 0) return node;
+	return mapNode(node, (n) => {
+		if (n.type === 'subtraction' && isSum(n.right)) return { ...n, right: parentheses(n.right) };
+		if (n.type === 'opposite' && isSum(n.operand)) return { ...n, operand: parentheses(n.operand) };
+		return n;
+	});
+}
+
+/** `a − (b + c)` ou `−(b + c)`, la somme sans nœud de parenthèse. */
+function impliesParentheses(node: MathNode): boolean {
+	if (node.type === 'subtraction') return isSum(node.right);
+	if (node.type === 'opposite') return isSum(node.operand);
+	return false;
+}
+
+function isSum(node: MathNode): boolean {
+	return node.type === 'addition' || node.type === 'subtraction';
 }

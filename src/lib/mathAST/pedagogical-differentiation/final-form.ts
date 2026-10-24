@@ -37,6 +37,7 @@ import { divide, fraction, multiply, number, opposite, parentheses, superscript 
 import {
 	flattenProductShallow,
 	flattenSumShallow,
+	flipSign,
 	unflattenProduct,
 	unflattenSum
 } from '../flatten';
@@ -174,16 +175,22 @@ function withCoefficientInNumerator(node: MathNode): MathNode {
 }
 
 /**
- * `−(u/v)′` → `(−u′)/v` : le − entre au numérateur, qui est alors réduit comme
- * celui d'un quotient. `−x²/(x+2)` se lit `−(x²/(x+2))` : sa dérivée brute
- * `−(2x(x+2) − x²)/(x+2)²` n'était pas un quotient, et `auto` gardait
- * `(x² − 2x(x+2))/(x+2)²` (revue du lot 5b).
+ * `−(u/v)′` → `(−u′)/v` : le − entre au numérateur, distribué sur chacun de
+ * ses termes, qui est alors réduit comme celui d'un quotient. `−x²/(x+2)` se
+ * lit `−(x²/(x+2))` : sa dérivée brute `−(2x(x+2) − x²)/(x+2)²` n'était pas un
+ * quotient, et `auto` gardait `(x² − 2x(x+2))/(x+2)²` (revue du lot 5b).
+ * ⚠️ Distribué ICI : `tidy` garde `−(a − b)`, parenthèse sous-entendue
+ * comprise (Q40, lot 5f-1).
  */
 function withOppositeInNumerator(node: MathNode): MathNode {
 	if (!isOpposite(node)) return node;
 	const quotient = unwrap(node.operand);
 	if (quotient.type !== 'division') return node;
-	return divide(opposite(quotient.numerator), quotient.denominator, quotient.displayStyle);
+	const terms: SignedTerm[] = flattenSumShallow(unwrap(quotient.numerator)).map(
+		({ sign, term }) => ({ sign: flipSign(sign), term })
+	);
+	const numerator = unflattenSum(terms) ?? opposite(quotient.numerator);
+	return divide(numerator, quotient.denominator, quotient.displayStyle);
 }
 
 /** Un nombre, sous un éventuel − ou des parenthèses : `2`, `−3`. */

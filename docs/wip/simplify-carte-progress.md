@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, Q40-Q48 tranchées (§ 72), 5f-1 en cours._
+_Mis à jour le 2026-10-24, 5f-1 codé (§ 73), PR à ouvrir._
 
 - **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; ~~5e D4~~ (#1696, § 70) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → **5** (… → ~~Q33~~ → ~~5e D4~~ → **5f restes**) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5f-1 (`tidy` : R2 parenthèses sous-entendues, R3 `∛x − ∛x` et termes gardés côte à côte), tests rouges d'abord ; puis 5f-2 → 5f-5 (§ 71, Q40-Q48 tranchées § 72). Rien de codé. Piste R2 : `flattenSumShallow` (`flatten.ts`) ouvre `a − (b+c)` sans nœud `delimiter` ; déplacer `withImpliedParentheses` (`tidy/terms.ts`) dans `tidy()` (`tidy/index.ts`, avant `stripUnnecessaryBrackets`, 3ᵉ argument compris), puis donner à `keptWithGroups` une ouverture explicite (`x − 1 − (x + 1) → −2`), car `tidySafe(node)` n'ouvrira plus.
+- **Prochaine action** : 5f-1 codé (§ 73) → PR, revue `code-reviewer` opus, merge ; prévenir la session `atelier-python` (retrait-calc) au merge pour qu'elle rebase. Puis 5f-2 primitives (R1, R4, R5, R6 ; Q42 b, Q43, Q44 a + bis) → 5f-3 → 5f-5 (§ 71-72).
 - **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) .
-- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : TABLEAU zsh et copie vérifiée (§ 64) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f` (journal seul).
+- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : script `zz-tirages.mts` copié à la racine, `pnpm exec tsx`, base = dépôt principal sur `origin/main`, TABLEAU zsh et copie vérifiée (§ 64, § 73) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f` (5f-1 codé).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -986,3 +986,11 @@ Sondé (deux tests jetables, retirés ; 14 dérivées et 12 primitives de lycée
 ## 72. Q40-Q48 tranchées (David, 2026-10-24 : « je suis tes recos »)
 
 Q40 oui · Q41 oui · Q42 b · Q43 oui · Q44 a, Q44-bis oui · Q45 les deux · Q46 oui · Q47 oui · Q48 oui. Découpage 5f-1 → 5f-5 validé avec. 5f-1 (`tidy`, R2-R3) sur cette branche.
+
+## 73. Lot 5f-1 (`tidy`, R2-R3) codé (branche `feat/simplify-carte-5f`, 2026-10-24)
+
+- **R2 (Q40)** : `withImpliedParentheses` passe de `tidy/terms.ts` dans `tidy()` (`tidy/index.ts`), appliqué à l'entrée ET au 3ᵉ argument (l'écriture de départ du récit) ; sans parenthèse sous-entendue, l'arbre n'est pas recopié (`findNodes` d'abord). `keptWithGroups` ouvre explicitement (`openImpliedParentheses` = `unflattenSum(flattenSumShallow(node))`) : `x − 1 − (x + 1) → −2` gardé. Inchangé (noté, pas tranché) : `2x − (x + 1)` reste écrit par `tidyTerms` (ouvrir ne réduit pas le nombre de termes).
+- **R3 (Q41)** : `∛x` (indice impair) défini partout (`hasOddIndex`, `tidy/sign.ts`) ; en ordre rangé, les termes gardés pour le domaine restent côte à côte (`sortKeepingCancelled`, `collect.ts` : après le regroupement, deux termes de même clé ne peuvent être que ceux-là) — le récit de `ln(x)+3−ln(x)` n'a plus d'aller-retour.
+- **Appelant corrigé** : `withOppositeInNumerator` (`pedagogical-differentiation/final-form.ts`) comptait sur `tidy` pour distribuer le − de `−(u′v − uv′)` ; il le distribue lui-même (seul rouge de la suite : `derivee-factorisee`, `−x²/(x+2)`).
+- Tests : `tidy-parentheses-sous-entendues.test.ts` (13 rouges sur 22 avant), `tidy-annulation-domaine.test.ts` (7 rouges avant ; `ln(x)+3−ln(x)` sort de « rien ne change »).
+- Mesures : suite serveur `src/lib` 57 843 verts, 1 rouge (corrigé ci-dessus, dossiers dérivées et variations verts : 1 422) ; oracle des dérivées inchangé (égalité exacte à `KNOWN_FORM_DIFF`) ; **banc 1 102 modèles de prod × 8 tirages (25 672) : 0 différence** (témoin non construit) ; `check:incremental` 0 ; cliquet tenu ; doc `tidy-spec.md` (§A, §G.1, historique).
