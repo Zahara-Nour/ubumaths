@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-24, avant toute PR._
 
-- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 10 tranchées (tableau ci-dessous).
+- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 11 tranchées (tableau ci-dessous).
 - **Prochaine action** : poursuivre la revue au premier `?` du tableau « Revue page par page ».
-- **En attente de David** : le sort des lignes 11 à 19. Rien n'est codé : le plan viendra à la fin de la revue.
+- **En attente de David** : le sort des lignes 12 à 19. Rien n'est codé : le plan viendra à la fin de la revue.
 - **Pièges en cours** : rien ne se supprime pour l'instant ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` sont de vraies fonctionnalités, hors chantier.
 - **Worktree / branche** : aucun (rien de codé) ; journal commité sur `main`.
 
@@ -66,7 +66,7 @@ Sort : **vitrine** (`/demo/…`, public) · **aide** (`/aide-ecriture/…`, prof
 | 8   | `/demo/rich-text-editor-demo`   | dev (fusion) + vitrine  | fusion avec `admin/debug/rich-text` → `/dev/editeur-riche` (page admin + mode messagerie) ; `/demo/editeur` : le visiteur écrit une phrase avec formule, vue dans 3 usages réels (message au prof, cahier de texte, énoncé d'exercice), une phrase « qui écrit, qui lit » par usage, sans « Technologies »                                                                               |
 | 9   | `/demo/theme-test`              | dev                     | → `/dev/theme` telle quelle ; rien en vitrine                                                                                                                                                                                                                                                                                                                                            |
 | 10  | `/demo` (carrefour)             | vitrine (accueil) + dev | champ MathLive, carte retournable, logger, toasts → `/dev/bancs-essai` ; `/demo` = accueil de la vitrine : les 8 pages vitrine rangées par public, + liens vers Automaths, Atelier, jeux ; `/demo/…` ouvert aux robots et ajouté au sitemap (`/dev`, `/aide-ecriture` fermés) ; lien « Voir ce que fait Chiphre » dans les vues `/professeurs`, `/parents`, `/eleves` et le pied de page |
-| 11  | `/test-saisie`                  | ?                       |                                                                                                                                                                                                                                                                                                                                                                                          |
+| 11  | `/test-saisie`                  | dev                     | → `/dev/saisie-naturelle` telle quelle (panneau « sous le capot ») ; rien en vitrine (lien Atelier depuis `/demo`) ; candidate à la suppression plus tard                                                                                                                                                                                                                                |
 | 12  | `/test-cadres`                  | ?                       |                                                                                                                                                                                                                                                                                                                                                                                          |
 | 13  | `/test-font`                    | ?                       |                                                                                                                                                                                                                                                                                                                                                                                          |
 | 14  | `/test-erreur`                  | ?                       |                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -103,5 +103,7 @@ vecteurs (textes à réécrire en entier), le reste = référence du langage.
   ce sont des privilèges de classe, donc du ressort du prof (règle 5). David : « on le fera plus tard ».
 - **Lexique (dictionnaire) géré par l'admin** (`/dashboard/admin/dictionnaire`, `requireAdmin`,
   `api/admin/dictionnaire/`) : contenu pédagogique, donc du ressort du prof (règle 5).
+- **`/test-saisie`** : prototype jetable dont le travail est fait (#1355) ; candidate à la
+  suppression, à trancher par David.
 - **Scripts de démo de constructions / brouillons de `/constructions`** : doublon possible, à revoir
   après la revue (aucune suppression pour l'instant).
