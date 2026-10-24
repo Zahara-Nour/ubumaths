@@ -30,7 +30,7 @@ const CASES: [string, MathNode, string][] = [
 	['ln(3 − (x+2))', func('ln', [subtract(number(3), p('x+2'))]), 'ln(3-(x+2))'],
 	['(1 − (x+1))²', power(subtract(number(1), p('x+1')), number(2)), '(1-(x+1))^2'],
 	// Revue de 5f-1 : `flipNumerator` en faisait `−((x+1) − x)/2`, réduit au passage suivant
-	['(x − (x+1))/2', divide(subtract(variable('x'), p('x+1')), number(2)), '(x-(x+1))/2']
+	['(x − (x+1))/2', divide(subtract(variable('x'), p('x+1')), number(2), 'fraction'), '(x-(x+1))/2']
 ];
 
 describe('tidy — a − (b + c) sans nœud de parenthèse se lit comme écrit', () => {
