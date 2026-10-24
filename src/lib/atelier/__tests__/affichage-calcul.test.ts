@@ -112,6 +112,29 @@ describe('une expression littérale est mise au propre, ordre de l’élève gar
 		expect(kept.ok && kept.object.definition).toBe('5x');
 	});
 
+	// Revue de 5d (#1682, S3) : des termes qui s'annulent ne font pas perdre le domaine
+	it.each([
+		['ln(x)-ln(x)', 'ln(x)-ln(x)'],
+		['1/x-1/x', '1/x-1/x']
+	])('« Garder » %s range une fonction, écrite %s', (input, definition) => {
+		const s = session();
+		const result = runInput(s, input);
+		const kept = promote(s, result);
+
+		expect(latexOf(result)).not.toBe('0');
+		expect(kept.ok && kept.object.kind).toBe('function');
+		expect(kept.ok && kept.object.definition).toBe(definition);
+	});
+
+	// Défini partout : la valeur affichée est gardée (Q27)
+	it('« Garder » x − x range la valeur 0', () => {
+		const s = session();
+		const kept = promote(s, runInput(s, 'x-x'));
+
+		expect(kept.ok && kept.object.kind).toBe('value');
+		expect(kept.ok && kept.object.definition).toBe('0');
+	});
+
 	it('« Garder » une fraction non simplifiable garde son domaine', () => {
 		const s = session();
 		const kept = promote(s, runInput(s, 'x/x'));
