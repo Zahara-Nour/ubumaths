@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1679._
+_Mis à jour le 2026-10-24, après #1679 (+ correctif exposant t/n)._
 
 - **État** : #1676, #1678, #1679 mergées (pas en prod). Vue PDF validée par David ; tout le lycée transcrit (2de, 1_GEN, 1_SPE, T_SPE, T_EXP, T_COMP, 1_TECHNO, T_TECHNO) ; titres `##`/`###` en bleu d'accent, filet sous `##`, validé par David.
 - **Prochaine action** : lot cycles 4, 3, 2 sur une nouvelle branche (`cycle-N.md` commun + un morceau par niveau, cf. `OFFICIAL_PROGRAMMES`) ; même méthode : un agent Sonnet par morceau, complétude par mots `pdftotext`, formules par `validateLatex` (`mathlive/ssr`).
-- **En attente de David** : relecture de `transcriptions/2.md` (fractions empilées p. 5, vecteurs p. 9) ; 1_GEN p. 7 « exposant 1/n » (glyphe abîmé dans le PDF) ; niveaux de titres ambigus 1_TECHNO p. 8-9, T_TECHNO p. 10-11.
+- **En attente de David** : relecture de `transcriptions/2.md` (fractions empilées p. 5, vecteurs p. 9) ; niveaux de titres ambigus 1_TECHNO p. 8-9, T_TECHNO p. 10-11.
 - **Pièges en cours** : `<embed>` bloqué par la CSP → `<iframe>` ; prettier ignore `transcriptions/` ; limiteur de connexions locales (15 min, par IP) bloque les captures Playwright après quelques essais → test client `OfficialProgrammeView.svelte.test.ts` pour le rendu.
 - **Worktree / branche** : `../ubumaths-wt-programmes` (branche `feat/programmes-transcriptions-lycee`, mergée) gardé tant que le serveur de test 5177 sert ; à retirer ensuite.
 
@@ -33,3 +33,4 @@ _Mis à jour le 2026-10-24, après #1679._
 - 2026-10-24 : David a essayé la vue PDF dans Chrome : elle marche. PR 2 lancée (lot lycée, branche `feat/programmes-transcriptions-lycee`).
 - 2026-10-24 : #1679 ouverte (lot lycée : 7 transcriptions par 7 agents Sonnet, 956 formules validées MathLive, complétude par mots). Titres en couleur : d'abord une couleur par niveau, jugé excessif par David → une seule couleur d'accent pour `##` et `###`.
 - 2026-10-24 : #1679 mergée (lot lycée + titres en couleur sobres).
+- 2026-10-24 : 1_GEN p. 7 : c'est l'exposant $t/n$ (David), pas $1/n$ comme je l'avais affirmé sur un glyphe abîmé : corrigé.

@@ -387,7 +387,7 @@ Les professeurs peuvent mettre en parallèle le sens de variation des fonctions 
 - Propriétés algébriques (admises, par extension des propriétés des puissances entières).
 - Variations.
 - Représentation graphique.
-- Cas particulier de l'exposant $\dfrac{1}{n}$.
+- Cas particulier de l'exposant $\dfrac{t}{n}$.
 - Taux d'évolution moyen correspondant à $n$ évolutions successives.
 
 ##### Capacités attendues
