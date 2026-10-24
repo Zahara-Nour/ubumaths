@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24).
 
 ## À quoi ça sert
 
@@ -1140,7 +1140,9 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   (corrections, `.dériver`, bouton), écrit la **forme finale** `finalDerivative` (`final-form.ts`,
   simplify-carte lot 5a). La carte f′ (`derivativeAstOf`) la calcule UNE fois sur f déjà
   substituée (`finalDerivativeOf` : étapes pédagogiques, repli sur `differentiate`), même rendu
-  que le bouton. Quotient → division par la puissance commune permise par le domaine de f,
+  que le bouton. Les sommes que la dérivée brute porte sans parenthèse écrite sont d'abord
+  ouvertes (`1 − (eˣ + xeˣ)` → `1 − eˣ − xeˣ`, `withImpliedSumsOpened`) : `tidy` les garde depuis
+  Q40 (lot 5f-1), la forme finale réduit. Quotient → division par la puissance commune permise par le domaine de f,
   cherchée sur le numérateur BRUT (`(2x − x²)/x⁴ → (2 − x)/x³`, `(1 − x)eˣ/(eˣ)² → (1 − x)/eˣ`,
   `(x²/(x−1)²)′ = −2x/(x−1)³`), puis numérateur `auto`, dénominateur gardé, et le quotient entier
   par `auto` s'il raccourcit (`((x²−1)/(x+1))′ = 1`, `−2/(4x²) → −1/(2x²)`), signe de la barre selon

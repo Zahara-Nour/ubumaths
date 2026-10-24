@@ -78,6 +78,7 @@ import {
 	powerDefinedEverywhere
 } from './sign';
 import {
+	containsSumFactor,
 	isPlainTerm,
 	numberFirst,
 	orderUnderMinus,
@@ -1280,6 +1281,10 @@ function flipNumerator(term: TidyTerm, settings: Settings): TidyTerm | null {
 	const terms = toSumTerms(numerator.base, undefined, settings);
 	const negatives = terms.filter((inner) => isNegativeRational(inner.coefficient));
 	if (terms.length !== 2 || negatives.length !== 1 || !terms.every(isPlainTerm)) return null;
+	// Une somme écrite en terme ne se retourne pas : `(x − (x+1))/2` deviendrait
+	// `−((x+1) − x)/2`, dont la parenthèse, inutile, tomberait au passage suivant
+	// (`−1/2`) — `tidy` ne serait plus idempotent (revue de 5f-1)
+	if (terms.some(containsSumFactor)) return null;
 	if (isAlgebraicComplex(terms)) return null;
 
 	const base = buildSum(sortTerms(terms.map(negateTerm)));

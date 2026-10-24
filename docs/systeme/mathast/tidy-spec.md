@@ -59,7 +59,8 @@ forme canonique du Compute Engine, qui est une expression).
   que s'ils sont définis partout (David, 2026-10-24 ; `definedEverywhere`,
   `tidy/sign.ts`) : `x − x`, `eˣ − eˣ`, `ln(x²+1) − ln(x²+1)` → `0`, mais
   `ln(x) − ln(x)`, `1/x − 1/x`, `√x − √x`, `tan(x) − tan(x)` restent écrits ;
-  une racine d'indice impair est définie partout (`∛x − ∛x → 0`, Q41). En ordre
+  une racine d'indice impair positif est définie partout (`∛x − ∛x → 0`, Q41 ;
+  `x^{1/3}`, puissance réelle, reste restreint à x ≥ 0). En ordre
   rangé, les termes ainsi gardés restent côte à côte, à la place du premier :
   `3 − ln x + x + ln x → ln(x) − ln(x) + x + 3`. Un terme seul de coefficient nul n'est pas une annulation (`0/x`, `0·ln(x)`
   → `0`). Les options `typeCtx` et `domain` (§G.1) lèvent la restriction.

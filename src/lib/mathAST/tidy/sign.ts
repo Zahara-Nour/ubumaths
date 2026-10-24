@@ -266,11 +266,11 @@ export function definedEverywhere(
 	}
 }
 
-/** `∛x`, `⁵√x` : l'indice d'une racine est un entier impair (`√x` n'en a pas). */
+/** `∛x`, `⁵√x` : l'indice d'une racine est un entier impair positif (`√x` n'en a pas). */
 function hasOddIndex(index: MathNode | undefined): boolean {
 	if (index === undefined) return false;
 	const value = extractRational(index);
-	return value !== null && value.d === 1n && value.n % 2n !== 0n;
+	return value !== null && value.d === 1n && value.n > 0n && value.n % 2n !== 0n;
 }
 
 /**

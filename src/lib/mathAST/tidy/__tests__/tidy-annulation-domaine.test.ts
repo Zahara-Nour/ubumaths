@@ -153,12 +153,16 @@ describe('une racine d’indice impair est définie partout', () => {
 		}
 	);
 
-	it.each(['sqrt(x)-sqrt(x)', 'sqrt[4](x)-sqrt[4](x)', 'sqrt[3](ln(x))-sqrt[3](ln(x))'])(
-		'%s reste écrit',
-		(input) => {
-			expect(t(input)).not.toBe('0');
-		}
-	);
+	// Revue de 5f-1 : un indice négatif divise par x (`sqrt[-3](x)` = x^(−1/3))
+	it.each([
+		'sqrt(x)-sqrt(x)',
+		'sqrt[4](x)-sqrt[4](x)',
+		'sqrt[3](ln(x))-sqrt[3](ln(x))',
+		'sqrt[-3](x)-sqrt[-3](x)',
+		'sqrt[-1](x)-sqrt[-1](x)'
+	])('%s reste écrit', (input) => {
+		expect(t(input)).not.toBe('0');
+	});
 });
 
 describe('en ordre rangé, les termes gardés pour le domaine restent côte à côte', () => {

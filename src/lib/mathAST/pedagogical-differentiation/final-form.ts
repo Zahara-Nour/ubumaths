@@ -58,7 +58,7 @@ import { tidy } from '../tidy';
 import type { TidyOptions } from '../tidy';
 import { nonZeroBases } from '../tidy/sign';
 import { nodeCount, tidyTerms } from '../tidy/terms';
-import { findNodes } from '../transforms';
+import { findNodes, mapNode } from '../transforms';
 
 /** Le budget de la politique `auto` : au-delà, la dérivée rangée reste. */
 const AUTO_TIMEOUT_MS = 1000;
@@ -133,7 +133,7 @@ function rawDerivative(node: MathNode, variable: string): MathNode | null {
 }
 
 function finalForm(written: MathNode, f: MathNode, options: TidyOptions): MathNode {
-	const node = withOppositeInNumerator(withCoefficientInNumerator(written));
+	const node = withOppositeInNumerator(withCoefficientInNumerator(withImpliedSumsOpened(written)));
 	if (node.type === 'division') {
 		const raw = tidy(node.numerator, { ...options, order: 'kept' });
 		const denominator = tidy(node.denominator, { ...options, order: 'kept' });
@@ -148,6 +148,25 @@ function finalForm(written: MathNode, f: MathNode, options: TidyOptions): MathNo
 		);
 	}
 	return withCommonExponential(reduce(node, options), options);
+}
+
+/**
+ * Les sommes que la dérivée brute porte sans parenthèse écrite, ouvertes :
+ * `1 − (eˣ + xeˣ)` → `1 − eˣ − xeˣ`. La forme finale RÉDUIT, alors que `tidy`
+ * garde une parenthèse sous-entendue comme écrite (Q40, lot 5f-1) : sans cette
+ * ouverture, `auto` gardait `−(eˣ + xeˣ)` au lieu de `−(x + 1)eˣ` (revue de
+ * 5f-1). Une parenthèse écrite (`delimiter`) reste fermée.
+ */
+function withImpliedSumsOpened(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		const implied =
+			(n.type === 'subtraction' && isSum(n.right)) || (n.type === 'opposite' && isSum(n.operand));
+		return implied ? (unflattenSum(flattenSumShallow(n)) ?? n) : n;
+	});
+}
+
+function isSum(node: MathNode): boolean {
+	return node.type === 'addition' || node.type === 'subtraction';
 }
 
 /**

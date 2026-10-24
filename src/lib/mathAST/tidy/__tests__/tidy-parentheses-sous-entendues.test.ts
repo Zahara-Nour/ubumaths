@@ -16,7 +16,7 @@ import { tidyTerms } from '../terms';
 import { parseCustom } from '../../parser/custom';
 import { toCustom } from '../../custom-generator';
 import { areEquivalent } from '../../equivalence';
-import { func, number, opposite, power, subtract } from '../../factory';
+import { divide, func, number, opposite, power, subtract, variable } from '../../factory';
 import type { MathNode } from '../../types';
 
 const p = parseCustom;
@@ -28,7 +28,9 @@ const CASES: [string, MathNode, string][] = [
 	['−(x+2)', opposite(p('x+2')), '-(x+2)'],
 	['x² − (x − 1)', subtract(p('x^2'), p('x-1')), 'x^2-(x-1)'],
 	['ln(3 − (x+2))', func('ln', [subtract(number(3), p('x+2'))]), 'ln(3-(x+2))'],
-	['(1 − (x+1))²', power(subtract(number(1), p('x+1')), number(2)), '(1-(x+1))^2']
+	['(1 − (x+1))²', power(subtract(number(1), p('x+1')), number(2)), '(1-(x+1))^2'],
+	// Revue de 5f-1 : `flipNumerator` en faisait `−((x+1) − x)/2`, réduit au passage suivant
+	['(x − (x+1))/2', divide(subtract(variable('x'), p('x+1')), number(2)), '(x-(x+1))/2']
 ];
 
 describe('tidy — a − (b + c) sans nœud de parenthèse se lit comme écrit', () => {
@@ -60,5 +62,12 @@ describe('tidyTerms — ouvrir si ça regroupe', () => {
 		['−(x+2)', opposite(p('x+2')), '-(x+2)']
 	])('%s', (_label, node, expected) => {
 		expect(toCustom(tidyTerms(node))).toBe(expected);
+	});
+});
+
+describe('tidy — idempotent sur un numérateur à somme écrite', () => {
+	it.each(['(x-(x+1))/2', '(1-(x+1))/3', '(2x-(x+1))/5'])('%s', (input) => {
+		const once = tidy(p(input));
+		expect(toCustom(tidy(once))).toBe(toCustom(once));
 	});
 });

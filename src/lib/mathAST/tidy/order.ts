@@ -415,7 +415,7 @@ export function orderUnderMinus(terms: readonly TidyTerm[]): TidyTerm[] | null {
 }
 
 /** Un terme qui contient une somme en facteur : `3(x + 1)`, `(2x − 1)/3`, `x(x + 1)²`. */
-function containsSumFactor(term: TidyTerm): boolean {
+export function containsSumFactor(term: TidyTerm): boolean {
 	return term.factors.some((factor) => {
 		let base = factor.base;
 		while (isDelimiter(base)) base = base.content;
