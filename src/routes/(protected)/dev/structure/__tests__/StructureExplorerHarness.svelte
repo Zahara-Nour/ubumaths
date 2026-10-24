@@ -6,7 +6,7 @@
 	import { provideReaderGrade } from '$lib/lexicon/reader-grade';
 	import type { CapitalPairs } from '$lib/mathAST/parser';
 	import StructureField from '$lib/components/structure/StructureField.svelte';
-	import { provideStructureLexicon } from '../structure-lexicon.svelte';
+	import { provideStructureLexicon } from '$lib/components/structure/structure-lexicon.svelte';
 
 	interface Props {
 		latex: string;

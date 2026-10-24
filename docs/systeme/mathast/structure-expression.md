@@ -7,7 +7,7 @@ couvre:
 
 # Structure d'une expression
 
-> Outil **« Structure d'une expression »** : page de mise au point `/dev/structure` (admin seul, ex-`/test-structure`)
+> Outil **« Structure d'une expression »** : page de mise au point `/dev/structure` (admin seul, ex-`/test-structure`), vitrine publique `/demo/structure`
 > ([utilitaires-et-demos.md](../utilitaires-et-demos.md)) ; moteur `src/lib/mathAST/structure/`
 > ([README.md](README.md)). Héritier d'Algebria (outil Flash/Haxe de David, Sésamath, article 487
 > de MathemaTICE). Vocabulaire : [CONTEXT.md](../../../CONTEXT.md) § « La structure d'une
@@ -130,8 +130,10 @@ Texte : « Ajoute des parenthèses pour montrer ce que tu calcules d'abord : (5 
 ### D. Accès
 
 Page **`/dev/structure`** (ex-`/test-structure`), réservée à l'admin depuis le rangement des pages
-de démo (chantier demo-debug, 2026-10-24) ; la formule seule (`StructureField`) reviendra au public
-dans la vitrine `/demo/structure`. Rien n'est enregistré ; niveau lu par `readReaderGrade()` (`profiles.grade`).
+de démo (chantier demo-debug, 2026-10-24) ; la formule seule (`StructureField`, sans corpus ni
+réglages) est publique dans la vitrine **`/demo/structure`** (PR 6a). Rien n'est enregistré ; niveau
+lu par `readReaderGrade()` (`profiles.grade`). Les fiches du dictionnaire suivent ce niveau, 5e pour
+un visiteur (`$lib/components/structure/structure-lexicon.svelte.ts`, partagé par les deux pages).
 
 Points proposés par Claude et acceptés : « x puissance 4 » (B9) ; survol de « sin » = la fonction
 appliquée (A8) ; cadres englobants en pointillés gris (A10).
