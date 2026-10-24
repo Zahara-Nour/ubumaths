@@ -6,15 +6,15 @@
  * programme de seconde générale et technologique (codes 2-201…2-400), les
  * références d'automatismes du grade '2' vers le parcours antérieur ET vers la
  * 2de elle-même (auto-références C13), et la restructuration C2 de la branche
- * Logique. VALIDÉS par David le 2026-10-08 (docs/wip/arbre-notions/seed-2de.md :
+ * Logique. VALIDÉS par David le 2026-10-08 (docs/archive/wip/arbre-notions/seed-2de.md :
  * puces multi-parties, discutables 1-5, L1-L4). Puis la passe « points vagues »
  * (migration `20261010200000_points_vagues_2de`, validée le 2026-10-08,
- * docs/wip/arbre-notions/passe-points-vagues-2de.md) : 2-332 retiré, cinq libellés
+ * docs/archive/wip/arbre-notions/passe-points-vagues-2de.md) : 2-332 retiré, cinq libellés
  * spécifiés, 2-262 sur la notion Calcul littéral → 199 points. Puis les scissions validées par
  * David (migration `20261017090000_scission_points_programme`) : deux points ⚙ de la partie
  * Automatismes du BO (2-401 périmètre d'un polygone, 2-402 interpréter les quartiles), rangés
  * avant 2-235, et le trou laissé par 2-332 refermé → 201 points ; fixture transformée par
- * docs/wip/arbre-notions/c5-scissions-generer.py.
+ * docs/archive/wip/arbre-notions/c5-scissions-generer.py.
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade '2', l'ensemble exact des

@@ -7,11 +7,11 @@
  * grade 'T_SPE') et les références du grade 'T_SPE' : entretien des contenus repris
  * mot pour mot de la 2de et de la 1re (U5/V1), liste d'automatismes de 1re spé
  * reprise pour le cycle terminal (A1). VALIDÉS par David le 2026-10-08
- * (docs/wip/arbre-notions/seed-tspe.md).
+ * (docs/archive/wip/arbre-notions/seed-tspe.md).
  *
  * Références reportées par les scissions validées par David (migration
  * `20261017090000_scission_points_programme`) : fixture transformée par
- * docs/wip/arbre-notions/c5-scissions-generer.py.
+ * docs/archive/wip/arbre-notions/c5-scissions-generer.py.
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade 'T_SPE', l'ensemble exact des

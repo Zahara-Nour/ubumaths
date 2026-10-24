@@ -5,7 +5,7 @@
  * Migration `20261021100000_lot_2bis_retirer_variations` : 7 modèles du CP et du collège perdent
  * les variations qui relèvent d'un autre point (specs réindexées, variable commune devenue inutile
  * retirée) puis reçoivent le tag de leur point, d'après la liste VALIDÉE par David
- * (docs/wip/arbre-notions/analyse/lot-2bis-modifications.md, copie figée — contenu d'avant et
+ * (docs/archive/wip/arbre-notions/analyse/lot-2bis-modifications.md, copie figée — contenu d'avant et
  * d'après — dans tests/integration/fixtures/lot-2bis-variations.json).
  * Méthode (copies de la prod, rejeu du fichier, rollback) : tests/helpers/database/lot-2bis-migration.ts.
  *

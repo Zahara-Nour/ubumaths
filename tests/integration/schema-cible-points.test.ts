@@ -2,7 +2,7 @@
  * Schéma cible ADR 0020 — points de programme, références, parcours (phase 0)
  * ===========================================================================
  *
- * Spécification : docs/wip/arbre-notions/schema-cible-spec.md (B1-B7 + C1-C27
+ * Spécification : docs/archive/wip/arbre-notions/schema-cible-spec.md (B1-B7 + C1-C27
  * validés par David le 2026-10-07). Migration `<horodatage>_schema_cible_points` :
  *   - `curriculum_points` : `node_id` (nœud de l'arbre), `grade`, `rubrique`,
  *     `kind` étendu à `algorithme` ;

@@ -7,11 +7,11 @@
  * spécifique », codes 1GEN-001…044, grade '1_GEN') et les références du grade '1_GEN' :
  * lignes de la partie Automatismes (dont une auto-référence), liste de 2de reprise (C16),
  * entretien des contenus repris de 2de (U5/V1). VALIDÉS par David le 2026-10-08
- * (docs/wip/arbre-notions/seed-1gen.md). Pas d'ancien seed pour ce niveau.
+ * (docs/archive/wip/arbre-notions/seed-1gen.md). Pas d'ancien seed pour ce niveau.
  *
  * Références reportées par les scissions validées par David (migration
  * `20261017090000_scission_points_programme`) : fixture transformée par
- * docs/wip/arbre-notions/c5-scissions-generer.py.
+ * docs/archive/wip/arbre-notions/c5-scissions-generer.py.
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade '1_GEN', l'ensemble exact des

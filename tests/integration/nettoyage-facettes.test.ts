@@ -3,7 +3,7 @@
  * ======================================================================================
  *
  * Migration `20261012080000_nettoyage_facettes_arbre` : l'audit des facettes ENTIÈREMENT
- * TRANCHÉ par David le 2026-10-09 (docs/wip/arbre-notions/audit-facettes.md ; ADR 0020 § 3
+ * TRANCHÉ par David le 2026-10-09 (docs/archive/wip/arbre-notions/audit-facettes.md ; ADR 0020 § 3
  * précisé — une notion n'a qu'un découpage, par contenu mathématique) et les rangements
  * corrigés du lot de l'étape 2 de C5 et du crible. Copie figée des opérations :
  * tests/integration/fixtures/nettoyage-facettes.json.

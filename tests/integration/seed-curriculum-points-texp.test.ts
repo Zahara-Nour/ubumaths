@@ -6,7 +6,7 @@
  * programme de mathématiques expertes (codes TEXP-201…TEXP-353, grade 'T_EXP'),
  * reprise un pour un de l'ancien découpage. Aucune référence d'automatismes (A1 = non :
  * la liste de 1re est portée par la Tle spé, suivie en parallèle). VALIDÉS par David
- * le 2026-10-08 (docs/wip/arbre-notions/seed-texp.md).
+ * le 2026-10-08 (docs/archive/wip/arbre-notions/seed-texp.md).
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade 'T_EXP', et aucune référence

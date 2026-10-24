@@ -4,8 +4,8 @@
  *
  * Chaque lot (A « resserrer les nombres », B « retirer des variations »…) donne à des modèles de
  * question un nouveau contenu puis le tag de leur point, d'après la liste VALIDÉE par David
- * (docs/wip/arbre-notions/analyse/lot-2bis-modifications.md). Sa migration est générée par
- * `docs/wip/arbre-notions/analyse/lot_2bis_outils.py`, avec une fixture qui fige le contenu d'avant
+ * (docs/archive/wip/arbre-notions/analyse/lot-2bis-modifications.md). Sa migration est générée par
+ * `docs/archive/wip/arbre-notions/analyse/lot_2bis_outils.py`, avec une fixture qui fige le contenu d'avant
  * et d'après.
  *
  * Les modèles n'existent qu'en production. Les suites fabriquent donc l'état de la prod — des

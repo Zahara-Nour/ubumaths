@@ -23,7 +23,7 @@
  * suites (préfixe « itest- ») vivent sous leurs propres racines : on compare
  * seulement les arbres dont la racine est une branche du JSON.
  *
- * ⚠️ La copie figée, pas docs/wip/arbre-notions/arbre-notions.json : le JSON
+ * ⚠️ La copie figée, pas docs/archive/wip/arbre-notions/arbre-notions.json : le JSON
  * de travail évolue en commit direct sur main (doc), sans CI, alors que la
  * base ne change qu'avec une migration. Le 2026-10-08, la version .15 du JSON
  * (branche Logique) a cassé ce test sur toutes les PR. À la migration qui

@@ -8,11 +8,11 @@
  * partie Automatismes de Tle (dont une auto-référence, l'indice de base 100 ; pas de
  * reprise de la liste de 1re, T4), entretien des contenus repris de 2de et de 1re techno
  * (U5/V1), dont tout le bloc Algorithmique. VALIDÉS par David le 2026-10-08
- * (docs/wip/arbre-notions/seed-ttechno.md). Pas d'ancien seed pour ce niveau.
+ * (docs/archive/wip/arbre-notions/seed-ttechno.md). Pas d'ancien seed pour ce niveau.
  *
  * Références reportées par les scissions validées par David (migration
  * `20261017090000_scission_points_programme`) : fixture transformée par
- * docs/wip/arbre-notions/c5-scissions-generer.py.
+ * docs/archive/wip/arbre-notions/c5-scissions-generer.py.
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade 'T_TECHNO', l'ensemble exact des

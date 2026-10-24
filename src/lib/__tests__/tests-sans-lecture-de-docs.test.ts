@@ -5,7 +5,7 @@
  * Un changement 100 % documentaire se commite directement sur main, et la CI
  * ne tourne pas sur un push qui ne touche que docs/ (`paths-ignore`). Un test
  * qui lit un fichier de docs/ casse donc en silence : le 2026-10-08, le JSON
- * de travail de l'arbre des notions (docs/wip/arbre-notions/arbre-notions.json)
+ * de travail de l'arbre des notions (docs/archive/wip/arbre-notions/arbre-notions.json)
  * est passé en version .15 par un commit de doc, et le test d'intégration du
  * seed a échoué sur TOUTES les PR suivantes.
  *
