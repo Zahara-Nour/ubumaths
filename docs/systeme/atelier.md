@@ -2199,15 +2199,21 @@ menu d'une fonction, d'une suite ou d'une liste propose « Ouvrir dans Python »
   `log` → `log10`, `arccos` → `acos`, `|x|` → `abs` ; `from math import …` des seuls noms
   utilisés ;
 - suite explicite → `def u(n)` ; récurrence → la boucle des sujets (`u = u₀`,
-  `for k in range(n0, n)`, `u_n` → `u`, `n` → `k`) ;
+  `for k in range(n0, n)`, `u_n` → `u`, `n` → `k` ; `i`, `j`… si un objet s'appelle déjà `k`) ;
 - liste → `L = [12, 15, 9]`, écritures exactes gardées (`1/4`), virgule → point, cases vides
-  retirées avec un commentaire ; une case à formule : les valeurs calculées ;
+  retirées avec un commentaire, `1{,}5` et `−3` lus ; une case à formule : les valeurs calculées, avec
+  un commentaire (et le nombre d'entrées ignorées) ;
 - ce que l'objet cite part avec lui, une fois, avant lui : curseur (`a = 3  # curseur de
 l’atelier`), valeur calculée, fonction, suite, premier terme donné par un curseur.
 
 **Refus** (bouton grisé, raison au survol) : objet incomplet, en attente ou en erreur,
 fonction sur un intervalle, par morceaux, grandeur à unité, liste de mots, carte `f′` ou
 `f⁻¹`, racine n-ième, adresse compressée > 2 000 caractères (`pythonPageOf`).
+
+`pythonOf` est mémorisée par révision de l'atelier : `actionsFor` l'appelle à chaque rendu.
+
+Écarts connus : `u(n)` avant le premier rang rend u₀ en Python (l'atelier : rien) ; `x**(1/2)`
+d'un négatif donne un complexe en Python (l'atelier : non défini).
 
 Côté `/python` (Q1) : si l'éditeur contient du code de l'élève (`pythonStore.hasOwnCode`),
 « Remplacer ton code ? » avant de charger ; « Garder mon code » le laisse intact.

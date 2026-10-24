@@ -104,6 +104,24 @@ const MAX_COMPRESSED_LENGTH = 2000;
  * fonctions) écrit avant lui, ou la raison du refus.
  */
 export function pythonOf(atelier: Atelier, name: string): PythonResult {
+	// Les actions des cartes le demandent à chaque rendu : une traduction par
+	// révision de l'atelier suffit (revue de #1697)
+	let memo = MEMO.get(atelier);
+	if (memo === undefined || memo.revision !== atelier.revision) {
+		memo = { revision: atelier.revision, byName: new Map() };
+		MEMO.set(atelier, memo);
+	}
+	const known = memo.byName.get(name);
+	if (known !== undefined) return known;
+	const result = translate(atelier, name);
+	memo.byName.set(name, result);
+	return result;
+}
+
+/** Les traductions de la révision courante, par atelier. */
+const MEMO = new WeakMap<Atelier, { revision: number; byName: Map<string, PythonResult> }>();
+
+function translate(atelier: Atelier, name: string): PythonResult {
 	const context: Context = { atelier, imports: new Set(), seen: new Set(), blocks: [] };
 	try {
 		write(context, name);
@@ -246,8 +264,9 @@ function writeSequence(context: Context, object: SequenceObject): void {
 
 	// Récurrence : la boucle des sujets de bac, le terme courant porte le nom de la suite
 	const first = firstTermCode(context, object);
+	const loop = loopVariable(context.atelier);
 	const step = python(context, ast, {
-		variable: { name: INDEX_VARIABLE, as: 'k' },
+		variable: { name: INDEX_VARIABLE, as: loop },
 		recurrenceOf: object.name
 	});
 	const range =
@@ -258,10 +277,25 @@ function writeSequence(context: Context, object: SequenceObject): void {
 		code:
 			`def ${u}(${INDEX_VARIABLE}):\n` +
 			`${INDENT}${u} = ${first}\n` +
-			`${INDENT}for k in range(${range}):\n` +
+			`${INDENT}for ${loop} in range(${range}):\n` +
 			`${INDENT}${INDENT}${u} = ${step}\n` +
 			`${INDENT}return ${u}\n`
 	});
+}
+
+/** Les noms de la boucle d'une récurrence, dans l'ordre des sujets de bac. */
+const LOOP_VARIABLES = ['k', 'i', 'j', 'p', 'q'];
+
+/**
+ * La variable de boucle : `k`, sauf si un objet de l'atelier s'appelle déjà
+ * ainsi — un curseur `k` cité serait écrasé par la boucle (revue de #1697).
+ */
+function loopVariable(atelier: Atelier): string {
+	const free = LOOP_VARIABLES.find((name) => atelier.get(name) === undefined);
+	if (free === undefined) {
+		throw new Untranslatable('Trop de lettres déjà prises pour écrire la boucle en Python.');
+	}
+	return free;
 }
 
 /** Le premier terme : un nombre écrit, ou le nom d'une valeur (qui part avec la suite). */
@@ -286,22 +320,34 @@ function writeList(context: Context, object: ListObject): void {
 	const entries = object.definition.split(';').map((entry) => entry.trim());
 	const filled = entries.filter((entry) => entry !== '');
 	// Les cases vides finales ne sont pas rangées : seules celles du milieu comptent
+	const notes: string[] = [];
 	const gaps = entries.length - filled.length;
+	if (gaps > 0) notes.push(plural(gaps, 'case vide retirée', 'cases vides retirées'));
 	// Une case calculée par une formule (`=A1+1`) : sa valeur, la formule cite la grille
-	const computed = filled.some((entry) => entry.startsWith('=') || readListValue(entry) === null);
-	const items = computed
-		? object.values.map((value) => String(value))
-		: filled.map((entry) => listEntry(context, entry));
-	const note =
-		gaps === 0
-			? ''
-			: `# ${gaps} case${gaps > 1 ? 's' : ''} vide${gaps > 1 ? 's' : ''} retirée${gaps > 1 ? 's' : ''}\n`;
+	const formulas = filled.some((entry) => entry.startsWith('='));
+	let items: string[];
+	if (formulas || filled.some((entry) => readListValue(entry) === null)) {
+		items = object.values.map((value) => String(value));
+		if (formulas) notes.push('valeurs calculées par les formules de la grille');
+		const ignored = filled.length - object.values.length;
+		if (ignored > 0) notes.push(plural(ignored, 'entrée ignorée', 'entrées ignorées'));
+	} else {
+		items = filled.map((entry) => listEntry(context, entry));
+	}
+	const note = notes.map((text) => `# ${text}\n`).join('');
 	context.blocks.push({ kind: 'value', code: `${note}${object.name} = [${items.join(', ')}]\n` });
+}
+
+/** `1 case vide retirée`, `2 cases vides retirées`. */
+function plural(count: number, one: string, many: string): string {
+	return `${count} ${count > 1 ? many : one}`;
 }
 
 /** Une entrée de liste : `0,5` → `0.5`, `1/4` reste `1/4`. */
 function listEntry(context: Context, entry: string): string {
-	const ast = astOf(entry.replace(/(\d),(\d)/g, '$1.$2'), 'text');
+	// Ce que la carte et MathLive écrivent : `1{,}5`, le vrai signe moins `−3`
+	const plain = entry.replace(/\{,\}/g, ',').replace(/\u2212/g, '-');
+	const ast = astOf(plain.replace(/(\d),(\d)/g, '$1.$2'), 'text');
 	if (ast === null) throw new Untranslatable(`« ${entry} » ne se lit pas.`);
 	return python(context, ast, {});
 }

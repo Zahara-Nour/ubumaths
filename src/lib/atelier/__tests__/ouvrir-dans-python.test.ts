@@ -181,6 +181,36 @@ describe('une suite', () => {
 	});
 });
 
+describe('revue de #1697', () => {
+	it('un curseur k cité : la boucle prend une autre lettre', () => {
+		const atelier = atelierWith(['value', 'k', '2'], ['sequence', 'u', 'k u_n + n']);
+		atelier.setSequence('u', { firstTerm: '1' });
+		expect(codeOf(atelier, 'u')).toBe(
+			'k = 2  # curseur de l’atelier\n\n' +
+				'def u(n):\n    u = 1\n    for i in range(n):\n        u = k*u + i\n    return u\n'
+		);
+	});
+
+	it('une liste écrite par la carte : 1{,}5 et le vrai signe moins', () => {
+		const atelier = atelierWith(['list', 'L', '1{,}5 ; −3 ; 1/4']);
+		expect(codeOf(atelier, 'L')).toBe('L = [1.5, -3, 1/4]\n');
+	});
+
+	it('une formule de la grille : les valeurs, et c’est écrit', () => {
+		const atelier = atelierWith(['list', 'L', '1 ; =1+1']);
+		expect(codeOf(atelier, 'L')).toBe(
+			'# valeurs calculées par les formules de la grille\nL = [1, 2]\n'
+		);
+	});
+
+	it('la traduction suit la définition (mémoire par révision)', () => {
+		const atelier = atelierWith(['function', 'f', 'x^2']);
+		expect(codeOf(atelier, 'f')).toContain('x**2');
+		atelier.update('f', 'x^3', 'text');
+		expect(codeOf(atelier, 'f')).toContain('x**3');
+	});
+});
+
 describe('une liste', () => {
 	it('des nombres entre crochets', () => {
 		const atelier = atelierWith(['list', 'L', '12 ; 15 ; 9']);
