@@ -1,7 +1,7 @@
 /**
  * Transcriptions des programmes officiels (2026-10-24).
  *
- *   - la seconde est transcrite, titrée comme le BO ;
+ *   - les niveaux du lycée sont transcrits, titrés comme le BO ;
  *   - le texte ne crée aucun nœud interactif ou accidentel (trou, #hashtag,
  *     @mention, renvoi d'aide, bloc de code) : c'est du texte à lire ;
  *   - un niveau dont un morceau manque n'a pas de transcription ;
@@ -14,9 +14,22 @@ import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { OFFICIAL_PROGRAMMES } from '$lib/programmes/official-programmes';
 import { parseMarkdown } from '$lib/ubumark';
+import type { GradeCode } from '$lib/types/grades';
 import { getTranscription } from '../transcriptions';
 
 // Constantes
+
+/** Les niveaux du lycée, tous transcrits */
+const LYCEE: readonly GradeCode[] = [
+	'2',
+	'1_GEN',
+	'1_SPE',
+	'T_SPE',
+	'T_EXP',
+	'T_COMP',
+	'1_TECHNO',
+	'T_TECHNO'
+];
 
 const FORBIDDEN_NODES = [
 	'blank',
@@ -42,18 +55,18 @@ function nodeTypes(node: unknown, found = new Set<string>()): Set<string> {
 }
 
 describe('getTranscription', () => {
-	it('2de : transcrite, titrée comme le BO', () => {
-		const source = getTranscription('2');
-		expect(source).not.toBeNull();
-		expect(source).toMatch(
-			/^# Programme de mathématiques de la classe de seconde générale et technologique$/m
-		);
-	});
+	describe.each(LYCEE)('%s', (grade) => {
+		it('transcrit, titré comme le BO', () => {
+			const source = getTranscription(grade);
+			expect(source).not.toBeNull();
+			expect(source?.split('\n')[0]).toBe(`# ${OFFICIAL_PROGRAMMES[grade]?.title}`);
+		});
 
-	it('2de : aucun nœud interactif ou accidentel', () => {
-		const types = nodeTypes(parseMarkdown(getTranscription('2') ?? ''));
-		expect(types.has('heading')).toBe(true);
-		expect(FORBIDDEN_NODES.filter((type) => types.has(type))).toEqual([]);
+		it('aucun nœud interactif ou accidentel', () => {
+			const types = nodeTypes(parseMarkdown(getTranscription(grade) ?? ''));
+			expect(types.has('heading')).toBe(true);
+			expect(FORBIDDEN_NODES.filter((type) => types.has(type))).toEqual([]);
+		});
 	});
 
 	it('CM1 : morceaux pas encore écrits → null', () => {
