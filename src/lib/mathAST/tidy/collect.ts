@@ -61,7 +61,7 @@ import {
 	withUnit,
 	sqrt as sqrtNode
 } from '../factory';
-import { isDelimiter, isFunction } from '../guards';
+import { isDelimiter, isEulerConstant, isFunction } from '../guards';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { format as formatUnit } from '../units/formatter';
 import { exactConversion, dimensionKey } from '../units/exact';
@@ -72,7 +72,6 @@ import { decimalString, hasDecimalLiteral } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
 import { cannotVanish, nonZeroBases } from './sign';
 import {
-	containsUnknown,
 	isPlainTerm,
 	numberFirst,
 	orderUnderMinus,
@@ -524,38 +523,52 @@ function keepDomain(factor: MutableFactor, settings: Settings, watch: FamilyWatc
 	}
 	if (factor.crossed) watch?.add('factors');
 	if (isZeroRational(exponent)) return [];
+	const power = exponentRulePower(base, exponent, settings);
+	if (power === null) return [{ base, exponent, key }];
+	const powerKey = factorKey(power, settings);
+	const sign = isNegativeRational(exponent) ? negRational(ONE) : ONE;
 	return [
-		factor.grouped ? withExponentRule(base, exponent, key, settings) : { base, exponent, key }
+		factor.grouped
+			? { base: power, exponent: sign, key: powerKey }
+			: { base, exponent, key, likeKey: `${powerKey}^${sign.n}/${sign.d}` }
 	];
 }
 
 /**
  * Q29 (David, 2026-10-24) — des exponentielles identiques regroupées s'écrivent
  * avec la règle des exposants, comme en classe : `eˣ·eˣ → e^{2x}`, `(eˣ)²·eˣ →
- * e^{3x}`, et non `(eˣ)²`. Une exponentielle : base sans inconnue (`e`, `2`),
- * exposant non rationnel. Une puissance tapée seule (`(eˣ)²`) ne passe pas ici ;
- * deux exposants différents (`eˣ·e^{−x}`) non plus : c'est `réduire` (Q31, S4).
+ * e^{3x}`, et non `(eˣ)²`. Une exponentielle : base `e` ou rationnel positif,
+ * exposant non rationnel. Une puissance tapée seule (`(eˣ)²`) reste écrite,
+ * mais se regroupe avec sa forme `e^{2x}` (`likeKey`) ; deux exposants
+ * différents (`eˣ·e^{−x}`) ne se regroupent pas : c'est `réduire` (Q31, S4).
+ * La puissance réécrite, ou `null` si la règle ne s'applique pas.
  */
-function withExponentRule(
+function exponentRulePower(
 	base: MathNode,
 	exponent: Rational,
-	key: string,
 	settings: Settings
-): TidyFactor {
-	const unchanged = { base, exponent, key };
-	if (base.type !== 'superscript' || extractRational(base.superscript) !== null) return unchanged;
-	if (containsUnknown(base.base) || !isIntegerRational(exponent)) return unchanged;
+): MathNode | null {
+	if (base.type !== 'superscript' || extractRational(base.superscript) !== null) return null;
+	if (!isExponentRuleBase(base.base) || !isIntegerRational(exponent)) return null;
 	const times = absRational(exponent);
-	if (isOneRational(times)) return unchanged;
-	const power = tidyAtom(
+	if (isOneRational(times)) return null;
+	return tidyAtom(
 		superscript(base.base, multiply(number(times.n.toString()), base.superscript, 'implicit')),
 		settings
 	);
-	return {
-		base: power,
-		exponent: isNegativeRational(exponent) ? negRational(ONE) : ONE,
-		key: factorKey(power, settings)
-	};
+}
+
+/**
+ * `e` ou un rationnel strictement positif (`2`, `1/2`). Ni `π` (`π^{2x}` et
+ * `(πˣ)²` sont jugés différents par `areEquivalent`, revue de #1674), ni une
+ * base négative ou nulle (`(−2)ˣ`, `0ˣ`).
+ */
+function isExponentRuleBase(node: MathNode): boolean {
+	let inner = node;
+	while (isDelimiter(inner)) inner = inner.content;
+	if (isEulerConstant(inner)) return true;
+	const value = extractRational(inner);
+	return value !== null && isPositiveRational(value);
 }
 
 /**
@@ -1277,7 +1290,7 @@ function flipNumerator(term: TidyTerm, settings: Settings): TidyTerm | null {
  */
 function factorsKey(term: TidyTerm): string {
 	return term.factors
-		.map((factor) => `${factor.key}^${factor.exponent.n}/${factor.exponent.d}`)
+		.map((factor) => factor.likeKey ?? `${factor.key}^${factor.exponent.n}/${factor.exponent.d}`)
 		.sort()
 		.join('*');
 }

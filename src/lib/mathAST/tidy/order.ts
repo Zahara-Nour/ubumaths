@@ -271,7 +271,7 @@ export function isFirstDegreeSum(terms: readonly TidyTerm[]): boolean {
  * indice (`u_0`), une longueur (`AB`), un trou, un symbole en sont, et aussi
  * une fonction de l'énoncé (`f(2)`, `f'(1)`, `g(0)`) : sa valeur est inconnue.
  */
-export function containsUnknown(node: MathNode): boolean {
+function containsUnknown(node: MathNode): boolean {
 	let found = false;
 	mapNode(node, (n) => {
 		if (

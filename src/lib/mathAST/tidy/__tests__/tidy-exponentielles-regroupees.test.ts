@@ -33,7 +33,17 @@ const CASES: readonly (readonly [string, string])[] = [
 	['e^x*e^{-x}', 'e^xe^{-x}'],
 	// Une base qui contient une inconnue n'est pas une exponentielle
 	['x^x*x^x', '(x^x)^2'],
-	['(e^x+1)(e^x+1)', '(e^x+1)^2']
+	['(e^x+1)(e^x+1)', '(e^x+1)^2'],
+	// Ni π (équivalence non reconnue), ni une base négative ou nulle
+	['\\pi^x*\\pi^x', '(\\pi^x)^2'],
+	['(-2)^x*(-2)^x', '((-2)^x)^2'],
+	// Une puissance tapée reste, mais se regroupe avec sa forme e^{2x} (revue)
+	['(e^x)^2+e^x*e^x', '2(e^x)^2'],
+	['e^x*e^x+(e^x)^2', '2e^{2x}'],
+	['e^x*e^x*e^x+(e^x)^3', '2e^{3x}'],
+	['e^x*e^x+e^{2x}', '2e^{2x}'],
+	['e^x*e^x-e^{2x}', '0'],
+	['(e^x)^2-e^{2x}', '0']
 ];
 
 describe('exponentielles regroupées (Q29) — défaut', () => {
