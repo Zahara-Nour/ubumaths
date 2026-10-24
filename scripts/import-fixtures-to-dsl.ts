@@ -46,16 +46,6 @@ async function main() {
 	console.log(`Mode: ${dryRun ? 'DRY RUN' : 'INSERTION'}`);
 	console.log(`${files.length} fichiers XML a convertir\n`);
 
-	// Get an author_id — use the first admin/teacher profile
-	const { data: profiles } = await supabase.from('profiles').select('id').limit(1).single();
-
-	const authorId = profiles?.id;
-	if (!authorId) {
-		console.error("Aucun profil trouve en base. Impossible d'assigner un auteur.");
-		process.exit(1);
-	}
-	console.log(`Auteur: ${authorId}\n`);
-
 	let successCount = 0;
 	let errorCount = 0;
 
@@ -89,9 +79,7 @@ async function main() {
 				format: 'dsl',
 				script: {},
 				dsl_script: result.dsl,
-				author_id: authorId,
-				is_public: true,
-				tags: ['instrumenpoche', 'import']
+				is_public: true
 			})
 			.select('id')
 			.single();

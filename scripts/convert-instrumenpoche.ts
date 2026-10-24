@@ -1479,13 +1479,12 @@ function generateSqlInsert(script: ConstructionScript, index: number): string {
 	const description = script.description?.replace(/'/g, "''") || '';
 	const jsonStr = JSON.stringify(script).replace(/'/g, "''");
 
-	return `INSERT INTO constructions (title, description, script, is_public, author_id)
+	return `INSERT INTO constructions (title, description, script, is_public)
 VALUES (
   '${title}',
   ${description ? `'${description}'` : 'NULL'},
   '${jsonStr}'::jsonb,
-  true,
-  NULL
+  true
 );`;
 }
 
