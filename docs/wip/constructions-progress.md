@@ -2,15 +2,37 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1659 et #1662 (constructions publiques de la prod)._
+_Mis à jour le 2026-10-24, phase 0 « écriture au prof seul » validée._
 
-- **État** : lots 1 à 12 mergés ; constructions publiques de la prod réécrites et ÉCRITES EN PROD le 2026-10-24 (8 publiques, repérage dépublié, sans nom d'auteur ; sauvegarde `scripts/constructions-prod/avant-2026-10-23.json`). Le code (lots, compas qui s'ouvre à sa première utilisation, ligne « Auteur » et nom retirés des pages et de l'API) attend le prochain `deploy:prod`.
-- **Prochaine action** : aucune ; après les vérifications de David, verser (`docs/systeme/geometrie/constructions.md` déjà à jour) et archiver ce journal.
-- **En attente de David** : vérifications #1621 → #1659 dans `docs/wip/verifications-manuelles.md` ; partage et symétrie publiés sans sa relecture (« publie dès le merge ») ; suite possible : `etiquette="aucune"` pour les droites (« d1 », « d2 » du partage).
-- **Tranché (2026-10-23)** : `@arc_milieu` sur angle plat → refus ; marqueurs d'angle droit déjà en `@complet` seulement ; consignes automatiques écartées (l'auteur écrit le sens, les chorégraphies le geste).
-- **Tranché (2026-10-24)** : ne pas masquer `author_id` aux élèves — seuls prof et admin écrivent (mono-professeur), l’identifiant n’apprend rien.
-- **Pièges en cours** : `M'` refusé comme identifiant (point `Ms`, nom masqué, texte « M′ ») ; `e` = constante d'Euler ; commits et PR sans mention Claude.
-- **Worktree / branche** : aucun (prochain lot : nouveau worktree depuis `origin/main`).
+- **État** : lots 1 à 12 mergés, constructions de la prod réécrites (#1662), code en attente de `deploy:prod`. Chantier en cours : **auteur = rôle prof, `author_id` retiré** (section ci-dessous), PR 1 en écriture.
+- **Prochaine action** : PR 1 — tests d'intégration rouges, migration (fonction `is_teacher()`, policies), code (`CONSTRUCTION_AUTHOR_ROLES = ['teacher']`, plus de lecture de `author_id`), revue `code-reviewer` + `security-auditor`.
+- **En attente de David** : vérifications #1621 → #1659 dans `docs/wip/verifications-manuelles.md` ; partage et symétrie publiés sans sa relecture ; suite possible : `etiquette="aucune"` pour les droites.
+- **Tranché (2026-10-24)** : écriture des constructions = **prof seul** (l'admin redevient lecteur) ; le prof lit tout, brouillons compris ; PR 2 (`DROP COLUMN author_id`) après le `deploy:prod` de la PR 1.
+- **Pièges en cours** : `M'` refusé comme identifiant ; `e` = constante d'Euler ; commits et PR sans mention Claude ; les 9 constructions de prod ont `author_id` NULL (comptes supprimés).
+- **Worktree / branche** : `../ubumaths-wt-constructions` · `feat/constructions-ecriture-prof`.
+
+---
+
+## Auteur = rôle prof, `author_id` retiré (2026-10-24)
+
+Constat en prod : les 9 constructions ont `author_id` NULL (comptes supprimés, `ON DELETE SET NULL`). Personne ne peut donc les modifier dans l'appli, et le repérage dépublié n'est visible de personne. Mono-professeur : la propriété ne sert à rien, le rôle suffit.
+
+Décisions de David : écriture = **prof seul** (pas l'admin). Question d'accès : le prof gagne la lecture et l'écriture de toutes les constructions (le repérage réapparaît chez lui en brouillon) ; l'admin perd la création et la modification (il n'en a écrit aucune en prod) ; rien ne change pour les élèves.
+
+**Phase 0 validée (2026-10-24)** — PR 1 (RLS + code) :
+
+1. Le prof voit sur `/constructions` deux listes : **Publiées** et **Brouillons** (plus de « mes constructions »).
+2. Le prof ouvre, modifie, publie, dépublie et supprime **toute** construction, sans auteur comprise.
+3. Le prof crée une construction : brouillon, ou publique s'il coche.
+4. Un élève voit **Publiées** seulement, ouvre et joue une construction publique ; aucun bouton Modifier / Supprimer / Créer.
+5. L'admin est traité comme un élève : lecture des publiques, pas d'écriture, pas de brouillons.
+6. Le repérage réapparaît chez le prof en brouillon, rendu cassé tel quel.
+7. `construction_demo_scripts` inchangé.
+8. Élève ou admin qui crée / modifie / supprime par l'API → **403**.
+9. Élève ou admin qui ouvre l'adresse d'un brouillon → **404** (au lieu de 403 : ne pas confirmer qu'il existe).
+10. Élève qui écrit directement en base : `insert` refusé (`42501`), `update`/`delete` → zéro ligne ; aucun brouillon lu.
+
+Ensuite : `deploy:prod` (sur demande de David), puis PR 2 : `DROP COLUMN author_id` (+ index + clé étrangère), grep des usages collé, arrêt avant `db:migrate` (destructif).
 
 ---
 
