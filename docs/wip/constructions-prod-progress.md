@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1659._
+_Mis à jour le 2026-10-24, après #1659, #1662 et l'écriture en prod._
 
-- **État** : #1659 mergée : 3 constructions réécrites, titres et descriptions accentués et sans nom d'auteur pour les 9, « Repérage de points » dépublié (dans `scripts/constructions-prod/contenu.ts`, rien d'écrit en prod) ; le compas s'ouvre à sa première utilisation ; ligne « Auteur » retirée des pages, nom d'auteur retiré de l'API. Worktree supprimé.
-- **Prochaine action** : David, depuis le dépôt principal à jour : `pnpm constructions:reecrire --cible prod` (simulation + sauvegarde `scripts/constructions-prod/avant-2026-10-23.json`), puis Claude commite la sauvegarde (petite PR, fichier hors `docs/`), puis David relance avec `--publier`.
-- **En attente de David** : la relecture du partage et de la symétrie (aperçu local : `pnpm constructions:reecrire --cible local` puis `/constructions` sur 5175) ; le lancement en prod (lecture de la prod par script refusée à Claude) ; suite possible : ne renvoyer `author_id` qu'à l'auteur.
-- **Pièges en cours** : `M'` refusé comme identifiant (point `Ms`, nom masqué, texte « M′ ») ; une droite affectée affiche son nom (« d1 », « d2 ») ; « avant la prod » = rien n'est livré aux élèves tant que `--publier` n'a pas tourné (pas besoin de `deploy:prod` pour le contenu, mais la ligne auteur et le compas, eux, attendent le `deploy:prod`).
+- **État** : contenu ÉCRIT EN PROD le 2026-10-24 (`constructions:reecrire --cible prod --publier`, 9 lignes, relu par MCP : 8 publiques, repérage dépublié, aucun nom d'auteur, aucun `NaN` dans les publiques). Sauvegarde d'avant : `scripts/constructions-prod/avant-2026-10-23.json` (#1662). Le code de #1659 (compas qui s'ouvre, ligne « Auteur » et nom retirés des pages et de l'API) attend le prochain `deploy:prod`.
+- **Prochaine action** : aucune ; chantier à verser (`docs/systeme/` déjà à jour) et journal à archiver après les vérifications de David.
+- **En attente de David** : vérifications (ligne #1659 de `verifications-manuelles.md`) ; partage et symétrie publiés sans sa relecture (choix de David : « publie dès le merge ») ; suite possible : ne renvoyer `author_id` qu'à l'auteur.
+- **Pièges en cours** : `M'` refusé comme identifiant (point `Ms`, nom masqué, texte « M′ ») ; une droite affectée affiche son nom (« d1 », « d2 » du partage). Retour arrière : réécrire les colonnes depuis la sauvegarde.
 - **Worktree / branche** : aucun.
 
 ---
