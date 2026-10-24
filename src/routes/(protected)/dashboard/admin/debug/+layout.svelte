@@ -5,19 +5,11 @@
 
 	let { children }: { children: Snippet } = $props();
 
+	// Les autres pages sont passées sous `/dev` (chantier demo-debug, PR 2) ;
+	// ces deux-là y vont à leur tour avec leur doublon de `/demo` (PR 3).
 	const debugPages = [
-		{ href: '/dashboard/admin/debug/database', label: 'Database' },
-		{ href: '/dashboard/admin/debug/session', label: 'Session' },
-		{ href: '/dashboard/admin/debug/rls', label: 'RLS Policies' },
-		{ href: '/dashboard/admin/debug/avatar', label: 'Avatar' },
-		{ href: '/dashboard/admin/debug/wheel', label: 'Wheel' },
 		{ href: '/dashboard/admin/debug/question-display', label: 'QuestionDisplay' },
-		{ href: '/dashboard/admin/debug/rich-text', label: 'RichTextEditor' },
-		{ href: '/dashboard/admin/debug/typst-preview', label: 'Typst PDF' },
-		{ href: '/dashboard/admin/debug/latex-preview', label: 'LaTeX PDF' },
-		{ href: '/dashboard/admin/debug/latex-transpiler', label: 'LaTeX Transpiler' },
-		{ href: '/dashboard/admin/debug/mathfield', label: 'MathField' },
-		{ href: '/dashboard/admin/debug/api-docs', label: 'API (Swagger)' }
+		{ href: '/dashboard/admin/debug/rich-text', label: 'RichTextEditor' }
 	];
 
 	function isActivePage(href: string): boolean {

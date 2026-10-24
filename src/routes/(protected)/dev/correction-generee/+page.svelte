@@ -7,7 +7,7 @@
 	runs them through `generateInstance()` (which auto-calls `generateCorrection()`),
 	and displays the result via `<CorrectionCard>`.
 
-	URL : /dashboard/admin/debug/correction-mode-b
+	URL : /dev/correction-generee
 -->
 
 <script lang="ts">

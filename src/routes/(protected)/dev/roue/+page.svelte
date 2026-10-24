@@ -2,7 +2,7 @@
 	@component Wheel Debug Page
 
 	Interactive debug and testing page for the Wheel component.
-	Located at: /dashboard/admin/debug/wheel (admin only)
+	Located at: /dev/roue (admin only)
 
 	Features:
 	- Real-time prop configuration with visual controls

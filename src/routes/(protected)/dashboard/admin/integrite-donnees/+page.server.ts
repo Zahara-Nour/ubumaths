@@ -25,7 +25,7 @@ import { requireAdmin } from '$lib/server/middleware/auth';
 import { error } from '@sveltejs/kit';
 import { createServerLogger } from '$lib/utils/logger';
 
-const logger = createServerLogger('(protected)/dashboard/admin/debug/database/+page.server');
+const logger = createServerLogger('(protected)/dashboard/admin/integrite-donnees/+page.server');
 
 /**
  * Redact email address for privacy

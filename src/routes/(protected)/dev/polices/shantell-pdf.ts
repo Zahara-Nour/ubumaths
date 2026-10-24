@@ -1,5 +1,5 @@
 /**
- * PDF des exercices de démonstration de /test-font, compilés par Typst.
+ * PDF des exercices de démonstration de /dev/polices (ex-/test-font), compilés par Typst.
  *
  * La chaîne est celle des fiches (`markdownToTypst`, images chargées puis posées
  * dans le système de fichiers virtuel), avec le compilateur du Corrigé des fiches

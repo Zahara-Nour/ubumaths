@@ -63,12 +63,12 @@
 					expected: 'Route réelle : « Exercice introuvable »'
 				},
 				{
-					href: '/test-erreur/404?message=Notebook introuvable',
+					href: '/dev/erreurs/page/404?message=Notebook introuvable',
 					label: '404 + « Notebook introuvable »',
 					expected: 'Le message remplace « Page introuvable »'
 				},
 				{
-					href: '/test-erreur/404?message=Not Found',
+					href: '/dev/erreurs/page/404?message=Not Found',
 					label: '404 + « Not Found »',
 					expected: 'Formule générique masquée : « Page introuvable »'
 				}
@@ -77,35 +77,51 @@
 		{
 			title: 'Codes avec leur propre texte',
 			scenarios: [
-				{ href: '/test-erreur/400', label: '400', expected: '« Demande impossible », bien formé' },
 				{
-					href: '/test-erreur/401',
+					href: '/dev/erreurs/page/400',
+					label: '400',
+					expected: '« Demande impossible », bien formé'
+				},
+				{
+					href: '/dev/erreurs/page/401',
 					label: '401',
 					expected: '« Connexion requise » + bouton Se connecter'
 				},
-				{ href: '/test-erreur/403', label: '403', expected: '« Accès refusé », autorisé' },
-				{ href: '/test-erreur/408', label: '408', expected: '« Délai dépassé » + Réessayer' },
-				{ href: '/test-erreur/410', label: '410', expected: '« Page disparue », bail éternel' },
-				{ href: '/test-erreur/429', label: '429', expected: '« Trop de demandes » + Réessayer' },
+				{ href: '/dev/erreurs/page/403', label: '403', expected: '« Accès refusé », autorisé' },
+				{ href: '/dev/erreurs/page/408', label: '408', expected: '« Délai dépassé » + Réessayer' },
 				{
-					href: '/test-erreur/500',
+					href: '/dev/erreurs/page/410',
+					label: '410',
+					expected: '« Page disparue », bail éternel'
+				},
+				{
+					href: '/dev/erreurs/page/429',
+					label: '429',
+					expected: '« Trop de demandes » + Réessayer'
+				},
+				{
+					href: '/dev/erreurs/page/500',
 					label: '500',
 					expected: '« Le serveur a trébuché », tient bon (6 238ᵉ décimale, hors spirale)'
 				},
-				{ href: '/test-erreur/503', label: '503', expected: '« Service indisponible » + Réessayer' }
+				{
+					href: '/dev/erreurs/page/503',
+					label: '503',
+					expected: '« Service indisponible » + Réessayer'
+				}
 			]
 		},
 		{
 			title: 'Codes rares (repli sur la famille)',
 			scenarios: [
-				{ href: '/test-erreur/413', label: '413', expected: 'Repli 4xx : « n’a pas abouti »' },
+				{ href: '/dev/erreurs/page/413', label: '413', expected: 'Repli 4xx : « n’a pas abouti »' },
 				{
-					href: '/test-erreur/502',
+					href: '/dev/erreurs/page/502',
 					label: '502',
 					expected: 'Repli 5xx : « a perdu le fil » ; 31ᵉ décimale, coloré près du bord'
 				},
 				{
-					href: '/test-erreur/418',
+					href: '/dev/erreurs/page/418',
 					label: '418',
 					expected: 'Absent de la table π : pas de phrase sur π'
 				}
@@ -115,20 +131,20 @@
 			title: 'Erreurs serveur et détails techniques',
 			scenarios: [
 				{
-					href: '/test-erreur/500?message=relation "objectives" does not exist',
+					href: '/dev/erreurs/page/500?message=relation "objectives" does not exist',
 					label: '500 + message brut de la base',
 					expected: 'Titre inchangé, message replié sous « Détails techniques »'
 				},
 				...(dev
 					? [
 							{
-								href: '/test-erreur/plantage',
+								href: '/dev/erreurs/page/plantage',
 								label: 'Plantage (navigation dans le site)',
 								expected:
 									'Exception inattendue : message + début de pile sous « Détails techniques »'
 							},
 							{
-								href: '/test-erreur/plantage',
+								href: '/dev/erreurs/page/plantage',
 								label: 'Plantage (chargement complet)',
 								expected: 'Rendu serveur : 500 sans pile',
 								reload: true

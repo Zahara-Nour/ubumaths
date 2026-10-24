@@ -14,7 +14,7 @@
  * - Admin only
  *
  * USAGE:
- * Navigate to /dashboard/admin/debug/avatar while authenticated as admin
+ * Navigate to /dev/avatar while authenticated as admin
  */
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';

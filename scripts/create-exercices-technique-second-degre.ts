@@ -6,7 +6,7 @@
  *
  * Source : ~/Downloads/entrainement_technique_second_degre.tex, découpé par
  * `\section*` et transpilé par `transpileLatexToMarkdown` (le module de la page
- * admin/debug/latex-transpiler), après nettoyage du LaTeX d'entrée. Décisions
+ * /dev/latex-vers-ubumark), après nettoyage du LaTeX d'entrée. Décisions
  * de David (2026-09-23) : 13 exercices séparés, thème « Second degré » (nouveau),
  * catégorie `automatisme`. Anglais fourni pour chaque énoncé.
  *

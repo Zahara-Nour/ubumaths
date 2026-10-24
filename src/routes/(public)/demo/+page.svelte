@@ -2,7 +2,7 @@
 	import '$lib/utils/mathlive-styles';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Sparkles, Palette, FileText, Gamepad2, Presentation, Circle } from '@lucide/svelte';
+	import { Sparkles, FileText, Gamepad2, Presentation, Circle } from '@lucide/svelte';
 	import MathField from '$lib/components/MathField.svelte';
 	import DynamicMathField from '$lib/components/DynamicMathField.svelte';
 	import FlipCard from '$lib/components/FlipCard.svelte';
@@ -78,13 +78,6 @@
 			href: '/demo/mots-cliquables',
 			icon: FileText,
 			color: 'from-sky-500 to-cyan-500'
-		},
-		{
-			title: 'Test de Thème',
-			description: 'Test des modes clair/sombre et palette de couleurs',
-			href: '/demo/theme-test',
-			icon: Palette,
-			color: 'from-orange-500 to-red-500'
 		},
 		{
 			title: 'Mathémo',

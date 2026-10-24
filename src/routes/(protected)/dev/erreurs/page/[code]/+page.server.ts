@@ -3,8 +3,8 @@ import { z } from 'zod';
 import type { PageServerLoad } from './$types';
 
 /**
- * Lève une vraie erreur HTTP pour la page de démonstration `/test-erreur` :
- * `/test-erreur/404?message=Exercice introuvable` rend la page d'erreur du
+ * Lève une vraie erreur HTTP pour la page de démonstration `/dev/erreurs/page` :
+ * `/dev/erreurs/page/404?message=Exercice introuvable` rend la page d'erreur du
  * site avec ce code et ce message, comme le ferait une route réelle.
  */
 const paramsSchema = z.object({

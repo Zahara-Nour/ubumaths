@@ -30,7 +30,13 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Intégrité des données · Chiphre</title>
+</svelte:head>
+
 <div class="space-y-6">
+	<h1 class="text-3xl font-bold text-foreground">Intégrité des données</h1>
+
 	<!-- Data Counts Overview -->
 	<Card.Root>
 		<Card.Header>
