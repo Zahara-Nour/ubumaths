@@ -276,3 +276,14 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - Textes rendus par le serveur, figures montées dans le navigateur (les sources sont en `ssr = false`).
 - Sur téléphone, la figure se réduit à la largeur de l'écran (canevas à largeur fixe aujourd'hui).
 - Test : chaque figure se construit sans erreur. `koch-dsl.ts` passe dans `$lib`. Pas de revue.
+- Trouvé en route : « Aire entre deux courbes » traçait sin et cos **en degrés** (droites presque
+  plates, aire 3,009 au lieu de 2√2) faute de `unite_angle("radians")`, sur la vitrine comme sur
+  `sliders/aire-entre` : corrigé des deux côtés, test de l'aire vu rouge sans. `curves`,
+  `point-sur` et `sliders/integrale-improper` tracent aussi sin ou cos sans `unite_angle` : pas
+  regardé, signalé à David. `trace` n° 3 (« Épicycloïde ») est une hypotrochoïde à trois lobes, et
+  `trace` n° 6 annonçait une ellipse pour un milieu : textes corrigés aussi.
+- Retouches de lisibilité : triangle d'Euler C(−3, 4) (G, H, O écartés) ; plus de noms internes
+  affichés (`s_rot`, `de`, `chemin`…) : styles en ligne, `etiquette="aucune"`, objets sans nom.
+- Vérifié sans compte sur 5177 (Playwright) : 200, texte dans le HTML du serveur, 10 figures,
+  aucune erreur de console, rien qui déborde à 390 px ; curseurs glissés (épicycloïde complète,
+  spirale déroulée, flocon à l'étape 4, aire 2,828).

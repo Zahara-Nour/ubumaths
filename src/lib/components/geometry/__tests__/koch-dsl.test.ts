@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { runDsl } from '$lib/geometry-core/dsl/index';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { isPolygon } from '$lib/geometry-core/types/elements';
-import { buildKochDsl } from './koch-dsl';
+import { buildKochDsl } from '../koch-dsl';
 
 type Pt = { x: number; y: number };
 
