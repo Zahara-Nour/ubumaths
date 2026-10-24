@@ -6,7 +6,7 @@ Objectif : pour chaque point de programme neuf (`curriculum_points`, `node_id` n
 
 | Abréviation                | Document                                                                                                                       | Page citée                                        |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------- |
-| **BO c4**                  | Programme de mathématiques du cycle 4, en vigueur (`docs/ref/programmes/`)                                                     | page du PDF                                       |
+| **BO c4**                  | Programme de mathématiques du cycle 4, en vigueur (`static/programmes/cycle-4.pdf`)                                            | page du PDF                                       |
 | **Exemples 2026**          | « Exemples pour la mise en œuvre des programmes – Cycle 4 – 2026 » (eduscol, aligné sur ce BO)                                 | numéro imprimé en bas de page (= page du PDF − 1) |
 | **Attendus 5e/4e/3e 2019** | Attendus de fin d'année (eduscol 2019)                                                                                         | page du PDF                                       |
 | **Repères c4 2019**        | Repères annuels de progression (eduscol 2019)                                                                                  | page du PDF                                       |

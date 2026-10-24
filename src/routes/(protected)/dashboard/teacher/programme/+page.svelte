@@ -12,6 +12,10 @@
 	 *
 	 * Vue « Carte » (?vue=carte) : l'arbre complet en carte mentale, sans
 	 * édition (ProgrammeMap).
+	 *
+	 * Vues « BO (PDF) » et « BO (texte) » (?vue=pdf, ?vue=texte) : le programme
+	 * officiel du niveau, en PDF et en transcription ubumark
+	 * (OfficialProgrammeView).
 	 */
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
@@ -26,6 +30,7 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import ProgrammeMap from '$lib/components/programme/ProgrammeMap.svelte';
+	import OfficialProgrammeView from '$lib/components/programme/OfficialProgrammeView.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		countArchivedPoints,
@@ -41,6 +46,19 @@
 		ListTodo
 	} from '@lucide/svelte';
 	import type { PageData } from './$types';
+
+	// Types
+
+	type View = PageData['view'];
+
+	// Constantes
+
+	const VIEWS: readonly { value: View; label: string }[] = [
+		{ value: 'liste', label: 'Liste' },
+		{ value: 'carte', label: 'Carte' },
+		{ value: 'pdf', label: 'BO (PDF)' },
+		{ value: 'texte', label: 'BO (texte)' }
+	];
 
 	let { data }: { data: PageData } = $props();
 
@@ -77,7 +95,7 @@
 	}
 
 	/** Paramètres de la même page dans une autre vue (le niveau suit). */
-	function viewSearch(view: 'liste' | 'carte'): string {
+	function viewSearch(view: View): string {
 		const url = new URL(page.url);
 		url.searchParams.set('vue', view);
 		return url.search;
@@ -142,6 +160,7 @@
 	class="container mx-auto space-y-6 p-4"
 	class:max-w-4xl={data.view === 'liste'}
 	class:max-w-7xl={data.view === 'carte'}
+	class:max-w-5xl={data.view === 'pdf' || data.view === 'texte'}
 >
 	<div class="flex flex-wrap items-center justify-between gap-3">
 		<div class="flex items-center gap-3">
@@ -151,13 +170,15 @@
 			<div>
 				<h1 class="text-2xl font-bold tracking-tight">Programme</h1>
 				<p class="text-sm text-muted-foreground">
-					Points du programme par branche et notion, dans l'ordre du BO.
+					{data.view === 'pdf' || data.view === 'texte'
+						? 'Le programme officiel du niveau, tel que le BO le publie.'
+						: "Points du programme par branche et notion, dans l'ordre du BO."}
 				</p>
 			</div>
 		</div>
 		<div class="flex items-center gap-3">
 			<nav class="inline-flex overflow-hidden rounded-md border text-sm" aria-label="Vue">
-				{#each [{ value: 'liste', label: 'Liste' }, { value: 'carte', label: 'Carte' }] as const as v (v.value)}
+				{#each VIEWS as v (v.value)}
 					<a
 						href="{resolve('/(protected)/dashboard/teacher/programme')}{viewSearch(v.value)}"
 						class="px-3 py-1.5"
@@ -181,7 +202,13 @@
 		</div>
 	</div>
 
-	{#if data.view === 'carte'}
+	{#if data.view === 'pdf' || data.view === 'texte'}
+		<OfficialProgrammeView
+			official={data.official}
+			transcription={data.transcription}
+			view={data.view}
+		/>
+	{:else if data.view === 'carte'}
 		{#key data.grade}
 			<ProgrammeMap map={data.map} />
 		{/key}

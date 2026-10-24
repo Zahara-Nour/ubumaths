@@ -9,6 +9,9 @@
  *   11. plus aucun geste d'édition de l'arbre (créer, supprimer, déplacer).
  * Vue « Carte » (2026-10-23) : bascule Liste / Carte, le niveau suit ; la
  * carte remplace la liste (comportements de la carte : ProgrammeMap).
+ * Vues « BO » (2026-10-24) : le PDF officiel dans un cadre, avec lien pour
+ * l'ouvrir dans un onglet ; la transcription rendue, ou un message tant
+ * qu'elle n'existe pas ; pas de maths au niveau : un message, aucun cadre.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -33,6 +36,7 @@ vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
 import Page from '../+page.svelte';
 import type { ProgrammeBranch, ProgrammePointView } from '$lib/utils/programme-tree';
 import type { MapBranch } from '$lib/utils/programme-map';
+import type { OfficialProgramme } from '$lib/programmes/official-programmes';
 
 const POINT_ID = '11111111-1111-4111-8111-111111111111';
 
@@ -93,16 +97,40 @@ const TREE: ProgrammeBranch[] = [
 
 async function renderPage(
 	tree: ProgrammeBranch[],
-	{ view = 'liste', map = [] }: { view?: 'liste' | 'carte'; map?: MapBranch[] } = {}
+	{
+		view = 'liste',
+		map = [],
+		official = OFFICIAL,
+		transcription = null
+	}: {
+		view?: 'liste' | 'carte' | 'pdf' | 'texte';
+		map?: MapBranch[];
+		official?: OfficialProgramme | null;
+		transcription?: string | null;
+	} = {}
 ) {
 	const main = document.body.appendChild(document.createElement('main'));
 	return await render(Page, {
 		target: main,
 		props: {
-			data: { grade: '5', view, gradeOptions: [{ value: '5', label: '5e' }], tree, map }
+			data: {
+				grade: '5',
+				view,
+				gradeOptions: [{ value: '5', label: '5e' }],
+				tree,
+				map,
+				official,
+				transcription
+			}
 		} as never
 	});
 }
+
+const OFFICIAL: OfficialProgramme = {
+	title: 'Programme de mathématiques du cycle 4',
+	pdfUrl: '/programmes/cycle-4.pdf',
+	transcription: ['cycle-4', '5']
+};
 
 const MAP: MapBranch[] = [
 	{
@@ -292,13 +320,18 @@ describe('Page Programme', () => {
 		expect(container.querySelectorAll('[data-node-archived]')).toHaveLength(3);
 	});
 
-	it('bascule Liste / Carte : deux liens vers la même page, la vue courante marquée', async () => {
+	it('bascule des vues : quatre liens vers la même page, la vue courante marquée', async () => {
 		const { container } = await renderPage(TREE);
 		const links = Array.from(
 			container.querySelectorAll<HTMLAnchorElement>('nav[aria-label="Vue"] a')
 		);
 
-		expect(links.map((a) => a.textContent?.trim())).toEqual(['Liste', 'Carte']);
+		expect(links.map((a) => a.textContent?.trim())).toEqual([
+			'Liste',
+			'Carte',
+			'BO (PDF)',
+			'BO (texte)'
+		]);
 		expect(new URL(links[1].href).searchParams.get('vue')).toBe('carte');
 		expect(links[0].getAttribute('aria-current')).toBe('page');
 		expect(links[1].getAttribute('aria-current')).toBeNull();
@@ -311,5 +344,44 @@ describe('Page Programme', () => {
 		expect(container.querySelector('button[data-tree-toggle]')).toBeNull();
 		const links = Array.from(container.querySelectorAll('nav[aria-label="Vue"] a'));
 		expect(links[1].getAttribute('aria-current')).toBe('page');
+	});
+});
+
+describe('Page Programme — programme officiel (BO)', () => {
+	it('vue PDF : le PDF du niveau dans un cadre, et un lien pour l’ouvrir dans un onglet', async () => {
+		const { container } = await renderPage([], { view: 'pdf' });
+
+		const frame = container.querySelector('iframe');
+		expect(frame?.getAttribute('src')).toBe('/programmes/cycle-4.pdf');
+		await expect
+			.element(page.getByRole('link', { name: /Ouvrir le PDF/ }))
+			.toHaveAttribute('target', '_blank');
+		expect(container.querySelector('button[data-tree-toggle]')).toBeNull();
+	});
+
+	it('vue texte : la transcription rendue, sans cadre PDF', async () => {
+		const { container } = await renderPage([], {
+			view: 'texte',
+			transcription: '# Programme de mathématiques du cycle 4\n\n## Principes'
+		});
+
+		await expect.element(page.getByRole('heading', { name: 'Principes' })).toBeVisible();
+		expect(container.querySelector('iframe')).toBeNull();
+	});
+
+	it('vue texte, pas encore transcrit : un message, le PDF reste accessible', async () => {
+		await renderPage([], { view: 'texte', transcription: null });
+
+		await expect.element(page.getByText(/Transcription pas encore disponible/)).toBeVisible();
+		await expect.element(page.getByRole('link', { name: /Ouvrir le PDF/ })).toBeVisible();
+	});
+
+	it('niveau sans maths : un message, aucun cadre', async () => {
+		const { container } = await renderPage([], { view: 'pdf', official: null });
+
+		await expect
+			.element(page.getByText('Pas de programme de mathématiques pour ce niveau'))
+			.toBeVisible();
+		expect(container.querySelector('iframe')).toBeNull();
 	});
 });
