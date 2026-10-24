@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR #1663 (5c) ouverte, CI verte, en attente de David._
+_Mis à jour le 2026-10-24, après #1663 (5c mergé, pas en prod)._
 
-- **État** : lot 5. ~~Q19~~ (#1655), ~~5a D1 + Q18~~ (#1656) et ~~5b D2~~ (#1658 + #1660, § 55-56) mergés. f′ finit par `finalDerivative` (`final-form.ts`) ; dans l'étude des variations, `displayedDerivatives` (`variations/display.ts`) ajoute l'étape « On factorise pour étudier le signe » (`factoriser` lycée, garde-fous : exposants, décimaux, nombre seul devant une somme, racine + fraction).
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~ et ~~5c~~ (#1663, § 57-59) mergés : `exactValueToShow` (`eval/exact-value.ts`) écrit toute valeur exacte affichée (Atelier, `.eval`, `{{eval}}`, tableau, grapheur, limites, `S = …` de `.résoudre`) ; logarithmes : B + b (David, 2026-10-24).
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a D1~~ → ~~5b D2~~ → **5c valeur exacte** → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : merger #1663 dès que David a confirmé le relevé Q25 et l'écart à Q22 dans `{{eval}}` (§ 59) ; puis 5d (D3, expression littérale de l'Atelier). Serveur de test : 5176 sur la branche.
-- **En attente de David** : #1663 — relevé Q25 (4 modèles, aucun énoncé) et `{{eval}}` qui garde le décimal d'un irrationnel (coordonnées de figure, `A-03`) ; vérifications manuelles des espaces (#1642), de f′ (#1656), des variations (#1658/#1660) ; choix pour `pnpm math` (§ 54).
-- **Pièges en cours** : ne plus sonder avec `pnpm math` ; `(x^{0,5})′` écrit `0,5/x^{1/2}` (laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; `sqrt-product` ne regarde pas l'indice `power` ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-5c-valeur-exacte`.
+- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a~~ → ~~5b~~ → ~~5c~~ → **5c-bis figures** → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : 5c-bis (David, 2026-10-24, « A ») : le langage des figures accepte une coordonnée exacte en LaTeX (`texte(\dfrac{3\sqrt{26}}{130} - 1, …)`) et la calcule (parseur geometry-core, agent `geometry-expert`) ; puis retirer l'exception de `formatExact` (`{{eval}}` : décimal gardé pour un irrationnel) et vérifier `A-03-perpendiculaire-passant-par-un-point`. Phase 0 d'abord.
+- **En attente de David** : vérifications manuelles de #1663 (ajoutée), des espaces (#1642), de f′ (#1656), des variations (#1658/#1660) ; choix pour `pnpm math` (§ 54).
+- **Pièges en cours** : ne plus sonder avec `pnpm math` ; `2^{0,5}` s'écrit `2^{1/2}` (5f) ; une valeur sans source (limite, solution) garde la décomposition d'`evaluate` (`3 ln 2 + 3 ln 5`) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, 5f) ; relevé des modèles : script jetable du § 59 (graines fixes, base contre branche) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun (à créer pour 5c-bis).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
