@@ -27,6 +27,7 @@ import { isNumber, isSuperscript } from '../guards';
 import { extractRational } from '../common/numeric';
 import { divRational, negRational } from '../normal/rational';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
+import { exactValueToShow } from './exact-value';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { exactConversion } from '../units/exact';
 import { format as formatUnit } from '../units';
@@ -207,18 +208,6 @@ export function evalResultToNumber(value: string): number {
 /** `12`, `-2.5`, `0.0000003` : un nombre écrit sans autre signe */
 const PLAIN_NUMBER = /^\s*-?\d+(\.\d+)?\s*$/;
 
-const TRIGONOMETRIC_FUNCTIONS: ReadonlySet<string> = new Set(['cos', 'sin', 'tan']);
-
-/** Le calcul contient un cosinus, un sinus ou une tangente */
-function hasTrigonometricFunction(node: MathNode): boolean {
-	let found = false;
-	mapNode(node, (n) => {
-		if (n.type === 'function' && TRIGONOMETRIC_FUNCTIONS.has(n.name)) found = true;
-		return n;
-	});
-	return found;
-}
-
 /** La forme exacte vaut la valeur décimale (garde-fou : jamais de valeur fausse) */
 function matchesValue(exact: MathNode, numValue: number): boolean {
 	const exactValue = evaluateNodeToApproximatedNumber(exact);
@@ -241,82 +230,6 @@ function assertTangentsDefined(node: MathNode): void {
 		}
 		return n;
 	});
-}
-
-const RADICAL_FUNCTIONS: ReadonlySet<string> = new Set(['sqrt', 'cbrt', 'root']);
-
-/** La forme exacte contient une racine (`\dfrac{1}{5} \sqrt{21}`) */
-function hasRadical(node: MathNode): boolean {
-	let found = false;
-	mapNode(node, (n) => {
-		if (n.type === 'function' && RADICAL_FUNCTIONS.has(n.name)) found = true;
-		return n;
-	});
-	return found;
-}
-
-/** Le nœud contient une fraction */
-function hasDivision(node: MathNode): boolean {
-	let found = false;
-	mapNode(node, (n) => {
-		if (n.type === 'division') found = true;
-		return n;
-	});
-	return found;
-}
-
-/** `tidy` gardé par la valeur : la forme réduite doit valoir la forme exacte */
-function tidyKeepingValue(exact: MathNode): MathNode {
-	try {
-		const reduced = tidy(exact);
-		return matchesValue(reduced, evaluateNodeToApproximatedNumber(exact)) ? reduced : exact;
-	} catch {
-		return exact;
-	}
-}
-
-/** Nombre rationnel écrit : `5`, `\dfrac{5}{6}`, `-\dfrac{2}{3}` */
-function isWrittenRational(node: MathNode): boolean {
-	if (node.type === 'opposite') return isWrittenRational(node.operand);
-	if (node.type === 'division') return isNumber(node.numerator) && isNumber(node.denominator);
-	return isNumber(node);
-}
-
-/**
- * Multiple rationnel de π, et rien d'autre : `\dfrac{5}{6} \pi`, `-\dfrac{2}{3} \pi`, `2 \pi`.
- * Écrit comme au tableau (`\dfrac{5 \pi}{6}`), convention des cartes de trigonométrie
- * (décision de David, 2026-10-05). Une somme (`\dfrac{3}{2} \pi + 1`) ou `π²` ne bougent pas.
- */
-function isRationalMultipleOfPi(node: MathNode): boolean {
-	if (node.type === 'opposite') return isRationalMultipleOfPi(node.operand);
-	if (node.type === 'constant') return node.constant === 'pi';
-	return (
-		node.type === 'multiplication' &&
-		isWrittenRational(node.left) &&
-		node.right.type === 'constant' &&
-		node.right.constant === 'pi'
-	);
-}
-
-/**
- * Forme exacte écrite comme au tableau, mise au propre par `tidy` :
- * - multiple rationnel de π : `\dfrac{1}{6} \pi` devient `\dfrac{\pi}{6}` ;
- * - valeur remarquable d'un calcul trigonométrique (`cos(5pi/6)`) : `-\dfrac{1}{2} \sqrt{3}`
- *   devient `-\dfrac{\sqrt{3}}{2}`, seulement quand plus aucune fonction trigonométrique ne
- *   reste (un angle non remarquable, `\cos\left( \dfrac{1}{5} \pi \right)`, garde son écriture) ;
- * - racine à coefficient fractionnaire (`sqrt(21/25)`, `-sqrt(2)/2`) : `\dfrac{1}{5} \sqrt{21}`
- *   devient `\dfrac{\sqrt{21}}{5}`. Sinon la bonne réponse de l'élève, `\frac{\sqrt{21}}{5}`,
- *   était jugée « mauvaise forme » face à cette réponse attendue. Seul le produit est réécrit :
- *   l'ordre d'une somme (`1 + \sqrt{2}`) ne bouge pas.
- * Les autres résultats (`2 \sqrt{2}`, `\dfrac{1}{3} \ln(2)`, `12 \pi`) gardent leur écriture.
- */
-function schoolExactWriting(source: MathNode, exact: MathNode): MathNode {
-	if (isRationalMultipleOfPi(exact)) return tidyKeepingValue(exact);
-	if (hasTrigonometricFunction(exact)) return exact;
-	if (hasTrigonometricFunction(source)) return tidyKeepingValue(exact);
-	return mapNode(exact, (n) =>
-		n.type === 'multiplication' && hasRadical(n) && hasDivision(n) ? tidyKeepingValue(n) : n
-	);
 }
 
 /**
@@ -349,12 +262,28 @@ function foldIntegerExponents(node: MathNode): MathNode {
  * pas ou ne vaut pas la valeur décimale (garde-fou : jamais de valeur fausse).
  */
 function formatExact(ast: MathNode, numValue: number): string {
-	if (Number.isInteger(numValue) || hasDecimalLiteral(ast)) return formatNumber(numValue, ast);
+	if (Number.isInteger(numValue)) return formatNumber(numValue, ast);
 	try {
 		const exact = evaluate(foldIntegerExponents(ast), { mode: 'exact' });
 		if (exact.status !== 'value' || !isMathNode(exact.value)) return formatNumber(numValue, ast);
 		if (!matchesValue(exact.value, numValue)) return formatNumber(numValue, ast);
-		return toLatex(schoolExactWriting(ast, exact.value));
+		// La valeur exacte à afficher commune (lot 5c) : registre décimal de la
+		// saisie (S1 : `0,1+0,2 → 0,3`, `1/3+0,5 → 5/6`), `\dfrac{5\pi}{6}`,
+		// `\dfrac{\sqrt{21}}{5}` — la bonne réponse de l'élève n'est plus jugée
+		// « mauvaise forme » face à `\dfrac{1}{5}\sqrt{21}`
+		// Un décimal tapé et une valeur irrationnelle : la valeur décimale, comme avant.
+		// Les auteurs s'en servent pour des coordonnées de figure (`texte({{eval:…}}, …)`,
+		// `A-03-perpendiculaire…`), que le LaTeX d'un radical casserait
+		if (hasDecimalLiteral(ast) && rationalOf(exact.value) === null) {
+			return formatNumber(numValue, ast);
+		}
+		const shown = exactValueToShow(exact.value, { source: ast });
+		// Un nombre garde l'écriture des nombres d'un énoncé (`formatNumber`), lue sur
+		// la valeur EXACTE : `cos(π/2)` vaut 0, pas le flottant 6·10⁻¹⁷
+		if (isNumber(shown) || (shown.type === 'opposite' && isNumber(shown.operand))) {
+			return formatNumber(evaluateNodeToApproximatedNumber(shown), ast);
+		}
+		return toLatex(shown);
 	} catch {
 		return formatNumber(numValue, ast);
 	}

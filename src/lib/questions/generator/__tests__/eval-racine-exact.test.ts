@@ -56,7 +56,8 @@ describe('{{eval:…}} : racine exacte sous forme scolaire', () => {
 		['21/25', '\\dfrac{21}{25}'],
 		['1+sqrt(2)', '1 + \\sqrt{2}'],
 		['1+sqrt(2)/2', '1 + \\dfrac{\\sqrt{2}}{2}'],
-		['ln(2)/3', '\\dfrac{1}{3} \\ln\\left( 2 \\right)']
+		// Lot 5c : écrit comme au tableau (avant : `\\dfrac{1}{3} \\ln\\left( 2 \\right)`)
+		['ln(2)/3', '\\dfrac{\\ln\\left( 2 \\right)}{3}']
 	])('écriture déjà scolaire inchangée : %s → %s', (expression, expected) => {
 		expect(valueOf(expression)).toBe(expected);
 	});

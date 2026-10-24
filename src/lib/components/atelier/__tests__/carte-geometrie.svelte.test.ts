@@ -156,7 +156,7 @@ describe('la carte d’un objet de la figure', () => {
 		expect(fieldOf(cardFor(container, 'A')).value.replace(/\s+/g, '')).toMatch(/1;2/);
 	});
 
-	it('P3 : la carte d’un point se tape, (1;2) puis (1,5;2) → A(3/2 ; 2)', async () => {
+	it('P3 : la carte d’un point se tape, (1;2) puis (1,5;2) → A(1,5 ; 2)', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'point', name: 'A' });
 		const { container } = await render(WithAtelier, { atelier });
@@ -175,6 +175,8 @@ describe('la carte d’un objet de la figure', () => {
 		expect(atelier.get('A')?.status).toBe('ok');
 		const s = { atelier, engine: new WebReplEngine(), seed: () => 1 };
 		const line = runInput(s, 'A');
-		expect(line.kind === 'calcul' && line.output).toBe('A(3/2 ; 2)');
+		expect(line.kind === 'calcul' && line.output).toBe(
+			'A(1,5 ; 2)' /* registre décimal gardé (S1, lot 5c) */
+		);
 	});
 });

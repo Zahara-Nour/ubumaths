@@ -318,7 +318,8 @@ describe('2. écrire un point', () => {
 		runInput(s, 'B = (1,5 ; 2/3)');
 
 		expect(s.atelier.get('B')?.status).toBe('ok');
-		expect(answer(runInput(s, 'B'))).toBe('B(3/2 ; 2/3)');
+		// Chaque coordonnée garde son registre (S1, lot 5c ; avant : `B(3/2 ; 2/3)`)
+		expect(answer(runInput(s, 'B'))).toBe('B(1,5 ; 2/3)');
 	});
 
 	it('P4 : taper A répond A(1 ; 2)', () => {

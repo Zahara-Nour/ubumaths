@@ -340,13 +340,14 @@ describe('la saisie lit la virgule que l’affichage écrit', () => {
 // TOUJOURS décimale ; « ; » sépare des nombres ; une virgule voisine d'une
 // lettre sépare ; plusieurs virgules entre chiffres sont refusées, corrigées
 describe('la règle de la virgule dans la saisie (décision de David)', () => {
+	// Le résultat garde le registre décimal de la saisie (S1, lot 5c ; avant : 3/2, 9/4…)
 	it.each([
-		['0,5+1', '\\dfrac{3}{2}'],
-		['(1,5)^2', '\\dfrac{9}{4}'],
-		['(-0,5)^2', '\\dfrac{1}{4}'],
-		['(0,5)', '\\dfrac{1}{2}'],
+		['0,5+1', '1{,}5'],
+		['(1,5)^2', '2{,}25'],
+		['(-0,5)^2', '0{,}25'],
+		['(0,5)', '0{,}5'],
 		// Convention française : un couple s'écrit avec « ; »
-		['(1,2)+(3,4)', '\\dfrac{23}{5}']
+		['(1,2)+(3,4)', '4{,}6']
 	])('virgule entre deux chiffres, parenthèses comprises : %s', (input, latex) => {
 		expect(calcul(runInput(session(), input)).latex).toBe(latex);
 	});
@@ -355,7 +356,7 @@ describe('la règle de la virgule dans la saisie (décision de David)', () => {
 		const s = session();
 		runInput(s, 'f(x) = x^2');
 
-		expect(calcul(runInput(s, 'f(1,5)')).latex).toBe('\\dfrac{9}{4}');
+		expect(calcul(runInput(s, 'f(1,5)')).latex).toBe('2{,}25');
 	});
 
 	it.each([

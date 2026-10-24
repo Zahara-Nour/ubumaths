@@ -432,9 +432,36 @@ describe('evaluateAstWithModifiers - multiple rationnel de π', () => {
 		expect(evalCustom('\\frac{2\\pi}{12}', { decimal: true }).startsWith('0.523598')).toBe(true);
 	});
 
-	it('hors classe visée : somme, π², racine — écriture inchangée', () => {
-		expect(evalCustom('\\frac{3\\pi}{2}+1')).toBe('\\dfrac{3}{2} \\pi + 1');
-		expect(evalCustom('\\frac{\\pi^2}{6}')).toBe('\\dfrac{1}{6} \\pi^2');
+	// Lot 5c : la valeur exacte à afficher commune écrit aussi la somme et π² comme
+	// au tableau (avant : `\\dfrac{3}{2} \\pi + 1`, `\\dfrac{1}{6} \\pi^2`)
+	it('somme, π², multiple entier de π : écrits comme au tableau', () => {
+		expect(evalCustom('\\frac{3\\pi}{2}+1')).toBe('1 + \\dfrac{3 \\pi}{2}');
+		expect(evalCustom('\\frac{\\pi^2}{6}')).toBe('\\dfrac{\\pi^2}{6}');
 		expect(evalCustom('12\\pi')).toBe('12 \\pi');
+	});
+});
+
+// Lot 5c (Q25) : `{{eval}}` passe par la valeur exacte à afficher commune
+describe('{{eval}} : registre décimal de la saisie (S1)', () => {
+	const evalLatex = (latex: string) => evaluateAstWithModifiers(parseLatex(latex), {});
+
+	it('écrit une fraction quand le résultat n’a pas d’écriture décimale finie', () => {
+		// Avant : 0.833333333333333
+		expect(evalLatex('\\frac{1}{3}+0.5')).toBe('\\dfrac{5}{6}');
+	});
+
+	it('garde le décimal d’une valeur décimale finie', () => {
+		expect(evalLatex('0.1+0.2')).toBe('0.3');
+	});
+
+	// Exception à Q22 pour `{{eval}}` : un décimal tapé et une valeur irrationnelle
+	// restent décimaux — coordonnées de figure (`A-03-perpendiculaire…`)
+	it('garde la valeur décimale d’un irrationnel calculé avec un décimal', () => {
+		expect(evalLatex('0.5\\sqrt{2}')).toBe('0.707106781186547');
+	});
+
+	it('écrit un angle quelconque comme au tableau', () => {
+		// Avant : \sin\left( \dfrac{1}{5} \pi \right)
+		expect(evalLatex('\\sin(\\frac{\\pi}{5})')).toBe('\\sin\\left( \\dfrac{\\pi}{5} \\right)');
 	});
 });

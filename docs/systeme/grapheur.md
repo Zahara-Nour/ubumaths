@@ -18,7 +18,7 @@ couvre:
 
 > Synthèse des journaux archivés `docs/archive/wip/grapheur-*`, `suites-grapheur-progress.md`,
 > `dissoudre-doublons-grapheur-progress.md` et des chantiers couleurs. Vérifié contre le code le
-> 2026-10-15.
+> 2026-10-15 (ordonnée exacte d'un extremum, 2026-10-24).
 
 ## À quoi ça sert
 
@@ -199,7 +199,9 @@ mouvement du curseur de tangente ; chaque cache se vide au-delà de 200 fenêtre
 
 `analyzeFunction` est **hybride** : quand l'AST est disponible (`buildAnalysisAST`), zéros et
 extremums viennent de `findCriticalZeros` / `findCriticalExtrema` (mathAST), exacts quand c'est
-possible (`exactX`, `exactY`, confiance 1,0) ; sinon balayage numérique (`findRoots`,
+possible (`exactX`, `exactY`, confiance 1,0 ; `exactY` écrite par la valeur exacte à afficher
+commune, `exactValueToShow` via `simplifyExact` — la même écriture que le tableau de variations :
+`sin(−π/2) − 0,5 → −1,5`, `ln(4)/4` sans identité, lot 5c) ; sinon balayage numérique (`findRoots`,
 `findExtrema`). Un nombre de plus de 10 chiffres significatifs (`0.3333333333333333`) coupe tout
 le chemin exact, asymptotes comprises (`hasUnwieldyNumber`) : l'arithmétique exacte y prenait
 plusieurs secondes, dans l'interface (2026-10-15). Un échantillon presque nul n'est une racine que si |f| y est un **minimum local**

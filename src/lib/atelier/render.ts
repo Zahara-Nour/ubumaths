@@ -18,11 +18,10 @@
 import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { toLatex } from '$lib/mathAST/latex-generator';
-import { tidy } from '$lib/mathAST/tidy';
-import { isScientificNotation } from '$lib/mathAST/cli/approximation';
+import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { findNodes } from '$lib/mathAST/transforms';
-import { isNumber, isOpposite, isUnit } from '$lib/mathAST/guards';
+import { isUnit } from '$lib/mathAST/guards';
 import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
@@ -133,27 +132,21 @@ function cleanText(output: string): string {
 
 /**
  * La forme de LECTURE d'un résultat : `evaluate` rend une forme de calcul
- * (« coefficient × π » : ⅓ π), `tidy` la remet au propre (π/3, √2/2).
+ * (« coefficient × π » : ⅓ π), la valeur exacte à afficher commune la remet au
+ * propre (π/3, √2/2 — lot 5c). Le moteur l'a déjà fait pour un calcul tapé
+ * (avec la saisie pour source, `0,1+0,2 → 0,3`) ; elle ne bouge plus une
+ * écriture déjà lue. Un nombre seul et une notation scientifique (mode
+ * décimal) restent tels quels.
  */
 function readable(ast: MathNode): MathNode {
-	// Un nombre seul est déjà écrit : la valeur approchée du mode décimal garde ses
-	// 4 décimales, zéro final compris (`5,0990`), que `tidy` retirerait (revue du lot 4b)
-	if (isNumber(ast) || (isOpposite(ast) && isNumber(ast.operand))) return ast;
-	// Une notation scientifique (mode décimal) aussi : `tidy` recalculerait `3 × 10²⁰`
-	// en 300000000000000000000
-	if (isScientificNotation(ast)) return ast;
-	// Une expression à variables libres aussi : `tidy` y simplifierait `x/x` en 1
+	// Une expression à variables libres : `tidy` y simplifierait `x/x` en 1
 	// (faux en 0, et autre chose que ce que « Garder » range) et réordonnerait
 	// `3-2x+x^2` (revue du lot B). Sa cible est π, √, e, ln — sans variable
 	if (getVariables(ast).size > 0) return ast;
 	// Une grandeur est déjà mise au propre par la console (`quantities.ts`) :
 	// `tidy` recalculerait l'écriture juxtaposée `2 h 30 min` en une seule unité (lot C)
 	if (findNodes(ast, isUnit).length > 0) return ast;
-	try {
-		return tidy(ast);
-	} catch {
-		return ast;
-	}
+	return exactValueToShow(ast);
 }
 
 /**
@@ -183,7 +176,7 @@ export function renderResult(
 		return { text };
 	}
 
-	// Un calcul s'écrit depuis son ARBRE, mis au propre par `tidy` (phase 0
+	// Un calcul s'écrit depuis son ARBRE, mis au propre (`readable`, phase 0
 	// grandeurs, lot B). ⚠️ Plus jamais depuis le texte : un antislash y faisait
 	// prendre `{1/3}\pi` pour du LaTeX (« 1/3π » en ligne), et une grandeur n'y
 	// gardait son unité que si sa valeur était une fraction.

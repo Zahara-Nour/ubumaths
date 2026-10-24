@@ -56,3 +56,20 @@ describe('discontinuité — limite et valeur au point comparées sous la même 
 		}
 	);
 });
+
+// Lot 5c : la valeur exacte à afficher commune (`eval/exact-value.ts`)
+describe('valeur d’une limite — la valeur exacte à afficher commune', () => {
+	it.each([
+		// Q23 : une seule fraction sur un dénominateur commun
+		[
+			'\\lim_{x\\to +\\infty}\\left(\\frac{1}{2}+\\frac{\\sqrt{5}}{2}+\\frac{1}{x}\\right)',
+			'\\dfrac{1 + \\sqrt{5}}{2}'
+		],
+		[
+			'\\lim_{x\\to 0}\\left(\\frac{1}{2}-\\frac{\\sqrt{5}}{2}+x\\right)',
+			'\\dfrac{1 - \\sqrt{5}}{2}'
+		]
+	])('%s → %s', (latex, expected) => {
+		expect(valueOf(latex)).toBe(expected);
+	});
+});

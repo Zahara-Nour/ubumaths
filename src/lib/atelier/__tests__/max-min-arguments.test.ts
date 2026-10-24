@@ -29,13 +29,14 @@ function answer(s: CalcSession, line: string): string {
 }
 
 describe('une fonction définie avec max ou min dans Calcul', () => {
-	// Calcul répond en valeur exacte (`5/2`)
+	// Calcul répond en valeur exacte, dans le registre de la définition (S1, lot 5c :
+	// `2,5`, avant `5/2`)
 	it.each([
 		['f(x) = max(2 ; x)', 'f(1)', '2'],
 		['f(x) = max(2 ; x)', 'f(3)', '3'],
-		['f(x) = max(2,5 ; x)', 'f(1)', '5/2'],
-		['f(x) = min(x ; 1,5)', 'f(4)', '3/2'],
-		['f(x) = max(x;2)+1,5', 'f(0)', '7/2']
+		['f(x) = max(2,5 ; x)', 'f(1)', '2,5'],
+		['f(x) = min(x ; 1,5)', 'f(4)', '1,5'],
+		['f(x) = max(x;2)+1,5', 'f(0)', '3,5']
 	])('%s puis %s répond %s', (definition, call, expected) => {
 		const s = session();
 		runInput(s, definition);
@@ -103,8 +104,8 @@ describe('max et min dans le champ de la carte', () => {
 	// Ce que MathLive écrit quand l'élève tape dans la carte
 	it.each([
 		['\\max\\left(2,x\\right)', 'f(1)', '2'],
-		['\\max\\left(2{,}5;x\\right)', 'f(1)', '5/2'],
-		['\\min\\left(x;1{,}5\\right)+1', 'f(4)', '5/2']
+		['\\max\\left(2{,}5;x\\right)', 'f(1)', '2,5'],
+		['\\min\\left(x;1{,}5\\right)+1', 'f(4)', '2,5']
 	])('%s tapé dans la carte : %s répond %s', (definition, call, expected) => {
 		const s = session();
 		s.atelier.create({ kind: 'function', name: 'f', definition }, 'keyboard');

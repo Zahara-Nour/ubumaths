@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1661 (5b mergé, pas en prod ; main reverdi)._
+_Mis à jour le 2026-10-24, PR #1663 (5c) ouverte, CI verte, en attente de David._
 
 - **État** : lot 5. ~~Q19~~ (#1655), ~~5a D1 + Q18~~ (#1656) et ~~5b D2~~ (#1658 + #1660, § 55-56) mergés. f′ finit par `finalDerivative` (`final-form.ts`) ; dans l'étude des variations, `displayedDerivatives` (`variations/display.ts`) ajoute l'étape « On factorise pour étudier le signe » (`factoriser` lycée, garde-fous : exposants, décimaux, nombre seul devant une somme, racine + fraction).
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a D1~~ → ~~5b D2~~ → **5c valeur exacte** → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5c (§ 13 A, § 49) : une seule fonction « valeur exacte à afficher » pour `readable`, `tidyKeepingValue` (`{{eval}}`), `tidyExactValue` (tableau), `simplifyExact` (grapheur), limites et solutions ; `0,1+0,2 → 0,3`, `2,50 → 2,5`, `cos(π/6)` calculé partout. Phase 0 d'abord (comportements, à valider).
-- **En attente de David** : vérifications manuelles des espaces (#1642), de f′ (#1656) et des variations (#1658/#1660) ; choix pour `pnpm math` (supprimer avec `/calc`, ou brancher sur l'Atelier, § 54).
+- **Prochaine action** : merger #1663 dès que David a confirmé le relevé Q25 et l'écart à Q22 dans `{{eval}}` (§ 59) ; puis 5d (D3, expression littérale de l'Atelier). Serveur de test : 5176 sur la branche.
+- **En attente de David** : #1663 — relevé Q25 (4 modèles, aucun énoncé) et `{{eval}}` qui garde le décimal d'un irrationnel (coordonnées de figure, `A-03`) ; vérifications manuelles des espaces (#1642), de f′ (#1656), des variations (#1658/#1660) ; choix pour `pnpm math` (§ 54).
 - **Pièges en cours** : ne plus sonder avec `pnpm math` ; `(x^{0,5})′` écrit `0,5/x^{1/2}` (laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; `sqrt-product` ne regarde pas l'indice `power` ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-5c-valeur-exacte`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -822,3 +822,33 @@ Sondé sur `main` (2 sondes jetables, retirées) : 24 valeurs exactes passées p
 - **Q24 : notation scientifique gardée** quand l'entrée est écrite `a × 10ⁿ` ; `2^{10}` se calcule.
 - **Q25 : `{{eval}}` passe à `5/6`**, avec un relevé des modèles touchés montré avant le merge.
 - **Q26 : `.résoudre`** : la ligne `S = …` seule en 5c, les étapes du solveur en 5f.
+
+## 59. Lot 5c codé (branche `feat/simplify-carte-5c-valeur-exacte`, 2026-10-24)
+
+`exactValueToShow` (`eval/exact-value.ts`) ; branchés : tableau (`tidyExactValue`), grapheur (`simplifyExact`), limites (`writeLimitValue`), Atelier (`readableExact` du moteur avec la saisie pour source, `render.ts`, `.eval`), `{{eval}}` (`formatExact` ; `schoolExactWriting`/`tidyKeepingValue` retirés), `S = …` de `.résoudre` (`solve-steps.ts` `shownAnswer`, `solve-latex.ts`, `solve.command.ts`). Tests rouges d'abord pour chaque lieu.
+
+Trouvés en route :
+
+- S1 n'est pas « décimal si l'écriture est finie » : un opérande fraction ou une division donne une fraction (`1/4+0,5 → 3/4`, `1,5/3 → 1/2`). La fonction délègue ce choix à `tidy` sur la source.
+- La saisie gagnait sur la valeur calculée (`(1+√2)^{100}` moins cher que sa valeur développée) : critère « la plus calculée » avant le coût (appels de fonction, puis puissances entières d'une somme). `√3` n'est pas un appel à calculer.
+- Un rationnel s'écrit depuis la valeur seule : `normalize` sur une grosse saisie coûtait 2,7 s (`exact-trop-long.test.ts`).
+- `{{eval:cos(π/2)}}` écrivait le flottant `6·10⁻¹⁷` (le nombre se formatait depuis le flottant, pas depuis la valeur exacte) : corrigé.
+- **Écart à Q22, pour `{{eval}}` seulement** : un irrationnel calculé avec un décimal garde la valeur décimale. `A-03-perpendiculaire-passant-par-un-point` calcule ainsi les coordonnées d'une étiquette de figure (`texte({{eval:P1x}}, …)`) ; un radical en LaTeX y cassait la figure. **À confirmer par David.**
+- Tests qui assertaient l'ancien comportement, mis à jour : décimaux de l'Atelier (`0,5+1 → 1,5`, `f(1,5) → 2,25`, `max(2,5 ; x)` → `2,5`, `B(1,5 ; 2/3)`), notation scientifique retapée (`8.77*10^9`), `{{eval}}` (`1 + 3π/2`, `π²/6`, `ln(2)/3`), solutions (`2π/3`, `(1 − √5)/2`).
+
+**Relevé Q25** (corpus `data/relecture/` + `scripts/questions/`, 1 031 modèles, 6 graines par variation, 19 830 instances, base `3ded253a0` contre la branche) : 4 modèles changent.
+
+| Modèle                                          | Ce qui change                                                                                                                                                         |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fonctions/597`                                 | réponse attendue `−1 + √2` → `√2 − 1` (4 instances)                                                                                                                   |
+| `D-05-ajustement-par-changement-de-variable-ln` | variables internes : `\exp(127/100)` → `e^{127/100}` ; `150/13 ln 2 + 150/13 ln 5 − 61/13` → `(50 ln(1000) − 61)/13` (la saisie est `ln(1000)`) ; réponses inchangées |
+| `C-02-al-kashi-longueur`                        | variable interne : `√(−24 cos(5/18 π) + 25)` → `√(25 − 24 cos(5π/18))`                                                                                                |
+| `C-01-seuil-par-le-logarithme`                  | variable interne : `(ln 2 + ln 5)/ln 2` → `ln(1/10)/ln(1/2)` ; réponses inchangées                                                                                    |
+
+Aucun énoncé ne change. Limite : instantané du corpus, pas les modèles modifiés depuis en base.
+
+**Revue `code-reviewer` (opus)** : aucune valeur fausse (~100 saisies sondées). Traités : candidates comparées APRÈS le regroupement sur dénominateur commun, et radical au dénominateur compté comme « à calculer » (`1/(√3 − 1)` restait tel quel, `(1 + √3)/2` désormais) ; notation scientifique gardée seulement pour l'Atelier (`keepScientific`) — dans `{{eval}}`, `a × 10⁻³` aurait changé de forme selon la mantisse tirée ; exposant 0 exclu. Laissés : `ln 8` reste `ln 8` (main écrivait `3 ln 2`, identité appliquée par `evaluate`) ; `2^{0,5}` s'écrit `2^{1/2}` (ni `√2` ni décimal), à 5f. Relevé rejoué : les mêmes 4 modèles.
+
+**Logarithmes (David, 2026-10-24)** : question « pourquoi `ln 8` reste `ln 8` ? » — c'était le coût qui départageait (`ln 4 + ln 2 → 3 ln 2` mais `ln 8 → ln 8`), main décomposait tout en facteurs premiers via `evaluate`. Options A (facteurs premiers), B (puissance d'un seul entier → `n ln p`, sinon tel quel), C (aucune propriété). **David : « B »**, puis pour la borne d'un seuil (`2ⁿ > 1000`), **« b »** : un quotient de deux logarithmes garde l'écriture de l'énoncé (`ln 1000 / ln 2`). Décimal dans le logarithme gardé (`ln(0,1)`, règle des seuils du 2026-10-09). Relevé rejoué : les mêmes 4 modèles.
+
+**Écart Q22 de `{{eval}}`** : vérifié — un radical en LaTeX dans `texte(x, y, "d")` fait disparaître toute la figure (« Séquence `\dfrac` inconnue »). David (2026-10-24) : « je préférerai qu'on gère l'affichage latex dans les étiquettes » — à préciser (le LaTeX est dans la POSITION de l'étiquette, pas dans son texte).

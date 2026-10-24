@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; espaces de groupement dès 5 chiffres, 2026-10-23).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; espaces de groupement dès 5 chiffres, 2026-10-23).
 
 ## À quoi ça sert
 
@@ -1321,9 +1321,9 @@ seulement si la valeur est arrondie (`≈ 0,7071`, `0,25`) ; « Garder » range 
 précision (`quantityAst`). Depuis le 2026-10-12, plus aucun repli sur l'écriture du flottant du
 moteur (`e+30`, 15 chiffres, 2⁶⁴ écrit `18446744073709552000` faux et sans `≈`) : l'écriture se lit
 toujours sur le résultat exact, le calcul décimal du moteur ne sert qu'à une valeur non réelle et à
-« Garder ». Le texte d'une notation scientifique se retape dans la console (`8.7700*10^9`,
-`1.4286*10^-7`) ; à l'écran, `isScientificNotation` la protège de `tidy` (qui recalculerait
-`3 × 10²⁰`). Mêmes règles pour une grandeur (`9,4607 × 10¹⁵ m`). Le texte d'un résultat exact est mis au propre comme l'écran (`\pi/3`,
+« Garder ». Le texte d'une notation scientifique se retape dans la console, et garde sa notation
+en mode exact (Q24, lot 5c : `8.7700*10^9` → `8.77*10^9`, `1.4286*10^-7` → `1.4286*10^{-7}`) ;
+à l'écran, `exactValueToShow` la laisse telle quelle (`tidy` recalculerait `3 × 10²⁰`). Mêmes règles pour une grandeur (`9,4607 × 10¹⁵ m`). Le texte d'un résultat exact est mis au propre comme l'écran (`\pi/3`,
 plus `{1/3}\pi`) — y compris dans le texte brut du moteur.
 
 **Résultat exact trop long** (lot « lenteur des grandes fractions », option A de David du 2026-10-12,
@@ -2698,9 +2698,16 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
    26 × 200, 200 caractères par cellule.
 9. **Visible et désactivé avec sa raison**, jamais caché : actions de carte et commandes.
 10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`). Un **calcul** s'écrit depuis
-    son arbre, mis au propre par `tidy` (π/3, √2/2 ; un décimal le reste, S1 de `tidy` ; un nombre
+    son arbre, écrit par la valeur exacte à afficher commune (`exactValueToShow`,
+    `mathAST/eval/exact-value.ts`, lot 5c — la même que `{{eval}}`, le tableau de variations, le
+    grapheur et les limites). Le moteur (`readableExact`, `web-repl-engine.ts`) la calcule avec la
+    saisie pour source : registre décimal gardé (`0,1+0,2 → 0,3`, `2,50 → 2,5`, `1/3+0,5 → 5/6`,
+    `0,5√2 → √2/2`), `cos(π/6)` calculé, une seule fraction sur un dénominateur commun
+    (`(1+√5)/2`), notation scientifique tapée gardée (`3 × 10²⁰`) ; un nombre
     seul — la valeur approchée `≈ 5,0990`, zéro final compris — et un résultat à variable
-    libre sont laissés tels quels — `x/x` ne devient pas 1), unités traduites par `displayUnitsInLatex` ; seule une **commande** peut encore montrer
+    libre sont laissés tels quels — `x/x` ne devient pas 1. La ligne `S = …` de `.résoudre`
+    (`solve-steps.ts`, `shownAnswer`) s'écrit de même depuis les solutions conclues (`−√2/2`,
+    `(1 − √5)/2`, `2x = 0,6` → `x = 0,3`) ; les étapes gardent l'écriture du moteur pédagogique, unités traduites par `displayUnitsInLatex` ; seule une **commande** peut encore montrer
     son texte s'il ne contient que du LaTeX sûr (lot B des grandeurs, 2026-10-11).
     La constante d'Euler y arrive écrite `e` : `toCustom` l'écrit ainsi et tous les
     parseurs la relisent comme Euler (depuis le 2026-10-10 ; `withPlainEuler` et le

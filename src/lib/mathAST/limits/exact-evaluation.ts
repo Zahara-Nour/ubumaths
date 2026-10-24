@@ -27,7 +27,7 @@ import {
 } from '../guards';
 import { getNumericValue, numericNode } from '../common/numeric';
 import { exactConstantNode } from './generalized-degree';
-import { tidy } from '../tidy';
+import { exactValueToShow } from '../eval/exact-value';
 import { hasDecimalLiteral } from '../tidy/decimal';
 
 // =============================================================================
@@ -424,11 +424,12 @@ export function resultToNode(result: ExtendedNormalizeResult): MathNode | null {
  * `0.5`).
  *
  * Réservée aux valeurs rendues : les calculs intermédiaires gardent la forme
- * de `resultToNode`.
+ * de `resultToNode`. Passe par la valeur exacte à afficher commune (lot 5c) :
+ * `1/2 + √5/2` s'écrit `(1 + √5)/2`, comme au tableau de variations.
  */
 export function writeLimitValue(value: MathNode): MathNode {
 	if (isInfinity(value)) return value;
-	return tidy(withEulerConstant(value));
+	return exactValueToShow(withEulerConstant(value));
 }
 
 /**
