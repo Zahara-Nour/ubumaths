@@ -130,6 +130,14 @@ export type { NumberLineBlockRange } from '../types/number-line';
 // Bloc ```qr
 export { parseQr, parseQrContent, findQrBlocks, isQrBlockStart } from './qr-parser';
 
+// Bloc ```horloge
+export {
+	parseHorloge,
+	parseHorlogeContent,
+	findHorlogeBlocks,
+	isHorlogeBlockStart
+} from './horloge-parser';
+
 // Bloc ```courbe
 export {
 	parseCourbe,

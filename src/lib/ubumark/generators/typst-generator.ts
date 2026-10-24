@@ -62,6 +62,7 @@ import { generateNumberLineTypst } from './number-line-typst';
 import { generateCourbeTypst } from './courbe-typst';
 import { generateStatChartTypst } from './stat-chart-typst';
 import { generateQrTypst } from './qr-typst';
+import { generateHorlogeTypst } from './horloge-typst';
 // Registre LÉGER : pas d'import de geometry-core ici (voir figure-typst-registry.ts)
 import { renderFigureTypst } from './figure-typst-registry';
 import type { VariationTableNode } from '../types/variation-table';
@@ -390,6 +391,8 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 
 		case 'qr':
 			return generateQrTypst(node);
+		case 'horloge':
+			return generateHorlogeTypst(node);
 
 		default:
 			return '';

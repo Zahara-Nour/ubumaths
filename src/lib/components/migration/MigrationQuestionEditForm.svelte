@@ -788,7 +788,7 @@
 												<Badge variant={choice.isCorrect ? 'default' : 'outline'}>
 													{String.fromCharCode(65 + ci)}
 												</Badge>
-												<div class="flex-1">
+												<div class="flex-1 [--horloge-taille:3cm]">
 													<MarkdownRenderer content={choice.content} />
 												</div>
 												{#if choice.isCorrect}

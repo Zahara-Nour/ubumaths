@@ -92,6 +92,12 @@ import {
 } from './number-line-parser';
 import { findQrBlocks, parseQr, parseQrContent, isQrBlockStart } from './qr-parser';
 import {
+	findHorlogeBlocks,
+	parseHorloge,
+	parseHorlogeContent,
+	isHorlogeBlockStart
+} from './horloge-parser';
+import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
 	parseCourbe,
@@ -468,6 +474,7 @@ function parseBlocks(
 	const trigCircleBlocks = findTrigCircleBlocks(lines);
 	const numberLineBlocks = findNumberLineBlocks(lines);
 	const qrBlocks = findQrBlocks(lines);
+	const horlogeBlocks = findHorlogeBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -482,7 +489,8 @@ function parseBlocks(
 		{ ranges: probTreeBlocks, parse: parseProbabilityTree, language: 'probtree' },
 		{ ranges: trigCircleBlocks, parse: parseTrigCircle, language: 'trig' },
 		{ ranges: numberLineBlocks, parse: parseNumberLine, language: 'line' },
-		{ ranges: qrBlocks, parse: parseQr, language: 'qr' }
+		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
+		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -545,6 +553,7 @@ function parseBlocks(
 			...trigCircleBlocks,
 			...numberLineBlocks,
 			...qrBlocks,
+			...horlogeBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -557,6 +566,7 @@ function parseBlocks(
 			...findTrigCircleBlocks(originalLines),
 			...findNumberLineBlocks(originalLines),
 			...findQrBlocks(originalLines),
+			...findHorlogeBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks
@@ -1623,6 +1633,12 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findQrBlocks,
 		parse: parseQr,
 		language: 'qr'
+	},
+	{
+		is: isHorlogeBlockStart,
+		find: findHorlogeBlocks,
+		parse: parseHorloge,
+		language: 'horloge'
 	}
 ] as const;
 
@@ -1835,6 +1851,9 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'qr') {
 			// QR code dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseQrContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'horloge') {
+			// Horloge dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseHorlogeContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));
