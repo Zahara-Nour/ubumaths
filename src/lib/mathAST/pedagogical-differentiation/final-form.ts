@@ -37,6 +37,7 @@ import { divide, fraction, multiply, number, opposite, parentheses, superscript 
 import {
 	flattenProductShallow,
 	flattenSumShallow,
+	flipSign,
 	unflattenProduct,
 	unflattenSum
 } from '../flatten';
@@ -57,7 +58,7 @@ import { tidy } from '../tidy';
 import type { TidyOptions } from '../tidy';
 import { nonZeroBases } from '../tidy/sign';
 import { nodeCount, tidyTerms } from '../tidy/terms';
-import { findNodes } from '../transforms';
+import { findNodes, mapNode } from '../transforms';
 
 /** Le budget de la politique `auto` : au-delà, la dérivée rangée reste. */
 const AUTO_TIMEOUT_MS = 1000;
@@ -132,7 +133,7 @@ function rawDerivative(node: MathNode, variable: string): MathNode | null {
 }
 
 function finalForm(written: MathNode, f: MathNode, options: TidyOptions): MathNode {
-	const node = withOppositeInNumerator(withCoefficientInNumerator(written));
+	const node = withOppositeInNumerator(withCoefficientInNumerator(withImpliedSumsOpened(written)));
 	if (node.type === 'division') {
 		const raw = tidy(node.numerator, { ...options, order: 'kept' });
 		const denominator = tidy(node.denominator, { ...options, order: 'kept' });
@@ -147,6 +148,25 @@ function finalForm(written: MathNode, f: MathNode, options: TidyOptions): MathNo
 		);
 	}
 	return withCommonExponential(reduce(node, options), options);
+}
+
+/**
+ * Les sommes que la dérivée brute porte sans parenthèse écrite, ouvertes :
+ * `1 − (eˣ + xeˣ)` → `1 − eˣ − xeˣ`. La forme finale RÉDUIT, alors que `tidy`
+ * garde une parenthèse sous-entendue comme écrite (Q40, lot 5f-1) : sans cette
+ * ouverture, `auto` gardait `−(eˣ + xeˣ)` au lieu de `−(x + 1)eˣ` (revue de
+ * 5f-1). Une parenthèse écrite (`delimiter`) reste fermée.
+ */
+function withImpliedSumsOpened(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		const implied =
+			(n.type === 'subtraction' && isSum(n.right)) || (n.type === 'opposite' && isSum(n.operand));
+		return implied ? (unflattenSum(flattenSumShallow(n)) ?? n) : n;
+	});
+}
+
+function isSum(node: MathNode): boolean {
+	return node.type === 'addition' || node.type === 'subtraction';
 }
 
 /**
@@ -174,16 +194,22 @@ function withCoefficientInNumerator(node: MathNode): MathNode {
 }
 
 /**
- * `−(u/v)′` → `(−u′)/v` : le − entre au numérateur, qui est alors réduit comme
- * celui d'un quotient. `−x²/(x+2)` se lit `−(x²/(x+2))` : sa dérivée brute
- * `−(2x(x+2) − x²)/(x+2)²` n'était pas un quotient, et `auto` gardait
- * `(x² − 2x(x+2))/(x+2)²` (revue du lot 5b).
+ * `−(u/v)′` → `(−u′)/v` : le − entre au numérateur, distribué sur chacun de
+ * ses termes, qui est alors réduit comme celui d'un quotient. `−x²/(x+2)` se
+ * lit `−(x²/(x+2))` : sa dérivée brute `−(2x(x+2) − x²)/(x+2)²` n'était pas un
+ * quotient, et `auto` gardait `(x² − 2x(x+2))/(x+2)²` (revue du lot 5b).
+ * ⚠️ Distribué ICI : `tidy` garde `−(a − b)`, parenthèse sous-entendue
+ * comprise (Q40, lot 5f-1).
  */
 function withOppositeInNumerator(node: MathNode): MathNode {
 	if (!isOpposite(node)) return node;
 	const quotient = unwrap(node.operand);
 	if (quotient.type !== 'division') return node;
-	return divide(opposite(quotient.numerator), quotient.denominator, quotient.displayStyle);
+	const terms: SignedTerm[] = flattenSumShallow(unwrap(quotient.numerator)).map(
+		({ sign, term }) => ({ sign: flipSign(sign), term })
+	);
+	const numerator = unflattenSum(terms) ?? opposite(quotient.numerator);
+	return divide(numerator, quotient.denominator, quotient.displayStyle);
 }
 
 /** Un nombre, sous un éventuel − ou des parenthèses : `2`, `−3`. */
