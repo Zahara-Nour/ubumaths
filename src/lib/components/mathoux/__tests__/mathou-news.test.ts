@@ -40,6 +40,12 @@ describe('fetchMathouNews', () => {
 		expect(fetchMock).toHaveBeenCalledWith('/api/student/mathoux');
 	});
 
+	it('des gidouilles sans nouveauté (rattrapage) → rendues', async () => {
+		const paid = { ...NO_NEWS, gidouilles: 18 };
+		stubFetch({ born: 1, napping: 0, toDiscover: 0, news: paid });
+		expect(await fetchMathouNews()).toEqual(paid);
+	});
+
 	it('rien de nouveau → null', async () => {
 		stubFetch({ born: 1, napping: 0, toDiscover: 0, news: NO_NEWS });
 		expect(await fetchMathouNews()).toBeNull();

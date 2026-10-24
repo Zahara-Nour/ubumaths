@@ -6,19 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 1 (migration du lot A) ouverte._
+_Mis à jour le 2026-10-24, #1689 en revue (plafond ajouté)._
 
-- **État** : PR 1 = migration `20261024210000` (colonnes « payé » + `pay_mathou_milestones`,
-  service_role seul) + 25 tests d'intégration (rouges sans, verts avec) ; revue de code et audit
-  de sécurité faits, aucun bloquant, leurs deux correctifs appliqués (étoile en double, stade payé
-  jamais en baisse).
-- **Prochaine action** : PR 1 mergée → `db:migrate` (4 conditions réunies) → `db:types` → PR 2 :
-  appeler le versement après `rememberMathoux` (noms par `mathouName`), +2 au forfait de
-  révision, annonce du rattrapage par le Palotin.
+- **État** : #1685 mergée et migrée. #1689 (branche `feat/mathoux-gidouilles-travail`) : versement
+  des étapes, annonce, +2 de révision avec ou sans Palotin (choix 1b de David), plafond 20 / 24 h
+  glissantes + libellés « Chatterie : » (choix 2b, migration `20261024230000`, appliquée en local).
+- **Prochaine action** : audit de sécurité de la migration du plafond → CI verte → merge →
+  `db:migrate` (question d'accès tranchée : personne ne lit rien de neuf) → lot B (page de dessins).
 - **En attente de David** : rien.
-- **Pièges en cours** : le versement touche `updated_at` → le compare-and-swap de
-  `rememberMathoux` peut rejouer une fois ; l'appeler APRÈS l'écriture de la mémoire.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-accessoires`.
+- **Pièges en cours** : lignes d'un même versement = même `created_at` ; tests qui paient en
+  plusieurs fois : `ageActivity` pour libérer le plafond ; après rebase, `FRESH=1` au typecheck.
+- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-gidouilles-travail`.
 
 ## Constat (2026-10-24)
 
@@ -60,3 +58,14 @@ _Mis à jour le 2026-10-24, PR 1 (migration du lot A) ouverte._
   pas de décoration.
 - Panse seule en v1. Colliers au lot suivant (règle à trouver pour la fraise du grand matou).
   **Pelages jamais vendus** (identité de la race).
+
+## Historique
+
+- 2026-10-24 — #1685 (migration du lot A) mergée ; `db:migrate` + `db:types`. Revue de code et
+  audit de sécurité : aucun bloquant ; corrigés : étoile en double, stade payé jamais en baisse.
+- 2026-10-24 — #1689 : revue de code et audit ; David choisit (1b) +2 de révision sans condition
+  de Palotin, (2b) plafond des étapes contre les réussites forgées (20 / 24 h glissantes,
+  recommandation acceptée : « je te suis ») ; +2 réservé aux élèves.
+- 2026-10-24 — audit de la migration du plafond : aucun bloquant. Preuve du verrou `profiles` :
+  sans lui (copie de travail, `pg_sleep(0.3)` ajouté pour élargir la course), le test « deux
+  versements simultanés » est rouge (36 au lieu de 18) ; vert avec la migration réelle.

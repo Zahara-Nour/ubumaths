@@ -23,13 +23,14 @@
  * « Une fois par jour », sans migration : `srs_review_sessions.completed_at`
  * (colonne jusqu'ici jamais écrite) marque la séance qui a rapporté le forfait.
  * - Une séance déjà marquée aujourd'hui → rien, sans autre lecture.
- * - Plafond du jour déjà atteint ou élève sans Palotin → la séance n'est pas
- *   réclamée.
+ * - Plafond du jour déjà atteint ou élève sans Palotin → la séance est réclamée
+ *   quand même, pour les gidouilles (décision de David, 2026-10-24) ; pas d'XP.
  * - Réclamation conditionnelle (`completed_at is null`) vérifiée par
  *   `.select()` : de deux envois simultanés sur un paquet, un seul la marque.
  * - Deux paquets réclamés au même instant : chacun voit l'autre, AUCUN forfait
  *   ce jour-là (côté sûr).
- * - Crédit en erreur ou nul → réclamation relâchée (`completed_at` remis à null).
+ * - Rien de donné (ni XP ni gidouilles) → réclamation relâchée (`completed_at`
+ *   remis à null).
  *
  * Écritures (réclamation, relâche) au client service, `userId` de la session ;
  * les lectures restent au client de l'élève. La migration 20261017090100
@@ -46,6 +47,7 @@ import {
 	type BuddyXpFromExerciseResult
 } from '$lib/server/buddy-xp-service';
 import { getStudentBuddy } from '$lib/server/buddy-queries';
+import { creditStudentGidouilles } from '$lib/server/achievements/credit-gidouilles';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import {
 	DAILY_XP_CAP,
@@ -55,6 +57,9 @@ import {
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/srs/review-session-reward');
+
+/** Gidouilles de la séance de révision du jour (décision de David, 2026-10-24). */
+export const REVIEW_DAY_GIDOUILLES = 2;
 
 type SB = SupabaseClient<Database>;
 
@@ -120,35 +125,48 @@ async function releaseClaim(userId: string, claimedIds: string[]): Promise<void>
 	}
 }
 
+/** Ce que la séance du jour a rapporté : l'XP du Palotin (s'il y a lieu) et les gidouilles. */
+export interface ReviewSessionReward {
+	/** Forfait du Palotin ; null sans Palotin, plafond du jour atteint ou crédit en échec. */
+	buddyXp: BuddyXpFromExerciseResult | null;
+	/** Gidouilles versées (`REVIEW_DAY_GIDOUILLES`, 0 si le crédit a échoué). */
+	gidouilles: number;
+}
+
 /**
- * Crédite le forfait si la règle (a) ou (b) est remplie après cette carte et
- * qu'aucun forfait n'a été donné aujourd'hui. `userId` vient de la SESSION ;
- * `dayStartIso` est le début du jour qui borne la séance (celui de la route).
+ * Récompense la séance du jour si la règle (a) ou (b) est remplie après cette
+ * carte et qu'aucune séance n'a été récompensée aujourd'hui. `userId` vient de
+ * la SESSION et doit être un ÉLÈVE (l'appelant le vérifie : le crédit de
+ * gidouilles au client service ne contrôle pas le rôle). `dayStartIso` est le
+ * début du jour qui borne la séance (celui de la route).
+ *
+ * Gidouilles (décision de David, 2026-10-24) : +2 pour la séance terminée,
+ * indépendamment du Palotin (sans Palotin, ou plafond d'XP du jour atteint,
+ * l'élève qui a révisé les touche quand même). La réclamation n'est relâchée
+ * que si RIEN n'a été donné : relâcher après un versement de gidouilles
+ * permettrait de les toucher deux fois (un forfait d'XP en échec est alors perdu
+ * pour la journée, journalisé).
+ *
+ * @returns null si rien n'a été donné.
  */
 export async function rewardFinishedReviewSession(
 	supabase: SB,
 	userId: string,
 	deckId: string,
 	dayStartIso: string
-): Promise<BuddyXpFromExerciseResult | null> {
+): Promise<ReviewSessionReward | null> {
 	try {
-		// 1. Forfait déjà donné aujourd'hui ? (évite toute autre lecture)
+		// 1. Séance déjà récompensée aujourd'hui ? (évite toute autre lecture)
 		const completed = await sessionsCompletedToday(supabase, userId, dayStartIso);
 		if (!completed || completed.length > 0) return null;
 
-		// 2. Un Palotin, et de la place sous le plafond du jour
-		const buddy = await getStudentBuddy(supabase, userId);
-		if (!buddy) return null;
-		const today = new Date().toISOString().split('T')[0];
-		const earnedToday = buddy.last_xp_date === today ? buddy.xp_earned_today : 0;
-		if (earnedToday >= DAILY_XP_CAP) return null;
-
-		// 3. L'effort du jour
+		// 2. L'effort du jour
 		if (!(await isEffortEnough(supabase, userId, deckId, dayStartIso))) return null;
 
-		// 4. Réclamer la séance du jour de ce paquet — une seule fois (client
+		// 3. Réclamer la séance du jour de ce paquet — une seule fois (client
 		//    service : l'élève n'écrit pas `completed_at` lui-même)
-		const { data: claimed, error: claimError } = await createServiceRoleClient()
+		const service = createServiceRoleClient();
+		const { data: claimed, error: claimError } = await service
 			.from('srs_review_sessions')
 			.update({ completed_at: new Date().toISOString() })
 			.eq('user_id', userId)
@@ -164,25 +182,51 @@ export async function rewardFinishedReviewSession(
 		if (!claimed || claimed.length === 0) return null;
 		const claimedIds = claimed.map((row) => row.id);
 
-		// 5. Deux paquets réclamés au même instant : chacun voit l'autre, aucun
-		//    forfait aujourd'hui (côté sûr). Lecture illisible : rien non plus.
+		// 4. Deux paquets réclamés au même instant : chacun voit l'autre, rien
+		//    aujourd'hui (côté sûr). Lecture illisible : rien non plus.
 		const after = await sessionsCompletedToday(supabase, userId, dayStartIso);
 		if (!after || after.some((id) => !claimedIds.includes(id))) return null;
 
-		// 6. Créditer ; échec ou crédit nul → relâcher la réclamation
-		let result: BuddyXpFromExerciseResult | null = null;
-		try {
-			result = await addBuddyXpFromReviewSession(supabase, userId);
-		} catch (creditError) {
-			logger.error('Forfait de révision non crédité :', creditError);
-		}
-		if (!result || result.xpResult.xp_gained <= 0) {
+		// 5. Forfait du Palotin : un Palotin, et de la place sous le plafond du jour
+		const buddyXp = await reviewBuddyXp(supabase, userId);
+
+		// 6. Gidouilles de la séance, avec ou sans Palotin
+		const creditError = await creditStudentGidouilles(
+			service,
+			userId,
+			REVIEW_DAY_GIDOUILLES,
+			'Révision du jour terminée'
+		);
+		if (creditError) logger.error('Gidouilles de la révision non versées :', creditError);
+		const gidouilles = creditError ? 0 : REVIEW_DAY_GIDOUILLES;
+
+		// 7. Rien de donné → relâcher la réclamation (un nouvel essai reste possible)
+		if (!buddyXp && gidouilles === 0) {
 			await releaseClaim(userId, claimedIds);
 			return null;
 		}
-		return result;
+		return { buddyXp, gidouilles };
 	} catch (rewardError) {
-		logger.error('Forfait de révision non crédité :', rewardError);
+		logger.error('Séance de révision non récompensée :', rewardError);
+		return null;
+	}
+}
+
+/** Forfait du Palotin ; null sans Palotin, plafond du jour atteint, crédit nul ou en échec. */
+async function reviewBuddyXp(
+	supabase: SB,
+	userId: string
+): Promise<BuddyXpFromExerciseResult | null> {
+	try {
+		const buddy = await getStudentBuddy(supabase, userId);
+		if (!buddy) return null;
+		const today = new Date().toISOString().split('T')[0];
+		const earnedToday = buddy.last_xp_date === today ? buddy.xp_earned_today : 0;
+		if (earnedToday >= DAILY_XP_CAP) return null;
+		const result = await addBuddyXpFromReviewSession(supabase, userId);
+		return result && result.xpResult.xp_gained > 0 ? result : null;
+	} catch (creditError) {
+		logger.error('Forfait de révision non crédité :', creditError);
 		return null;
 	}
 }

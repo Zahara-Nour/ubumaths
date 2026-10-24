@@ -34,6 +34,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import {
+	bestGrowth,
 	isMathouStage,
 	memoryCovers,
 	mergeMemory,
@@ -49,6 +50,11 @@ type SB = SupabaseClient<Database>;
 /** Ligne de mémoire telle que lue : `updatedAt` sert la mise à jour conditionnelle. */
 export interface StoredMathouMemory extends MathouMemory {
 	updatedAt: string;
+	/**
+	 * Stade et étoiles déjà payés en gidouilles (`rewarded_*`, migration
+	 * 20261024210000) : faux → `payMathouMilestones` a quelque chose à verser.
+	 */
+	paid: boolean;
 }
 
 /**
@@ -70,7 +76,8 @@ export class MathouMemoryWriteError extends Error {
 }
 
 const TABLE = 'student_mathoux';
-const COLUMNS = 'notion_id, best_stage, starred_grades, asleep, updated_at';
+const COLUMNS =
+	'notion_id, best_stage, starred_grades, asleep, updated_at, rewarded_stage, rewarded_grades';
 
 /** Essais d'une mise à jour conditionnelle avant d'abandonner (journalisé). */
 const MAX_ATTEMPTS = 3;
@@ -81,6 +88,8 @@ type MemoryRow = {
 	starred_grades: string[];
 	asleep: boolean;
 	updated_at: string;
+	rewarded_stage: string | null;
+	rewarded_grades: string[];
 };
 
 /** Ligne → mémoire ; un stade inconnu (interdit par la base) est écarté. */
@@ -93,7 +102,14 @@ function toStored(row: MemoryRow): StoredMathouMemory | null {
 		bestStage: row.best_stage,
 		starredGrades: row.starred_grades ?? [],
 		asleep: row.asleep,
-		updatedAt: row.updated_at
+		updatedAt: row.updated_at,
+		// Payé au moins jusqu'au meilleur stade (un stade corrigé à la main sous le payé ne
+		// redemande rien) et toutes les étoiles payées
+		paid:
+			row.rewarded_stage !== null &&
+			isMathouStage(row.rewarded_stage) &&
+			bestGrowth(row.rewarded_stage, row.best_stage) === row.rewarded_stage &&
+			(row.starred_grades ?? []).every((grade) => (row.rewarded_grades ?? []).includes(grade))
 	};
 }
 

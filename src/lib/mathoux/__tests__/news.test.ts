@@ -14,6 +14,8 @@ import {
 	mathouNews,
 	newsItemPhrase,
 	newsSummaryPhrase,
+	gidouillesPhrase,
+	hasNews,
 	moreNewsPhrase,
 	MAX_NEWS_ITEMS,
 	type MathouNews,
@@ -401,6 +403,46 @@ describe('phrases', () => {
 			expect(newsSummaryPhrase(news({ firstVisit: true, total: 1 }))).toBe(
 				'Un chaton est né à la Chatterie : Pile-Poil !'
 			);
+		});
+
+		it('gidouilles seules (rattrapage) → Faustroll les verse', () => {
+			expect(newsSummaryPhrase(news({ total: 0, items: [], gidouilles: 18 }))).toBe(
+				'Faustroll te verse 18 gidouilles pour tes Mathoux !'
+			);
+		});
+
+		it('une nouveauté et ses gidouilles → les deux', () => {
+			expect(newsSummaryPhrase(news({ gidouilles: 3 }))).toBe(
+				'Un chaton est né à la Chatterie : Pile-Poil ! +3 gidouilles pour tes Mathoux.'
+			);
+		});
+	});
+
+	describe('gidouilles', () => {
+		const base: MathouNews = { firstVisit: false, total: 0, items: [] };
+
+		it('phrase : au singulier, au pluriel, seule ou sous les nouveautés', () => {
+			expect(gidouillesPhrase(1, false)).toBe('+1 gidouille pour tes Mathoux.');
+			expect(gidouillesPhrase(8, false)).toBe('+8 gidouilles pour tes Mathoux.');
+			expect(gidouillesPhrase(18, true)).toBe(
+				'Faustroll te verse 18 gidouilles pour tes Mathoux !'
+			);
+		});
+
+		it('hasNews : une nouveauté détaillée, ou des gidouilles', () => {
+			expect(hasNews(base)).toBe(false);
+			expect(hasNews({ ...base, gidouilles: 0 })).toBe(false);
+			expect(hasNews({ ...base, gidouilles: 5 })).toBe(true);
+			expect(hasNews({ ...base, total: 1, items: [item({})] })).toBe(true);
+		});
+
+		it('le résumé accepte les gidouilles, et un résumé sans elles (absent : 0)', () => {
+			const summary = { born: 1, napping: 0, toDiscover: 0, news: base };
+			expect(mathouxSummarySchema.safeParse(summary).success).toBe(true);
+			const paid = { ...summary, news: { ...base, gidouilles: 8 } };
+			expect(mathouxSummarySchema.parse(paid).news.gidouilles).toBe(8);
+			const negative = { ...summary, news: { ...base, gidouilles: -1 } };
+			expect(mathouxSummarySchema.safeParse(negative).success).toBe(false);
 		});
 	});
 });

@@ -62,6 +62,7 @@ import {
 	type StoredMathouMemory,
 	type WrittenMathoux
 } from './memory';
+import { payMathouMilestones, type MathouNames } from './gidouilles';
 import {
 	buildMathouCollection,
 	isPointLost,
@@ -140,7 +141,24 @@ export async function loadMathouCollectionWithNews(
 	// Mémoire : n'écrit que s'il y a du nouveau ; une panne n'empêche pas l'affichage
 	const written = await rememberSafely(studentId, memoryUpdates(collection, memory), memory);
 
-	return { collection, news: mathouNews(collection, memory, written) };
+	// Gidouilles des étapes, APRÈS la mémoire (le versement change `updated_at`) ;
+	// aucune requête s'il n'y a rien à payer (le cas courant)
+	const unpaid = written.size > 0 || [...memory.values()].some((entry) => !entry.paid);
+	const gidouilles = unpaid
+		? await payMathouMilestones(createServiceRoleClient(), studentId, namesOf(collection))
+		: 0;
+
+	const news = mathouNews(collection, memory, written);
+	return { collection, news: gidouilles > 0 ? { ...news, gidouilles } : news };
+}
+
+/** Nom affiché de chaque Mathou né, par notion (libellé du journal des gidouilles). */
+function namesOf(collection: MathouCollection): MathouNames {
+	const names: MathouNames = {};
+	for (const mathou of collection.races.flatMap((race) => race.mathoux)) {
+		if (mathou.growth !== 'a_decouvrir') names[mathou.notionId] = mathou.name;
+	}
+	return names;
 }
 
 /**

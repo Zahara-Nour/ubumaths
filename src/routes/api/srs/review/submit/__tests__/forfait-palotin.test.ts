@@ -7,11 +7,16 @@
  * par jour » est prise par `rewardFinishedReviewSession` (testé à part) ; ici, le
  * branchement : appel avec l'identité de la SESSION et le paquet révisé, gain
  * rendu, et une panne du Palotin ne fait jamais échouer la révision.
+ *
+ * Gidouilles de la révision du jour (décision de David, 2026-10-24) : +2 avec le
+ * forfait, donc au plus une fois par jour, au client service, rendues sous
+ * `review_gidouilles` ; une panne du crédit ne fait pas échouer la révision.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
 
 const applyFsrsReview = vi.hoisted(() => vi.fn());
+const role = vi.hoisted(() => ({ current: 'student' }));
 const rewardFinishedReviewSession = vi.hoisted(() =>
 	vi.fn<
 		(
@@ -19,7 +24,7 @@ const rewardFinishedReviewSession = vi.hoisted(() =>
 			userId: string,
 			deckId: string,
 			dayStartIso: string
-		) => Promise<BuddyXpFromExerciseResult | null>
+		) => Promise<{ buddyXp: BuddyXpFromExerciseResult | null; gidouilles: number } | null>
 	>()
 );
 
@@ -27,7 +32,7 @@ vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
 vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard: vi.fn() }));
 vi.mock('$lib/server/srs/review-session-reward', () => ({ rewardFinishedReviewSession }));
 vi.mock('$lib/server/middleware/auth', () => ({
-	requireAuth: async () => ({ user: { id: ELEVE }, profile: { role: 'student' } })
+	requireAuth: async () => ({ user: { id: ELEVE }, profile: { role: role.current } })
 }));
 vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: () => {} }));
 
@@ -105,7 +110,11 @@ async function reviser() {
 	});
 	const response = await POST({ request, locals: { supabase: fauxSupabase() } } as never);
 	expect(response.status, 'statut de la route').toBe(200);
-	return (await response.json()) as { success: boolean; buddy_xp: unknown };
+	return (await response.json()) as {
+		success: boolean;
+		buddy_xp: unknown;
+		review_gidouilles: number;
+	};
 }
 
 describe('POST /api/srs/review/submit — forfait du Palotin', () => {
@@ -118,7 +127,8 @@ describe('POST /api/srs/review/submit — forfait du Palotin', () => {
 			nextReview: new Date().toISOString(),
 			totalReviews: 1
 		});
-		rewardFinishedReviewSession.mockReset().mockResolvedValue(GAIN);
+		rewardFinishedReviewSession.mockReset().mockResolvedValue({ buddyXp: GAIN, gidouilles: 2 });
+		role.current = 'student';
 	});
 
 	it('rend le gain du Palotin sous `buddy_xp`, forme de /api/tests/save', async () => {
@@ -145,5 +155,31 @@ describe('POST /api/srs/review/submit — forfait du Palotin', () => {
 		const body = await reviser();
 		expect(body.success).toBe(true);
 		expect(body.buddy_xp).toBeNull();
+	});
+
+	it('séance récompensée : les gidouilles sont rendues sous `review_gidouilles`', async () => {
+		expect((await reviser()).review_gidouilles).toBe(2);
+	});
+
+	it('sans Palotin : pas de `buddy_xp`, mais les gidouilles de la séance', async () => {
+		rewardFinishedReviewSession.mockResolvedValue({ buddyXp: null, gidouilles: 2 });
+		const body = await reviser();
+		expect(body.buddy_xp).toBeNull();
+		expect(body.review_gidouilles).toBe(2);
+	});
+
+	it('rien de donné : `buddy_xp` null, aucune gidouille', async () => {
+		rewardFinishedReviewSession.mockResolvedValue(null);
+		const body = await reviser();
+		expect(body.buddy_xp).toBeNull();
+		expect(body.review_gidouilles).toBe(0);
+	});
+
+	it('compte non élève (prof qui révise) : aucune récompense demandée', async () => {
+		role.current = 'teacher';
+		const body = await reviser();
+		expect(rewardFinishedReviewSession).not.toHaveBeenCalled();
+		expect(body.buddy_xp).toBeNull();
+		expect(body.review_gidouilles).toBe(0);
 	});
 });

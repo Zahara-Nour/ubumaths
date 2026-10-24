@@ -38,6 +38,21 @@ export async function creditAchievementGidouilles(
 	amount: number,
 	achievementName: string
 ): Promise<unknown> {
+	return creditStudentGidouilles(admin, studentId, amount, `Succès : ${achievementName}`);
+}
+
+/**
+ * Verse `amount` gidouilles avec le libellé `reason` (journal des récompenses),
+ * sur la classe active la plus récente de l'élève. Même fonction SQL que les
+ * succès. L'appelant garantit qu'il ne verse qu'une fois.
+ * Rend l'erreur éventuelle (lecture de la classe ou crédit), `null` sinon.
+ */
+export async function creditStudentGidouilles(
+	admin: SupabaseClient<Database>,
+	studentId: string,
+	amount: number,
+	reason: string
+): Promise<unknown> {
 	// Classe active la plus récente, comme process_achievement_event.
 	const { data: membership, error: membershipError } = await admin
 		.from('class_members')
@@ -54,7 +69,7 @@ export async function creditAchievementGidouilles(
 		p_student_id: studentId,
 		p_class_id: membership?.class_id ?? null,
 		p_delta: amount,
-		p_reason: `Succès : ${achievementName}`,
+		p_reason: reason,
 		p_created_by: null
 	};
 

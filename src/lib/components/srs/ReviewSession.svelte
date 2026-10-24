@@ -87,6 +87,8 @@
 	let skippedCount = $state(0);
 	/** Gain du Palotin renvoyé par le serveur en fin de séance (null : rien à montrer) */
 	let buddyGain = $state<BuddyGainView | null>(null);
+	/** Gidouilles de la révision du jour (`review_gidouilles`, avec le forfait du Palotin) */
+	let reviewGidouilles = $state(0);
 	// Nouveautés de la Chatterie, demandées une fois la dernière carte enregistrée
 	let mathouNews = $state<MathouNews | null>(null);
 
@@ -216,11 +218,22 @@
 	async function readBuddyGain(response: Response) {
 		try {
 			const payload: unknown = await response.json();
+			const amount = reviewGidouillesOf(payload);
+			if (amount > 0) reviewGidouilles = amount;
 			const gain = await receiveBuddyGain(payload);
 			if (gain) buddyGain = gain;
 		} catch (error) {
 			console.error('Gain du Palotin illisible (révision enregistrée) :', error);
 		}
+	}
+
+	/** `review_gidouilles` de la réponse : un entier positif borné, sinon 0. */
+	function reviewGidouillesOf(payload: unknown): number {
+		if (typeof payload !== 'object' || payload === null) return 0;
+		const value: unknown = (payload as Record<string, unknown>).review_gidouilles;
+		return typeof value === 'number' && Number.isInteger(value) && value > 0 && value <= 100
+			? value
+			: 0;
 	}
 
 	/**
@@ -399,6 +412,13 @@
 				<div class="mt-6">
 					<BuddyGainCard gain={buddyGain} />
 				</div>
+			{/if}
+
+			<!-- Gidouilles de la révision du jour -->
+			{#if reviewGidouilles > 0}
+				<p class="mt-6 text-center text-sm font-medium" data-testid="review-gidouilles">
+					+{reviewGidouilles} gidouilles pour ta révision du jour.
+				</p>
 			{/if}
 
 			<!-- Nouveautés de la Chatterie -->

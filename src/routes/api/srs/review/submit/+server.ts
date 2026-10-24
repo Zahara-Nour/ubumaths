@@ -172,20 +172,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			timeSpent
 		});
 
-		// ----- Forfait du Palotin (décision de David, 2026-10-18) -----
-		// Séance terminée (plus aucune carte due), au plus une fois par jour.
-		// Même forme que `buddy_xp` de `/api/tests/save`. Non bloquant : la
-		// révision est déjà enregistrée.
+		// ----- Forfait du Palotin et gidouilles de la séance du jour -----
+		// Séance terminée (décisions de David, 2026-10-18 et 2026-10-24), au plus une
+		// fois par jour. `buddy_xp` a la même forme que dans `/api/tests/save`.
+		// Élèves seulement : le crédit de gidouilles au client service ne vérifie pas
+		// le rôle. Non bloquant : la révision est déjà enregistrée.
 		let buddyXp: BuddyXpFromExerciseResult | null = null;
-		try {
-			buddyXp = await rewardFinishedReviewSession(supabase, user.id, body.deckId, todayStr);
-		} catch (buddyError) {
-			logger.error('Forfait du Palotin non crédité :', buddyError);
+		let reviewGidouilles = 0;
+		if (profile.role === 'student') {
+			try {
+				const reward = await rewardFinishedReviewSession(supabase, user.id, body.deckId, todayStr);
+				buddyXp = reward?.buddyXp ?? null;
+				reviewGidouilles = reward?.gidouilles ?? 0;
+			} catch (rewardError) {
+				logger.error('Séance de révision non récompensée :', rewardError);
+			}
 		}
 
 		return json({
 			success: true,
 			buddy_xp: buddyXp,
+			review_gidouilles: reviewGidouilles,
 			stats: {
 				difficulty: updatedStats.difficulty,
 				stability: updatedStats.stability,
