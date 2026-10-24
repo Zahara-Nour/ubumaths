@@ -18,7 +18,13 @@
 
 import type { MathNode, DivisionNode, NumberNode } from '../types';
 import { multiply, number, opposite, parentheses } from '../factory';
-import { flattenProductShallow, unflattenProduct } from '../flatten';
+import {
+	flattenProductShallow,
+	flattenSumShallow,
+	unflattenProduct,
+	unflattenSum
+} from '../flatten';
+import type { FlatSum } from '../flatten';
 import { isAddition, isNumber, isSubtraction } from '../guards';
 import { findNodes } from '../transforms';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
@@ -116,8 +122,25 @@ function decimalQuotient(node: DivisionNode): MathNode | null {
 	if (decimal === null) return null;
 	const rest = unflattenProduct(others);
 	if (rest === null) return number(decimal);
-	const body = isAddition(rest) || isSubtraction(rest) ? parentheses(rest) : rest;
-	return multiply(number(decimal), body, 'implicit');
+	if (decimal === '1') return rest;
+	if (!isAddition(rest) && !isSubtraction(rest)) return multiply(number(decimal), rest, 'implicit');
+	// Une somme qui commence par un − : le signe devant, `-0,5(x + 1)`, jamais `0,5(-x - 1)`
+	const terms = flattenSumShallow(rest);
+	const negated = leadingNegative(terms);
+	const sum = negated === null ? rest : unflattenSum(negated);
+	const product = multiply(number(decimal), parentheses(sum ?? rest), 'implicit');
+	return negated === null ? product : opposite(product);
+}
+
+/** Les termes, signes inversés, quand le premier porte un − (`-x - 1` → `x + 1`) ; sinon `null`. */
+function leadingNegative(terms: FlatSum): FlatSum | null {
+	const [first] = terms;
+	const leads = first.sign === '-' || first.term.type === 'opposite';
+	if (!leads) return null;
+	return terms.map(({ sign, term }, i) => {
+		if (i === 0 && term.type === 'opposite') return { sign, term: term.operand };
+		return { sign: sign === '+' ? '-' : '+', term };
+	});
 }
 
 /** Un entier positif écrit : `5`. */

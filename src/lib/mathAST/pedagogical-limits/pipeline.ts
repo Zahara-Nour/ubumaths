@@ -626,7 +626,7 @@ function tryFactorisation(
 	] as const;
 	for (const side of sides) {
 		const factored = side.factored;
-		if (sameWriting(side.node, factored)) continue;
+		if (sameShown(side.node, factored, ctx)) continue;
 		factorSubSteps.push(
 			makeStep(ctx, {
 				rule: side.rule,

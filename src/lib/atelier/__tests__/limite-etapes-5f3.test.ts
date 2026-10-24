@@ -15,6 +15,9 @@ import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { Atelier } from '../atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput, type CalcSession } from '../calcul';
+import { inDecimalRegister } from '$lib/mathAST/pedagogical-limits/decimal-register';
+import { divide, number, opposite, subtract, variable } from '$lib/mathAST/factory';
+import { toLatex } from '$lib/mathAST/latex-generator';
 
 // =============================================================================
 // Décor
@@ -101,6 +104,33 @@ describe('les décimaux tapés restent décimaux dans les étapes', () => {
 		expect(simplification).toContain('=\\lim_{x\\to1}0{,}5(x+1)');
 		expect(shown(list)).not.toContain('\\dfrac{1}{2}');
 		expect(last(list).title).toBe('La limite vaut $1$');
+	});
+});
+
+describe('revue de 5f-3 : le registre décimal', () => {
+	it('(x² − x)/(0,5x) en 0 : pas de « 0,5x = 0,5x » en sous-étape', () => {
+		const list = steps('.limite (x^2-x)/(0,5x) en 0');
+		const simplification = step(list, 'Simplification du facteur commun');
+		const subTitles = (simplification.subSteps ?? []).map((s) => s.title);
+		expect(subTitles.some((t) => t.startsWith('Factorisation du dénominateur'))).toBe(false);
+	});
+
+	it('(−0,5x² + 0,5)/(x − 1) en 1 : le signe devant, −0,5(x + 1)', () => {
+		const list = steps('.limite (-0,5x^2+0,5)/(x-1) en 1');
+		const simplification = flat(step(list, 'Simplification du facteur commun'));
+		expect(simplification).toContain('=\\lim_{x\\to1}-0{,}5(x+1)');
+		expect(shown(list)).not.toContain('0{,}5(-x');
+	});
+});
+
+describe('inDecimalRegister', () => {
+	it('x/1 → x, jamais 1x', () => {
+		expect(toLatex(inDecimalRegister(divide(variable('x'), number('1'), 'fraction')))).toBe('x');
+	});
+
+	it('(−x − 1)/2 → −0,5(x + 1)', () => {
+		const node = divide(subtract(opposite(variable('x')), number('1')), number('2'), 'fraction');
+		expect(toLatex(inDecimalRegister(node)).replace(/\s/g, '')).toBe('-0.5\\left(x+1\\right)');
 	});
 });
 
