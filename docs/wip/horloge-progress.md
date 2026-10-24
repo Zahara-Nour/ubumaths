@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, phase 0 écrite._
+_Mis à jour le 2026-10-24, après #1707._
 
-- **État** : bloc ```horloge codé (parseur, scène, écran, PDF, QCM écran + série figée, éditeur riche, `check:ubumark`), tests verts, doc à jour ; PR ouverte.
-- **Prochaine action** : revue `code-reviewer`, CI verte → merge ; puis retour au chantier « questions » (modèles CP-046/047).
-- **En attente de David** : rien.
-- **Pièges en cours** : Supabase local et verrou typecheck partagés avec la session « questions » (exit 2 = attendre). Aucune migration prévue ; si besoin, relire `list_migrations` en prod (dernière connue : `20261025000100`). Aucun modèle de question dans ce chantier (retour au chantier « questions »).
-- **Worktree / branche** : `../ubumaths-wt-horloge` · `feat/horloge` · port 5176.
+- **État** : bloc ```horloge LIVRÉ (#1707 mergée, sur `main`, pas en prod) : parseur, scène, écran, PDF, QCM (écran, correction, série figée), éditeur riche, `check:ubumark`, doc système à jour.
+- **Prochaine action** : aucune dans ce chantier ; les modèles CP-046/047 (puis CE1/CE2) reviennent au chantier « questions ». Fin de chantier : verser ce journal dans `docs/archive/` (le durable est déjà dans `docs/systeme/ubumark.md`).
+- **En attente de David** : vérification à l'œil (ligne #1707 de `docs/wip/verifications-manuelles.md`) ; la grande aiguille qui passe sur les chiffres est-elle acceptable ?
+- **Pièges en cours** : aucun. Hors périmètre noté : placer les aiguilles (« réponses à placer »).
+- **Worktree / branche** : supprimés après merge.
 
 ---
 
@@ -229,3 +229,5 @@ Toutes les recommandations du § 7 retenues :
 - 2026-10-24 : implémentation. Tests rouges vérifiés puis verts (parseur, scène, Typst + compilation réelle, écran,
   restreint, éditeur riche, invariants des blocs, série figée). Captures écran clair/sombre à 360 px et PDF
   vérifiées à l'œil. Constat : la grande aiguille passe sur les chiffres (12 à midi) comme sur une vraie horloge.
+- 2026-10-24 : revue `code-reviewer` : choix de QCM en horloge affichés en texte brut dans la correction
+  (`ExpectedResultView`) → corrigé ; `-0 h` refusé ; `;` interdit dans une légende (documenté). #1707 mergée.
