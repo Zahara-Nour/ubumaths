@@ -50,24 +50,45 @@ vitrine du Tour du Royaume.
 
 Sort : **vitrine** (`/demo/…`, public) · **dev** (`/dev/…`, admin) · **à revoir**.
 
-| #   | Page                            | Sort          | Note                                                                                                               |
-| --- | ------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------ |
-| 1   | `/test-structure`               | vitrine + dev | coupée en deux : formule (`StructureField`) → `/demo/structure` ; corpus et case « AB produit » → `/dev/structure` |
-| 2   | `/geometry-demo/*`              | ?             |                                                                                                                    |
-| 3   | `/demo/trig-circle-demo`        | ?             |                                                                                                                    |
-| 4   | `/construction-demo`            | ?             |                                                                                                                    |
-| 5   | `/demo/vip-cards-demo`          | ?             |                                                                                                                    |
-| 6   | `/demo/mots-cliquables`         | ?             |                                                                                                                    |
-| 7   | `/demo/question-display-demo`   | ?             |                                                                                                                    |
-| 8   | `/demo/rich-text-editor-demo`   | ?             |                                                                                                                    |
-| 9   | `/demo/theme-test`              | ?             |                                                                                                                    |
-| 10  | `/demo` (carrefour)             | ?             |                                                                                                                    |
-| 11  | `/test-saisie`                  | ?             |                                                                                                                    |
-| 12  | `/test-cadres`                  | ?             |                                                                                                                    |
-| 13  | `/test-font`                    | ?             |                                                                                                                    |
-| 14  | `/test-erreur`                  | ?             |                                                                                                                    |
-| 15  | `/slides/*` (3 pages)           | ?             |                                                                                                                    |
-| 16  | `/blockly/playground`           | ?             |                                                                                                                    |
-| 17  | `/test-exercises`               | ?             |                                                                                                                    |
-| 18  | `/dashboard/admin/debug/*` (14) | ?             |                                                                                                                    |
-| 19  | `/dashboard/admin/errors/test`  | ?             |                                                                                                                    |
+| #   | Page                            | Sort          | Note                                                                                                                                                   |
+| --- | ------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | `/test-structure`               | vitrine + dev | coupée en deux : formule (`StructureField`) → `/demo/structure` ; corpus et case « AB produit » → `/dev/structure`                                     |
+| 2   | `/geometry-demo/*`              | dev + galerie | tout → `/dev/geometrie/…` tel quel ; galerie `/demo/geometrie` : 10 figures validées (ci-dessous), textes en français propre, script replié par défaut |
+| 3   | `/demo/trig-circle-demo`        | ?             |                                                                                                                                                        |
+| 4   | `/construction-demo`            | ?             |                                                                                                                                                        |
+| 5   | `/demo/vip-cards-demo`          | ?             |                                                                                                                                                        |
+| 6   | `/demo/mots-cliquables`         | ?             |                                                                                                                                                        |
+| 7   | `/demo/question-display-demo`   | ?             |                                                                                                                                                        |
+| 8   | `/demo/rich-text-editor-demo`   | ?             |                                                                                                                                                        |
+| 9   | `/demo/theme-test`              | ?             |                                                                                                                                                        |
+| 10  | `/demo` (carrefour)             | ?             |                                                                                                                                                        |
+| 11  | `/test-saisie`                  | ?             |                                                                                                                                                        |
+| 12  | `/test-cadres`                  | ?             |                                                                                                                                                        |
+| 13  | `/test-font`                    | ?             |                                                                                                                                                        |
+| 14  | `/test-erreur`                  | ?             |                                                                                                                                                        |
+| 15  | `/slides/*` (3 pages)           | ?             |                                                                                                                                                        |
+| 16  | `/blockly/playground`           | ?             |                                                                                                                                                        |
+| 17  | `/test-exercises`               | ?             |                                                                                                                                                        |
+| 18  | `/dashboard/admin/debug/*` (14) | ?             |                                                                                                                                                        |
+| 19  | `/dashboard/admin/errors/test`  | ?             |                                                                                                                                                        |
+
+### Galerie de géométrie `/demo/geometrie` (validée par David le 2026-10-24)
+
+Chaque figure : titre et texte de 2-3 lignes en français propre, pour le visiteur ; script
+replié sous « Voir le script ».
+
+| #   | Figure                                             | Source (`/geometry-demo/…`) | Niveau  |
+| --- | -------------------------------------------------- | --------------------------- | ------- |
+| 1   | Points remarquables du triangle                    | `triangles`                 | collège |
+| 2   | Symétries et rotation                              | `transformations` (2ᵉ)      | collège |
+| 3   | Homothétie variable                                | `sliders/homothetie`        | collège |
+| 4   | Cercle par trois points                            | `circles` (1ʳᵉ)             | collège |
+| 5   | Intégrale dynamique                                | `sliders/integrale`         | lycée   |
+| 6   | Aire entre deux courbes                            | `sliders/aire-entre`        | lycée   |
+| 7   | Lieu géométrique (milieu d'un point sur un cercle) | `lieu` (2ᵉ)                 | lycée   |
+| 8   | Flocon de Von Koch                                 | `sliders/koch`              | plaisir |
+| 9   | Épicycloïde                                        | `sliders/epicycloide`       | plaisir |
+| 10  | Spirale d'Archimède                                | `trace` (2ᵉ)                | plaisir |
+
+Écartées : spirographe, rosace, limaçon (doublons de l'épicycloïde), coniques (hors programme),
+vecteurs (textes à réécrire en entier), le reste = référence du langage.
