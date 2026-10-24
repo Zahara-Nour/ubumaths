@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1675._
+_Mis à jour le 2026-10-24, PR 2 en cours._
 
-- **État** : PR 1 (socle) MERGÉE (#1675) : `/dev` (admin) et `/aide-ecriture` (prof) gardés par `reservedAreasHandle` (hook) + `+layout.server.ts` par espace ; accueils vides ; pas en prod.
-- **Prochaine action** : PR 2, déplacements « telles quelles » vers `/dev` (lignes 9, 11, 12, 13, 14, 16, 18 hors 7 et 8, 19 + traduction), redirections dans `redirectHandle.ts`, lien « Debug » du menu admin → `/dev`, `database` → « Intégrité des données ». Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main`.
+- **État** : PR 1 (socle) mergée (#1675). PR 2 (déplacements vers `/dev`) ouverte : 18 pages sous `/dev`, `database` → `/dashboard/admin/integrite-donnees`, redirections 308 (`MOVED_PAGES`), lien « Debug » → `/dev`.
+- **Prochaine action** : merger la PR 2, puis PR 3 (fusions 7, 8, 15 ; parts dev des lignes 1, 5, 6, 10).
 - **En attente de David** : rien.
-- **Pièges en cours** : sous `/dev`, jamais de donnée sensible par un load universel (`+page.ts`) ni par Supabase dans le navigateur (le hook ne les voit pas) ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES` ; refus du hook = page d'erreur minimale de SvelteKit ; aucune suppression hors fusions (7, 8, 15) et ligne 17 ; `/test-font` intact ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : aucun (PR 1 nettoyée).
+- **Pièges en cours** : sous `/dev`, jamais de donnée sensible par un load universel (`+page.ts`) ni par Supabase dans le navigateur ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES` ; `/test-font` redirigée à l'adresse exacte seulement (images sous `static/test-font/`) ; `question-display` et `rich-text` restent sous `admin/debug` jusqu'à la PR 3 ; ligne 4 après le chantier constructions.
+- **Worktree / branche** : `../ubumaths-wt-demo-debug` · `feat/demo-debug-deplacements`.
 
 ## Décisions de David (2026-10-24)
 
@@ -156,3 +156,10 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
   `$lib/shared/blockly`, inchangé depuis le 2026-06-23. Phase 0 à ouvrir.
 - **Scripts de démo de constructions / brouillons de `/constructions`** : doublon possible, à revoir
   après la revue (aucune suppression pour l'instant).
+
+## PR 2 — déplacements vers `/dev` (2026-10-24)
+
+- 18 pages déplacées telles quelles (`git mv`) : lignes 9, 11, 12, 13, 14, 16, 19 et 11 pages de la ligne 18. Adresses : voir `MOVED_PAGES` (`src/lib/server/redirectHandle.ts`), 308 comme les autres anciennes routes, sous-pages et query string comprises.
+- `database` → `/dashboard/admin/integrite-donnees` (titre « Intégrité des données », lien propre au menu admin) ; « Debug » → `/dev`.
+- `/dev/erreurs/surveillance` traduite en français. Carte « Test de Thème » retirée du carrefour `/demo` (page désormais admin). Exclusion sitemap `/blockly/**` retirée (plus de page).
+- Vérifié sur 5178 (Playwright) : 20 pages en 200 pour l'admin, redirections justes, élève 403, anonyme → connexion. Erreurs de console déjà présentes avant (clés en double dans `rls` et `correction-generee`, boutons imbriqués dans `theme`, CSP de la feuille Swagger) : laissées telles quelles.

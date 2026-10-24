@@ -230,7 +230,7 @@ notifications, le temps réel relance ensuite la lecture ([realtime.md](realtime
   (10 par défaut) par `/api/teacher/rewards/update-student`, puis `invalidateAll()`.
 - **`/dashboard/teacher/documents`** : documents du tuteur IA (`DocumentManager`, RAG).
 
-`Wheel.svelte` sert aussi à l'accueil prof, à `VipCardUseDialog` et à `admin/debug/wheel`. Les
+`Wheel.svelte` sert aussi à l'accueil prof, à `VipCardUseDialog` et à `/dev/roue`. Les
 prénoms en double sont départagés par le plus court préfixe du nom (« Léa M. », « Léa P. »). Avec
 `addJokerIfOdd`, une case « Joker » complète un nombre impair : si elle sort, aucun gagnant n'est
 annoncé. Le gagnant se calcule à la fin de la transition CSS (`transitionend`).

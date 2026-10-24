@@ -214,7 +214,7 @@ L'élève ne tape jamais `\unit` : dans un blanc **à unité** (`blank.unit.expe
 
 ## 4. Défauts connus, non corrigés
 
-- La page `admin/debug/mathfield` déclare sa propre macro `\unit` (fond vert, police sans empattement), pour son champ de saisie uniquement. Elle ne suit pas les règles d'affichage ci-dessus.
+- La page `/dev/champ-math` déclare sa propre macro `\unit` (fond vert, police sans empattement), pour son champ de saisie uniquement. Elle ne suit pas les règles d'affichage ci-dessus.
 
 ## 5. Code et tests
 

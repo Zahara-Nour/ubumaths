@@ -2,6 +2,7 @@
 couvre:
   - 'src/routes/api/{errors,bug-reports,search,openapi.json}/**'
   - 'src/routes/(protected)/dashboard/admin/{errors,bug-reports,docs,debug}/**'
+  - 'src/routes/(protected)/dev/erreurs/surveillance/**'
   - 'src/routes/(protected)/dashboard/bug-reports/**'
   - 'src/lib/components/bug-reports/**'
   - 'src/lib/utils/{errorMonitoring,freezeDetection,errors,version}.ts'
@@ -10,7 +11,7 @@ couvre:
   - 'src/lib/server/{errorMonitoring,healthStats,bug-report-errors,bug-report-export,bug-report-screenshots,docs-scanner,markdown-parser,search}.ts'
   - 'src/lib/server/validation/{errors,bug-reports,health,search}.ts'
   - 'src/lib/server/openapi/**'
-  - 'src/routes/(protected)/dashboard/admin/debug/api-docs/**'
+  - 'src/routes/(protected)/dev/api/**'
   - 'src/routes/api/latex/**'
   - src/lib/server/validation/latex.ts
 ---
@@ -105,8 +106,8 @@ Trois boucles distinctes :
 
 Pages admin : `/dashboard/admin/errors` (statistiques 24 h et occurrences, filtres
 `type`, `severity`, `resolved`, `search` dans l'adresse), `/dashboard/admin/errors/[id]`
-(détail, action `resolve`), `/dashboard/admin/errors/test` (boutons qui provoquent des
-erreurs de test).
+(détail, action `resolve`), `/dev/erreurs/surveillance` (ex-`/dashboard/admin/errors/test`,
+admin seul, textes en français : boutons qui provoquent des erreurs de test).
 
 ### Détection de gel
 
@@ -203,10 +204,12 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   disque au moment de la requête (`src/lib/server/docs-scanner.ts`) et rendent le
   Markdown en HTML (`src/lib/server/markdown-parser.ts`, `marked`). `getDocumentContent`
   refuse un chemin qui sort de `docs/` (`..`).
-- `/dashboard/admin/debug/*` : pages d'essai (base, session, RLS, avatar, roue, éditeurs,
-  PDF Typst et LaTeX, MathField…). Le menu est dans `debug/+layout.svelte`.
+- `/dev/*` (admin seul, hors du tableau de bord) : pages d'essai (session, RLS, avatar, roue,
+  PDF Typst et LaTeX, MathField…), listées par `/dev`. Restent sous `/dashboard/admin/debug/` :
+  `question-display` et `rich-text` (menu dans `debug/+layout.svelte`). Les anciennes adresses
+  sont redirigées en 308 ([auth.md](auth.md)).
 - `POST /api/latex/compile` (vérifié le 2026-10-13) : relais vers `texlive.net`
-  (`latexcgi`) pour la page `debug/latex-preview`, son seul appelant. Compte exigé
+  (`latexcgi`) pour la page `/dev/pdf-latex`, son seul appelant. Compte exigé
   (`requireAuth`, l'ancien relais ouvert du finding H13) ; Zod `compileLatexSchema`
   (`src/lib/server/validation/latex.ts` : 50 000 caractères au plus, `svg` / `png` / `pdf`,
   corps 8 à 72). La réponse de texlive.net est renvoyée telle quelle, avec son `Content-Type`.
@@ -219,8 +222,8 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
 - `src/lib/server/openapi/generator.ts` : `generateOpenAPISpec()` écrit **à la main** une
   spécification OpenAPI 3.1 de 11 chemins.
 - `GET /api/openapi.json` : admin seul, `Cache-Control: private, no-store`.
-- `/dashboard/admin/debug/api-docs` (admin seul : garde de la section et `requireAdmin`
-  dans `+page.server.ts` ; `ssr = false`, entrée « API (Swagger) » du menu debug) :
+- `/dev/api` (ex-`/dashboard/admin/debug/api-docs` ; admin seul : garde de `/dev` et `requireAdmin`
+  dans `+page.server.ts` ; `ssr = false`, entrée « API (Swagger) » de `/dev`) :
   Swagger UI chargé depuis `unpkg.com` (version épinglée 5.11.0, autorisée par la CSP de
   `src/hooks.server.ts`), qui lit
   `/api/openapi.json`. Jusqu'au 2026-10-13, la page était publique (`/api-docs`) et

@@ -182,7 +182,10 @@ Routes :
 `/login` n'existe pas : `redirectHandle` (`src/lib/server/redirectHandle.ts`) le renvoie en 308
 vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
 `src/lib/server/__tests__/redirectHandle.test.ts`). Même filet pour `/cas`, retirée le 2026-10-13 :
-`/cas` et `/cas/` mènent à `/atelier` en 308, query string comprise.
+`/cas` et `/cas/` mènent à `/atelier` en 308, query string comprise. Même filet pour les pages de
+démo et de debug rangées sous `/dev` (table `MOVED_PAGES` : `/test-saisie`, `/test-cadres`,
+`/test-erreur`, `/demo/theme-test`, `/dashboard/admin/debug/*`…) ; `/test-font` seulement à l'adresse
+exacte, ses images restant sous `static/test-font/`.
 
 ## Processus 1 — la connexion (Supabase Auth)
 
@@ -193,7 +196,7 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
 1. `requestIdHandle` — `locals.requestId`, en-tête `X-Request-ID`.
 2. `maintenanceHandle` — avant Supabase, pour marcher base gelée.
 3. `supabaseHandle` — `locals.supabase` et `locals.safeGetSession`.
-4. `redirectHandle` — anciennes routes, dont `/login` et `/cas`.
+4. `redirectHandle` — anciennes routes, dont `/login`, `/cas` et les pages déplacées sous `/dev`.
 5. `userProfileHandle` — `locals.user` puis `locals.profile`.
 6. `accountStatusHandle` — compte non approuvé : 403 sur toute API et toute écriture (voir « Le statut du compte »).
 7. `passwordChangeHandle` — mot de passe provisoire à changer : pages → `/auth/update-password`, API et écritures → 403 (voir « Mots de passe des élèves »).
