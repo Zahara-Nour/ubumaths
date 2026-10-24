@@ -89,9 +89,11 @@ describe('hors de l’échelle : la notation scientifique', () => {
 		expect(decimal(input).output).toBe(expected);
 	});
 
+	// Retapé en mode exact, il garde sa notation scientifique (Q24, lot 5c ; avant :
+	// `8770000000` et `7143/50000000000`), sans zéro final à la mantisse
 	it('le texte se retape dans la console', () => {
-		expect(new WebReplEngine().execute('8.7700*10^9').output).toBe('8770000000');
-		expect(new WebReplEngine().execute('1.4286*10^-7').output).toBe('7143/50000000000');
+		expect(new WebReplEngine().execute('8.7700*10^9').output).toBe('8.77*10^9');
+		expect(new WebReplEngine().execute('1.4286*10^-7').output).toBe('1.4286*10^{-7}');
 	});
 
 	// Au-delà du plafond des puissances exactes, le calcul décimal du moteur échoue

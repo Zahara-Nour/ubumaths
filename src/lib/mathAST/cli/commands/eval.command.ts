@@ -16,7 +16,7 @@ import { fraction, opposite } from '../../factory';
 import { evaluate, substitute } from '../../eval';
 import { forbiddenValue, FORBIDDEN_REASON_TEXT } from '../../eval/forbidden-value';
 import { hasDecimalLiteral } from '../../tidy/decimal';
-import { tidy } from '../../tidy';
+import { exactValueToShow } from '../../eval/exact-value';
 import {
 	approximateDigitsOf,
 	approximateLatexOf,
@@ -312,7 +312,7 @@ function displayedValue(
 			latex: digits.exact ? written : `\\approx ${written}`
 		};
 	}
-	const readable = readableExact(exactNode);
+	const readable = exactValueToShow(exactNode, { source: substituted });
 	return {
 		ast: readable,
 		latex: toLatex(readable),
@@ -321,17 +321,4 @@ function displayedValue(
 				approximateLatex: approximateLatexOf(digits)
 			})
 	};
-}
-
-/**
- * Un résultat exact mis au propre (π/3, √2/2), comme la ligne d'un calcul
- * (`readableExact` de `web-repl-engine.ts`). Un décimal reste décimal : `tidy`
- * garde son registre (S1).
- */
-function readableExact(node: MathNode): MathNode {
-	try {
-		return tidy(node);
-	} catch {
-		return node;
-	}
 }

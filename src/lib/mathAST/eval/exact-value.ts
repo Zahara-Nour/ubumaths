@@ -16,8 +16,9 @@ import { denormalize, normalize } from '../normal';
 import { tidy } from '../tidy';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { computeCost } from '../simplify/cost';
-import { divide, euler, opposite, superscript } from '../factory';
+import { divide, euler, multiply, opposite, superscript } from '../factory';
 import {
+	isDelimiter,
 	isDivision,
 	isFunction,
 	isMultiplication,
@@ -57,13 +58,16 @@ export interface ExactValueOptions {
 /**
  * L'écriture affichée d'une valeur exacte.
  *
- * - le registre décimal de la saisie est gardé quand la valeur a une écriture
- *   décimale finie (S1 : `0,1+0,2 → 0,3`) ; sinon une fraction ou un radical
- *   (`1/3+0,5 → 5/6`, `0,5√2 → √2/2`, Q22) ;
+ * - le registre décimal de la saisie est gardé, avec la règle S1 de `tidy`
+ *   (`0,1+0,2 → 0,3`, `1/3+0,5 → 5/6`) ; un irrationnel n'a pas d'écriture
+ *   décimale finie (`0,5√2 → √2/2`, Q22) ;
  * - une notation scientifique tapée (`3 × 10²⁰`) reste telle quelle (Q24) ;
- * - parmi les écritures candidates (la valeur, la forme normale de la source,
- *   la source), mises au propre par `tidy`, celle qui laisse le moins de
- *   fonctions à calculer (`cos(π/6)` calculé), puis la moins chère ;
+ * - un rationnel s'écrit depuis la valeur seule (la source n'apporterait rien,
+ *   et `normalize` coûte cher sur une grosse saisie) ;
+ * - sinon, parmi les écritures candidates (la valeur, la forme normale de la
+ *   source, la source), mises au propre par `tidy`, la plus CALCULÉE — le moins
+ *   de fonctions à calculer (`cos(π/6)` calculé), puis le moins de puissances
+ *   d'une somme (`(1+√2)^{100}` développée) —, puis la moins chère ;
  * - une somme de fractions de même dénominateur s'écrit en une seule (Q23 :
  *   `(1 + √5)/2`).
  *
@@ -74,18 +78,18 @@ export interface ExactValueOptions {
  */
 export function exactValueToShow(value: MathNode, options: ExactValueOptions = {}): MathNode {
 	const { source } = options;
-	if (source !== undefined && isTypedScientificNotation(source)) return source;
+	if (source !== undefined && isTypedScientificNotation(source)) return withCross(source);
 	if (isWrittenNumber(value) || isTypedScientificNotation(value)) return value;
 
 	const rational = rationalOf(value);
 	const decimalRegister = options.decimal ?? (source !== undefined && hasDecimalLiteral(source));
 	if (decimalRegister && rational !== null) {
-		const written = decimalWriting(rational);
+		const written = decimalRegisterWriting(rational, source);
 		if (written !== null) return written;
 	}
 
 	const candidates = [value];
-	if (source !== undefined) {
+	if (source !== undefined && rational === null) {
 		const normalized = normalizeSafe(source);
 		if (normalized !== null) candidates.push(normalized);
 		candidates.push(source);
@@ -108,14 +112,17 @@ export function exactValueToShow(value: MathNode, options: ExactValueOptions = {
 const LATER_CANDIDATE_BIAS = 1.2;
 
 /**
- * La meilleure de deux écritures : la moins de fonctions à calculer, puis la
+ * La meilleure de deux écritures : la plus calculée (`uncomputed`), puis la
  * moins chère ; la plus tardive (la source) gagne les égalités, règle du
  * tableau de variations (`-1/(2e)` plutôt que `-½ e^{2·(−½)}`).
  */
 function better(current: MathNode, candidate: MathNode): MathNode {
-	const currentCalls = uncomputedCalls(current);
-	const candidateCalls = uncomputedCalls(candidate);
+	const [currentCalls, currentPowers] = uncomputed(current);
+	const [candidateCalls, candidatePowers] = uncomputed(candidate);
 	if (candidateCalls !== currentCalls) return candidateCalls < currentCalls ? candidate : current;
+	if (candidatePowers !== currentPowers) {
+		return candidatePowers < currentPowers ? candidate : current;
+	}
 	return computeCost(candidate) <= LATER_CANDIDATE_BIAS * computeCost(current)
 		? candidate
 		: current;
@@ -124,12 +131,26 @@ function better(current: MathNode, candidate: MathNode): MathNode {
 /** Les radicaux sont des écritures exactes, pas des calculs laissés en plan. */
 const RADICALS = new Set(['sqrt', 'root']);
 
-/** Les appels de fonction sans variable laissés dans l'écriture (`cos(π/6)`, `ln 2`, pas `√3`). */
-function uncomputedCalls(node: MathNode): number {
-	return findNodes(
+/**
+ * Ce qu'une écriture laisse à calculer : les appels de fonction sans variable
+ * (`cos(π/6)`, `ln 2`, pas `√3`), puis les puissances entières d'une somme
+ * (`(1+√2)^{100}`).
+ */
+function uncomputed(node: MathNode): readonly [number, number] {
+	const calls = findNodes(
 		node,
 		(n) => isFunction(n) && !RADICALS.has(n.name) && getVariables(n).size === 0
 	).length;
+	const powers = findNodes(node, isPowerOfSum).length;
+	return [calls, powers];
+}
+
+/** `(a + b)^n`, n entier écrit. */
+function isPowerOfSum(node: MathNode): boolean {
+	if (!isSuperscript(node) || !isNumber(node.superscript)) return false;
+	if (!/^\d+$/.test(node.superscript.value)) return false;
+	const base = isDelimiter(node.base) ? node.base.content : node.base;
+	return base.type === 'addition' || base.type === 'subtraction';
 }
 
 // =============================================================================
@@ -161,6 +182,19 @@ function isTypedScientificNotation(node: MathNode): boolean {
 	);
 }
 
+/**
+ * Une notation scientifique écrite avec ×, sans zéro final à la mantisse
+ * (`8.7700*10^9` tapé → `8,77 × 10⁹`).
+ */
+function withCross(node: MathNode): MathNode {
+	if (isOpposite(node)) return opposite(withCross(node.operand));
+	if (!isMultiplication(node) || !isNumber(node.left)) return node;
+	const mantissa = node.left.value.includes('.')
+		? node.left.value.replace(/0+$/, '').replace(/\.$/, '')
+		: node.left.value;
+	return multiply(numericNode(mantissa), node.right, 'cross');
+}
+
 /** Valeur exacte d'un nombre, d'un opposé ou d'un quotient de nombres ; `null` sinon. */
 function rationalOf(node: MathNode): Rational | null {
 	if (isOpposite(node)) {
@@ -175,6 +209,21 @@ function rationalOf(node: MathNode): Rational | null {
 			: divRational(numerator, denominator);
 	}
 	return extractRational(node);
+}
+
+/**
+ * Un rationnel dans le registre décimal (S1). `tidy` en fixe la règle sur la
+ * source : décimal, sauf si un opérande est une fraction ou une division
+ * (`1/4 + 0,5 → 3/4`, `1,5/3 → 1/2`) ou si l'écriture décimale est infinie.
+ * Ce qu'il ne calcule pas (`max(2,5 ; 1)`), ou sans source : décimal si
+ * l'écriture est finie.
+ */
+function decimalRegisterWriting(r: Rational, source: MathNode | undefined): MathNode | null {
+	if (source !== undefined) {
+		const tidied = tidySafe(source);
+		if (rationalOf(tidied) !== null) return tidied;
+	}
+	return decimalWriting(r);
 }
 
 /** L'écriture décimale d'un rationnel (`-1.6`), `null` si elle est infinie. */

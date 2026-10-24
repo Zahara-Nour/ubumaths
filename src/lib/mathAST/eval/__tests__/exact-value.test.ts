@@ -136,3 +136,17 @@ describe('valeurs déjà écrites', () => {
 		expect(shownAlone('5.0990')).toBe('5.0990');
 	});
 });
+
+describe('le registre décimal suit la règle S1 de tidy', () => {
+	it('écrit une fraction quand un opérande est une fraction', () => {
+		expect(shown('\\frac{1}{4}+0.5')).toBe('\\dfrac{3}{4}');
+	});
+
+	it('lit une division comme une fraction', () => {
+		expect(shown('\\frac{1.5}{3}')).toBe('\\dfrac{1}{2}');
+	});
+
+	it('écrit en décimal ce que tidy ne calcule pas', () => {
+		expect(shown('\\max(2.5,1)')).toBe('2.5');
+	});
+});

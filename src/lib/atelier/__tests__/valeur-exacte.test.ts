@@ -1,109 +1,39 @@
 /**
- * « Valeur exacte » sous la barre, seulement quand la fraction vient d'un vrai
- * calcul (décision de David du 2026-10-15, option 3).
- *
- * Une case qui écrit un décimal fini montre sa fraction sous la barre (Q-L3-2)
- * — mais 3,1416 = 3927/1250 n'apprend rien. Règle : la fraction se montre si
- * le calcul contient une DIVISION (écrite, d'une fonction comme MOYENNE, d'une
- * fonction de l'élève, d'une case citée) ; sans division (décimal tapé, somme de
- * décimaux, ARRONDI), elle est masquée (`shownExact`).
+ * La ligne d'un calcul de l'Atelier passe par la valeur exacte à afficher
+ * commune (lot 5c du chantier simplify-carte, `eval/exact-value.ts`, § 57-58).
+ * Mesuré sur main : `0,1+0,2 → 3/10`, `2,50 → 5/2`, `(1+√5)/2 → 1/2 + √5/2`,
+ * `3×10²⁰` écrit en entier.
  */
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
+import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { runInput, type CalcSession } from '../calcul';
 
-const A = 0;
-const C = 2;
-
-/** `true` : pas de « Valeur exacte » sous la barre (la case montre déjà ce qui compte). */
-function hidden(formula: string, before: { column: number; row: number; text: string }[] = []) {
-	const a = new Atelier();
-	a.editCells([...before, { column: C, row: 1, text: formula }]);
-	const v = a.cellValue(C, 1);
-	if (v.kind !== 'number') throw new Error(`pas un nombre : ${JSON.stringify(v)}`);
-	return v.shownExact === true;
+function latexOf(input: string): string | undefined {
+	const session: CalcSession = { atelier: new Atelier(), engine: new WebReplEngine() };
+	const result = runInput(session, input);
+	if (result.kind !== 'calcul') throw new Error(`pas un calcul : ${JSON.stringify(result)}`);
+	return result.latex;
 }
 
-const series = [
-	{ column: A, row: 1, text: '12' },
-	{ column: A, row: 2, text: '15' },
-	{ column: A, row: 3, text: '9' },
-	{ column: A, row: 4, text: '14' }
-];
-
-describe('sans division : la fraction est masquée', () => {
-	const cases = ['=0,25', '=-2+0,5', '=1,5+2,25', '=0,1*3', '=ARRONDI(PI();4)', '=ARRONDI(1/3;2)'];
-	for (const formula of cases) {
-		it(formula, () => expect(hidden(formula)).toBe(true));
-	}
-
-	it('=ARRONDI(ECARTYPE(A1:A4);2)', () => {
-		expect(hidden('=ARRONDI(ECARTYPE(A1:A4);2)', series)).toBe(true);
-	});
-
-	it('une somme de décimaux (=SOMME)', () => {
-		expect(
-			hidden('=SOMME(A1:A2)', [
-				{ column: A, row: 1, text: '1,25' },
-				{ column: A, row: 2, text: '2,5' }
-			])
-		).toBe(true);
-	});
-});
-
-describe('avec une division : la fraction se montre', () => {
-	const cases = ['=1/4', '=509/128', '=-3/2', '=6:8'];
-	for (const formula of cases) {
-		it(formula, () => expect(hidden(formula)).toBe(false));
-	}
-
-	it('une moyenne', () => {
-		expect(hidden('=MOYENNE(A1:A4)', series)).toBe(false);
-	});
-
-	it('une case citée qui vient d’une division', () => {
-		expect(hidden('=A1*3', [{ column: A, row: 1, text: '=1/4' }])).toBe(false);
-	});
-});
-
-// Revue : la règle regardait l'arbre APRÈS l'injection des cases citées, où une
-// formule exacte (`=0,25`) entre sous la forme de sa fraction (1/4)
-describe('une case citée garde son origine', () => {
-	const masked: [string, string][] = [
-		['=0,25', '=A1*2'],
-		['=0,1*3', '=A1+1'],
-		['=1,5+2,25', '=A1+1'],
-		['=ARRONDI(PI();4)', '=A1+1']
-	];
-	for (const [cited, formula] of masked) {
-		it(`A1 ${cited}, ${formula} : masquée`, () => {
-			expect(hidden(formula, [{ column: A, row: 1, text: cited }])).toBe(true);
-		});
-	}
-
-	it('=SOMME(A1:A2) avec A1 =0,25 : masquée', () => {
-		expect(
-			hidden('=SOMME(A1:A2)', [
-				{ column: A, row: 1, text: '=0,25' },
-				{ column: A, row: 2, text: '1' }
-			])
-		).toBe(true);
-	});
-
-	it('=SOMME(0,25;1) : masquée', () => {
-		expect(hidden('=SOMME(0,25;1)')).toBe(true);
-	});
-
-	it('une case tapée `1/4` citée : une division, montrée', () => {
-		expect(hidden('=A1*3', [{ column: A, row: 1, text: '1/4' }])).toBe(false);
-	});
-
-	it('une notation scientifique tapée (1e-3) est un décimal tapé : masquée', () => {
-		expect(hidden('=1e-3')).toBe(true);
-		expect(hidden('=2,5e-2*2')).toBe(true);
-	});
-
-	it('MOYENNE de nombres entiers : montrée (elle divise)', () => {
-		expect(hidden('=MOYENNE(2;3)')).toBe(false);
+describe('la ligne d’un calcul exact', () => {
+	it.each([
+		// S1 : le registre décimal de la saisie
+		['0,1+0,2', '0{,}3'],
+		['2,50', '2{,}5'],
+		['1/3+0,5', '\\dfrac{5}{6}'],
+		// Q22 : un irrationnel n'a pas d'écriture décimale finie
+		['0,5*sqrt(2)', '\\dfrac{\\sqrt{2}}{2}'],
+		// Q23 : une seule fraction sur un dénominateur commun
+		['(1+sqrt(5))/2', '\\dfrac{1 + \\sqrt{5}}{2}'],
+		// Q24 : la notation scientifique tapée
+		['3*10^20', '3 \\times 10^{20}'],
+		// Inchangés
+		['1/3+1/6', '\\dfrac{1}{2}'],
+		['cos(π/6)', '\\dfrac{\\sqrt{3}}{2}'],
+		['2^10', '1024']
+	])('%s → %s', (input, expected) => {
+		expect(latexOf(input)).toBe(expected);
 	});
 });

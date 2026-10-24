@@ -91,7 +91,7 @@ import {
 	isWrittenNumber,
 	type ApproximateDigits
 } from '../approximation';
-import { tidy } from '../../tidy';
+import { exactValueToShow } from '../../eval/exact-value';
 import { mapNode } from '../../transforms';
 
 // =============================================================================
@@ -124,26 +124,23 @@ function approximationFields(
 	}
 	// En mode décimal, la ligne montre déjà la valeur décimale : le bouton rend
 	// l'exacte, sauf si c'est un nombre déjà écrit (« ≈ 3 » vaut 3)
-	// … écrite par `tidy`, comme la ligne en mode exact : π/3, pas ⅓ π (revue du lot B) —
-	// sauf une écriture gardée, que `tidy` développerait (`(1+1/1000)^{1000}`)
+	// … écrite comme la ligne en mode exact (valeur exacte à afficher) : π/3, pas ⅓ π
+	// (revue du lot B) — sauf une écriture gardée, que `tidy` développerait
+	// (`(1+1/1000)^{1000}`)
 	return canToggle && approximate !== null
-		? { exactLatex: toLatex(keptWriting ? exact : tidy(exact)) }
+		? { exactLatex: toLatex(keptWriting ? exact : exactValueToShow(exact)) }
 		: {};
 }
 
 /**
- * Un résultat exact mis au propre pour l'écrire (π/3, √2/2) : la forme de
- * calcul d'`evaluate` (« coefficient × π ») passée par `tidy` — sauf avec une
+ * Un résultat exact écrit pour être lu (π/3, √2/2, `0,1+0,2 → 0,3`) : la valeur
+ * exacte à afficher commune (lot 5c), la saisie pour source — sauf avec une
  * variable, que `tidy` rangerait (même règle que l'écran de l'atelier,
- * `render.ts`). Un décimal reste décimal : `tidy` garde son registre (S1).
+ * `render.ts`).
  */
-function readableExact(node: MathNode): MathNode {
+function readableExact(node: MathNode, source: MathNode): MathNode {
 	if (getVariables(node).size > 0) return node;
-	try {
-		return tidy(node);
-	} catch {
-		return node;
-	}
+	return exactValueToShow(node, { source });
 }
 
 /**
@@ -1022,11 +1019,11 @@ export class WebReplEngine {
 						: exactResult.reason
 				);
 			}
-			// Format exact result — mis au propre comme à l'écran : `\pi/3`, pas la
+			// L'écriture exacte, la même à l'écran et dans le texte : `\pi/3`, pas la
 			// forme de calcul `{1/3}\pi` d'`evaluate`
-			const exactStr = toCustom(
-				tooLong === null ? readableExact(exactResult.node) : typedWriting(expanded)
-			);
+			const exactShown =
+				tooLong === null ? readableExact(exactResult.node, expanded) : exactResult.node;
+			const exactStr = toCustom(tooLong === null ? exactShown : typedWriting(expanded));
 			const exactOutput = exactStr;
 			const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactStr)}</span>`;
 
@@ -1105,7 +1102,7 @@ export class WebReplEngine {
 				// range la valeur pleine précision (`quantityAst`)
 				ast:
 					currentMode === 'exact'
-						? exactResult.node
+						? exactShown
 						: digits === null
 							? decimalResult.status === 'value'
 								? decimalResult.node
