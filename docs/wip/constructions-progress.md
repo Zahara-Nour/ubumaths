@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 1 « écriture au prof seul » ouverte (#1665)._
+_Mis à jour le 2026-10-24, après #1665 et #1666 (migration jouée en prod)._
 
-- **État** : #1665 mergée (code + migration). Collision d'horodatage avec `passe_lycee_retouches_2` (même `20261024120000`, autre session) : migration renommée `20261024120100` (PR de correction), PAS encore jouée en prod.
-- **Prochaine action** : PR de renommage mergée → `migration list --linked` (seule la mienne sans `remote`, ou avec celle de passe-lycée) → `db:migrate` (4 conditions réunies) ; puis, après le `deploy:prod` demandé par David, PR 2 (`DROP COLUMN author_id`).
-- **En attente de David** : vérifier `/constructions` en prof et en élève (serveur de la branche) ; vérifications #1621 → #1659 dans `docs/wip/verifications-manuelles.md` ; suite possible : `etiquette="aucune"` pour les droites.
+- **État** : #1665 (code + migration) et #1666 (migration renommée `20261024120100` après collision avec `passe_lycee_retouches_2`) mergées ; `db:migrate` joué le 2026-10-24, vérifié en prod (5 policies attendues, `is_teacher()` présente, anon sans EXECUTE). Le code attend le prochain `deploy:prod` ; d'ici là, l'ancien code tourne sans régression (l'admin perd déjà l'écriture).
+- **Prochaine action** : après le `deploy:prod` demandé par David, PR 2 : `DROP COLUMN author_id` (+ index + FK), vue `resources` recréée avant, grep collé, arrêt avant `db:migrate` (destructif).
+- **En attente de David** : vérifications #1665/#1666 (et #1621 → #1659) dans `docs/wip/verifications-manuelles.md` — serveur de test `http://localhost:5177` (worktree, à retirer après sa vérification) ; suite possible : `etiquette="aucune"` pour les droites.
 - **Tranché (2026-10-24)** : écriture des constructions = **prof seul** (l'admin redevient lecteur, conversion XML comprise) ; scripts de démo inchangés (prof et admin) ; le prof lit tout, brouillons compris.
 - **Pièges en cours** : PR 2 — la vue `public.resources` lit `constructions.author_id` (`20260909020000`, `20260930140000`) : la recréer AVANT le `DROP` ; scripts `scripts/constructions-prod/appliquer.ts`, `scripts/convert-instrumenpoche.ts` et le test `lectures-ouvertes-fermees` écrivent `author_id`. `M'` refusé comme identifiant ; commits et PR sans mention Claude.
-- **Worktree / branche** : `../ubumaths-wt-constructions` · `feat/constructions-ecriture-prof`.
+- **Worktree / branche** : `../ubumaths-wt-constructions` (branche `fix/constructions-migration-horodatage`, mergée) gardé pour le serveur de test 5177 ; à retirer ensuite (`git worktree remove` + `branch -d` des deux branches).
 
 ---
 
