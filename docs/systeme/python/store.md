@@ -167,10 +167,11 @@ Tous ces setters déclenchent `saveToStorage()` qui debounce de 500 ms puis :
 
 ### URL sharing
 
-| Méthode                             | Action                                                                      |
-| ----------------------------------- | --------------------------------------------------------------------------- |
-| `generateShareUrl()` → `string`     | LZ-String + `?code=…`. **Throw** si compressé > 2000 chars                  |
-| `loadFromUrl(url: URL)` → `boolean` | Décompresse et remplit `code` ; `false` si param absent ou decompression KO |
+| Méthode                             | Action                                                                                                                                                           |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `generateShareUrl()` → `string`     | LZ-String + `?code=…`. **Throw** si compressé > 2000 chars                                                                                                       |
+| `loadFromUrl(url: URL)` → `boolean` | Décompresse et remplit `code` ; `false` si param absent ou decompression KO                                                                                      |
+| `hasOwnCode()` → `boolean`          | Code de l'élève dans l'éditeur (ni vide, ni code d'accueil) : `/python` demande avant de le remplacer par un `?code=` reçu (« Ouvrir dans Python » de l'atelier) |
 
 ### Initialisation profil
 

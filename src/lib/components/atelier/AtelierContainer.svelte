@@ -47,6 +47,7 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { cascadeMessage, citingCellsNote, removedMessage } from '$lib/atelier/removal';
 	import { tabulationReport } from '$lib/atelier/tabulate';
+	import { pythonOf, pythonPageOf } from '$lib/atelier/to-python';
 	import {
 		ArchiveRestore,
 		EllipsisVertical,
@@ -855,6 +856,16 @@
 		document.getElementById('atelier-mes-objets')?.focus();
 	}
 
+	function openInPython(name: string) {
+		const translated = pythonOf(atelier, name);
+		const page = translated.ok ? pythonPageOf(translated.code) : translated;
+		if (!page.ok) {
+			toaster.error(page.message);
+			return;
+		}
+		window.open(page.url, '_blank', 'noopener');
+	}
+
 	function handleAction(action: ObjectAction, object: AtelierObject) {
 		if (action.id === 'remove') {
 			const dependents = atelier.removalOf(object.name);
@@ -880,6 +891,12 @@
 			const bottom = Math.max(1, object.definition.split(';').length);
 			dataZone = { left: object.column, right: object.column, top: 1, bottom };
 			dataKey++;
+			return;
+		}
+
+		// « Ouvrir dans Python » : un nouvel onglet, l'atelier ne bouge pas (pont du 2026-10-24)
+		if (action.id === 'python') {
+			openInPython(object.name);
 			return;
 		}
 

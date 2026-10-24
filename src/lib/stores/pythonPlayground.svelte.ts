@@ -582,6 +582,16 @@ class PythonPlaygroundStore {
 	}
 
 	/**
+	 * L'élève a-t-il du code à lui dans l'éditeur ? Avant de le remplacer par un
+	 * code reçu (`?code=`, « Ouvrir dans Python » de l'atelier), on lui demande
+	 * (décision Q1 du 2026-10-24) — le code d'accueil ou un éditeur vide, non.
+	 */
+	hasOwnCode(): boolean {
+		const code = this.code.trim();
+		return code !== '' && code !== DEFAULT_CODE.trim();
+	}
+
+	/**
 	 * Load code from a URL query parameter.
 	 *
 	 * @param url - The URL to load code from
