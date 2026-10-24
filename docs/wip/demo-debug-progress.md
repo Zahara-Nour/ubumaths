@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 2 en cours._
+_Mis à jour le 2026-10-24, après #1677._
 
-- **État** : PR 1 (socle) mergée (#1675). PR 2 (déplacements vers `/dev`) ouverte : 18 pages sous `/dev`, `database` → `/dashboard/admin/integrite-donnees`, redirections 308 (`MOVED_PAGES`), lien « Debug » → `/dev`.
-- **Prochaine action** : merger la PR 2, puis PR 3 (fusions 7, 8, 15 ; parts dev des lignes 1, 5, 6, 10).
+- **État** : PR 1 (socle, #1675) et PR 2 (déplacements vers `/dev`, #1677) mergées, pas en prod. 18 pages sous `/dev`, `database` → `/dashboard/admin/integrite-donnees`, redirections 308 (`MOVED_PAGES`).
+- **Prochaine action** : PR 3, fusions (lignes 7, 8, 15) et parts dev des lignes 1, 5, 6, 10. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main`.
 - **En attente de David** : rien.
-- **Pièges en cours** : sous `/dev`, jamais de donnée sensible par un load universel (`+page.ts`) ni par Supabase dans le navigateur ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES` ; `/test-font` redirigée à l'adresse exacte seulement (images sous `static/test-font/`) ; `question-display` et `rich-text` restent sous `admin/debug` jusqu'à la PR 3 ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : `../ubumaths-wt-demo-debug` · `feat/demo-debug-deplacements`.
+- **Pièges en cours** : sous `/dev`, jamais de donnée sensible par un load universel ni par Supabase dans le navigateur ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES` ; une page sortie du tableau de bord doit porter son `<h1>` (test `chaque-page-a-un-titre`) et ses marges ; chaque page déplacée → `couvre:` d'une doc (garde de couverture au `pre-push`) ; `question-display` et `rich-text` encore sous `admin/debug` ; `/test-font` redirigée à l'adresse exacte seulement ; ligne 4 après le chantier constructions.
+- **Worktree / branche** : aucun (PR 2 nettoyée).
 
 ## Décisions de David (2026-10-24)
 
@@ -162,4 +162,5 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - 18 pages déplacées telles quelles (`git mv`) : lignes 9, 11, 12, 13, 14, 16, 19 et 11 pages de la ligne 18. Adresses : voir `MOVED_PAGES` (`src/lib/server/redirectHandle.ts`), 308 comme les autres anciennes routes, sous-pages et query string comprises.
 - `database` → `/dashboard/admin/integrite-donnees` (titre « Intégrité des données », lien propre au menu admin) ; « Debug » → `/dev`.
 - `/dev/erreurs/surveillance` traduite en français. Carte « Test de Thème » retirée du carrefour `/demo` (page désormais admin). Exclusion sitemap `/blockly/**` retirée (plus de page).
+- Retour de CI : 10 pages tenaient leur `<h1>` du layout de debug → titre et marges ajoutés. Garde de couverture : `couvre:` de `surveillance-des-erreurs.md` étendu, `trous` Blockly repointé.
 - Vérifié sur 5178 (Playwright) : 20 pages en 200 pour l'admin, redirections justes, élève 403, anonyme → connexion. Erreurs de console déjà présentes avant (clés en double dans `rls` et `correction-generee`, boutons imbriqués dans `theme`, CSP de la feuille Swagger) : laissées telles quelles.
