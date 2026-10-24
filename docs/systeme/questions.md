@@ -370,6 +370,12 @@ vient de `gradeLevelToSchoolLevel(grades)` : le plus haut niveau des `grades`, `
 La **stratégie** (pas atomiques au collège, combinés au lycée…) est choisie **au rendu** par niveau :
 la même suite d'opérations se rédige différemment. `verbosity` : `summarized` | `detailed`.
 
+Dans l'éditeur, le formulaire n'édite que le texte des étapes du mode A (un paragraphe = une étape) ;
+`feedback` et `generatedSteps` s'écrivent en mode JSON. Enregistré en mode formulaire, le modèle
+garde tel quel le reste de la correction chargée (`stringToCorrection`, variation et correction
+partagée ; la duplication d'une variation le copie aussi) — il l'effaçait avant le 2026-10-24.
+Tests : `QuestionTemplateForm-correction-gardee.svelte.test.ts`.
+
 `simplify` avec `intent: 'developper'` ne montre **pas** la trace du pipeline (produits collés
 « 2x1 », la même ligne répétée) : il montre la rédaction de `.développer` dans l'atelier,
 `explainExpansion` (`mathAST/pedagogical-simplify/expand-explained.ts`) — une intention, une seule
