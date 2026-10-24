@@ -132,10 +132,15 @@ Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou),
   `rewarded_grades` retiennent ce qui a été payé ; `pay_mathou_milestones(student, names)`
   (migration `20261024210000`, `service_role` seul) verrouille les lignes de l'élève, paie l'écart
   entre la mémoire et le payé, crédite `profiles.gidouilles` et écrit une ligne
-  `gidouilles_activity` par étape (« Naissance de Tangentin », « Tangentin devient matou »,
-  « Tangentin gagne une étoile » ; le nom vient de `names`, sinon de la notion, 80 signes au plus).
-  Une ligne encore jamais payée paie tout ce qu'elle a atteint (rattrapage). Deux appels
-  simultanés : le second attend le verrou et ne trouve plus rien. Appelée par
+  `gidouilles_activity` par étape (« Chatterie : naissance de Tangentin », « Chatterie : Tangentin
+  devient matou », « Chatterie : Tangentin gagne une étoile » ; le nom vient de `names`, sinon de
+  la notion, 80 signes au plus). Une ligne encore jamais payée paie tout ce qu'elle a atteint
+  (rattrapage). **Plafond** (migration `20261024230000`, choix de David du 2026-10-24 après l'audit
+  de #1689 : les réussites peuvent être forgées par l'élève, correction côté client) : **20
+  gidouilles d'étapes sur 24 heures glissantes**, comptées sur les lignes « Chatterie : … » ; une
+  étape qui ne tient plus attend entière (jamais coupée) et la ligne reste non payée pour elle, puis
+  passe aux appels suivants. La ligne `profiles` de l'élève est verrouillée avant de compter : deux
+  appels simultanés se suivent et ne dépassent pas le plafond à eux deux. Appelée par
   `loadMathouCollectionWithNews` (`payMathouMilestones`, `src/lib/server/mathoux/gidouilles.ts`)
   **après** l'écriture de la mémoire (le versement change `updated_at`), seulement si ce calcul a
   écrit ou si une ligne lue n'est pas payée (`StoredMathouMemory.paid`) : aucune requête dans le

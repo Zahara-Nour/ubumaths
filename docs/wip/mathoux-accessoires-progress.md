@@ -6,19 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1685 ; PR 2 du lot A ouverte._
+_Mis à jour le 2026-10-24, #1689 en revue (plafond ajouté)._
 
-- **État** : #1685 mergée, migration `20261024210000` appliquée en prod (droits vérifiés :
-  postgres + service_role seuls), `db:types` fait. PR 2 (branche
-  `feat/mathoux-gidouilles-travail`) : versement après la mémoire, gidouilles dans la carte de
-  fin de séance et la bulle du Palotin, +2 avec le forfait de révision.
-- **Prochaine action** : PR 2 mergée → lot B (page de dessins des 6 décorations + races à motif de
-  panse, à faire valider par David avant toute migration).
-- **En attente de David** : (1) +2 de révision lié au forfait du Palotin ou à la séance seule ;
-  (2) étapes des Mathoux farmables par fausses réussites (audit #1689) : accepter, ou plafond
-  par jour. PR #1689 non poussée depuis ces questions.
-- **Pièges en cours** : lignes `gidouilles_activity` d'un même versement = même `created_at`
-  (ordre non garanti) ; le worktree garde son nom `mathoux-accessoires` pour toute la suite.
+- **État** : #1685 mergée et migrée. #1689 (branche `feat/mathoux-gidouilles-travail`) : versement
+  des étapes, annonce, +2 de révision avec ou sans Palotin (choix 1b de David), plafond 20 / 24 h
+  glissantes + libellés « Chatterie : » (choix 2b, migration `20261024230000`, appliquée en local).
+- **Prochaine action** : audit de sécurité de la migration du plafond → CI verte → merge →
+  `db:migrate` (question d'accès tranchée : personne ne lit rien de neuf) → lot B (page de dessins).
+- **En attente de David** : rien.
+- **Pièges en cours** : lignes d'un même versement = même `created_at` ; tests qui paient en
+  plusieurs fois : `ageActivity` pour libérer le plafond ; après rebase, `FRESH=1` au typecheck.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-gidouilles-travail`.
 
 ## Constat (2026-10-24)
@@ -66,3 +63,6 @@ _Mis à jour le 2026-10-24, après #1685 ; PR 2 du lot A ouverte._
 
 - 2026-10-24 — #1685 (migration du lot A) mergée ; `db:migrate` + `db:types`. Revue de code et
   audit de sécurité : aucun bloquant ; corrigés : étoile en double, stade payé jamais en baisse.
+- 2026-10-24 — #1689 : revue de code et audit ; David choisit (1b) +2 de révision sans condition
+  de Palotin, (2b) plafond des étapes contre les réussites forgées (20 / 24 h glissantes,
+  recommandation acceptée : « je te suis ») ; +2 réservé aux élèves.

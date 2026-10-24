@@ -206,7 +206,9 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
 7. **Le travail mathématique** (décisions de David du 2026-10-24) : jusque-là, il ne rapportait
    aucune gidouille (seulement l'XP du Palotin). Deux sources :
    - **étapes de la Chatterie** : naissance +3, matou +5, grand matou +10, étoile +5, une fois
-     chacune, par `pay_mathou_milestones` (voir [mathoux.md § Mémoire](mathoux.md)) ;
+     chacune, **20 au plus sur 24 heures glissantes** (les réussites peuvent être forgées par
+     l'élève : le plafond rend l'abus lent et visible), libellés « Chatterie : … », par
+     `pay_mathou_milestones` (voir [mathoux.md § Mémoire](mathoux.md)) ;
    - **révision du jour** : +2 quand la séance de révision du jour est terminée (règle du forfait :
      10 cartes du jour, ou paquet vidé après 3), au plus une fois par jour, **avec ou sans
      Palotin**, plafond d'XP atteint ou non (`rewardFinishedReviewSession`,
