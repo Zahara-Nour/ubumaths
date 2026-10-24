@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1661 (5b mergé, pas en prod ; main reverdi)._
+_Mis à jour le 2026-10-24, 5c en cours (phase 0 validée, § 57-58)._
 
 - **État** : lot 5. ~~Q19~~ (#1655), ~~5a D1 + Q18~~ (#1656) et ~~5b D2~~ (#1658 + #1660, § 55-56) mergés. f′ finit par `finalDerivative` (`final-form.ts`) ; dans l'étude des variations, `displayedDerivatives` (`variations/display.ts`) ajoute l'étape « On factorise pour étudier le signe » (`factoriser` lycée, garde-fous : exposants, décimaux, nombre seul devant une somme, racine + fraction).
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a D1~~ → ~~5b D2~~ → **5c valeur exacte** → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5c (§ 13 A, § 49) : une seule fonction « valeur exacte à afficher » pour `readable`, `tidyKeepingValue` (`{{eval}}`), `tidyExactValue` (tableau), `simplifyExact` (grapheur), limites et solutions ; `0,1+0,2 → 0,3`, `2,50 → 2,5`, `cos(π/6)` calculé partout. Phase 0 d'abord (comportements, à valider).
+- **Prochaine action** : 5c en cours. Fait : `exactValueToShow` (`eval/exact-value.ts`) + tableau, grapheur, limites. Reste : Atelier (moteur `readableExact`, `render.ts` `readable`, `.eval`), `{{eval}}` (`formatExact`, relevé des modèles touchés à montrer, Q25), ligne `S = …` de `.résoudre` (3 lieux), doc, PR.
 - **En attente de David** : vérifications manuelles des espaces (#1642), de f′ (#1656) et des variations (#1658/#1660) ; choix pour `pnpm math` (supprimer avec `/calc`, ou brancher sur l'Atelier, § 54).
 - **Pièges en cours** : ne plus sonder avec `pnpm math` ; `(x^{0,5})′` écrit `0,5/x^{1/2}` (laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; `sqrt-product` ne regarde pas l'indice `power` ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-5c-valeur-exacte`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 

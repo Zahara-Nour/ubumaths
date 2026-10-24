@@ -12,15 +12,12 @@ import type { MathNode } from '../types';
 import type { Domain } from '../domain/types';
 import type { CriticalPointInfo, CriticalPointNature } from './types';
 import { findZerosWithStatus } from '../sign/helpers/zeros';
-import { euler, superscript } from '../factory';
 import { isFunction } from '../guards';
-import { findFirst, mapNode } from '../transforms';
-import { normalize, denormalize } from '../normal';
+import { findFirst } from '../transforms';
 import { computeDomain } from '../domain/compute';
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
-import { tidy } from '../tidy';
-import { cheapest } from '../simplify/cost';
+import { exactValueToShow } from '../eval/exact-value';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { containsNode } from '../domain/algebra';
 
@@ -227,39 +224,16 @@ export function evaluateAtCriticalPoint(
 }
 
 /**
- * La valeur exacte f(x₀), mise au propre pour l'affichage : `normalize`
- * applique les identités, `tidy` met au propre.
- *
- * Trois écritures candidates de la même valeur : l'évaluation exacte
- * (`-exp(-1)` pour x eˣ en −1), la forme normale de la substitution, et la
- * substitution elle-même (`-1·e^{-1}`, que `tidy` rend −1/e). `cheapest` garde
- * la plus simple ; la substitution mise au propre gagne les égalités.
- *
- * Mesuré avant : le minimum de x e^{2x} s'affichait `-1/2·e^{2·(−1/2)}`, celui
- * de x² ln x `ln(e^{−1/2})(e^{−1/2})²`. `tidy` n'applique aucune identité
- * (ln(eᵃ) = a est exclu, docs/systeme/mathast/tidy-spec.md §A) : c'est `normalize` qui
- * réduit (décision de David, option A, 2026-10-05).
- *
- * `normalize` écrit `1/e` sous la forme `exp(-1)`, que `tidy` ne touche pas :
- * chaque candidate repasse en écriture `e^{…}` avant `tidy` (−1/e, pas
- * `-exp(-1)`).
+ * La valeur exacte f(x₀) affichée : la valeur à afficher commune
+ * (`eval/exact-value.ts`, lot 5c), la substitution pour source — `normalize`
+ * y applique les identités (x² ln x en e^{−1/2} : `ln(e^{−1/2})(e^{−1/2})²` →
+ * −1/(2e), décision de David, option A, 2026-10-05).
  *
  * @param substituted - f(x₀), x₀ substitué, non évalué
  * @param evaluated - Ce que rend l'évaluation exacte, `null` si elle a échoué
  */
 export function tidyExactValue(substituted: MathNode, evaluated: MathNode | null): MathNode {
-	const candidates: MathNode[] = [];
-	if (evaluated !== null) candidates.push(evaluated);
-	const normalized = normalizeSafe(substituted);
-	if (normalized !== null) candidates.push(normalized);
-	candidates.push(substituted);
-
-	let best: MathNode | null = null;
-	for (const candidate of candidates) {
-		const tidied = tidySafe(toEulerPowers(candidate));
-		best = best === null ? tidied : cheapest(best, tidied);
-	}
-	return best ?? tidySafe(substituted);
+	return exactValueToShow(evaluated ?? substituted, { source: substituted });
 }
 
 /**
@@ -277,31 +251,6 @@ export function tidyCriticalAbscissa(value: MathNode): MathNode {
 
 function isExpCall(node: MathNode): boolean {
 	return isFunction(node) && node.name === 'exp' && node.args.length === 1;
-}
-
-/** `exp(u)` → `e^{u}` : l'écriture que `tidy` sait mettre au propre (e^{−1} → 1/e). */
-function toEulerPowers(node: MathNode): MathNode {
-	return mapNode(node, (current) =>
-		isFunction(current) && isExpCall(current) ? superscript(euler(), current.args[0]) : current
-	);
-}
-
-/** La forme normale réécrite, `null` si `normalize` lève une exception. */
-function normalizeSafe(node: MathNode): MathNode | null {
-	try {
-		return denormalize(normalize(node));
-	} catch {
-		return null;
-	}
-}
-
-/** `tidy` peut relancer une exception imprévue : on garde alors la forme brute. */
-function tidySafe(node: MathNode): MathNode {
-	try {
-		return tidy(node);
-	} catch {
-		return node;
-	}
 }
 
 /**

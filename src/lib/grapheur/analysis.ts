@@ -38,12 +38,12 @@ import {
 	findCriticalExtrema,
 	getAllDiscontinuities
 } from '$lib/mathAST/analysis';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+import { evaluate, evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
+import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
 import { isInfinity } from '$lib/mathAST/guards';
 import { exactAsymptotes } from './asymptotes-exactes';
 import { touchesZero } from '$lib/mathAST/analysis/near-zero';
 import { restrictAnalysis, type Restriction } from './restriction';
-import { simplify } from '$lib/mathAST/simplify';
 import { substitute } from '$lib/mathAST/eval/substitute';
 import { add, infinity, multiply, variable } from '$lib/mathAST/factory';
 import { evaluateLimit } from '$lib/mathAST/limits';
@@ -1486,15 +1486,17 @@ function analyzeCached(input: AnalysisInput, viewport: Viewport): FunctionAnalys
 }
 
 /**
- * Simplify an ordinate before it is shown.
+ * L'ordonnée affichée d'un extremum.
  *
- * `findCriticalExtrema` returns `y` as the expression evaluated at the critical
- * point, unreduced: the vertex of `x² − 2` comes back as `0^2 - 2`, and a
- * trigonometric one as `sin(-π/2) - 0.5`. Nobody wants to read that.
+ * `findCriticalExtrema` rend `y` comme l'expression évaluée au point critique,
+ * non réduite : le sommet de `x² − 2` arrive en `0^2 - 2`, un extremum
+ * trigonométrique en `sin(-π/2) - 0.5`. Elle passe par la valeur exacte à
+ * afficher commune (lot 5c), la même que le tableau de variations.
  */
 function simplifyExact(node: MathNode): MathNode {
 	try {
-		return simplify(node).result;
+		const result = evaluate(node, { mode: 'exact' });
+		return exactValueToShow(result.status === 'value' ? result.node : node, { source: node });
 	} catch {
 		return node;
 	}

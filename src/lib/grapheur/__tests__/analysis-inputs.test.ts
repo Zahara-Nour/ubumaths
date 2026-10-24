@@ -156,6 +156,24 @@ describe('valeurs exactes', () => {
 		expect(toLatex(extremum.exactX!)).toBe('0');
 	});
 
+	// Lot 5c : la valeur exacte à afficher commune (`eval/exact-value.ts`), la même
+	// que le tableau de variations. Mesuré avant : `simplify` donnait −3/2 (décimal
+	// perdu, S1) et ln(2)/2 (identité appliquée en silence, S4)
+	it('garde le registre décimal de l’ordonnée d’un extremum', () => {
+		const ordinates = analyse('\\sin(x)-0.5').extrema.flatMap((e) =>
+			e.exactY === undefined ? [] : [toLatex(e.exactY)]
+		);
+
+		expect(ordinates).toContain('-1.5');
+		expect(ordinates).not.toContain('-\\dfrac{3}{2}');
+	});
+
+	it('n’applique pas d’identité à l’ordonnée d’un extremum', () => {
+		const [extremum] = analyse('x^2+\\frac{1}{4}\\ln(4)').extrema;
+
+		expect(toLatex(extremum.exactY!)).toBe('\\dfrac{\\ln\\left( 4 \\right)}{4}');
+	});
+
 	it('n’invente pas de valeur exacte quand seul le numérique a trouvé', () => {
 		// exp(x) - x - 2 : zéros non résolubles algébriquement.
 		const roots = analyse('e^x-x-2').roots;
