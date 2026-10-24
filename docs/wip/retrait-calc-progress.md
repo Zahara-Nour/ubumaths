@@ -104,3 +104,13 @@ le trouve lourd à l'usage.
   `/calc` mis à jour, `docs/systeme/atelier.md` (`couvre:`), versement de `atelier-saisie-naturelle.md`.
   Suppression de `mathAST/step-generator` (seul lecteur : `/calc` ; `step-renderer-base.ts` et
   `pedagogical-solve/types.ts` ne le citent qu'en commentaire, à mettre à jour).
+
+### Revue Opus de la PR 1 (2026-10-24)
+
+- **F1** `2*30°` : étapes concluant en radians (`\dfrac{1}{3}\pi~\unit{rad}`) sous une ligne en degrés →
+  `hasUnit`, pas d'étapes.
+- **F2** `3/4*2/9` contredisait C3 (lu `((3/4)·2)/9`, étapes en `× 2 ÷ 9`) → `hasSlashChain`, pas
+  d'étapes.
+- **F3** `2:0,5` s'écrivait `\dfrac{2}{0{,}5}` → fraction seulement entre deux entiers.
+- Vérifié sans finding : `.évaluer` inchangé (106 tests), aucune étape en double, saisies
+  récrites (suites, mesures, grandeurs, π, fonctions à paramètre) sans étapes, 37 ms au pire.
