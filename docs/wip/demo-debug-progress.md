@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-24, avant toute PR._
 
-- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 7 tranchées (tableau ci-dessous).
+- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 8 tranchées (tableau ci-dessous).
 - **Prochaine action** : poursuivre la revue au premier `?` du tableau « Revue page par page ».
-- **En attente de David** : le sort des lignes 8 à 19. Rien n'est codé : le plan viendra à la fin de la revue.
+- **En attente de David** : le sort des lignes 9 à 19. Rien n'est codé : le plan viendra à la fin de la revue.
 - **Pièges en cours** : rien ne se supprime pour l'instant ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` sont de vraies fonctionnalités, hors chantier.
 - **Worktree / branche** : aucun (rien de codé) ; journal commité sur `main`.
 
@@ -17,7 +17,7 @@ _Mis à jour le 2026-10-24, avant toute PR._
    la coquille du tableau de bord (pages en plein écran). `/dashboard/admin/debug/*` y passe
    aussi. Anciennes adresses redirigées un temps.
 3. **Une vitrine publique** (`/demo/…`), au contenu choisi page par page avec David.
-4. **Aucune suppression pour l'instant**, sauf fusion de doublons demandée par David (ligne 7).
+4. **Aucune suppression pour l'instant**, sauf fusion de doublons demandée par David (lignes 7, 8).
 5. **Contenu pédagogique = prof, jamais l'admin** (règle générale). D'où une 3ᵉ catégorie :
    **aide à l'écriture**, réservée au prof, dans un espace unique `/aide-ecriture/…` (pages pour
    essayer et apprendre à écrire scripts, blocs, figures). Exception : l'éditeur de constructions
@@ -63,7 +63,7 @@ Sort : **vitrine** (`/demo/…`, public) · **aide** (`/aide-ecriture/…`, prof
 | 5   | `/demo/vip-cards-demo`          | vitrine + dev          | `/demo/cartes` : 4 cartes (une par rareté) écrites dans le code, lisibles sans compte (vérifier où sont les images, `image_path`) ; `/examples` et le catalogue lu en base → `/dev/cartes`                                                                                                                                                                        |
 | 6   | `/demo/mots-cliquables`         | dev + vitrine          | page de test telle quelle → `/dev/mots-cliquables` ; `/demo/lexique` : mots cliquables et sélecteur de niveau (bloc 3 : la définition suit l'élève), sans les consignes de test                                                                                                                                                                                   |
 | 7   | `/demo/question-display-demo`   | dev (fusion) + vitrine | fusion avec `admin/debug/question-display` → `/dev/carte-question` (page admin + 4 questions d'exemple) ; `/demo/questions` : une série de 3-4 questions sous ses 5 formes en onglets (en classe, entraînement, flash-cards, course aux nombres, révisions espacées — simulée si elle exige la base), une phrase « qui, quand » par forme, lien vers `/automaths` |
-| 8   | `/demo/rich-text-editor-demo`   | ?                      |                                                                                                                                                                                                                                                                                                                                                                   |
+| 8   | `/demo/rich-text-editor-demo`   | dev (fusion) + vitrine | fusion avec `admin/debug/rich-text` → `/dev/editeur-riche` (page admin + mode messagerie) ; `/demo/editeur` : le visiteur écrit une phrase avec formule, vue dans 3 usages réels (message au prof, cahier de texte, énoncé d'exercice), une phrase « qui écrit, qui lit » par usage, sans « Technologies »                                                        |
 | 9   | `/demo/theme-test`              | ?                      |                                                                                                                                                                                                                                                                                                                                                                   |
 | 10  | `/demo` (carrefour)             | ?                      |                                                                                                                                                                                                                                                                                                                                                                   |
 | 11  | `/test-saisie`                  | ?                      |                                                                                                                                                                                                                                                                                                                                                                   |
