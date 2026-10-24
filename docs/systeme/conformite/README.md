@@ -121,6 +121,10 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > `dernier_passage`, jour de la dernière page vue, et `retour_a_feter`, retour après une longue
 > absence pas encore salué par le Palotin), lisible par le serveur seul. Décrite en
 > [rgpd.md § 2.6](rgpd.md) et sur la page Confidentialité (§ 3.2 et § 7).
+>
+> ➕ **2026-10-24.** `gaming` exporte aussi les décorations de panse des Mathoux : la décoration
+> portée (`student_mathoux.decoration`) et les achats (`student_mathou_decorations`, sous
+> `mathou_decorations` : décoration, prix payé, date). Une lecture en échec rend 500.
 
 ### 4. Consentement parental (Art. 8)
 
@@ -129,7 +133,7 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 | Grades déclencheurs                     | 6,5,4,3,2 + défaut sûr | **tout sauf 1re/Tle** (base) | ⚠️ corrigé le 2026-10-10    |
 | **Période de grâce**                    | 30 jours               | **date fixe `2026-06-30`**   | ⏰ modifié (15/02)          |
 | Service email                           | Gmail                  | **Brevo** (`email/brevo.ts`) | modifié                     |
-| Endpoints protégés                      | ~12                    | **19** (`requireConsent`)    | étendu (+jeux, marketplace) |
+| Endpoints protégés                      | ~12                    | **21** (`requireConsent`)    | étendu (+jeux, marketplace) |
 | Tables / fonctions / mode lecture seule | présents               | présents                     | ✓                           |
 
 > **Règle (A3, décision de David du 2026-10-10)** : la **base fait foi** —
