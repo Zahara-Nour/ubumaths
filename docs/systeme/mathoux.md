@@ -219,7 +219,7 @@ propre fond : il se lit pareil en clair et en sombre.
   tirets ; aucune couleur de race (ni pelage, ni motif, ni auréole).
 - **Races** (`mathou-races.ts`, noms validés par David le 2026-10-18, de « le Noir de Nombrilie »
   à « le Tigré de Glitchistan ») : 19 couples pelage + motif distincts — uni noir,
-  tigré roux, smoking, pointes siamoises, arabesques rouges sur les flancs et au front avec yeux vairons (bleu et cuivre, seule race aux yeux dépareillés : `eyesRight`), chartreux uni, écaille, tacheté,
+  tigré roux, smoking, pointes siamoises, arabesques rouges sur les flancs et au front (intérieur des oreilles et bout de la queue rouges) avec yeux vairons (bleu et cuivre, seule race aux yeux dépareillés : `eyesRight`), chartreux uni, écaille, tacheté,
   tricolore, arlequin (losanges), masque de bandit, marbré, fumé, van, chaussettes, bicolore,
   croissant de lune sur la panse, étoile au front, tigré argent. L'auréole varie (rouge
   de Steinlen, bleu nuit, vert bouteille, violet) pour le contraste avec le pelage.
