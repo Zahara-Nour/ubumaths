@@ -16,7 +16,7 @@ import { denormalize, normalize } from '../normal';
 import { tidy } from '../tidy';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { computeCost } from '../simplify/cost';
-import { divide, euler, multiply, opposite, superscript } from '../factory';
+import { divide, euler, func, multiply, opposite, superscript } from '../factory';
 import {
 	isDelimiter,
 	isDivision,
@@ -76,7 +76,10 @@ export interface ExactValueOptions {
  *   de fonctions à calculer (`cos(π/6)` calculé), puis le moins de puissances
  *   d'une somme (`(1+√2)^{100}` développée) —, puis la moins chère ;
  * - une somme de fractions de même dénominateur s'écrit en une seule (Q23 :
- *   `(1 + √5)/2`).
+ *   `(1 + √5)/2`) ;
+ * - le logarithme d'une puissance d'un seul entier s'écrit `n ln p` (`ln 8 →
+ *   3 ln 2`, `ln(1/2) → −ln 2`) ; sinon il reste tel quel (`ln 6`), aucune
+ *   décomposition en facteurs premiers (décision de David, 2026-10-24).
  *
  * Un nombre seul (valeur approchée du mode décimal, `5,0990`) et une notation
  * scientifique calculée sont déjà écrits : rendus tels quels.
@@ -110,7 +113,7 @@ export function exactValueToShow(value: MathNode, options: ExactValueOptions = {
 	// Chaque candidate est jugée sous sa forme finale, dénominateur commun compris
 	// (`1/2 + √3/2` se compare en `(1 + √3)/2`)
 	const tidied = candidates.map((candidate) =>
-		withCommonDenominator(tidySafe(toEulerPowers(candidate)))
+		withCommonDenominator(tidySafe(withLogarithmsOfPowers(tidySafe(toEulerPowers(candidate)))))
 	);
 	// Un décimal n'est gardé que s'il écrit exactement la valeur (Q22)
 	const withoutDecimals = tidied.filter((candidate) => !hasDecimalLiteral(candidate));
@@ -281,6 +284,56 @@ function withCommonDenominator(node: MathNode): MathNode {
 	const numerator = unflattenSum(numerators);
 	if (numerator === null || denominator === null) return node;
 	return tidySafe(divide(numerator, denominator, 'fraction'));
+}
+
+// =============================================================================
+// Logarithmes (décision de David, 2026-10-24, « B »)
+// =============================================================================
+
+/**
+ * `ln(pᵏ) → k ln p`, `ln(1/m) → −ln m` : le logarithme d'une puissance d'un seul
+ * entier (`ln 8 → 3 ln 2`, `ln 1000 → 3 ln 10`, `ln(1/8) → −3 ln 2`). `ln 6`,
+ * `ln 12`, `ln(3/2)` restent tels quels.
+ */
+function withLogarithmsOfPowers(node: MathNode): MathNode {
+	return mapNode(node, (current) => {
+		if (!isFunction(current) || current.name !== 'ln' || current.args.length !== 1) return current;
+		const arg = isDelimiter(current.args[0]) ? current.args[0].content : current.args[0];
+		// Un décimal écrit reste dans son registre : `ln(0,1)` (seuils des suites, 2026-10-09)
+		if (hasDecimalLiteral(arg)) return current;
+		const r = rationalOf(arg);
+		if (r === null || r.n <= 0n) return current;
+		if (r.d === 1n) return logarithmOfInteger(r.n) ?? current;
+		if (r.n !== 1n) return current;
+		const inverse = logarithmOfInteger(r.d);
+		return opposite(inverse ?? func('ln', [numericNode(r.d.toString())]));
+	});
+}
+
+/** `k ln p` pour n = pᵏ, k ≥ 2 le plus grand ; `null` si n n'est pas une puissance. */
+function logarithmOfInteger(n: bigint): MathNode | null {
+	// Au-delà des entiers sûrs, la racine flottante ne guide plus : laissé tel quel
+	if (n < 4n || n > BigInt(Number.MAX_SAFE_INTEGER)) return null;
+	for (let k = n.toString(2).length - 1; k >= 2; k--) {
+		const base = integerRoot(n, k);
+		if (base !== null) {
+			return multiply(
+				numericNode(String(k)),
+				func('ln', [numericNode(base.toString())]),
+				'implicit'
+			);
+		}
+	}
+	return null;
+}
+
+/** La racine k-ième entière de n, ou `null`. */
+function integerRoot(n: bigint, k: number): bigint | null {
+	const guess = BigInt(Math.round(Number(n) ** (1 / k)));
+	for (const candidate of [guess - 1n, guess, guess + 1n]) {
+		if (candidate >= 2n && candidate ** BigInt(k) === n) return candidate;
+	}
+	return null;
 }
 
 // =============================================================================

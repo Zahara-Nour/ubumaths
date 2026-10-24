@@ -166,3 +166,31 @@ describe('ce que la revue a relevé', () => {
 		expect(shown('\\frac{1}{1+\\sqrt{2}}')).toBe('\\sqrt{2} - 1');
 	});
 });
+
+// Décision de David (2026-10-24, « B ») : le logarithme d'une puissance d'un seul
+// entier s'écrit n ln p ; sinon il reste tel quel (aucune décomposition en
+// facteurs premiers)
+describe('logarithme d’un nombre', () => {
+	it.each([
+		['\\ln 8', '3 \\ln\\left( 2 \\right)'],
+		['\\ln 1000', '3 \\ln\\left( 10 \\right)'],
+		['\\ln\\left(\\frac{1}{2}\\right)', '-\\ln\\left( 2 \\right)'],
+		['\\ln\\left(\\frac{1}{8}\\right)', '-3 \\ln\\left( 2 \\right)'],
+		['\\ln 4+\\ln 2', '3 \\ln\\left( 2 \\right)'],
+		['\\ln 6', '\\ln\\left( 6 \\right)'],
+		['\\ln 12', '\\ln\\left( 12 \\right)'],
+		['\\ln2+\\ln3', '\\ln\\left( 2 \\right) + \\ln\\left( 3 \\right)']
+	])('%s → %s', (input, expected) => {
+		expect(shown(input)).toBe(expected);
+	});
+
+	it('écrit ln(1/10)/ln(1/2) comme ln 10 / ln 2', () => {
+		expect(shown('\\frac{\\ln\\left(\\frac{1}{10}\\right)}{\\ln\\left(\\frac{1}{2}\\right)}')).toBe(
+			'\\dfrac{\\ln\\left( 10 \\right)}{\\ln\\left( 2 \\right)}'
+		);
+	});
+});
+
+it('laisse le logarithme d’un très grand entier tel quel, sans lever', () => {
+	expect(shown('\\ln\\left(2^{80}\\right)')).toContain('\\ln');
+});
