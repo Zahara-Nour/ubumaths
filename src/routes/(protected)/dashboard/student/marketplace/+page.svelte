@@ -14,6 +14,7 @@
 	import StudentActivityFeed from '$lib/components/marketplace/StudentActivityFeed.svelte';
 	import CreateListingModal from '$lib/components/marketplace/CreateListingModal.svelte';
 	import VipCardShopSection from '$lib/components/vip-cards/VipCardShopSection.svelte';
+	import MathouDecorationsShowcase from '$lib/components/mathoux/MathouDecorationsShowcase.svelte';
 
 	// Props from server
 	let { data } = $props();
@@ -98,6 +99,9 @@
 		<!-- Tab 1: Boutique -->
 		<Tabs.Content value="shop" class="mt-6">
 			<VipCardShopSection supabase={data.supabase} userId={data.user!.id} />
+			<div class="mt-10">
+				<MathouDecorationsShowcase />
+			</div>
 		</Tabs.Content>
 
 		<!-- Tab 2: Annonces -->

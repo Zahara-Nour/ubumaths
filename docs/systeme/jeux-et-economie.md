@@ -238,6 +238,11 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
   carte VIP adaptée est consommée d'abord ; `use_minesweeper_undo` exige une carte (pas de
   repli en gidouilles). 2048 (`use_2048_power`) : 3 à 40 selon le pouvoir ; Mathémo
   (`use_mathemo_power`) : 5 à 15.
+- **Décorations de panse des Mathoux** (lot B des accessoires, 2026-10-24) : six, de 10 à 40,
+  achetées une fois dans la Chatterie par `buy_mathou_decoration` (solde vérifié, débit, ligne
+  « Chatterie : cocarde achetée » au journal, sous verrou) ; consentement exigé comme pour la
+  boutique VIP. L'onglet Boutique du Marché les montre (`MathouDecorationsShowcase`) sans les
+  vendre. Voir [mathoux.md § Décorations de panse](mathoux.md#décorations-de-panse).
 - **Cartes réservées au serveur** : personne ne modifie directement `profiles.vip_cards` (garde
   `guard_profile_reserved_fields`, migration `20261003150000_vip_cartes_verrou.sql`) ; seules les
   fonctions SECURITY DEFINER le font.

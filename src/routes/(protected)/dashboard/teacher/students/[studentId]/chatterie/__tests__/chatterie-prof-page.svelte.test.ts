@@ -34,6 +34,7 @@ const COLLECTION: MathouCollection = {
 					growth: 'matou',
 					asleep: true,
 					dueForRevision: true,
+					decoration: null,
 					trainingCategories: CATEGORIES,
 					stars: ['2'],
 					workablePoints: 4,
@@ -48,6 +49,7 @@ const COLLECTION: MathouCollection = {
 					growth: 'chaton',
 					asleep: false,
 					dueForRevision: false,
+					decoration: null,
 					trainingCategories: CATEGORIES,
 					stars: [],
 					workablePoints: 2,
@@ -103,6 +105,22 @@ describe('Chatterie d’un élève, vue du prof', () => {
 		await expect.element(page.getByText('le Mathou des Fractions')).toBeVisible();
 		expect(page.getByRole('link', { name: /Réveiller/ }).elements()).toHaveLength(0);
 		expect(page.getByRole('link', { name: /Faire grandir/ }).elements()).toHaveLength(0);
+	});
+
+	it('décorations de panse : visibles sur les Mathoux, jamais « Décorer »', async () => {
+		const [fractions, ...rest] = COLLECTION.races[0].mathoux;
+		const { container } = await renderPage({
+			collection: {
+				...COLLECTION,
+				races: [
+					{ ...COLLECTION.races[0], mathoux: [{ ...fractions, decoration: 'medal' }, ...rest] },
+					...COLLECTION.races.slice(1)
+				]
+			}
+		});
+		const decorations = [...container.querySelectorAll('[data-part="decoration"]')];
+		expect(decorations.map((d) => d.getAttribute('data-decoration'))).toEqual(['medal']);
+		expect(page.getByRole('button', { name: /Décorer/ }).elements()).toHaveLength(0);
 	});
 
 	it('élève sans niveau : le dit, sans Chatterie', async () => {

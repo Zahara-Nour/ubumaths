@@ -21,7 +21,7 @@ import {
 	type MathouNews,
 	type MathouNewsItem
 } from '../news';
-import { mathouxSummarySchema } from '../summary';
+import { mathouNewsSchema, mathouxSummarySchema } from '../summary';
 
 // Décor
 function mathou(notionId: string, growth: Mathou['growth'], stars: string[] = []): Mathou {
@@ -33,6 +33,7 @@ function mathou(notionId: string, growth: Mathou['growth'], stars: string[] = []
 		growth,
 		asleep: false,
 		dueForRevision: false,
+		decoration: null,
 		trainingCategories: null,
 		stars,
 		workablePoints: 2,
@@ -84,10 +85,18 @@ describe('mathouNews', () => {
 					name: 'Nom n1',
 					raceIndex: 2,
 					stage: 'chaton',
+					decoration: null,
 					newStars: []
 				}
 			]
 		});
+	});
+
+	it('la décoration portée suit la nouveauté (dessin de la carte de fin de séance)', () => {
+		const collection = collectionOf({ ...mathou('n1', 'matou'), decoration: 'medal' });
+		const news = newsAll(collection, memoryOf({ n1: { bestStage: 'chaton', starredGrades: [] } }));
+		expect(news.items[0]).toMatchObject({ kind: 'growth', decoration: 'medal' });
+		expect(mathouNewsSchema.parse(news).items[0].decoration).toBe('medal');
 	});
 
 	it('croissance : stade au-dessus de la mémoire', () => {
@@ -224,6 +233,7 @@ describe('mathouNews', () => {
 				name: 'Nom n1',
 				raceIndex: 2,
 				stage: 'matou',
+				decoration: null,
 				newStars: []
 			}
 		]);

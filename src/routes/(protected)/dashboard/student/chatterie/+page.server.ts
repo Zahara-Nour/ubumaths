@@ -8,12 +8,19 @@
  * Une lecture en échec ne se montre pas comme une Chatterie vide : la page
  * reçoit `unavailable` et le dit.
  *
+ * Décorations de panse (lot B des accessoires) : les décorations achetées et le
+ * solde, pour la fenêtre « Décorer ». Une lecture des décorations en échec
+ * n'empêche pas la Chatterie : `ownedDecorations` vaut `null` et « Décorer »
+ * ne s'affiche pas (sinon tout paraîtrait « à acheter »).
+ *
  * Spec : docs/wip/mathoux-conception.md § 9 · doc : docs/systeme/mathoux.md
  */
 
 import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { loadMathouCollection } from '$lib/server/mathoux/collection';
+import { readOwnedDecorations } from '$lib/server/mathoux/decorations';
+import type { MathouDecorationId } from '$lib/mathoux/decorations';
 import type { MathouCollection } from '$lib/mathoux/collection-logic';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -27,11 +34,19 @@ const EMPTY_COLLECTION: MathouCollection = {
 export const load: PageServerLoad = async ({ locals }) => {
 	const { user, profile } = await requireRole(locals, 'student');
 
-	try {
-		const collection = await loadMathouCollection(locals.supabase, user.id, profile.grade);
-		return { collection, unavailable: false };
-	} catch (err) {
-		logger.error('Chatterie illisible :', err);
-		return { collection: EMPTY_COLLECTION, unavailable: true };
+	const balance = Number(profile.gidouilles ?? 0);
+	const [collectionResult, ownedResult] = await Promise.allSettled([
+		loadMathouCollection(locals.supabase, user.id, profile.grade),
+		readOwnedDecorations(locals.supabase, user.id)
+	]);
+
+	let ownedDecorations: MathouDecorationId[] | null = null;
+	if (ownedResult.status === 'fulfilled') ownedDecorations = ownedResult.value;
+	else logger.error('Décorations illisibles :', ownedResult.reason);
+
+	if (collectionResult.status === 'rejected') {
+		logger.error('Chatterie illisible :', collectionResult.reason);
+		return { collection: EMPTY_COLLECTION, unavailable: true, ownedDecorations, balance };
 	}
+	return { collection: collectionResult.value, unavailable: false, ownedDecorations, balance };
 };

@@ -8,6 +8,7 @@
 
 import { z } from 'zod';
 import { MAX_NEWS_ITEMS } from './news';
+import { MATHOU_DECORATION_IDS } from './decorations';
 
 const stageSchema = z.enum(['chaton', 'matou', 'grand_matou']);
 
@@ -23,6 +24,7 @@ export const mathouNewsSchema = z.object({
 				name: z.string().min(1).max(200),
 				raceIndex: z.number().int().min(0).max(1000),
 				stage: stageSchema,
+				decoration: z.enum(MATHOU_DECORATION_IDS).nullable().optional(),
 				previousStage: stageSchema.optional(),
 				newStars: z.array(z.string().min(1).max(20)).max(30)
 			})

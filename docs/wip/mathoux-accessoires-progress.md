@@ -6,23 +6,21 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 1 du lot B (migration) ouverte._
+_Mis à jour le 2026-10-24, PR 2 du lot B (code des décorations) ouverte._
 
-- **État** : lot A clos (#1685, #1689). Lot B : migration `20261024235000_mathoux_decorations.sql`
-  écrite (table `student_mathou_decorations`, colonne `student_mathoux.decoration`, fonctions
-  `buy_mathou_decoration` / `set_mathou_decoration`), 23 tests d'intégration rouges sans elle,
-  verts avec ; appliquée en LOCAL seulement.
-- **Prochaine action** : revue + audit sécurité de la PR 1 ; CI verte → merge ; `db:migrate` (les
-  4 conditions) ; `db:types`. Puis PR 2 = code (catalogue TS, dessins dans `MathouAvatar`,
-  Chatterie « Décorer », vitrine Boutique, vue prof, export RGPD — colonnes en dur dans
-  `api/account/export/+server.ts` : ajouter `decoration` et la table des achats —, consentement à la
-  route).
-- **En attente de David** : rien.
-- **Pièges en cours** : rendu serveur de plusieurs `MathouAvatar` = ids `s1-…` répétés ; les prix
-  font foi en SQL (`mathou_decoration_catalog`) : le catalogue TS de la PR 2 doit les recopier
-  (test d'égalité à prévoir) ; poser une décoration change `updated_at` (la mémoire rejoue sa
-  mise à jour conditionnelle, normal) ; après un rebase, `FRESH=1`.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-decorations`.
+- **État** : lot A clos. Lot B : migration (#1699) en prod ; PR 2 (code) ouverte sur
+  `feat/mathoux-decorations-code` : catalogue + dessins, mémoire → `Mathou.decoration`, routes
+  `buy`/`wear` (Zod, consentement à l'achat), fenêtre « Décorer » de la Chatterie, vitrine au
+  Marché, vue prof, export RGPD, doc système. Tests verts, typecheck 0.
+- **Prochaine action** : revue (code-reviewer + security-auditor), CI verte → merge ; puis
+  vérification manuelle de David (serveur de la branche : `http://localhost:5178`).
+- **En attente de David** : vérifier à l'écran la fenêtre « Décorer » (il faut un élève avec un
+  Mathou né et des gidouilles : la base locale n'a pas d'élève de démo).
+- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; poser
+  une décoration change `updated_at` (la mémoire rejoue sa mise à jour conditionnelle) ;
+  `ConsentButton` exige un `Tooltip.Provider` (d'où un `Button` grisé par `consent.isReadOnly`) ;
+  le worktree n'est pas lié à Supabase ; après un rebase, `FRESH=1`.
+- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-decorations-code`.
 
 ## Constat (2026-10-24)
 
@@ -119,3 +117,10 @@ _Mis à jour le 2026-10-24, PR 1 du lot B (migration) ouverte._
   des fonctions DEFINER finit par `pg_temp` (garde CI `definer-guard`), rollback complet (catalogue),
   assertion « Élève introuvable » ; tests ajoutés : un achat ne libère pas le plafond, catalogue
   refusé aux clients connectés. Rollback rejoué en local puis migration : 25 + garde verts.
+- 2026-10-24 — #1699 mergée (CI verte) ; `db:migrate` depuis le dépôt principal (seule cette
+  migration en attente, vérifié au `--dry-run`) ; droits relus en prod ; `db:types` sur la branche
+  de la PR 2 (table ajoutée au domaine Mathoux de `generate-db-doc.ts`).
+- 2026-10-24 — PR 2 du lot B : code des décorations (catalogue TS + test d'égalité avec la base,
+  dessins dans `MathouAvatar`, mémoire, routes, « Décorer », vitrine, vue prof, export RGPD).
+  Consentement exigé à l'achat seulement (la pose est gratuite et ne porte que l'acheté). Base
+  locale sans élève de démo : vérification à l'écran laissée à David.

@@ -7,11 +7,15 @@
 	 * uniquement (chaton, matou, sieste…), jamais XP, niveau ni score
 	 * (Compendium § IX).
 	 *
+	 * « Décorer » (lot B des accessoires) : la fenêtre `ChatterieDecorer` suit le
+	 * Mathou par sa notion, pour se remettre à jour après chaque achat ou pose.
+	 *
 	 * Spec : docs/wip/mathoux-conception.md § 9 · doc : docs/systeme/mathoux.md
 	 */
 
 	import { Cat } from '@lucide/svelte';
 	import ChatterieRaces from '$lib/components/mathoux/ChatterieRaces.svelte';
+	import ChatterieDecorer from '$lib/components/mathoux/ChatterieDecorer.svelte';
 	import { collectionCountsPhrase } from '$lib/mathoux/collection-logic';
 	import type { PageData } from './$types';
 
@@ -19,6 +23,10 @@
 
 	const collection = $derived(data.collection);
 	const isEmpty = $derived(collection.races.length === 0);
+	const mathoux = $derived(collection.races.flatMap((race) => race.mathoux));
+
+	let decoratingId = $state<string | null>(null);
+	const decorating = $derived(mathoux.find((m) => m.notionId === decoratingId) ?? null);
 </script>
 
 <svelte:head>
@@ -51,6 +59,19 @@
 	{:else}
 		<p class="mb-6 font-medium">{collectionCountsPhrase(collection.counts)}</p>
 
-		<ChatterieRaces races={collection.races} />
+		<ChatterieRaces
+			races={collection.races}
+			ondecorate={data.ownedDecorations ? (mathou) => (decoratingId = mathou.notionId) : undefined}
+		/>
+
+		{#if data.ownedDecorations}
+			<ChatterieDecorer
+				mathou={decorating}
+				{mathoux}
+				owned={data.ownedDecorations}
+				balance={data.balance}
+				onclose={() => (decoratingId = null)}
+			/>
+		{/if}
 	{/if}
 </div>
