@@ -7,6 +7,10 @@
  * Entre deux parenthèses, l'ordre écrit reste. Dans le groupe des fonctions,
  * l'ordre alphabétique (Q14). Les deux modes d'ordre des termes (`canonical`,
  * `kept`) partagent cet ordre.
+ *
+ * Q30 (David, 2026-10-24) : une fonction usuelle en un nombre (`√2`, `ln 2`,
+ * `sin 1`, `|−3|`) est une valeur, rangée comme un coefficient, devant les
+ * lettres : `2√2 x`, pas `2x√2`.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -51,7 +55,20 @@ const CASES: readonly (readonly [string, string])[] = [
 	['2^x*ln(2)', 'ln(2)*2^x'],
 	['(1/2)^x(x+1)', '(x+1)(1/2)^x'],
 	['(1/2)^x*ln(x)*x', 'xln(x)(1/2)^x'],
-	['sin(x)cos(x)', 'cos(x)sin(x)']
+	['sin(x)cos(x)', 'cos(x)sin(x)'],
+	// Une fonction en un nombre : une valeur, devant les lettres (Q30)
+	['sqrt(8)x', '2sqrt(2)x'],
+	['x*sqrt(2)', 'sqrt(2)x'],
+	['x*sqrt(3)/2', '{sqrt(3)x}/2'],
+	['x*sqrt(2)^3', '2sqrt(2)x'],
+	['(x+1)sqrt(2)', 'sqrt(2)(x+1)'],
+	['x ln(2)', 'ln(2)x'],
+	['sin(1)x', 'sin(1)x'],
+	['x|2-sqrt(5)|', '|2-sqrt(5)|x'],
+	['sqrt(2)ln(2)x', 'ln(2)sqrt(2)x'],
+	['x*e^2', 'e^2x'],
+	// Une fonction de l'énoncé en un nombre reste une inconnue
+	['f(2)x', 'xf(2)']
 ];
 
 describe('ordre des facteurs (Q13) — défaut', () => {
@@ -99,7 +116,8 @@ describe('ordre des facteurs (Q13) — les termes semblables se regroupent', () 
 
 describe('ordre des facteurs (Q15) — le LaTeX se relit', () => {
 	it.each([
-		['2x*ln(2)*2^(x^2)', '2 x \\ln\\left( 2 \\right) \\times 2^{x^2}'],
+		['2x*ln(2)*2^(x^2)', '2 \\ln\\left( 2 \\right) x \\times 2^{x^2}'],
+		['sqrt(8)x', '2 \\sqrt{2} x'],
 		['x*3^x', 'x \\times 3^x'],
 		['(x+1)*2^x', '\\left( x + 1 \\right) \\times 2^x']
 	])('%s s’écrit %s', (input, expected) => {
