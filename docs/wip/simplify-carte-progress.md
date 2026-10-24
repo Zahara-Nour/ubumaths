@@ -8,9 +8,9 @@ _Mis à jour le 2026-10-24, après #1670 (5c-bis mergé, pas en prod)._
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a~~ → ~~5b~~ → ~~5c~~ → ~~5c-bis~~ → **5d D3** → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
 - **Prochaine action** : 5d D3 (phase 0 d'abord).
-- **En attente de David** : écriture en prod du brouillon A-03 (`518f7f0b`, `create-questions --publier --mettre-a-jour`, seule différence : `;d`) ; vérifications manuelles de #1670 (ajoutée), #1663, des espaces (#1642), de f′ (#1656), des variations (#1658/#1660) ; choix pour `pnpm math` (§ 54) ; futur chantier hors simplify-carte : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
+- **En attente de David** : écriture en prod du brouillon A-03 (`518f7f0b`) — refusée au classifieur du mode auto, à lancer par David : `pnpm tsx scripts/create-questions.ts --dir <dossier ne contenant que le JSON d'A-03> --publier --mettre-a-jour` (seule différence : `;d`) ; vérifications manuelles de #1670 (ajoutée), #1663, des espaces (#1642), de f′ (#1656), des variations (#1658/#1660) ; choix pour `pnpm math` (§ 54) ; futur chantier hors simplify-carte : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
 - **Pièges en cours** : ne plus sonder avec `pnpm math` ; `2^{0,5}` s'écrit `2^{1/2}` (5f) ; une valeur sans source (limite, solution) garde la décomposition d'`evaluate` (`3 ln 2 + 3 ln 5`) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, 5f) ; relevés : bancs jetables du § 60 (modèles de la PROD, base contre branche) ; worktree neuf : `pnpm exec svelte-kit sync` avant `pnpm tsx` (sinon `$lib` introuvable) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `../ubumaths-wt-simplify-carte` à retirer (2 bancs jetables non suivis : décision de David) ; aucun pour 5d.
+- **Worktree / branche** : aucun (retirés après #1670 ; bancs jetables supprimés, David). À créer pour 5d. Plus tard : contrôle des ```figure dans `scripts/audit-question-draws.ts` (petite PR, reco du 2026-10-24).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
