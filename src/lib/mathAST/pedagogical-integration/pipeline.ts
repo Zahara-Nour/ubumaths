@@ -430,9 +430,10 @@ function pushSimplifyStep(
 		return rewriting.result;
 	}
 	// Coefficient à réduire (`\dfrac{2}{4}e^x` → `\dfrac{1}{2}e^x`) : on le réduit
-	// en gardant la forme « k · fonction » ; sinon, `tidy`
+	// en gardant la forme « k · fonction » ; sinon, `tidy`. Le domaine de la
+	// primitive est acquis (celui de l'intégrande) : `ln|x| − ln|x| → 0` (S3)
 	const tidy = (node: MathNode): MathNode => {
-		const tidiedSum = tidyTerms(node);
+		const tidiedSum = tidyTerms(node, { domain: [raw] });
 		return lnCoefficientForm(tidiedSum) ?? tidiedSum;
 	};
 	const tidied = single ? withRationalCoefficient(single.k, single.fn) : tidy(raw);

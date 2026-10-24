@@ -168,3 +168,90 @@ export function nonZeroBases(
 	for (const node of domain) visit(node);
 	return bases;
 }
+
+/** Les fonctions usuelles qui ne sont pas définies sur ℝ entier (`domain/builtins.ts`). */
+const RESTRICTED_FUNCTIONS = new Set([
+	'sqrt',
+	'ln',
+	'log',
+	'log10',
+	'log2',
+	'arcsin',
+	'arccos',
+	'tan',
+	'cot',
+	'sec',
+	'csc'
+]);
+
+/** Les logarithmes : argument strictement positif. */
+const LOGARITHMS = new Set(['ln', 'log', 'log10', 'log2']);
+
+/**
+ * L'expression est-elle définie pour toute valeur de ses variables ? (S3
+ * étendue aux sommes, David, 2026-10-24.) Des termes semblables de somme nulle
+ * ne disparaissent que si elle l'est : `x − x → 0`, mais `ln(x) − ln(x)` et
+ * `1/x − 1/x` restent. Une hypothèse déclarée (`typeCtx`) ou une base non
+ * nulle du domaine acquis (`nonZero`, par son hash) lève la restriction.
+ * Prudente comme `cannotVanish` : `false` veut dire « pas prouvé ». Une
+ * fonction inconnue (`f`) est tenue pour définie partout, comme dans
+ * `domain/builtins.ts`.
+ */
+export function definedEverywhere(
+	node: MathNode,
+	typeCtx: TypeContext | undefined,
+	nonZero: ReadonlySet<string>
+): boolean {
+	// Une constante : `tidy` ne lui fait rien perdre en l'annulant
+	if (findNodes(node, isVariable).length === 0) return true;
+	if (!getChildren(node).every((child) => definedEverywhere(child, typeCtx, nonZero))) {
+		return false;
+	}
+	switch (node.type) {
+		case 'division':
+			return knownNonZero(node.denominator, typeCtx, nonZero);
+		case 'superscript': {
+			const exponent = extractRational(node.superscript);
+			return exponent === null
+				? isPositive(node.base, typeCtx) || nonZero.has(hashMathNode(node.base))
+				: powerDefinedEverywhere(node.base, exponent, typeCtx, nonZero);
+		}
+		case 'function': {
+			if (!RESTRICTED_FUNCTIONS.has(node.name)) return true;
+			if (node.args.length !== 1) return false;
+			const [arg] = node.args;
+			if (node.name === 'sqrt') return isNonNegative(arg, typeCtx);
+			if (LOGARITHMS.has(node.name)) {
+				return isPositive(arg, typeCtx) || nonZero.has(hashMathNode(arg));
+			}
+			return false;
+		}
+		default:
+			return true;
+	}
+}
+
+/**
+ * `base^exposant`, exposant rationnel, est-il défini partout ? Un entier
+ * positif toujours ; un entier négatif si la base ne s'annule pas ; un
+ * exposant fractionnaire si la base est positive (ou nulle, exposant positif).
+ */
+export function powerDefinedEverywhere(
+	base: MathNode,
+	exponent: { readonly n: bigint; readonly d: bigint },
+	typeCtx: TypeContext | undefined,
+	nonZero: ReadonlySet<string>
+): boolean {
+	if (findNodes(base, isVariable).length === 0) return true;
+	if (exponent.d === 1n) return exponent.n >= 0n || knownNonZero(base, typeCtx, nonZero);
+	return exponent.n > 0n ? isNonNegative(base, typeCtx) : isPositive(base, typeCtx);
+}
+
+/** Une base dont on sait qu'elle ne vaut pas 0 : par sa structure, ou par le domaine acquis. */
+function knownNonZero(
+	node: MathNode,
+	typeCtx: TypeContext | undefined,
+	nonZero: ReadonlySet<string>
+): boolean {
+	return cannotVanish(node, typeCtx) || nonZero.has(hashMathNode(node));
+}

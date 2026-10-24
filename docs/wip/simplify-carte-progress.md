@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1673 (Q30 mergé, pas en prod)._
+_Mis à jour le 2026-10-24, PR de l'annulation des termes (§ 64) avant 5d._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670) et ~~Q30~~ (#1673, § 62 : `2√2 x`, `ln(2) x`, corpus des dérivées mis à jour) mergés. Phase 0 de 5d au § 61, Q27-Q30 au § 62. Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674) mergés. **5d codé et commité** sur `feat/simplify-carte-5d-d3` (pas poussé, journal § 64 de cette branche à renuméroter § 65 au rebase). En cours : `fix/simplify-carte-annulation-domaine` (§ 64 : `ln(x) − ln(x)` ne s'annule plus). Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (~~Q19~~ → ~~5a~~ → ~~5b~~ → ~~5c~~ → ~~5c-bis~~ → ~~Q30~~ → ~~Q29~~ → **5d D3** → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : merger la PR de Q29 (`fix/simplify-carte-exponentielles`), puis 5d (« Garder » range l'affiché, Q27).
-- **En attente de David** : vérifications manuelles de #1670, #1663, #1642, #1656, #1658/#1660 ; choix pour `pnpm math` (§ 54) ; futur chantier : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
-- **Pièges en cours** : Q28 était déjà tranchée (§ 35 Q1, `x⁰ → 1`) — relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc des modèles : script jetable dans le scratchpad (prod en lecture, base contre branche en échangeant le fichier depuis une copie) ; l'oracle des dérivées ignore l'ordre des facteurs ; worktree neuf : `pnpm exec svelte-kit sync` avant `pnpm tsx` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `fix/simplify-carte-exponentielles` (rebasée sur #1673).
+- **Ordre des lots** : … → **5** (… → ~~Q29~~ → **annulation-domaine** → **5d D3** → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : merger la PR annulation-domaine ; puis rebaser 5d sur `main`, ajouter le test « Garder `ln(x) − ln(x)` reste une fonction », pousser, PR, revue.
+- **En attente de David** : à lui montrer, l'affichage de 5d : `sin^2(x) → sin(x)^2`, `x m → m x`, `2πr m → 2πmr` ; `eˣ·eˣ·e^{−x} → e^{−x}e^{2x}` (conforme à Q31) ; vérifications manuelles de #1670, #1663, #1642, #1656, #1658/#1660 ; choix pour `pnpm math` (§ 54) ; futur chantier : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
+- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc des modèles : script jetable (prod en lecture), échange de fichiers avec un TABLEAU zsh et une copie vérifiée (§ 64) ; l'oracle des dérivées ignore l'ordre des facteurs ; 5f : `réduire` fait-il `eˣ·e^{−x} → 1` ? ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `fix/simplify-carte-annulation-domaine` (depuis `origin/main`) ; 5d sur `feat/simplify-carte-5d-d3`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -894,3 +894,11 @@ Décision déjà prise au § 19 : une expression littérale tapée dans Calcul e
 - **Q31 : non.** `tidy` ne regroupe pas deux exponentielles d'exposants différents (`eˣ·e^{2x}`, `eˣ·e^{−x}`, `e^{2x}/eˣ`, `eˣ·e` restent) : propriété enseignée, rôle de `réduire` (S4). À vérifier en 5f : `réduire` le fait-il, avec son étape ?
 - **Q29** : `collect.ts` — drapeau `grouped` sur un facteur rejoint par un autre de même base ; `withExponentRule` réécrit une exponentielle (base sans inconnue, exposant non rationnel) d'exposant entier |k| ≥ 2 en `base^{k·u}` mis au propre. `eˣ·eˣ → e^{2x}`, `3eˣ·2eˣ → 6e^{2x}`, `(eˣ)²·eˣ → e^{3x}`, `e^{x+1}·e^{x+1} → e^{2(x+1)}`, `2ˣ·2ˣ → 2^{2x}`, `(eˣ)³/eˣ → e^{2x}`, `1/(eˣ·eˣ) → 1/e^{2x}` ; gardés : `(eˣ)²` tapé, `x^x·x^x → (x^x)²`, `(eˣ+1)(eˣ+1) → (eˣ+1)²`. Tests : 18 rouges sur 45 sans le correctif (`tidy-exponentielles-regroupees`). Suite serveur complète : verte (60 621), aucune attente ne dépendait de `(eˣ)²`. Banc des modèles de la prod (19 254 tirages, base contre branche) : aucun changement.
 - **Revue `code-reviewer` (opus) de #1674, corrigé** : (1) régression — `(eˣ)² + eˣ·eˣ` ne se regroupait plus (`2(eˣ)²` sur `main`) : clé de regroupement `likeKey` (une puissance tapée se regroupe avec sa forme `e^{2x}`) ; `(eˣ)² + eˣ·eˣ → 2(eˣ)²`, `eˣ·eˣ + (eˣ)² → 2e^{2x}`, `(eˣ)² − e^{2x} → 0` (pas regroupé sur `main`). (2) `πˣ·πˣ → π^{2x}` jugé non équivalent par `areEquivalent` : règle restreinte à `e` et aux rationnels positifs (`(πˣ)²`, `((−2)ˣ)²` gardés). Tests : 69 (rouges des deux points vérifiés avant correctif). Suite serveur verte (60 645). **À montrer à David** : `eˣ·eˣ·e^{−x} → e^{−x}e^{2x}` (sur `main` : `(eˣ)²e^{−x}`), conforme à Q31 mais se lit mal.
+
+## 64. Des termes qui s'annulent ne perdent pas le domaine (branche `fix/simplify-carte-annulation-domaine`, 2026-10-24)
+
+- **Trouvé par la revue de 5d** : avec `tidy` dans Calcul, `ln(x) − ln(x)`, `1/x − 1/x`, `√x − √x` s'affichaient `0` et « Garder » rangeait la valeur 0 (sur `main` : une fonction avec son domaine). S3 ne couvrait que les fractions. **David : corriger dans `tidy` pour tous (« ok »), PR avant 5d** ; la variante `{ result, conditions }` (« 0 pour x > 0 ») reste pour plus tard (lot 4a Q2).
+- `collectLikeTerms` (`collect.ts`) : un groupe de ≥ 2 termes de somme nulle n'est effacé que si le terme est défini partout (`definedEverywhere`, `powerDefinedEverywhere`, `tidy/sign.ts`) ; sinon ses termes sont réécrits tels quels. `typeCtx` et `domain` lèvent la restriction. Un terme seul de coefficient nul (`0/x`, `0·ln x`) reste effacé : un zéro absorbant n'est pas une annulation. Fonction inconnue (`f(x) − f(x)`) tenue pour définie partout, comme `domain/builtins.ts`.
+- Intégration pédagogique : la primitive est mise au propre sur son domaine (`tidyTerms(node, { domain: [raw] })`, `pipeline.ts`) — `∫(1/x − 1/x)` reste `0`.
+- Tests : `tidy-annulation-domaine.test.ts`, 15 rouges sur 35 sans le correctif. Suite serveur verte (60 762). Banc des modèles de la prod (19 254 tirages, base contre branche) : aucun changement.
+- ⚠️ Piège du banc : en zsh, `F="a b c"` ne se découpe pas (`for f in $F` = un seul tour) — un tableau `F=(a b c)` ; et sauvegarder AVANT d'écraser, en vérifiant la copie (`collect.ts` perdu puis réécrit depuis les scripts de la session).
