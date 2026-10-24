@@ -2453,11 +2453,11 @@ recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer
 `typedCalculationSteps` dans `calcul.ts` ; phase 0 du retrait de `/calc`, validée par David le
 2026-10-24). Un calcul **sans lettre** (`2+3*4`, `1/2+1/3`, `5-(-3)`) porte les opérations de
 `.évaluer` (même cœur, `explainedOperations`, mêmes gardes E4-E5), sans « On remplace » ni résumé
-(il redirait la ligne). Seule une division de deux nombres s'écrit en fraction
-(`numberSlashesAsFractions` : `1/2` → $\frac{1}{2}$, `3/4*2/9` reste `\frac{3}{4} \times 2 \div 9`).
-Pas d'étapes : une lettre (valeur de l'atelier, `x`), une fonction de l'atelier (`f(2)`), un terme
-de suite (`u_3`, `u(5)` récrit), une mesure (`AE`), une grandeur, un résultat exact trop long, une
-réponse arrondie. Les lignes récrites (`u_3`, mesures) perdent les étapes de leur calcul
+(il redirait la ligne). Seule une division de deux entiers s'écrit en fraction
+(`numberSlashesAsFractions` : `1/2` → $\frac{1}{2}$ ; `2:0,5` reste `2 \div 0{,}5`). Pas d'étapes : une lettre (valeur de l'atelier, `x`), une fonction de l'atelier (`f(2)`), un terme
+de suite (`u_3`, `u(5)` récrit), une mesure (`AE`), une grandeur ou un angle en degrés (`hasUnit` : `2*30°` concluait en radians),
+un produit de fractions sans parenthèses (`hasSlashChain` : `3/4*2/9` se lit `((3/4)·2)/9`, des
+étapes écriraient `× 2 ÷ 9`), un résultat exact trop long, une réponse arrondie. Les lignes récrites (`u_3`, mesures) perdent les étapes de leur calcul
 intérieur (`withoutSteps`). `Entry.steps` vient de tout résultat qui en porte (`entryOf`).
 
 **« Comment ? » de `.évaluer`** (`evaluate-steps.ts`, PR 3, décisions de David du 2026-10-14).

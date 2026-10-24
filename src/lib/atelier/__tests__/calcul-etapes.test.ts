@@ -145,6 +145,24 @@ describe('C3 : rien à montrer → pas d’étapes', () => {
 	it.each(['14', '-5', '7/3', '0'])('%s', (typed) => {
 		expect(line(typed).steps).toBeUndefined();
 	});
+
+	// Lu `((3/4)·2)/9` : des étapes écriraient `× 2 ÷ 9`, pas le produit de deux fractions tapé
+	it.each(['3/4*2/9', '1/2*3/4'])('%s : un produit de fractions sans parenthèses', (typed) => {
+		expect(line(typed).steps).toBeUndefined();
+	});
+});
+
+describe('revue du 2026-10-24', () => {
+	it('un angle en degrés : pas d’étapes (elles concluaient en radians)', () => {
+		for (const typed of ['2*30°', '2*30° + 1°']) {
+			expect(line(typed).steps, typed).toBeUndefined();
+		}
+	});
+
+	it('2:0,5 : la division de décimaux reste « ÷ », jamais une fraction à virgule', () => {
+		const found = line('2:0,5').steps ?? [];
+		expect(found.map(flat).join(' ')).not.toMatch(/frac/);
+	});
 });
 
 describe('C4 : les gardes de .évaluer', () => {

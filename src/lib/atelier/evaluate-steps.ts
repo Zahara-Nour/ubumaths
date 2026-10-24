@@ -40,7 +40,8 @@ import type { Assignment } from '$lib/mathAST/cli/core/variable-argument';
 import { substitute } from '$lib/mathAST/eval';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { toLatex } from '$lib/mathAST/latex-generator';
-import { mapNode } from '$lib/mathAST/transforms';
+import { findNodes, mapNode } from '$lib/mathAST/transforms';
+import { isUnit } from '$lib/mathAST/guards';
 import { fraction, parentheses } from '$lib/mathAST/factory';
 import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
 import { generatePedagogicalArithmeticSteps } from '$lib/mathAST/pedagogical-arithmetic/pipeline';
@@ -185,6 +186,9 @@ export function calculationSteps(
 		if (engineLatex.startsWith('\\approx')) return null;
 		const parsed = parse(expression).ast;
 		if (parsed === undefined || getVariables(parsed).size > 0) return null;
+		// Un angle (`2*30°`) : les étapes concluaient en radians (revue du 2026-10-24)
+		if (hasUnit(parsed) || hasUnit(engineAnswer)) return null;
+		if (hasSlashChain(parsed)) return null;
 		const typed = crossProducts(numberSlashesAsFractions(dropUselessParentheses(parsed)));
 		const explained = explainedOperations(typed, engineAnswer);
 		if (explained === null || hasStar(explained.operations)) return null;
@@ -252,18 +256,44 @@ function slashesAsFractions(node: MathNode): MathNode {
 }
 
 /**
- * Sur une ligne de Calcul, seule une division de deux nombres (`1/2`) s'écrit
- * en fraction : `3/4*2/9` se lit `((3/4)·2)/9`, qu'une fraction écrirait
- * étagée ; il reste `\dfrac{3}{4} × 2 ÷ 9`, comme tapé.
+ * Sur une ligne de Calcul, seule une division de deux entiers (`1/2`) s'écrit
+ * en fraction ; `2:0,5` reste `2 ÷ 0,5`, jamais une fraction à virgule.
  */
 function numberSlashesAsFractions(node: MathNode): MathNode {
 	return mapNode(node, (n) =>
 		n.type === 'division' &&
 		n.displayStyle !== 'fraction' &&
-		n.numerator.type === 'number' &&
-		n.denominator.type === 'number'
+		isInteger(n.numerator) &&
+		isInteger(n.denominator)
 			? fraction(n.numerator, n.denominator)
 			: n
+	);
+}
+
+function isInteger(node: MathNode): boolean {
+	return node.type === 'number' && !node.value.includes('.');
+}
+
+/** Une unité, un angle en degrés compris (`30°`). */
+function hasUnit(node: MathNode): boolean {
+	return findNodes(node, isUnit).length > 0;
+}
+
+/**
+ * `3/4*2/9` se lit `((3/4)·2)/9` : des étapes écriraient `× 2 ÷ 9`, pas le
+ * produit de deux fractions que l'élève a tapé (C3, revue du 2026-10-24).
+ * Une division dont le numérateur est un produit ou un quotient sans
+ * parenthèses → pas d'étapes.
+ */
+function hasSlashChain(node: MathNode): boolean {
+	return (
+		findNodes(
+			node,
+			(n) =>
+				n.type === 'division' &&
+				n.displayStyle !== 'fraction' &&
+				(n.numerator.type === 'multiplication' || n.numerator.type === 'division')
+		).length > 0
 	);
 }
 
