@@ -5,19 +5,43 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1602._
+_Mis à jour le 2026-10-24, après le versement de la passe lycée (#1664 dernière PR)._
 
-- **État** : C5 terminée côté code et base. Étape 4 (#1598) en prod ; PR 2 (#1602) mergée : `db:types`, filtres de
-  l'ancienne génération retirés (`curriculum-point-status.ts`), docs et décors de test sans « ancien point ».
-  #1602 n'est pas encore en prod (aucune migration ; elle part au prochain `deploy:prod`).
-- **Prochaine action** : **passe lycée** (5 étapes, décidée le 2026-10-21), chantier à part : passe des points
-  (critère de scission), bornes par point, relevé des modèles, verdicts en inclusion stricte, page à cocher puis
-  migration des tags ; les 12 modèles sans point s'y traitent.
+- **État** : C5 terminée côté code et base. Passe lycée (chantier à part) CLOSE et archivée :
+  [journal](../archive/wip/passe-lycee-progress.md). Ses bornes sont dans `arbre-notions/bornes/lycee/`.
+- **Prochaine action** : à choisir par David parmi les suites ci-dessous ; versement de l'arbre des notions (bornes
+  collège + lycée comprises) quand le chantier se clora.
 - **En attente de David** : rien de bloquant. Signalés : 11 modèles sans corrigé ; c9d6c5db attend une règle de
-  correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
+  correction. 📌 Futurs chantiers non décidés : écran de rangement des exercices (51) ; modèles 1re gén. / techno.
 - **Pièges en cours** : `supabase start` joue les migrations hors transaction (LOCK seulement dans un `do`) ; points
-  `TEST-SK-*` sans grade, voulu ; MySelect et infobulles de l'analytique affichent le LaTeX brut.
+  `TEST-SK-*` sans grade, voulu ; un modèle a au plus un point par programme (trigger) ; `question:specs --file` :
+  convertir par `toQuestionTemplate` ; worktree neuf : `svelte-kit sync` avant `tsx`.
 - **Worktree / branche** : aucun.
+
+## Suites de la passe lycée (inventaire du 2026-10-24)
+
+Détail dans le [journal archivé](../archive/wip/passe-lycee-progress.md) (entrée « Inventaire avant versement ») ;
+dossiers de travail sous `docs/archive/wip/passe-lycee/`. Rien de tout cela ne touche un élève (brouillons, ou points
+sans donnée d'élève).
+
+- **Futur chantier « modèles 1re gén. / techno »** : `arbre-notions/modeles-autre-programme.csv`, 46 verdicts
+  MODIFIER (39) ou TAG_PAR_VARIATION (7) d'un modèle pour un AUTRE programme que le sien (25 en 1re techno, 18 en
+  1re ES, 2 en 2de, 1 en Tle spé, 1 en Tle techno), laissés sans tag (décision du 2026-10-23 : un modèle ne
+  s'appauvrit pas pour un autre programme), plus `eae2ff6a` (racines lues sur une parabole, 1TECHNO-059, laissé sans
+  point le 2026-10-24). Aucun modèle n'est aujourd'hui de niveau 1re ES ni techno.
+- **Défauts de rendu des brouillons**, hors des variations retouchées : termes nuls affichés dans les corrigés
+  (`646b4cd3` V2-V3, `93539700` V1, `f2cc01fc` V4) ; les 11 modèles à défauts relevés à l'audit de #1646
+  (`1/(6-0)`, `119b9148` « 17 = 9 + 8 »…) — liste à refaire en relançant l'audit du rendu.
+- **Specs rouges** : `27d77564` et son neuf `103cf8d9` (« nombre sans espace » attendu, perfectible), rouges avant la
+  passe ; `e02fb162` spec « v1 : développé » (`bad_form`).
+- **`9a6087c5`** : 12 tirages sur 600 en échec au relevé de l'étape c, jamais examiné.
+- **Couverture des points** (points avec au moins un modèle, 2026-10-24) : 2de 36/292, 1SPE 91/237, 1GEN 14/64,
+  1TECHNO 31/143, TSPE 135/326, TCOMP 78/179, TEXP 60/176, TTECHNO 1/92. Points qui ont perdu leur seul exercice :
+  2-232, TSPE-432, TSPE-466, TSPE-596 notamment.
+- **Laissés sans tag par décision** : QCM de cours et vrai/faux à 4 points ou plus (non scindés) ; `f8ccc8b6`,
+  `a80a780f`, `318ea542`.
+- **Classés sans suite** (David, 2026-10-23) : rollbacks « trop stricts » de #1651 et #1654 (migrations jouées et
+  relues).
 
 ## Tranché avec David (2026-10-06)
 

@@ -2,7 +2,7 @@
 
 Objectif : pour chaque point de programme actif de seconde générale et technologique (`grade` = `2`), dire jusqu'où vont les questions qu'on peut y rattacher (« seulement »). Ces bornes serviront à juger qu'un modèle de question reste **entièrement** dans le point. 292 points lus dans `points-lycee.csv` (base locale, empreinte identique à la prod le 2026-10-22).
 
-La seconde hérite des bornes de 3e (`../../arbre-notions/bornes/cycle4.json`, clé `3`) : ce qui y est acquis n'est pas recopié, sauf quand la seconde le change (racines carrées, histogramme).
+La seconde hérite des bornes de 3e (`../cycle4.json`, clé `3`) : ce qui y est acquis n'est pas recopié, sauf quand la seconde le change (racines carrées, histogramme).
 
 ## Sources et façon de citer
 

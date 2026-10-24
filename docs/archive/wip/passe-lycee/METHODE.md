@@ -1,6 +1,6 @@
 # Passe lycée — étape a : passe des points (méthode validée par David le 2026-10-22)
 
-Principes : [ADR 0020 § 7, précisions du 2026-10-17](../../adr/0020-arbre-central-programmes-pointeurs.md).
+Principes : [ADR 0020 § 7, précisions du 2026-10-17](../../../adr/0020-arbre-central-programmes-pointeurs.md).
 **Seuls les nouveaux programmes** comptent (décision de David, 2026-10-22) : textes de `docs/ref/programmes/`,
 extraits dans `bo/*.txt` (`pdftotext -layout`). Maths expertes : seul texte existant, celui de 2019, reconduit.
 

@@ -1,0 +1,48 @@
+template_id;grades;titre;programme;verdict;code;modification;source
+536c01bb-8401-4f53-b8ca-faf9bf4c243d;1_SPE;Identité, équation, statut des lettres;1_TECHNO;TAG_PAR_VARIATION;1TECHNO-001,1TECHNO-106;;1spe-a.csv
+279cf28f-a9e9-4c15-bd00-adbb9442c9bd;1_SPE;Calculer un terme d'une suite géométrique;1_GEN;MODIFIER;1GEN-028;"Raison et termes strictement positifs : V1 q ∈ {2 ; 3} et k > 0 ; V2 t > 0.";1spe-a.csv
+279cf28f-a9e9-4c15-bd00-adbb9442c9bd;1_SPE;Calculer un terme d'une suite géométrique;1_TECHNO;MODIFIER;1TECHNO-036;"Raison et termes strictement positifs : V1 q ∈ {2 ; 3} et k > 0 ; V2 t > 0.";1spe-a.csv
+349e1be5-65c5-49ce-b8e5-627a0c4a0bf5;1_SPE;Déterminer la raison d'une suite géométrique;1_GEN;MODIFIER;1GEN-028;Tirer m et j strictement positifs (termes et raison > 0).;1spe-a.csv
+349e1be5-65c5-49ce-b8e5-627a0c4a0bf5;1_SPE;Déterminer la raison d'une suite géométrique;1_TECHNO;MODIFIER;1TECHNO-036;Tirer m et j strictement positifs (termes et raison > 0).;1spe-a.csv
+85afd455-84a0-4caa-82c0-36840b19a219;1_SPE;Déterminer la raison d'une suite géométrique;1_GEN;MODIFIER;1GEN-028;Tirer c et q strictement positifs.;1spe-a.csv
+85afd455-84a0-4caa-82c0-36840b19a219;1_SPE;Déterminer la raison d'une suite géométrique;1_TECHNO;MODIFIER;1TECHNO-036;Tirer c et q strictement positifs.;1spe-a.csv
+ab4d55f7-d89d-4629-a60e-4ab880ff155c;1_SPE;Calculer un terme d'une suite géométrique;1_GEN;MODIFIER;1GEN-028;"Raison et termes strictement positifs : V1 q ∈ {2 ; 3} et t > 0 ; V2 k > 0.";1spe-a.csv
+ab4d55f7-d89d-4629-a60e-4ab880ff155c;1_SPE;Calculer un terme d'une suite géométrique;1_TECHNO;MODIFIER;1TECHNO-036;"Raison et termes strictement positifs : V1 q ∈ {2 ; 3} et t > 0 ; V2 k > 0.";1spe-a.csv
+a430a698-851d-40b9-b4b0-146153788397;1_SPE;Lire un terme sur un graphique;1_GEN;MODIFIER;1GEN-050;Retirer V3 (suite uₙ₊₁ = uₙ + n − p, ni arithmétique ni géométrique).;1spe-a.csv
+727fb88a-0cb7-4937-88c7-c522dffe04f4;1_SPE;Calculer un terme d'une suite géométrique;1_GEN;MODIFIER;1GEN-029;Tirer a et q strictement positifs.;1spe-a.csv
+727fb88a-0cb7-4937-88c7-c522dffe04f4;1_SPE;Calculer un terme d'une suite géométrique;1_TECHNO;MODIFIER;1TECHNO-038;Tirer a et q strictement positifs.;1spe-a.csv
+95c38330-063f-4ade-b1ae-152b84bce20f;1_SPE;Deviner le terme général à partir d'une liste des premiers termes;1_GEN;MODIFIER;1GEN-029;Tirer a et b strictement positifs.;1spe-a.csv
+95c38330-063f-4ade-b1ae-152b84bce20f;1_SPE;Deviner le terme général à partir d'une liste des premiers termes;1_TECHNO;MODIFIER;1TECHNO-038;Tirer a et b strictement positifs.;1spe-a.csv
+cf51cb93-c89b-477d-bfed-eb3cffae5edf;1_SPE;Calculer un terme d'une suite géométrique;1_GEN;MODIFIER;1GEN-057;Tirer c et q strictement positifs.;1spe-a.csv
+cf51cb93-c89b-477d-bfed-eb3cffae5edf;1_SPE;Calculer un terme d'une suite géométrique;1_TECHNO;MODIFIER;1TECHNO-038;Tirer c et q strictement positifs.;1spe-a.csv
+e67b1cbd-3a00-4379-bb4c-5a39ddff360f;1_SPE;Terme général d'une suite géométrique;1_GEN;MODIFIER;1GEN-029;Tirer u₀ et q strictement positifs.;1spe-a.csv
+e67b1cbd-3a00-4379-bb4c-5a39ddff360f;1_SPE;Terme général d'une suite géométrique;1_TECHNO;MODIFIER;1TECHNO-038;Tirer u₀ et q strictement positifs.;1spe-a.csv
+eca755e6-dd1f-4a49-996d-88168fcfc4e5;1_SPE;Terme général d'une suite géométrique;1_GEN;MODIFIER;1GEN-029;Tirer c et q strictement positifs.;1spe-a.csv
+eca755e6-dd1f-4a49-996d-88168fcfc4e5;1_SPE;Terme général d'une suite géométrique;1_TECHNO;MODIFIER;1TECHNO-038;Tirer c et q strictement positifs.;1spe-a.csv
+fc921674-ee4f-488c-9fe4-5598795c0508;1_SPE;Deviner le terme général à partir d'une liste des premiers termes;1_GEN;MODIFIER;1GEN-029;Tirer a et b strictement positifs.;1spe-a.csv
+fc921674-ee4f-488c-9fe4-5598795c0508;1_SPE;Deviner le terme général à partir d'une liste des premiers termes;1_TECHNO;MODIFIER;1TECHNO-038;Tirer a et b strictement positifs.;1spe-a.csv
+5042401b-ceb0-4dc2-aa48-b83e90ee4bf2;1_SPE;Sens de variation d'une suite géométrique de raison positive;1_GEN;MODIFIER;1GEN-030;"Retirer V2 et V4 (u₀ négatif) ; V5 : u₀ > 0 seulement.";1spe-a.csv
+5042401b-ceb0-4dc2-aa48-b83e90ee4bf2;1_SPE;Sens de variation d'une suite géométrique de raison positive;1_TECHNO;MODIFIER;1TECHNO-049;"Retirer V2 et V4 (u₀ négatif) ; V5 : u₀ > 0 seulement.";1spe-a.csv
+27d77564-e109-4681-8a64-13a3ee1729cd;1_SPE;Valeur d'un placement à intérêts simples ou composés;1_GEN;TAG_PAR_VARIATION;1GEN-048,1GEN-056;;1spe-a.csv
+aeb1389d-0805-4421-9b25-1fcb4e4f4670;1_SPE;Évolution en pourcentage et suite géométrique;1_TECHNO;TAG_PAR_VARIATION;1TECHNO-036,1TECHNO-038;;1spe-a.csv
+c90fa022-9493-4812-adb7-c785babee9d4;1_SPE;Intérêts simples ou composés : nature de la suite;1_GEN;TAG_PAR_VARIATION;1GEN-017,1GEN-038;V3;1spe-a.csv
+849aabbc-4576-4644-a5c6-5b840b4dbbb9;1_SPE;Déterminer la limite d'une suite;T_SPE;TAG_PAR_VARIATION;TSPE-402,TSPE-383;;1spe-a.csv
+19961e67-88c4-43bf-a76b-6a2af61dedf3;1_SPE;Valeur renvoyée par une fonction Python de seuil;1_GEN;TAG_PAR_VARIATION;1GEN-061,1GEN-021;;1spe-a.csv
+56b1803f-f707-49a9-a0b7-3e6b8220f2d7;1_SPE;Déterminer les coordonnées du sommet;1_GEN;MODIFIER;1GEN-053;Retirer V1 (forme canonique a(x − h)² + k, hors des formes du module).;1spe-a.csv
+56b1803f-f707-49a9-a0b7-3e6b8220f2d7;1_SPE;Déterminer les coordonnées du sommet;1_TECHNO;MODIFIER;1TECHNO-124;Retirer V1 (forme canonique, absente de la 1re techno).;1spe-a.csv
+9f00da01-a030-4697-8d69-20c380fa0b78;1_SPE;Déterminer l'équation de l'axe de symétrie de la parabole;1_GEN;MODIFIER;1GEN-052;Retirer V1 (forme canonique, hors des formes du module).;1spe-a.csv
+9f00da01-a030-4697-8d69-20c380fa0b78;1_SPE;Déterminer l'équation de l'axe de symétrie de la parabole;1_TECHNO;MODIFIER;1TECHNO-123;"Retirer V1 (forme canonique, absente de la 1re techno) ; V2 : tirer b multiple de 2a ou de a (axe entier ou demi-entier).";1spe-a.csv
+604f83b7-4ed3-4b0f-b393-85e60ac353b4;1_SPE;Factoriser un trinôme à l'aide de ses racines;1_TECHNO;MODIFIER;1TECHNO-064;Retirer V2 (« en calculant d'abord ses racines » : sans discriminant en 1re techno, ou donner une racine).;1spe-a.csv
+2b382069-eaad-4627-8405-bddd24b81c38;1_SPE;Intervalles où f est croissante, f′ trinôme du second degré;1_TECHNO;MODIFIER;1TECHNO-075;"Donner f′ sous forme factorisée a(x − p)(x − q) (ou les racines dans l'énoncé) en V1-V2, ou limiter p, q à des racines évidentes (|r| ≤ 3) ; V3 (ax² − C) reste.";1spe-b.csv
+0113c53d-ee4a-4da9-9327-537461ffdc85;1_SPE;Variations et extremum d'une fonction du second degré;1_TECHNO;MODIFIER;1TECHNO-081;Correction à refaire par f′(x) = 2ax + b (ou par la symétrie) au lieu de la formule α = −b/(2a).;1spe-b.csv
+0113c53d-ee4a-4da9-9327-537461ffdc85;1_SPE;Variations et extremum d'une fonction du second degré;1_GEN;MODIFIER;1GEN-025;Correction par la symétrie (résoudre f(x) = c, soit x(ax + b) = 0) au lieu de α = −b/(2a).;1spe-b.csv
+7e9b9b32-0d7a-4bd9-89f3-af0dd3a95431;1_SPE;Compléter une loi : trouver le paramètre p;1_TECHNO;MODIFIER;1TECHNO-095;Habiller V1-V2 d'un contexte (jeu, dé…) : tableaux de x_k abstraits.;1spe-b.csv
+b83f1392-a1b1-4c2d-8f04-599b92dbe6c0;1_SPE;Compléter une loi : une probabilité manquante;1_TECHNO;MODIFIER;1TECHNO-095;Habiller V1-V2 d'un contexte.;1spe-b.csv
+f3addbe3-7254-483f-a640-0ea75e23dc69;1_SPE;Compléter une loi : deux probabilités manquantes liées;1_TECHNO;MODIFIER;1TECHNO-095;Habiller les trois variations d'un contexte.;1spe-b.csv
+448894f3-f0e8-459d-91db-fc81433038c2;1_SPE;Lire une probabilité dans le tableau de la loi;1_TECHNO;MODIFIER;1TECHNO-137;Habiller V1 d'un contexte.;1spe-b.csv
+570f91d5-75e6-4af8-b22b-67fae6c4bde1;1_SPE;Probabilité d'un événement du type X ≥ a, X < a ou a ≤ X ≤ b;1_TECHNO;MODIFIER;1TECHNO-137;"Retirer V3 (P(a ≤ X ≤ b)) ; habiller V1-V2 d'un contexte. V4 (pannes, P(X ≤ 2)) convient.";1spe-b.csv
+8354a0e7-f707-48e0-ac3d-f43cc5b2e2fa;1_SPE;Espérance à partir de la loi;1_TECHNO;MODIFIER;1TECHNO-099;Habiller V1-V2 d'un contexte.;1spe-b.csv
+0ab3faa5-a660-4841-9a5f-6563458d2489;1_SPE;Nier une proposition;2;MODIFIER;2-211;"Retirer V1, V2 et V4 (négations de propositions quantifiées « pour tout réel x… », « il existe x… » et d'une implication quantifiée) ; garder V3.";1spe-a-2de.csv
+27d77564-e109-4681-8a64-13a3ee1729cd;1_SPE;Valeur d'un placement à intérêts simples ou composés;2;MODIFIER;2-368;Retirer V1 (intérêts simples : capital initial + n fois t % du capital initial), ou la rattacher ailleurs.;1spe-a-2de.csv
+a95a9c0d-0d5d-4a5a-ab50-294e12bb7f47;T_SPE,T_COMP;Loi binomiale : P(X = k), P(X = 0), P(X ⩾ 1) à la main (n ⩽ 5);T_TECHNO;TAG_PAR_VARIATION;TTECHNO-065 | TTECHNO-064;Pour un seul point TTECHNO-065 : retirer V4 (P(X ⩾ 1)), ou V1-V2 pour TTECHNO-064.;tspe-tcomp.csv
+eae2ff6a-5e46-445b-bfa6-02cadb6d956a;;(racines lues sur une parabole);1_TECHNO;RETIRÉ R1;1TECHNO-059;laissé sans point (David, 2026-10-24, option A);journal 2026-10-24

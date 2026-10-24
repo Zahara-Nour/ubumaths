@@ -1,23 +1,19 @@
 # Passe lycée — progression
 
-Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David le 2026-10-21). Décisions :
-[ADR 0020 § 7](../adr/0020-arbre-central-programmes-pointeurs.md). Méthode de l'étape a :
+Suite de [arbre-notions](../../wip/arbre-notions-progress.md) (passe décidée par David le 2026-10-21). Décisions :
+[ADR 0020 § 7](../../adr/0020-arbre-central-programmes-pointeurs.md). Méthode de l'étape a :
 [passe-lycee/METHODE.md](passe-lycee/METHODE.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après le `db:migrate` de #1664._
+_Mis à jour le 2026-10-24 : chantier CLOS et versé._
 
-- **État** : passe lycée FINIE ; inventaire d'avant versement fait, ses 3 défauts corrigés (#1664 mergée, migration
-  jouée et relue par le MCP : 3/3 empreintes = fixture).
-- **Prochaine action** : versement (fin de chantier) : le durable dans `docs/systeme/`, journal archivé. Y reporter
-  les suites de l'inventaire du 2026-10-24 (défauts de rendu des brouillons, specs 27d77564 / 103cf8d9, 9a6087c5,
-  eae2ff6a → futur chantier « modèles 1re gén. / techno », couverture des points) et les rollbacks « trop stricts » de
-  #1651 / #1654 classés sans suite.
-- **En attente de David** : son go pour le versement.
-- **Pièges en cours** : un modèle a au plus un point par programme (trigger) ; `question:specs --file` : convertir par
-  `toQuestionTemplate` ; worktree neuf : `svelte-kit sync` avant `tsx`.
-- **Worktree / branche** : aucun.
+- **État** : passe lycée finie (dernière PR #1664, migration jouée). Journal archivé le 2026-10-24.
+- **Versement** : bornes du lycée → `docs/wip/arbre-notions/bornes/lycee/`, à côté de celles du collège (versées dans
+  `docs/systeme/` avec l'arbre des notions) ; suites → section « Suites de la passe lycée » de
+  [arbre-notions-progress.md](../../wip/arbre-notions-progress.md) ; modèles valables pour un autre programme →
+  `docs/wip/arbre-notions/modeles-autre-programme.csv`. Le reste (`passe-lycee/`) est archivé tel quel : chemins
+  `docs/wip/passe-lycee/…` du journal ci-dessous = `docs/archive/wip/passe-lycee/…` (sauf `bornes/`).
 
 ## Les 5 étapes
 
