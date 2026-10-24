@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, phase 0 du lot A1._
+_Mis à jour le 2026-10-25, lot A1 écrit._
 
-- **État** : groupe A découpé en 6 lots (§ 4 ter) ; lot A1 (calcul mental, 6 points) en phase 0 — détail proposé à David (§ 6).
-- **Prochaine action** : validation d'A1 par David, puis écriture des 6 modèles + specs, `checkTemplate`, migration, page à cocher.
-- **En attente de David** : vérification manuelle #1702 ; validation du détail d'A1.
-- **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017) ; dater après la dernière migration de la prod (`list_migrations`) ; `db:migrate` depuis le dépôt principal ; heredoc `python3 - <<EOF` bloque dans ce shell → script dans le scratchpad.
+- **État** : lot A1 (6 modèles de calcul mental, CP-020/081/021/082/028/027) écrit dans `scripts/questions/cp-a1/` (générateur `docs/wip/questions/lot-a1.py`), `checkTemplate` vert (34 specs, 50/50 tirages), rendu relu ; simulation `create-questions` : 6 à créer. Horloge terminée (session « horloge ») ; outil « opérations posées » lancé dans une autre session.
+- **Prochaine action** : sur le go de David, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cp-a1 --publier` (brouillons en prod), puis migration nœud + tags (modèle M2 de #1702, test d'intégration rouge sans elle), PR, page à cocher.
+- **En attente de David** : go pour l'écriture en prod ; ou nœuds/tags posés par lui dans la page admin (pas de migration) ; vérification manuelle #1702.
+- **Pièges en cours** : la case naît d'une variable `expression1` (sinon « Blank count mismatch ») ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; `create-questions` ne pose ni nœud ni tag ; un modèle CP peut prendre un point CE1 (pas l'inverse) ; dater les migrations après la prod (`list_migrations`) ; `db:migrate` depuis le dépôt principal.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-cp-a1`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
