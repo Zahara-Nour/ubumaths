@@ -1,15 +1,11 @@
-# Atelier : propriétés des objets — journal
+# Atelier : propriétés des objets — journal (archivé)
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1634._
+_Mis à jour le 2026-10-24 : chantier clos par David, journal versé._
 
-- **État** : chantier livré — PR 1 #1627 (point de couleur, cartes sans nature ni mesure, console qui défile, noms en couleur du texte), PR 2 #1630 (panneau Propriétés, Renommer, retours de revue, formes du cahier) et #1634 (π fractionnaire `2π√3/3`, `π/4`) mergées. Pas encore en prod.
-- **Prochaine action** : verser ce journal (`docs/archive/wip/`) quand David clôt le chantier ; les renvois du code vers ce chemin (`properties.ts`, `ObjectProperties.svelte`, tests) suivront dans une PR.
-- **Tranché (David, 2026-10-23)** : périmètre et aire en `2π√3/3`, `π/4` (comme au cahier), pas `(2/3)π√3` → livré par #1634 (texte `2√5/3` sans parenthèses au passage).
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`).
-- **Pièges en cours** : aucun ; #1627, #1630 et #1634 partent ensemble au prochain `deploy:prod`.
-- **Worktree / branche** : supprimés.
+- **État** : CLOS. #1627, #1630, #1634 mergées ; partent au prochain `deploy:prod`. Le durable est dans `docs/systeme/atelier.md` (« Le panneau Propriétés »).
+- **Reste** : les vérifications manuelles de #1627, #1630, #1634 (`docs/wip/verifications-manuelles.md`).
 
 ## Décisions de David (2026-10-23)
 

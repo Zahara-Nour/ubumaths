@@ -1,6 +1,6 @@
 /**
  * Le panneau « Propriétés » d'un objet, déplié sous sa carte (chantier
- * `docs/wip/atelier-proprietes-progress.md`, validé par David le 2026-10-23) :
+ * `docs/archive/wip/atelier-proprietes-progress.md`, validé par David le 2026-10-23) :
  * ouvert par « Propriétés » ou « Renommer », il montre les mesures, renomme
  * (les objets qui citent le nom suivent), règle le style et l'étiquette ;
  * Échap le referme et rend le focus au menu de la carte.
