@@ -1,0 +1,7 @@
+## Initiation à la pensée informatique
+
+Le mode de pensée informatique est une approche universelle permettant de résoudre des problèmes complexes en exploitant des processus de calcul, qu’ils soient réalisés par des humains ou par des machines. En s’initiant à la pensée informatique, l’élève développe des connaissances et des capacités qui sont transposables à d’autres disciplines et qui le préparent aux défis du monde contemporain.
+
+Au cycle 2, dans la continuité du cycle 1, l’élève a déjà développé des raisonnements qui relèvent de la pensée informatique. Dès le CP, l’élève a appris à réaliser un déplacement dans l’espace à partir d’un codage ou à coder de tels déplacements, notamment pour programmer un robot se déplaçant sur un quadrillage ou un personnage se déplaçant dans un quadrillage sur un écran de tablette ou d’ordinateur. L’apprentissage des algorithmes des opérations posées tout au long du cycle 2 contribue également à l’initiation à la pensée informatique. À partir du CE1, l’élève a aussi appris à poursuivre des suites évolutives comme « 1, 2, 4, 7, 11, 16, etc. » ou « 1, 2, 4, 8, 16, etc. ».
+
+Ces premiers apprentissages qui contribuent au développement de la pensée informatique se poursuivent au cours moyen : algorithmes des opérations posées, programmes de constructions géométriques, programmes de calcul, suites évolutives. Ces éléments, abordés dans les autres domaines de ce programme, sont résumés dans les paragraphes ci-après.
