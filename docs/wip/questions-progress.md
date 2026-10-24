@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-24, après #1702._
 
 - **État** : corrections CP livrées (#1702 mergée, `db:migrate` fait, vérifié en prod : empreintes, tags, nœuds, niveaux) ; outil `horloge` lancé par David en parallèle dans sa propre session (journal `docs/wip/horloge-progress.md` sur `feat/horloge`).
-- **Prochaine action** : groupe A (33 points, texte seul, § 2) par lots — proposer le découpage des lots et les premiers modèles à David (phase 0), nouveau worktree.
+- **Prochaine action** : groupe A (32 points, texte seul, § 2) par lots — proposer le découpage des lots et les premiers modèles à David (phase 0), nouveau worktree.
 - **En attente de David** : vérification manuelle #1702 (`docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017) ; le générateur (`scissions_outils`) ne sait ni retirer un tag ni changer les seuls niveaux → migration à la main ; dater après la dernière migration de la prod (`list_migrations`) ; `db:migrate` depuis le dépôt principal (le worktree n'est pas lié à Supabase) ; heredoc `python3 - <<EOF` bloque dans ce shell → script dans le scratchpad.
 - **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1702).
@@ -32,11 +32,11 @@ Non tagués CP (12) :
 
 ## 2. Les 72 points CP sans modèle
 
-- **A. Texte / formule seuls (33)** : 003, 004, 007, 075, 076 ; ordinaux 009-013 ; 014, 077, 015, 078, 079, 017 ;
-  020, 021, 027, 028, 081, 082 ; problèmes 029-031 ; 036, 038, 037 ; lexique 032, 039, 041 ; 048 ; 016 (posée, rendu à vérifier).
+- **A. Texte / formule seuls (32)** : 003, 004, 007, 075, 076 ; ordinaux 009-013 ; 014, 077, 015, 078, 079, 017 ;
+  020, 021, 027, 028, 081, 082 ; problèmes 029-031 ; 036, 038, 037 ; lexique 032, 039, 041 ; 048.
 - **B. Outil existant** : droite graduée `line` → 008 ; `figure` → 054-056, 057-058, 061-062, 034-035, 067 ;
   `tableau-croise` / `effectifs` → 069, 068 ; images fixes → 049-052, 040.
-- **C. Outil neuf** : collections → 001, 004 (en partie), 070 ; monnaie → 042-045, 071 ; horloge → 046, 047.
+- **C. Outil neuf** : collections → 001, 004 (en partie), 070 ; monnaie → 042-045, 071 ; horloge → 046, 047 ; opérations posées → 016.
 - **D. Non évaluables sans interaction** : 002, 053, 059, 060, 063-066, 074 — **à revoir avec la validation de figure élève (géométrie)**.
 - À trancher : 072, 084 (« présenter », « construire » : « compléter » compte-t-il ?).
 
@@ -71,6 +71,7 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 3. Bloc `monnaie` (pièces et billets d'euros).
 4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles).
 5. **Case « figure »** (§ 2 bis) : branche les prédicats existants et la barre d'outils de l'atelier dans une question.
+6. **Opérations posées** (demandé par David le 2026-10-24) : bloc « en colonnes » (addition au CP, CP-016 ; puis soustraction, multiplication, division aux niveaux suivants) — aucun rendu « posé » n'existe dans `ubumark`. Place dans l'ordre : à trancher.
 
 ## 4. Questions à David
 
