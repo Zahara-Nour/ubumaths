@@ -38,6 +38,7 @@
 import { GRADE_CODES, GRADES, isGradeCode } from '$lib/types/grades';
 import { buildSeriesLink, cartItemSchema, type SeriesCategories } from '$lib/validation/series';
 import { MATHOU_NAMES } from './mathou-noms';
+import type { MathouDecorationId } from './decorations';
 
 // ============================================================================
 // Types
@@ -56,6 +57,11 @@ export interface MathouMemory {
 	starredGrades: string[];
 	/** Sieste écrite par le dernier calcul : sert à annoncer le réveil. */
 	asleep: boolean;
+	/**
+	 * Décoration de panse portée (`student_mathoux.decoration`). Lue seulement : la
+	 * mémoire ne l'écrit jamais (achat et pose : `$lib/server/mathoux/decorations.ts`).
+	 */
+	decoration?: MathouDecorationId | null;
 }
 
 /** Ce que la mémoire doit apprendre d'un Mathou : sa ligne complète, jamais en baisse. */
@@ -157,6 +163,8 @@ export interface Mathou {
 	trainingCategories: SeriesCategories | null;
 	/** Niveaux étoilés (calculés ∪ mémorisés), du plus ancien au plus récent. */
 	stars: string[];
+	/** Décoration de panse portée (lue dans la mémoire), `null` sinon. */
+	decoration: MathouDecorationId | null;
 	/** Totaux sur tout le parcours. */
 	workablePoints: number;
 	acquiredPoints: number;
@@ -451,6 +459,7 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 			dueForRevision: asleep && hasNappingPoint,
 			trainingCategories: trainingCategories(trainingTemplates),
 			stars,
+			decoration: remembered?.decoration ?? null,
 			workablePoints: workableTotal,
 			acquiredPoints: acquiredTotal,
 			byGrade

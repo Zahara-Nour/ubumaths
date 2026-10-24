@@ -33,6 +33,7 @@ function mathou(notionId: string, growth: Mathou['growth'], stars: string[] = []
 		growth,
 		asleep: false,
 		dueForRevision: false,
+		decoration: null,
 		trainingCategories: null,
 		stars,
 		workablePoints: 2,

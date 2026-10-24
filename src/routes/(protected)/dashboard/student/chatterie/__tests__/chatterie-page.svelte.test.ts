@@ -49,6 +49,7 @@ const COLLECTION: MathouCollection = {
 					growth: 'matou',
 					asleep: true,
 					dueForRevision: true,
+					decoration: null,
 					trainingCategories: CAT_FRAC,
 					stars: [],
 					workablePoints: 4,
@@ -63,6 +64,7 @@ const COLLECTION: MathouCollection = {
 					growth: 'a_decouvrir',
 					asleep: false,
 					dueForRevision: false,
+					decoration: null,
 					// La logique n'en donne pas à une silhouette : la page ne doit pas le montrer non plus
 					trainingCategories: CAT_ENT,
 					stars: [],
@@ -85,6 +87,7 @@ const COLLECTION: MathouCollection = {
 					growth: 'grand_matou',
 					asleep: false,
 					dueForRevision: false,
+					decoration: null,
 					trainingCategories: CAT_VEC,
 					stars: ['2', '1_SPE'],
 					workablePoints: 3,

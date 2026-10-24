@@ -391,6 +391,48 @@ describe('buildMathouCollection avec la mémoire', () => {
 		});
 	});
 
+	it('la décoration portée vient de la mémoire ; sans elle, aucune', () => {
+		const collection = buildMathouCollection({
+			points: [
+				{ id: 'p1', nodeId: 'n-ent', grade: '2' },
+				{ id: 'p2', nodeId: 'n-calc', grade: '2' }
+			],
+			nodes: NODES,
+			progress: progress({
+				p1: { hasSuccess: true },
+				p2: { hasSuccess: true }
+			}),
+			nappingPointIds: new Set(),
+			memory: memory({
+				'n-ent': { bestStage: 'chaton', starredGrades: [], decoration: 'cockade' },
+				'n-calc': { bestStage: 'chaton', starredGrades: [] }
+			})
+		});
+		const decorations = collection.races
+			.flatMap((race) => race.mathoux)
+			.map((m) => [m.notionId, m.decoration]);
+		expect(decorations).toEqual(
+			expect.arrayContaining([
+				['n-ent', 'cockade'],
+				['n-calc', null]
+			])
+		);
+	});
+
+	it('la décoration ne fait jamais écrire la mémoire', () => {
+		const mem = memory({
+			'n-ent': { bestStage: 'chaton', starredGrades: [], decoration: 'heart' }
+		});
+		const collection = buildMathouCollection({
+			points: [{ id: 'p1', nodeId: 'n-ent', grade: '2' }],
+			nodes: NODES,
+			progress: progress({ p1: { hasSuccess: true } }),
+			nappingPointIds: new Set(),
+			memory: mem
+		});
+		expect(memoryUpdates(collection, mem)).toEqual([]);
+	});
+
 	it('le calcul plus avancé que la mémoire l’emporte', () => {
 		const collection = buildMathouCollection({
 			points: [{ id: 'p1', nodeId: 'n-ent', grade: '2' }],
