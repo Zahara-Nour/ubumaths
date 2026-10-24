@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 2 (lot lycée) en cours._
+_Mis à jour le 2026-10-24, PR #1679 ouverte._
 
-- **État** : PR 1 mergée (#1676, #1678, pas en prod) ; vue PDF essayée par David dans Chrome : elle marche. PR 2 en cours : les 7 programmes du lycée transcrits par 7 agents (un par PDF), test rouge commité.
-- **Prochaine action** : relire les transcriptions (formules contre le PDF), tests verts, PR 2 ; puis lot cycles 4, 3, 2 (`cycle-N.md` + un morceau par niveau).
-- **En attente de David** : relecture de `transcriptions/2.md` (fractions empilées p. 5, vecteurs p. 9).
-- **Pièges en cours** : `<embed>` bloqué par la CSP (`object-src 'none'`) → `<iframe>` ; prettier ignore `transcriptions/` ; `src/lib/programmes/**` est dans le filtre de chemins de l'intégration (`check:integration-paths`).
+- **État** : PR 1 mergée (#1676, #1678, pas en prod) ; vue PDF validée par David dans Chrome. PR #1679 ouverte : 7 programmes du lycée transcrits + titres en couleur, sobres (`##`/`###` en bleu d'accent, filet sous `##`, le reste en couleur du texte : « pas dans l'excès »).
+- **Prochaine action** : #1679 verte → merger ; puis lot cycles 4, 3, 2 (`cycle-N.md` + un morceau par niveau).
+- **En attente de David** : relecture de `transcriptions/2.md` (fractions empilées p. 5, vecteurs p. 9) ; 1_GEN p. 7 « exposant 1/n » (glyphe abîmé dans le PDF) ; niveaux de titres ambigus 1_TECHNO p. 8-9, T_TECHNO p. 10-11.
+- **Pièges en cours** : `<embed>` bloqué par la CSP → `<iframe>` ; prettier ignore `transcriptions/` ; formules validées par `validateLatex` de `mathlive/ssr` (pas KaTeX) ; complétude contrôlée par mots `pdftotext` vs transcription.
 - **Worktree / branche** : `../ubumaths-wt-programmes`, branche `feat/programmes-transcriptions-lycee` (serveur de test 5177).
 
 ## Décisions (2026-10-24, validées par David : « je suis tes recos »)
@@ -31,3 +31,4 @@ _Mis à jour le 2026-10-24, PR 2 (lot lycée) en cours._
 - 2026-10-24 : #1676 mergée. Revue (code-reviewer) : test de cohérence fichiers ↔ niveaux ajouté, BO lu dans ses seules vues ; crainte « CSP bloque le PDF dans le cadre » écartée (statiques servis sans CSP, en local comme sur Vercel), à confirmer dans Chrome. CI : motif `src/lib/programmes/**` ajouté au filtre de l'intégration.
 - 2026-10-24 : #1678 mergée : barre des vues toujours sous le titre (à droite, elle passait à la ligne selon la longueur du sous-titre et changeait de place) ; vues BO à la largeur de la liste.
 - 2026-10-24 : David a essayé la vue PDF dans Chrome : elle marche. PR 2 lancée (lot lycée, branche `feat/programmes-transcriptions-lycee`).
+- 2026-10-24 : #1679 ouverte (lot lycée : 7 transcriptions par 7 agents Sonnet, 956 formules validées MathLive, complétude par mots). Titres en couleur : d'abord une couleur par niveau, jugé excessif par David → une seule couleur d'accent pour `##` et `###`.

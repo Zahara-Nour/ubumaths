@@ -6,8 +6,8 @@
 	  sélection), plus un lien pour l'ouvrir dans un onglet (aperçu médiocre
 	  sur iPhone / iPad) et un lien de téléchargement ;
 	- `texte` : sa transcription ubumark, ou un message tant qu'elle n'est pas
-	  écrite ; un niveau de titre = une couleur, pour se repérer dans un texte
-	  long (titre du BO en couleur du texte).
+	  écrite ; grandes parties et thèmes en couleur d'accent, pour se repérer
+	  dans un texte long, sans plus.
 	`official` null : pas de mathématiques à ce niveau (terminale générale).
 
 	@module components/programme/OfficialProgrammeView
@@ -70,20 +70,15 @@
 {/if}
 
 <style>
-	/* Une couleur par niveau de titre de la transcription (classes `md-hN` de HeadingNode) */
-	.bo-texte :global(.md-h2) {
+	/* Titres de la transcription (classes `md-hN` de HeadingNode) : une seule couleur
+	   d'accent pour les deux premiers niveaux, filet sous les grandes parties ; les
+	   niveaux suivants gardent la couleur du texte (taille et graisse suffisent) */
+	.bo-texte :global(.md-h2),
+	.bo-texte :global(.md-h3) {
 		color: var(--color-curve-1);
 	}
-	.bo-texte :global(.md-h3) {
-		color: var(--color-curve-2);
-	}
-	.bo-texte :global(.md-h4) {
-		color: var(--color-curve-3);
-	}
-	.bo-texte :global(.md-h5) {
-		color: var(--color-curve-4);
-	}
-	.bo-texte :global(.md-h6) {
-		color: var(--color-fig-vert);
+	.bo-texte :global(.md-h2) {
+		border-bottom: 1px solid var(--color-border);
+		padding-bottom: 0.25rem;
 	}
 </style>

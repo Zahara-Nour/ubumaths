@@ -1,7 +1,8 @@
 /**
- * Vue « BO (texte) » — demandé par David (2026-10-24) : une couleur par niveau
- * de titre de la transcription, pour se repérer dans un texte long ; le titre
- * du BO (`#`) garde la couleur du texte.
+ * Vue « BO (texte) » — demandé par David (2026-10-24) : des titres en couleur
+ * pour se repérer dans un texte long, sobrement (« pas dans l'excès ») :
+ * grandes parties et thèmes (`##`, `###`) dans une même couleur d'accent ;
+ * titre du BO et niveaux suivants en couleur du texte.
  */
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -23,7 +24,7 @@ function headingColor(container: HTMLElement, level: number): string {
 }
 
 describe('OfficialProgrammeView, vue texte', () => {
-	it('une couleur par niveau de titre, le titre du BO en couleur du texte', async () => {
+	it('une seule couleur d’accent, pour `##` et `###` ; le reste en couleur du texte', async () => {
 		const { container } = await render(OfficialProgrammeView, {
 			official: OFFICIAL,
 			transcription: SOURCE,
@@ -33,7 +34,10 @@ describe('OfficialProgrammeView, vue texte', () => {
 		if (!article) throw new Error('article absent');
 
 		const colors = [1, 2, 3, 4, 5, 6].map((level) => headingColor(container, level));
-		expect(colors[0]).toBe(getComputedStyle(article).color);
-		expect(new Set(colors).size).toBe(6);
+		const text = getComputedStyle(article).color;
+		const [h1, h2, h3, ...rest] = colors;
+		expect(h2).not.toBe(text);
+		expect(h3).toBe(h2);
+		expect([h1, ...rest]).toEqual([text, text, text, text]);
 	});
 });
