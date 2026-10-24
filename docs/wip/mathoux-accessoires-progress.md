@@ -1,22 +1,27 @@
 # Mathoux : gidouilles du travail et décorations de panse — journal
 
-> Branche `feat/mathoux-accessoires`, worktree `../ubumaths-wt-mathoux-accessoires`. Démarré le
+> Branches `feat/mathoux-accessoires` (lot A) puis `feat/mathoux-decorations` (lot B), worktree `../ubumaths-wt-mathoux-accessoires`. Démarré le
 > 2026-10-24. Suite de [mathoux-sans-gidouille-progress.md](mathoux-sans-gidouille-progress.md) ;
 > conception : [mathoux-conception.md § 4, étape 3](mathoux-conception.md).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1689._
+_Mis à jour le 2026-10-24, PR 1 du lot B (migration) ouverte._
 
-- **État** : lot A COMPLET sur `main` : #1685 (versement) et #1689 (code, +2 de révision sans
-  condition de Palotin, plafond 20 / 24 h) mergées ; migrations `20261024210000` et
-  `20261024230000` appliquées en prod ; code pas en prod (prochain `deploy:prod`, vérification
-  notée dans `verifications-manuelles.md`).
-- **Prochaine action** : lot B — page de dessins des 6 décorations de panse et des 4 races à motif
-  (smoking, marbré, arlequin, Lunaire), à faire choisir par David AVANT toute migration.
+- **État** : lot A clos (#1685, #1689). Lot B : migration `20261024235000_mathoux_decorations.sql`
+  écrite (table `student_mathou_decorations`, colonne `student_mathoux.decoration`, fonctions
+  `buy_mathou_decoration` / `set_mathou_decoration`), 23 tests d'intégration rouges sans elle,
+  verts avec ; appliquée en LOCAL seulement.
+- **Prochaine action** : revue + audit sécurité de la PR 1 ; CI verte → merge ; `db:migrate` (les
+  4 conditions) ; `db:types`. Puis PR 2 = code (catalogue TS, dessins dans `MathouAvatar`,
+  Chatterie « Décorer », vitrine Boutique, vue prof, export RGPD — colonnes en dur dans
+  `api/account/export/+server.ts` : ajouter `decoration` et la table des achats —, consentement à la
+  route).
 - **En attente de David** : rien.
-- **Pièges en cours** : lignes d'un même versement = même `created_at` ; tests qui paient en
-  plusieurs fois : `ageActivity` ; après un rebase, `FRESH=1` au typecheck.
+- **Pièges en cours** : rendu serveur de plusieurs `MathouAvatar` = ids `s1-…` répétés ; les prix
+  font foi en SQL (`mathou_decoration_catalog`) : le catalogue TS de la PR 2 doit les recopier
+  (test d'égalité à prévoir) ; poser une décoration change `updated_at` (la mémoire rejoue sa
+  mise à jour conditionnelle, normal) ; après un rebase, `FRESH=1`.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-decorations`.
 
 ## Constat (2026-10-24)
@@ -60,6 +65,27 @@ _Mis à jour le 2026-10-24, après #1689._
 - Panse seule en v1. Colliers au lot suivant (règle à trouver pour la fraise du grand matou).
   **Pelages jamais vendus** (identité de la race).
 
+### Lot B : comportements validés (2026-10-24)
+
+- **Dessins** : cœur A (rouge) 10 · étoile B (rouge sur pastille crème) 10 · petite gidouille A
+  (spirale noire sur pastille crème) 20 · cocarde A (à rubans) 20 · médaille A (à ruban) 40 ·
+  blason A (rouge au chevron d'or) 40. Dessins dans `scripts/mathoux-planches/decorations.test.ts`.
+  Smoking, marbré, arlequin : par-dessus ; Lunaire : dans le creux du croissant.
+- **Une décoration orne UN SEUL Mathou à la fois** ; la poser ailleurs la déplace, gratuitement ;
+  retrait gratuit ; une décoration au plus par Mathou.
+- **Où** : achat et pose dans la Chatterie (bouton « Décorer » sur chaque Mathou né, les six
+  dessinées sur CE Mathou, prix, « Achetée » / « Portée par … ») ; l'achat pose sur le Mathou
+  choisi. **Et** une section « Décorations des Mathoux » dans l'onglet Boutique du Marché
+  (`VipCardShopSection` à côté) : vitrine + lien « Décorer mes Mathoux », AUCUN achat là
+  (le Marché peut être fermé : `check_marketplace_enabled`, la Chatterie reste la voie d'achat).
+- Achat atomique : solde vérifié, débit, décoration donnée, ligne au journal (« Chatterie :
+  cocarde achetée », −20). Solde insuffisant → refus, « Il te manque N gidouilles ». Déjà achetée →
+  pas de second achat. Double clic → un seul débit. Ni échange ni revente.
+- Refus : décoration inconnue, Mathou d'un autre élève ou pas né ; achat réservé aux élèves.
+- Sieste : la garde ; silhouette : rien. Vue prof : décorations visibles.
+- **Consentement** : comme la boutique VIP, sans consentement l'élève voit mais n'achète pas.
+- Deux PR : migration (+ intégration, `db:migrate`, `db:types`), puis le code.
+
 ## Historique
 
 - 2026-10-24 — #1685 (migration du lot A) mergée ; `db:migrate` + `db:types`. Revue de code et
@@ -71,3 +97,25 @@ _Mis à jour le 2026-10-24, après #1689._
   sans lui (copie de travail, `pg_sleep(0.3)` ajouté pour élargir la course), le test « deux
   versements simultanés » est rouge (36 au lieu de 18) ; vert avec la migration réelle.
 - 2026-10-24 — #1689 mergée ; `db:migrate` du plafond, droits vérifiés en prod. Lot A clos.
+- 2026-10-24 — lot B : page de dessins publiée (6 décorations en deux versions chacune, prix
+  proposés 10 cœur et étoile / 20 gidouille et cocarde / 40 médaille et blason ; options des races
+  à motif). Rendus tirés du vrai `MathouAvatar` par `scripts/mathoux-planches/decorations.test.ts`
+  (`PLANCHE=1`, sauté sinon).
+- 2026-10-24 — choix de David sur la page (lus dans sa base) : cœur A (rouge) 10, étoile B (rouge
+  sur pastille crème) 10, petite gidouille A (spirale noire sur pastille crème) 20, cocarde A (à
+  rubans) 20, médaille A (à ruban) 40, blason A (rouge au chevron d'or) 40. Races à motif :
+  smoking, marbré, arlequin → par-dessus ; Lunaire → dans le creux du croissant (centre
+  `waistY - 4 - moon × 0,12`, échelle × 0,9).
+- 2026-10-24 — « Où acheter » : j'avais affirmé à tort qu'il n'y avait pas de boutique ; il y a
+  l'onglet Boutique de `/dashboard/student/marketplace`. David choisit les deux (Chatterie +
+  vitrine Boutique). Comportements de phase 0 validés, consentement compris.
+- 2026-10-24 — PR 1 du lot B : migration des décorations. Garanties tenues par la base (clé
+  composée « achetée par CET élève », index unique partiel « un seul Mathou ») ; verrou `profiles`
+  comme le lot A (double clic = un seul débit, prouvé par deux appels simultanés) ; achats en
+  lignes négatives « Chatterie : … », hors plafond (qui ne compte que les positives). Preuve
+  rouge : 23/23 échouent sans la migration, 23/23 verts avec ; suites mémoire, étapes, vue prof,
+  collection : 74 verts.
+- 2026-10-24 — revue (Sonnet) et audit (Opus) de #1699 : aucun bloquant. Corrigés : `search_path`
+  des fonctions DEFINER finit par `pg_temp` (garde CI `definer-guard`), rollback complet (catalogue),
+  assertion « Élève introuvable » ; tests ajoutés : un achat ne libère pas le plafond, catalogue
+  refusé aux clients connectés. Rollback rejoué en local puis migration : 25 + garde verts.
