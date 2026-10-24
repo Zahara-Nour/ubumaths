@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24.
 
 ## À quoi ça sert
 
@@ -179,6 +179,7 @@ en retrait sous un item de liste.
 | `figure`                                                                                                                  | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`     | `figure-typst.ts` (via registre) |
 | `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`              | `StatChart.svelte`       | `stat-chart-typst.ts`            |
 | `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`         | `qr-typst.ts`                    |
+| `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`         | `horloge-typst.ts`               |
 
 La liste des genres statistiques est `STAT_CHART_KINDS` (`src/lib/ubumark/types/stat-chart.ts`).
 
@@ -282,6 +283,26 @@ l'élève et au PDF. La matrice est calculée au rendu, pas au parseur (`uqr` ho
 PDF, le SVG du QR stylé ([QR codes](qr-codes.md#le-style-imposé)) est posé en image vectorielle
 (`#image(bytes(…), format: "svg")`), sans fichier ni paquet réseau ; compilation réelle testée (`qr-typst-compilation.test.ts`). Dans l'éditeur riche :
 bloc de code `qr`, bouton « Insérer un QR code ». Chat élève (rendu restreint) : jamais rendu.
+
+**Horloge à aiguilles** (chantier [horloge](../wip/horloge-progress.md)) — `src/lib/ubumark/__tests__/horloge/` :
+
+````text
+```horloge
+heure: 8 h 30 ; 8 h 45
+légendes: Départ ; Arrivée
+chiffres: quarts
+```
+````
+
+`heure:` (obligatoire) : 1 à 4 heures `9 h`, `9 h 30`, `9h5` (heures 0 à 23, minutes 0 à 59 ;
+`9:30` refusé), une horloge par heure. Facultatives : `légendes:` (une par horloge, 40 caractères),
+`chiffres: tous | quarts | aucun`, `graduations: minutes | heures | aucune`,
+`minutes: visibles | cachées` (cachées : heure entière exigée), `cadran: 12 | 24` (couronne
+intérieure 13 à 24), `taille:` (2 à 8 cm ; 4 cm par défaut). La petite aiguille avance avec les
+minutes ; 13 h se dessine comme 1 h. Scène partagée `utils/horloge-scene.ts` ; au PDF, Typst
+natif (ni paquet ni image). Nom accessible « Horloge à aiguilles », **jamais l'heure** (la réponse).
+Dans un choix de QCM : 3 cm (`--horloge-taille` posé par `MultipleChoiceInput` et les aperçus ;
+série figée : `withChoiceClockSize` ajoute `taille: 3cm`, lettre seule sur sa ligne).
 
 ### Cases à compléter
 

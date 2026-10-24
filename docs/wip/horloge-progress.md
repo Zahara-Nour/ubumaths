@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-10-24, phase 0 écrite._
 
-- **État** : phase 0 VALIDÉE (§ 7 bis, recommandations retenues) ; implémentation en cours.
-- **Prochaine action** : tests rouges → parseur, scène, écran, PDF, QCM.
+- **État** : bloc ```horloge codé (parseur, scène, écran, PDF, QCM écran + série figée, éditeur riche, `check:ubumark`), tests verts, doc à jour ; PR ouverte.
+- **Prochaine action** : revue `code-reviewer`, CI verte → merge ; puis retour au chantier « questions » (modèles CP-046/047).
 - **En attente de David** : rien.
 - **Pièges en cours** : Supabase local et verrou typecheck partagés avec la session « questions » (exit 2 = attendre). Aucune migration prévue ; si besoin, relire `list_migrations` en prod (dernière connue : `20261025000100`). Aucun modèle de question dans ce chantier (retour au chantier « questions »).
 - **Worktree / branche** : `../ubumaths-wt-horloge` · `feat/horloge` · port 5176.
@@ -226,3 +226,6 @@ Toutes les recommandations du § 7 retenues :
 - 2026-10-24 : worktree créé ; lecture des bornes (CP-046/047, CE1-059 à 063, CE1-104, CE2-057 à 059,
   CE2-094), de `ubumark.md`, de `number-line-parser.ts` et `stat-chart-parser.ts` ; phase 0 écrite.
 - 2026-10-24 : phase 0 validée par David (§ 7 bis).
+- 2026-10-24 : implémentation. Tests rouges vérifiés puis verts (parseur, scène, Typst + compilation réelle, écran,
+  restreint, éditeur riche, invariants des blocs, série figée). Captures écran clair/sombre à 360 px et PDF
+  vérifiées à l'œil. Constat : la grande aiguille passe sur les chiffres (12 à midi) comme sur une vraie horloge.
