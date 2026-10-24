@@ -199,7 +199,7 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
 7. `passwordChangeHandle` — mot de passe provisoire à changer : pages → `/auth/update-password`, API et écritures → 403 (voir « Mots de passe des élèves »).
 8. `studentPresenceHandle` — élève connecté au compte approuvé, toute page hors `/api/*` : présence du jour notée au client service, au plus une fois par jour et par instance (mémoire locale, sans cookie) ; sert au « tu m'as manqué » du Palotin ([buddy-palotins.md](buddy-palotins.md#retour-apres-une-longue-absence-2026-10-21)).
 9. `adminElevationHandle` — `locals.adminSupabase`, `locals.adminElevation`.
-10. `reservedAreasHandle` (`src/lib/server/reservedAreasHandle.ts`) — espaces réservés, par identifiant de route : `/dev` admin seul (vrai compte admin ou prof élevé ; prof non élevé → `/dashboard/elevate?redirect=…`), `/aide-ecriture` prof seul (un vrai compte admin reçoit 403) ; visiteur → `/auth/login` (401 en écriture), sinon 403. Dans le hook et non dans un layout : ni les loads de page parallèles ni les actions n'y échappent (chantier demo-debug, 2026-10-24).
+10. `reservedAreasHandle` (`src/lib/server/reservedAreasHandle.ts`) — espaces réservés, par identifiant de route : `/dev` admin seul (vrai compte admin ou prof élevé ; prof non élevé → `/dashboard/elevate?redirect=…`), `/aide-ecriture` prof seul (un vrai compte admin reçoit 403) ; visiteur → `/auth/login` (401 en écriture), sinon 403. Dans le hook et non dans un layout : ni les loads de page parallèles ni les actions n'y échappent (chantier demo-debug, 2026-10-24). ⚠️ En navigation côté client, le hook ne tourne que si le navigateur demande `__data.json` : chaque espace a donc son `+layout.server.ts`, qui force cette requête et refait le contrôle (`checkReservedArea`). Un load universel (`+page.ts`) ou une requête Supabase faite dans le navigateur n'y passent pas : **aucune donnée sensible par là sous `/dev`**.
 11. `csrfHandle` — `Origin` doit correspondre à `Host` pour POST/PUT/PATCH/DELETE.
 12. `securityHeadersHandle` — CSP, HSTS (prod), `X-Frame-Options`, `Cache-Control: private, no-store` si connecté ou cookie posé.
 13. `errorMonitoringHandle` — erreurs et requêtes lentes (> 3 s) vers `error_logs`.
@@ -475,7 +475,7 @@ passe du compte admin** ; le jeton du prof n'acquiert jamais de pouvoir admin.
    saisie.
 
 La section `/dashboard/admin` redirige un prof non élevé vers `/dashboard/elevate?redirect=…`
-(retour borné à `/dashboard/admin/*` et `/dev/*` : `safeElevationRedirect`,
+(retour borné à `/dashboard/admin/*` et `/dev/*`, sans segment `.`/`..` ni `\` : `safeElevationRedirect`,
 `src/lib/server/elevation-redirect.ts`), sauf `friendships` et `users`, ouverts au prof.
 Un élève reçoit 403.
 

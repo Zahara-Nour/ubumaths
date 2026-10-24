@@ -7,7 +7,7 @@ _Mis à jour le 2026-10-24, PR 1 (socle) en cours._
 - **État** : plan validé par David ; PR 1 (socle) codée sur `feat/demo-debug` : garde `reservedAreasHandle` dans le hook, accueils `/dev` et `/aide-ecriture` vides, robots, élévation lue sous `/dev`, retour d'élévation admis vers `/dev`.
 - **Prochaine action** : revues (`code-reviewer` + `security-auditor`), PR, CI, merge. Puis PR 2 (déplacements « telles quelles » vers `/dev`).
 - **En attente de David** : rien.
-- **Pièges en cours** : un refus levé dans le hook s'affiche sur la page d'erreur minimale de SvelteKit, pas sur `+error.svelte` (choix assumé : garde dans le hook) ; `adminElevationHandle` ne lit le cookie que sous `/dashboard/admin`, `/api/admin`, `/dev` ; aucune suppression hors fusions (7, 8, 15) et ligne 17 ; `/test-font` intact ; ligne 4 après le chantier constructions.
+- **Pièges en cours** : sous `/dev`, jamais de donnée sensible par un load universel (`+page.ts`) ni par Supabase dans le navigateur (le hook ne les voit pas) ; un refus levé dans le hook s'affiche sur la page d'erreur minimale de SvelteKit, pas sur `+error.svelte` (choix assumé : garde dans le hook) ; `adminElevationHandle` ne lit le cookie que sous `/dashboard/admin`, `/api/admin`, `/dev` ; aucune suppression hors fusions (7, 8, 15) et ligne 17 ; `/test-font` intact ; ligne 4 après le chantier constructions.
 - **Worktree / branche** : `../ubumaths-wt-demo-debug` · `feat/demo-debug`.
 
 ## Décisions de David (2026-10-24)
@@ -136,6 +136,12 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
   `/api/admin` → un prof élevé aurait été refusé sur `/dev`. Étendu à `/dev` (test rouge d'abord).
   `safeRedirect` de l'écran d'élévation sorti en `src/lib/server/elevation-redirect.ts`, admet `/dev`.
 - Vérifié sur le serveur local (5176), comptes `student`, `teacher`, `teacher` élevé, `admin` : conforme.
+- Revues : `code-reviewer` (rien de bloquant), `security-auditor` (rien de bloquant ; un Moyen
+  corrigé) : en **navigation côté client**, sans nœud serveur propre, `__data.json` n'était pas
+  demandé, le hook ne tournait pas → un élève voyait `/dev` (constaté rouge avec Playwright). Ajout
+  d'un `+layout.server.ts` par espace (`checkReservedArea`), vert ensuite pour les 4 comptes.
+  Aussi : retour d'élévation refuse `.`/`..` (encodés compris) et `\` ; robots `/dev$` + `/dev/`.
+  Laissé : `adminElevationHandle` filtre sur le chemin brut (`/%64ev` → élévation non lue : échec fermé).
 
 ## Hors chantier, à faire plus tard (noté le 2026-10-24)
 

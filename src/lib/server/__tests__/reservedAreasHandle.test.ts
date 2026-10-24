@@ -13,7 +13,7 @@
  */
 import { describe, it, expect, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import { reservedAreasHandle } from '../reservedAreasHandle';
+import { checkReservedArea, reservedAreasHandle } from '../reservedAreasHandle';
 
 // ============================================================================
 // HELPERS
@@ -167,5 +167,43 @@ describe('reservedAreasHandle — hors des deux espaces', () => {
 		expect(
 			await issue(evenement('/dashboard/admin', '/(protected)/dashboard/admin', 'eleve'))
 		).toEqual({ passe: true });
+	});
+});
+
+describe('reservedAreasHandle — cas de bord', () => {
+	it('un cookie d’élévation actif sans client admin ne suffit pas (comme `requireAdmin`)', async () => {
+		const event = evenement(...DEV_PAGE, 'prof-eleve');
+		event.locals.adminSupabase = undefined;
+		expect(await issue(event)).toMatchObject({ passe: false, status: 303 });
+	});
+
+	it('connecté sans profil : 403 sur les deux espaces', async () => {
+		for (const [chemin, routeId] of [DEV_PAGE, AIDE_PAGE]) {
+			const event = evenement(chemin, routeId, 'prof');
+			event.locals.profile = null;
+			expect(await issue(event)).toEqual({ passe: false, status: 403 });
+		}
+	});
+
+	it('un prof élevé peut écrire sous /dev (action de formulaire)', async () => {
+		expect(await issue(evenement(...DEV_PAGE, 'prof-eleve', 'POST'))).toEqual({ passe: true });
+	});
+});
+
+describe('checkReservedArea — le contrôle du +layout.server.ts de chaque espace', () => {
+	// Navigation côté client : le hook ne tourne que si `__data.json` est demandé ; le
+	// layout serveur de l'espace force la requête et refait le même contrôle.
+	it('refuse l’élève comme le hook', () => {
+		expect(() => checkReservedArea(evenement(...DEV_PAGE, 'eleve'))).toThrow(
+			expect.objectContaining({ status: 403 })
+		);
+		expect(() => checkReservedArea(evenement(...AIDE_PAGE, 'admin'))).toThrow(
+			expect.objectContaining({ status: 403 })
+		);
+	});
+
+	it('laisse passer le compte qui y a droit', () => {
+		expect(() => checkReservedArea(evenement(...DEV_PAGE, 'admin'))).not.toThrow();
+		expect(() => checkReservedArea(evenement(...AIDE_PAGE, 'prof'))).not.toThrow();
 	});
 });
