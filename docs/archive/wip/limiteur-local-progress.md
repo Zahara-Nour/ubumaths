@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR à ouvrir._
+_Mis à jour le 2026-10-24, après #1686._
 
-- **État** : phase 0 validée (OAuth non touché) ; code et tests écrits, verts ; doc `auth.md` + `environnement-de-dev.md` à jour.
-- **Prochaine action** : PR, revues `code-reviewer` + `security-auditor` (Opus), CI verte → merge.
-- **En attente de David** : rien.
-- **Pièges en cours** : sous vitest `dev` est vrai → un test d'action avec IP `127.0.0.1` saute le limiteur ; les anciens tests passent par `203.0.113.7`.
-- **Worktree / branche** : `../ubumaths-wt-limiteur-local` · `feat/limiteur-local`.
+- **État** : CLOS. #1686 mergée (pas encore en prod : attend un `deploy:prod`). Durable versé dans `docs/systeme/auth.md` et `docs/pratiques/environnement-de-dev.md`.
+- **Prochaine action** : aucune.
+- **En attente de David** : vérifier qu'aucune variable `NODE_ENV` n'est posée sur Vercel (ligne dans `docs/wip/verifications-manuelles.md`).
+- **Worktree / branche** : supprimés.
 
 ## Le besoin (2026-10-24)
 
