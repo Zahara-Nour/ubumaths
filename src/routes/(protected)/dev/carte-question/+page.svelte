@@ -387,17 +387,20 @@
 			<Card.Description>Live FlashCard component</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<FlashCard
-				{interactive}
-				instance={currentInstance as QuestionInstance}
-				onAnswerSubmit={handleAnswerSubmit}
-				_onAnswerChange={handleAnswerChange}
-				onComplete={handleComplete}
-				onFlip={handleFlip}
-				{size}
-				{showCorrectionOnWrong}
-				{maxAttempts}
-			/>
+			<!-- Remontée à chaque question : la carte ne garde ni réponse ni retournement -->
+			{#key selectedQuestionType}
+				<FlashCard
+					{interactive}
+					instance={currentInstance as QuestionInstance}
+					onAnswerSubmit={handleAnswerSubmit}
+					_onAnswerChange={handleAnswerChange}
+					onComplete={handleComplete}
+					onFlip={handleFlip}
+					{size}
+					{showCorrectionOnWrong}
+					{maxAttempts}
+				/>
+			{/key}
 		</Card.Content>
 	</Card.Root>
 
