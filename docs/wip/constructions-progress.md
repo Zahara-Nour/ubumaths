@@ -6,8 +6,9 @@ _Mis à jour le 2026-10-24, après #1659 et #1662 (constructions publiques de la
 
 - **État** : lots 1 à 12 mergés ; constructions publiques de la prod réécrites et ÉCRITES EN PROD le 2026-10-24 (8 publiques, repérage dépublié, sans nom d'auteur ; sauvegarde `scripts/constructions-prod/avant-2026-10-23.json`). Le code (lots, compas qui s'ouvre à sa première utilisation, ligne « Auteur » et nom retirés des pages et de l'API) attend le prochain `deploy:prod`.
 - **Prochaine action** : aucune ; après les vérifications de David, verser (`docs/systeme/geometrie/constructions.md` déjà à jour) et archiver ce journal.
-- **En attente de David** : vérifications #1621 → #1659 dans `docs/wip/verifications-manuelles.md` ; partage et symétrie publiés sans sa relecture (« publie dès le merge ») ; suites possibles : ne renvoyer `author_id` qu'à l'auteur, `etiquette="aucune"` pour les droites (« d1 », « d2 » du partage).
+- **En attente de David** : vérifications #1621 → #1659 dans `docs/wip/verifications-manuelles.md` ; partage et symétrie publiés sans sa relecture (« publie dès le merge ») ; suite possible : `etiquette="aucune"` pour les droites (« d1 », « d2 » du partage).
 - **Tranché (2026-10-23)** : `@arc_milieu` sur angle plat → refus ; marqueurs d'angle droit déjà en `@complet` seulement ; consignes automatiques écartées (l'auteur écrit le sens, les chorégraphies le geste).
+- **Tranché (2026-10-24)** : ne pas masquer `author_id` aux élèves — seuls prof et admin écrivent (mono-professeur), l’identifiant n’apprend rien.
 - **Pièges en cours** : `M'` refusé comme identifiant (point `Ms`, nom masqué, texte « M′ ») ; `e` = constante d'Euler ; commits et PR sans mention Claude.
 - **Worktree / branche** : aucun (prochain lot : nouveau worktree depuis `origin/main`).
 
