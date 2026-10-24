@@ -217,6 +217,10 @@
 		{ value: 'lg', label: 'Grande' }
 	];
 
+	function labelOf(items: { value: string; label: string }[], value: string): string {
+		return items.find((item) => item.value === value)?.label ?? value;
+	}
+
 	// Current question instance
 	let currentInstance = $derived(sampleQuestions[selectedQuestionType]);
 
@@ -304,9 +308,9 @@
 		<Card.Content class="space-y-4">
 			<!-- Question Type Selector -->
 			<div class="space-y-2">
-				<Label for="question-type">Question</Label>
+				<span class="text-sm font-medium">Question</span>
 				<MySelect
-					id="question-type"
+					triggerAriaLabel={`Question : ${labelOf(QUESTION_ITEMS, selectedQuestionType)}`}
 					type="single"
 					items={QUESTION_ITEMS}
 					bind:value={selectedQuestionType}
@@ -344,9 +348,9 @@
 
 				<!-- Size -->
 				<div class="space-y-2">
-					<Label for="size-select">Taille</Label>
+					<span class="text-sm font-medium">Taille</span>
 					<MySelect
-						id="size-select"
+						triggerAriaLabel={`Taille : ${labelOf(SIZE_ITEMS, size)}`}
 						type="single"
 						items={SIZE_ITEMS}
 						bind:value={() => size, (v) => (size = v as typeof size)}
