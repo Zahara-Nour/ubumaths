@@ -6,17 +6,18 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR des retouches 2 ouverte._
+_Mis à jour le 2026-10-24, après le `db:migrate` de #1664._
 
-- **État** : inventaire d'avant versement fait (2026-10-24) ; PR `fix/passe-lycee-retouches-2` (3 modèles : e02fb162
-  V1 signe +, f796ffc0 V4 n > k, 0d2edda7 deux variations) prouvée, en revue / CI.
-- **Prochaine action** : merge → `db:migrate` (par David, refusé au mode auto) → relecture MCP → versement (le
-  durable dans `docs/systeme/`, journal archivé ; y reporter les « Suites » de l'inventaire ci-dessous).
-- **En attente de David** : `db:migrate` après merge.
+- **État** : passe lycée FINIE ; inventaire d'avant versement fait, ses 3 défauts corrigés (#1664 mergée, migration
+  jouée et relue par le MCP : 3/3 empreintes = fixture).
+- **Prochaine action** : versement (fin de chantier) : le durable dans `docs/systeme/`, journal archivé. Y reporter
+  les suites de l'inventaire du 2026-10-24 (défauts de rendu des brouillons, specs 27d77564 / 103cf8d9, 9a6087c5,
+  eae2ff6a → futur chantier « modèles 1re gén. / techno », couverture des points) et les rollbacks « trop stricts » de
+  #1651 / #1654 classés sans suite.
+- **En attente de David** : son go pour le versement.
 - **Pièges en cours** : un modèle a au plus un point par programme (trigger) ; `question:specs --file` : convertir par
-  `toQuestionTemplate` (scratchpad `convertir.ts`) ; worktree neuf : `svelte-kit sync` avant `tsx` ; régénérer un lot
-  reformate sa fixture (prettier) : restaurer les fixtures des lots joués.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `fix/passe-lycee-retouches-2`.
+  `toQuestionTemplate` ; worktree neuf : `svelte-kit sync` avant `tsx`.
+- **Worktree / branche** : aucun.
 
 ## Les 5 étapes
 
@@ -354,3 +355,9 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   de 1re générale. Intégration : 13 verts ; sans l'étape 4, la suite nominale tombe à sa mise en place et le rollback
   rougit ; suite d'intégration complète verte (271 fichiers, 3 499 tests). `check:incremental` 0 erreur, cliquet
   tenu, `lint:fast` propre.
+- **2026-10-24 — #1664 mergée, `db:migrate` fait (conditions réunies).** Revues Opus : `security-auditor` sans
+  bloquant ; `code-reviewer` : description de la spec ajoutée fausse (« 2x − 1 » pour « 2x − 3 », réponse juste),
+  corrigée et migration régénérée avant le merge ; laissé : spec « v1 : développé » de e02fb162 rouge (`bad_form`)
+  avant comme après, spec v0 a=2 p=2 q=1 hors condition `p-a*q != 0` (les specs ne lisent pas les conditions). CI
+  verte. Prod (MCP) : 3 empreintes = `apres` de la fixture, 0d2edda7 à 4 variations, statuts, nœuds et tags
+  inchangés. Vérification manuelle notée (0d2edda7).
