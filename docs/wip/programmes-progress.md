@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 1 en cours._
+_Mis à jour le 2026-10-24, après #1676._
 
-- **État** : PR 1 (vues « BO (PDF) » et « BO (texte) », PDF déplacés dans `static/programmes/`, transcription de la 2de) en cours sur `feat/programmes-officiels`.
-- **Prochaine action** : après le merge de la PR 1, transcrire les autres programmes par lots (lycée, puis cycles 4, 3, 2 découpés par niveau).
-- **En attente de David** : relecture de la transcription de 2de (fidélité au BO, forme).
-- **Pièges en cours** : `object-src 'none'` (CSP) bloque `<embed>` → `<iframe>` ; prettier ignore `src/lib/server/programmes/transcriptions/` (il abîme l'ubumark).
-- **Worktree / branche** : `../ubumaths-wt-programmes` · `feat/programmes-officiels`.
+- **État** : PR 1 mergée (#1676, pas en prod) : vues « BO (PDF) » et « BO (texte) », PDF dans `static/programmes/`, transcription de la 2de seule.
+- **Prochaine action** : transcrire les autres programmes par lots (lycée d'abord, puis cycles 4, 3, 2 découpés par niveau : `cycle-N.md` commun + un morceau par niveau), sur une nouvelle branche.
+- **En attente de David** : relecture de `src/lib/server/programmes/transcriptions/2.md` (fractions empilées p. 5, vecteurs p. 9) ; essai de la vue PDF dans Chrome.
+- **Pièges en cours** : `<embed>` bloqué par la CSP (`object-src 'none'`) → `<iframe>` ; prettier ignore `transcriptions/` ; `src/lib/programmes/**` est dans le filtre de chemins de l'intégration (`check:integration-paths`).
+- **Worktree / branche** : `../ubumaths-wt-programmes` gardé tant que le serveur de test 5177 sert ; à retirer ensuite.
 
 ## Décisions (2026-10-24, validées par David : « je suis tes recos »)
 
@@ -28,3 +28,4 @@ _Mis à jour le 2026-10-24, PR 1 en cours._
 ## Journal
 
 - 2026-10-24 : phase 0 validée ; PR 1 codée (tests serveur rouges puis verts).
+- 2026-10-24 : #1676 mergée. Revue (code-reviewer) : test de cohérence fichiers ↔ niveaux ajouté, BO lu dans ses seules vues ; crainte « CSP bloque le PDF dans le cadre » écartée (statiques servis sans CSP, en local comme sur Vercel), à confirmer dans Chrome. CI : motif `src/lib/programmes/**` ajouté au filtre de l'intégration.
