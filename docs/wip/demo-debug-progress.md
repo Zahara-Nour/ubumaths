@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-24, avant toute PR._
 
-- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 17 tranchées (tableau ci-dessous).
+- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 18 tranchées (tableau ci-dessous).
 - **Prochaine action** : poursuivre la revue au premier `?` du tableau « Revue page par page ».
-- **En attente de David** : le sort des lignes 18 et 19. Rien n'est codé : le plan viendra à la fin de la revue.
+- **En attente de David** : le sort de la ligne 19. Rien n'est codé : le plan viendra à la fin de la revue.
 - **Pièges en cours** : rien ne se supprime pour l'instant ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` sont de vraies fonctionnalités, hors chantier.
 - **Worktree / branche** : aucun (rien de codé) ; journal commité sur `main`.
 
@@ -73,7 +73,7 @@ Sort : **vitrine** (`/demo/…`, public) · **aide** (`/aide-ecriture/…`, prof
 | 15  | `/slides/*` (3 pages)           | dev (fusion) + vitrine  | fusion des 3 → `/dev/diaporama` (bascule plein écran / dans un cadre, taille réglable, section transitions) ; vitrine `/demo/diaporama` : diaporama qui se présente lui-même, façon démo reveal.js + atouts Chiphre (plan ci-dessous)                                                                                                                                                     |
 | 16  | `/blockly/playground`           | dev                     | → `/dev/blockly` tel quel ; rien en vitrine (fonctionnalité pas encore ouverte aux élèves) ; deviendra une vraie fonctionnalité plus tard (David)                                                                                                                                                                                                                                         |
 | 17  | `/test-exercises`               | **supprimée** (David)   | avec ses orphelins : `ExerciseMarkdownEditor.svelte`, `exercises/services/image-markdown-editor.ts` + son test. GARDER `ExerciseMarkdownPreview` (sert à `LaTeXImportDialog` → `ExerciseForm`), `ImageAttributePanel`, `image-upload.ts`, `MarkdownEditor`. Re-greper avant de supprimer                                                                                                  |
-| 18  | `/dashboard/admin/debug/*` (14) | ?                       |                                                                                                                                                                                                                                                                                                                                                                                           |
+| 18  | `/dashboard/admin/debug/*` (14) | dev (13) + admin (1)    | → `/dev/` : `session`, `rls`, `api`, `avatar`, `roue`, `champ-math`, `apercu-question`, `correction-generee`, `pdf-typst`, `pdf-latex`, `latex-vers-ubumark` ; `question-display` et `rich-text` fusionnées (lignes 7, 8) ; `database` RESTE dans l'admin, renommée « Intégrité des données » ; lien « Debug » du menu admin → accueil de `/dev` (liste de toutes les pages de dev)       |
 | 19  | `/dashboard/admin/errors/test`  | ?                       |                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ### Galerie de géométrie `/demo/geometrie` (validée par David le 2026-10-24)
