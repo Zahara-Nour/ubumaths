@@ -2449,6 +2449,17 @@ recevait le symbole f, une constante, et `.dériver f` répondait 0, `.intégrer
   `x^2 de 0 à a` → a³/3. Une condition toujours vraie ne s'affiche pas (`a^2 + 1 ≠ 0`,
   `isPositive`) ; l'exposant d'une puissance de x est réduit (`x^{a-1+1}` → `x^a`).
 
+**« Comment ? » d'une ligne de Calcul** (`calculationSteps` dans `evaluate-steps.ts`, branché par
+`typedCalculationSteps` dans `calcul.ts` ; phase 0 du retrait de `/calc`, validée par David le
+2026-10-24). Un calcul **sans lettre** (`2+3*4`, `1/2+1/3`, `5-(-3)`) porte les opérations de
+`.évaluer` (même cœur, `explainedOperations`, mêmes gardes E4-E5), sans « On remplace » ni résumé
+(il redirait la ligne). Seule une division de deux nombres s'écrit en fraction
+(`numberSlashesAsFractions` : `1/2` → $\frac{1}{2}$, `3/4*2/9` reste `\frac{3}{4} \times 2 \div 9`).
+Pas d'étapes : une lettre (valeur de l'atelier, `x`), une fonction de l'atelier (`f(2)`), un terme
+de suite (`u_3`, `u(5)` récrit), une mesure (`AE`), une grandeur, un résultat exact trop long, une
+réponse arrondie. Les lignes récrites (`u_3`, mesures) perdent les étapes de leur calcul
+intérieur (`withoutSteps`). `Entry.steps` vient de tout résultat qui en porte (`entryOf`).
+
 **« Comment ? » de `.évaluer`** (`evaluate-steps.ts`, PR 3, décisions de David du 2026-10-14).
 **E2** : `generatePedagogicalArithmeticSteps` niveau `college`, une opération par étape (pièges du
 négatif compris : `(-3)^2 = (-3) \times (-3) = 9`, « Soustraire $-3$, c'est ajouter $3$ »).
