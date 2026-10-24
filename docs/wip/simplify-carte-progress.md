@@ -881,3 +881,10 @@ Décision déjà prise au § 19 : une expression littérale tapée dans Calcul e
 - **Q29** — `eˣ·eˣ → (eˣ)²` (règle `x·x → x²`), alors qu'en classe on écrit `e^{2x}`. Reco : `e^{2x}` (règle des exposants pour une exponentielle). Change aussi `tidy` pour tous : même traitement que Q28 (vérifié d'abord, sinon 5f).
 
 **Plan (une PR)** : tests rouges dans `affichage-calcul.test.ts` (nominal + limites ci-dessus), garde « variable » de `readable` remplacée par `tidy` ordre gardé, « Garder » selon Q27, `docs/systeme/atelier.md` mis à jour. Revue `code-reviewer` (Sonnet).
+
+## 62. Q27-Q30 (David, 2026-10-24)
+
+- **Q27 : oui.** « Garder » range ce qui est affiché (lot 5d).
+- **Q28 : retirée.** Déjà tranchée au lot 4a (§ 35, Q1 : `x⁰ → 1` gardé, convention des polynômes) ; reproposée par erreur, David a suivi la reco sans le rappel. Prototype mesuré (2 tests seulement en dépendaient, `tidy-domaine`, `tidy-review`) puis retiré.
+- **Q29** : reco suivie (`eˣ·eˣ → e^{2x}`) ; précision en attente — seulement quand des facteurs se regroupent, un `(eˣ)²` tapé restant tel quel (`tidy` ne distingue pas les deux aujourd'hui).
+- **Q30 : b** (David, maintenu après le relevé). Une fonction usuelle en un nombre (`√2`, `ln 2`, `sin 1`, `|−3|`) se range comme un coefficient, devant les lettres : `2√2 x`, `√2 (x+1)`, `ln(2) x`, `1/(ln(2) x)`, `2 ln(2) x·2^{x²}`. Une fonction de l'énoncé (`f(2)`) reste une inconnue. Branche `fix/simplify-carte-ordre-valeurs`, PR avant 5d. `order.ts` : catégorie `CATEGORY_VALUE`. Tests : 20 rouges sur 128 sans le correctif (`tidy-ordre-facteurs`). Suite serveur : 4 rouges, tous des attentes de l'ancien ordre, mises à jour. **Corpus des dérivées mis à jour** (David : « il faudra mettre à jour le corpus ») : 4 formes (`log₂`, `log` ×2, `2^{x²}`) — l'oracle compare sans l'ordre des facteurs, il ne l'avait pas vu.
