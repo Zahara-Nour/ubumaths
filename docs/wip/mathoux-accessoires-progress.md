@@ -14,7 +14,9 @@ _Mis à jour le 2026-10-24, après #1685 ; PR 2 du lot A ouverte._
   fin de séance et la bulle du Palotin, +2 avec le forfait de révision.
 - **Prochaine action** : PR 2 mergée → lot B (page de dessins des 6 décorations + races à motif de
   panse, à faire valider par David avant toute migration).
-- **En attente de David** : rien.
+- **En attente de David** : (1) +2 de révision lié au forfait du Palotin ou à la séance seule ;
+  (2) étapes des Mathoux farmables par fausses réussites (audit #1689) : accepter, ou plafond
+  par jour. PR #1689 non poussée depuis ces questions.
 - **Pièges en cours** : lignes `gidouilles_activity` d'un même versement = même `created_at`
   (ordre non garanti) ; le worktree garde son nom `mathoux-accessoires` pour toute la suite.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-gidouilles-travail`.
