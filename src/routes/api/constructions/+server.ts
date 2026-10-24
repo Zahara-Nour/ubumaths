@@ -128,7 +128,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 /**
  * POST /api/constructions
  * Create a new construction
- * Prof seul (la RLS tient la même règle, migration 20261024120000)
+ * Prof seul (la RLS tient la même règle, migration 20261024120100)
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
 	await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);

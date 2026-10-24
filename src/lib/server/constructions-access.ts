@@ -2,7 +2,7 @@
  * Qui peut créer, modifier, supprimer une construction et en lire les brouillons :
  * le prof seul (décision de David du 2026-10-24 ; mono-professeur, la propriété
  * `author_id` ne compte plus). La RLS tient la même règle (migration
- * 20261024120000) ; ces gardes ne servent qu'à répondre 403 / 404 et à masquer les
+ * 20261024120100) ; ces gardes ne servent qu'à répondre 403 / 404 et à masquer les
  * boutons.
  */
 import type { UserRole } from '$lib/server/middleware/auth';
