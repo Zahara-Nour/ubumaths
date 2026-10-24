@@ -268,7 +268,8 @@ function renderParsed(latex: string, schoolLevel: 'lycee' | 'superieur' = 'lycee
 
 /** La 2ᵉ ligne du bloc `aligned` : `= …`. */
 function rightHandSide(expressionLatex: string | undefined): string {
-	const line = (expressionLatex ?? '').split('\n').find((l) => l.trimStart().startsWith('& ='));
+	// La dernière ligne : une simplification écrit aussi la forme factorisée (Q45)
+	const line = (expressionLatex ?? '').split('\n').findLast((l) => l.trimStart().startsWith('& ='));
 	if (line === undefined) throw new Error(`pas de membre de droite : ${expressionLatex}`);
 	return line.trim().replace(/^& = /, '');
 }

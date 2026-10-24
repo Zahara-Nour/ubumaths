@@ -2686,6 +2686,11 @@ parenthèses seulement où le sens l'exige (`1/(2x)`). Test :
 `limite-commande.test.ts`.
 
 **« Comment ? » de `.limite`** (`limit-steps.ts`, PR 3, décisions de David du 2026-10-14).
+Depuis le lot 5f-3 de `simplify-carte` (Q45, 2026-10-25), les étapes gardent les décimaux tapés
+comme la réponse de la ligne (`.limite (0,5x^2+1)/x^2 en +inf` : `x²(0,5 + 1/x²)`, « La limite
+vaut 0,5 ») et « Simplification du facteur commun » écrit le quotient développé puis factorisé
+avant de simplifier (détail : `docs/systeme/mathast/README.md`, `pedagogical-limits` ; tests
+`__tests__/limite-etapes-5f3.test.ts`).
 Les étapes sont celles de `generatePedagogicalLimitSteps` (niveau `lycee` : forme indéterminée,
 factorisation, conjugué, terme prépondérant, limites de référence et croissances comparées,
 composée `e^u`, côtés d'un pôle, côté implicite) — jamais `dispatchPedagogicalLimit`,

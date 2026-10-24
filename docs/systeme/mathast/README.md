@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25).
 
 ## À quoi ça sert
 
@@ -1364,7 +1364,17 @@ Le noyau fournit les nombres, l'appelant garde son écriture et ses étapes :
   `1.5` (K21, V21) ; titres en LaTeX entre `$…$` (« La limite vaut $\dfrac{3}{2}$ », « $3 \sqrt{2}$ »).
   Un numérateur ou un dénominateur qui EST déjà le facteur (`x - 1` en 1) n'a pas de sous-étape
   (plus de « x − 1 = x − 1 ») ; une fraction simplifiée en constante (`\dfrac{x+1}{x+1}` → 1)
-  conclut sur l'expression de départ, sans « \lim 1 = 1 » (2026-10-14).
+  conclut sur l'expression de départ, sans « \lim 1 = 1 » (2026-10-14). **« Simplification du
+  facteur commun » montre le calcul** (lot 5f-3, Q45, 2026-10-25) : champ `chain` de l'étape,
+  une ligne `= \lim …` par écriture intermédiaire (`factorisationChain`) — le quotient développé
+  quand l'écriture tapée ne l'est pas, puis factorisé : `((x+1)² − 1)/x = (x² + 2x)/x =
+x(x + 2)/x = x + 2`, `(x² − 1)/(x − 1) = (x − 1)(x + 1)/(x − 1) = x + 1` ; un quotient tapé
+  déjà factorisé n'a pas de ligne répétée. **Décimaux tapés gardés** (même lot) :
+  `stepsInRegister` (`decimal-register.ts`) récrit les étapes finies quand l'expression tape un
+  décimal — un nombre ou un coefficient à écriture décimale finie en décimal (`x²(0,5 + 1/x²)`,
+  « La limite vaut 0,5 », `0,5(x − 1)(x + 1)`), sinon en fraction (`1/3` reste) ; ni exposant,
+  ni argument de fonction, ni constante (`π/4`), et l'expression tapée reste telle quelle. La
+  valeur rendue (`value`) ne change pas. Tests : `atelier/__tests__/limite-etapes-5f3.test.ts`.
   **Limites de référence** (`tryKnownLimit`) : `e^u` est lu comme `\exp(u)` pour la table
   `KNOWN_LIMITS`, et la parenthèse autour de la base d'une puissance ôtée
   (`toKnownLimitShape`) — `\dfrac{e^x}{x}`, `x e^{-x}`, `\dfrac{x^3}{e^x}` en +∞ (croissances

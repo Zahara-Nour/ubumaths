@@ -40,7 +40,7 @@
  * @module mathAST/pedagogical-limits/pipeline
  */
 
-import type { MathNode } from '../types';
+import type { DivisionNode, MathNode } from '../types';
 import type { LimitDirection, IndeterminateForm } from '../limits/types';
 import { detectIndeterminateForm } from '../limits/indeterminate';
 import {
@@ -111,6 +111,8 @@ import {
 	rationalPolynomialNode,
 	toPolynomial
 } from '../factor';
+import { inDecimalRegister, stepsInRegister } from './decimal-register';
+import { hasDecimalLiteral } from '../tidy/decimal';
 import { PedagogicalLimitNotImplemented, STRATEGIES_LIMITS } from './types';
 import type {
 	LimitBindings,
@@ -193,6 +195,8 @@ interface StepInit {
 	readonly direction?: LimitDirection;
 	/** Limites des termes (étape `limits-of-terms`) */
 	readonly termLimits?: TermLimits;
+	/** Écritures intermédiaires entre `before` et `after` */
+	readonly chain?: readonly MathNode[];
 }
 
 function makeStep(ctx: PipelineContext, init: StepInit): PedagogicalLimitStep {
@@ -211,6 +215,7 @@ function makeStep(ctx: PipelineContext, init: StepInit): PedagogicalLimitStep {
 		...(init.bindings && { bindings: init.bindings }),
 		...(init.indeterminateForm && { indeterminateForm: init.indeterminateForm }),
 		...(init.termLimits && { termLimits: init.termLimits }),
+		...(init.chain && init.chain.length > 0 && { chain: init.chain }),
 		...(init.subSteps && init.subSteps.length > 0 && { subSteps: init.subSteps })
 	};
 }
@@ -273,7 +278,7 @@ export function generatePedagogicalLimitSteps(
 
 	const headerSteps = ctx.strategy.includeIdentify ? [emitIdentifyLimit(ctx, expression)] : [];
 	const result = runStrategies(expression, ctx);
-	return finalize(ctx, [...headerSteps, ...result.steps], result);
+	return finalize(ctx, stepsInRegister([...headerSteps, ...result.steps], expression), result);
 }
 
 /**
@@ -603,22 +608,24 @@ function tryFactorisation(
 	// Sous-étapes : factoriser numérateur et dénominateur. Un côté qui EST déjà
 	// le facteur (`x - 1` en 1) n'a rien à factoriser : pas de « x − 1 = x − 1 ».
 	const factorSubSteps: PedagogicalLimitStep[] = [];
+	const factoredNumerator = timesFactor(factor, division.numerator, x);
+	const factoredDenominator = timesFactor(factor, division.denominator, x);
 	const sides = [
 		{
 			rule: 'factor-numerator',
 			name: 'numérateur',
 			node: expression.numerator,
-			q: division.numerator
+			factored: factoredNumerator
 		},
 		{
 			rule: 'factor-denominator',
 			name: 'dénominateur',
 			node: expression.denominator,
-			q: division.denominator
+			factored: factoredDenominator
 		}
 	] as const;
 	for (const side of sides) {
-		const factored = timesFactor(factor, side.q, x);
+		const factored = side.factored;
 		if (sameWriting(side.node, factored)) continue;
 		factorSubSteps.push(
 			makeStep(ctx, {
@@ -654,7 +661,8 @@ function tryFactorisation(
 		after: simplified,
 		verbosityLevel: 'summarized',
 		bindings: { factor },
-		subSteps: factorSubSteps
+		subSteps: factorSubSteps,
+		chain: factorisationChain(expression, factoredNumerator, factoredDenominator, ctx)
 	});
 
 	// Recurse on the simplified expression — usually direct substitution now works.
@@ -686,6 +694,46 @@ function timesFactor(factor: MathNode, quotient: Poly, x: MathNode): MathNode {
 	if (lead.n === 1n && lead.d === 1n) return body;
 	if (lead.n === -1n && lead.d === 1n) return opposite(body);
 	return multiply(rationalToNode(lead), body, 'implicit');
+}
+
+/**
+ * Les lignes entre le quotient et sa simplification (Q45, David,
+ * 2026-10-24) : développé, quand l'écriture tapée ne l'est pas
+ * (`\dfrac{(x+1)^2 - 1}{x}` → `\dfrac{x^2 + 2x}{x}`), puis factorisé
+ * (`\dfrac{x(x + 2)}{x}`) ; une ligne qui répéterait la précédente tombe.
+ */
+function factorisationChain(
+	expression: DivisionNode,
+	factoredNumerator: MathNode,
+	factoredDenominator: MathNode,
+	ctx: PipelineContext
+): MathNode[] {
+	const x = makeVariable(ctx.variable);
+	const developedSide = (node: MathNode, factored: MathNode): MathNode => {
+		// Déjà factorisé tapé (`x(x + 1)`) : rien à développer pour le refactoriser
+		if (sameShown(node, factored, ctx)) return node;
+		const side = readSide(node, ctx.variable);
+		return side === null || side.expanded ? node : expandedNode(side, x);
+	};
+	const developed = overDenominator(
+		developedSide(expression.numerator, factoredNumerator),
+		developedSide(expression.denominator, factoredDenominator)
+	);
+	const factored = overDenominator(factoredNumerator, factoredDenominator);
+	const chain: MathNode[] = [];
+	if (!sameShown(developed, expression, ctx)) chain.push(developed);
+	if (!sameShown(factored, chain.at(-1) ?? expression, ctx)) chain.push(factored);
+	return chain;
+}
+
+/**
+ * Même écriture À L'AFFICHAGE : quand l'expression tape un décimal, les
+ * étapes passent en décimal (`decimal-register.ts`), `\dfrac{1}{2}x` et
+ * `0,5x` s'affichent pareil.
+ */
+function sameShown(a: MathNode, b: MathNode, ctx: PipelineContext): boolean {
+	if (!hasDecimalLiteral(ctx.globalBefore)) return sameWriting(a, b);
+	return sameWriting(inDecimalRegister(a), inDecimalRegister(b));
 }
 
 /** Même écriture, aux parenthèses de la saisie près : `(x + 1)` et `x + 1` */
