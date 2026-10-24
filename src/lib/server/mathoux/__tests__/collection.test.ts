@@ -445,6 +445,7 @@ describe('loadMathouCollection', () => {
 					name: expect.any(String),
 					raceIndex: 0,
 					stage: 'matou',
+					decoration: null,
 					newStars: []
 				}
 			]

@@ -28,6 +28,7 @@
 		type MathouDecorationInfo
 	} from '$lib/mathoux/decorations';
 	import type { Mathou } from '$lib/mathoux/collection-logic';
+	import { capitalize } from '$lib/mathoux/news';
 
 	// Types
 	interface Props {
@@ -39,6 +40,11 @@
 		balance: number;
 		onclose: () => void;
 	}
+
+	type PostOutcome = 'done' | 'refused' | 'failed';
+
+	// Constantes
+	const FAILURE = 'Action impossible pour l’instant : réessaie dans un moment.';
 
 	// Variables
 	let { mathou, mathoux, owned, balance, onclose }: Props = $props();
@@ -62,51 +68,70 @@
 		return `${n} gidouille${n > 1 ? 's' : ''}`;
 	}
 
-	async function post(path: string, body: unknown): Promise<boolean> {
+	/**
+	 * `refused` : la base a dit non (déjà achetée, pas achetée, solde…) — la page
+	 * était périmée (autre onglet) : on la recharge aussi. `failed` : panne.
+	 */
+	async function post(path: string, body: unknown): Promise<PostOutcome> {
 		try {
 			const response = await fetch(path, {
 				method: 'POST',
 				headers: { 'content-type': 'application/json' },
 				body: JSON.stringify(body)
 			});
-			if (response.ok) return true;
+			if (response.ok) return 'done';
 			const payload: unknown = await response.json().catch(() => null);
 			const message =
 				payload && typeof payload === 'object' && 'message' in payload
 					? String(payload.message)
-					: 'Action impossible pour l’instant : réessaie dans un moment.';
+					: FAILURE;
 			toaster.error(message);
+			return response.status === 404 || response.status === 409 ? 'refused' : 'failed';
 		} catch {
-			toaster.error('Action impossible pour l’instant : réessaie dans un moment.');
+			toaster.error(FAILURE);
+			return 'failed';
 		}
-		return false;
 	}
 
-	async function buy(target: Mathou, info: MathouDecorationInfo) {
+	/** Une action à la fois ; la page rechargée sauf panne ; jamais de boutons bloqués. */
+	async function run(info: MathouDecorationInfo, action: () => Promise<PostOutcome>) {
 		busy = info.id;
-		const done = await post('/api/student/mathoux/decorations/buy', {
-			decoration: info.id,
-			notionId: target.notionId
-		});
-		if (done) {
-			syncGidouilles({ type: 'student' }, -info.price);
-			toaster.success(`Achat fait : ${info.name} pour ${target.name} (−${gidouilles(info.price)})`);
-			await invalidateAll();
+		try {
+			if ((await action()) !== 'failed') await invalidateAll();
+		} finally {
+			busy = null;
 		}
-		busy = null;
 	}
 
-	async function wear(target: Mathou, info: MathouDecorationInfo, on: boolean) {
-		busy = info.id;
-		const done = await post('/api/student/mathoux/decorations/wear', {
-			notionId: target.notionId,
-			decoration: on ? info.id : null
+	function buy(target: Mathou, info: MathouDecorationInfo) {
+		return run(info, async () => {
+			const outcome = await post('/api/student/mathoux/decorations/buy', {
+				decoration: info.id,
+				notionId: target.notionId
+			});
+			if (outcome === 'done') {
+				syncGidouilles({ type: 'student' }, -info.price);
+				toaster.success(
+					`Achat fait : ${info.name} pour ${target.name} (−${gidouilles(info.price)})`
+				);
+			}
+			return outcome;
 		});
-		if (done) {
-			toaster.success(on ? `${target.name} porte : ${info.name}` : 'Décoration retirée');
-			await invalidateAll();
-		}
-		busy = null;
+	}
+
+	function wear(target: Mathou, info: MathouDecorationInfo, on: boolean) {
+		return run(info, async () => {
+			const outcome = await post('/api/student/mathoux/decorations/wear', {
+				notionId: target.notionId,
+				decoration: on ? info.id : null
+			});
+			if (outcome === 'done') {
+				toaster.success(
+					on ? `${capitalize(target.name)} porte : ${info.name}` : 'Décoration retirée'
+				);
+			}
+			return outcome;
+		});
 	}
 </script>
 
@@ -189,7 +214,7 @@
 									size="sm"
 									variant="outline"
 									disabled={busy !== null}
-									aria-label="Retirer {info.name} de {target.name}"
+									aria-label="Retirer {info.name}, portée par {target.name}"
 									onclick={() => wear(target, info, false)}
 								>
 									Retirer

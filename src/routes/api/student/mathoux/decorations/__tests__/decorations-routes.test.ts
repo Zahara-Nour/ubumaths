@@ -12,10 +12,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn() }));
 vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: vi.fn() }));
+vi.mock('$lib/server/middleware/rateLimit', () => ({ rateLimit: vi.fn() }));
 vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: vi.fn() }));
 
 import { requireRole } from '$lib/server/middleware/auth';
 import { requireConsent } from '$lib/server/middleware/consent';
+import { rateLimit } from '$lib/server/middleware/rateLimit';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { POST as buy } from '../buy/+server';
 import { POST as wear } from '../wear/+server';
@@ -41,6 +43,7 @@ function event(body: unknown) {
 beforeEach(() => {
 	vi.mocked(requireRole).mockReset();
 	vi.mocked(requireConsent).mockReset();
+	vi.mocked(rateLimit).mockReset();
 	rpc.mockReset();
 	vi.mocked(createServiceRoleClient).mockReturnValue({ rpc } as never);
 	vi.mocked(requireRole).mockResolvedValue({ user: { id: 'eleve-1' }, profile: PROFILE } as never);
@@ -119,6 +122,24 @@ describe('POST /api/student/mathoux/decorations/buy', () => {
 		await expect(buy(event({ decoration: 'heart', notionId: NOTION }))).rejects.toMatchObject({
 			status: 500
 		});
+	});
+});
+
+describe('limite de débit, partagée par l’achat et la pose', () => {
+	it.each([
+		['buy', () => buy(event({ decoration: 'heart', notionId: NOTION }))],
+		['wear', () => wear(event({ notionId: NOTION, decoration: null }))]
+	])('%s : clé par élève, 30 par minute ; dépassée → 429, rien n’est appelé', async (_, call) => {
+		rpc.mockResolvedValue({ data: { ok: true }, error: null });
+		await call();
+		expect(rateLimit).toHaveBeenCalledWith('mathou_decoration:eleve-1', 30, 60_000);
+
+		rpc.mockClear();
+		vi.mocked(rateLimit).mockImplementation(() => {
+			throw { status: 429 };
+		});
+		await expect(call()).rejects.toMatchObject({ status: 429 });
+		expect(rpc).not.toHaveBeenCalled();
 	});
 });
 

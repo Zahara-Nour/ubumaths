@@ -23,6 +23,7 @@ import {
 	type MathouMemory,
 	type MathouStage
 } from './collection-logic';
+import type { MathouDecorationId } from './decorations';
 
 // Types
 export type MathouNewsKind = 'birth' | 'growth' | 'wake' | 'star';
@@ -32,6 +33,8 @@ export interface MathouNewsItem {
 	notionId: string;
 	name: string;
 	raceIndex: number;
+	/** Décoration de panse portée (`Mathou.decoration`), pour le dessin de la carte. */
+	decoration?: MathouDecorationId | null;
 	/** Stade atteint. */
 	stage: MathouStage;
 	/** Croissance seulement : le stade de la ligne remplacée (le dessin se transforme depuis lui). */
@@ -100,6 +103,7 @@ export function mathouNews(
 			name: mathou.name,
 			raceIndex: mathou.raceIndex,
 			stage,
+			decoration: mathou.decoration,
 			...(kind === 'growth' && have ? { previousStage: have.bestStage } : {}),
 			newStars
 		});
@@ -114,7 +118,7 @@ export function mathouNews(
 }
 
 /** Majuscule initiale (« le Mathou des Fractions » en tête de phrase). */
-function capitalize(text: string): string {
+export function capitalize(text: string): string {
 	return text.charAt(0).toLocaleUpperCase('fr') + text.slice(1);
 }
 
