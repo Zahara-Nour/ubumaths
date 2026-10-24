@@ -20,6 +20,7 @@ couvre:
   - 'src/routes/(public)/demo/cercle-trigo/+page.svelte'
   - 'src/routes/(public)/demo/cartes/+page.svelte'
   - 'src/routes/(public)/demo/cartes/cartes.ts'
+  - 'src/routes/(public)/demo/lexique/+page.svelte'
   - src/lib/components/structure/structure-lexicon.svelte.ts
   - 'src/routes/(protected)/dev/saisie-naturelle/*.svelte'
   - 'src/routes/(protected)/dev/polices/+page.svelte'
@@ -123,7 +124,7 @@ Les anciennes adresses sont redirigées en 308 par `redirectHandle` (table `MOVE
 [auth.md](auth.md#la-chaîne-de-handles)), sous-pages comprises ; une ancienne adresse publique mène
 donc le visiteur à la connexion. `/test-font` ne l'est qu'à l'adresse exacte, ses images restant
 sous `static/test-font/`. Les pages vitrine (`/demo/…`) arrivent une par une (phase 6 du
-chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c). Elles ne sont reliées de nulle part avant l'accueil de la
+chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d). Elles ne sont reliées de nulle part avant l'accueil de la
 vitrine (phase 7).
 
 Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` ; `/dev` est
@@ -146,6 +147,7 @@ protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo
 | `/demo/structure`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                      | Vitrine, non liée     |
 | `/demo/cercle-trigo`          | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                              | Vitrine, non liée     |
 | `/demo/cartes`                | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 4 cartes VIP écrites dans le code, une par rareté, avec leur effet holographique                                                                           | Vitrine, non liée     |
+| `/demo/lexique`               | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : mots du dictionnaire soulignés dans une question et 5 phrases, sélecteur de niveau                                                                         | Vitrine, non liée     |
 | `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable     |
 
 Précisions :
@@ -182,6 +184,13 @@ Précisions :
   la base ni le stockage (dont la CSP locale refuse les images de la prod). La légendaire tourne
   seule (`showcase`). Les feuilles `/css/holo-cards/*.css` sont chargées par la page, comme dans
   `/dev/cartes`. `noindex` jusqu'à la phase 7.
+- **`/demo/lexique`** (vitrine, PR 6d) : les mots du dictionnaire soulignés dans une question
+  (l'aire d'un carré, à remplir) et dans 5 phrases dont la fiche change avec le niveau (carré,
+  aire, périmètre, fonction, fonction exponentielle), chacune avec une ligne d'aide non soulignée
+  (`lexiconGrade={null}`). Un sélecteur (CM1 à 1re générale, 6e à l'ouverture) pose le niveau
+  pour toute la page par `provideReaderGrade`. Le dictionnaire vient de `/api/dictionnaire`,
+  public. La page de test, avec l'indice, reste sur `/dev/mots-cliquables`. `noindex` jusqu'à la
+  phase 7.
 - **`/dev/polices`** (ex-`/test-font`) : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles

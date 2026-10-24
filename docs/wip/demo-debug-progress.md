@@ -243,3 +243,7 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - `BackLink` vers `/demo`, `noindex`, non reliée avant la phase 7. Pas de revue.
 - Vérifié en base (prod, lecture seule) : niveaux des définitions de ces 5 mots identiques au
   jeu de référence des tests.
+- Vu sur le serveur de la branche (5177, Playwright, sans compte, 390 px) : page 200, mots
+  soulignés en 6e sans « fonction », avec « fonction » et « fonction exponentielle » en 1re spé,
+  aucune erreur de console, pas de défilement horizontal. Une fiche **cumule** les définitions
+  des niveaux passés (CP + CE2 pour « carré » en 6e) : lignes d'aide écrites en « la fiche ajoute ».
