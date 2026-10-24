@@ -76,7 +76,7 @@ describe('Login Timing Attack Protection', () => {
 				await actions.login({
 					request: mockRequest,
 					locals: { supabase: mockSupabase } as never,
-					getClientAddress: () => '127.0.0.1'
+					getClientAddress: () => '203.0.113.7' // IP publique : chemin de la prod, limiteur actif
 				} as never);
 			} catch {
 				// Redirect on success, fail() on error - both are expected

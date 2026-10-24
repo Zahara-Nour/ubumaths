@@ -24,7 +24,7 @@ async function login(identifier: string) {
 	const res = await actions.login({
 		request: new Request('http://localhost/auth/login', { method: 'POST', body: form }),
 		locals: { supabase: { auth: { signInWithPassword } } },
-		getClientAddress: () => '127.0.0.1'
+		getClientAddress: () => '203.0.113.7' // IP publique : chemin de la prod, limiteur actif
 	} as never);
 	return { res, signInWithPassword };
 }
