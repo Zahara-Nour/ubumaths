@@ -38,6 +38,7 @@
  * 6. User is redirected to dashboard (or original page if specified)
  */
 import { redirect, fail } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import type { Actions, PageServerLoad } from './$types';
 import { createServerLogger } from '$lib/utils/logger';
 import {
@@ -45,6 +46,7 @@ import {
 	checkLoginRateLimitByEmail,
 	checkOAuthRateLimitByIP
 } from '$lib/server/rateLimiter';
+import { skipsLoginRateLimit } from '$lib/server/local-login-rate-limit';
 import { validateFormData, loginFormSchema } from '$lib/server/validation';
 import { GOOGLE_LOGIN_ENABLED } from '$lib/config/google-login';
 
@@ -140,15 +142,18 @@ export const actions = {
 		const { email, password } = validation.data;
 
 		// Rate limiting (with HMR-safe globalThis singleton)
+		// Levé seulement sous `pnpm dev` depuis la boucle locale (cf. local-login-rate-limit.ts).
 		const ip = getClientAddress();
-		const ipLimit = await checkLoginRateLimitByIP(ip);
-		if (!ipLimit.allowed) {
-			return fail(429, { error: ipLimit.message, email: typedIdentifier });
-		}
+		if (!skipsLoginRateLimit(dev, ip)) {
+			const ipLimit = await checkLoginRateLimitByIP(ip);
+			if (!ipLimit.allowed) {
+				return fail(429, { error: ipLimit.message, email: typedIdentifier });
+			}
 
-		const emailLimit = await checkLoginRateLimitByEmail(email);
-		if (!emailLimit.allowed) {
-			return fail(429, { error: emailLimit.message, email: typedIdentifier });
+			const emailLimit = await checkLoginRateLimitByEmail(email);
+			if (!emailLimit.allowed) {
+				return fail(429, { error: emailLimit.message, email: typedIdentifier });
+			}
 		}
 
 		// Sign in on the server - this is the key!

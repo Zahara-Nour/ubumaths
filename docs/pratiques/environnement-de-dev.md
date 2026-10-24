@@ -106,8 +106,11 @@ SvelteKit pose les cookies en `Secure`, le navigateur jette le cookie de session
 tunnel SSH lancé **depuis le MacBook**, puis ouvrir `http://localhost:<port>` :
 `ssh -L <port>:localhost:<port> -L 54321:localhost:54321 david@100.79.226.105` (54321 = Supabase
 local, pour les appels du navigateur). Le serveur n'a pas besoin de `--host`. Comptes locaux :
-`supabase/seed/dev_accounts.sql` (`teacher@local.test` / `local-teacher`…). Les connexions ratées
-comptent dans le limiteur (table `rate_limits` locale, 15 min) : prendre un autre compte local.
+`supabase/seed/dev_accounts.sql` (`teacher@local.test` / `local-teacher`…). Sous `pnpm dev`, les
+connexions depuis `localhost` ne passent pas par le limiteur de connexion (`skipsLoginRateLimit`,
+`docs/systeme/auth.md`) : sessions et scripts Playwright peuvent se connecter sans compter. Depuis
+une autre IP (téléphone sur le réseau local) ou dans un build (`pnpm preview`), le limiteur
+s'applique : 5 essais par IP en 15 min, table `rate_limits` locale.
 
 **Supabase local.** Une seule pile pour tout le dépôt (ports 54321-54329, `project_id` figé), d'où le
 verrou `supabase`. CLI = devDependency exacte, lancée par `pnpm db:*` ou `pnpm exec supabase`.
