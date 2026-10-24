@@ -6,19 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 1 (migration du lot A) ouverte._
+_Mis à jour le 2026-10-24, après #1685 ; PR 2 du lot A ouverte._
 
-- **État** : PR 1 = migration `20261024210000` (colonnes « payé » + `pay_mathou_milestones`,
-  service_role seul) + 25 tests d'intégration (rouges sans, verts avec) ; revue de code et audit
-  de sécurité faits, aucun bloquant, leurs deux correctifs appliqués (étoile en double, stade payé
-  jamais en baisse).
-- **Prochaine action** : PR 1 mergée → `db:migrate` (4 conditions réunies) → `db:types` → PR 2 :
-  appeler le versement après `rememberMathoux` (noms par `mathouName`), +2 au forfait de
-  révision, annonce du rattrapage par le Palotin.
+- **État** : #1685 mergée, migration `20261024210000` appliquée en prod (droits vérifiés :
+  postgres + service_role seuls), `db:types` fait. PR 2 (branche
+  `feat/mathoux-gidouilles-travail`) : versement après la mémoire, gidouilles dans la carte de
+  fin de séance et la bulle du Palotin, +2 avec le forfait de révision.
+- **Prochaine action** : PR 2 mergée → lot B (page de dessins des 6 décorations + races à motif de
+  panse, à faire valider par David avant toute migration).
 - **En attente de David** : rien.
-- **Pièges en cours** : le versement touche `updated_at` → le compare-and-swap de
-  `rememberMathoux` peut rejouer une fois ; l'appeler APRÈS l'écriture de la mémoire.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-accessoires`.
+- **Pièges en cours** : lignes `gidouilles_activity` d'un même versement = même `created_at`
+  (ordre non garanti) ; le worktree garde son nom `mathoux-accessoires` pour toute la suite.
+- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-gidouilles-travail`.
 
 ## Constat (2026-10-24)
 
@@ -60,3 +59,8 @@ _Mis à jour le 2026-10-24, PR 1 (migration du lot A) ouverte._
   pas de décoration.
 - Panse seule en v1. Colliers au lot suivant (règle à trouver pour la fraise du grand matou).
   **Pelages jamais vendus** (identité de la race).
+
+## Historique
+
+- 2026-10-24 — #1685 (migration du lot A) mergée ; `db:migrate` + `db:types`. Revue de code et
+  audit de sécurité : aucun bloquant ; corrigés : étoile en double, stade payé jamais en baisse.
