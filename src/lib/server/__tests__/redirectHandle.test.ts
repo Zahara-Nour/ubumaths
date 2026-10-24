@@ -55,6 +55,56 @@ describe('redirectHandle — /cas, remplacée par l’atelier', () => {
 	});
 });
 
+describe('redirectHandle — pages de démo et de debug rangées sous /dev', () => {
+	it.each([
+		['/demo/theme-test', '/dev/theme'],
+		['/test-saisie', '/dev/saisie-naturelle'],
+		['/test-cadres', '/dev/cadres'],
+		['/test-font', '/dev/polices'],
+		['/test-erreur', '/dev/erreurs/page'],
+		['/blockly/playground', '/dev/blockly'],
+		['/dashboard/admin/errors/test', '/dev/erreurs/surveillance'],
+		['/dashboard/admin/debug/session', '/dev/session'],
+		['/dashboard/admin/debug/rls', '/dev/rls'],
+		['/dashboard/admin/debug/api-docs', '/dev/api'],
+		['/dashboard/admin/debug/avatar', '/dev/avatar'],
+		['/dashboard/admin/debug/wheel', '/dev/roue'],
+		['/dashboard/admin/debug/mathfield', '/dev/champ-math'],
+		['/dashboard/admin/debug/question-preview-base-card', '/dev/apercu-question'],
+		['/dashboard/admin/debug/correction-mode-b', '/dev/correction-generee'],
+		['/dashboard/admin/debug/typst-preview', '/dev/pdf-typst'],
+		['/dashboard/admin/debug/latex-preview', '/dev/pdf-latex'],
+		['/dashboard/admin/debug/latex-transpiler', '/dev/latex-vers-ubumark'],
+		['/dashboard/admin/debug/database', '/dashboard/admin/integrite-donnees']
+	])('%s mène à %s, en 308', async (from, to) => {
+		expect(await redirectionOf(from)).toEqual({ status: 308, location: to });
+	});
+
+	it('les sous-pages et la query string suivent', async () => {
+		expect(await redirectionOf('/test-erreur/404?message=Not%20Found')).toEqual({
+			status: 308,
+			location: '/dev/erreurs/page/404?message=Not%20Found'
+		});
+		expect(await redirectionOf('/test-erreur/plantage')).toEqual({
+			status: 308,
+			location: '/dev/erreurs/page/plantage'
+		});
+	});
+
+	it('les images de /test-font/ restent servies, sans redirection', async () => {
+		expect(await redirectionOf('/test-font/courbe.png')).toBeNull();
+	});
+
+	it('une adresse qui commence seulement pareil passe', async () => {
+		expect(await redirectionOf('/test-cadresX')).toBeNull();
+		expect(await redirectionOf('/dashboard/admin/errors')).toBeNull();
+		expect(await redirectionOf('/dashboard/admin/errors/42')).toBeNull();
+		expect(await redirectionOf('/dashboard/admin/debug/question-display')).toBeNull();
+		expect(await redirectionOf('/dashboard/admin/debug/rich-text')).toBeNull();
+		expect(await redirectionOf('/demo')).toBeNull();
+	});
+});
+
 describe('redirectHandle — les anciennes routes déjà redirigées', () => {
 	it('/login mène toujours à /auth/login', async () => {
 		expect(await redirectionOf('/login?error=x')).toEqual({

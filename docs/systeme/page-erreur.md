@@ -3,7 +3,7 @@ couvre:
   - src/routes/+error.svelte
   - 'src/lib/error-page/**'
   - 'src/lib/components/error-page/**'
-  - 'src/routes/(public)/test-erreur/**'
+  - 'src/routes/(protected)/dev/erreurs/page/**'
   - src/lib/server/maintenance.ts
 ---
 
@@ -85,7 +85,7 @@ Chiphre »…), `noindex`. SvelteKit renvoie le bon code HTTP.
 | `src/lib/components/error-page/PiSpiral.svelte` | Rendu SVG de la spirale                                              |
 | `src/lib/error-page/pi-spiral-svg.ts`           | La même spirale en texte SVG, pour la page de maintenance            |
 | `src/lib/server/maintenance.ts`                 | Page de maintenance (HTML autonome, même famille)                    |
-| `src/routes/(public)/test-erreur/`              | Démo : tous les cas, vraie erreur par code                           |
+| `src/routes/(protected)/dev/erreurs/page/`      | Démo : tous les cas, vraie erreur par code                           |
 | `src/hooks.client.ts` (`handleError`)           | Remplit `detail` ; journalise une 404 de navigation en avertissement |
 | `src/lib/seo/sitemap-pages.ts`                  | Pages candidates aux suggestions (leur `title` est le texte du lien) |
 
@@ -144,10 +144,10 @@ sans l'heure de retour.
 
 ## Page de démonstration
 
-`/test-erreur` (`src/routes/(public)/test-erreur/`) liste tous les cas, chacun avec ce qu'on doit
+`/dev/erreurs/page` (ex-`/test-erreur`, admin seul ; `src/routes/(protected)/dev/erreurs/page/`) liste tous les cas, chacun avec ce qu'on doit
 voir : fautes de frappe et suggestions, message précis en titre, chaque code de la table, repli
-sur la famille, message brut d'une 5xx. `/test-erreur/<code>?message=…` lève une vraie erreur
-HTTP (code 400-599 et message validés par Zod). `/test-erreur/plantage` lève une exception
+sur la famille, message brut d'une 5xx. `/dev/erreurs/page/<code>?message=…` lève une vraie erreur
+HTTP (code 400-599 et message validés par Zod). `/dev/erreurs/page/plantage` lève une exception
 inattendue, **en dev seulement** (404 en prod, pour ne pas polluer le journal des erreurs) : suivi
 depuis la démo, il montre la pile sous « Détails techniques » ; en chargement complet, le rendu
 serveur sans pile. Exclue par `robots.txt`, `noindex`.

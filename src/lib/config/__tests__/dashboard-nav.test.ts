@@ -179,9 +179,7 @@ describe('isNavLinkActive', () => {
 		expect(
 			isNavLinkActive('/dashboard/teacher/contenu', '/dashboard/teacher/contenu/enigmes/new')
 		).toBe(true);
-		expect(isNavLinkActive('/dashboard/admin/debug/database', '/dashboard/admin/debug/cache')).toBe(
-			true
-		);
+		expect(isNavLinkActive('/dashboard/admin/docs', '/dashboard/admin/docs/adr')).toBe(true);
 	});
 
 	it('demande une adresse exacte pour les autres liens', () => {

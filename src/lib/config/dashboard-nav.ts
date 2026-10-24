@@ -39,6 +39,7 @@ import {
 	LogOut,
 	LibraryBig,
 	Shapes,
+	DatabaseCheck,
 	Cat
 } from '@lucide/svelte';
 import type { LucideIcon } from '@lucide/svelte';
@@ -180,7 +181,13 @@ export function getNavLinks(
 			{ href: '/organisation/kanban', label: 'Suivi du site', icon: Kanban },
 			{ href: '/dashboard/admin/cron', label: 'CRON Jobs', icon: Clock },
 			{ href: '/dashboard/admin/docs', label: 'Documentation', icon: FileText },
-			{ href: '/dashboard/admin/debug/database', label: 'Debug', icon: Settings },
+			{
+				href: '/dashboard/admin/integrite-donnees',
+				label: 'Intégrité des données',
+				icon: DatabaseCheck
+			},
+			// Espace des pages de dev, hors du tableau de bord (chantier demo-debug).
+			{ href: '/dev', label: 'Debug', icon: Settings },
 			{ href: '/dashboard/admin/settings', label: 'Settings', icon: Settings },
 			...footerLinks
 		];
@@ -196,7 +203,6 @@ export function getNavLinks(
  * qui s'ouvrent depuis lui et y reviennent (#1121).
  */
 const ACTIVE_PREFIXES: Record<string, string[]> = {
-	'/dashboard/admin/debug/database': ['/dashboard/admin/debug'],
 	'/dashboard/admin/docs': ['/dashboard/admin/docs'],
 	'/dashboard/admin/bug-reports': ['/dashboard/admin/bug-reports'],
 	'/dashboard/teacher/contenu': ['/dashboard/teacher/contenu'],

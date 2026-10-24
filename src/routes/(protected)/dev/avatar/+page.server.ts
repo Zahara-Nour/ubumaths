@@ -1,0 +1,42 @@
+/**
+ * Avatar Debug Page - Server Load Function
+ *
+ * PURPOSE:
+ * Provides comprehensive debugging information for troubleshooting avatar display issues
+ * with Google OAuth authentication.
+ *
+ * RETURNS:
+ * - user: User object with metadata (including 'picture' and 'avatar_url' fields)
+ * - profile: User profile from database (including saved avatar_url)
+ * - userMetadata: Explicit copy of user metadata for easier inspection
+ *
+ * ACCESS CONTROL:
+ * - Admin only
+ *
+ * USAGE:
+ * Navigate to /dev/avatar while authenticated as admin
+ */
+import { error } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+import { requireAdmin } from '$lib/server/middleware/auth';
+
+export const load: PageServerLoad = async ({ locals }) => {
+	// Admin gate (admin login OR step-up elevation)
+	await requireAdmin(locals);
+
+	// Diagnostic data describes the CURRENT session (real admin or elevated teacher).
+	const { user, profile } = locals;
+	if (!user) {
+		throw error(401, 'Connexion requise');
+	}
+
+	return {
+		user: {
+			id: user.id,
+			email: user.email,
+			user_metadata: user.user_metadata
+		},
+		profile,
+		userMetadata: user.user_metadata
+	};
+};

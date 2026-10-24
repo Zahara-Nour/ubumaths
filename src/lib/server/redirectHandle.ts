@@ -11,6 +11,45 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 
 /**
+ * Pages de démo et de debug rangées sous `/dev` (chantier demo-debug, PR 2) :
+ * ancienne adresse → nouvelle. Les sous-pages suivent (`/test-erreur/404` →
+ * `/dev/erreurs/page/404`).
+ */
+const MOVED_PAGES: Record<string, string> = {
+	'/demo/theme-test': '/dev/theme',
+	'/test-saisie': '/dev/saisie-naturelle',
+	'/test-cadres': '/dev/cadres',
+	'/test-erreur': '/dev/erreurs/page',
+	'/blockly/playground': '/dev/blockly',
+	'/dashboard/admin/errors/test': '/dev/erreurs/surveillance',
+	'/dashboard/admin/debug/session': '/dev/session',
+	'/dashboard/admin/debug/rls': '/dev/rls',
+	'/dashboard/admin/debug/api-docs': '/dev/api',
+	'/dashboard/admin/debug/avatar': '/dev/avatar',
+	'/dashboard/admin/debug/wheel': '/dev/roue',
+	'/dashboard/admin/debug/mathfield': '/dev/champ-math',
+	'/dashboard/admin/debug/question-preview-base-card': '/dev/apercu-question',
+	'/dashboard/admin/debug/correction-mode-b': '/dev/correction-generee',
+	'/dashboard/admin/debug/typst-preview': '/dev/pdf-typst',
+	'/dashboard/admin/debug/latex-preview': '/dev/pdf-latex',
+	'/dashboard/admin/debug/latex-transpiler': '/dev/latex-vers-ubumark',
+	'/dashboard/admin/debug/database': '/dashboard/admin/integrite-donnees'
+};
+
+/** Nouvelle adresse d'une page déplacée, ou `null` si `pathname` n'en est pas une. */
+function movedPageTarget(pathname: string): string | null {
+	// Adresse exacte seulement : les images du PDF de démonstration restent
+	// servies sous `static/test-font/`.
+	if (pathname === '/test-font' || pathname === '/test-font/') return '/dev/polices';
+	for (const [from, to] of Object.entries(MOVED_PAGES)) {
+		if (pathname === from || pathname.startsWith(from + '/')) {
+			return to + pathname.slice(from.length);
+		}
+	}
+	return null;
+}
+
+/**
  * URL Redirect Handle
  * Handles deprecated route redirects to maintain backwards compatibility
  * Includes navigation restructure redirects (2026-01)
@@ -100,6 +139,11 @@ export const redirectHandle: Handle = async ({ event, resolve }) => {
 	// Filet pour les liens gardés et les favoris.
 	if (pathname === '/cas' || pathname === '/cas/') {
 		throw redirect(308, '/atelier' + event.url.search);
+	}
+
+	const movedTo = movedPageTarget(pathname);
+	if (movedTo) {
+		throw redirect(308, movedTo + event.url.search);
 	}
 
 	return resolve(event);

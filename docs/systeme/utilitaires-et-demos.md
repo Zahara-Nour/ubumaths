@@ -11,17 +11,16 @@ couvre:
   - 'src/routes/(public)/demo/+page.ts'
   - 'src/routes/(public)/demo/question-display-demo/+page.svelte'
   - 'src/routes/(public)/demo/rich-text-editor-demo/+page.svelte'
-  - 'src/routes/(public)/demo/theme-test/+page.svelte'
+  - 'src/routes/(protected)/dev/theme/+page.svelte'
   - 'src/routes/(public)/demo/trig-circle-demo/+page.svelte'
-  - 'src/routes/(public)/test-cadres/+page.svelte'
+  - 'src/routes/(protected)/dev/cadres/+page.svelte'
   - 'src/routes/(public)/test-structure/+page.svelte'
   - 'src/routes/(public)/test-structure/*.svelte'
   - 'src/routes/(public)/test-structure/*.ts'
-  - 'src/routes/(public)/test-saisie/*.svelte'
-  - 'src/routes/(public)/test-saisie/*.ts'
-  - 'src/routes/(public)/test-font/+page.svelte'
-  - 'src/routes/(public)/test-font/exercices-demo.json'
-  - 'src/routes/(public)/test-font/shantell-pdf.ts'
+  - 'src/routes/(protected)/dev/saisie-naturelle/*.svelte'
+  - 'src/routes/(protected)/dev/polices/+page.svelte'
+  - 'src/routes/(protected)/dev/polices/exercices-demo.json'
+  - 'src/routes/(protected)/dev/polices/shantell-pdf.ts'
   - 'src/routes/(public)/upsilon/+page.svelte'
   - src/lib/stores/listNumbering.svelte.ts
   - src/lib/styles/list-numbering.css
@@ -85,14 +84,23 @@ Un appelant compté ici est un import réel (`git grep "<chemin d'import>" -- sr
 ## 1. Pages de démo et de mise au point
 
 **Rangement en cours** (chantier demo-debug, `docs/wip/demo-debug-progress.md`) : les pages de
-mise au point passent sous `/dev/…` (admin seul), les aides pour écrire du contenu sous
+mise au point sont passées sous `/dev/…` (admin seul), les aides pour écrire du contenu sous
 `/aide-ecriture/…` (prof seul) ; les deux espaces sont gardés dans le hook
 (`reservedAreasHandle`, [auth.md](auth.md#la-chaîne-de-handles)), contrôle refait par le
 `+layout.server.ts` de chaque espace (navigation côté client), et fermés aux robots. Leur
-accueil (`/dev`, `/aide-ecriture`) liste leurs pages par `PageIndex.svelte` ; vides pour l'instant.
+accueil (`/dev`, `/aide-ecriture`) liste leurs pages par `PageIndex.svelte` (`DEV_PAGES` pour `/dev`).
 
-Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` et `/test-*`) et
-interdites aux robots par `static/robots.txt` (`/demo`, `/test-`), sauf `/a-propos` et
+Pages déjà déplacées sous `/dev` (PR 2) : `/dev/theme`, `/dev/saisie-naturelle`, `/dev/cadres`,
+`/dev/polices`, `/dev/erreurs/page`, `/dev/erreurs/surveillance`, `/dev/blockly` et les anciennes pages
+de `/dashboard/admin/debug/` (`/dev/session`, `/dev/rls`, `/dev/api`, `/dev/avatar`, `/dev/roue`,
+`/dev/champ-math`, `/dev/apercu-question`, `/dev/correction-generee`, `/dev/pdf-typst`,
+`/dev/pdf-latex`, `/dev/latex-vers-ubumark`). Les anciennes adresses sont redirigées en 308 par
+`redirectHandle` (table `MOVED_PAGES`, [auth.md](auth.md#la-chaîne-de-handles)) ; `/test-font` ne
+l'est qu'à l'adresse exacte, ses images restant sous `static/test-font/`. Restent sous
+`/dashboard/admin/debug/` : `question-display` et `rich-text` (à fusionner, PR 3).
+
+Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` et `/test-*` ; `/dev` est
+protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo`, `/test-`, `/dev`), sauf `/a-propos` et
 `/upsilon`, qui sont de vraies pages.
 
 | Page                          | Servie à                                   | Liens entrants                                         | Contenu                                                                                                                                                              | Statut                            |
@@ -102,12 +110,12 @@ interdites aux robots par `static/robots.txt` (`/demo`, `/test-`), sauf `/a-prop
 | `/demo`                       | tous (prérendue : `+page.ts`, `prerender`) | aucun, hors des `BackLink` de ses sous-pages           | Carrefour : liens vers les démos, champ MathLive, carte retournable, journal (`LoggerDemo`), toasts                                                                  | Démo, non liée                    |
 | `/demo/question-display-demo` | tous                                       | `/demo`                                                | `FlashCard` sur quatre questions d'exemple                                                                                                                           | Démo                              |
 | `/demo/rich-text-editor-demo` | tous                                       | `/demo`                                                | `RichTextEditor` en mode chat + `RichTextDisplay`                                                                                                                    | Démo                              |
-| `/demo/theme-test`            | tous                                       | `/demo`                                                | « Référence des composants Shadcn » dans les deux thèmes (1 094 lignes)                                                                                              | Démo                              |
+| `/dev/theme`                  | admin (`/dev`)                             | `/dev`                                                 | « Référence des composants Shadcn » dans les deux thèmes (1 094 lignes) ; ex-`/demo/theme-test`, carte retirée de `/demo`                                            | Démo                              |
 | `/demo/trig-circle-demo`      | tous                                       | `/demo`                                                | Bloc markdown `trig` (cercle trigonométrique) avec ses réglages                                                                                                      | Démo                              |
-| `/test-cadres`                | tous (`noindex`)                           | aucun                                                  | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                     | Mise au point, gardée             |
-| `/test-font`                  | tous                                       | aucun                                                  | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée             |
+| `/dev/cadres`                 | admin (`/dev`)                             | `/dev`                                                 | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                     | Mise au point, gardée             |
+| `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée             |
 | `/test-structure`             | tous (`noindex`)                           | aucun                                                  | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**               |
-| `/test-saisie`                | tous (`noindex`)                           | aucun                                                  | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable                 |
+| `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable                 |
 | `/test-exercises`             | tout connecté, élève compris               | aucun                                                  | `ExerciseMarkdownEditor` sur un exercice d'exemple                                                                                                                   | Mise au point, probablement morte |
 
 Précisions :
@@ -128,20 +136,20 @@ Précisions :
   **longueur** (« la longueur AB », `capitalPairs: 'length'`) ; la case « Lire AB comme un
   produit » repasse en mode produit, pour la formule principale et le corpus. Un nom de figure
   (`ABC`) affiche son message à la place de la lecture.
-- **`/test-font`** : outil de comparaison des polices de rendu ; décision de ne rien changer à
+- **`/dev/polices`** (ex-`/test-font`) : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles
   de la police, petits et grands (ponctuation, opérateurs, logique, ensembles, flèches, vecteurs,
   géométrie, symboles courants, lettres calligraphiques, délimiteurs empilés, racines, ∑ ∫,
   lettres grecques, AMS) : la regarder suffit pour juger un changement du jeu Shantell (`tools/chiphre-math/`). En bas, trois **exercices réels**
-  (copie figée de la base, `exercices-demo.json`, image copiée dans `static/test-font/`), affichés en
+  (copie figée de la base, `exercices-demo.json`, image restée dans `static/test-font/`), affichés en
   Shantell et téléchargeables en PDF : `shantell-pdf.ts` compile avec le compilateur du **Corrigé
   des fiches** (`src/lib/typst/compiler/correction-fonts-compiler.ts`, `TypstSnippet.buildLocalCompiler`),
   qui charge en plus `static/fonts/chiphre-math-typst/` (Shantell Sans Light/Bold, **Chiphre Math** :
   police OpenType MATH construite depuis le jeu KaTeX par
   `tools/chiphre-math/src/build_typst_math_font.py`), et pose les mêmes règles de police
   (`withCorrectionFonts`). Le compilateur partagé des fiches n'est pas touché.
-- **`/test-cadres`** : garde la trace du choix `\htmlStyle` pour le cadre des solutions
+- **`/dev/cadres`** (ex-`/test-cadres`) : garde la trace du choix `\htmlStyle` pour le cadre des solutions
   (`\bbox` perd sa bordure en MathLive 0.111.1, `roundedbox` est décalé).
 
 ### Pièges
@@ -149,7 +157,7 @@ Précisions :
 - **`/test-structure` lit un fichier de test** :
   `$lib/mathAST/structure/__tests__/fixtures/corpus-saisies.txt?raw`. Modifier ce corpus change
   la page ; le supprimer casse le build.
-- **`/test-font` ne rétablit pas les polices en partant.** `switchMathFonts('shantell')` pose un
+- **`/dev/polices` ne rétablit pas les polices en partant.** `switchMathFonts('shantell')` pose un
   `<link>` dans `<head>` et change `MathfieldElement.fontsDirectory` ; la page n'a ni `onDestroy`
   ni retour à `katex`. Après une visite, une navigation côté client garde Shantell partout
   jusqu'au rechargement.
@@ -163,7 +171,7 @@ Précisions :
   `\hat` et `\tilde` sont `^` et `~`. Redessiner le glyphe attendu ne change alors rien à
   l'écran : relever d'abord, dans le navigateur, le caractère et la police (`font-family`) de
   chaque symbole. `\widehat` et `\overline` ne passent pas par la police (SVG, filet).
-- Les pages `/demo/**` sont publiques et sans `noindex` : seul `robots.txt` les écarte.
+- Les pages `/demo/**` sont publiques et sans `noindex` : seul `robots.txt` les écarte. Celles de `/dev` sont réservées à l'admin.
 
 ---
 
@@ -213,7 +221,7 @@ faute d'y être.
 | `french-math.ts`          | Nombres d'un LaTeX à la française (`{,}`, espaces fines dès 5 chiffres, option `minDigits`) ; `toLocaleDecimal` garde le point en anglais ; `withDigitGrouping` pose les espaces sans toucher au séparateur                                                                                                                                                                                                                                                                                       | questions, saisie à trous, rendu markdown, générateurs LaTeX/Typst | [ubumark.md](ubumark.md)                                               |
 | `latex-syntax-adapter.ts` | `$$…$$` sur une ligne → `$…$` (ancienne syntaxe MathDisplay)                                                                                                                                                                                                                                                                                                                                                                                                                                      | `ChatBot`, `TutorChat`, `QuestionPreviewCard`, `OrderingInput`     | —                                                                      |
 | `markdown.ts`             | `addHeaderIds(html)` : `id` unique sur les `<h2>`…`<h6>`                                                                                                                                                                                                                                                                                                                                                                                                                                          | `/dashboard/admin/docs`, `server/markdown-parser.ts`               | —                                                                      |
-| `mathlive-fonts.ts`       | Bascule KaTeX ↔ Shantell (feuille de surcharge, `fontsDirectory`) ; en Shantell, barres de fraction et de racine au trait des lettres (0,068 em, bouts arrondis), la racine dépasse et se referme par un petit trait : règles ajoutées à la feuille partagée des champs MathLive ; le mode texte (`\text`, `\textbf`) passe en Shantell Sans Light/Bold, la police de texte des PDF (`--text-font-family` posée par `static/mathlive-fonts-shantell.css`, sinon MathLive prend la police système) | `/test-font` seulement                                             | § 1                                                                    |
+| `mathlive-fonts.ts`       | Bascule KaTeX ↔ Shantell (feuille de surcharge, `fontsDirectory`) ; en Shantell, barres de fraction et de racine au trait des lettres (0,068 em, bouts arrondis), la racine dépasse et se referme par un petit trait : règles ajoutées à la feuille partagée des champs MathLive ; le mode texte (`\text`, `\textbf`) passe en Shantell Sans Light/Bold, la police de texte des PDF (`--text-font-family` posée par `static/mathlive-fonts-shantell.css`, sinon MathLive prend la police système) | `/dev/polices` seulement                                           | § 1                                                                    |
 | `search.ts`               | Nettoie et valide une recherche (longueur minimale 2)                                                                                                                                                                                                                                                                                                                                                                                                                                             | `server/exercise-assignments.ts`                                   | —                                                                      |
 | `skeleton-detector.ts`    | Squelette de chargement selon la route (`dashboard`, `list`, `form`, `default`)                                                                                                                                                                                                                                                                                                                                                                                                                   | layout racine, layout du dashboard                                 | [tableaux-de-bord-et-navigation.md](tableaux-de-bord-et-navigation.md) |
 | `storage.ts`              | `storageUrl(bucket, path)` : URL publique Supabase Storage depuis `PUBLIC_SUPABASE_URL`                                                                                                                                                                                                                                                                                                                                                                                                           | démineur, 2048                                                     | —                                                                      |
@@ -238,7 +246,7 @@ faute d'y être.
 | `MathField.svelte`                        | Enveloppe `<math-field>` MathLive : `bind:value`, `bind:element`, attributs transmis                                                                         | atelier, CAS, grapheur, `MathInput`, `TestSpecEditor`, démos |
 | `DynamicMathField.svelte`                 | `<math-field>` créé en JS après import dynamique de MathLive                                                                                                 | `/demo` seulement                                            |
 | `CodeViewer.svelte`                       | CodeMirror 6 en lecture seule (JSON, Python), chargé à la demande                                                                                            | `PdfPreview`, détail d'un exercice (prof)                    |
-| `LaTeXEditor.svelte`                      | CodeMirror 6 pour du LaTeX, chargé à la demande                                                                                                              | `/dashboard/admin/debug/latex-transpiler`                    |
+| `LaTeXEditor.svelte`                      | CodeMirror 6 pour du LaTeX, chargé à la demande                                                                                                              | `/dev/latex-vers-ubumark`                                    |
 | `JsonViewer.svelte`                       | JSON indenté dans une carte, bouton copier                                                                                                                   | **aucun**                                                    |
 | `LoggerDemo.svelte`, `ToastDemo.svelte`   | Démonstrations du journal et des toasts                                                                                                                      | `/demo` seulement                                            |
 | `ClassStatsCard.svelte`                   | Nombre d'élèves d'une classe et bouton « emploi du temps »                                                                                                   | `/dashboard/teacher/classes`                                 |

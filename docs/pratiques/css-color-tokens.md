@@ -138,7 +138,7 @@ Règles :
 
 - **Ne jamais écrire `@media (prefers-color-scheme: dark)`** dans un composant : il
   suit l'OS, pas le bouton. Écrire `:global(.dark) .x` (ou `.dark .x` dans un
-  `<style>` global, p. ex. sous `<svelte:head>`, cf. la page Swagger `/dashboard/admin/debug/api-docs`, #686).
+  `<style>` global, p. ex. sous `<svelte:head>`, cf. la page Swagger `/dev/api`, #686).
 - Ne pas réécrire `style.colorScheme` à la main : mode-watcher le fait déjà, au
   chargement (script anti-FOUC) comme à chaque bascule.
 - Pour tester : les **deux cas mixtes** (OS clair + choix sombre, et l'inverse).

@@ -13,7 +13,7 @@
  * avec ces polices échoue → le même corrigé, recompilé dans la police standard,
  * l'erreur Typst étant rendue à l'appelant (avertissement) et écrite en console.
  *
- * Sert aussi la page /test-font (PDF de démonstration).
+ * Sert aussi la page /dev/polices (PDF de démonstration).
  *
  * @module typst/compiler/correction-fonts-compiler
  */
