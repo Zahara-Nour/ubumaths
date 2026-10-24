@@ -2,14 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1669._
+_Mis à jour le 2026-10-24 : chantier CLOS, versé dans [constructions.md](../../systeme/geometrie/constructions.md) (§ 6 réécriture de la prod, § 9 écarts ouverts)._
 
-- **État** : PR 1 (#1665, #1666) en prod (v0.46.0, migration jouée). PR 2 #1669 mergée : migration `20261024183700` (vue `resources` recréée avec `null::uuid`, puis `DROP COLUMN constructions.author_id`), scripts et tests adaptés ; revues code + sécurité sans bloquant ; preuve rouge faite ; appliquée en LOCAL seulement.
-- **Prochaine action** : ⛔ `db:migrate` de `20261024183700` **sur accord explicite de David** (destructif ; perte nulle : 9/9 `author_id` NULL en prod, aucun défaut) ; puis PR `db:types` + régénérer `docs/systeme/base-de-donnees-tables.md`.
-- **En attente de David** : accord pour le `db:migrate` ; vérifications #1665/#1666 (et #1621 → #1659) dans `docs/wip/verifications-manuelles.md` — serveur de test `http://localhost:5177` ; suite possible : `etiquette="aucune"` pour les droites.
-- **Tranché (2026-10-24)** : écriture des constructions = **prof seul** ; scripts de démo inchangés (prof et admin) ; le prof lit tout, brouillons compris ; colonne `author_id` supprimée (question d'accès : personne ne gagne ni ne perd).
-- **Pièges en cours** : `scripts/constructions-prod/appliquer.ts` à lancer depuis `main` (la version de `production` lit encore `author_id`) ; mineur noté par l'audit : `anon` garde des droits de TABLE sur `constructions` (RLS sans policy anon, rien d'ouvert) — `REVOKE` possible à part. Commits et PR sans mention Claude.
-- **Worktree / branche** : `../ubumaths-wt-constructions` (branche `fix/constructions-migration-horodatage`, mergée) gardé pour le serveur 5177, à retirer après la vérification de David (`git worktree remove` + `branch -d` de `fix/constructions-migration-horodatage` et `feat/constructions-ecriture-prof`).
+- **État** : écriture des constructions au prof seul (#1665, #1666) et colonne `author_id` supprimée (#1669, migration jouée et vérifiée en prod, types #1671) ; lots 1 → 12 livrés.
+- **Reste** (dans la doc système, § 9) : `etiquette="aucune"`, `@arc_milieu` à l'angle plat, marqueurs d'angle droit hors `@complet`. Mineur d'audit : droits de table d'`anon` sur `constructions` (RLS sans policy anon, rien d'ouvert) — `REVOKE` possible à part.
+- **Vérifications manuelles** : #1621 → #1666 dans `docs/wip/verifications-manuelles.md`.
 
 ---
 
@@ -40,7 +37,7 @@ Ensuite : `deploy:prod` (sur demande de David), puis PR 2 : `DROP COLUMN author_
 
 ## Constructions publiques de la prod (2026-10-23 → 24, #1659, #1662)
 
-Ancien journal à part, archivé : [constructions-prod-progress.md](../archive/wip/constructions-prod-progress.md).
+Ancien journal à part, archivé : [constructions-prod-progress.md](constructions-prod-progress.md).
 
 ### Constat (prod, lecture seule, 2026-10-23)
 
@@ -98,7 +95,7 @@ Migration : **additive au sens du risque** (resserre deux policies, aucune donn�
 
 ## Lot 2 — Consignes, `masque`, ménage (2026-10-23)
 
-Inventaire de départ : [constructions.md](../systeme/geometrie/constructions.md) § Fonctions manquantes, Dette de code, Commentaires périmés.
+Inventaire de départ : [constructions.md](../../systeme/geometrie/constructions.md) § Fonctions manquantes, Dette de code, Commentaires périmés.
 
 ### Phase 0 — validée par David le 2026-10-23
 

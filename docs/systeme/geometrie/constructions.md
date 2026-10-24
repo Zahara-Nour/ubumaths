@@ -327,14 +327,23 @@ Aucun lien `href="/constructions"` dans `src/` hors de ces routes : on y arrive 
 | `GET`/`POST`/`DELETE /api/construction-demo-scripts` | `requireRoles` prof ou admin     | `name` ≤ 100, `dsl_script` ≤ 100 000 ; `upsert` sur (`author_id`, `name`) ; `DELETE ?id=` UUID, `.select()` : zéro ligne → 404                       |
 
 **Pas d'auteur, un rôle** (décision de David, 2026-10-24) : mono-professeur, la propriété ne sert à rien.
-Une construction n'a pas d'auteur (mono-professeur : le rôle suffit) ; les colonnes rendues au
-navigateur sont `CONSTRUCTION_COLUMNS`.
+Une construction n'a pas d'auteur ; les colonnes rendues au navigateur sont `CONSTRUCTION_COLUMNS`.
 
 Qui écrit les constructions : `CONSTRUCTION_AUTHOR_ROLES` et `canAuthorConstructions`
 (`src/lib/server/constructions-access.ts`), **prof seul** ; l'admin les lit comme un élève. Les scripts de démo
 gardent prof et admin (`DEMO_SCRIPT_AUTHOR_ROLES`, `canAuthorDemoScripts`, décision du 2026-10-23). La base tient
 les mêmes règles (migrations `20261024120100`, `20261023150000`) : les gardes de l'API et des pages ne font que
 répondre 403 / 404 et masquer les boutons.
+
+### Réécrire les constructions de la prod
+
+`pnpm constructions:reecrire` (`scripts/constructions-prod/appliquer.ts`, contenu dans `contenu.ts`) a
+réécrit les constructions publiques de la prod le 2026-10-24. **Simulation par défaut** :
+`--cible local` montre le rendu sans lire la prod ; `--cible prod` affiche le diff et écrit la
+sauvegarde `scripts/constructions-prod/avant-2026-10-23.json` (commitée : c'est le retour arrière) ;
+`--cible prod --publier` écrit, lancé par David après relecture du rendu. Gardes : sauvegarde complète
+exigée, titre d'avant vérifié ligne à ligne, écriture sous condition `updated_at` inchangé puis relue.
+Test : `scripts/__tests__/constructions-prod.test.ts` (O milieu de [AC] et [BD], AM = MN = NB…).
 
 ## 7. Convertisseur XML InstrumenPoche → DSL
 
@@ -402,6 +411,16 @@ Faits relevés dans le code le 2026-10-22.
 | `PPU = 40` codé deux fois dans l'exécuteur, en double de `INITIAL_PPU`                                                                                                                                                                                                                                                  | `executor.ts:1203`, `:1322` ; `ConstructionCanvas.svelte:60`        |
 | Le genre `compass-measure` sert aussi de « déplacement sans tracé » de l'équerre et de la règle                                                                                                                                                                                                                         | `perpendiculaire.ts:973-1245`, `parallele.ts:437-811`, `:1200`      |
 | 3 constructions en prod (« Ajouter 19 », « Soustraire 99 », « Axes de symétrie… carré ») contiennent des `@cacher("T_3")`, `@cacher("arc_9")`… sans effet, écrits par l'ancien convertisseur : ce sont des identifiants IEP sans nom dans le script, aucune réécriture automatique possible (ré-import depuis leur XML) | table `constructions` (mesure du 2026-10-23)                        |
+
+Relevés pendant le chantier du 2026-10-22 → 24, restés ouverts :
+
+| Point                                                                                                                                                                                | Où                              |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
+| L'étiquette d'un segment nommé (`s = segment(A, B)`) s'affiche au milieu du segment, donc sur celle du milieu I. Aucun segment nommé en prod ; suite possible : `etiquette="aucune"` | rendu des étiquettes            |
+| `@arc_milieu` refuse l'angle plat (milieu de [A′B′] = V) et renvoie vers `@arcs_egaux` ou `@mesure` : écart à confirmer par David                                                    | `bissectrice.ts`                |
+| Les marqueurs d'angle droit de la double perpendiculaire ne sont visibles qu'en `@complet`                                                                                           | `parallele.ts`                  |
+| `mediatrice(s)` sur un segment nommé est refusé par le builtin ; un identifiant avec prime (`M'`) est refusé à la lecture                                                            | `builtins.ts`, analyseur du DSL |
+| `starPairStems` pourrait aller jusqu'à Q\*/R\* si toutes les lettres de C à P sont prises (théorique)                                                                                | `parallele.ts`                  |
 
 ### Dette de code
 
