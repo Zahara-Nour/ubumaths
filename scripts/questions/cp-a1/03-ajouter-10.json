@@ -1,0 +1,95 @@
+{
+	"title": "Ajouter 10",
+	"description": "Ajouter une dizaine à un nombre",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Additionner",
+	"subdomain": "Somme",
+	"level": 19,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..90"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}+10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Ajouter $10$, c'est ajouter une dizaine : le chiffre des dizaines augmente de $1$, le chiffre des unités ne change pas.",
+					"$${{n}}+10={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "34 + 10 = 44",
+			"variationIndex": 0,
+			"variables": {
+				"n": "34"
+			},
+			"answers": ["44"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "nombre à un chiffre : 4 + 10 = 14",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 90 + 10 = 100",
+			"variationIndex": 0,
+			"variables": {
+				"n": "90"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ajoute 1 (35)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "34"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zéro inutile 044",
+			"variationIndex": 0,
+			"variables": {
+				"n": "34"
+			},
+			"answers": ["044"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		}
+	]
+}

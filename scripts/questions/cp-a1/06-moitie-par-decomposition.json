@@ -1,0 +1,113 @@
+{
+	"title": "Moitié d'un nombre pair",
+	"description": "En décomposant en dizaines et unités (46 = 40 + 6)",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Additionner",
+	"subdomain": "Double et moitié",
+	"level": 8,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle est la moitié de ${{eval:D+u}}$ ?\n\nLa moitié de ${{eval:D+u}}$ est $?$.",
+			"variables": [
+				{
+					"name": "D",
+					"expression": "20|40|60|80"
+				},
+				{
+					"name": "u",
+					"expression": "2|4|6|8"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:(D+u)/2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On décompose : ${{eval:D+u}}={{D}}+{{u}}$.",
+					"La moitié de ${{D}}$ est ${{eval:D/2}}$ et la moitié de ${{u}}$ est ${{eval:u/2}}$.",
+					"La moitié de ${{eval:D+u}}$ est donc ${{eval:D/2}}+{{eval:u/2}}={{solution}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "moitié de 46 = 23",
+			"variationIndex": 0,
+			"variables": {
+				"D": "40",
+				"u": "6"
+			},
+			"answers": ["23"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "moitié de 82 = 41",
+			"variationIndex": 0,
+			"variables": {
+				"D": "80",
+				"u": "2"
+			},
+			"answers": ["41"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "moitié de 28 = 14",
+			"variationIndex": 0,
+			"variables": {
+				"D": "20",
+				"u": "8"
+			},
+			"answers": ["14"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le double (92)",
+			"variationIndex": 0,
+			"variables": {
+				"D": "40",
+				"u": "6"
+			},
+			"answers": ["92"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : unités non partagées (26)",
+			"variationIndex": 0,
+			"variables": {
+				"D": "40",
+				"u": "6"
+			},
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zéro inutile 023",
+			"variationIndex": 0,
+			"variables": {
+				"D": "40",
+				"u": "6"
+			},
+			"answers": ["023"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		}
+	]
+}

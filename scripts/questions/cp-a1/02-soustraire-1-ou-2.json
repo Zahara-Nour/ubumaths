@@ -1,0 +1,116 @@
+{
+	"title": "Soustraire 1 ou 2",
+	"description": "Nombre à deux chiffres, moins 1 ou 2",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Soustraire",
+	"subdomain": "Différence",
+	"level": 12,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..100"
+				},
+				{
+					"name": "b",
+					"expression": "1..2"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}-{{b}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-b}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soustraire ${{b}}$, c'est reculer de ${{b}}$ dans la suite des nombres : ${{n}}$, ${{eval:n-1}}${{if:b==2|, ${{eval:n-2}}$|}}.",
+					"$${{n}}-{{b}}={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "37 − 2 = 35",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37",
+				"b": "2"
+			},
+			"answers": ["35"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "passage de la dizaine : 41 − 2 = 39",
+			"variationIndex": 0,
+			"variables": {
+				"n": "41",
+				"b": "2"
+			},
+			"answers": ["39"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 100 − 1 = 99",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100",
+				"b": "1"
+			},
+			"answers": ["99"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ajoute au lieu de soustraire (39)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37",
+				"b": "2"
+			},
+			"answers": ["39"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : passage de dizaine oublié (49)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "41",
+				"b": "2"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zéro inutile 035",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37",
+				"b": "2"
+			},
+			"answers": ["035"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		}
+	]
+}
