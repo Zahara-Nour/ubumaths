@@ -1939,7 +1939,6 @@ export type Database = {
       }
       constructions: {
         Row: {
-          author_id: string | null
           created_at: string | null
           description: string | null
           dsl_script: string | null
@@ -1951,7 +1950,6 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          author_id?: string | null
           created_at?: string | null
           description?: string | null
           dsl_script?: string | null
@@ -1963,7 +1961,6 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          author_id?: string | null
           created_at?: string | null
           description?: string | null
           dsl_script?: string | null
@@ -1974,29 +1971,7 @@ export type Database = {
           title?: string
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "constructions_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "constructions_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "constructions_author_id_fkey"
-            columns: ["author_id"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-        ]
+        Relationships: []
       }
       conversation_participants: {
         Row: {
@@ -15937,6 +15912,7 @@ export type Database = {
       is_series_owner: { Args: { p_series_id: string }; Returns: boolean }
       is_student: { Args: never; Returns: boolean }
       is_student_in_class: { Args: { p_class_id: string }; Returns: boolean }
+      is_teacher: { Args: never; Returns: boolean }
       is_teacher_for_shared_coursework: {
         Args: { p_shared_coursework_id: string }
         Returns: boolean
