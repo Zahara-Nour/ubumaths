@@ -7,7 +7,7 @@ _Mis à jour le 2026-10-23, après #1653 (lot 12, finitions) et le ménage des w
 - **État** : lots 1 à 12 mergés, pas encore en prod. Les 10 worktrees `constructions*` et leurs serveurs sont supprimés ; les vérifications #1621 → #1653 se font sur `main` (5175), lignes corrigées dans `docs/wip/verifications-manuelles.md` (carré en P, E\*/F\*).
 - **Tranché (David suit la reco, 2026-10-23)** : `@arc_milieu` sur un angle plat → refus avec renvoi vers `@arcs_egaux`/`@mesure` (déjà le comportement du code). Marqueurs d'angle droit : déjà visibles seulement en `@complet` ou `+marqueurs` (`visibility.ts`) ; c'était une vérification, pas une suite, rien à coder.
 - **Consignes automatiques : écartées (2026-10-23)** — les consignes de l'auteur portent le sens (but, propriété, conclusion), les chorégraphies génèrent déjà les consignes de geste ; David suit la reco.
-- **Prochaine action** : aucune dans ce chantier. Suite ouverte à part : réécriture des constructions publiques fausses de la prod → chantier `constructions-prod` (PR #1659, journal `docs/wip/constructions-prod-progress.md`).
+- **Prochaine action** : aucune dans ce chantier. Constructions publiques de la prod réécrites et publiées le 2026-10-24 → chantier `constructions-prod` (#1659, #1662, journal `docs/wip/constructions-prod-progress.md`) ; le compas qui s'ouvre à sa première utilisation attend le `deploy:prod`.
 - **En attente de David** : ses vérifications #1621 → #1653.
 - **Pièges en cours** : `e` = constante d'Euler. Commits et PR : aucune mention Claude.
 - **Worktree / branche** : aucun (prochain lot : nouveau worktree depuis `origin/main`).
