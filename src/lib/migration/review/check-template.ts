@@ -7,9 +7,9 @@
  * - au moins une spec de test, et toutes vertes (même validateur que l'élève) ;
  *   sauf carte de cours : aucune spec, mais recto et verso non vides à chaque tirage ;
  * - chaque variation génère une instance sur `instances` tirages (0 échec) ;
- * - E1 (Q37, chantier simplify-carte) : quand la correction automatique d'une dérivée
- *   ou d'une primitive demande une forme (`finalForm`) et qu'une case exige une forme
- *   de l'élève (`requiredForm`), la réponse de la correction passe ce juge à chaque tirage.
+ * - E1 (Q37, chantier simplify-carte) : quand une case exige une forme de l'élève
+ *   (`requiredForm`), la réponse de la correction automatique d'une dérivée ou d'une
+ *   primitive passe ce juge à chaque tirage, qu'elle demande une forme (`finalForm`) ou non.
  *
  * Les avertissements (`warnings`) ne changent jamais le verdict : variable qui peut
  * être négative citée sans parenthèses (`x-{{a}}` → `x--3`), cf. negative-substitution.ts.
@@ -58,7 +58,7 @@ export interface TemplateCheckReport {
 	};
 	/** E1 (Q37) : la réponse de la correction jugée par la forme exigée de l'élève */
 	correctionForm: {
-		/** Tirages vérifiés (finalForm ET forme exigée) */
+		/** Tirages vérifiés (correction automatique de dérivée ou de primitive ET forme exigée) */
 		checked: number;
 		failures: GenerationFailure[];
 	};
@@ -132,18 +132,16 @@ function checkGeneration(
 
 /**
  * E1 (Q37) : les formes exigées que la réponse de la correction ne passe pas ;
- * `null` quand il n'y a rien à vérifier (pas de `finalForm`, ou aucune forme exigée).
+ * `null` quand il n'y a rien à vérifier (pas de correction automatique de dérivée ou de
+ * primitive, aucune forme exigée, ou pas de réponse finale). Avec ou sans `finalForm` :
+ * la forme par défaut doit, elle aussi, passer le juge (David, 2026-10-24).
  */
 function correctionFormErrors(
 	instance: QuestionInstance,
 	cleanCoefficients: boolean
 ): string[] | null {
-	const generatedSteps = instance.correction?.generatedSteps;
-	const finalForm =
-		generatedSteps?.kind === 'differentiate' || generatedSteps?.kind === 'integrate'
-			? generatedSteps.finalForm
-			: undefined;
-	if (finalForm === undefined) return null;
+	const kind = instance.correction?.generatedSteps?.kind;
+	if (kind !== 'differentiate' && kind !== 'integrate') return null;
 	const requiredForms: RequiredForm[] = [
 		...(instance.blanks ?? []).flatMap((blank) =>
 			blank.requiredForm === undefined ? [] : [blank.requiredForm]
@@ -152,7 +150,8 @@ function correctionFormErrors(
 	];
 	if (requiredForms.length === 0) return null;
 	const answer = calculusFinalAnswerLatex(instance, { cleanCoefficients });
-	if (answer === null) return ['la correction ne donne pas de réponse finale'];
+	// Rien de généré (repli sur la correction écrite) ou pas de valeur (V28) : rien à juger
+	if (answer === null) return null;
 	// Même lecture que le juge de l'élève (`answer-validator`)
 	const reading = readingOf(instance);
 	return requiredForms

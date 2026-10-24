@@ -4,7 +4,8 @@
  *
  * - Q36 : `finalForm` refusé sur une intégrale à bornes (sa réponse est un nombre).
  * - Q37 (E1) : quand une case exige une forme (`requiredForm`), la réponse sur
- *   laquelle finit la correction passe le juge de cette forme, à chaque tirage.
+ *   laquelle finit la correction passe le juge de cette forme, à chaque tirage —
+ *   avec ou sans `finalForm` (David, 2026-10-24).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -141,8 +142,11 @@ describe('Q37 : la correction passe le juge de la forme exigée (E1)', () => {
 		expect(report.correctionForm.checked).toBe(0);
 	});
 
-	it('forme exigée sans finalForm : pas vérifiée (§ 20, la garde vise le réglage)', () => {
+	it('forme exigée sans finalForm : vérifiée aussi, la forme par défaut développée est refusée', () => {
+		// f′ par défaut = 2ax − 2a : un produit exigé la refuse (David, 2026-10-24)
 		const report = checkTemplate(derivativeTemplate(undefined, 'product'), { instances: 3 });
-		expect(report.correctionForm.checked).toBe(0);
+		expect(report.correctionForm.checked).toBe(3);
+		expect(report.correctionForm.failures).toHaveLength(3);
+		expect(report.passed).toBe(false);
 	});
 });
