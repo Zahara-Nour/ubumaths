@@ -53,8 +53,26 @@ describe('redirectHandle — /cas, remplacée par l’atelier', () => {
 
 	it('une adresse qui commence seulement par « /cas » passe', async () => {
 		expect(await redirectionOf('/casino')).toBeNull();
-		expect(await redirectionOf('/calc')).toBeNull();
 		expect(await redirectionOf('/atelier')).toBeNull();
+	});
+});
+
+describe('redirectHandle — /calc, remplacée par l’atelier', () => {
+	it('/calc mène à /atelier, en 308', async () => {
+		expect(await redirectionOf('/calc')).toEqual({ status: 308, location: '/atelier' });
+		expect(await redirectionOf('/calc/')).toEqual({ status: 308, location: '/atelier' });
+	});
+
+	it('un ancien lien de partage (?share=) tombe : l’atelier a son propre format', async () => {
+		expect(await redirectionOf('/calc?share=eyJleHByIjoiMisyIn0%3D')).toEqual({
+			status: 308,
+			location: '/atelier'
+		});
+	});
+
+	it('une adresse qui commence seulement par « /calc » passe', async () => {
+		expect(await redirectionOf('/calculatrices')).toBeNull();
+		expect(await redirectionOf('/calcul')).toBeNull();
 	});
 });
 

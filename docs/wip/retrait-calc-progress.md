@@ -1,21 +1,21 @@
 ---
 title: Retrait de /calc — journal
 date: 2026-10-24
-status: PR 1 mergée (#1705) — PR 2 (retrait de /calc) à faire
+status: PR 1 mergée (#1705) — PR 2 (retrait de /calc) en cours
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1705._
+_Mis à jour le 2026-10-25, PR 2 en cours._
 
-- **État** : PR 1 mergée (#1705) — « Comment ? » sur un calcul sans lettre, sur `main`, pas en prod.
-  Worktree et branche de la PR 1 supprimés.
-- **Prochaine action** : PR 2, retrait de `/calc` + `mathAST/step-generator` (plan ci-dessous),
-  nouveau worktree `../ubumaths-wt-retrait-calc`, branche `chore/retrait-calc-2`.
-- **En attente de David** : rien. À l'essai, signalé : en `.mode décimal` pas d'étapes ; une seule
-  opération (`12/4`) a un « Comment ? » qui redit la ligne (C1).
+- **État** : PR 2 (retrait de `/calc`) écrite, vérifications locales vertes ; PR à ouvrir, revue
+  `code-reviewer` (Sonnet), CI, merge.
+- **Prochaine action** : après le merge, fin de chantier — archiver ce journal.
+- **En attente de David** : supprimer aussi le code que plus aucune page ne monte (singleton
+  `grapheurStore`, `FunctionPanel` et ses champs, prop `panel`, `outputHtml`) ? Listé dans
+  `grapheur.md` § Écarts connus.
 - **Pièges** : `docs:check-a-jour` réclame `statistiques.md` dès que `desk.svelte.ts` change.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `../ubumaths-wt-retrait-calc`, `chore/retrait-calc-2`.
 
 ---
 
@@ -113,3 +113,19 @@ le trouve lourd à l'usage.
 - **F3** `2:0,5` s'écrivait `\dfrac{2}{0{,}5}` → fraction seulement entre deux entiers.
 - Vérifié sans finding : `.évaluer` inchangé (106 tests), aucune étape en double, saisies
   récrites (suites, mesures, grandeurs, π, fonctions à paramètre) sans étapes, 37 ms au pire.
+
+### PR 2 — retrait de `/calc` (2026-10-25)
+
+- Redirection 308 `/calc` → `/atelier`, **sans la query** (les liens `?share=` n'ont pas d'équivalent
+  dans l'atelier ; modèle `/spreadsheet`). Tests `redirectHandle.test.ts` rouges d'abord.
+- Sortie du sitemap ; suggestion de faute de frappe testée sur `/ATELIER/`.
+- Supprimés : `routes/(public)/calc`, `components/calculator` (5 composants, 2 tests),
+  `stores/calculator.svelte.ts` (+ test), `mathAST/step-generator` (+ test).
+- `chiphre-calc-history` reste dans `WORK_DATA_KEYS` (`work-data.ts`) : purge des données d'un ancien
+  usage à la déconnexion, comme `chiphre-cas-repl`.
+- Infobulle du clavier virtuel « Les touches de /calc » → « Les touches de calcul ».
+- `atelier-saisie-naturelle.md` versé (règles de frappe dans `atelier.md` § Réglages) et archivé.
+- **Trouvé en route, hors plan** : sans `/calc`, aucune page ne monte plus le singleton
+  `grapheurStore`, `FunctionPanel` (+ `FunctionInput`, `SequenceInput`, `SequenceTable`,
+  `ParameterInput`) ni la prop `panel` de `GrapheurContainer` ; `outputHtml` de `WebReplEngine` n'a
+  plus de lecteur. Gardés, question posée à David.

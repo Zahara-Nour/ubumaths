@@ -1,14 +1,15 @@
 # Moteur web de la console mathAST
 
 `WebReplEngine` exécute dans le navigateur ce que fait la console de `pnpm math` : expressions,
-commandes à point (`.dériver`, `.résoudre`…), égalités, grandeurs. **Deux lecteurs** : la vue
+commandes à point (`.dériver`, `.résoudre`…), égalités, grandeurs. **Un lecteur** : la vue
 Calcul de l'atelier (`src/lib/atelier/engine.ts`, `src/lib/atelier/desk.svelte.ts`), qui traduit les
 commandes en français, lit la saisie elle-même et met en forme les réponses (doc :
-[docs/systeme/atelier.md](../../../../../docs/systeme/atelier.md)) ; et la calculatrice `/calc`
-(`src/lib/stores/calculator.svelte.ts`).
+[docs/systeme/atelier.md](../../../../../docs/systeme/atelier.md)).
 
 Le REPL web `/cas` (store `repl.svelte.ts`, composants `components/cas/`, complétion
-`cli/completion/`) est **retiré depuis le 2026-10-13** : l'adresse mène à `/atelier`.
+`cli/completion/`) est **retiré depuis le 2026-10-13**, la calculatrice `/calc` (store
+`calculator.svelte.ts`, composants `components/calculator/`) depuis le 2026-10-25 : les deux adresses
+mènent à `/atelier`.
 
 ## Fichiers
 
@@ -18,16 +19,14 @@ Le REPL web `/cas` (store `repl.svelte.ts`, composants `components/cas/`, compl�
 | `types.ts`                | `ReplExecutionResult` (texte, HTML, arbre, LaTeX, valeurs exacte et approchée), `WebFunctionInfo`     |
 | `output-formatter-web.ts` | Sortie HTML des erreurs et des arbres (classes CSS à la place des couleurs du terminal), `escapeHtml` |
 | `french-errors.ts`        | Messages d'erreur du moteur traduits en français                                                      |
-| `index.ts`                | Export de `WebReplEngine` (lu par le store de `/calc`)                                                |
+| `index.ts`                | Export de `WebReplEngine`                                                                             |
 
 ## Lecteurs
 
 - **Atelier** (vue Calcul) : `execute`, `getCommands` (catalogue), `getEvalState` (mode),
   `getState` (`syncEngine`) ; champs `output`, `latex`, `ast`, `error`, `approximateLatex`,
   `exactLatex`, `quantityAst`, `exactTooLong`.
-- **`/calc`** (`src/lib/stores/calculator.svelte.ts`) : `execute`, `getCommands` ; champs `output`,
-  `latex`, `outputHtml`, `error`. `outputHtml` n'a plus que ce lecteur, qui le recopie dans son
-  historique sans l'afficher.
+- `outputHtml` n'a plus aucun lecteur hors des tests depuis le retrait de `/calc` (2026-10-25).
 - `getFunctions` n'est lu que par des tests (`atelier/__tests__/engine.test.ts` s'en sert pour
   vérifier `syncEngine`).
 

@@ -27,12 +27,15 @@ escalier), nuages de points, avec curseurs de paramètres, points remarquables (
 intersections), asymptotes, tangente, aire sous la courbe, cercle osculateur et export SVG/PNG.
 
 Le grapheur n'est **plus une page autonome** : c'est la vue **Graphe** de l'atelier
-([atelier.md](atelier.md)). Il reste deux hôtes :
+([atelier.md](atelier.md)). Il ne reste qu'un hôte :
 
 | Hôte                      | Instance                                                | Panneau de saisie                             |
 | ------------------------- | ------------------------------------------------------- | --------------------------------------------- |
 | `/atelier` et `/grapheur` | `new GrapheurStore(null)` par atelier, sans persistance | « Mes objets » de l'atelier (`panel={false}`) |
-| `/calc` (calculatrice)    | le singleton `grapheurStore`, persisté en localStorage  | `FunctionPanel` du grapheur                   |
+
+`/calc` (calculatrice), qui montait le singleton `grapheurStore` (persisté en localStorage) avec le
+`FunctionPanel` du grapheur, est **retirée** depuis le 2026-10-25 : aucune page ne monte plus ni
+l'un ni l'autre (voir « Écarts connus »).
 
 `/grapheur` (`src/routes/(public)/grapheur/+page.svelte`) **ouvre l'atelier** sur la vue Graphe ;
 ce qu'elle fait des liens `?f=` et `?a=` est décrit dans [atelier.md](atelier.md), pas ici.
@@ -84,7 +87,7 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 | `AsymptoteLines.svelte`, `SpecialPoints.svelte`, `IntersectionPoints.svelte`                                            | Couches d'analyse                                                                                                       |
 | `CurveHover.svelte`, `GraphLabel.svelte`                                                                                | Survol aimanté et étiquettes (exacte au survol, cycle au clic)                                                          |
 | `ImageReadings.svelte`, `ReadingSliders.svelte`                                                                         | Lecture graphique de l'image : pointillés (couche SVG) ; point glissant (curseur ARIA en HTML, hors de l'image)         |
-| `FunctionPanel.svelte`, `FunctionInput.svelte`, `SequenceInput.svelte`, `SequenceTable.svelte`, `ParameterInput.svelte` | Panneau de saisie — **monté seulement par `/calc`**                                                                     |
+| `FunctionPanel.svelte`, `FunctionInput.svelte`, `SequenceInput.svelte`, `SequenceTable.svelte`, `ParameterInput.svelte` | Panneau de saisie — **monté par aucune page** depuis le retrait de `/calc` (tests seuls)                                |
 | `ColorPicker.svelte`, `LineWidthPicker.svelte`, `LineStylePicker.svelte`                                                | Réglages de trait, réutilisés par une carte de l'atelier (`CurveSettings`)                                              |
 | `ViewportControls.svelte`, `ExportButton.svelte`, `CoordinatesDisplay.svelte`, `KeyboardHandler.svelte`                 | Zoom, export, coordonnées, raccourcis clavier (`+ - flèches Échap g 0`), sauf touche déjà prise ou zone `data-own-keys` |
 
@@ -363,9 +366,11 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 
 ## Écarts connus
 
-- **Commentaires périmés sur `/grapheur`** : `src/lib/stores/grapheur-context.ts` et la prop
-  `store` de `GrapheurContainer.svelte` disent encore que `/grapheur` et `/calc` partagent le
-  singleton. Depuis l'atelier, seul `/calc` l'utilise.
+- **Code que plus aucune page ne monte** depuis le retrait de `/calc` (2026-10-25) : le singleton
+  `grapheurStore` (et sa persistance `chiphre-grapheur-state`), le `FunctionPanel` et les champs
+  qu'il monte (`FunctionInput`, `SequenceInput`, `SequenceTable`, `ParameterInput`), la prop
+  `panel` de `GrapheurContainer.svelte` (l'atelier passe toujours `panel={false}`). Seuls des tests
+  les lisent encore.
 - **`src/lib/components/grapheur/index.ts`** (barillet) n'a aucun importeur.
 - Les ré-exports `viewport.ts`, `bezier.ts`, `colors.ts` de `src/lib/grapheur/` sont des
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.

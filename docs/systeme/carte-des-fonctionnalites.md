@@ -112,8 +112,8 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 - Démos et pages de mise au point : `/demo/*`, `/construction-demo`,
   tout `/dev/*` (admin seul : polices, cadres, pages d'erreur, Blockly, diaporama, structure…),
   tout `/aide-ecriture/*` (prof seul : géométrie, cercle trigonométrique).
-- Héritage remplacé par l'Atelier : `/calc` ([atelier.md](atelier.md)). `/cas` (2026-10-13) et
-  `/spreadsheet` (2026-10-24) sont retirées : leurs adresses mènent à `/atelier`.
+- Héritage remplacé par l'Atelier ([atelier.md](atelier.md)) : `/cas` (2026-10-13), `/spreadsheet`
+  (2026-10-24) et `/calc` (2026-10-25) sont retirées : leurs adresses mènent à `/atelier`.
 - Routes sans lien ou en sommeil : `/tuteur`, `/calculatrice`, `/games/evoland`, Navadra
   ([jeux-et-economie.md](jeux-et-economie.md), [outils-prof.md](outils-prof.md)).
 - Tout `/dashboard/admin/*`.
@@ -246,8 +246,5 @@ Royaume, D19 par la chandelle qui se pose au bout d'une minute ; V14, C16, C17, 
 
 - Glossaire et Almanach : absents du menu (décision de David du 2026-10-12 : le menu garde
   Automaths et le Shtam, les plus vivants).
-- `/calc` reste au sitemap (avant le 2026-10-11) alors que « Ne pas mettre en avant » le range en
-  héritage remplacé par l'Atelier ; `/games/evoland` en est exclu pour cette raison (`/cas`,
-  retirée le 2026-10-13, n'est plus une page).
 - Accessibilité, tout le site : anneau de focus clair à 2:1 (D16), `muted-foreground` à 4,4:1 sur fonds
   teintés (D17), pas de lien d'évitement (D18).

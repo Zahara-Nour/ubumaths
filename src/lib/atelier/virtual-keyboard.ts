@@ -1,7 +1,7 @@
 /**
  * Prototype JETABLE — le clavier virtuel de MathLive, configuré (décision 7)
  *
- * Onglet « Calcul » : les touches de `/calc` (`CalculatorKeyboard.svelte`),
+ * Onglet « Calcul » : les touches de l'ancienne `/calc` (`CalculatorKeyboard.svelte`),
  * les fonctions réciproques et x³ en appui long. Onglet « Commandes » : une
  * touche par commande, qui insère son modèle à trous, et les petits mots.
  *
@@ -49,7 +49,7 @@ const SEP = '[separator-5]';
 
 export const CALC_LAYOUT: VirtualKeyboardLayout = {
 	label: 'Calcul',
-	tooltip: 'Les touches de /calc',
+	tooltip: 'Les touches de calcul',
 	rows: [
 		[...'789', { latex: '\\div', insert: '\\frac{#@}{#0}' }, SEP, ...FUNCTIONS.map(fn)],
 		[...'456', '\\times', SEP, '\\sqrt{#0}', SQUARE, { latex: '#@^{#?}', label: '^' }, '\\pi', 'e'],

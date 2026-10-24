@@ -35,8 +35,8 @@ export function provideGrapheurStore(store: GrapheurStore): GrapheurStore {
  * contexte. Sans ce repli, le refactor les casserait tous — et un composant
  * monté hors de son conteneur cesserait de fonctionner sans rien dire.
  *
- * Le singleton reste donc l'instance par défaut, et `/grapheur` comme `/calc`
- * gardent exactement le comportement qu'ils avaient.
+ * Le singleton reste donc l'instance par défaut. Depuis le retrait de `/calc`
+ * (2026-10-25), aucune page ne le monte : il ne sert plus qu'à ces tests.
  */
 export function useGrapheurStore(): GrapheurStore {
 	return hasContext(GRAPHEUR_KEY) ? getContext<GrapheurStore>(GRAPHEUR_KEY) : grapheurStore;

@@ -33,8 +33,7 @@ import type { SignTableGrid } from '../pedagogical-solve/sign-table-grid';
  * - `lycee` — high school (2nde–Terminale)
  * - `superieur` — post-secondary
  *
- * Canonical home for this type. Re-exported from `step-generator/types.ts`
- * for backwards compatibility with existing imports.
+ * Canonical home for this type.
  */
 export type SchoolLevel = 'primaire' | 'college' | 'lycee' | 'superieur';
 

@@ -1,8 +1,8 @@
 /**
  * Les commandes deviennent découvrables — §5, et Q3 tranchée le 2026-09-16.
  *
- * Aujourd'hui `/calc` propose 8 commandes écrites en dur sur 36 réelles, toutes
- * décrites en anglais sauf deux. Un élève ne peut pas savoir que `.variations`
+ * Avant l'atelier, `/calc` (retirée depuis) proposait 8 commandes écrites en dur sur
+ * 36 réelles, toutes décrites en anglais sauf deux. Un élève ne peut pas savoir que `.variations`
  * existe.
  */
 

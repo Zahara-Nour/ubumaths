@@ -287,7 +287,7 @@ export function typedValueNode(value: MathNode): MathNode {
 }
 
 /**
- * La valeur que montre une interface (l'atelier, `/calc`) : son LaTeX, son
+ * La valeur que montre une interface (l'atelier) : son LaTeX, son
  * arbre, et la valeur approchée du bouton ≈.
  *
  * E5 (décision de David, 2026-10-14) : une saisie décimale — la valeur tapée,

@@ -22,7 +22,7 @@ describe('suggestPages', () => {
 		['/almanac', '/almanach'],
 		['/cesar', '/chiffrement/cesar'],
 		['/vigenère', '/chiffrement/vigenere'],
-		['/CALC/', '/calc']
+		['/ATELIER/', '/atelier']
 	])('faute de frappe %s → %s', (typed, expected) => {
 		expect(paths(typed)[0]).toBe(expected);
 	});
