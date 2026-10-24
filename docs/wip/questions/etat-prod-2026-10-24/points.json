@@ -1,0 +1,37 @@
+[
+	{
+		"id": "abbf49fa-e25f-45c3-81bc-57d3015ecaf5",
+		"code": "CE1-028",
+		"grade": "CE1",
+		"node_id": "9ebf797e-aaf1-4cd9-869e-274d84f46d63",
+		"archived_at": null
+	},
+	{
+		"id": "6374b756-13fa-463b-aba5-9efe282a6f18",
+		"code": "CE1-101",
+		"grade": "CE1",
+		"node_id": "9ebf797e-aaf1-4cd9-869e-274d84f46d63",
+		"archived_at": null
+	},
+	{
+		"id": "8805106f-c602-4a22-9b2f-b4168e0d1ba8",
+		"code": "CP-004",
+		"grade": "CP",
+		"node_id": "6ce95f7a-c7b2-410e-814e-e46c04ac3b67",
+		"archived_at": null
+	},
+	{
+		"id": "61a0bb1d-4116-42c4-89c1-048a3b045f0d",
+		"code": "CP-005",
+		"grade": "CP",
+		"node_id": "948c8b72-f671-4d2c-aace-4c14d51d7b06",
+		"archived_at": null
+	},
+	{
+		"id": "37dcdd0d-7fc1-4356-8ae7-5634d3004a5d",
+		"code": "CP-023",
+		"grade": "CP",
+		"node_id": "ee8abe8b-368f-4037-a4b2-9a3cab1d1afa",
+		"archived_at": null
+	}
+]

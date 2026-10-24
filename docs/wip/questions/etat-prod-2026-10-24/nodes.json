@@ -1,0 +1,50 @@
+[
+	{
+		"id": "ee8abe8b-368f-4037-a4b2-9a3cab1d1afa",
+		"parent_id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"kind": "subnotion",
+		"name": "complément"
+	},
+	{
+		"id": "9ebf797e-aaf1-4cd9-869e-274d84f46d63",
+		"parent_id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"kind": "subnotion",
+		"name": "double et moitié"
+	},
+	{
+		"id": "948c8b72-f671-4d2c-aace-4c14d51d7b06",
+		"parent_id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"kind": "subnotion",
+		"name": "décomposition"
+	},
+	{
+		"id": "6ce95f7a-c7b2-410e-814e-e46c04ac3b67",
+		"parent_id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"kind": "subnotion",
+		"name": "écritures"
+	},
+	{
+		"id": "d43f3738-fb53-46bb-a1f2-9c85f5865763",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : addition et soustraction"
+	},
+	{
+		"id": "85dfa6ee-5a03-47ae-8a14-37b2e37165ba",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : multiplication"
+	},
+	{
+		"id": "8bd9867e-2828-4155-9027-31de2bedffe8",
+		"parent_id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"kind": "notion",
+		"name": "Entiers : numération"
+	},
+	{
+		"id": "ba60d71a-751d-42f2-96ab-ef3d1780351e",
+		"parent_id": null,
+		"kind": "branch",
+		"name": "Nombres et calculs"
+	}
+]
