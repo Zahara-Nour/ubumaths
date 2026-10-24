@@ -161,7 +161,10 @@
 	class:max-w-4xl={data.view !== 'carte'}
 	class:max-w-7xl={data.view === 'carte'}
 >
-	<div class="flex flex-wrap items-center justify-between gap-3">
+	<!-- Barre des vues toujours sous le titre : à droite, elle passait à la
+	     ligne selon la longueur du sous-titre et changeait de place d'une vue
+	     à l'autre. -->
+	<div class="flex flex-col gap-3">
 		<div class="flex items-center gap-3">
 			<div class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
 				<ListTodo class="h-6 w-6 text-primary" />
@@ -175,7 +178,7 @@
 				</p>
 			</div>
 		</div>
-		<div class="flex items-center gap-3">
+		<div class="flex flex-wrap items-center gap-3">
 			<nav class="inline-flex overflow-hidden rounded-md border text-sm" aria-label="Vue">
 				{#each VIEWS as v (v.value)}
 					<a
