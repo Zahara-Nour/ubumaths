@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1673 (Q30 mergé, pas en prod)._
+_Mis à jour le 2026-10-24, après #1674 (Q29 mergé, pas en prod)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670) et ~~Q30~~ (#1673, § 62 : `2√2 x`, `ln(2) x`, corpus des dérivées mis à jour) mergés. Phase 0 de 5d au § 61, Q27-Q30 au § 62. Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673 : `2√2 x`, `ln(2) x`) et ~~Q29~~ (#1674 : `eˣ·eˣ → e^{2x}`, § 63) mergés. Phase 0 de 5d au § 61, Q27-Q31 aux § 62-63. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → **5** (~~Q19~~ → ~~5a~~ → ~~5b~~ → ~~5c~~ → ~~5c-bis~~ → ~~Q30~~ → ~~Q29~~ → **5d D3** → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : merger la PR de Q29 (`fix/simplify-carte-exponentielles`), puis 5d (« Garder » range l'affiché, Q27).
-- **En attente de David** : vérifications manuelles de #1670, #1663, #1642, #1656, #1658/#1660 ; choix pour `pnpm math` (§ 54) ; futur chantier : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
-- **Pièges en cours** : Q28 était déjà tranchée (§ 35 Q1, `x⁰ → 1`) — relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc des modèles : script jetable dans le scratchpad (prod en lecture, base contre branche en échangeant le fichier depuis une copie) ; l'oracle des dérivées ignore l'ordre des facteurs ; worktree neuf : `pnpm exec svelte-kit sync` avant `pnpm tsx` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `fix/simplify-carte-exponentielles` (rebasée sur #1673).
+- **Prochaine action** : 5d D3, comportements validés (§ 61, § 62) : expression littérale de l'Atelier → `tidy({ order: 'kept' })` dans `readable` (`atelier/render.ts`), « Garder » range l'affiché (Q27). Tests rouges d'abord (`affichage-calcul.test.ts`).
+- **En attente de David** : `eˣ·eˣ·e^{−x} → e^{−x}e^{2x}` (se lit mal, conforme à Q31) — à lui montrer ; vérifications manuelles de #1670, #1663, #1642, #1656, #1658/#1660 ; choix pour `pnpm math` (§ 54) ; futur chantier : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
+- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` (Q28 = § 35 Q1) ; ne plus sonder avec `pnpm math` ; banc des modèles : script jetable dans le scratchpad (prod en lecture, base contre branche) ; l'oracle des dérivées ignore l'ordre des facteurs ; `toCustom` écrit `e^xe^{2x}` qui se relit `e^{xe^{2x}}` (tests d'idempotence sur l'arbre) ; 5f : `réduire` fait-il `eˣ·e^{−x} → 1` ? ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-5d-d3` (depuis `origin/main` après #1674).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
