@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1679 (+ correctif exposant t/n)._
+_Mis à jour le 2026-10-24, après #1683 (exposant t/n)._
 
 - **État** : #1676, #1678, #1679 mergées (pas en prod). Vue PDF validée par David ; tout le lycée transcrit (2de, 1_GEN, 1_SPE, T_SPE, T_EXP, T_COMP, 1_TECHNO, T_TECHNO) ; titres `##`/`###` en bleu d'accent, filet sous `##`, validé par David.
 - **Prochaine action** : lot cycles 4, 3, 2 sur une nouvelle branche (`cycle-N.md` commun + un morceau par niveau, cf. `OFFICIAL_PROGRAMMES`) ; même méthode : un agent Sonnet par morceau, complétude par mots `pdftotext`, formules par `validateLatex` (`mathlive/ssr`).
 - **En attente de David** : relecture de `transcriptions/2.md` (fractions empilées p. 5, vecteurs p. 9) ; niveaux de titres ambigus 1_TECHNO p. 8-9, T_TECHNO p. 10-11.
 - **Pièges en cours** : `<embed>` bloqué par la CSP → `<iframe>` ; prettier ignore `transcriptions/` ; limiteur de connexions locales (15 min, par IP) bloque les captures Playwright après quelques essais → test client `OfficialProgrammeView.svelte.test.ts` pour le rendu.
-- **Worktree / branche** : `../ubumaths-wt-programmes` (branche `feat/programmes-transcriptions-lycee`, mergée) gardé tant que le serveur de test 5177 sert ; à retirer ensuite.
+- **Worktree / branche** : `../ubumaths-wt-programmes` (branche `fix/programmes-exposant-t-sur-n`, mergée) gardé tant que le serveur de test 5177 sert ; à retirer ensuite.
 
 ## Décisions (2026-10-24, validées par David : « je suis tes recos »)
 
