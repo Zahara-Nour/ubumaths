@@ -6,13 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, phase 0 validée._
+_Mis à jour le 2026-10-24, PR 1 (migration du lot A) ouverte._
 
-- **État** : phase 0 validée (ci-dessous) ; lot A en cours, rien de codé.
-- **Prochaine action** : réponse de David à la question d'accès du lot A, puis la migration
-  (colonnes « déjà payé » + fonction de versement), avec ses tests d'intégration rouges d'abord.
-- **En attente de David** : question d'accès du lot A.
-- **Pièges en cours** : fonction SQL et code qui l'appelle = deux PR (`db:types` depuis la prod).
+- **État** : PR 1 = migration `20261024210000` (colonnes « payé » + `pay_mathou_milestones`,
+  service_role seul) + 25 tests d'intégration (rouges sans, verts avec) ; revue de code et audit
+  de sécurité faits, aucun bloquant, leurs deux correctifs appliqués (étoile en double, stade payé
+  jamais en baisse).
+- **Prochaine action** : PR 1 mergée → `db:migrate` (4 conditions réunies) → `db:types` → PR 2 :
+  appeler le versement après `rememberMathoux` (noms par `mathouName`), +2 au forfait de
+  révision, annonce du rattrapage par le Palotin.
+- **En attente de David** : retirer ou non la ligne `Claude-Session:` du 1er commit (force-push).
+- **Pièges en cours** : le versement touche `updated_at` → le compare-and-swap de
+  `rememberMathoux` peut rejouer une fois ; l'appeler APRÈS l'écriture de la mémoire.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-accessoires`.
 
 ## Constat (2026-10-24)

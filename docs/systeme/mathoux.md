@@ -127,6 +127,16 @@ Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou),
   **conditionnellement** (`WHERE updated_at = <lu>`, comparer-et-échanger). Zéro ligne rendue :
   relecture, fusion (meilleur stade, union des étoiles), nouvel essai (3 au plus). Sans fonction
   SQL, c'est l'écriture sûre par PostgREST ; un Mathou qui grandit coûte une requête.
+- **Gidouilles des étapes** (lot A des accessoires, décisions de David du 2026-10-24) : naissance
+  +3, matou +5, grand matou +10, étoile +5, **une fois chacune**. `rewarded_stage` et
+  `rewarded_grades` retiennent ce qui a été payé ; `pay_mathou_milestones(student, names)`
+  (migration `20261024210000`, `service_role` seul) verrouille les lignes de l'élève, paie l'écart
+  entre la mémoire et le payé, crédite `profiles.gidouilles` et écrit une ligne
+  `gidouilles_activity` par étape (« Naissance de Tangentin », « Tangentin devient matou »,
+  « Tangentin gagne une étoile » ; le nom vient de `names`, sinon de la notion, 80 signes au plus).
+  Une ligne encore jamais payée paie tout ce qu'elle a atteint (rattrapage). Deux appels
+  simultanés : le second attend le verrou et ne trouve plus rien. Pas encore appelée par le
+  serveur (PR suivante). Preuve : `tests/integration/mathoux-gidouilles-etapes.test.ts`.
 - **Export RGPD** : catégorie `gaming` de `/api/account/export`
   ([rgpd.md § 7.3](conformite/rgpd.md)). Effacement : cascade depuis `profiles`.
 

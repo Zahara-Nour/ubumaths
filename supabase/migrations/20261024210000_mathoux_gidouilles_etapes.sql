@@ -142,8 +142,10 @@ begin
 
 		-- Étoiles pas encore payées
 		for v_grade in
-			select g from unnest(v_row.starred_grades) as g
+			-- distinct : l'unicité des étoiles est à la charge du serveur, pas d'un CHECK
+			select distinct g from unnest(v_row.starred_grades) as g
 			where not (g = any (v_row.rewarded_grades))
+			order by g
 		loop
 			notion_id := v_row.notion_id;
 			delta := v_star_reward;
@@ -155,7 +157,8 @@ begin
 		end loop;
 
 		update public.student_mathoux m
-		set rewarded_stage = v_row.best_stage,
+		-- Jamais en baisse : un stade corrigé à la main sous le payé ne ferait pas repayer
+		set rewarded_stage = v_stages[greatest(v_from, v_to)],
 			rewarded_grades = array(
 				select distinct g from unnest(v_row.rewarded_grades || v_row.starred_grades) as g order by g
 			)

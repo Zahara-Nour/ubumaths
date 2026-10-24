@@ -327,6 +327,84 @@ describe('Étapes de la Chatterie payées en gidouilles (pay_mathou_milestones)'
 			const { error } = await service.rpc(RPC, { p_student_id: adminId });
 			expect(error).not.toBeNull();
 		});
+
+		it('un Mathou payé qui s’endort puis se réveille ne repaie rien', async () => {
+			const student = await newStudent();
+			const notion = await newNotion();
+			await seedMathou(student.id, notion, { best_stage: 'matou', starred_grades: ['2'] });
+			await pay(student.id);
+			const before = await balanceOf(student.id);
+
+			await setMathou(student.id, notion, { asleep: true });
+			expect(await pay(student.id)).toEqual([]);
+			await setMathou(student.id, notion, { asleep: false });
+			expect(await pay(student.id)).toEqual([]);
+			expect(await balanceOf(student.id)).toBe(before);
+		});
+
+		it('stade et étoile gagnés entre deux versements sont payés tous les deux', async () => {
+			const student = await newStudent();
+			const notion = await newNotion();
+			await seedMathou(student.id, notion, { best_stage: 'matou' });
+			await pay(student.id);
+
+			await setMathou(student.id, notion, { best_stage: 'grand_matou', starred_grades: ['2'] });
+			const payments = await pay(student.id, { [notion]: 'Tangentin' });
+			expect(payments.map((p) => [p.delta, p.reason])).toEqual([
+				[10, 'Tangentin devient grand matou'],
+				[5, 'Tangentin gagne une étoile']
+			]);
+		});
+
+		it('une étoile écrite en double n’est payée qu’une fois', async () => {
+			const student = await newStudent();
+			const notion = await newNotion();
+			await seedMathou(student.id, notion, { best_stage: 'chaton', starred_grades: ['2', '2'] });
+			expect(total(await pay(student.id))).toBe(3 + 5);
+		});
+
+		it('un stade corrigé sous le payé ne fait pas repayer quand il remonte', async () => {
+			const student = await newStudent();
+			const notion = await newNotion();
+			await seedMathou(student.id, notion, { best_stage: 'grand_matou' });
+			await pay(student.id);
+
+			await setMathou(student.id, notion, { best_stage: 'matou' });
+			expect(await pay(student.id)).toEqual([]);
+			await setMathou(student.id, notion, { best_stage: 'grand_matou' });
+			expect(await pay(student.id)).toEqual([]);
+		});
+
+		it('la ligne du journal porte la classe active de l’élève (visibilité du prof)', async () => {
+			const student = await newStudent();
+			const notion = await newNotion();
+			const { data: classe, error: classeError } = await service
+				.from('classes')
+				.insert({
+					name: `${TAG} classe`,
+					join_code: `MG${crypto.randomUUID().slice(0, 6).toUpperCase()}`,
+					grade: '2'
+				})
+				.select('id')
+				.single<{ id: string }>();
+			if (classeError || !classe) throw new Error(`décor classe : ${classeError?.message}`);
+			const { error: membreError } = await service
+				.from('class_members')
+				.insert({ class_id: classe.id, student_id: student.id, status: 'active' });
+			expect(membreError).toBeNull();
+			await seedMathou(student.id, notion, { best_stage: 'chaton' });
+
+			await pay(student.id);
+			const pg = await getPostgresClient();
+			const { rows } = await pg.query(
+				'select class_id from public.gidouilles_activity where student_id = $1',
+				[student.id]
+			);
+			expect(rows).toEqual([{ class_id: classe.id }]);
+
+			await service.from('class_members').delete().eq('class_id', classe.id);
+			await service.from('classes').delete().eq('id', classe.id);
+		});
 	});
 
 	describe('accès : seul le serveur verse', () => {
