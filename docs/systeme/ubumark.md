@@ -295,7 +295,7 @@ chiffres: quarts
 ````
 
 `heure:` (obligatoire) : 1 à 4 heures `9 h`, `9 h 30`, `9h5` (heures 0 à 23, minutes 0 à 59 ;
-`9:30` refusé), une horloge par heure. Facultatives : `légendes:` (une par horloge, 40 caractères),
+`9:30` refusé), une horloge par heure. Facultatives : `légendes:` (une par horloge, 40 caractères, sans `;`),
 `chiffres: tous | quarts | aucun`, `graduations: minutes | heures | aucune`,
 `minutes: visibles | cachées` (cachées : heure entière exigée), `cadran: 12 | 24` (couronne
 intérieure 13 à 24), `taille:` (2 à 8 cm ; 4 cm par défaut). La petite aiguille avance avec les

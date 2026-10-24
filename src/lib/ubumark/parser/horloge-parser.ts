@@ -151,7 +151,8 @@ function parseTime(raw: string): HorlogeTime {
 	if (!match) throw new LineError(`heure « ${raw} » non comprise : ${TIME_FORMAT_HINT}`);
 	const hours = Number(match[1]);
 	const minutes = match[2] === undefined ? 0 : Number(match[2]);
-	if (hours < 0 || hours > 23) {
+	// `-0 h` : -0 < 0 est faux, d'où le test sur le signe écrit
+	if (match[1].startsWith('-') || hours > 23) {
 		throw new LineError(`heure « ${raw} » : de 0 à 23 h (minuit s’écrit 0 h)`);
 	}
 	if (minutes > 59) throw new LineError(`heure « ${raw} » : minutes de 0 à 59`);

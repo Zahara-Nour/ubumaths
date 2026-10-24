@@ -129,12 +129,15 @@ describe('bloc ```horloge — erreurs (le nœud reste, avec son message)', () =>
 		expect(messages(node).join()).toContain('heure:');
 	});
 
-	it.each(['24 h', '25 h', '-1 h'])('heure hors de 0 à 23 : %s (comportement 18)', (text) => {
-		const node = parse(`heure: ${text}`);
-		expect(node.spec).toBeNull();
-		expect(messages(node)).toEqual([expect.stringContaining('de 0 à 23')]);
-		expect(messages(node)[0]).toMatch(/^Ligne 1 : /);
-	});
+	it.each(['24 h', '25 h', '-1 h', '-0 h'])(
+		'heure hors de 0 à 23 : %s (comportement 18)',
+		(text) => {
+			const node = parse(`heure: ${text}`);
+			expect(node.spec).toBeNull();
+			expect(messages(node)).toEqual([expect.stringContaining('de 0 à 23')]);
+			expect(messages(node)[0]).toMatch(/^Ligne 1 : /);
+		}
+	);
 
 	it.each(['9 h 60', '9 h 75'])('minutes hors de 0 à 59 : %s (comportement 19)', (text) => {
 		const node = parse(`heure: ${text}`);
