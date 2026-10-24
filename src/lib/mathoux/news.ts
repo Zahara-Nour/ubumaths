@@ -47,6 +47,11 @@ export interface MathouNews {
 	total: number;
 	/** Les `MAX_NEWS_ITEMS` premières : naissances, puis croissances, puis étoiles. */
 	items: MathouNewsItem[];
+	/**
+	 * Gidouilles versées par ce calcul pour les étapes de la Chatterie (absent : 0).
+	 * Sans nouveauté détaillée, c'est un rattrapage (étapes atteintes avant le lot A).
+	 */
+	gidouilles?: number;
 }
 
 // Constantes
@@ -150,10 +155,37 @@ export function firstVisitPhrase(total: number): string {
 	return `${total} Mathoux t’attendent à la Chatterie !`;
 }
 
+/** Gidouilles versées par ce calcul (0 si aucune). */
+export function newsGidouilles(news: MathouNews): number {
+	return news.gidouilles ?? 0;
+}
+
+/** Quelque chose à annoncer : une nouveauté détaillée ou des gidouilles. */
+export function hasNews(news: MathouNews): boolean {
+	return (news.total > 0 && news.items.length > 0) || newsGidouilles(news) > 0;
+}
+
+/**
+ * « +8 gidouilles pour tes Mathoux. » sous les nouveautés ; seule (rattrapage) :
+ * « Faustroll te verse 18 gidouilles pour tes Mathoux ! »
+ */
+export function gidouillesPhrase(amount: number, alone: boolean): string {
+	const word = amount > 1 ? 'gidouilles' : 'gidouille';
+	return alone
+		? `Faustroll te verse ${amount} ${word} pour tes Mathoux !`
+		: `+${amount} ${word} pour tes Mathoux.`;
+}
+
 /** Une phrase pour la bulle du Palotin ; `null` s'il n'y a rien à dire. */
 export function newsSummaryPhrase(news: MathouNews): string | null {
-	if (news.total === 0 || news.items.length === 0) return null;
-	if (isFirstVisitGroup(news)) return firstVisitPhrase(news.total);
-	const first = newsItemPhrase(news.items[0]);
-	return news.total > 1 ? `${first} ${moreNewsPhrase(news.total - 1)}` : first;
+	const amount = newsGidouilles(news);
+	if (news.total === 0 || news.items.length === 0) {
+		return amount > 0 ? gidouillesPhrase(amount, true) : null;
+	}
+	const head = isFirstVisitGroup(news)
+		? firstVisitPhrase(news.total)
+		: news.total > 1
+			? `${newsItemPhrase(news.items[0])} ${moreNewsPhrase(news.total - 1)}`
+			: newsItemPhrase(news.items[0]);
+	return amount > 0 ? `${head} ${gidouillesPhrase(amount, false)}` : head;
 }

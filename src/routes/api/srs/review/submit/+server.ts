@@ -27,7 +27,12 @@ import { recordSrsReviewAttempt } from '$lib/server/srs/srs-attempt';
 import { rewardFinishedReviewSession } from '$lib/server/srs/review-session-reward';
 import { recordReviewSessionCard } from '$lib/server/srs/review-session-stats';
 import type { BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
+import { creditStudentGidouilles } from '$lib/server/achievements/credit-gidouilles';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
+
+/** Gidouilles du forfait de révision du jour (décision de David, 2026-10-24). */
+const REVIEW_DAY_GIDOUILLES = 2;
 
 const logger = createServerLogger('api/srs/review/submit/+server');
 
@@ -183,9 +188,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			logger.error('Forfait du Palotin non crédité :', buddyError);
 		}
 
+		// ----- Gidouilles de la révision du jour (décision de David, 2026-10-24) -----
+		// Avec le forfait, donc au plus une fois par jour (la séance est réclamée).
+		// Non bloquant : une panne est journalisée, la révision est enregistrée.
+		let reviewGidouilles = 0;
+		if (buddyXp) {
+			const creditError = await creditStudentGidouilles(
+				createServiceRoleClient(),
+				user.id,
+				REVIEW_DAY_GIDOUILLES,
+				'Révision du jour terminée'
+			);
+			if (creditError) logger.error('Gidouilles de la révision non versées :', creditError);
+			else reviewGidouilles = REVIEW_DAY_GIDOUILLES;
+		}
+
 		return json({
 			success: true,
 			buddy_xp: buddyXp,
+			review_gidouilles: reviewGidouilles,
 			stats: {
 				difficulty: updatedStats.difficulty,
 				stability: updatedStats.stability,

@@ -23,11 +23,18 @@ vi.mock('../memory', async (importOriginal) => ({
 	...(await importOriginal<typeof import('../memory')>()),
 	rememberMathoux: vi.fn()
 }));
+// Versement des gidouilles des étapes : simulé (la fonction SQL est prouvée en intégration)
+vi.mock('../gidouilles', () => ({ payMathouMilestones: vi.fn() }));
 
 import { computePointBadges } from '$lib/server/srs/capacity-badge';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { MathouMemoryWriteError, rememberMathoux } from '../memory';
-import { loadMathouCollection, loadMathouCollectionWithNews } from '../collection';
+import { payMathouMilestones } from '../gidouilles';
+import {
+	loadMathouCollection,
+	loadMathouCollectionWithNews,
+	readMathouCollection
+} from '../collection';
 import { resolveTestLaunch } from '$lib/utils/test-launch';
 import { trainingQuery } from '$lib/mathoux/collection-logic';
 
@@ -117,6 +124,8 @@ beforeEach(() => {
 	vi.mocked(rememberMathoux).mockReset();
 	vi.mocked(rememberMathoux).mockResolvedValue(new Map());
 	vi.mocked(createServiceRoleClient).mockClear();
+	vi.mocked(payMathouMilestones).mockReset();
+	vi.mocked(payMathouMilestones).mockResolvedValue(0);
 });
 
 const T0 = '2026-10-18T10:00:00.000001+00:00';
@@ -367,7 +376,9 @@ describe('loadMathouCollection', () => {
 							best_stage: 'matou',
 							starred_grades: [],
 							asleep: false,
-							updated_at: T0
+							updated_at: T0,
+							rewarded_stage: 'matou',
+							rewarded_grades: []
 						}
 					])
 			})
@@ -401,7 +412,9 @@ describe('loadMathouCollection', () => {
 							best_stage: 'matou',
 							starred_grades: [],
 							asleep: false,
-							updated_at: T0
+							updated_at: T0,
+							rewarded_stage: 'matou',
+							rewarded_grades: []
 						}
 					])
 			})
@@ -451,7 +464,9 @@ describe('loadMathouCollection', () => {
 							best_stage: 'chaton',
 							starred_grades: [],
 							asleep: false,
-							updated_at: T0
+							updated_at: T0,
+							rewarded_stage: 'chaton',
+							rewarded_grades: []
 						}
 					])
 			})
@@ -485,6 +500,108 @@ describe('loadMathouCollection', () => {
 		expect(news.items).toEqual([expect.objectContaining({ kind: 'birth', notionId: 'n1' })]);
 	});
 
+	it('gidouilles : un Mathou né est payé APRÈS l’écriture de la mémoire, au client service, avec son nom', async () => {
+		const order: string[] = [];
+		vi.mocked(rememberMathoux).mockImplementation(async () => {
+			order.push('mémoire');
+			return new Map([['n1', null]]);
+		});
+		vi.mocked(payMathouMilestones).mockImplementation(async () => {
+			order.push('versement');
+			return 8;
+		});
+		const { supabase } = buildMock(nominalHandlers());
+		const { news } = await loadMathouCollectionWithNews(supabase, STUDENT, '1_SPE');
+		expect(order).toEqual(['mémoire', 'versement']);
+		expect(payMathouMilestones).toHaveBeenCalledWith(SERVICE_CLIENT, STUDENT, {
+			n1: expect.any(String)
+		});
+		expect(news.gidouilles).toBe(8);
+	});
+
+	it('gidouilles : tout est déjà payé et rien de nouveau → aucun versement, aucune requête', async () => {
+		const { supabase } = buildMock(
+			nominalHandlers({
+				student_mathoux: () =>
+					ok([
+						{
+							notion_id: 'n1',
+							best_stage: 'matou',
+							starred_grades: [],
+							asleep: false,
+							updated_at: T0,
+							rewarded_stage: 'matou',
+							rewarded_grades: []
+						}
+					])
+			})
+		);
+		const { news } = await loadMathouCollectionWithNews(supabase, STUDENT, '1_SPE');
+		expect(payMathouMilestones).not.toHaveBeenCalled();
+		expect(createServiceRoleClient).not.toHaveBeenCalled();
+		expect(news.gidouilles).toBeUndefined();
+	});
+
+	it('gidouilles : rattrapage — une ligne jamais payée est payée sans nouveauté, et annoncée', async () => {
+		vi.mocked(payMathouMilestones).mockResolvedValue(8);
+		const { supabase } = buildMock(
+			nominalHandlers({
+				student_mathoux: () =>
+					ok([
+						{
+							notion_id: 'n1',
+							best_stage: 'matou',
+							starred_grades: [],
+							asleep: false,
+							updated_at: T0,
+							rewarded_stage: null,
+							rewarded_grades: []
+						}
+					])
+			})
+		);
+		const { news } = await loadMathouCollectionWithNews(supabase, STUDENT, '1_SPE');
+		expect(rememberMathoux).not.toHaveBeenCalled();
+		expect(payMathouMilestones).toHaveBeenCalledTimes(1);
+		expect(news).toEqual({ firstVisit: false, total: 0, items: [], gidouilles: 8 });
+	});
+
+	it('gidouilles : une étoile pas encore payée déclenche le versement', async () => {
+		const { supabase } = buildMock(
+			nominalHandlers({
+				student_mathoux: () =>
+					ok([
+						{
+							notion_id: 'n1',
+							best_stage: 'matou',
+							starred_grades: ['2'],
+							asleep: false,
+							updated_at: T0,
+							rewarded_stage: 'matou',
+							rewarded_grades: []
+						}
+					])
+			})
+		);
+		await loadMathouCollectionWithNews(supabase, STUDENT, '1_SPE');
+		expect(payMathouMilestones).toHaveBeenCalledTimes(1);
+	});
+
+	it('gidouilles : versement nul ou en panne (0) → rien d’annoncé, la collection tient', async () => {
+		vi.mocked(rememberMathoux).mockResolvedValue(new Map([['n1', null]]));
+		const { supabase } = buildMock(nominalHandlers());
+		const { collection, news } = await loadMathouCollectionWithNews(supabase, STUDENT, '1_SPE');
+		expect(collection.races[0].mathoux[0].growth).toBe('matou');
+		expect(news.gidouilles).toBeUndefined();
+	});
+
+	it('gidouilles : la vue du professeur ne verse jamais', async () => {
+		vi.mocked(rememberMathoux).mockResolvedValue(new Map([['n1', null]]));
+		const { supabase } = buildMock(nominalHandlers());
+		await readMathouCollection(supabase, STUDENT, '1_SPE');
+		expect(payMathouMilestones).not.toHaveBeenCalled();
+	});
+
 	it('nouveautés : sans niveau, rien', async () => {
 		const { supabase } = buildMock({});
 		const { news } = await loadMathouCollectionWithNews(supabase, STUDENT, null);
@@ -509,7 +626,9 @@ describe('loadMathouCollection', () => {
 							best_stage: 'grand_matou',
 							starred_grades: ['2'],
 							asleep: false,
-							updated_at: T0
+							updated_at: T0,
+							rewarded_stage: 'grand_matou',
+							rewarded_grades: ['2']
 						}
 					])
 			})

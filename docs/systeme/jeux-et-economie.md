@@ -203,7 +203,14 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
 6. **Succès** : les gidouilles d'un succès-jalon (2048, Mathémo) passent par
    `update_student_gidouilles` à 5 arguments (`credit-gidouilles.ts`) — le bug « jamais crédités »
    de l'ancienne doc est corrigé (test `tests/integration/succes-gidouilles.test.ts`).
-7. **Toute écriture de gidouilles passe par `gidouilles_activity`**, d'où le journal
+7. **Le travail mathématique** (décisions de David du 2026-10-24) : jusque-là, il ne rapportait
+   aucune gidouille (seulement l'XP du Palotin). Deux sources :
+   - **étapes de la Chatterie** : naissance +3, matou +5, grand matou +10, étoile +5, une fois
+     chacune, par `pay_mathou_milestones` (voir [mathoux.md § Mémoire](mathoux.md)) ;
+   - **révision du jour** : +2 avec le forfait de révision du Palotin (au plus une fois par jour),
+     `creditStudentGidouilles` (`credit-gidouilles.ts`), libellé « Révision du jour terminée »,
+     rendues par `POST /api/srs/review/submit` sous `review_gidouilles`.
+8. **Toute écriture de gidouilles passe par `gidouilles_activity`**, d'où le journal
    (`reward_events`) — sauf Navadra (voir plus haut) et les fonctions citées dans Doutes.
 
 ### Dépenses

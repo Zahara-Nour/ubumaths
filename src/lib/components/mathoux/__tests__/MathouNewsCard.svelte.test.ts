@@ -68,6 +68,23 @@ describe('MathouNewsCard', () => {
 		expect(textOf(container)).not.toContain('autre');
 	});
 
+	it('gidouilles sous les nouveautés : « +N gidouilles »', async () => {
+		const news: MathouNews = { firstVisit: false, total: 1, items: [item('a')], gidouilles: 3 };
+		const { container } = await render(MathouNewsCard, { news });
+		expect(textOf(container)).toContain('Un chaton est né à la Chatterie : Nom a !');
+		expect(
+			container.querySelector('[data-testid="mathou-news-gidouilles"]')?.textContent?.trim()
+		).toBe('+3 gidouilles pour tes Mathoux.');
+	});
+
+	it('rattrapage : des gidouilles sans nouveauté → la carte les annonce seules', async () => {
+		const news: MathouNews = { firstVisit: false, total: 0, items: [], gidouilles: 18 };
+		const { container } = await render(MathouNewsCard, { news });
+		expect(container.querySelector('section')).not.toBeNull();
+		expect(container.querySelector('li')).toBeNull();
+		expect(textOf(container)).toContain('Faustroll te verse 18 gidouilles pour tes Mathoux !');
+	});
+
 	it('rien (null ou vide) → rien n’est rendu', async () => {
 		const vide = await render(MathouNewsCard, { news: null });
 		expect(vide.container.querySelector('section')).toBeNull();

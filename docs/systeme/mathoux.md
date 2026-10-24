@@ -135,8 +135,15 @@ Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou),
   `gidouilles_activity` par étape (« Naissance de Tangentin », « Tangentin devient matou »,
   « Tangentin gagne une étoile » ; le nom vient de `names`, sinon de la notion, 80 signes au plus).
   Une ligne encore jamais payée paie tout ce qu'elle a atteint (rattrapage). Deux appels
-  simultanés : le second attend le verrou et ne trouve plus rien. Pas encore appelée par le
-  serveur (PR suivante). Preuve : `tests/integration/mathoux-gidouilles-etapes.test.ts`.
+  simultanés : le second attend le verrou et ne trouve plus rien. Appelée par
+  `loadMathouCollectionWithNews` (`payMathouMilestones`, `src/lib/server/mathoux/gidouilles.ts`)
+  **après** l'écriture de la mémoire (le versement change `updated_at`), seulement si ce calcul a
+  écrit ou si une ligne lue n'est pas payée (`StoredMathouMemory.paid`) : aucune requête dans le
+  cas courant. La vue du prof ne verse jamais. Le total versé part dans les nouveautés
+  (`MathouNews.gidouilles`) : « +8 gidouilles pour tes Mathoux. » sous la carte de fin de séance,
+  ou seul pour un rattrapage (« Faustroll te verse 18 gidouilles pour tes Mathoux ! »), et dans
+  la bulle du Palotin. Une panne est journalisée ; le versement est repris au calcul suivant.
+  Preuve : `tests/integration/mathoux-gidouilles-etapes.test.ts`.
 - **Export RGPD** : catégorie `gaming` de `/api/account/export`
   ([rgpd.md § 7.3](conformite/rgpd.md)). Effacement : cascade depuis `profiles`.
 

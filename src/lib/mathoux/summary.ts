@@ -27,7 +27,8 @@ export const mathouNewsSchema = z.object({
 				newStars: z.array(z.string().min(1).max(20)).max(30)
 			})
 		)
-		.max(MAX_NEWS_ITEMS)
+		.max(MAX_NEWS_ITEMS),
+	gidouilles: z.number().int().min(0).max(100_000).optional()
 });
 
 export const mathouxSummarySchema = z.object({

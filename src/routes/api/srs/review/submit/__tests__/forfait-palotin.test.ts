@@ -7,6 +7,10 @@
  * par jour » est prise par `rewardFinishedReviewSession` (testé à part) ; ici, le
  * branchement : appel avec l'identité de la SESSION et le paquet révisé, gain
  * rendu, et une panne du Palotin ne fait jamais échouer la révision.
+ *
+ * Gidouilles de la révision du jour (décision de David, 2026-10-24) : +2 avec le
+ * forfait, donc au plus une fois par jour, au client service, rendues sous
+ * `review_gidouilles` ; une panne du crédit ne fait pas échouer la révision.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
@@ -26,6 +30,10 @@ const rewardFinishedReviewSession = vi.hoisted(() =>
 vi.mock('$lib/server/srs/fsrs-actions', () => ({ applyFsrsReview }));
 vi.mock('$lib/server/srs/programme-deck', () => ({ ensureProgrammeDeckCard: vi.fn() }));
 vi.mock('$lib/server/srs/review-session-reward', () => ({ rewardFinishedReviewSession }));
+const creditStudentGidouilles = vi.hoisted(() => vi.fn());
+vi.mock('$lib/server/achievements/credit-gidouilles', () => ({ creditStudentGidouilles }));
+const SERVICE = vi.hoisted(() => ({ service: true }));
+vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => SERVICE }));
 vi.mock('$lib/server/middleware/auth', () => ({
 	requireAuth: async () => ({ user: { id: ELEVE }, profile: { role: 'student' } })
 }));
@@ -105,7 +113,11 @@ async function reviser() {
 	});
 	const response = await POST({ request, locals: { supabase: fauxSupabase() } } as never);
 	expect(response.status, 'statut de la route').toBe(200);
-	return (await response.json()) as { success: boolean; buddy_xp: unknown };
+	return (await response.json()) as {
+		success: boolean;
+		buddy_xp: unknown;
+		review_gidouilles: number;
+	};
 }
 
 describe('POST /api/srs/review/submit — forfait du Palotin', () => {
@@ -119,6 +131,7 @@ describe('POST /api/srs/review/submit — forfait du Palotin', () => {
 			totalReviews: 1
 		});
 		rewardFinishedReviewSession.mockReset().mockResolvedValue(GAIN);
+		creditStudentGidouilles.mockReset().mockResolvedValue(null);
 	});
 
 	it('rend le gain du Palotin sous `buddy_xp`, forme de /api/tests/save', async () => {
@@ -145,5 +158,32 @@ describe('POST /api/srs/review/submit — forfait du Palotin', () => {
 		const body = await reviser();
 		expect(body.success).toBe(true);
 		expect(body.buddy_xp).toBeNull();
+	});
+
+	it('forfait donné : +2 gidouilles au client service pour l’élève de la session', async () => {
+		const body = await reviser();
+		expect(creditStudentGidouilles).toHaveBeenCalledTimes(1);
+		expect(creditStudentGidouilles).toHaveBeenCalledWith(
+			SERVICE,
+			ELEVE,
+			2,
+			'Révision du jour terminée'
+		);
+		expect(body.review_gidouilles).toBe(2);
+	});
+
+	it('pas de forfait : aucune gidouille', async () => {
+		rewardFinishedReviewSession.mockResolvedValue(null);
+		const body = await reviser();
+		expect(creditStudentGidouilles).not.toHaveBeenCalled();
+		expect(body.review_gidouilles).toBe(0);
+	});
+
+	it('crédit en échec : la révision reste enregistrée (200), aucune gidouille annoncée', async () => {
+		creditStudentGidouilles.mockResolvedValue({ message: 'refusé' });
+		const body = await reviser();
+		expect(body.success).toBe(true);
+		expect(body.buddy_xp).toEqual(GAIN);
+		expect(body.review_gidouilles).toBe(0);
 	});
 });
