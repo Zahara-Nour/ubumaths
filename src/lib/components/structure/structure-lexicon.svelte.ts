@@ -1,6 +1,6 @@
 /**
- * Structure d'une expression — mots cliquables de la page
- * =======================================================
+ * Structure d'une expression — mots cliquables des pages
+ * ========================================================
  *
  * Les mots de la lecture (somme, produit, carré…) ouvrent la même fiche que
  * dans un énoncé (Q12), au niveau de l'élève connecté (`readReaderGrade`, posé

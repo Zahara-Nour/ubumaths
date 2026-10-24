@@ -16,6 +16,8 @@ couvre:
   - 'src/routes/(protected)/dev/structure/+page.svelte'
   - 'src/routes/(protected)/dev/structure/*.svelte'
   - 'src/routes/(protected)/dev/structure/*.ts'
+  - 'src/routes/(public)/demo/structure/+page.svelte'
+  - src/lib/components/structure/structure-lexicon.svelte.ts
   - 'src/routes/(protected)/dev/saisie-naturelle/*.svelte'
   - 'src/routes/(protected)/dev/polices/+page.svelte'
   - 'src/routes/(protected)/dev/polices/exercices-demo.json'
@@ -117,8 +119,9 @@ Supprimée (PR 5) : `/test-exercises`, avec ses orphelins `ExerciseMarkdownEdito
 Les anciennes adresses sont redirigées en 308 par `redirectHandle` (table `MOVED_PAGES`,
 [auth.md](auth.md#la-chaîne-de-handles)), sous-pages comprises ; une ancienne adresse publique mène
 donc le visiteur à la connexion. `/test-font` ne l'est qu'à l'adresse exacte, ses images restant
-sous `static/test-font/`. Les pages vitrine (`/demo/…`) viendront plus tard (phases 6 et 7 du
-chantier).
+sous `static/test-font/`. Les pages vitrine (`/demo/…`) arrivent une par une (phase 6 du
+chantier) : `/demo/structure` (PR 6a). Elles ne sont reliées de nulle part avant l'accueil de la
+vitrine (phase 7).
 
 Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` ; `/dev` est
 protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo`, `/test-`, `/dev`), sauf `/a-propos` et
@@ -137,6 +140,7 @@ protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo
 | `/dev/cadres`                 | admin (`/dev`)                             | `/dev`                                                 | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                     | Mise au point, gardée |
 | `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée |
 | `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**   |
+| `/demo/structure`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                      | Vitrine, non liée     |
 | `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable     |
 
 Précisions :
@@ -150,13 +154,18 @@ Précisions :
   survole (encadré de la sous-expression, lecture en français, mots du dictionnaire cliquables,
   message « 6e ou avant »), on l'écrit d'un clic court, on déplace un terme, un facteur ou un
   membre d'égalité par appui puis mouvement, « Annuler » revient en arrière. Dans la route :
-  `StructureFormula.svelte` (formules du corpus, survol seul) et `structure-lexicon.svelte.ts`
-  (fiches du dictionnaire au niveau de l'élève, 5e pour un visiteur). Spécification et
+  `StructureFormula.svelte` (formules du corpus, survol seul) ; à côté du champ,
+  `$lib/components/structure/structure-lexicon.svelte.ts` (fiches du dictionnaire au niveau de
+  l'élève, 5e pour un visiteur), partagé avec la vitrine. Spécification et
   décisions : [mathast/structure-expression.md](mathast/structure-expression.md). Le moteur est
   décrit dans [mathast/README.md](mathast/README.md). Deux majuscules collées se lisent comme une
   **longueur** (« la longueur AB », `capitalPairs: 'length'`) ; la case « Lire AB comme un
   produit » repasse en mode produit, pour la formule principale et le corpus. Un nom de figure
   (`ABC`) affiche son message à la place de la lecture.
+- **`/demo/structure`** (vitrine, PR 6a) : la même formule pour un visiteur, sans corpus ni cases à
+  cocher (réglages par défaut : `AB` lu comme une longueur, terme soulevé pendant un déplacement),
+  6 exemples (priorités, somme algébrique, différence, puissance, fractions, équation) ; à
+  l'ouverture, l'expression de l'article Sésamath. `noindex` jusqu'à la phase 7.
 - **`/dev/polices`** (ex-`/test-font`) : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles
