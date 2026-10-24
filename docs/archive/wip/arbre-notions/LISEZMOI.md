@@ -1,7 +1,7 @@
 # Arbre des notions (version .16, 2026-10-09)
 
-Classement branche > notion > sous-notion décidé avec David ([ADR 0019](../../adr/0019-classement-branche-notion-sous-notion.md),
-[ADR 0020](../../adr/0020-arbre-central-programmes-pointeurs.md)).
+Classement branche > notion > sous-notion décidé avec David ([ADR 0019](../../../adr/0019-classement-branche-notion-sous-notion.md),
+[ADR 0020](../../../adr/0020-arbre-central-programmes-pointeurs.md)).
 
 **L'arbre est en base** (table `classification_nodes`) depuis le 2026-10-08. La version .16 est en base depuis le
 2026-10-10 (#1002) : c'est le nettoyage des facettes, avec un seul découpage par notion, par contenu mathématique

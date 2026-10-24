@@ -1,6 +1,6 @@
 # Passe lycée — progression
 
-Suite de [arbre-notions](../../wip/arbre-notions-progress.md) (passe décidée par David le 2026-10-21). Décisions :
+Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David le 2026-10-21). Décisions :
 [ADR 0020 § 7](../../adr/0020-arbre-central-programmes-pointeurs.md). Méthode de l'étape a :
 [passe-lycee/METHODE.md](passe-lycee/METHODE.md).
 
@@ -9,10 +9,10 @@ Suite de [arbre-notions](../../wip/arbre-notions-progress.md) (passe décidée p
 _Mis à jour le 2026-10-24 : chantier CLOS et versé._
 
 - **État** : passe lycée finie (dernière PR #1664, migration jouée). Journal archivé le 2026-10-24.
-- **Versement** : bornes du lycée → `docs/wip/arbre-notions/bornes/lycee/`, à côté de celles du collège (versées dans
+- **Versement** : bornes du lycée → `docs/systeme/programmes/bornes/lycee/`, à côté de celles du collège (versées dans
   `docs/systeme/` avec l'arbre des notions) ; suites → section « Suites de la passe lycée » de
-  [arbre-notions-progress.md](../../wip/arbre-notions-progress.md) ; modèles valables pour un autre programme →
-  `docs/wip/arbre-notions/modeles-autre-programme.csv`. Le reste (`passe-lycee/`) est archivé tel quel : chemins
+  [arbre-notions-progress.md](arbre-notions-progress.md) ; modèles valables pour un autre programme →
+  `docs/archive/wip/arbre-notions/modeles-autre-programme.csv`. Le reste (`passe-lycee/`) est archivé tel quel : chemins
   `docs/wip/passe-lycee/…` du journal ci-dessous = `docs/archive/wip/passe-lycee/…` (sauf `bornes/`).
 
 ## Les 5 étapes

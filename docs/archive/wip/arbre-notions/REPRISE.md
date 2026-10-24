@@ -1,7 +1,7 @@
 # Arbre des notions — document de reprise
 
 > ⚠️ **PÉRIMÉ EN PARTIE depuis le 2026-10-07 (soir)** — lire d'abord
-> [ADR 0020](../../adr/0020-arbre-central-programmes-pointeurs.md) et la fin de
+> [ADR 0020](../../../adr/0020-arbre-central-programmes-pointeurs.md) et la fin de
 > [arbre-notions-progress.md](../arbre-notions-progress.md). Ce qui a changé depuis ce document :
 > l'arbre est **central et SANS niveaux** (les niveaux du § 3 sont devenus indicatifs) ; les
 > programmes = **points rattachés aux nœuds** (le « pas de lien arbre ↔ programme » du § 2/ADR 0019
@@ -13,7 +13,7 @@
 
 > Rédigé le 2026-10-07 à la fin de la session « arbre-notions », pour reprendre le chantier proprement
 > dans une nouvelle session. À lire en entier avant toute action.
-> Compléments : [ADR 0019](../../adr/0019-classement-branche-notion-sous-notion.md),
+> Compléments : [ADR 0019](../../../adr/0019-classement-branche-notion-sous-notion.md),
 > [progression](../arbre-notions-progress.md), [LISEZMOI](LISEZMOI.md).
 
 ---

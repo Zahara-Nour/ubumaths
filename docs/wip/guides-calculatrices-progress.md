@@ -27,7 +27,7 @@ guide : savoir s'en servir correctement, et savoir où chercher chaque outil.
 
 ## Liste des tâches, vérifiée contre les programmes
 
-Source : seeds de l'arbre des notions (`docs/wip/arbre-notions/seed-*.md`, transcription ligne à
+Source : seeds de l'arbre des notions (`docs/archive/wip/arbre-notions/seed-*.md`, transcription ligne à
 ligne des BO). Statut : **P** = demandé par le programme · **V** = vérifier un résultat · **E** = règle
 d'examen / pratique.
 

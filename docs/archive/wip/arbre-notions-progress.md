@@ -1,26 +1,22 @@
 # Arbre des notions — progression
 
-Décisions : [ADR 0019](../adr/0019-classement-branche-notion-sous-notion.md). Page de travail (privée) :
+Décisions : [ADR 0019](../../adr/0019-classement-branche-notion-sous-notion.md). Page de travail (privée) :
 https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchpad de la session du 2026-10-06).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après le versement de la passe lycée (#1664 dernière PR)._
+_Mis à jour le 2026-10-24 : chantier CLOS, journal archivé._
 
-- **État** : C5 terminée côté code et base. Passe lycée (chantier à part) CLOSE et archivée :
-  [journal](../archive/wip/passe-lycee-progress.md). Ses bornes sont dans `arbre-notions/bornes/lycee/`.
-- **Prochaine action** : à choisir par David parmi les suites ci-dessous ; versement de l'arbre des notions (bornes
-  collège + lycée comprises) quand le chantier se clora.
-- **En attente de David** : rien de bloquant. Signalés : 11 modèles sans corrigé ; c9d6c5db attend une règle de
-  correction. 📌 Futurs chantiers non décidés : écran de rangement des exercices (51) ; modèles 1re gén. / techno.
-- **Pièges en cours** : `supabase start` joue les migrations hors transaction (LOCK seulement dans un `do`) ; points
-  `TEST-SK-*` sans grade, voulu ; un modèle a au plus un point par programme (trigger) ; `question:specs --file` :
-  convertir par `toQuestionTemplate` ; worktree neuf : `svelte-kit sync` avant `tsx`.
-- **Worktree / branche** : aucun.
+- **État** : chantier clos par David le 2026-10-24. Versement : [arbre-des-notions.md](../../systeme/programmes/arbre-des-notions.md)
+  (modèle, règles en base, conventions, écarts connus, chantiers à venir) ; bornes des points →
+  [docs/systeme/programmes/bornes/](../../systeme/programmes/bornes/). Ce journal et `arbre-notions/` = historique.
+- **Chemins** : `docs/wip/arbre-notions/…` cité plus bas = `docs/archive/wip/arbre-notions/…` (sauf `bornes/`, versé).
+- **Suites** (futurs chantiers, non lancés) : page programme avec les programmes officiels (PDF + ubumark) ; page des
+  questions non taguées ; modèles qui complètent les programmes et approfondissements ; vérification des modèles.
 
 ## Suites de la passe lycée (inventaire du 2026-10-24)
 
-Détail dans le [journal archivé](../archive/wip/passe-lycee-progress.md) (entrée « Inventaire avant versement ») ;
+Détail dans le [journal archivé](passe-lycee-progress.md) (entrée « Inventaire avant versement ») ;
 dossiers de travail sous `docs/archive/wip/passe-lycee/`. Rien de tout cela ne touche un élève (brouillons, ou points
 sans donnée d'élève).
 

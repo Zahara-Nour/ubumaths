@@ -4,7 +4,7 @@ Statuts : **P** = le programme le demande (outil cité ou calcul numérique atte
 algébrique/graphique/tableur attendue, la calculatrice VÉRIFIE · **E** = pratique / examen / usage
 laissé au professeur.
 
-Sources lues : seeds `docs/wip/arbre-notions/seed-*.md` (codes ci-dessous) + textes bruts des BO,
+Sources lues : seeds `docs/archive/wip/arbre-notions/seed-*.md` (codes ci-dessous) + textes bruts des BO,
 introductions comprises, retrouvés dans un ancien scratchpad
 (`/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/e05b1216-…/scratchpad/bo/*.txt` : c2, c3,
 c4, 1ensci, 1techno, ttechno, tcomp, texp, 1spe, tspe). Ce scratchpad est hors dépôt et temporaire.

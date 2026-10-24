@@ -51,7 +51,7 @@ d'une même tâche à petite échelle.
    - **Ce que l'élève fait, ce sont les points du programme qui le disent.**
    - **Les « facettes » disparaissent.** Ce sont les sous-notions créées pour le filtre pendant
      les rangements. Elles se fondent dans les sous-notions de contenu (audit
-     `docs/wip/arbre-notions/audit-facettes.md`).
+     `docs/archive/wip/arbre-notions/audit-facettes.md`).
    - **Le critère « voudra-t-on filtrer là-dessus ? » ne vaut plus** que pour décider de
      découper un contenu plus finement.
 
@@ -71,7 +71,7 @@ d'une même tâche à petite échelle.
    automatiquement. Un contenu rangé sans aucun point est, par définition, hors programme.
 
    **Précisions de David (2026-10-09).** Elles font suite à l'analyse
-   `docs/wip/arbre-notions/c5-architecture-liens.md` :
+   `docs/archive/wip/arbre-notions/c5-architecture-liens.md` :
 
    - **Le nœud d'une ressource est stocké.** C'est lui que lit le filtre ; il ne se déduit pas
      des points. Une ressource sans point garde son nœud, et ce nœud peut être plus fin que
