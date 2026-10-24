@@ -1,10 +1,11 @@
 /**
  * Transcriptions des programmes officiels (2026-10-24).
  *
- *   - les niveaux du lycée sont transcrits, titrés comme le BO ;
+ *   - tous les niveaux qui ont des maths sont transcrits, titrés comme le BO ;
+ *   - un niveau de cycle n'a que sa partie de chaque domaine (titre du niveau
+ *     tel que le BO l'écrit, jamais celui d'un autre niveau du cycle) ;
  *   - le texte ne crée aucun nœud interactif ou accidentel (trou, #hashtag,
  *     @mention, renvoi d'aide, bloc de code) : c'est du texte à lire ;
- *   - un niveau dont un morceau manque n'a pas de transcription ;
  *   - la terminale générale non plus (pas de programme) ;
  *   - chaque fichier de transcriptions/ est un morceau d'au moins un niveau
  *     (un nom mal écrit rendrait le niveau muet, « pas encore disponible »).
@@ -14,21 +15,31 @@ import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { OFFICIAL_PROGRAMMES } from '$lib/programmes/official-programmes';
 import { parseMarkdown } from '$lib/ubumark';
-import type { GradeCode } from '$lib/types/grades';
+import { GRADE_CODES, type GradeCode } from '$lib/types/grades';
 import { getTranscription } from '../transcriptions';
 
 // Constantes
 
-/** Les niveaux du lycée, tous transcrits */
-const LYCEE: readonly GradeCode[] = [
-	'2',
-	'1_GEN',
-	'1_SPE',
-	'T_SPE',
-	'T_EXP',
-	'T_COMP',
-	'1_TECHNO',
-	'T_TECHNO'
+/** Les niveaux qui ont des maths, tous transcrits */
+const TRANSCRIBED = GRADE_CODES.filter((grade) => grade !== 'T_GEN');
+
+/** Le titre de chaque niveau de cycle dans le BO, par cycle */
+const CYCLE_LEVEL_HEADINGS: readonly (readonly [GradeCode, string])[][] = [
+	[
+		['CP', 'Cours préparatoire'],
+		['CE1', 'Cours élémentaire première année'],
+		['CE2', 'Cours élémentaire deuxième année']
+	],
+	[
+		['CM1', 'Cours moyen première année'],
+		['CM2', 'Cours moyen deuxième année'],
+		['6', 'Sixième']
+	],
+	[
+		['5', 'Cinquième'],
+		['4', 'Quatrième'],
+		['3', 'Troisième']
+	]
 ];
 
 const FORBIDDEN_NODES = [
@@ -55,7 +66,7 @@ function nodeTypes(node: unknown, found = new Set<string>()): Set<string> {
 }
 
 describe('getTranscription', () => {
-	describe.each(LYCEE)('%s', (grade) => {
+	describe.each(TRANSCRIBED)('%s', (grade) => {
 		it('transcrit, titré comme le BO', () => {
 			const source = getTranscription(grade);
 			expect(source).not.toBeNull();
@@ -69,15 +80,28 @@ describe('getTranscription', () => {
 		});
 	});
 
-	it('CM1 : morceaux pas encore écrits → null', () => {
-		expect(getTranscription('CM1')).toBeNull();
+	describe.each(CYCLE_LEVEL_HEADINGS.flat())('%s (cycle)', (grade, heading) => {
+		it('sa partie de chaque domaine, aucune de celle des autres niveaux', () => {
+			const headings = new Set(
+				(getTranscription(grade) ?? '').split('\n').filter((line) => line.startsWith('### '))
+			);
+			const others = CYCLE_LEVEL_HEADINGS.flat()
+				.filter(([other]) => other !== grade)
+				.map(([, title]) => `### ${title}`);
+
+			expect(headings.has(`### ${heading}`)).toBe(true);
+			expect(others.filter((title) => headings.has(title))).toEqual([]);
+		});
 	});
 
 	it('chaque fichier de transcriptions/ est un morceau référencé', () => {
 		const referenced = new Set(
 			Object.values(OFFICIAL_PROGRAMMES).flatMap((programme) => programme?.transcription ?? [])
 		);
-		const files = readdirSync(resolve('src/lib/server/programmes/transcriptions'))
+		const files = readdirSync(resolve('src/lib/server/programmes/transcriptions'), {
+			recursive: true,
+			encoding: 'utf8'
+		})
 			.filter((file) => file.endsWith('.md'))
 			.map((file) => file.slice(0, -'.md'.length));
 
