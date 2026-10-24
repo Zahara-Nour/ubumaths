@@ -6,7 +6,7 @@
  * points sont partagés ; l'origine garde son identifiant, le groupe de variations le plus fourni et
  * ses tags d'avant, chaque autre groupe part dans un modèle neuf (72 en tout) rangé et tagué sur ses
  * propres points. 6 origines changent de nœud (R2). D'après le plan VALIDÉ par David
- * (docs/wip/passe-lycee/analyse/scissions-plan.csv, copie figée dans
+ * (docs/archive/wip/passe-lycee/analyse/scissions-plan.csv, copie figée dans
  * tests/integration/fixtures/passe-lycee-scissions.json).
  * Méthode (copies de la prod, rejeu du fichier, rollback) : tests/helpers/database/lot-2bis-migration.ts.
  *

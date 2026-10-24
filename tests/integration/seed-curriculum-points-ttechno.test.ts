@@ -20,7 +20,7 @@
  *
  * Puis la passe des points du lycée (migration `20261022180000_passe_points_lycee`, validée
  * le 2026-10-22) : coupes, points ⚙ et puces rétablies → 92 points ; fixture transformée par
- * docs/wip/passe-lycee/generer-migration.py.
+ * docs/archive/wip/passe-lycee/generer-migration.py.
  *
  * @vitest-environment node
  */

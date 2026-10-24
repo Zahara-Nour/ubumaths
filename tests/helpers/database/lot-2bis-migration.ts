@@ -17,11 +17,11 @@
  * fixture) : absent avant, présent après avec son contenu, son tag et toutes les autres colonnes de
  * son origine, supprimé par le rollback — qui refuse si une donnée d'élève y tient.
  *
- * Passe lycée (docs/wip/passe-lycee/analyse/lot-modifier.md) : un modèle peut déjà porter des tags
+ * Passe lycée (docs/archive/wip/passe-lycee/analyse/lot-modifier.md) : un modèle peut déjà porter des tags
  * (`tags_avant`), que la migration exige et laisse ; un modèle neuf peut avoir son propre nœud
  * (`scission.noeud`, point sur une sous-notion voisine).
  *
- * Lot des scissions de la passe lycée (docs/wip/passe-lycee/analyse/scissions_outils.py) : la
+ * Lot des scissions de la passe lycée (docs/archive/wip/passe-lycee/analyse/scissions_outils.py) : la
  * fixture donne `tags` (plusieurs tags posés) et `neufs` (plusieurs modèles neufs, chacun avec ses
  * `tags`) au lieu de `tag` et `scission`, et une origine peut changer de nœud (`noeud_apres`, R2).
  * Les deux formes sont ramenées à la seconde (`normaliser`).
