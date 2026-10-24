@@ -11,6 +11,10 @@
 	 * `readOnly` (vue du professeur) : ni « Réveiller » ni « Faire grandir », ce
 	 * sont des actions de l'élève.
 	 *
+	 * Décorations de panse (lot B des accessoires) : chaque Mathou porte la sienne,
+	 * vue du prof comprise ; `ondecorate` (page de l'élève) ajoute « Décorer » sur
+	 * chaque Mathou né.
+	 *
 	 * Mots du lore uniquement (chaton, matou, sieste…), jamais XP, niveau ni
 	 * score (Compendium § IX).
 	 */
@@ -37,7 +41,16 @@
 		grand_matou: 'Grand matou'
 	};
 
-	let { races, readOnly = false }: { races: MathouRaceGroup[]; readOnly?: boolean } = $props();
+	let {
+		races,
+		readOnly = false,
+		ondecorate
+	}: {
+		races: MathouRaceGroup[];
+		readOnly?: boolean;
+		/** « Décorer » ce Mathou ; absent = pas de bouton */
+		ondecorate?: (mathou: Mathou) => void;
+	} = $props();
 
 	/** Lien de l'Entraînement d'un Mathou, construit au rendu (`trainingQuery`). */
 	function trainingLink(mathou: Mathou): string | null {
@@ -82,6 +95,7 @@
 								stage={mathou.growth === 'a_decouvrir' ? 'chaton' : mathou.growth}
 								asleep={mathou.asleep}
 								silhouette={toDiscover}
+								decoration={mathou.decoration}
 								size={64}
 								label={avatarLabel(mathou)}
 							/>
@@ -118,7 +132,7 @@
 								<!-- Endormi sans carte due : « Réveiller » mène déjà à l'Entraînement, un seul bouton -->
 								{@const grow =
 									mathou.asleep && !mathou.dueForRevision ? null : trainingLink(mathou)}
-								{#if wake || grow}
+								{#if wake || grow || ondecorate}
 									<div class="mt-1 flex flex-wrap gap-2">
 										{#if wake}
 											<Button
@@ -138,6 +152,16 @@
 												aria-label="Faire grandir {mathou.name}"
 											>
 												Faire grandir
+											</Button>
+										{/if}
+										{#if ondecorate}
+											<Button
+												size="sm"
+												variant="outline"
+												aria-label="Décorer {mathou.name}"
+												onclick={() => ondecorate(mathou)}
+											>
+												Décorer
 											</Button>
 										{/if}
 									</div>

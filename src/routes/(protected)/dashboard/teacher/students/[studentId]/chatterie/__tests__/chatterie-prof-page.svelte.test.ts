@@ -107,6 +107,22 @@ describe('Chatterie d’un élève, vue du prof', () => {
 		expect(page.getByRole('link', { name: /Faire grandir/ }).elements()).toHaveLength(0);
 	});
 
+	it('décorations de panse : visibles sur les Mathoux, jamais « Décorer »', async () => {
+		const [fractions, ...rest] = COLLECTION.races[0].mathoux;
+		const { container } = await renderPage({
+			collection: {
+				...COLLECTION,
+				races: [
+					{ ...COLLECTION.races[0], mathoux: [{ ...fractions, decoration: 'medal' }, ...rest] },
+					...COLLECTION.races.slice(1)
+				]
+			}
+		});
+		const decorations = [...container.querySelectorAll('[data-part="decoration"]')];
+		expect(decorations.map((d) => d.getAttribute('data-decoration'))).toEqual(['medal']);
+		expect(page.getByRole('button', { name: /Décorer/ }).elements()).toHaveLength(0);
+	});
+
 	it('élève sans niveau : le dit, sans Chatterie', async () => {
 		await renderPage({ hasGrade: false, collection: EMPTY });
 		await expect.element(page.getByText('Pas encore de niveau : pas de Chatterie.')).toBeVisible();

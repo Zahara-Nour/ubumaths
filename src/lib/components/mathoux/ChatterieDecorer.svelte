@@ -1,0 +1,213 @@
+<script lang="ts">
+	/**
+	 * « Décorer » un Mathou de la Chatterie (lot B des accessoires, décisions de
+	 * David du 2026-10-24) : les six décorations de panse dessinées sur CE Mathou,
+	 * avec leur prix, « Achetée » ou « Portée par … ».
+	 *
+	 * - pas encore achetée : « Acheter » (l'achat la pose sur ce Mathou) ; sans
+	 *   consentement parental, le bouton est grisé (comme la boutique VIP) ; solde
+	 *   insuffisant : « Il te manque N gidouilles » ;
+	 * - achetée : « Poser » (la retire du Mathou qui la portait : un seul à la
+	 *   fois), ou « Retirer » si ce Mathou la porte. Gratuit.
+	 *
+	 * La base débite et vérifie tout (`/api/student/mathoux/decorations/*`) ; la
+	 * page est rechargée après chaque action (`invalidateAll`).
+	 */
+
+	import { invalidateAll } from '$app/navigation';
+	import * as Dialog from '$lib/components/ui/dialog';
+	import { Button } from '$lib/components/ui/button';
+	import { consent } from '$lib/stores/consent.svelte';
+	import MathouAvatar from './MathouAvatar.svelte';
+	import gidouilleImage from '$lib/assets/images/gidouille.png';
+	import { toaster } from '$lib/stores/toaster.svelte';
+	import { syncGidouilles } from '$lib/utils/cache-sync';
+	import {
+		MATHOU_DECORATIONS,
+		type MathouDecorationId,
+		type MathouDecorationInfo
+	} from '$lib/mathoux/decorations';
+	import type { Mathou } from '$lib/mathoux/collection-logic';
+
+	// Types
+	interface Props {
+		/** Le Mathou à décorer ; `null` = fenêtre fermée */
+		mathou: Mathou | null;
+		/** Tous les Mathoux de l'élève : qui porte quoi */
+		mathoux: Mathou[];
+		owned: MathouDecorationId[];
+		balance: number;
+		onclose: () => void;
+	}
+
+	// Variables
+	let { mathou, mathoux, owned, balance, onclose }: Props = $props();
+
+	let busy = $state<MathouDecorationId | null>(null);
+
+	const wornBy = $derived(
+		new Map(
+			mathoux
+				.filter((m): m is Mathou & { decoration: MathouDecorationId } => m.decoration !== null)
+				.map((m) => [m.decoration, m])
+		)
+	);
+
+	// Functions
+	function missingFor(info: MathouDecorationInfo): number {
+		return Math.max(0, Math.ceil(info.price - balance));
+	}
+
+	function gidouilles(n: number): string {
+		return `${n} gidouille${n > 1 ? 's' : ''}`;
+	}
+
+	async function post(path: string, body: unknown): Promise<boolean> {
+		try {
+			const response = await fetch(path, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify(body)
+			});
+			if (response.ok) return true;
+			const payload: unknown = await response.json().catch(() => null);
+			const message =
+				payload && typeof payload === 'object' && 'message' in payload
+					? String(payload.message)
+					: 'Action impossible pour l’instant : réessaie dans un moment.';
+			toaster.error(message);
+		} catch {
+			toaster.error('Action impossible pour l’instant : réessaie dans un moment.');
+		}
+		return false;
+	}
+
+	async function buy(target: Mathou, info: MathouDecorationInfo) {
+		busy = info.id;
+		const done = await post('/api/student/mathoux/decorations/buy', {
+			decoration: info.id,
+			notionId: target.notionId
+		});
+		if (done) {
+			syncGidouilles({ type: 'student' }, -info.price);
+			toaster.success(`Achat fait : ${info.name} pour ${target.name} (−${gidouilles(info.price)})`);
+			await invalidateAll();
+		}
+		busy = null;
+	}
+
+	async function wear(target: Mathou, info: MathouDecorationInfo, on: boolean) {
+		busy = info.id;
+		const done = await post('/api/student/mathoux/decorations/wear', {
+			notionId: target.notionId,
+			decoration: on ? info.id : null
+		});
+		if (done) {
+			toaster.success(on ? `${target.name} porte : ${info.name}` : 'Décoration retirée');
+			await invalidateAll();
+		}
+		busy = null;
+	}
+</script>
+
+<Dialog.Root
+	open={mathou !== null}
+	onOpenChange={(open) => {
+		if (!open) onclose();
+	}}
+>
+	<Dialog.Content class="max-h-[90vh] max-w-2xl overflow-y-auto">
+		{#if mathou}
+			{@const target = mathou}
+			<Dialog.Header>
+				<Dialog.Title>Décorer {target.name}</Dialog.Title>
+				<Dialog.Description>
+					Une décoration s’achète une fois et orne un seul Mathou à la fois. La changer de Mathou ou
+					la retirer est gratuit.
+				</Dialog.Description>
+			</Dialog.Header>
+
+			<p class="flex items-center gap-1.5 text-sm font-medium">
+				Tu as {balance.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}
+				<img src={gidouilleImage} alt="gidouilles" class="h-4 w-4" />
+			</p>
+
+			{#if consent.isReadOnly}
+				<p class="rounded-md border border-border bg-muted/40 p-3 text-sm" role="status">
+					Pour acheter une décoration, il faut l’accord de tes parents. Tu peux déjà les regarder.
+				</p>
+			{/if}
+
+			<ul class="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-3">
+				{#each MATHOU_DECORATIONS as info (info.id)}
+					{@const isOwned = owned.includes(info.id)}
+					{@const wearer = wornBy.get(info.id)}
+					{@const onThis = wearer?.notionId === target.notionId}
+					{@const missing = missingFor(info)}
+					<li
+						class="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 text-center"
+						data-decoration={info.id}
+					>
+						<MathouAvatar
+							raceIndex={target.raceIndex}
+							stage={target.growth === 'a_decouvrir' ? 'chaton' : target.growth}
+							asleep={target.asleep}
+							animated={false}
+							decoration={info.id}
+							size={88}
+							label={`${target.name} avec : ${info.name}`}
+						/>
+						<p class="font-medium">{info.name}</p>
+						{#if !isOwned}
+							<p class="flex items-center gap-1 text-sm">
+								{info.price}
+								<img src={gidouilleImage} alt="gidouilles" class="h-4 w-4" />
+							</p>
+						{:else if wearer}
+							<p class="text-sm text-muted-foreground">Portée par {wearer.name}</p>
+						{:else}
+							<p class="text-sm text-muted-foreground">Achetée</p>
+						{/if}
+
+						<div class="mt-auto">
+							{#if !isOwned}
+								{#if missing > 0}
+									<p class="text-sm text-muted-foreground">Il te manque {gidouilles(missing)}</p>
+								{:else}
+									<Button
+										size="sm"
+										disabled={busy !== null || consent.isReadOnly}
+										title={consent.isReadOnly ? consent.getDisabledTooltip() : undefined}
+										aria-label="Acheter {info.name} pour {target.name}"
+										onclick={() => buy(target, info)}
+									>
+										Acheter
+									</Button>
+								{/if}
+							{:else if onThis}
+								<Button
+									size="sm"
+									variant="outline"
+									disabled={busy !== null}
+									aria-label="Retirer {info.name} de {target.name}"
+									onclick={() => wear(target, info, false)}
+								>
+									Retirer
+								</Button>
+							{:else}
+								<Button
+									size="sm"
+									disabled={busy !== null}
+									aria-label="Poser {info.name} sur {target.name}"
+									onclick={() => wear(target, info, true)}
+								>
+									Poser
+								</Button>
+							{/if}
+						</div>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+	</Dialog.Content>
+</Dialog.Root>
