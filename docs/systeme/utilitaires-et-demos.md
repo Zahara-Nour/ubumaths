@@ -21,6 +21,8 @@ couvre:
   - 'src/routes/(public)/demo/cartes/+page.svelte'
   - 'src/routes/(public)/demo/cartes/cartes.ts'
   - 'src/routes/(public)/demo/lexique/+page.svelte'
+  - 'src/routes/(public)/demo/corriges/+page.svelte'
+  - 'src/routes/(public)/demo/corriges/corriges.ts'
   - src/lib/components/structure/structure-lexicon.svelte.ts
   - 'src/routes/(protected)/dev/saisie-naturelle/*.svelte'
   - 'src/routes/(protected)/dev/polices/+page.svelte'
@@ -124,7 +126,7 @@ Les anciennes adresses sont redirigées en 308 par `redirectHandle` (table `MOVE
 [auth.md](auth.md#la-chaîne-de-handles)), sous-pages comprises ; une ancienne adresse publique mène
 donc le visiteur à la connexion. `/test-font` ne l'est qu'à l'adresse exacte, ses images restant
 sous `static/test-font/`. Les pages vitrine (`/demo/…`) arrivent une par une (phase 6 du
-chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d). Elles ne sont reliées de nulle part avant l'accueil de la
+chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d), `/demo/corriges` (PR 6e). Elles ne sont reliées de nulle part avant l'accueil de la
 vitrine (phase 7).
 
 Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` ; `/dev` est
@@ -148,6 +150,7 @@ protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo
 | `/demo/cercle-trigo`          | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                              | Vitrine, non liée     |
 | `/demo/cartes`                | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 4 cartes VIP écrites dans le code, une par rareté, avec leur effet holographique                                                                           | Vitrine, non liée     |
 | `/demo/lexique`               | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : mots du dictionnaire soulignés dans une question et 5 phrases, sélecteur de niveau                                                                         | Vitrine, non liée     |
+| `/demo/corriges`              | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : une page de Corrigé de fiche (écriture manuscrite) en image fixe, `static/demo/corriges/`                                                                  | Vitrine, non liée     |
 | `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable     |
 
 Précisions :
@@ -190,6 +193,16 @@ Précisions :
   (`lexiconGrade={null}`). Un sélecteur (CM1 à 1re générale, 6e à l'ouverture) pose le niveau
   pour toute la page par `provideReaderGrade`. Le dictionnaire vient de `/api/dictionnaire`,
   public. La page de test, avec l'indice, reste sur `/dev/mots-cliquables`. `noindex` jusqu'à la
+  phase 7.
+- **`/demo/corriges`** (vitrine, PR 6e) : la première page du Corrigé d'une fiche en image fixe
+  (WebP, `static/demo/corriges/`), sans Typst ni polices chargés par la page. Chemin et
+  dimensions dans `corriges.ts`, vérifiés par un test. L'image vient de la vraie chaîne des
+  fiches, avec les deux premiers exercices de `/dev/polices/exercices-demo.json` (titre de la
+  fiche : « Second degré et trigonométrie ») : un dossier de rédaction (`titles.txt`, `md/`,
+  `sol/`, `en/`, `sol-en/`) passé à `pnpm tsx scripts/fiches/rendu-fiche.ts`, puis
+  `node scripts/fiches/compile-prod.mjs --polices-corrige corrige.typ`, page 1 rendue par
+  `pdftoppm -r 200`, recadrée sans le pied de page (`magick … -crop 1654x2225+0+0 -quality 85`).
+  À refaire quand le modèle de fiche ou les polices du Corrigé changent. `noindex` jusqu'à la
   phase 7.
 - **`/dev/polices`** (ex-`/test-font`) : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une

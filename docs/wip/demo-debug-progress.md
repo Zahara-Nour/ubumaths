@@ -247,3 +247,16 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
   soulignés en 6e sans « fonction », avec « fonction » et « fonction exponentielle » en 1re spé,
   aucune erreur de console, pas de défilement horizontal. Une fiche **cumule** les définitions
   des niveaux passés (CP + CE2 pour « carré » en 6e) : lignes d'aide écrites en « la fiche ajoute ».
+
+## PR 6e — vitrine `/demo/corriges` (phase 0 : David suit les recommandations de Claude, « je te suis », le 2026-10-24)
+
+- Une page de Corrigé en **image fixe** (WebP, `static/demo/corriges/`), sans Typst ni polices
+  chargés par la page ; mode sombre : la feuille reste blanche, cadre et ombre.
+- Source : la **vraie chaîne des fiches** (`rendu-fiche.ts` puis `compile-prod.mjs
+--polices-corrige`), pas celle de `/dev/polices` qui met tout le document en Shantell :
+  bandeau et titres dans la police du modèle, correction en Shantell / Chiphre Math.
+- Exercices : les deux premiers de `/dev/polices/exercices-demo.json` (inéquation du second
+  degré, cos x = a et sin x = a), page 1 seule ; pas de comparaison côte à côte.
+- `BackLink` vers `/demo`, `noindex`, non reliée avant la phase 7. Pas de revue.
+- Remarqué sur l'image : le `z` manuscrit de Chiphre Math ressemble à un `2` (« 4z », « z² »
+  dans l'exercice 1). Signalé à David, rien changé.
