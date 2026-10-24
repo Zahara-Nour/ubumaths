@@ -1,7 +1,7 @@
 ---
 title: Retrait de /calc — journal
 date: 2026-10-24
-status: phase 0 — en attente de la validation de David
+status: phase 0 validée (2026-10-24) — PR 1 en cours
 ---
 
 ## Reprendre ici
@@ -10,9 +10,9 @@ _Mis à jour le 2026-10-24, avant la première PR._
 
 - **État** : inventaire fait ; `/calc` n'a qu'un manque côté atelier : les **étapes d'un calcul sans lettre**.
   David (2026-10-24) : **combler d'abord**, puis retirer `/calc` → deux PR.
-- **Prochaine action** : PR 1 « Comment ? » sur un calcul sans lettre, après validation de la phase 0
-  ci-dessous.
-- **En attente de David** : validation de la phase 0 (C1-C5) et des questions Q1-Q3.
+- **Prochaine action** : PR 1 « Comment ? » sur un calcul sans lettre (phase 0 C1-C5 + Q1-Q3
+  validées le 2026-10-24) : tests d'abord.
+- **En attente de David** : rien.
 - **Worktree / branche** : `../ubumaths-wt-retrait-calc` · `chore/retrait-calc` (PR 1 renommée au besoin).
 
 ---
@@ -70,15 +70,23 @@ négatifs (`5-(-3)`, `(-2)^3`, `-2^2`), fractions (même dénominateur), racines
 - **C5** Division par zéro, règle qui échoue, délai dépassé → la ligne reste celle d'aujourd'hui,
   sans « Comment ? » ; jamais d'erreur affichée à cause des étapes.
 
-### Questions
+### Questions — tranchées par David le 2026-10-24 (« je valide »)
 
-- **Q1** Un calcul qui utilise une **valeur de l'atelier** (`a+2` avec `a = 3` posé) : pas de
-  « Comment ? » en PR 1 (ce serait « On remplace $a$ par 3 », le travail de `.évaluer`). D'accord ?
-- **Q2** **Pas de résumé** (bouton « Résumé / Détaillé ») : pour `.évaluer`, le résumé est
-  « remplacement + résultat » ; ici il redirait la ligne. D'accord ?
-- **Q3** **Décimaux** : `/calc` montrait `0.5 + 1.25 = 1.75` ; l'atelier n'aura rien (garde E5,
-  le moteur passe par 7/4). Accepter cette perte pour retirer `/calc`, ou la traiter avant
-  (chantier dans `pedagogical-arithmetic`) ?
+- **Q1** Un calcul qui utilise une **valeur de l'atelier** (`a+2` avec `a = 3` posé) : **pas de
+  « Comment ? »** en PR 1 (ce serait « On remplace $a$ par 3 », le travail de `.évaluer`).
+- **Q2** **Pas de résumé** (bouton « Résumé / Détaillé ») : il redirait la ligne.
+- **Q3** **Décimaux** : sans objet — `/calc` passait aussi par une fraction (`0.5+1.25` → `1/2 + 5/4
+= 7/4`, mesuré). Garde E5 gardée : pas d'étapes. Des étapes décimales justes = piste pour
+  `pedagogical-arithmetic`, non lancée.
+
+### `step-generator` contre `pedagogical-arithmetic` (sonde du 2026-10-24, 24 calculs)
+
+`step-generator` (moteur de `/calc`) : négatifs sans parenthèses (`-3 × -3`, `5 - -3`), `(-2)^3` écrit
+`-2^3`, `-2^2` s'arrête à `2^2 = 4`, décimaux réécrits en fractions (`2.5*4` → `5/2 × 4`), étapes
+parasites (`1 ÷ 2 = 1/2`, `√3 = √3`), libellé « sqrt ». Mieux : une puissance en une étape
+(`2^3 = 8`, aparté « 2 × 2 × 2 »). → **`pedagogical-arithmetic` gardé** (moteur des corrections et de
+`.évaluer`) ; **`step-generator` supprimé en PR 2** ; puissances en une étape = PR à part si David
+le trouve lourd à l'usage.
 
 ### Plan
 
@@ -91,5 +99,5 @@ négatifs (`5-(-3)`, `(-2)^3`, `-2^2`), fractions (même dénominateur), racines
   `suggestions.test.ts` `/CALC/` à changer), suppression de `routes/(public)/calc`,
   `components/calculator`, `stores/calculator.svelte.ts` et leurs tests, commentaires qui citent
   `/calc` mis à jour, `docs/systeme/atelier.md` (`couvre:`), versement de `atelier-saisie-naturelle.md`.
-  ⚠️ `mathAST/step-generator` : `generateSteps` n'aura plus de lecteur (ses types restent lus par
-  `step-renderer-base.ts` et `pedagogical-solve/types.ts`) → à trancher en PR 2.
+  Suppression de `mathAST/step-generator` (seul lecteur : `/calc` ; `step-renderer-base.ts` et
+  `pedagogical-solve/types.ts` ne le citent qu'en commentaire, à mettre à jour).
