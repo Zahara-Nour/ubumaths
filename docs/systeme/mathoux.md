@@ -142,7 +142,9 @@ Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou),
   cas courant. La vue du prof ne verse jamais. Le total versé part dans les nouveautés
   (`MathouNews.gidouilles`) : « +8 gidouilles pour tes Mathoux. » sous la carte de fin de séance,
   ou seul pour un rattrapage (« Faustroll te verse 18 gidouilles pour tes Mathoux ! »), et dans
-  la bulle du Palotin. Une panne est journalisée ; le versement est repris au calcul suivant.
+  la bulle du Palotin. La page Chatterie (`loadMathouCollection`) verse aussi mais n'annonce
+  rien, comme pour les nouveautés détaillées : les gidouilles restent au journal des récompenses.
+  Une panne est journalisée ; le versement est repris au calcul suivant.
   Preuve : `tests/integration/mathoux-gidouilles-etapes.test.ts`.
 - **Export RGPD** : catégorie `gaming` de `/api/account/export`
   ([rgpd.md § 7.3](conformite/rgpd.md)). Effacement : cascade depuis `profiles`.

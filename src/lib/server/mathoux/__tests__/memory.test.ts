@@ -88,6 +88,16 @@ describe('readMathouMemory', () => {
 					rewarded_grades: ['2']
 				},
 				{
+					// Stade corrigé à la main sous le payé : rien à redemander
+					notion_id: 'n5',
+					best_stage: 'matou',
+					starred_grades: [],
+					asleep: false,
+					updated_at: T0,
+					rewarded_stage: 'grand_matou',
+					rewarded_grades: []
+				},
+				{
 					notion_id: 'n4',
 					best_stage: 'chaton',
 					starred_grades: [],
@@ -125,6 +135,7 @@ describe('readMathouMemory', () => {
 					paid: false
 				}
 			],
+			['n5', { bestStage: 'matou', starredGrades: [], asleep: false, updatedAt: T0, paid: true }],
 			['n4', { bestStage: 'chaton', starredGrades: [], asleep: false, updatedAt: T0, paid: false }]
 		]);
 	});

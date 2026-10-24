@@ -34,6 +34,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import {
+	bestGrowth,
 	isMathouStage,
 	memoryCovers,
 	mergeMemory,
@@ -102,8 +103,12 @@ function toStored(row: MemoryRow): StoredMathouMemory | null {
 		starredGrades: row.starred_grades ?? [],
 		asleep: row.asleep,
 		updatedAt: row.updated_at,
+		// Payé au moins jusqu'au meilleur stade (un stade corrigé à la main sous le payé ne
+		// redemande rien) et toutes les étoiles payées
 		paid:
-			row.rewarded_stage === row.best_stage &&
+			row.rewarded_stage !== null &&
+			isMathouStage(row.rewarded_stage) &&
+			bestGrowth(row.rewarded_stage, row.best_stage) === row.rewarded_stage &&
 			(row.starred_grades ?? []).every((grade) => (row.rewarded_grades ?? []).includes(grade))
 	};
 }
