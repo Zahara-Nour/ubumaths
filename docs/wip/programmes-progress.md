@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1683 (exposant t/n)._
+_Mis à jour le 2026-10-24, lot cycles en PR._
 
-- **État** : #1676, #1678, #1679 mergées (pas en prod). Vue PDF validée par David ; tout le lycée transcrit (2de, 1_GEN, 1_SPE, T_SPE, T_EXP, T_COMP, 1_TECHNO, T_TECHNO) ; titres `##`/`###` en bleu d'accent, filet sous `##`, validé par David.
-- **Prochaine action** : lot cycles 4, 3, 2 sur une nouvelle branche (`cycle-N.md` commun + un morceau par niveau, cf. `OFFICIAL_PROGRAMMES`) ; même méthode : un agent Sonnet par morceau, complétude par mots `pdftotext`, formules par `validateLatex` (`mathlive/ssr`).
-- **En attente de David** : relecture de `transcriptions/2.md` (fractions empilées p. 5, vecteurs p. 9) ; niveaux de titres ambigus 1_TECHNO p. 8-9, T_TECHNO p. 10-11.
-- **Pièges en cours** : `<embed>` bloqué par la CSP → `<iframe>` ; prettier ignore `transcriptions/` ; limiteur de connexions locales (15 min, par IP) bloque les captures Playwright après quelques essais → test client `OfficialProgrammeView.svelte.test.ts` pour le rendu.
-- **Worktree / branche** : `../ubumaths-wt-programmes` (branche `fix/programmes-exposant-t-sur-n`, mergée) gardé tant que le serveur de test 5177 sert ; à retirer ensuite.
+- **État** : tous les niveaux transcrits. Lot cycles 2, 3, 4 (63 morceaux sous `transcriptions/cycle-N/`) sur `feat/programmes-transcriptions-cycles`, PR à merger ; lycée mergé (#1676, #1678, #1679, #1683), rien en prod.
+- **Prochaine action** : relecture par David des cycles (serveur 5177) ; puis clore le chantier (versement dans `docs/systeme/`, archivage du journal).
+- **En attente de David** : (1) cycle 2 : tableaux « Objectifs d’apprentissage / Exemples de réussite » éclatés en titres `######` + listes (libellés ajoutés là où le tableau n’a pas d’en-tête, CE1 p. 28) ; (2) illustrations remplacées par « _(Illustration : voir le PDF, page P.)_ », leur texte non transcrit (une en pleine phrase : ciseaux et stylos, CM1 p. 9 / CM2 p. 12) ; (3) relecture de `transcriptions/2.md` (fractions p. 5, vecteurs p. 9) ; titres ambigus 1_TECHNO p. 8-9, T_TECHNO p. 10-11.
+- **Pièges en cours** : `<embed>` bloqué par la CSP → `<iframe>` ; prettier ignore `transcriptions/` ; limiteur de connexions locales bloque les captures Playwright → test client pour le rendu.
+- **Worktree / branche** : `../ubumaths-wt-programmes`, branche `feat/programmes-transcriptions-cycles` ; serveur de test 5177.
 
 ## Décisions (2026-10-24, validées par David : « je suis tes recos »)
 
@@ -20,6 +20,8 @@ _Mis à jour le 2026-10-24, après #1683 (exposant t/n)._
 ## Écart au plan
 
 - **Pas de `#page=N` par niveau** : les PDF des cycles 2, 3 et 4 sont rangés par domaine puis par niveau ; chaque niveau revient dans chaque domaine, aucune page n'est « la sienne ». Le PDF s'ouvre au sommaire ; la transcription d'un niveau de cycle = morceau commun du cycle (`cycle-N.md`) + morceau du niveau (`CM1.md`…), qui regroupe sa partie de chaque domaine.
+
+- **Introductions de domaine** (cycles 3 et 4) : un morceau commun par domaine (`cycle-N/<domaine>`, titre `##` + introduction), suivi de la partie du niveau (`cycle-N/<niveau>-<domaine>`, titre `###` du niveau) — tranché par David le 2026-10-24 (pas de doublon, le texte se lit comme le BO).
 
 ## Correspondance niveau → texte
 
@@ -34,3 +36,4 @@ _Mis à jour le 2026-10-24, après #1683 (exposant t/n)._
 - 2026-10-24 : #1679 ouverte (lot lycée : 7 transcriptions par 7 agents Sonnet, 956 formules validées MathLive, complétude par mots). Titres en couleur : d'abord une couleur par niveau, jugé excessif par David → une seule couleur d'accent pour `##` et `###`.
 - 2026-10-24 : #1679 mergée (lot lycée + titres en couleur sobres).
 - 2026-10-24 : 1_GEN p. 7 : c'est l'exposant $t/n$ (David), pas $1/n$ comme je l'avais affirmé sur un glyphe abîmé : corrigé.
+- 2026-10-24 : lot cycles (branche `feat/programmes-transcriptions-cycles`) : 12 agents Sonnet (commun + 3 niveaux par cycle), complétude par mots (manquent seulement sommaire et texte des illustrations), 551 formules validées MathLive ; expressions à moitié LaTeX (`a$x$ = c`) passées entièrement en maths ; siècles en texte (« XVIIe ») comme au lycée.
