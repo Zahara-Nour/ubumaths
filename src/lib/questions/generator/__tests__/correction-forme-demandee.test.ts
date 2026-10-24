@@ -212,8 +212,9 @@ describe('finalForm — primitive développée', () => {
 		expect(result.result).toBe('-x \\exponentialE^{-x} - \\exponentialE^{-x}');
 	});
 
-	it('un − devant une somme développée est distribué : −2(x + 1)eˣ (revue)', () => {
-		const result = antiderivative('-2(x+1) e^x', 'developpee');
+	// ∫−2(x + 1)eˣ = −2xeˣ depuis R4 (Q43) : déjà développée, l'exemple est ∫−2xeˣ = −2(x − 1)eˣ
+	it('un − devant une somme développée est distribué : −2(x − 1)eˣ (revue)', () => {
+		const result = antiderivative('-2x e^x', 'developpee');
 		expect(result.title).toBe('On développe');
 		expect(result.result).not.toContain('\\left(');
 	});

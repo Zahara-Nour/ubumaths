@@ -19,22 +19,17 @@
  * @module mathAST/requested-form
  */
 
-import type { MathNode, NumberNode } from './types';
-import { divide, multiply, number, opposite } from './factory';
-import {
-	flattenProductShallow,
-	flattenSumShallow,
-	unflattenProduct,
-	unflattenSum
-} from './flatten';
+import type { MathNode } from './types';
+import { divide, opposite } from './factory';
+import { flattenSumShallow, unflattenSum } from './flatten';
 import type { Sign, SignedTerm } from './flatten';
-import { findNodes, mapNode } from './transforms';
-import { decimalString, hasDecimalLiteral } from './tidy/decimal';
+import { findNodes } from './transforms';
+import { hasDecimalLiteral } from './tidy/decimal';
 import { isDelimiter, isDivision, isNumber, isOpposite } from './guards';
 import { hashMathNode } from './normal/hash';
 import { generatePedagogicalSimplifySteps } from './pedagogical-simplify/pipeline';
 import { tidy } from './tidy';
-import { factoredForm, withTypedDecimals } from './variations/display';
+import { factoredForm, withDecimalCoefficients, withTypedDecimals } from './variations/display';
 
 /** La forme demandée (`FinalForm` des modèles de question). */
 export type RequestedForm = 'developpee' | 'factorisee';
@@ -98,33 +93,6 @@ function signedTerms(node: MathNode, sign: Sign): SignedTerm[] {
 	return flattenSumShallow(inner).flatMap((part) =>
 		signedTerms(part.term, part.sign === sign ? '+' : '-')
 	);
-}
-
-/**
- * Quand l'énoncé tapait des décimaux, un coefficient en fraction redevient
- * décimal (S1) : `3x²/2` → `1,5x²` (revue du lot 5e ; `withTypedDecimals` ne
- * récrit que les fractions de deux nombres).
- */
-function withDecimalCoefficients(node: MathNode, typed: MathNode): MathNode {
-	if (!hasDecimalLiteral(typed)) return node;
-	return mapNode(node, (current) => {
-		if (!isDivision(current) || !isInteger(current.denominator)) return current;
-		const factors = flattenProductShallow(current.numerator);
-		const numeric = factors.filter(({ factor }) => isNumber(factor));
-		if (numeric.length !== 1 || !isInteger(numeric[0].factor)) return current;
-		const decimal = decimalString({
-			n: BigInt(numeric[0].factor.value),
-			d: BigInt(current.denominator.value)
-		});
-		if (decimal === null) return current;
-		const rest = unflattenProduct(factors.filter(({ factor }) => !isNumber(factor)));
-		return rest === null ? number(decimal) : multiply(number(decimal), rest, 'implicit');
-	});
-}
-
-/** Un entier positif écrit : `5`. */
-function isInteger(node: MathNode): node is NumberNode {
-	return isNumber(node) && /^\d+$/.test(node.value) && node.value !== '0';
 }
 
 function fractionCount(node: MathNode): number {

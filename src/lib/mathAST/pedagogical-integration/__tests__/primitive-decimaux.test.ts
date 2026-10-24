@@ -73,7 +73,7 @@ describe('R5 : la réécriture est une étape « On simplifie », F′ = f', () 
 		(integrand) => {
 			const f = parseLatex(integrand);
 			const F = primitive(integrand).antiderivative;
-			expect(areEquivalent(differentiate(F, 'x'), f)).toBe(true);
+			expect(areEquivalent(differentiate(F, { variable: 'x' }), f)).toBe(true);
 		}
 	);
 });

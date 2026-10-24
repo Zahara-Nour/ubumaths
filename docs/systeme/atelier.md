@@ -2484,7 +2484,11 @@ remplacement). Les refus (`VALUE_FORBIDDEN`) sortent avant,
 sans étapes.
 
 **`.intégrer` en détail** (`integrate-steps.ts`, 2026-10-13). La réponse de la ligne est celle
-du moteur `integration`, inchangée (`+ C` compris). Le « Comment ? » vient de
+du moteur `integration`, inchangée (`+ C` compris) — sauf le registre des coefficients d'une
+primitive à décimaux, réécrit comme dans les corrections (`withUniformCoefficients`, simplify-carte
+R5/Q42 b, 2026-10-24 : `.intégrer 0,6x+1,2` → $0{,}3x^2 + 1{,}2x + C$, et non
+$\dfrac{3}{10}x^2 + \dfrac{6}{5}x$). La valeur d'une intégrale bornée à paramètre est réduite par
+`tidy` (R1). Le « Comment ? » vient de
 `generatePedagogicalIntegrationSteps` (niveau `lycee`, détaillé + résumé), et ne s'affiche que si
 deux gardes passent (`integrate-steps-check.ts`) :
 

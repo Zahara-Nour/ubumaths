@@ -124,7 +124,8 @@ describe('sans ln : rien ne change', () => {
 
 	it.each([
 		['.dériver 0.5x^2', 'x'],
-		['.intégrer 1.5x', '\\dfrac{3}{4}x^2+C']
+		// Un décimal tapé : la primitive en décimal quand elle tombe juste (R5, Q42 b)
+		['.intégrer 1.5x', '0{,}75x^2+C']
 	])('%s → %s', (input, expected) => {
 		expect(answer(run(input))).toBe(expected);
 	});
