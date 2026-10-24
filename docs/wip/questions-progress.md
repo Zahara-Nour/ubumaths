@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, avant toute PR._
+_Mis à jour le 2026-10-24, décisions du § 4 prises._
 
-- **État** : inventaire CP fait (lecture seule de la prod, rien modifié) — § 1 à 3 ci-dessous.
-- **Prochaine action** : réponses de David aux questions du § 4 (dont la 6, case « figure ») ; puis worktree `modeles-cp` et écriture des modèles du groupe A par lots.
-- **En attente de David** : les 6 questions du § 4.
+- **État** : inventaire CP fait ; David a validé les 6 recommandations (§ 4 bis).
+- **Prochaine action** : corrections `52c4d773` et `0e5372a4`, puis Double/moitié 1-3 → CE1 ; ensuite groupe A par lots (worktree `modeles-cp`).
+- **En attente de David** : rien.
 - **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017).
-- **Worktree / branche** : aucun pour l'instant (dépôt principal, lecture seule) ; journal sur `main`.
+- **Worktree / branche** : aucun pour l'instant ; journal sur `main`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (noter la méthode au fil de l'eau, § 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -81,6 +81,15 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 5. Corriger tout de suite `52c4d773` (retirer ×, CP-004 ?) et enrichir `0e5372a4` ?
 6. Case « figure » (§ 2 bis) : chantier à ouvrir (avant ou après horloge / collections / monnaie) ?
 
+## 4 bis. Décisions (David, 2026-10-24)
+
+1. Ordre d'ensemble : corrections (5) → groupe A (texte seul) → horloge → case « figure » (chantier à part, worktree et phase 0 propres) → collection → monnaie (bâtie sur collection).
+2. Multiplier/Double et moitié 1-3 → CE1-028 / CE1-101, valeur 0 retirée, plages vérifiées ; pas de suppression.
+3. Groupe D : 059, 060, 058, 034 (+ 008) attendent la case « figure » ; 053, 063-066, 074 **hors appli**, ne comptent plus comme non couverts.
+4. CP-084 : « compléter un tableau préparé » suffit (`tableau-croise` à trous). CP-072 : attend les « réponses à placer » (hauteur des barres).
+5. `52c4d773` : retirer ×, × 100, centaines du corrigé ; tag CP-005 → CP-004. `0e5372a4` : garder le complément à 10, ajouter le complément à la dizaine supérieure (≤ 99, unités ≠ 0).
+6. Case « figure » : après l'horloge, avant collection et monnaie.
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -93,3 +102,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 
 - 2026-10-24 : inventaire CP (lecture prod MCP read-only).
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 2 bis).
+- 2026-10-24 : décisions du § 4 (§ 4 bis).
