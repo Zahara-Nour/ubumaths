@@ -153,7 +153,7 @@
 		},
 		qcm_pi: {
 			templateId: 'demo-qcm',
-			statement: resolvedMarkdown('Quelle est la valeur de $$\\pi$$ arrondie au centième ?'),
+			statement: resolvedMarkdown('Quelle est la valeur de $\\pi$ arrondie au centième ?'),
 			correctChoiceIndex: '1',
 			choices: [
 				{ content: resolvedMarkdown('$$3{,}00$$'), isCorrect: false },
