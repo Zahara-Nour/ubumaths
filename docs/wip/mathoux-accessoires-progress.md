@@ -15,7 +15,7 @@ _Mis à jour le 2026-10-24, PR 1 (migration du lot A) ouverte._
 - **Prochaine action** : PR 1 mergée → `db:migrate` (4 conditions réunies) → `db:types` → PR 2 :
   appeler le versement après `rememberMathoux` (noms par `mathouName`), +2 au forfait de
   révision, annonce du rattrapage par le Palotin.
-- **En attente de David** : retirer ou non la ligne `Claude-Session:` du 1er commit (force-push).
+- **En attente de David** : rien.
 - **Pièges en cours** : le versement touche `updated_at` → le compare-and-swap de
   `rememberMathoux` peut rejouer une fois ; l'appeler APRÈS l'écriture de la mémoire.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-accessoires`.
