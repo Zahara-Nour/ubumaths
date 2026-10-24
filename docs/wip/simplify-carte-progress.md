@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, 5e : PR #1696 ouverte, revue corrigée (§ 70)._
+_Mis à jour le 2026-10-24, après #1696 (5e D4 mergé, pas en prod)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; **5e D4** : #1696 ouverte, revue opus corrigée, CI à suivre (§ 70). Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; ~~5e D4~~ (#1696, § 70) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (… → ~~Q33~~ → **5e D4** → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : #1696 — CI verte → merger, nettoyer, republier la page de synthèse ; puis 5f (primitive `simplify` → `tidy`, étapes de limite, bug `u′v − (uv′)` § 41, primitive `(x+1)eˣ − eˣ` non réduite, `0,6x + 1,2 → 3x²/10 + 1,2x`).
+- **Ordre des lots** : … → **5** (… → ~~Q33~~ → ~~5e D4~~ → **5f restes**) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : 5f, phase 0 (primitive `simplify` → `tidy`, étapes de limite, bug `u′v − (uv′)` § 41, primitive `(x+1)eˣ − eˣ` non réduite, `0,6x + 1,2 → 3x²/10 + 1,2x`, `0.2x³ − 0.6x` factorisée, § 70).
 - **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) .
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : TABLEAU zsh et copie vérifiée (§ 64) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5e-d4`.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, détaché sur `origin/main` (aucune branche en cours).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
