@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 3 en cours (pas encore ouverte)._
+_Mis à jour le 2026-10-24, après #1680._
 
-- **État** : PR 3 (fusions 7, 8, 15 ; parts dev 1, 5, 6, 10) codée et commitée sur `feat/demo-debug-fusions`, pas poussée. Typecheck 0, cliquet tenu, `lint:fast` propre, `docs:check-a-jour` vert, tests ciblés verts, accès vérifiés sur 5178 (admin 200 / élève 403 / visiteur → connexion).
-- **Prochaine action** : (1) revue `code-reviewer` (Sonnet) sur le diff — relancer si son résultat est perdu ; corriger ses constats ; (2) vérifier les interactions sur 5178 (script dans le scratchpad perdu au `/clear` : plein écran et « Quitter » de `/dev/diaporama`, onglet Transitions, question « QCM : valeur de π » de `/dev/carte-question`, onglet « Messagerie » de `/dev/editeur-riche`) ; (3) push, PR, CI, merge ; noter la vérification manuelle.
+- **État** : PR 1 (#1675), PR 2 (#1677) et PR 3 (#1680, fusions 7, 8, 15 et parts dev 1, 5, 6, 10) mergées, pas en prod. 25 pages sous `/dev` ; `/demo` ne relie que cercle trigo, Mathémo, Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
+- **Prochaine action** : PR 4, aide à l'écriture : ligne 2 (`/geometry-demo/*`, 30 pages → `/aide-ecriture/geometrie/…`) et ligne 3 (catalogue trigo → `/aide-ecriture/cercle-trigo`). Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main`.
 - **En attente de David** : rien.
-- **Pièges en cours** : limiteur de connexion local par IP (15 min) après des connexions répétées → garder l'état de session Playwright (`storageState`) ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; pas de `+layout@` sous `/dev` (saute la garde en navigation client) ; serveur de test 5178 lancé depuis le worktree (le tuer par son port) ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : `../ubumaths-wt-demo-debug` · `feat/demo-debug-fusions`.
+- **Pièges en cours** : sous `/dev`, jamais de `+layout@` (saute la garde en navigation client) ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; un test déplacé d'un niveau → recompter ses `../` ; limiteur de connexion local (5 connexions / 15 min par IP) : garder l'état de session Playwright ; ligne 4 après le chantier constructions.
+- **Worktree / branche** : aucun (PR 3 nettoyée).
 
 ## Décisions de David (2026-10-24)
 
