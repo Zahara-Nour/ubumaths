@@ -83,10 +83,11 @@ describe('load — programme officiel (BO)', () => {
 		expect(getProgrammeTree).not.toHaveBeenCalled();
 	});
 
-	it('?vue=texte, niveau pas encore transcrit : transcription null, PDF toujours là', async () => {
+	it('?vue=texte, niveau de cycle : transcription du cycle et du niveau, PDF du cycle', async () => {
 		const data = await loadAt('?grade=CM1&vue=texte');
 
-		expect(data.transcription).toBeNull();
+		expect(data.transcription?.split('\n')[0]).toBe('# Programme de mathématiques pour le cycle 3');
+		expect(data.transcription).toContain('\n### Cours moyen première année\n');
 		expect(data.official?.pdfUrl).toBe('/programmes/cycle-3.pdf');
 	});
 
