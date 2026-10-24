@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-24, avant toute PR._
 
-- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 5 tranchées (tableau ci-dessous).
+- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 6 tranchées (tableau ci-dessous).
 - **Prochaine action** : poursuivre la revue au premier `?` du tableau « Revue page par page ».
-- **En attente de David** : le sort des lignes 6 à 19. Rien n'est codé : le plan viendra à la fin de la revue.
+- **En attente de David** : le sort des lignes 7 à 19. Rien n'est codé : le plan viendra à la fin de la revue.
 - **Pièges en cours** : rien ne se supprime pour l'instant ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` sont de vraies fonctionnalités, hors chantier.
 - **Worktree / branche** : aucun (rien de codé) ; journal commité sur `main`.
 
@@ -61,7 +61,7 @@ Sort : **vitrine** (`/demo/…`, public) · **aide** (`/aide-ecriture/…`, prof
 | 3   | `/demo/trig-circle-demo`        | aide + vitrine | catalogue complet → `/aide-ecriture/cercle-trigo` ; `/demo/cercle-trigo` : 4 exemples sans le texte du bloc (mode interactif, π/6 avec projections et tableau, cos x = 1/2, cos x > 1/2)                                                                                                              |
 | 4   | `/construction-demo`            | aide + vitrine | éditeur → `/constructions/essais`, prof seul ; API `construction-demo-scripts` prof seul = retrait d'accès admin, PR à part après le chantier constructions ; `/demo/constructions` : lecteur seul, 2-3 constructions écrites dans le code ; doublon scripts de démo / brouillons noté pour plus tard |
 | 5   | `/demo/vip-cards-demo`          | vitrine + dev  | `/demo/cartes` : 4 cartes (une par rareté) écrites dans le code, lisibles sans compte (vérifier où sont les images, `image_path`) ; `/examples` et le catalogue lu en base → `/dev/cartes`                                                                                                            |
-| 6   | `/demo/mots-cliquables`         | ?              |                                                                                                                                                                                                                                                                                                       |
+| 6   | `/demo/mots-cliquables`         | dev + vitrine  | page de test telle quelle → `/dev/mots-cliquables` ; `/demo/lexique` : mots cliquables et sélecteur de niveau (bloc 3 : la définition suit l'élève), sans les consignes de test                                                                                                                       |
 | 7   | `/demo/question-display-demo`   | ?              |                                                                                                                                                                                                                                                                                                       |
 | 8   | `/demo/rich-text-editor-demo`   | ?              |                                                                                                                                                                                                                                                                                                       |
 | 9   | `/demo/theme-test`              | ?              |                                                                                                                                                                                                                                                                                                       |
@@ -101,5 +101,7 @@ vecteurs (textes à réécrire en entier), le reste = référence du langage.
 
 - **Catalogue des cartes VIP géré par l'admin** (`/dashboard/admin/vip-cards`, `api/admin/vip-cards/`) :
   ce sont des privilèges de classe, donc du ressort du prof (règle 5). David : « on le fera plus tard ».
+- **Lexique (dictionnaire) géré par l'admin** (`/dashboard/admin/dictionnaire`, `requireAdmin`,
+  `api/admin/dictionnaire/`) : contenu pédagogique, donc du ressort du prof (règle 5).
 - **Scripts de démo de constructions / brouillons de `/constructions`** : doublon possible, à revoir
   après la revue (aucune suppression pour l'instant).
