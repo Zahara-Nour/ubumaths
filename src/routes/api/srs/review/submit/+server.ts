@@ -191,8 +191,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// ----- Gidouilles de la révision du jour (décision de David, 2026-10-24) -----
 		// Avec le forfait, donc au plus une fois par jour (la séance est réclamée).
 		// Non bloquant : une panne est journalisée, la révision est enregistrée.
+		// Élèves seulement : le crédit au client service ne vérifie pas le rôle.
 		let reviewGidouilles = 0;
-		if (buddyXp) {
+		if (buddyXp && profile.role === 'student') {
 			const creditError = await creditStudentGidouilles(
 				createServiceRoleClient(),
 				user.id,

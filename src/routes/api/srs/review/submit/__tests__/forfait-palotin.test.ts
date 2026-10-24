@@ -16,6 +16,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { BuddyXpFromExerciseResult } from '$lib/server/buddy-xp-service';
 
 const applyFsrsReview = vi.hoisted(() => vi.fn());
+const role = vi.hoisted(() => ({ current: 'student' }));
 const rewardFinishedReviewSession = vi.hoisted(() =>
 	vi.fn<
 		(
@@ -35,7 +36,7 @@ vi.mock('$lib/server/achievements/credit-gidouilles', () => ({ creditStudentGido
 const SERVICE = vi.hoisted(() => ({ service: true }));
 vi.mock('$lib/server/serviceRoleClient', () => ({ createServiceRoleClient: () => SERVICE }));
 vi.mock('$lib/server/middleware/auth', () => ({
-	requireAuth: async () => ({ user: { id: ELEVE }, profile: { role: 'student' } })
+	requireAuth: async () => ({ user: { id: ELEVE }, profile: { role: role.current } })
 }));
 vi.mock('$lib/server/middleware/consent', () => ({ requireConsent: () => {} }));
 
@@ -132,6 +133,7 @@ describe('POST /api/srs/review/submit — forfait du Palotin', () => {
 		});
 		rewardFinishedReviewSession.mockReset().mockResolvedValue(GAIN);
 		creditStudentGidouilles.mockReset().mockResolvedValue(null);
+		role.current = 'student';
 	});
 
 	it('rend le gain du Palotin sous `buddy_xp`, forme de /api/tests/save', async () => {
@@ -184,6 +186,13 @@ describe('POST /api/srs/review/submit — forfait du Palotin', () => {
 		const body = await reviser();
 		expect(body.success).toBe(true);
 		expect(body.buddy_xp).toEqual(GAIN);
+		expect(body.review_gidouilles).toBe(0);
+	});
+
+	it('compte non élève (prof qui révise) : aucune gidouille, même avec un forfait', async () => {
+		role.current = 'teacher';
+		const body = await reviser();
+		expect(creditStudentGidouilles).not.toHaveBeenCalled();
 		expect(body.review_gidouilles).toBe(0);
 	});
 });
