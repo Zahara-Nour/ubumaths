@@ -43,7 +43,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				? await getProgrammeTree(locals.supabase, grade, { includeArchived: true })
 				: [],
 		map: view === 'carte' ? await getProgrammeMap(locals.supabase, grade) : [],
-		official: OFFICIAL_PROGRAMMES[grade],
+		official: view === 'pdf' || view === 'texte' ? OFFICIAL_PROGRAMMES[grade] : null,
 		transcription: view === 'texte' ? getTranscription(grade) : null
 	};
 };

@@ -97,7 +97,9 @@ describe('load — programme officiel (BO)', () => {
 		expect(data.transcription).toBeNull();
 	});
 
-	it('vue liste : la transcription n’est pas lue', async () => {
-		expect((await loadAt('?grade=2')).transcription).toBeNull();
+	it('vue liste : ni programme officiel ni transcription lus', async () => {
+		const data = await loadAt('?grade=2');
+		expect(data.official).toBeNull();
+		expect(data.transcription).toBeNull();
 	});
 });
