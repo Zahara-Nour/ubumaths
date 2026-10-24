@@ -158,9 +158,8 @@
 
 <div
 	class="container mx-auto space-y-6 p-4"
-	class:max-w-4xl={data.view === 'liste'}
+	class:max-w-4xl={data.view !== 'carte'}
 	class:max-w-7xl={data.view === 'carte'}
-	class:max-w-5xl={data.view === 'pdf' || data.view === 'texte'}
 >
 	<div class="flex flex-wrap items-center justify-between gap-3">
 		<div class="flex items-center gap-3">
