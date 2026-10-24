@@ -264,21 +264,54 @@ export function withTypedDecimals(candidate: MathNode, node: MathNode): MathNode
  */
 export function withDecimalCoefficients(candidate: MathNode, node: MathNode): MathNode {
 	if (!hasDecimalLiteral(node)) return candidate;
-	return mapNode(candidate, (current) => {
-		if (!isDivision(current) || !isPositiveInteger(current.denominator)) return current;
-		const factors = flattenProductShallow(current.numerator);
-		const numeric = factors.map(({ factor }) => factor).filter(isNumber);
-		if (numeric.length > 1 || (numeric.length === 1 && !isPositiveInteger(numeric[0]))) {
-			return current;
-		}
-		const decimal = decimalString({
-			n: numeric.length === 1 ? BigInt(numeric[0].value) : 1n,
-			d: BigInt(current.denominator.value)
-		});
-		if (decimal === null) return current;
-		const rest = unflattenProduct(factors.filter(({ factor }) => !isNumber(factor)));
-		return rest === null ? number(decimal) : multiply(number(decimal), rest, 'implicit');
+	return decimalCoefficientsOf(candidate);
+}
+
+/**
+ * Les coefficients de `node` seulement : ni l'exposant d'une puissance, ni
+ * l'argument d'une fonction (`e^{x/2}`, `\sqrt{x/4}` restent), ni une constante
+ * (`π/4` reste) — revue de 5f-2.
+ */
+function decimalCoefficientsOf(node: MathNode): MathNode {
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return {
+				...node,
+				left: decimalCoefficientsOf(node.left),
+				right: decimalCoefficientsOf(node.right)
+			};
+		case 'opposite':
+			return { ...node, operand: decimalCoefficientsOf(node.operand) };
+		case 'delimiter':
+			return { ...node, content: decimalCoefficientsOf(node.content) };
+		case 'superscript':
+			return { ...node, base: decimalCoefficientsOf(node.base) };
+		case 'division':
+			return decimalQuotient(node) ?? node;
+		default:
+			return node;
+	}
+}
+
+/** `3x²/10` → `0,3x²`, `x²/5` → `0,2x²` ; `null` hors de cette forme. */
+function decimalQuotient(node: DivisionNode): MathNode | null {
+	if (!isPositiveInteger(node.denominator)) return null;
+	const factors = flattenProductShallow(node.numerator);
+	const numeric = factors.map(({ factor }) => factor).filter(isNumber);
+	if (numeric.length > 1 || (numeric.length === 1 && !isPositiveInteger(numeric[0]))) return null;
+	const others = factors.filter(({ factor }) => !isNumber(factor));
+	if (others.some(({ factor }) => findNodes(factor, (n) => n.type === 'constant').length > 0)) {
+		return null;
+	}
+	const decimal = decimalString({
+		n: numeric.length === 1 ? BigInt(numeric[0].value) : 1n,
+		d: BigInt(node.denominator.value)
 	});
+	if (decimal === null) return null;
+	const rest = unflattenProduct(others);
+	return rest === null ? number(decimal) : multiply(number(decimal), rest, 'implicit');
 }
 
 /** Un entier positif écrit : `5`. */

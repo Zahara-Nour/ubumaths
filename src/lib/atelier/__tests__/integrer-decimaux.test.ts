@@ -32,6 +32,8 @@ describe('R5 : .intégrer, coefficients décimaux', () => {
 		['.intégrer 0,6x+1,2', '0{,}3x^2+1{,}2x+C'],
 		['.intégrer 0,3x^2', '0{,}1x^3+C'],
 		['.intégrer 0,2x^3-0,6x', '0{,}05x^4-0{,}3x^2+C'],
+		// Premier coefficient négatif : `opposite(3/10)·x²` (revue de 5f-2)
+		['.intégrer -0,6x+1,2', '-0{,}3x^2+1{,}2x+C'],
 		['.intégrer 0,5x^2-1,5x', '\\dfrac{1}{6}x^3-\\dfrac{3}{4}x^2+C'],
 		['.intégrer x^2+0,5', '\\dfrac{1}{3}x^3+\\dfrac{1}{2}x+C']
 	])('%s → %s', (input, expected) => {

@@ -33,7 +33,9 @@ describe('R5 : tous les coefficients tombent juste → tous en décimal', () => 
 		['0{,}5e^{2x}+x', '0.25 \\exponentialE^{2 x} + 0.5 x^2'],
 		['\\dfrac{0{,}5}{x}', '0.5 \\ln\\left( \\left| x \\right| \\right)'],
 		['0{,}2x+\\dfrac{1}{x}', '0.1 x^2 + \\ln\\left( \\left| x \\right| \\right)'],
-		['0{,}5\\cos(2x)', '0.25 \\sin\\left( 2 x \\right)']
+		['0{,}5\\cos(2x)', '0.25 \\sin\\left( 2 x \\right)'],
+		// La somme facteur d'une exponentielle (IPP) suit le même registre (revue de 5f-2)
+		['0{,}5xe^x', '\\left( 0.5 x - 0.5 \\right) \\exponentialE^x']
 	])('∫ %s → %s', (integrand, expected) => {
 		expect(toLatex(primitive(integrand).antiderivative)).toBe(expected);
 	});
@@ -68,12 +70,16 @@ describe('R5 : la réécriture est une étape « On simplifie », F′ = f', () 
 		expect(last && toLatex(last.after)).toBe('0.3 \\exponentialE^{2 x}');
 	});
 
-	it.each(['0{,}6x+1{,}2', '0{,}2x^3-0{,}6x', 'x^2+0{,}5', '0{,}5e^{2x}+x', '0{,}5\\cos(2x)'])(
-		'∫ %s : F′ = f',
-		(integrand) => {
-			const f = parseLatex(integrand);
-			const F = primitive(integrand).antiderivative;
-			expect(areEquivalent(differentiate(F, { variable: 'x' }), f)).toBe(true);
-		}
-	);
+	it.each([
+		'0{,}6x+1{,}2',
+		'0{,}2x^3-0{,}6x',
+		'x^2+0{,}5',
+		'0{,}5e^{2x}+x',
+		'0{,}5\\cos(2x)',
+		'0{,}5xe^x'
+	])('∫ %s : F′ = f', (integrand) => {
+		const f = parseLatex(integrand);
+		const F = primitive(integrand).antiderivative;
+		expect(areEquivalent(differentiate(F, { variable: 'x' }), f)).toBe(true);
+	});
 });

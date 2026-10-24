@@ -6,9 +6,10 @@
  *   (`3x²/10 + 1,2x` → `0,3x² + 1,2x`, `\dfrac{1}{2}\ln|x|` → `0,5\ln|x|`) ;
  * - sinon → tous en fraction (`x³/3 + 0,5x` → `x³/3 + x/2`).
  *
- * Un coefficient entier va avec les deux. Seuls les coefficients DEVANT les
- * termes sont lus : un terme qui porte un nombre non entier ailleurs
- * (`(0,5x + 1)eˣ`) laisse la primitive telle quelle. Partagé par les
+ * Un coefficient entier va avec les deux. Sont lus les coefficients devant les
+ * termes, et ceux d'UNE somme facteur d'un terme (`(x/2 − 1/2)eˣ` →
+ * `(0,5x − 0,5)eˣ`, revue de 5f-2) ; un nombre non entier ailleurs (exposant,
+ * argument d'une fonction) laisse la primitive telle quelle. Partagé par les
  * corrections (`pedagogical-integration`) et `.intégrer` de l'Atelier.
  *
  * @module mathAST/integration/coefficient-register
@@ -16,14 +17,14 @@
 
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
-import { multiply, number } from '../factory';
+import { delimiter, multiply, number } from '../factory';
 import {
 	flattenProductShallow,
 	flattenSumShallow,
 	unflattenProduct,
 	unflattenSum
 } from '../flatten';
-import type { Sign } from '../flatten';
+import type { FlatProduct, Sign } from '../flatten';
 import { extractExactRational, rationalToNode } from '../common/numeric';
 import { absRational, mulRational, divRational, negRational, ONE } from '../normal/rational';
 import { isDivision, isNumber } from '../guards';
@@ -31,11 +32,29 @@ import { findNodes } from '../transforms';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { tidy } from '../tidy';
 
-/** Un terme lu « coefficient × reste » ; `decimal` : le coefficient tapait un décimal. */
+/** Une somme lue terme à terme. */
+type ReadSum = readonly {
+	readonly sign: Sign;
+	readonly term: MathNode;
+	readonly part: CoefficientTerm;
+}[];
+
+/**
+ * Un terme lu « coefficient × reste » ; `decimal` : le coefficient tapait un
+ * décimal ; `nested` : la somme facteur du reste, lue elle aussi.
+ */
 type CoefficientTerm = {
 	readonly k: Rational;
 	readonly rest: MathNode | null;
 	readonly decimal: boolean;
+	readonly nested: NestedSum | null;
+};
+
+/** La somme facteur du reste : `factors[index]`, entre parenthèses. */
+type NestedSum = {
+	readonly factors: FlatProduct;
+	readonly index: number;
+	readonly sum: ReadSum;
 };
 
 /**
@@ -44,23 +63,60 @@ type CoefficientTerm = {
  */
 export function withUniformCoefficients(primitive: MathNode, integrand: MathNode): MathNode {
 	if (!hasDecimalLiteral(integrand)) return primitive;
-	const terms = flattenSumShallow(primitive);
-	const parts = terms.map(({ term }) => coefficientTerm(term));
-	if (parts.some((part) => part === null)) return primitive;
-	const read = parts as CoefficientTerm[];
-	const allDecimal = read.every(({ k }) => decimalString(absRational(k)) !== null);
-	const rewritten = terms.map(({ sign, term }, i) => {
-		const part = read[i];
-		if (part.k.d === 1n && !part.decimal) return { sign, term };
-		if (!allDecimal && !part.decimal) return { sign, term };
-		const negative = part.k.n < 0n;
-		const magnitude = absRational(part.k);
-		const written = allDecimal
-			? decimalTerm(magnitude, part.rest)
-			: fractionTerm(magnitude, part.rest);
-		return { sign: negative ? flip(sign) : sign, term: written };
-	});
-	return unflattenSum(rewritten) ?? primitive;
+	const sum = readSum(primitive);
+	if (sum === null) return primitive;
+	const allDecimal = coefficients(sum).every((k) => decimalString(absRational(k)) !== null);
+	return writeSum(sum, allDecimal) ?? primitive;
+}
+
+function readSum(node: MathNode): ReadSum | null {
+	const read: { sign: Sign; term: MathNode; part: CoefficientTerm }[] = [];
+	for (const { sign, term } of flattenSumShallow(node)) {
+		const part = coefficientTerm(term);
+		if (part === null) return null;
+		read.push({ sign, term, part });
+	}
+	return read;
+}
+
+/** Tous les coefficients de la somme, ceux de ses sommes facteurs compris. */
+function coefficients(sum: ReadSum): Rational[] {
+	return sum.flatMap(({ part }) => [part.k, ...(part.nested ? coefficients(part.nested.sum) : [])]);
+}
+
+function writeSum(sum: ReadSum, allDecimal: boolean): MathNode | null {
+	return unflattenSum(
+		sum.map(({ sign, term, part }) => {
+			// Rien à réécrire : le terme tel quel (`\dfrac{x^3}{6}` reste)
+			if (!rewrites(part, allDecimal) && part.nested === null) return { sign, term };
+			return { sign: part.k.n < 0n ? flip(sign) : sign, term: writeTerm(part, allDecimal) };
+		})
+	);
+}
+
+/** Le terme, coefficient en valeur absolue (le signe passe à la somme). */
+function writeTerm(part: CoefficientTerm, allDecimal: boolean): MathNode {
+	const rest = part.nested ? withNestedSum(part.nested, allDecimal) : part.rest;
+	const magnitude = absRational(part.k);
+	if (rewrites(part, allDecimal))
+		return allDecimal ? decimalTerm(magnitude, rest) : fractionTerm(magnitude, rest);
+	// Coefficient gardé : écrit tel quel devant le reste réécrit
+	if (rest === null) return rationalToNode(magnitude);
+	return magnitude.n === magnitude.d ? rest : multiply(rationalToNode(magnitude), rest, 'implicit');
+}
+
+/** Le coefficient change d'écriture : décimal tapé, ou fraction passée en décimal. */
+function rewrites(part: CoefficientTerm, allDecimal: boolean): boolean {
+	return part.decimal || (allDecimal && part.k.d !== 1n);
+}
+
+function withNestedSum(nested: NestedSum, allDecimal: boolean): MathNode | null {
+	const inner = writeSum(nested.sum, allDecimal);
+	if (inner === null) return null;
+	const factors = nested.factors.map((entry, i) =>
+		i === nested.index ? { ...entry, factor: delimiter('parentheses', inner) } : entry
+	);
+	return unflattenProduct(factors);
 }
 
 function flip(sign: Sign): Sign {
@@ -83,14 +139,29 @@ function fractionTerm(k: Rational, rest: MathNode | null): MathNode {
 
 /**
  * Le terme lu « coefficient × reste » : `0.3x^2`, `\dfrac{3x^2}{10}`,
- * `\dfrac{1}{2}e^{2x}`, `5`, `x^3` ; `null` quand un nombre non entier reste
- * ailleurs que devant.
+ * `\dfrac{1}{2}e^{2x}`, `-\dfrac{3}{10}x^2`, `5`, `x^3`, `(\dfrac{x}{2} − \dfrac{1}{2})e^x` ;
+ * `null` quand un nombre non entier reste ailleurs.
  */
 function coefficientTerm(term: MathNode): CoefficientTerm | null {
 	const read = readTerm(term);
-	if (read === null) return null;
-	if (read.rest !== null && hasLooseNumber(read.rest)) return null;
-	return read;
+	if (read === null || read.rest === null || !hasLooseNumber(read.rest)) return read;
+	const nested = nestedSum(read.rest);
+	return nested && { ...read, nested };
+}
+
+/** La seule somme facteur de `rest` qui porte les nombres non entiers, lue ; sinon `null`. */
+function nestedSum(rest: MathNode): NestedSum | null {
+	const factors = flattenProductShallow(rest);
+	const loose = factors
+		.map(({ factor }, index) => ({ factor, index }))
+		.filter(({ factor }) => hasLooseNumber(factor));
+	if (loose.length !== 1) return null;
+	const { factor, index } = loose[0];
+	const content = factor.type === 'delimiter' ? factor.content : factor;
+	if (content.type !== 'addition' && content.type !== 'subtraction') return null;
+	const sum = readSum(content);
+	if (sum === null || sum.some(({ part }) => part.nested !== null)) return null;
+	return { factors, index, sum };
 }
 
 function readTerm(term: MathNode): CoefficientTerm | null {
@@ -98,9 +169,9 @@ function readTerm(term: MathNode): CoefficientTerm | null {
 		const inner = readTerm(term.operand);
 		return inner && { ...inner, k: negRational(inner.k) };
 	}
-	if (isNumber(term)) {
+	if (isNumericCoefficient(term)) {
 		const k = extractExactRational(term);
-		return k && { k, rest: null, decimal: !isIntegerText(term.value) };
+		return k && { k, rest: null, decimal: hasDecimalLiteral(term), nested: null };
 	}
 	if (isDivision(term) && isNumber(term.denominator) && isIntegerText(term.denominator.value)) {
 		const d = extractExactRational(term.denominator);
@@ -118,23 +189,29 @@ function readTerm(term: MathNode): CoefficientTerm | null {
 			if (value === null) return null;
 			k = mulRational(k, value);
 		}
-		const decimal = numeric.some(({ factor }) => isNumber(factor) && !isIntegerText(factor.value));
-		return { k, rest: unflattenProduct(others), decimal };
+		const decimal = numeric.some(({ factor }) => hasDecimalLiteral(factor));
+		return { k, rest: unflattenProduct(others), decimal, nested: null };
 	}
-	return { k: ONE, rest: term, decimal: false };
+	return { k: ONE, rest: term, decimal: false, nested: null };
 }
 
-/** Un nombre écrit (`3`, `0.5`) ou une fraction de deux entiers écrits (`\dfrac{1}{2}`). */
+/**
+ * Un nombre écrit (`3`, `0.5`), une fraction de deux entiers écrits
+ * (`\dfrac{1}{2}`, `\dfrac{-3}{10}`), sous un éventuel − (`-\dfrac{3}{10}`,
+ * qu'écrit le moteur de l'Atelier).
+ */
 function isNumericCoefficient(node: MathNode): boolean {
+	if (node.type === 'opposite') return isNumericCoefficient(node.operand);
 	return isNumber(node) || isNumericFraction(node);
 }
 
 function isNumericFraction(node: MathNode): boolean {
+	if (!isDivision(node)) return false;
+	const top = node.numerator.type === 'opposite' ? node.numerator.operand : node.numerator;
 	return (
-		isDivision(node) &&
-		isNumber(node.numerator) &&
+		isNumber(top) &&
 		isNumber(node.denominator) &&
-		isIntegerText(node.numerator.value) &&
+		isIntegerText(top.value) &&
 		isIntegerText(node.denominator.value)
 	);
 }

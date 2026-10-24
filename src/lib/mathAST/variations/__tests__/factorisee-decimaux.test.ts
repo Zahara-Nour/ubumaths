@@ -72,3 +72,24 @@ describe('Q44 a : primitive demandée factorisée', () => {
 		);
 	});
 });
+
+describe('revue de 5f-2 : un exposant et une constante ne sont pas réécrits', () => {
+	it('(0,5x² − x)e^{x/2} factorisée : 0,5 sort, l’exposant tapé reste', () => {
+		const result = asked('(0{,}5x^2-x)e^{x/2}');
+		expect(result).toContain('0.5 x \\left( x - 2 \\right)');
+		expect(result).not.toContain('{0.5 x}');
+	});
+
+	it('(0,5x² − x)e^{x/2} développée : l’exposant tapé reste', () => {
+		const node = parseLatex('(0{,}5x^2-x)e^{x/2}');
+		const result = toLatex(requestedForm(node, 'developpee', { f: node, kind: 'derivative' }));
+		expect(result).not.toContain('0.5 x}');
+		expect(result).toContain('\\exponentialE^{x / 2}');
+	});
+
+	it('0,5x + π/4 développée : π/4 reste', () => {
+		const node = parseLatex('0{,}5x+\\dfrac{\\pi}{4}');
+		const result = toLatex(requestedForm(node, 'developpee', { f: node, kind: 'derivative' }));
+		expect(result).not.toContain('0.25');
+	});
+});
