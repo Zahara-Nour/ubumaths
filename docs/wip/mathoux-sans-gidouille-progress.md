@@ -5,13 +5,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, avant l'ouverture de la PR._
+_Mis à jour le 2026-10-24, après #1681._
 
-- **État** : code et tests faits ; PR à ouvrir.
-- **Prochaine action** : PR, CI, merge, puis noter la vérification manuelle.
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-sans-gidouille` · `feat/mathoux-sans-gidouille`.
+- **État** : **chantier clos.** #1681 mergée, pas en prod (au prochain `deploy:prod`, à la demande
+  de David). Démo des Mathoux mise à jour avec ce code.
+- **Prochaine action** : aucune.
+- **En attente de David** : `deploy:prod`, puis la vérification manuelle #1681.
+- **Pièges en cours** : aucun. Idée notée pour les accessoires : la panse libre accueillera la
+  décoration achetée en gidouilles (`mathoux-conception.md`, étape 3).
+- **Worktree / branche** : supprimés.
 
 ## Décisions de David (2026-10-24)
 
