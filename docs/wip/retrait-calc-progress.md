@@ -1,22 +1,21 @@
 ---
 title: Retrait de /calc — journal
 date: 2026-10-24
-status: phase 0 validée (2026-10-24) — PR 1 en cours
+status: PR 1 mergée (#1705) — PR 2 (retrait de /calc) à faire
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 1 prête (avant ouverture)._
+_Mis à jour le 2026-10-24, après #1705._
 
-- **État** : PR 1 « Comment ? » sur un calcul sans lettre codée, revue Opus faite (F1 angle en
-  degrés, F2 `3/4*2/9` contre C3, F3 `2:0,5` → corrigés). Serveur de test : `localhost:5176`.
-- **Prochaine action** : merger PR 1, puis PR 2 (retrait de `/calc` + `step-generator`, plan
-  ci-dessous).
-- **En attente de David** : rien. À signaler : en `.mode décimal`, pas d'étapes (réponses
-  arrondies) ; une seule opération (`12/4`) a un « Comment ? » qui redit la ligne (C1).
-- **Pièges** : `simplify-carte` (lot 5f-1) change `tidy` ; elle prévient au merge → rebaser,
-  relancer `calcul-etapes*.test.ts`.
-- **Worktree / branche** : `../ubumaths-wt-retrait-calc` · `chore/retrait-calc`.
+- **État** : PR 1 mergée (#1705) — « Comment ? » sur un calcul sans lettre, sur `main`, pas en prod.
+  Worktree et branche de la PR 1 supprimés.
+- **Prochaine action** : PR 2, retrait de `/calc` + `mathAST/step-generator` (plan ci-dessous),
+  nouveau worktree `../ubumaths-wt-retrait-calc`, branche `chore/retrait-calc-2`.
+- **En attente de David** : rien. À l'essai, signalé : en `.mode décimal` pas d'étapes ; une seule
+  opération (`12/4`) a un « Comment ? » qui redit la ligne (C1).
+- **Pièges** : `docs:check-a-jour` réclame `statistiques.md` dès que `desk.svelte.ts` change.
+- **Worktree / branche** : aucun.
 
 ---
 
