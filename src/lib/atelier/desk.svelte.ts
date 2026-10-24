@@ -1295,10 +1295,9 @@ function entryOf(result: CalcResult): Omit<Entry, 'id' | 'label'> {
 	return {
 		text: textOf(result),
 		...(result.kind === 'calcul' || result.kind === 'commande' ? { latex: result.latex } : {}),
-		// Un refus peut aussi porter des étapes (`.intégrer`, pôle dans [a ; b])
-		...((result.kind === 'commande' || result.kind === 'refus') && result.steps !== undefined
-			? { steps: result.steps }
-			: {}),
+		// Un refus peut aussi porter des étapes (`.intégrer`, pôle dans [a ; b]),
+		// une ligne de Calcul aussi (`2+3*4`, retrait de `/calc`)
+		...('steps' in result && result.steps !== undefined ? { steps: result.steps } : {}),
 		...((result.kind === 'commande' || result.kind === 'refus') && result.summary !== undefined
 			? { summary: result.summary }
 			: {}),

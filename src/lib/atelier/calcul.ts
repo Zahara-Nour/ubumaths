@@ -185,7 +185,7 @@ import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
 import { expandExpression, type ExpandMode } from './expand';
 import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
-import { evaluateSteps } from './evaluate-steps';
+import { calculationSteps, evaluateSteps } from './evaluate-steps';
 import { domainLine } from './domain-steps';
 import { limitCommand } from './limit';
 import { collapseLnAbs } from '$lib/mathAST/pedagogical-integration/latex';
@@ -288,6 +288,11 @@ export type CalcResult =
 			 * VALEUR de cette définition, qui suit ses points (décision de David, 2026-10-18).
 			 */
 			readonly measure?: { readonly definition: string; readonly provenance: Provenance };
+			/**
+			 * Les opérations d'un calcul sans lettre (`2+3*4`), sous « Comment ? » ;
+			 * absentes quand il n'y a rien à montrer (`calculationSteps`).
+			 */
+			readonly steps?: readonly RenderedStep[];
 	  }
 	| {
 			readonly kind: 'commande';
@@ -3726,6 +3731,7 @@ function resultWithDecimalComma(result: CalcResult): CalcResult {
 				...result,
 				output: decimalCommaText(result.output),
 				...(result.latex !== undefined && { latex: decimalCommaLatex(result.latex) }),
+				...(result.steps !== undefined && { steps: result.steps.map(decimalCommaStep) }),
 				...alternativeWithDecimalComma(result.alternative),
 				...(result.note !== undefined && { note: decimalCommaProse(result.note) })
 			};
@@ -4055,7 +4061,7 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		// L'écho, et une réponse restée en lettres (`u_3 + w`), gardent `u_3`
 		if (line.kind === 'calcul') {
 			return {
-				...line,
+				...withoutSteps(line),
 				input,
 				output: typedTermsIn(session.atelier, input, line.output)
 			};
@@ -4074,14 +4080,15 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	if (measured.changed) {
 		const line = computeInput(session, measured.text, provenance);
 		if (line.kind !== 'calcul') return line;
+		// Les étapes parleraient des valeurs mesurées, pas de ce qui a été tapé (Q1)
 		if (!measured.approximate) {
-			return { ...line, input, measure: { definition: input.trim(), provenance } };
+			return { ...withoutSteps(line), input, measure: { definition: input.trim(), provenance } };
 		}
 		// Un angle non remarquable : le moteur en ferait une fraction (368699/10000) —
 		// on montre le décimal, 4 décimales comme le mode décimal (`≈ 0,7071`)
 		const approximation = approximationOf(line.ast);
 		return {
-			...line,
+			...withoutSteps(line),
 			input,
 			output: `≈ ${approximation?.text ?? line.output}`,
 			latex: `\\approx ${approximation?.latex ?? line.latex ?? line.output}`,
@@ -4172,11 +4179,13 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		};
 	}
 	const rendered = renderResult(result);
+	const latex = rendered.latex ? approximatedLatex(result, rendered.latex) : undefined;
+	const steps = typedCalculationSteps(input, withTerms.text, result, latex);
 	return {
 		kind: 'calcul',
 		input,
 		output: rendered.text,
-		...(rendered.latex && { latex: approximatedLatex(result, rendered.latex) }),
+		...(latex !== undefined && { latex }),
 		// « Garder » range la grandeur exacte, pas son écriture juxtaposée (`2 h 30 min`) ;
 		// sinon l'écriture affichée (Q27, lot 5d : `2x+3x` se garde `5x`)
 		...(result.success &&
@@ -4184,8 +4193,35 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 				ast: result.quantityAst ?? rendered.ast ?? result.ast
 			}),
 		...calculationAlternative(result),
-		...notesOf(...reading.notes, tooLongNote(result))
+		...notesOf(...reading.notes, tooLongNote(result)),
+		...(steps !== null && { steps })
 	};
+}
+
+/**
+ * « Comment ? » d'une ligne de Calcul (phase 0 du retrait de `/calc`, 2026-10-24) :
+ * seulement un calcul tapé tel quel — un terme de suite remplacé (`u(5)`), une
+ * grandeur, une valeur de l'atelier n'en ont pas (Q1).
+ */
+function typedCalculationSteps(
+	input: string,
+	computed: string,
+	result: ReplExecutionResult,
+	latex: string | undefined
+): readonly RenderedStep[] | null {
+	if (computed !== input || !result.success || latex === undefined) return null;
+	if (result.quantityAst !== undefined || result.exactTooLong !== undefined) return null;
+	if (result.ast === undefined) return null;
+	return calculationSteps(decimalCommaInput(input), result.ast, latex);
+}
+
+/** Une ligne de Calcul sans ses étapes : elle répond à une autre saisie que la sienne. */
+function withoutSteps(
+	line: Extract<CalcResult, { kind: 'calcul' }>
+): Extract<CalcResult, { kind: 'calcul' }> {
+	if (line.steps === undefined) return line;
+	const { steps: _dropped, ...rest } = line;
+	return rest;
 }
 
 /**
