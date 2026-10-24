@@ -169,7 +169,41 @@ export function nonZeroBases(
 	return bases;
 }
 
-/** Les fonctions usuelles qui ne sont pas définies sur ℝ entier (`domain/builtins.ts`). */
+/**
+ * Les bases strictement positives sur un domaine acquis : l'argument d'un
+ * logarithme, la base d'une puissance d'exposant variable. À part de
+ * `nonZeroBases` : un dénominateur dit « ≠ 0 », pas « > 0 » (revue, 2026-10-24 :
+ * sur le domaine de `1/x`, `ln(x) − ln(x)` ne s'annule pas).
+ */
+export function positiveBases(
+	domain: readonly MathNode[],
+	tidyBase: (node: MathNode) => MathNode
+): ReadonlySet<string> {
+	const bases = new Set<string>();
+	const visit = (node: MathNode): void => {
+		if (node.type === 'function' && LOGARITHMS.has(node.name) && node.args.length === 1) {
+			bases.add(hashMathNode(tidyBase(node.args[0])));
+		} else if (node.type === 'superscript') {
+			const exponent = extractRational(node.superscript);
+			if (exponent === null && findNodes(node.superscript, isVariable).length > 0) {
+				bases.add(hashMathNode(tidyBase(node.base)));
+			}
+		}
+		for (const child of getChildren(node)) visit(child);
+	};
+	for (const node of domain) visit(node);
+	return bases;
+}
+
+/** Ce qu'un domaine acquis garantit des bases, par leur hash. */
+export type AcquiredDomain = {
+	/** Les bases non nulles (`nonZeroBases`). */
+	readonly nonZero: ReadonlySet<string>;
+	/** Les bases strictement positives (`positiveBases`). */
+	readonly positive: ReadonlySet<string>;
+};
+
+/** Les fonctions usuelles qui ne sont pas définies sur ℝ entier (`domain/builtins.ts`, `eval/evaluate.ts`). */
 const RESTRICTED_FUNCTIONS = new Set([
 	'sqrt',
 	'ln',
@@ -178,10 +212,13 @@ const RESTRICTED_FUNCTIONS = new Set([
 	'log2',
 	'arcsin',
 	'arccos',
+	'arccosh',
+	'arctanh',
 	'tan',
 	'cot',
 	'sec',
-	'csc'
+	'csc',
+	'factorial'
 ]);
 
 /** Les logarithmes : argument strictement positif. */
@@ -191,39 +228,36 @@ const LOGARITHMS = new Set(['ln', 'log', 'log10', 'log2']);
  * L'expression est-elle définie pour toute valeur de ses variables ? (S3
  * étendue aux sommes, David, 2026-10-24.) Des termes semblables de somme nulle
  * ne disparaissent que si elle l'est : `x − x → 0`, mais `ln(x) − ln(x)` et
- * `1/x − 1/x` restent. Une hypothèse déclarée (`typeCtx`) ou une base non
- * nulle du domaine acquis (`nonZero`, par son hash) lève la restriction.
- * Prudente comme `cannotVanish` : `false` veut dire « pas prouvé ». Une
- * fonction inconnue (`f`) est tenue pour définie partout, comme dans
- * `domain/builtins.ts`.
+ * `1/x − 1/x` restent. Une hypothèse déclarée (`typeCtx`) ou le domaine acquis
+ * (`acquired`) lève la restriction. Prudente comme `cannotVanish` : `false`
+ * veut dire « pas prouvé ». Une fonction inconnue (`f`) est tenue pour définie
+ * partout, comme dans `domain/builtins.ts`.
  */
 export function definedEverywhere(
 	node: MathNode,
 	typeCtx: TypeContext | undefined,
-	nonZero: ReadonlySet<string>
+	acquired: AcquiredDomain
 ): boolean {
 	// Une constante : `tidy` ne lui fait rien perdre en l'annulant
 	if (findNodes(node, isVariable).length === 0) return true;
-	if (!getChildren(node).every((child) => definedEverywhere(child, typeCtx, nonZero))) {
+	if (!getChildren(node).every((child) => definedEverywhere(child, typeCtx, acquired))) {
 		return false;
 	}
 	switch (node.type) {
 		case 'division':
-			return knownNonZero(node.denominator, typeCtx, nonZero);
+			return knownNonZero(node.denominator, typeCtx, acquired);
 		case 'superscript': {
 			const exponent = extractRational(node.superscript);
 			return exponent === null
-				? isPositive(node.base, typeCtx) || nonZero.has(hashMathNode(node.base))
-				: powerDefinedEverywhere(node.base, exponent, typeCtx, nonZero);
+				? knownPositive(node.base, typeCtx, acquired)
+				: powerDefinedEverywhere(node.base, exponent, typeCtx, acquired);
 		}
 		case 'function': {
 			if (!RESTRICTED_FUNCTIONS.has(node.name)) return true;
 			if (node.args.length !== 1) return false;
 			const [arg] = node.args;
 			if (node.name === 'sqrt') return isNonNegative(arg, typeCtx);
-			if (LOGARITHMS.has(node.name)) {
-				return isPositive(arg, typeCtx) || nonZero.has(hashMathNode(arg));
-			}
+			if (LOGARITHMS.has(node.name)) return knownPositive(arg, typeCtx, acquired);
 			return false;
 		}
 		default:
@@ -235,15 +269,20 @@ export function definedEverywhere(
  * `base^exposant`, exposant rationnel, est-il défini partout ? Un entier
  * positif toujours ; un entier négatif si la base ne s'annule pas ; un
  * exposant fractionnaire si la base est positive (ou nulle, exposant positif).
+ * `key` : le hash de la base, quand l'appelant l'a déjà (facteur de `tidy`).
  */
 export function powerDefinedEverywhere(
 	base: MathNode,
 	exponent: { readonly n: bigint; readonly d: bigint },
 	typeCtx: TypeContext | undefined,
-	nonZero: ReadonlySet<string>
+	acquired: AcquiredDomain,
+	key: string = hashMathNode(base)
 ): boolean {
 	if (findNodes(base, isVariable).length === 0) return true;
-	if (exponent.d === 1n) return exponent.n >= 0n || knownNonZero(base, typeCtx, nonZero);
+	if (exponent.d === 1n) {
+		return exponent.n >= 0n || cannotVanish(base, typeCtx) || acquired.nonZero.has(key);
+	}
+	if (acquired.positive.has(key)) return true;
 	return exponent.n > 0n ? isNonNegative(base, typeCtx) : isPositive(base, typeCtx);
 }
 
@@ -251,7 +290,16 @@ export function powerDefinedEverywhere(
 function knownNonZero(
 	node: MathNode,
 	typeCtx: TypeContext | undefined,
-	nonZero: ReadonlySet<string>
+	acquired: AcquiredDomain
 ): boolean {
-	return cannotVanish(node, typeCtx) || nonZero.has(hashMathNode(node));
+	return cannotVanish(node, typeCtx) || acquired.nonZero.has(hashMathNode(node));
+}
+
+/** Une base dont on sait qu'elle est strictement positive. */
+function knownPositive(
+	node: MathNode,
+	typeCtx: TypeContext | undefined,
+	acquired: AcquiredDomain
+): boolean {
+	return isPositive(node, typeCtx) || acquired.positive.has(hashMathNode(node));
 }

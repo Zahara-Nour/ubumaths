@@ -110,3 +110,37 @@ describe('sous hypothèse ou sur un domaine acquis, ils s’annulent', () => {
 		expect(toCustom(tidy(parseCustom('1/x-1/x'), { domain: [parseCustom('1/x')] }))).toBe('0');
 	});
 });
+
+// Revue Opus : un domaine qui dit « ≠ 0 » ne dit pas « > 0 »
+describe('un domaine acquis ne lève que ce qu’il garantit', () => {
+	const onDomain = (s: string, d: string) =>
+		toCustom(tidy(parseCustom(s), { domain: [parseCustom(d)] }));
+
+	it.each([
+		['ln(x)-ln(x)', '1/x'],
+		['ln(x)-ln(x)', 'ln(x^2)'],
+		['ln(x)-ln(x)', 'ln(-x)'],
+		['x^(1/2)-x^(1/2)', '1/x'],
+		['x^x-x^x', '1/x'],
+		['ln(x-1)-ln(x-1)', '1/(x-1)']
+	])('%s reste écrit sur le domaine de %s', (input, domain) => {
+		expect(onDomain(input, domain)).not.toBe('0');
+	});
+
+	it.each([
+		['x^(1/2)-x^(1/2)', 'ln(x)'],
+		['x^x-x^x', 'x^x'],
+		['1/x-1/x', 'ln(x)']
+	])('%s → 0 sur le domaine de %s', (input, domain) => {
+		expect(onDomain(input, domain)).toBe('0');
+	});
+});
+
+describe('fonctions hors de ℝ entier', () => {
+	it.each(['arccosh(x)-arccosh(x)', 'arctanh(x)-arctanh(x)', 'factorial(x)-factorial(x)'])(
+		'%s reste écrit',
+		(input) => {
+			expect(t(input)).not.toBe('0');
+		}
+	);
+});

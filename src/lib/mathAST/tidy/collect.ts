@@ -70,7 +70,13 @@ import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString, hasDecimalLiteral } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
-import { cannotVanish, definedEverywhere, nonZeroBases, powerDefinedEverywhere } from './sign';
+import {
+	cannotVanish,
+	definedEverywhere,
+	nonZeroBases,
+	positiveBases,
+	powerDefinedEverywhere
+} from './sign';
 import {
 	isPlainTerm,
 	numberFirst,
@@ -91,6 +97,8 @@ type Settings = {
 	readonly typeCtx: TypeContext | undefined;
 	/** Les bases non nulles sur le domaine acquis (`domain`, S3), par leur hash. */
 	readonly nonZero: ReadonlySet<string>;
+	/** Les bases strictement positives sur ce domaine (arguments de `ln`…), par leur hash. */
+	readonly positive: ReadonlySet<string>;
 	/** L'ordre des termes d'une somme (S2). */
 	readonly order: TermOrder;
 };
@@ -1353,11 +1361,11 @@ type TermGroup = {
 
 /** Chaque facteur du terme est défini pour toute valeur des variables (S3). */
 function termDefinedEverywhere(term: TidyTerm, settings: Settings): boolean {
-	const { typeCtx, nonZero } = settings;
+	const { typeCtx } = settings;
 	return term.factors.every(
 		({ base, exponent, key }) =>
-			definedEverywhere(base, typeCtx, nonZero) &&
-			(nonZero.has(key) || powerDefinedEverywhere(base, exponent, typeCtx, nonZero))
+			definedEverywhere(base, typeCtx, settings) &&
+			powerDefinedEverywhere(base, exponent, typeCtx, settings, key)
 	);
 }
 
@@ -1680,6 +1688,7 @@ function settingsOf(options: InnerOptions | undefined): Settings {
 		unitChoice: options?.unitChoice ?? 'school',
 		typeCtx: options?.typeCtx,
 		nonZero: domain.length === 0 ? NO_BASE : nonZeroBases(domain, (n) => tidyExpression(n)),
+		positive: domain.length === 0 ? NO_BASE : positiveBases(domain, (n) => tidyExpression(n)),
 		order: options?.order ?? 'canonical'
 	};
 }
@@ -1699,6 +1708,7 @@ function innerOptions(settings: Settings): InnerOptions | undefined {
 		settings.unitChoice === 'school' &&
 		settings.typeCtx === undefined &&
 		settings.nonZero.size === 0 &&
+		settings.positive.size === 0 &&
 		settings.order === 'canonical';
 	return isDefault ? undefined : { settings };
 }
