@@ -2,7 +2,7 @@
  * Polices du Corrigé : Shantell Sans (texte) et Chiphre Math (formules)
  * =====================================================================
  *
- * Le Corrigé d'une fiche s'imprime dans le duo de `/test-font` : Shantell Sans
+ * Le Corrigé d'une fiche s'imprime dans le duo de `/dev/polices` : Shantell Sans
  * Light pour le texte (Bold pour le gras) et Chiphre Math, police OpenType MATH
  * construite par `tools/chiphre-math`, pour les formules.
  *
@@ -74,7 +74,7 @@ function endOfTypstCall(typst: string, start: number): number | null {
 }
 
 /**
- * Le document ENTIER dans les polices du Corrigé : sert à `/test-font` seul,
+ * Le document ENTIER dans les polices du Corrigé : sert à `/dev/polices` seul,
  * plus aux corrigés des fiches (leurs règles sont bornées à chaque
  * correction). Les règles y sont posées deux fois :
  * - en tête, pour ce que Typst met en forme avec les réglages du `#set page`

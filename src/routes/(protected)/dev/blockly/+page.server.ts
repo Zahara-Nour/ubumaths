@@ -1,15 +1,14 @@
 /**
  * Blockly Playground Server Load
  *
- * Simple load function for the playground page.
- * Can optionally load user profile if logged in for future features
- * (e.g., saving/loading workspace state).
+ * Ne renvoie rien : la page n'en a pas besoin, et l'objet `User` complet n'a
+ * pas à partir vers le navigateur (audit du chantier demo-debug, PR 2). La
+ * sauvegarde d'un espace de travail le demandera le jour où Blockly deviendra
+ * une vraie fonctionnalité.
  */
 
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals }) => {
-	return {
-		user: locals.user
-	};
+export const load: PageServerLoad = async () => {
+	return {};
 };
