@@ -8,7 +8,7 @@ _Mis à jour le 2026-10-24, après #1695._
 - **Prochaine action** : phase 6 suite, une PR par page : cartes, lexique, corrigés, géométrie, questions, éditeur, diaporama. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main` ; phase 0 de la page à faire valider.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` (saute la garde en navigation client) ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; un test déplacé d'un niveau → recompter ses `../` ; `await render(…)` exigé par `lint:fast` ; limiteur de connexion local (5 connexions / 15 min par IP) : garder l'état de session Playwright ; pnpm 12 refuse `pnpm -s` (l'autofixer ne tourne pas, en silence) ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : aucun (PR 6b nettoyée).
+- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/demo-cartes` (PR 6c en cours, `/demo/cartes`) ; à faire après : les 4 images Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
@@ -156,6 +156,10 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
   `$lib/shared/blockly`, inchangé depuis le 2026-06-23. Phase 0 à ouvrir.
 - **Scripts de démo de constructions / brouillons de `/constructions`** : doublon possible, à revoir
   après la revue (aucune suppression pour l'instant).
+- **Images des 4 cartes VIP de Mathémo, à vérifier** (noté le 2026-10-24, demandé par David) :
+  Voyelles Révélées, Multiplicateur x1.5 (Mathémo), Lettre Bonus, Retour en Arrière (Mathémo) ont en
+  prod un `image_path` en `/images/vip-cards/…`, dossier absent de `static/` (les autres cartes sont
+  dans le stockage `vip-card-images`). Images sans doute cassées ; pas vérifié dans le navigateur.
 
 ## PR 2 — déplacements vers `/dev` (2026-10-24)
 
@@ -211,3 +215,17 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
   prof « Bloc trig : figure non dessinée ». Corrigé des deux côtés par un angle de départ π/4 ;
   test ajouté au catalogue (chaque exemple se dessine), vu rouge sans la correction.
 - Pas de revue (page qui assemble des composants existants, comme la 6a).
+
+## PR 6c — vitrine `/demo/cartes` (phase 0 validée par David le 2026-10-24)
+
+- 4 cartes écrites dans `cartes.ts`, une par rareté, textes du catalogue de la prod : Coup Double
+  (légendaire, en rotation `showcase`), Super Bonus, Game of throne, Batman and Robin. Écartées :
+  Sheikh (trop local), Mathémagie (« Daoudini »), les cartes de jeux.
+- Images recopiées du stockage public de la prod dans `static/images/demo-cartes/` : ni base ni
+  stockage, la page s'affiche aussi en local.
+- Trouvé en route : `VipCardHolo` sans les feuilles `/css/holo-cards/*.css` rend une simple image
+  (ni cadre ni reflet) ; elles sont chargées par le layout de `/dev/cartes` et du tableau de bord.
+  La page les charge dans son `<svelte:head>`.
+- Vérifié sans compte sur 5179 (Playwright) : page 200, 4 cartes, reflet au survol, agrandissement
+  au clic, aucune erreur de console, pas de défilement horizontal à 390 px.
+- Pas de revue (page qui assemble des composants existants, comme la 6a et la 6b).
