@@ -289,21 +289,22 @@ describe('.résoudre dans Calcul', () => {
 		expect(latexOf('.résoudre cos(x)=sin(x)')).toBe(`x=\\dfrac{\\pi}{4}+k\\pi${Z}`);
 	});
 
+	// Lot 5c : solutions écrites par la valeur exacte à afficher (avant : `\\dfrac{2}{3}\\pi`)
 	it('cos(2x)=cos(x) dans [0 ; 2π] : 0, 2π/3, 4π/3, 2π', () => {
 		expect(latexOf('.résoudre cos(2x)=cos(x) dans [0 ; 2\\pi]')).toBe(
-			'S=\\left\\{0\\,;\\,\\dfrac{2}{3}\\pi\\,;\\,\\dfrac{4}{3}\\pi\\,;\\,2\\pi\\right\\}'
+			'S=\\left\\{0\\,;\\,\\dfrac{2\\pi}{3}\\,;\\,\\dfrac{4\\pi}{3}\\,;\\,2\\pi\\right\\}'
 		);
 	});
 
 	it('sin(π/4 − x)=0 dans [0 ; 2π] : π/4 et 5π/4', () => {
 		expect(latexOf('.résoudre sin(\\pi/4-x)=0 dans [0 ; 2\\pi]')).toBe(
-			'S=\\left\\{\\dfrac{1}{4}\\pi\\,;\\,\\dfrac{5}{4}\\pi\\right\\}'
+			'S=\\left\\{\\dfrac{\\pi}{4}\\,;\\,\\dfrac{5\\pi}{4}\\right\\}'
 		);
 	});
 
 	it('sin(2x)=sin(x) dans [0 ; 2π] : 0, π/3, π, 5π/3, 2π', () => {
 		expect(latexOf('.résoudre sin(2x)=sin(x) dans [0 ; 2\\pi]')).toBe(
-			'S=\\left\\{0\\,;\\,\\dfrac{1}{3}\\pi\\,;\\,\\pi\\,;\\,\\dfrac{5}{3}\\pi\\,;\\,2\\pi\\right\\}'
+			'S=\\left\\{0\\,;\\,\\dfrac{\\pi}{3}\\,;\\,\\pi\\,;\\,\\dfrac{5\\pi}{3}\\,;\\,2\\pi\\right\\}'
 		);
 	});
 });

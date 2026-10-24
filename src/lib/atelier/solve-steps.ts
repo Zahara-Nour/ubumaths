@@ -30,6 +30,9 @@ import {
 	QuadraticEquationRenderer
 } from '$lib/mathAST/pedagogical-solve';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
+import { getVariables } from '$lib/mathAST/eval/substitute';
+import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
 import {
 	DEFAULT_VARIABLE,
 	splitVariableArgument,
@@ -258,10 +261,11 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 
 		const solutions = concludedSolutions(steps[steps.length - 1]);
 		const summarized = renderer.renderAll(steps, { schoolLevel, verbosity: 'summarized' });
+		const decimal = hasDecimalLiteral(relation);
 		if (within !== undefined) {
 			return solutions === null
 				? null
-				: restrictedSteps(rendered, summarized, solutions, variable, within);
+				: restrictedSteps(rendered, summarized, solutions, variable, within, decimal);
 		}
 		const approximate =
 			solutions === null
@@ -269,9 +273,13 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 				: approximateSolutionsLatex(variable, solutions, answer.trimStart().startsWith('S'));
 		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
 		const summary = summaryOf(rendered, summarized);
+		const values =
+			relation.relation !== '='
+				? null
+				: (solutions ?? solvedValue(steps[steps.length - 1].after, variable));
 		return {
 			steps: rendered,
-			answer,
+			answer: values === null ? answer : shownAnswer(answer, values, variable, decimal),
 			...(summary !== undefined && { summary }),
 			...(approximate !== null && { approximate })
 		};
@@ -285,6 +293,46 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 }
 
 /**
+ * La valeur d'une forme résolue `x = valeur` (premier degré, sans étape de
+ * conclusion), ou `null`.
+ */
+function solvedValue(after: MathNode, variable: string): readonly MathNode[] | null {
+	if (after.type !== 'relation' || after.relation !== '=') return null;
+	if (after.left.type !== 'variable' || after.left.name !== variable) return null;
+	return getVariables(after.right).size === 0 ? [after.right] : null;
+}
+
+/**
+ * La ligne de réponse écrite depuis les valeurs (lot 5c, Q26) : chaque solution
+ * passe par la valeur exacte à afficher commune — `−√2/2`, `(1 − √5)/2`, et le
+ * registre décimal de l'équation (`2x = 0,6` → `x = 0,3`). La forme (`x = …`
+ * ou `S = {…}`) est celle de la conclusion ; les étapes gardent leur écriture
+ * (lot 5f).
+ */
+function shownAnswer(
+	answer: string,
+	values: readonly MathNode[],
+	variable: string,
+	decimal: boolean
+): string {
+	if (values.length === 0) return answer;
+	return solutionsLine(values, variable, decimal, answer.trimStart().startsWith('S'));
+}
+
+/** `S = ∅`, `x = …` ou `S = {… ; …}`, chaque valeur écrite pour être lue. */
+function solutionsLine(
+	values: readonly MathNode[],
+	variable: string,
+	decimal: boolean,
+	asSet: boolean
+): string {
+	if (values.length === 0) return 'S = \\emptyset';
+	const written = values.map((value) => toLatex(exactValueToShow(value, { decimal })));
+	if (written.length === 1 && !asSet) return `${variable} = ${written[0]}`;
+	return `S = \\left\\{ ${written.join(' \\,;\\, ')} \\right\\}`;
+}
+
+/**
  * Les étapes sur ℝ, puis celle qui ne garde que les solutions de l'ensemble
  * (`x = 2` pour x² = 4 sur [0 ; +∞[). La réponse est celle de cette étape.
  */
@@ -293,7 +341,8 @@ function restrictedSteps(
 	summarized: readonly RenderedStep[],
 	solutions: readonly MathNode[],
 	variable: string,
-	within: Domain
+	within: Domain,
+	decimal: boolean
 ): SolvedSteps | null {
 	const kept: MathNode[] = [];
 	for (const solution of solutions) {
@@ -301,12 +350,7 @@ function restrictedSteps(
 		if (value === null) return null;
 		if (containsValue(within, value)) kept.push(solution);
 	}
-	const answer =
-		kept.length === 0
-			? 'S = \\emptyset'
-			: kept.length === 1
-				? `${variable} = ${toLatex(kept[0])}`
-				: `S = \\left\\{ ${kept.map((k) => toLatex(k)).join(' \\,;\\, ')} \\right\\}`;
+	const answer = solutionsLine(kept, variable, decimal, false);
 	const last = (steps: readonly RenderedStep[]): RenderedStep => ({
 		id: steps.length,
 		rule: 'keep-in-interval',

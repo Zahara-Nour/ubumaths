@@ -34,21 +34,18 @@ import { toLatex } from '../../latex-generator';
 import { toCustom } from '../../custom-generator';
 import { findNodes } from '../../transforms';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
-import { tidy } from '../../tidy';
-import { tidyCriticalAbscissa } from '../../variations/critical-points';
+import { exactValueToShow } from '../../eval/exact-value';
 import { approximateSolutionsLatex } from '../approximation';
 
 /** Plus grand coefficient de période écrit (`1000k\pi`) : au-delà, la famille n’est pas écrite. */
 const MAX_PERIOD_INTEGER = 1000;
 
-/** Une valeur mise au propre (`{1/2}sqrt(2)` → `\dfrac{\sqrt{2}}{2}`, `exp(-1)` → `1/e`). */
+/**
+ * Une solution écrite pour être lue (`{1/2}sqrt(2)` → `\dfrac{\sqrt{2}}{2}`,
+ * `exp(-1)` → `1/e`) : la valeur exacte à afficher commune (lot 5c).
+ */
 function tidyValue(value: MathNode): MathNode {
-	try {
-		const abscissa = tidyCriticalAbscissa(value);
-		return abscissa === value ? tidy(value) : abscissa;
-	} catch {
-		return value;
-	}
+	return exactValueToShow(value);
 }
 
 // =============================================================================

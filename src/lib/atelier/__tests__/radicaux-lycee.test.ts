@@ -59,8 +59,8 @@ describe('√u = v, v dépendant de x : v ≥ 0 et u = v²', () => {
 		expect(latex).toMatch(/^x = /);
 		expect(latex).toContain('\\sqrt{5}');
 		expect(latex).not.toContain('S =');
-		// Même écriture que le moteur pour x² − x − 1 = 0
-		expect(latex).toBe('x = \\dfrac{1}{2} - \\dfrac{\\sqrt{5}}{2}');
+		// Une seule fraction sur le dénominateur commun (lot 5c, Q23)
+		expect(latex).toBe('x = \\dfrac{1 - \\sqrt{5}}{2}');
 	});
 });
 
@@ -164,7 +164,7 @@ describe('√ tapé sans parenthèses : la racine porte sur l’atome qui suit',
 
 	it('√2x = 4 se lit √2 · x : x = 2√2', () => {
 		expect(answer('√2x=4')).toBe(answer('sqrt(2)x=4'));
-		expect(answer('√2x=4')).toBe('x = 2\\sqrt{2}');
+		expect(answer('√2x=4')).toBe('x = 2 \\sqrt{2}');
 	});
 
 	it('√u_n = 2 se lit √(u_n) : pas de refus « plusieurs lettres »', () => {

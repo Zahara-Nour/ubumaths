@@ -50,6 +50,7 @@ import { normalizeExcludedPoints } from '../../domain/compute';
 import type { Domain } from '../../domain/types';
 import { parseStudentDomain } from '../../domain/validation/parse-student-domain';
 import { toLatex } from '../../latex-generator';
+import { exactValueToShow } from '../../eval/exact-value';
 
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { getVariables } from '../../eval/substitute';
@@ -1325,8 +1326,8 @@ export class SolveCommand extends BaseCommand {
 			values.length === 0
 				? 'S = \\emptyset'
 				: values.length === 1
-					? `${variable} = ${(only && logarithmicValueLatex(only.value, only.approximate)) ?? toLatex(values[0])}`
-					: `S = \\left\\{ ${values.map((v) => toLatex(v)).join(' \\,;\\, ')} \\right\\}`;
+					? `${variable} = ${(only && logarithmicValueLatex(only.value, only.approximate)) ?? toLatex(exactValueToShow(values[0]))}`
+					: `S = \\left\\{ ${values.map((v) => toLatex(exactValueToShow(v))).join(' \\,;\\, ')} \\right\\}`;
 		const output =
 			values.length === 0
 				? 'Pas de solution dans cet intervalle'
