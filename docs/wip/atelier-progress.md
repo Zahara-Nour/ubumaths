@@ -6,6 +6,27 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 
 # Atelier — où en est le chantier
 
+## Reprendre ici
+
+_Mis à jour le 2026-10-24, après #1692 (retrait de `/spreadsheet`) et #1697 (« Ouvrir dans Python »)._
+
+- **État** : `/spreadsheet` retiré et pont « Ouvrir dans Python » livrés sur `main`, pas en prod.
+  Aucun worktree ni PR ouverts pour l'atelier.
+- **Prochaine action (David : « fais 1 »)** : **retirer `/calc`** (décidé le 2026-10-14). D'abord
+  vérifier que l'atelier couvre ce que `/calc` offrait (saisie MathLive, clavier virtuel, étapes d'un
+  calcul simple, « Copier »), puis redirection `/calc` → `/atelier` (modèle `/cas`,
+  `redirectHandle.ts`), retrait du sitemap (`seo/sitemap-pages.ts:76`), suppression de
+  `components/calculator` et `stores/calculator.svelte.ts` **seulement s'ils ne servent nulle part
+  ailleurs** (`atelier.md` les couvre : à vérifier). Verser `atelier-saisie-naturelle.md` (arrêté au
+  2026-10-14) dans l'archive au passage. Worktree `../ubumaths-wt-retrait-calc`.
+- **Ensuite (proposé, non lancé)** : clore le chantier du tableur — verser
+  `atelier-tableur-progress.md` et ses 8 phases 0 dans `docs/archive/wip/` (prod faite, `/spreadsheet`
+  retiré ; restent les vérifications manuelles de David).
+- **En attente de David** : `pnpm deploy:prod` ; après lui, proposer la suppression de la table
+  `spreadsheets` (1 ligne, migration destructive : s'arrêter et expliquer).
+- **Plus tard, si l'usage le demande** : sens inverse Python → atelier ; « Ouvrir dans Python » pour
+  une carte `f′`.
+
 - **Ce qui est livré, et comment ça marche** : [docs/systeme/atelier.md](../systeme/atelier.md)
   (vérifié contre le code le 2026-10-10) ; syntaxe des commandes : [atelier-syntaxe.md](../systeme/atelier-syntaxe.md).
 - **Historique** (phase 1, lots et PR, décisions D1-D8) : [atelier-progress-historique.md](../archive/wip/atelier-progress-historique.md).
