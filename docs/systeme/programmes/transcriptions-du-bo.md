@@ -24,13 +24,13 @@ et de la carte des points.
 
 ## Les fichiers
 
-| Quoi                          | Où                                                                               |
-| ----------------------------- | -------------------------------------------------------------------------------- |
-| PDF officiels (noms ASCII)    | `static/programmes/` (servis tels quels, publics : textes officiels publiés)     |
-| Transcriptions lycée          | `src/lib/server/programmes/transcriptions/<niveau>.md` (`2`, `1_SPE`, `T_COMP`…) |
-| Transcriptions cycles 2, 3, 4 | `src/lib/server/programmes/transcriptions/cycle-N/` (voir ci-dessous)            |
-| Niveau → PDF et morceaux      | `src/lib/programmes/official-programmes.ts` (`OFFICIAL_PROGRAMMES`)              |
-| Documents d'accompagnement    | `docs/ref/programmes/Accompagnement/` — **hors** de cette fonctionnalité         |
+| Quoi                          | Où                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------------- |
+| PDF officiels (noms ASCII)    | `static/programmes/` (servis tels quels, publics : textes officiels publiés)                      |
+| Transcriptions lycée          | `src/lib/server/programmes/transcriptions/<niveau>.md` (`2`, `1_SPE`, `T_COMP`…)                  |
+| Transcriptions cycles 2, 3, 4 | `src/lib/server/programmes/transcriptions/cycle-2/` (et `cycle-3/`, `cycle-4/`) (voir ci-dessous) |
+| Niveau → PDF et morceaux      | `src/lib/programmes/official-programmes.ts` (`OFFICIAL_PROGRAMMES`)                               |
+| Documents d'accompagnement    | `docs/ref/programmes/Accompagnement/` — **hors** de cette fonctionnalité                          |
 
 Correspondance : CP-CE2 → cycle 2 ; CM1-6e → cycle 3 ; 5e-3e → cycle 4 ; 1_GEN → enseignement scientifique ;
 T_GEN → aucun texte (pas de maths au tronc commun).
