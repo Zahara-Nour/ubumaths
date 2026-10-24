@@ -1,0 +1,42 @@
+### Cours préparatoire
+
+Avant d’apprendre à extraire de l’information à partir de tableaux ou de graphiques, les élèves apprennent au CP à organiser sous la forme d’un tableau ou d’un graphique des données qu’ils ont eux-mêmes recueillies. L’enquête porte sur les valeurs (de deux à cinq) prises par un caractère qualitatif et permet de déterminer l’effectif associé à chacune d’elles.
+
+###### Objectifs d’apprentissage
+
+- Collecter des données et présenter ces données sous forme d’un tableau ou d’un diagramme en barres.
+
+###### Exemples de réussite
+
+L’élève apprend à effectuer un recueil de données pour des populations de moins de quarante individus, à partir d’une question du type : « Quel est ton animal préféré ? ».
+
+L’élève sait produire et utiliser un outil lui permettant de recueillir les réponses de l’ensemble de la population étudiée. Par exemple, celles fournies par l’ensemble des élèves de la classe ou de deux classes à la question : « Parmi ces quatre fruits, quel est ton fruit préféré : orange, fraise, banane ou kiwi ? »
+
+*(Illustration : voir le PDF, page 37.)*
+
+L’élève sait ensuite organiser dans un tableau les données recueillies.
+
+| Fruit préféré | Nombre d’élèves |
+| --- | --- |
+| Orange | 4 |
+| Fraise | 12 |
+| Banane | 8 |
+| Kiwi | 2 |
+
+L’élève sait construire un diagramme en barres restituant les résultats de son enquête. Une étape préalable à la représentation graphique peut consister à réaliser une représentation des données en trois dimensions avec des barres constituées de cubes, à raison d’un cube par individu.
+
+*(Illustration : voir le PDF, page 37.)*
+
+À chacune des étapes, l’élève sait interpréter, lire et communiquer sur les données disponibles en utilisant les expressions: « le plus », « le moins », « le plus grand », « le plus petit », « autant que », « plus que » ou « moins que ».
+
+###### Objectifs d’apprentissage
+
+- Construire et compléter un tableau à double entrée.
+
+###### Exemples de réussite
+
+L’élève sait qu’un tableau à double entrée permet de représenter tous les couples qu’il est possible de former à partir de deux critères, par exemple la forme et la couleur.
+
+L’élève sait qu’une ligne et une colonne d’un tableau à double entrée permettent d’identifier le contenu de la case située à leur intersection. L’élève sait compléter des tableaux du type de celui qui est présenté ci-dessous :
+
+*(Illustration : voir le PDF, page 37.)*

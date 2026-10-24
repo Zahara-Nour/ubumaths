@@ -1,8 +1,8 @@
 /**
  * Transcriptions ubumark des programmes officiels
  * ===============================================
- * Un fichier `.md` par morceau dans `./transcriptions/` (texte du BO, mot à
- * mot). Un niveau met ses morceaux bout à bout (cf. `OFFICIAL_PROGRAMMES`) ;
+ * Un fichier `.md` par morceau sous `./transcriptions/` (texte du BO, mot à
+ * mot ; un sous-dossier par cycle). Un niveau met ses morceaux bout à bout (cf. `OFFICIAL_PROGRAMMES`) ;
  * tant qu'un morceau manque, le niveau n'a pas de transcription.
  *
  * @module server/programmes/transcriptions
@@ -13,10 +13,10 @@ import { OFFICIAL_PROGRAMMES } from '$lib/programmes/official-programmes';
 
 // Constantes
 
-/** Les morceaux, par nom de fichier sans `.md` */
+/** Les morceaux, par chemin sans `.md` (`2`, `cycle-4/5-nombres`…) */
 const SOURCES: Record<string, string> = Object.fromEntries(
 	Object.entries(
-		import.meta.glob<string>('./transcriptions/*.md', {
+		import.meta.glob<string>('./transcriptions/**/*.md', {
 			query: '?raw',
 			import: 'default',
 			eager: true

@@ -8,7 +8,8 @@
  * Les cycles 2, 3 et 4 n'ont qu'un PDF pour trois niveaux, rangé par domaine
  * puis par niveau : aucune page n'est « celle » d'un niveau, le PDF s'ouvre
  * au sommaire. La transcription, elle, est découpée par niveau : les parties
- * communes du cycle, puis la partie du niveau dans chaque domaine.
+ * communes du cycle, puis, dans chaque domaine, son introduction commune et
+ * la partie du niveau (un dossier `cycle-N/` par cycle).
  *
  * @module programmes/official-programmes
  */
@@ -23,8 +24,8 @@ export interface OfficialProgramme {
 	/** Adresse du PDF (fichier de `static/programmes/`) */
 	pdfUrl: string;
 	/**
-	 * Transcriptions ubumark à mettre bout à bout, dans l'ordre (noms de
-	 * fichiers sans `.md` dans `src/lib/server/programmes/transcriptions/`)
+	 * Transcriptions ubumark à mettre bout à bout, dans l'ordre (chemins sans
+	 * `.md` sous `src/lib/server/programmes/transcriptions/`, ex. `cycle-4/5-nombres`)
 	 */
 	transcription: readonly string[];
 }
@@ -32,20 +33,63 @@ export interface OfficialProgramme {
 // Constantes
 
 const CYCLE_2 = 'Programme de mathématiques du cycle 2';
-const CYCLE_3 = 'Programme de mathématiques du cycle 3';
-const CYCLE_4 = 'Programme de mathématiques du cycle 4';
+const CYCLE_3 = 'Programme de mathématiques pour le cycle 3';
+const CYCLE_4 = 'Programme de mathématiques pour le cycle 4';
+
+/** Les domaines de chaque cycle, dans l'ordre du BO */
+const CYCLE_DOMAINS = {
+	2: ['nombres', 'grandeurs', 'espace', 'donnees'],
+	3: ['nombres', 'grandeurs', 'espace', 'donnees', 'proportionnalite', 'informatique'],
+	4: ['nombres', 'espace', 'donnees', 'fonctions', 'informatique']
+} as const;
 
 /** Le programme de chaque niveau ; `null` : pas de mathématiques à ce niveau */
 export const OFFICIAL_PROGRAMMES: Record<GradeCode, OfficialProgramme | null> = {
-	CP: { title: CYCLE_2, pdfUrl: '/programmes/cycle-2.pdf', transcription: ['cycle-2', 'CP'] },
-	CE1: { title: CYCLE_2, pdfUrl: '/programmes/cycle-2.pdf', transcription: ['cycle-2', 'CE1'] },
-	CE2: { title: CYCLE_2, pdfUrl: '/programmes/cycle-2.pdf', transcription: ['cycle-2', 'CE2'] },
-	CM1: { title: CYCLE_3, pdfUrl: '/programmes/cycle-3.pdf', transcription: ['cycle-3', 'CM1'] },
-	CM2: { title: CYCLE_3, pdfUrl: '/programmes/cycle-3.pdf', transcription: ['cycle-3', 'CM2'] },
-	'6': { title: CYCLE_3, pdfUrl: '/programmes/cycle-3.pdf', transcription: ['cycle-3', '6'] },
-	'5': { title: CYCLE_4, pdfUrl: '/programmes/cycle-4.pdf', transcription: ['cycle-4', '5'] },
-	'4': { title: CYCLE_4, pdfUrl: '/programmes/cycle-4.pdf', transcription: ['cycle-4', '4'] },
-	'3': { title: CYCLE_4, pdfUrl: '/programmes/cycle-4.pdf', transcription: ['cycle-4', '3'] },
+	CP: {
+		title: CYCLE_2,
+		pdfUrl: '/programmes/cycle-2.pdf',
+		transcription: cycleTranscription(2, 'CP')
+	},
+	CE1: {
+		title: CYCLE_2,
+		pdfUrl: '/programmes/cycle-2.pdf',
+		transcription: cycleTranscription(2, 'CE1')
+	},
+	CE2: {
+		title: CYCLE_2,
+		pdfUrl: '/programmes/cycle-2.pdf',
+		transcription: cycleTranscription(2, 'CE2')
+	},
+	CM1: {
+		title: CYCLE_3,
+		pdfUrl: '/programmes/cycle-3.pdf',
+		transcription: cycleTranscription(3, 'CM1')
+	},
+	CM2: {
+		title: CYCLE_3,
+		pdfUrl: '/programmes/cycle-3.pdf',
+		transcription: cycleTranscription(3, 'CM2')
+	},
+	'6': {
+		title: CYCLE_3,
+		pdfUrl: '/programmes/cycle-3.pdf',
+		transcription: cycleTranscription(3, '6')
+	},
+	'5': {
+		title: CYCLE_4,
+		pdfUrl: '/programmes/cycle-4.pdf',
+		transcription: cycleTranscription(4, '5')
+	},
+	'4': {
+		title: CYCLE_4,
+		pdfUrl: '/programmes/cycle-4.pdf',
+		transcription: cycleTranscription(4, '4')
+	},
+	'3': {
+		title: CYCLE_4,
+		pdfUrl: '/programmes/cycle-4.pdf',
+		transcription: cycleTranscription(4, '3')
+	},
 	'2': {
 		title: 'Programme de mathématiques de la classe de seconde générale et technologique',
 		pdfUrl: '/programmes/2de.pdf',
@@ -95,3 +139,17 @@ export const OFFICIAL_PROGRAMMES: Record<GradeCode, OfficialProgramme | null> = 
 		transcription: ['T_TECHNO']
 	}
 };
+
+// Functions
+
+/**
+ * Les morceaux d'un niveau de cycle : les parties communes du cycle, puis,
+ * domaine par domaine, son introduction (commune) et la partie du niveau
+ */
+function cycleTranscription(cycle: 2 | 3 | 4, grade: string): string[] {
+	const dir = `cycle-${cycle}`;
+	return [
+		`${dir}/commun`,
+		...CYCLE_DOMAINS[cycle].flatMap((domain) => [`${dir}/${domain}`, `${dir}/${grade}-${domain}`])
+	];
+}
