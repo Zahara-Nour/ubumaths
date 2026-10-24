@@ -911,3 +911,9 @@ Décision déjà prise au § 19 : une expression littérale tapée dans Calcul e
 - 3 attentes de l'ancien affichage brut mises à jour (lecture juste, but inchangé) : `sin^2(x) → sin(x)^2` (forme unique de `tidy`), `x m → m x`, `2πr m → 2πmr` (lettres dans l'ordre alphabétique). **À montrer à David.**
 - Suite serveur verte (60 676), client Atelier vert (645), `check:incremental` 0 erreur.
 - **Revue `code-reviewer` (sonnet)** : un finding, corrigé par #1682 (§ 64) — `ln(x) − ln(x)`, `1/x − 1/x` s'affichaient `0` et se gardaient en valeur. Rebasé sur `main` après #1682 ; tests ajoutés : « Garder » `ln(x) − ln(x)` et `1/x − 1/x` range une fonction, `x − x` la valeur 0. Suite serveur verte (60 822), client Atelier vert, `check:incremental` 0 erreur.
+
+## 66. Affichage de 5d validé ; lot 5e (D4), phase 0 : sonde (2026-10-24, à valider par David)
+
+- **Affichage de 5d** (David : « ok pour l'affichage de 5d ») : `sin^2(x) → sin(x)^2`, `x m → m x`, `2πr m → 2πmr` acceptés.
+- **Sonde D4** (code sur `origin/main`, prod en lecture) : la forme finale n'est réglable que pour `generatedSteps` de `kind: 'simplify'` (`intent`, `template-schema.ts:220, 493`) ; `differentiate` (`renderDifferentiate`, `correction-generator.ts:606`, toujours `withTidyStep` → `finalDerivative`) et `integrate` n'ont aucun réglage. **Aucun des 1 102 modèles de la prod n'utilise `generatedSteps`** (Mode B), quel que soit le `kind`. Les 41 modèles de dérivée et de primitive (4 publiés) écrivent leur correction à la main avec `{{eval}}` (39 sur 41) ; aucun n'a de `requiredForm`. Le réglage de D4 (§ 20) et sa garde E1 n'auraient donc **aucun appelant** aujourd'hui (même cas que Q20, reportée).
+- **Q32** — 5e : (a) le reporter jusqu'au premier modèle de dérivée ou de primitive en Mode B (reco, comme Q20) ; (b) le coder maintenant (Zod strict et souple, éditeur `MySelect`, `renderDifferentiate`/`renderIntegrate`, test E1 sur un modèle d'essai).
