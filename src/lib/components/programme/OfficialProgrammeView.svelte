@@ -6,7 +6,8 @@
 	  sélection), plus un lien pour l'ouvrir dans un onglet (aperçu médiocre
 	  sur iPhone / iPad) et un lien de téléchargement ;
 	- `texte` : sa transcription ubumark, ou un message tant qu'elle n'est pas
-	  écrite.
+	  écrite ; grandes parties et thèmes en couleur d'accent, pour se repérer
+	  dans un texte long, sans plus.
 	`official` null : pas de mathématiques à ce niveau (terminale générale).
 
 	@module components/programme/OfficialProgrammeView
@@ -57,7 +58,7 @@
 			<iframe src={official.pdfUrl} title={official.title} class="h-[80vh] w-full rounded-lg border"
 			></iframe>
 		{:else if transcription}
-			<article class="rounded-lg border p-6">
+			<article class="bo-texte rounded-lg border p-6">
 				<MarkdownRenderer content={transcription} lexiconGrade={null} />
 			</article>
 		{:else}
@@ -67,3 +68,17 @@
 		{/if}
 	</div>
 {/if}
+
+<style>
+	/* Titres de la transcription (classes `md-hN` de HeadingNode) : une seule couleur
+	   d'accent pour les deux premiers niveaux, filet sous les grandes parties ; les
+	   niveaux suivants gardent la couleur du texte (taille et graisse suffisent) */
+	.bo-texte :global(.md-h2),
+	.bo-texte :global(.md-h3) {
+		color: var(--color-curve-1);
+	}
+	.bo-texte :global(.md-h2) {
+		border-bottom: 1px solid var(--color-border);
+		padding-bottom: 0.25rem;
+	}
+</style>
