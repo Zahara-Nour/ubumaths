@@ -1,6 +1,6 @@
 /**
- * Dessin d'un Mathou, direction « AB3 » : le chat-poire bonhomme-digne, gidouille sur la panse,
- * trait souple et aplats, sur une affiche jaune avec auréole (viewBox 200 × 200).
+ * Dessin d'un Mathou, direction « AB3 » : le chat-poire bonhomme-digne, trait souple et aplats,
+ * sur une affiche jaune avec auréole (viewBox 200 × 200).
  *
  * Fonctions pures : elles rendent des chemins SVG et des couleurs ; MathouAvatar.svelte assemble.
  * Le gabarit dépend du stade (la panse gonfle, la tête rapetisse) ; la race ne change que les
@@ -34,8 +34,8 @@ export interface StageTemplate {
 	hw: number;
 	/** Demi-largeur de la panse */
 	bw: number;
-	/** Rayon et nombre de tours de la gidouille */
-	gid: [number, number];
+	/** Rayon du croissant de lune posé sur la panse (motif du Lunaire) */
+	moon: number;
 	eye: number;
 	foot: number;
 	/** 1 = chaton (pieds en dedans et dépareillés, grands yeux), 0 = adulte ; entre les deux pendant
@@ -57,7 +57,6 @@ export interface PearGeometry {
 	earsOuter: [string, string];
 	tail: string;
 	feet: Ellipse[];
-	gidouille: string;
 	shade: string;
 }
 
@@ -99,7 +98,6 @@ export interface Dressing {
 	/** Fourrure autour de chaque œil, et du museau */
 	eyeFur: [string, string];
 	muzzle: string;
-	gidouille: { color: string; width: number };
 	shadeFill: string;
 	shadeOpacity: number;
 }
@@ -114,14 +112,14 @@ export const SILHOUETTE_FILL = 'hsl(40, 28%, 58%)';
 export const SILHOUETTE_LINE = 'hsl(40, 25%, 46%)';
 
 const STAGES: Record<MathouStage, StageTemplate> = {
-	chaton: { top: 58, bot: 174, hw: 38, bw: 48, gid: [19, 2], eye: 6, foot: 10.5, youth: 1 },
-	matou: { top: 38, bot: 178, hw: 26, bw: 64, gid: [32, 3], eye: 4.4, foot: 13, youth: 0 },
+	chaton: { top: 58, bot: 174, hw: 38, bw: 48, moon: 19, eye: 6, foot: 10.5, youth: 1 },
+	matou: { top: 38, bot: 178, hw: 26, bw: 64, moon: 32, eye: 4.4, foot: 13, youth: 0 },
 	grand_matou: {
 		top: 50,
 		bot: 180,
 		hw: 20,
 		bw: 82,
-		gid: [44, 3.6],
+		moon: 44,
 		eye: 3.6,
 		foot: 15,
 		youth: 0
@@ -144,7 +142,7 @@ export function blendStages(from: StageTemplate, to: StageTemplate, t: number): 
 		bot: lerp(from.bot, to.bot, t),
 		hw: lerp(from.hw, to.hw, t),
 		bw: lerp(from.bw, to.bw, t),
-		gid: [lerp(from.gid[0], to.gid[0], t), lerp(from.gid[1], to.gid[1], t)],
+		moon: lerp(from.moon, to.moon, t),
 		eye: lerp(from.eye, to.eye, t),
 		foot: lerp(from.foot, to.foot, t),
 		youth: lerp(from.youth, to.youth, t)
@@ -169,17 +167,6 @@ export function ellipsePath(cx: number, cy: number, rx: number, ry: number, rota
 	return `M${r1(cx - dx)} ${r1(cy - dy)}A${rx} ${ry} ${rotate} 1 0 ${r1(cx + dx)} ${r1(cy + dy)}A${rx} ${ry} ${rotate} 1 0 ${r1(cx - dx)} ${r1(cy - dy)}Z`;
 }
 
-/** Spirale d'Archimède : la gidouille */
-export function spiral(cx: number, cy: number, rMax: number, turns: number, steps = 80): string {
-	const pts: string[] = [];
-	for (let i = 0; i <= steps; i++) {
-		const t = i / steps;
-		const a = t * turns * Math.PI * 2;
-		pts.push(`${r1(cx + rMax * t * Math.cos(a))} ${r1(cy + rMax * t * Math.sin(a))}`);
-	}
-	return 'M' + pts.join(' L');
-}
-
 /** Bandes tigrées en croissants effilés, partant des deux flancs */
 function tabby(x0: number, x1: number, y0: number, y1: number, step: number, len: number): string {
 	const slope = 5;
@@ -200,6 +187,32 @@ function star(cx: number, cy: number, r: number): string {
 		pts.push(`${r1(cx + rr * Math.cos(a))} ${r1(cy + rr * Math.sin(a))}`);
 	}
 	return `M${pts.join('L')}Z`;
+}
+
+/**
+ * Une volute : une tige courbe qui finit en crosse enroulée. `k` = côté vers lequel elle part
+ * (1 : vers la droite), `r` = rayon de la crosse ; `mirror` la retourne de haut en bas.
+ */
+function volute(x: number, y: number, k: number, r: number, mirror = false): string {
+	const v = mirror ? -1 : 1;
+	const x1 = x + k * r * 3;
+	return (
+		`M${r1(x)} ${r1(y)}C${r1(x + k * r)} ${r1(y - v * r * 1.6)} ${r1(x1 - k * r)} ${r1(y - v * r * 1.8)} ${r1(x1)} ${r1(y - v * r * 0.6)}` +
+		`A${r1(r)} ${r1(r)} 0 1 ${k * v > 0 ? 1 : 0} ${r1(x1 - k * r * 1.2)} ${r1(y + v * r * 0.6)}` +
+		`A${r1(r * 0.55)} ${r1(r * 0.55)} 0 1 ${k * v > 0 ? 1 : 0} ${r1(x1 - k * r * 0.3)} ${r1(y - v * r * 0.1)}`
+	);
+}
+
+/** Arabesques : volutes alternées partant des deux flancs, de l'épaule au bas du corps */
+function arabesques(cx: number, bw: number, y0: number, y1: number, s: number): string {
+	let d = '';
+	const r = 4.6 * s;
+	for (let y = y0 + 8 * s, row = 0; y < y1 - 6 * s; y += 19 * s, row++) {
+		const mirror = row % 2 === 1;
+		d += volute(cx - bw * 1.02, y, 1, r, mirror);
+		d += volute(cx + bw * 1.02, y + 9 * s, -1, r, !mirror);
+	}
+	return d;
 }
 
 /** Le corps en poire, la tête au sommet, et tout ce qui s'y accroche */
@@ -264,7 +277,6 @@ export function pearGeometry(stage: MathouStage | StageTemplate): PearGeometry {
 		earsInner: [earIn(-1), earIn(1)],
 		tail,
 		feet,
-		gidouille: spiral(cx, wy - 4, st.gid[0], st.gid[1]),
 		shade
 	};
 }
@@ -294,7 +306,6 @@ export function dressing(race: MathouRace, g: PearGeometry): Dressing {
 		feet: [P, P],
 		eyeFur: [P, P],
 		muzzle: P,
-		gidouille: { color: lineOn(P), width: 3.4 },
 		shadeFill: isDark(P) ? 'hsl(220, 22%, 24%)' : INK,
 		shadeOpacity: isDark(P) ? 1 : 0.16
 	};
@@ -338,7 +349,6 @@ export function dressing(race: MathouRace, g: PearGeometry): Dressing {
 			layers.push({ d: muzzle, fill: S });
 			d.feet = [S, S];
 			d.muzzle = S;
-			d.gidouille = { color: INK, width: 3.4 };
 			break;
 		case 'pointes':
 			// Masque, oreilles, pieds et queue foncés ; corps crème ombré vers le bas
@@ -355,9 +365,18 @@ export function dressing(race: MathouRace, g: PearGeometry): Dressing {
 			d.eyeFur = [S, S];
 			d.muzzle = S;
 			break;
-		case 'gidouille':
-			d.gidouille = { color: S, width: 7.5 * Math.max(s, 0.85) };
+		case 'arabesque':
+			// Fines volutes sur les flancs et une au front ; la panse reste nue
+			layers.push({
+				d:
+					arabesques(cx, bw, sy, bot, s) +
+					volute(cx - 4.8 * h, top + (g.hy - top) * 0.35, 1, 3.2 * h, true),
+				fill: 'none',
+				stroke: S,
+				width: r1(2.4 * Math.max(s, 0.8))
+			});
 			d.earsInner = [S, S];
+			d.tailTip = S;
 			break;
 		case 'ecaille':
 			layers.push({
@@ -406,7 +425,7 @@ export function dressing(race: MathouRace, g: PearGeometry): Dressing {
 			d.tailRings = T3;
 			break;
 		case 'arlequin': {
-			// Losanges de cabaret sur la panse, de part et d'autre de la gidouille
+			// Losanges de cabaret sur la panse, de part et d'autre du milieu
 			let red = '';
 			let black = '';
 			const dw = 11 * s;
@@ -428,7 +447,6 @@ export function dressing(race: MathouRace, g: PearGeometry): Dressing {
 			layers.push({ d: `M0 0H200V${r1(sy + 4)}H0Z`, fill: P });
 			d.tailRings = S;
 			d.ears = [S, T3];
-			d.gidouille = { color: INK, width: 3.4 };
 			break;
 		}
 		case 'masque':
@@ -502,12 +520,11 @@ export function dressing(race: MathouRace, g: PearGeometry): Dressing {
 			layers.push({ d: muzzle, fill: S });
 			d.feet = [S, S];
 			d.muzzle = S;
-			d.gidouille = { color: INK, width: 3.4 };
 			d.tailTip = S;
 			break;
 		case 'plastron': {
-			// Croissant de lune qui berce la gidouille, cornes en haut
-			const gr = g.stage.gid[0];
+			// Croissant de lune sur la panse, cornes en haut
+			const gr = g.stage.moon;
 			const gy = wy - 4;
 			layers.push({ d: ellipsePath(cx, gy + gr * 0.18, gr * 1.38, gr * 1.3), fill: S });
 			layers.push({ d: ellipsePath(cx, gy - gr * 0.12, gr * 1.22, gr * 1.18), fill: P });

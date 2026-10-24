@@ -16,7 +16,7 @@ acceptées : « Bigarré », « l'Écumeur d'Arêtes » ; « Al Jabr » devenu �
 | Arithmétique              | tigré roux        | le Divisionnaire Euclidien |
 | Nombres complexes         | smoking           | l'Imaginaire Eulérien      |
 | Proportionnalité          | siamois           | le Linéen                  |
-| Algèbre                   | gidouille rouge   | le Al Jabr Oriental        |
+| Algèbre                   | arabesques rouges | le Al Jabr Oriental        |
 | Fonctions                 | chartreux         | le Chartreux de Yoyolande  |
 | Intégration               | écaille           | le Mesuré Riemannien       |
 | Équations différentielles | tacheté           | le Moucheté Newtonien      |

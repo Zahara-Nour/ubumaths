@@ -5,7 +5,12 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import MathouAvatar from '../MathouAvatar.svelte';
-import { MATHOU_RACES, MATHOU_RACE_COUNT, normalizeRaceIndex } from '../mathou-races';
+import {
+	MATHOU_RACES,
+	MATHOU_RACE_COUNT,
+	MATHOU_STAGES,
+	normalizeRaceIndex
+} from '../mathou-races';
 import { pearGeometry } from '../mathou-dessin';
 
 function svgOf(container: HTMLElement): SVGSVGElement {
@@ -126,12 +131,6 @@ describe('MathouAvatar', () => {
 				expect(layers, race.name).toEqual([]);
 				continue;
 			}
-			if (race.pattern === 'gidouille') {
-				// le motif EST la gidouille : épaisse, de la couleur du motif
-				const gid = svg.querySelector('[data-part="gidouille"]');
-				expect(gid?.getAttribute('stroke'), race.name).toBe(race.secondary);
-				continue;
-			}
 			expect(layers.length, race.name).toBeGreaterThan(0);
 			// couleur du motif : en aplat, en trait, ou via le dégradé du fumé
 			const gradientIds = [...svg.querySelectorAll('radialGradient')]
@@ -148,6 +147,46 @@ describe('MathouAvatar', () => {
 					gradientIds.includes(el.getAttribute('fill') ?? '')
 			);
 			expect(painted.length, race.name).toBeGreaterThan(0);
+		}
+	});
+
+	it('aucune gidouille sur la panse : chaque race, chaque stade, en sieste et en silhouette', async () => {
+		const cases = [
+			...MATHOU_STAGES.flatMap((stage) =>
+				MATHOU_RACES.map((_, raceIndex) => ({ raceIndex, stage, asleep: false, silhouette: false }))
+			),
+			...MATHOU_STAGES.map((stage) => ({ raceIndex: 4, stage, asleep: true, silhouette: false })),
+			...MATHOU_STAGES.map((stage) => ({ raceIndex: 4, stage, asleep: false, silhouette: true }))
+		];
+		for (const props of cases) {
+			const { container } = await render(MathouAvatar, { ...props, label: 'x' });
+			const svg = svgOf(container);
+			const where = `${MATHOU_RACES[props.raceIndex].name}, ${props.stage}`;
+			expect(svg.querySelector('[data-part="gidouille"]'), where).toBeNull();
+			// la gidouille en pointillé de la silhouette
+			expect(svg.querySelector('[stroke-dasharray="2 5"]'), where).toBeNull();
+		}
+	});
+
+	it('le Al Jabr Oriental a les yeux vairons, bleu et cuivre ; les autres races deux yeux pareils', async () => {
+		for (let i = 0; i < MATHOU_RACE_COUNT; i++) {
+			const race = MATHOU_RACES[i];
+			const { container } = await render(MathouAvatar, {
+				raceIndex: i,
+				stage: 'matou',
+				label: 'x'
+			});
+			const irises = [
+				...svgOf(container).querySelectorAll('[data-part="yeux"] > path[data-part="iris"]')
+			].map((el) => el.getAttribute('fill'));
+			expect(irises.length, race.name).toBe(2);
+			if (race.name === 'le Al Jabr Oriental') {
+				expect(race.pattern).toBe('arabesque');
+				expect(irises[0], race.name).not.toBe(irises[1]);
+				expect(irises, race.name).toEqual([race.eyes, race.eyesRight]);
+			} else {
+				expect(irises[0], race.name).toBe(irises[1]);
+			}
 		}
 	});
 

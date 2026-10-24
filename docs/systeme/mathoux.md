@@ -203,7 +203,7 @@ le Palotin demande donc le résumé **après l'affichage**, une fois par montage
 ## Les dessins
 
 Direction **AB3**, choisie par David le 2026-10-18 dans l'exploration graphique : le **chat-poire
-bonhomme-digne**, gidouille sur la panse, trait souple et aplats, posé sur une **affiche jaune**
+bonhomme-digne**, panse nue (gidouille retirée par David le 2026-10-24), trait souple et aplats, posé sur une **affiche jaune**
 (pastille arrondie, viewBox 200 × 200) avec une **auréole** derrière la tête. Le dessin porte son
 propre fond : il se lit pareil en clair et en sombre.
 
@@ -215,13 +215,13 @@ propre fond : il se lit pareil en clair et en sombre.
   royale, solennel (paupières mi-closes), couronne, fraise et bâton dans une **gloire** rayonnante.
 - **Sieste** : yeux fermés, bonnet de nuit rayé, lune, « Zzz » en traits ; le grand matou garde sa
   fraise, le bonnet remplace la couronne.
-- **Silhouette** (« à découvrir ») : forme unie sable éteint, gidouille en pointillé, auréole en
+- **Silhouette** (« à découvrir ») : forme unie sable éteint, auréole en
   tirets ; aucune couleur de race (ni pelage, ni motif, ni auréole).
 - **Races** (`mathou-races.ts`, noms validés par David le 2026-10-18, de « le Noir de Nombrilie »
   à « le Tigré de Glitchistan ») : 19 couples pelage + motif distincts — uni noir,
-  tigré roux, smoking, pointes siamoises, gidouille rouge épaisse, chartreux uni, écaille, tacheté,
+  tigré roux, smoking, pointes siamoises, arabesques rouges sur les flancs et au front avec yeux vairons (bleu et cuivre, seule race aux yeux dépareillés : `eyesRight`), chartreux uni, écaille, tacheté,
   tricolore, arlequin (losanges), masque de bandit, marbré, fumé, van, chaussettes, bicolore,
-  croissant de lune autour de la gidouille, étoile au front, tigré argent. L'auréole varie (rouge
+  croissant de lune sur la panse, étoile au front, tigré argent. L'auréole varie (rouge
   de Steinlen, bleu nuit, vert bouteille, violet) pour le contraste avec le pelage.
 - `mathou-dessin.ts` est pur (chemins et couleurs) ; `MathouAvatar.svelte` assemble. Les ids
   internes (découpes, dégradé du fumé) sont préfixés par `$props.id()`. Environ 8 Ko de SVG par
