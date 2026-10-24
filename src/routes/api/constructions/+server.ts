@@ -1,6 +1,6 @@
 /**
  * API Route: /api/constructions
- * GET - List constructions (user's own + public)
+ * GET - List constructions (toutes pour le prof, les publiées pour les autres)
  * POST - Create new construction
  */
 
@@ -8,7 +8,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
-import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
+import {
+	CONSTRUCTION_AUTHOR_ROLES,
+	CONSTRUCTION_COLUMNS,
+	canAuthorConstructions
+} from '$lib/server/constructions-access';
 import { constructionScriptSchema } from '$lib/constructions';
 import type { TablesInsert } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
@@ -26,11 +30,7 @@ const logger = createServerLogger('api/constructions/+server');
  */
 const listConstructionsQuerySchema = z.object({
 	page: z.coerce.number().int().min(1).default(1),
-	limit: z.coerce.number().int().min(1).max(100).default(20),
-	onlyMine: z
-		.enum(['true', 'false'])
-		.default('false')
-		.transform((v) => v === 'true')
+	limit: z.coerce.number().int().min(1).max(100).default(20)
 });
 
 /**
@@ -65,17 +65,16 @@ const createConstructionSchema = z
 
 /**
  * GET /api/constructions
- * Get constructions (user's own + public)
+ * Toutes pour le prof, brouillons compris ; les publiées pour les autres
  * Authenticated users only
  */
 export const GET: RequestHandler = async ({ locals, url }) => {
-	const { user } = await requireAuth(locals);
+	const { profile } = await requireAuth(locals);
 
 	// Validate query parameters
 	const queryResult = listConstructionsQuerySchema.safeParse({
 		page: url.searchParams.get('page') ?? undefined,
-		limit: url.searchParams.get('limit') ?? undefined,
-		onlyMine: url.searchParams.get('onlyMine') ?? undefined
+		limit: url.searchParams.get('limit') ?? undefined
 	});
 
 	if (!queryResult.success) {
@@ -85,10 +84,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		throw error(400, `Paramètres invalides : ${errorMsg}`);
 	}
 
-	const { page, limit, onlyMine } = queryResult.data;
+	const { page, limit } = queryResult.data;
 	const offset = (page - 1) * limit;
 
-	// Build query - user's own constructions OR public constructions
 	let query = locals.supabase.from('constructions').select(
 		`
 			id,
@@ -97,19 +95,13 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			format,
 			is_public,
 			created_at,
-			updated_at,
-			author_id
+			updated_at
 		`,
 		{ count: 'exact' }
 	);
 
-	if (onlyMine) {
-		// Only user's constructions
-		query = query.eq('author_id', user.id);
-	} else {
-		// User's own OR public constructions
-		query = query.or(`author_id.eq.${user.id},is_public.eq.true`);
-	}
+	// La RLS tient la même règle ; le filtre la double.
+	if (!canAuthorConstructions(profile.role)) query = query.eq('is_public', true);
 
 	query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1);
 
@@ -136,10 +128,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 /**
  * POST /api/constructions
  * Create a new construction
- * Prof et admin seuls (la RLS tient la même règle, migration 20261022200000)
+ * Prof seul (la RLS tient la même règle, migration 20261024120000)
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
+	await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	// Parse and validate request body
 	let body: unknown;
@@ -171,10 +163,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 			// `script` est une colonne jsonb : conversion explicite plutôt que cast.
 			script: toJson(format === 'json' ? script : {}),
 			dsl_script: format === 'dsl' ? (dsl_script ?? null) : null,
-			is_public,
-			author_id: user.id
+			is_public
 		} satisfies TablesInsert<'constructions'>)
-		.select()
+		.select(CONSTRUCTION_COLUMNS)
 		.single();
 
 	// Les étiquettes ne sont plus une colonne : elles vont dans `resource_tags`.

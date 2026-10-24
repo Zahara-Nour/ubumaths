@@ -1,8 +1,8 @@
 <!--
 	Constructions List Page
 	=======================
-	Lists all constructions (user's own + public from others)
-	with links to view/play each construction
+	Le prof voit les constructions publiées et ses brouillons, avec les actions ;
+	les autres comptes, les publiées seules (décision de David, 2026-10-24).
 -->
 
 <script lang="ts">
@@ -25,18 +25,18 @@
 		FileUp
 	} from '@lucide/svelte';
 
+	type Construction = PageData['constructions'][number];
+
 	let { data }: { data: PageData } = $props();
 
-	// Separate user's constructions from public ones by others
-	let myConstructions = $derived(data.constructions.filter((c) => c.author_id === data.userId));
-	let publicConstructions = $derived(
-		data.constructions.filter((c) => c.author_id !== data.userId && c.is_public)
-	);
+	let publishedConstructions = $derived(data.constructions.filter((c) => c.is_public));
+	// Vide pour qui n'est pas prof : le serveur et la RLS ne lui rendent que les publiées.
+	let draftConstructions = $derived(data.constructions.filter((c) => !c.is_public));
 
 	/**
 	 * Handle construction deletion
 	 */
-	async function handleDelete(construction: (typeof data.constructions)[0]) {
+	async function handleDelete(construction: Construction) {
 		if (
 			!confirm(
 				`Etes-vous sur de vouloir supprimer la construction "${construction.title}" ?\n\nCette action est irreversible.`
@@ -78,6 +78,93 @@
 	}
 </script>
 
+{#snippet constructionCard(construction: Construction)}
+	<Card.Root class="transition-shadow hover:shadow-md">
+		<Card.Header class="pb-3">
+			<div class="flex items-start justify-between gap-2">
+				<div class="flex-1 space-y-1">
+					<Card.Title class="line-clamp-1 text-lg">{construction.title}</Card.Title>
+					<div class="flex items-center gap-2">
+						{#if data.canAuthor}
+							<Badge
+								variant={construction.format === 'dsl' ? 'default' : 'outline'}
+								class="text-xs"
+							>
+								{construction.format === 'dsl' ? 'DSL' : 'JSON'}
+							</Badge>
+						{/if}
+						{#if construction.is_public}
+							<Badge variant="secondary" class="gap-1">
+								<Globe class="h-3 w-3" />
+								Publiée
+							</Badge>
+						{:else}
+							<Badge variant="outline" class="gap-1">
+								<Lock class="h-3 w-3" />
+								Brouillon
+							</Badge>
+						{/if}
+					</div>
+				</div>
+
+				{#if data.canAuthor}
+					<DropdownMenu.Root>
+						<DropdownMenu.Trigger>
+							{#snippet child({ props })}
+								<Button {...props} variant="ghost" size="icon" class="h-8 w-8">
+									<MoreVertical class="h-4 w-4" />
+								</Button>
+							{/snippet}
+						</DropdownMenu.Trigger>
+						<DropdownMenu.Content align="end">
+							<DropdownMenu.Item>
+								<a href="/constructions/{construction.id}" class="flex items-center">
+									<Play class="mr-2 h-4 w-4" />
+									Visualiser
+								</a>
+							</DropdownMenu.Item>
+							<DropdownMenu.Item>
+								<a href="/constructions/{construction.id}/edit" class="flex items-center">
+									<Edit class="mr-2 h-4 w-4" />
+									Modifier
+								</a>
+							</DropdownMenu.Item>
+							<DropdownMenu.Separator />
+							<DropdownMenu.Item
+								onclick={() => handleDelete(construction)}
+								class="text-destructive"
+							>
+								<Trash2 class="mr-2 h-4 w-4" />
+								Supprimer
+							</DropdownMenu.Item>
+						</DropdownMenu.Content>
+					</DropdownMenu.Root>
+				{/if}
+			</div>
+		</Card.Header>
+
+		<Card.Content class="pb-3">
+			{#if construction.description}
+				<p class="line-clamp-2 text-sm text-muted-foreground">
+					{construction.description}
+				</p>
+			{:else}
+				<p class="text-sm text-muted-foreground/60 italic">Pas de description</p>
+			{/if}
+		</Card.Content>
+
+		<Card.Footer class="flex items-center justify-between pt-0">
+			<span class="text-xs text-muted-foreground">
+				{formatDate(construction.created_at)}
+			</span>
+			<Button variant="outline" size="sm" href="/constructions/{construction.id}">
+				<Play class="mr-1 h-3 w-3" />
+				Visualiser
+			</Button>
+		</Card.Footer>
+	</Card.Root>
+{/snippet}
+
 <svelte:head>
 	<title>Constructions geometriques - Chiphre</title>
 </svelte:head>
@@ -108,185 +195,50 @@
 		{/if}
 	</div>
 
-	<!-- Stats Cards -->
-	<div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-		<Card.Root>
-			<Card.Content class="pt-6">
-				<div class="text-2xl font-bold">{myConstructions.length}</div>
-				<p class="text-xs text-muted-foreground">Mes constructions</p>
-			</Card.Content>
-		</Card.Root>
-		<Card.Root>
-			<Card.Content class="pt-6">
-				<div class="text-2xl font-bold">
-					{myConstructions.filter((c) => c.is_public).length}
-				</div>
-				<p class="text-xs text-muted-foreground">Partagees publiquement</p>
-			</Card.Content>
-		</Card.Root>
-		<Card.Root>
-			<Card.Content class="pt-6">
-				<div class="text-2xl font-bold">{publicConstructions.length}</div>
-				<p class="text-xs text-muted-foreground">Constructions publiques</p>
-			</Card.Content>
-		</Card.Root>
-	</div>
-
-	<!-- My Constructions Section -->
+	<!-- Published Constructions Section -->
 	<section class="mb-8">
-		<h2 class="mb-4 text-xl font-semibold">Mes constructions</h2>
+		<h2 class="mb-4 text-xl font-semibold">
+			Publiées
+			<span class="text-base font-normal text-muted-foreground">
+				({publishedConstructions.length})
+			</span>
+		</h2>
 
-		{#if myConstructions.length === 0}
+		{#if publishedConstructions.length === 0}
 			<Card.Root class="border-dashed">
 				<Card.Content class="flex flex-col items-center justify-center gap-4 py-12">
 					<Compass class="h-16 w-16 text-muted-foreground/50" />
-					<div class="text-center">
-						<h3 class="text-lg font-semibold">Aucune construction</h3>
-						<p class="mt-1 text-sm text-muted-foreground">
-							Creez votre premiere construction geometrique
-						</p>
-					</div>
-					{#if data.canAuthor}
-						<Button href="/constructions/new">
-							<Plus class="mr-2 h-4 w-4" />
-							Creer une construction
-						</Button>
-					{/if}
+					<h3 class="text-lg font-semibold">Aucune construction publiée</h3>
 				</Card.Content>
 			</Card.Root>
 		{:else}
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				{#each myConstructions as construction (construction.id)}
-					<Card.Root class="transition-shadow hover:shadow-md">
-						<Card.Header class="pb-3">
-							<div class="flex items-start justify-between gap-2">
-								<div class="flex-1 space-y-1">
-									<Card.Title class="line-clamp-1 text-lg">{construction.title}</Card.Title>
-									<div class="flex items-center gap-2">
-										<Badge
-											variant={construction.format === 'dsl' ? 'default' : 'outline'}
-											class="text-xs"
-										>
-											{construction.format === 'dsl' ? 'DSL' : 'JSON'}
-										</Badge>
-										{#if construction.is_public}
-											<Badge variant="secondary" class="gap-1">
-												<Globe class="h-3 w-3" />
-												Public
-											</Badge>
-										{:else}
-											<Badge variant="outline" class="gap-1">
-												<Lock class="h-3 w-3" />
-												Prive
-											</Badge>
-										{/if}
-									</div>
-								</div>
-
-								<!-- Actions Dropdown -->
-								<DropdownMenu.Root>
-									<DropdownMenu.Trigger>
-										{#snippet child({ props })}
-											<Button {...props} variant="ghost" size="icon" class="h-8 w-8">
-												<MoreVertical class="h-4 w-4" />
-											</Button>
-										{/snippet}
-									</DropdownMenu.Trigger>
-									<DropdownMenu.Content align="end">
-										<DropdownMenu.Item>
-											<a href="/constructions/{construction.id}" class="flex items-center">
-												<Play class="mr-2 h-4 w-4" />
-												Visualiser
-											</a>
-										</DropdownMenu.Item>
-										{#if data.canAuthor}
-											<DropdownMenu.Item>
-												<a href="/constructions/{construction.id}/edit" class="flex items-center">
-													<Edit class="mr-2 h-4 w-4" />
-													Modifier
-												</a>
-											</DropdownMenu.Item>
-										{/if}
-										<DropdownMenu.Separator />
-										<DropdownMenu.Item
-											onclick={() => handleDelete(construction)}
-											class="text-destructive"
-										>
-											<Trash2 class="mr-2 h-4 w-4" />
-											Supprimer
-										</DropdownMenu.Item>
-									</DropdownMenu.Content>
-								</DropdownMenu.Root>
-							</div>
-						</Card.Header>
-
-						<Card.Content class="pb-3">
-							{#if construction.description}
-								<p class="line-clamp-2 text-sm text-muted-foreground">
-									{construction.description}
-								</p>
-							{:else}
-								<p class="text-sm text-muted-foreground/60 italic">Pas de description</p>
-							{/if}
-						</Card.Content>
-
-						<Card.Footer class="flex items-center justify-between pt-0">
-							<span class="text-xs text-muted-foreground">
-								{formatDate(construction.created_at)}
-							</span>
-							<Button variant="outline" size="sm" href="/constructions/{construction.id}">
-								<Play class="mr-1 h-3 w-3" />
-								Visualiser
-							</Button>
-						</Card.Footer>
-					</Card.Root>
+				{#each publishedConstructions as construction (construction.id)}
+					{@render constructionCard(construction)}
 				{/each}
 			</div>
 		{/if}
 	</section>
 
-	<!-- Public Constructions Section -->
-	{#if publicConstructions.length > 0}
+	<!-- Draft Constructions Section (prof seul) -->
+	{#if data.canAuthor}
 		<section>
-			<h2 class="mb-4 text-xl font-semibold">Constructions publiques</h2>
+			<h2 class="mb-4 text-xl font-semibold">
+				Brouillons
+				<span class="text-base font-normal text-muted-foreground">
+					({draftConstructions.length})
+				</span>
+			</h2>
 
-			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				{#each publicConstructions as construction (construction.id)}
-					<Card.Root class="transition-shadow hover:shadow-md">
-						<Card.Header class="pb-3">
-							<div class="flex items-start justify-between gap-2">
-								<div class="flex-1 space-y-1">
-									<Card.Title class="line-clamp-1 text-lg">{construction.title}</Card.Title>
-								</div>
-								<Badge variant="secondary" class="shrink-0 gap-1">
-									<Globe class="h-3 w-3" />
-									Public
-								</Badge>
-							</div>
-						</Card.Header>
-
-						<Card.Content class="pb-3">
-							{#if construction.description}
-								<p class="line-clamp-2 text-sm text-muted-foreground">
-									{construction.description}
-								</p>
-							{:else}
-								<p class="text-sm text-muted-foreground/60 italic">Pas de description</p>
-							{/if}
-						</Card.Content>
-
-						<Card.Footer class="flex items-center justify-between pt-0">
-							<span class="text-xs text-muted-foreground">
-								{formatDate(construction.created_at)}
-							</span>
-							<Button variant="outline" size="sm" href="/constructions/{construction.id}">
-								<Play class="mr-1 h-3 w-3" />
-								Visualiser
-							</Button>
-						</Card.Footer>
-					</Card.Root>
-				{/each}
-			</div>
+			{#if draftConstructions.length === 0}
+				<p class="text-sm text-muted-foreground">Aucun brouillon.</p>
+			{:else}
+				<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+					{#each draftConstructions as construction (construction.id)}
+						{@render constructionCard(construction)}
+					{/each}
+				</div>
+			{/if}
 		</section>
 	{/if}
 </div>

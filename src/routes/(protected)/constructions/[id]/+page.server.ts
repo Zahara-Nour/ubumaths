@@ -21,13 +21,13 @@ export interface ConstructionDetail {
 	is_public: boolean;
 	created_at: string;
 	updated_at: string;
-	author_id: string | null;
 }
 
 export const load: PageServerLoad = async ({ params, parent, locals: { supabase } }) => {
 	const { user, profile } = await parent();
 	if (!user) throw error(401, 'Non autorisé');
 	const id = validateUuidParam(params.id);
+	const canAuthor = canAuthorConstructions(profile?.role);
 
 	const { data: construction, error: constructionError } = await supabase
 		.from('constructions')
@@ -41,8 +41,7 @@ export const load: PageServerLoad = async ({ params, parent, locals: { supabase 
 			dsl_script,
 			is_public,
 			created_at,
-			updated_at,
-			author_id
+			updated_at
 		`
 		)
 		.eq('id', id)
@@ -56,14 +55,14 @@ export const load: PageServerLoad = async ({ params, parent, locals: { supabase 
 		throw error(500, 'Erreur lors du chargement de la construction');
 	}
 
-	if (construction.author_id !== user.id && !construction.is_public) {
-		throw error(403, 'Accès refusé à cette construction');
+	// Un brouillon n'existe pas pour qui ne peut pas le lire (la RLS le masque déjà) :
+	// 404 plutôt que 403, pour ne pas confirmer qu'il existe.
+	if (!construction.is_public && !canAuthor) {
+		throw error(404, 'Construction introuvable');
 	}
 
 	return {
 		construction: construction as unknown as ConstructionDetail,
-		userId: user.id,
-		isOwner: construction.author_id === user.id,
-		canAuthor: canAuthorConstructions(profile?.role)
+		canAuthor
 	};
 };

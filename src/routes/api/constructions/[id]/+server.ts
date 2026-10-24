@@ -9,7 +9,11 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
-import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
+import {
+	CONSTRUCTION_AUTHOR_ROLES,
+	CONSTRUCTION_COLUMNS,
+	canAuthorConstructions
+} from '$lib/server/constructions-access';
 import { constructionScriptSchema } from '$lib/constructions';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -49,10 +53,10 @@ const updateConstructionSchema = z.object({
 /**
  * GET /api/constructions/[id]
  * Get construction by ID
- * Authenticated users only (must be owner or construction must be public)
+ * Connecté ; un brouillon n'est rendu qu'au prof
  */
 export const GET: RequestHandler = async ({ locals, params }) => {
-	const { user } = await requireAuth(locals);
+	const { profile } = await requireAuth(locals);
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -63,7 +67,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	// Fetch construction
 	const { data, error: queryError } = await locals.supabase
 		.from('constructions')
-		.select('*')
+		.select(CONSTRUCTION_COLUMNS)
 		.eq('id', params.id)
 		.single();
 
@@ -75,9 +79,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 		throw error(500, 'Impossible de charger la construction');
 	}
 
-	// Check access: user must be owner OR construction must be public
-	if (data.author_id !== user.id && !data.is_public) {
-		throw error(403, 'Accès refusé à cette construction');
+	// La RLS masque déjà les brouillons : 404 plutôt que 403, pour ne pas confirmer
+	// qu'il existe.
+	if (!data.is_public && !canAuthorConstructions(profile.role)) {
+		throw error(404, 'Construction introuvable');
 	}
 
 	return json({ construction: data });
@@ -86,10 +91,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 /**
  * PUT /api/constructions/[id]
  * Update construction
- * Only the owner can update, and only if teacher or admin (RLS enforces the same rule)
+ * Prof seul (la RLS tient la même règle, migration 20261024120000)
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
-	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
+	await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -121,31 +126,12 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		throw error(400, 'Aucune modification demandée');
 	}
 
-	// First check if user owns this construction
-	const { data: existing, error: fetchError } = await locals.supabase
-		.from('constructions')
-		.select('author_id')
-		.eq('id', params.id)
-		.single();
-
-	if (fetchError || !existing) {
-		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Construction introuvable');
-		}
-		logger.error('Error fetching construction:', fetchError);
-		throw error(500, 'Impossible de charger la construction');
-	}
-
-	if (existing.author_id !== user.id) {
-		throw error(403, 'Seul l’auteur peut modifier cette construction');
-	}
-
 	// Update construction
 	const { data, error: updateError } = await locals.supabase
 		.from('constructions')
 		.update(updateData)
 		.eq('id', params.id)
-		.select()
+		.select(CONSTRUCTION_COLUMNS)
 		.single();
 
 	// Un refus RLS rend zéro ligne : `.single()` répond PGRST116
@@ -163,34 +149,15 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 /**
  * DELETE /api/constructions/[id]
  * Delete construction
- * Only the owner can delete
+ * Prof seul (la RLS tient la même règle, migration 20261024120000)
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
-	const { user } = await requireAuth(locals);
+	await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
 	if (!idValidation.success) {
 		throw error(400, 'Identifiant de construction invalide');
-	}
-
-	// First check if user owns this construction
-	const { data: existing, error: fetchError } = await locals.supabase
-		.from('constructions')
-		.select('author_id')
-		.eq('id', params.id)
-		.single();
-
-	if (fetchError || !existing) {
-		if (fetchError?.code === 'PGRST116') {
-			throw error(404, 'Construction introuvable');
-		}
-		logger.error('Error fetching construction:', fetchError);
-		throw error(500, 'Impossible de charger la construction');
-	}
-
-	if (existing.author_id !== user.id) {
-		throw error(403, 'Seul l’auteur peut supprimer cette construction');
 	}
 
 	// Delete construction (un refus RLS rend zéro ligne, sans erreur)

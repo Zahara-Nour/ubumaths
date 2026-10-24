@@ -1,6 +1,6 @@
 /**
  * Constructions List Page Server
- * Load user's constructions and public constructions from others
+ * Le prof voit tout (publiées et brouillons) ; les autres, les publiées seules.
  */
 
 import type { PageServerLoad } from './$types';
@@ -25,29 +25,30 @@ export interface ConstructionListItem {
 	is_public: boolean | null;
 	created_at: string | null;
 	updated_at: string | null;
-	author_id: string | null;
 }
 
 export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
 	const { user, profile } = await parent();
 	if (!user) throw error(401, 'Non autorisé');
+	const canAuthor = canAuthorConstructions(profile?.role);
 
-	const { data: constructions, error: constructionsError } = await supabase
-		.from('constructions')
-		.select(
-			`
+	let query = supabase.from('constructions').select(
+		`
 			id,
 			title,
 			description,
 			format,
 			is_public,
 			created_at,
-			updated_at,
-			author_id
+			updated_at
 		`
-		)
-		.or(`author_id.eq.${user.id},is_public.eq.true`)
-		.order('created_at', { ascending: false });
+	);
+	// La RLS tient la même règle ; le filtre la double.
+	if (!canAuthor) query = query.eq('is_public', true);
+
+	const { data: constructions, error: constructionsError } = await query.order('created_at', {
+		ascending: false
+	});
 
 	if (constructionsError) {
 		logger.error('Error fetching constructions:', constructionsError);
@@ -56,7 +57,6 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 
 	return {
 		constructions: constructions ?? [],
-		userId: user.id,
-		canAuthor: canAuthorConstructions(profile?.role)
+		canAuthor
 	};
 };

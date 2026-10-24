@@ -2,18 +2,18 @@
  * Conversion Page Server Load
  *
  * Loads existing tags from constructions for autocomplete suggestions.
- * Requires teacher or admin role.
+ * Prof seul : la conversion enregistre une construction (CONSTRUCTION_AUTHOR_ROLES).
  */
 
 import type { PageServerLoad } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('(protected)/constructions/conversion/+page.server');
 
 export const load: PageServerLoad = async ({ locals }) => {
-	// Require teacher or admin role
-	await requireRoles(locals, ['teacher', 'admin']);
+	await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	// Autocomplétion : le catalogue partagé remplace la colonne `constructions.tags`,
 	// qui n'a d'ailleurs jamais porté la moindre valeur en production. Suggérer
