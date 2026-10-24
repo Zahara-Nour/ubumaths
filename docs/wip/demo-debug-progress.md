@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1693._
+_Mis à jour le 2026-10-24, après #1695._
 
-- **État** : PR 1 à 5 et PR 6a (#1693) mergées, pas en prod. PR 6b (`/demo/cercle-trigo`) en cours sur `feat/demo-cercle-trigo`. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
-- **Prochaine action** : finir la PR 6b (CI, merge) ; puis phase 6 suite, une PR par page : cartes, lexique, corrigés, géométrie, questions, éditeur, diaporama. Phase 0 de chaque page à faire valider.
+- **État** : PR 1 à 5, 6a (#1693, `/demo/structure`) et 6b (#1695, `/demo/cercle-trigo`) mergées, pas en prod. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
+- **Prochaine action** : phase 6 suite, une PR par page : cartes, lexique, corrigés, géométrie, questions, éditeur, diaporama. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main` ; phase 0 de la page à faire valider.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` (saute la garde en navigation client) ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; un test déplacé d'un niveau → recompter ses `../` ; `await render(…)` exigé par `lint:fast` ; limiteur de connexion local (5 connexions / 15 min par IP) : garder l'état de session Playwright ; pnpm 12 refuse `pnpm -s` (l'autofixer ne tourne pas, en silence) ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : `../ubumaths-wt-demo-debug` · `feat/demo-cercle-trigo`.
+- **Worktree / branche** : aucun (PR 6b nettoyée).
 
 ## Décisions de David (2026-10-24)
 
