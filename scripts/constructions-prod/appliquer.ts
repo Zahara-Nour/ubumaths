@@ -43,7 +43,6 @@ type Row = Pick<
 	| 'dsl_script'
 	| 'format'
 	| 'is_public'
-	| 'author_id'
 	| 'created_at'
 	| 'updated_at'
 >;
@@ -56,7 +55,7 @@ const PROD_HOST = 'cnevnzsvixxpnurautls.supabase.co';
 const LOCAL_HOSTS = new Set(['127.0.0.1', 'localhost']);
 const BACKUP_FILE = 'scripts/constructions-prod/avant-2026-10-23.json';
 const COLUMNS =
-	'id, title, description, script, dsl_script, format, is_public, author_id, created_at, updated_at';
+	'id, title, description, script, dsl_script, format, is_public, created_at, updated_at';
 
 // ============================================================================
 // FONCTIONS
@@ -170,8 +169,7 @@ async function insertPreview(supabase: SupabaseClient<Database>): Promise<void> 
 				dsl_script: c.dslScript,
 				script: {},
 				format: 'dsl',
-				is_public: c.isPublic,
-				author_id: null
+				is_public: c.isPublic
 			}))
 		)
 		.select('id');

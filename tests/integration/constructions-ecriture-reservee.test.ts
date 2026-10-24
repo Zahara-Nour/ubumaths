@@ -13,6 +13,9 @@
  * comptes ont été supprimés). L'admin et l'élève lisent les constructions publiées, rien
  * d'autre.
  *
+ * Puis la colonne `author_id` est retirée (migration 20261024183700) : la vue `resources`
+ * garde sa colonne de propriétaire, vide pour les constructions.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -58,13 +61,13 @@ async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 	return client;
 }
 
-/** Une construction DSL posée par la base (hors RLS) ; sans auteur par défaut, comme en prod. */
-async function construction(isPublic: boolean, authorId: string | null = null): Promise<string> {
+/** Une construction DSL posée par la base (hors RLS). */
+async function construction(isPublic: boolean): Promise<string> {
 	const pg = await getPostgresClient();
 	const { rows } = await pg.query<{ id: string }>(
-		`insert into constructions (title, format, dsl_script, script, is_public, author_id)
-		 values ($1, 'dsl', 'A = point(0, 0)', '{}', $2, $3) returning id`,
-		[TITRE, isPublic, authorId]
+		`insert into constructions (title, format, dsl_script, script, is_public)
+		 values ($1, 'dsl', 'A = point(0, 0)', '{}', $2) returning id`,
+		[TITRE, isPublic]
 	);
 	return rows[0].id;
 }
@@ -123,20 +126,33 @@ describe('constructions : écriture réservée au prof, qui lit tout', () => {
 		expect(supprimee).toHaveLength(1);
 	});
 
+	it('la table constructions n’a plus de colonne author_id', async () => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`select 1 from information_schema.columns
+			 where table_schema = 'public' and table_name = 'constructions' and column_name = 'author_id'`
+		);
+		expect(rows).toEqual([]);
+	});
+
+	it('la vue resources rend les constructions, propriétaire vide', async () => {
+		const id = await construction(true);
+		const client = await clientFor(prof.email);
+		const { data, error } = await client
+			.from('resources')
+			.select('id, owner_id')
+			.eq('kind', 'construction')
+			.eq('id', id);
+		expect(error).toBeNull();
+		expect(data).toEqual([{ id, owner_id: null }]);
+	});
+
 	for (const qui of ['admin', 'eleve'] as const) {
 		const compte = () => (qui === 'admin' ? admin : eleve);
 
 		it(`${qui} : création refusée (42501)`, async () => {
 			const client = await clientFor(compte().email);
 			const { error } = await client.from('constructions').insert(NOUVELLE);
-			expect(error?.code).toBe('42501');
-		});
-
-		it(`${qui} : création refusée même en se déclarant auteur`, async () => {
-			const client = await clientFor(compte().email);
-			const { error } = await client
-				.from('constructions')
-				.insert({ ...NOUVELLE, is_public: false, author_id: compte().id });
 			expect(error?.code).toBe('42501');
 		});
 
@@ -163,26 +179,6 @@ describe('constructions : écriture réservée au prof, qui lit tout', () => {
 			const client = await clientFor(compte().email);
 			const { data } = await client.from('constructions').delete().eq('id', id).select('id');
 			expect(data).toEqual([]);
-			expect(await existe(id)).toBe(true);
-		});
-
-		it(`${qui} : « sa » construction, ni lue en brouillon, ni modifiée, ni supprimée`, async () => {
-			const id = await construction(false, compte().id);
-			const client = await clientFor(compte().email);
-			const { data: lue } = await client.from('constructions').select('id').eq('id', id);
-			expect(lue).toEqual([]);
-			const { data: modifiee } = await client
-				.from('constructions')
-				.update({ is_public: true })
-				.eq('id', id)
-				.select('id');
-			expect(modifiee).toEqual([]);
-			const { data: supprimee } = await client
-				.from('constructions')
-				.delete()
-				.eq('id', id)
-				.select('id');
-			expect(supprimee).toEqual([]);
 			expect(await existe(id)).toBe(true);
 		});
 

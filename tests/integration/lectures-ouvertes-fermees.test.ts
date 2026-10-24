@@ -106,9 +106,8 @@ describe('lectures ouvertes fermées', () => {
 			);
 		}
 		const { rows } = await pg.query<{ id: string }>(
-			`insert into constructions (title, script, is_public, author_id)
-			 values ('zz-construction publique', '{}', true, $1) returning id`,
-			[a.id]
+			`insert into constructions (title, script, is_public)
+			 values ('zz-construction publique', '{}', true) returning id`
 		);
 		constructionId = rows[0].id;
 	});
