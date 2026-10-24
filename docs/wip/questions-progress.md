@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-24, avant toute PR._
 
 - **État** : inventaire CP fait (lecture seule de la prod, rien modifié) — § 1 à 3 ci-dessous.
-- **Prochaine action** : regarder dans le module géométrie si une **validation de figure faite par l'élève** a été pensée (demande de David, pour les points « construire / tracer ») ; puis réponses de David aux 5 questions du § 4 ; puis worktree `modeles-cp` et écriture des modèles du groupe A par lots.
-- **En attente de David** : les 5 questions du § 4.
+- **Prochaine action** : réponses de David aux questions du § 4 (dont la 6, case « figure ») ; puis worktree `modeles-cp` et écriture des modèles du groupe A par lots.
+- **En attente de David** : les 6 questions du § 4.
 - **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017).
 - **Worktree / branche** : aucun pour l'instant (dépôt principal, lecture seule) ; journal sur `main`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (noter la méthode au fil de l'eau, § 5).
@@ -40,12 +40,37 @@ Non tagués CP (12) :
 - **D. Non évaluables sans interaction** : 002, 053, 059, 060, 063-066, 074 — **à revoir avec la validation de figure élève (géométrie)**.
 - À trancher : 072, 084 (« présenter », « construire » : « compléter » compte-t-il ?).
 
+## 2 bis. Validation d'une figure faite par l'élève (relevé du 2026-10-24)
+
+C'était prévu : phase 3 « mode exercice, l'élève construit lui-même + validation »
+(`docs/archive/systeme-2026-06/geometrie/decisions.md` § 1 et § 11, inspiré du `check/` d'apigeom). Ce qui existe :
+
+- **Les prédicats** : `src/lib/geometry-core/validation/checks.ts` (321 lignes, testés) — `checkPointAt`, `checkCollinear`,
+  `checkDistance`, `checkSameDistance`, `checkParallel`, `checkPerpendicular`, `checkAngle`, `checkPointOnCircle`, chacun
+  `{ valid, message }` en français, en exact quand c'est possible. **Aucun appelant** (`docs/systeme/geometrie/README.md` § 9-10 :
+  « `validation/` branché sur des exercices » = jamais fait).
+- **La construction à la souris** : livrée dans l'atelier (lot 3, #1533→#1540) — barre d'outils (point, segment, droite,
+  demi-droite, cercle, milieu, intersection, point sur un objet, parallèle, perpendiculaire), glisser des points,
+  `snapToGrid` (`geometry-core/interaction/`). Vit dans `FigureView.svelte` de l'atelier, pas dans une question.
+- **Figures interactives** : `deplacable:` / `rendu:` réservés aux figures stockées, refusés dans un bloc d'exercice.
+
+Ce qui manque pour une question : une **case « figure »** (`answerKind` neuf) — figure de départ (quadrillage, points donnés),
+barre d'outils restreinte par le modèle, réponse = la figure de l'élève, jugée par des vérifications déclarées dans le modèle
+(liste de `check*`). Prédicats à ajouter pour le primaire : « il existe un segment / une droite passant par A et B »,
+« ce polygone est un carré / rectangle / triangle », « sommets sur des nœuds du quadrillage ».
+
+Points CP que cela rendrait évaluables : 059 (tracer une droite par deux points), 060 (compléter un carré / rectangle sur
+quadrillage), 058 (vérifier un alignement à la règle), 034 (reporter une longueur), et hors géométrie 008 (placer un point sur
+la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipulation, espace de la classe), 074 (oral) ;
+002 (construire une collection) relève du bloc `collection` s'il devient interactif.
+
 ## 3. Outils proposés
 
 1. Bloc `horloge` (cadran paramétrable ; CP heures entières, puis minutes CE1/CE2) — recommandé en premier.
 2. Bloc `collection` (vrac, barres de dix + cubes, groupements partiels).
 3. Bloc `monnaie` (pièces et billets d'euros).
 4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles).
+5. **Case « figure »** (§ 2 bis) : branche les prédicats existants et la barre d'outils de l'atelier dans une question.
 
 ## 4. Questions à David
 
@@ -54,6 +79,7 @@ Non tagués CP (12) :
 3. Groupe D laissé sans modèle ? (en attente de l'étude géométrie)
 4. CP-072 / 084 : « compléter » vaut-il « présenter / construire » ?
 5. Corriger tout de suite `52c4d773` (retirer ×, CP-004 ?) et enrichir `0e5372a4` ?
+6. Case « figure » (§ 2 bis) : chantier à ouvrir (avant ou après horloge / collections / monnaie) ?
 
 ## 5. Méthode (pour le futur skill)
 
@@ -66,3 +92,4 @@ Non tagués CP (12) :
 ## Journal
 
 - 2026-10-24 : inventaire CP (lecture prod MCP read-only).
+- 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 2 bis).
