@@ -2,17 +2,40 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1653 (lot 12, finitions) et le ménage des worktrees._
+_Mis à jour le 2026-10-24, après #1659 et #1662 (constructions publiques de la prod)._
 
-- **État** : lots 1 à 12 mergés, pas encore en prod. Les 10 worktrees `constructions*` et leurs serveurs sont supprimés ; les vérifications #1621 → #1653 se font sur `main` (5175), lignes corrigées dans `docs/wip/verifications-manuelles.md` (carré en P, E\*/F\*).
-- **Tranché (David suit la reco, 2026-10-23)** : `@arc_milieu` sur un angle plat → refus avec renvoi vers `@arcs_egaux`/`@mesure` (déjà le comportement du code). Marqueurs d'angle droit : déjà visibles seulement en `@complet` ou `+marqueurs` (`visibility.ts`) ; c'était une vérification, pas une suite, rien à coder.
-- **Consignes automatiques : écartées (2026-10-23)** — les consignes de l'auteur portent le sens (but, propriété, conclusion), les chorégraphies génèrent déjà les consignes de geste ; David suit la reco.
-- **Prochaine action** : aucune dans ce chantier. Constructions publiques de la prod réécrites et publiées le 2026-10-24 → chantier `constructions-prod` (#1659, #1662, journal `docs/wip/constructions-prod-progress.md`) ; le compas qui s'ouvre à sa première utilisation attend le `deploy:prod`.
-- **En attente de David** : ses vérifications #1621 → #1653.
-- **Pièges en cours** : `e` = constante d'Euler. Commits et PR : aucune mention Claude.
+- **État** : lots 1 à 12 mergés ; constructions publiques de la prod réécrites et ÉCRITES EN PROD le 2026-10-24 (8 publiques, repérage dépublié, sans nom d'auteur ; sauvegarde `scripts/constructions-prod/avant-2026-10-23.json`). Le code (lots, compas qui s'ouvre à sa première utilisation, ligne « Auteur » et nom retirés des pages et de l'API) attend le prochain `deploy:prod`.
+- **Prochaine action** : aucune ; après les vérifications de David, verser (`docs/systeme/geometrie/constructions.md` déjà à jour) et archiver ce journal.
+- **En attente de David** : vérifications #1621 → #1659 dans `docs/wip/verifications-manuelles.md` ; partage et symétrie publiés sans sa relecture (« publie dès le merge ») ; suites possibles : ne renvoyer `author_id` qu'à l'auteur, `etiquette="aucune"` pour les droites (« d1 », « d2 » du partage).
+- **Tranché (2026-10-23)** : `@arc_milieu` sur angle plat → refus ; marqueurs d'angle droit déjà en `@complet` seulement ; consignes automatiques écartées (l'auteur écrit le sens, les chorégraphies le geste).
+- **Pièges en cours** : `M'` refusé comme identifiant (point `Ms`, nom masqué, texte « M′ ») ; `e` = constante d'Euler ; commits et PR sans mention Claude.
 - **Worktree / branche** : aucun (prochain lot : nouveau worktree depuis `origin/main`).
 
 ---
+
+## Constructions publiques de la prod (2026-10-23 → 24, #1659, #1662)
+
+Ancien journal à part, archivé : [constructions-prod-progress.md](../archive/wip/constructions-prod-progress.md).
+
+### Constat (prod, lecture seule, 2026-10-23)
+
+9 constructions publiques, toutes issues de l'ancien convertisseur InstrumenPoche, aucune chorégraphie.
+
+| Construction              | Défaut                                                                                                   | Traitement                                                      |
+| ------------------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| Parallélogramme           | [DA] vers un point `NaN`, consignes en double, « le compas de la règle », cadre et `mark_*` d'import     | réécrite ; O par `milieu(A, C) @mesure` (AC = 10 cm)            |
+| Partage en 3 parts égales | I = J = K confondus, parallèles vers `NaN`, `£i(A,1)` affiché                                            | réécrite ; parallèles en `parallele(…) @euclide @epure`, codage |
+| « Symétrie centrale »     | symétrie AXIALE ; `M' = point(…)` refusé à la lecture (le script ne se chargeait pas) ; [MM′] vers `NaN` | réécrite, titre « Symétrie axiale au compas », codage MH = HM′  |
+| Repérage de points        | ni axes ni noms, segments vers `NaN`                                                                     | dépubliée (`is_public = false`), rien supprimé                  |
+| Toutes                    | titres et descriptions sans accents                                                                      | accents, noms d'auteur retirés                                  |
+
+Décisions de David (« je te suis », 2026-10-23) : réécrire les 3, dépublier le repérage, accents pour les 9, relecture du rendu en local avant toute écriture en prod.
+
+Vérification : `scripts/__tests__/constructions-prod.test.ts` (O milieu de [AC] et [BD] ; AM = MN = NB ; NM′ = NM et PM′ = PM), rouge si l'intersection prise est M lui-même ; rendu final regardé sur captures (navigateur de test).
+
+Retours de David en relecture locale : le compas prend d'abord l'écartement OB (arc de 1° sous B) puis le reporte ; à sa première apparition, le compas part presque fermé et s'ouvre (`compassOpening`, `COMPASS_CLOSED_OPENING` = 0,5, toutes constructions) ; plus aucun nom d'auteur (descriptions, ligne « Auteur » des pages, réponses de `/api/constructions`). Revue Sonnet + audit sécurité : rien de bloquant.
+
+Écriture : `pnpm constructions:reecrire --cible prod` (simulation + sauvegarde, #1662) puis `--publier` le 2026-10-24 ; relu par MCP. Retour arrière : réécrire les colonnes depuis la sauvegarde.
 
 ## Lot 1 — Sécurité (2026-10-22)
 
