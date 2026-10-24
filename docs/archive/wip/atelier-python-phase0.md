@@ -6,7 +6,7 @@ status: validée par David le 2026-10-24 (« je suis tes recos » : Q1-Q4 = reco
 
 # « Ouvrir dans Python » — phase 0
 
-Décision du 2026-10-24 ([atelier.md § Décisions](../systeme/atelier.md#décisions)) : pas d'onglet
+Décision du 2026-10-24 ([atelier.md § Décisions](../../systeme/atelier.md#décisions)) : pas d'onglet
 Python dans l'atelier, pas d'état partagé, mais un pont **à sens unique et visible**. L'élève
 prend une fonction, une suite ou une liste de l'atelier et l'ouvre dans `/python` sous forme de
 code Python lisible, qu'il peut modifier.
