@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, lot cycles en PR._
+_Mis à jour le 2026-10-24, après #1688._
 
-- **État** : tous les niveaux transcrits. Lot cycles 2, 3, 4 (63 morceaux sous `transcriptions/cycle-N/`) sur `feat/programmes-transcriptions-cycles`, PR à merger ; lycée mergé (#1676, #1678, #1679, #1683), rien en prod.
+- **État** : tous les niveaux transcrits. Lot cycles 2, 3, 4 (63 morceaux sous `transcriptions/cycle-N/`) mergé (#1688) ; lycée mergé (#1676, #1678, #1679, #1683) ; rien en prod.
 - **Prochaine action** : relecture par David des cycles (serveur 5177) ; puis clore le chantier (versement dans `docs/systeme/`, archivage du journal).
 - **En attente de David** : (1) cycle 2 : tableaux « Objectifs d’apprentissage / Exemples de réussite » éclatés en titres `######` + listes (libellés ajoutés là où le tableau n’a pas d’en-tête, CE1 p. 28) ; (2) illustrations remplacées par « _(Illustration : voir le PDF, page P.)_ », leur texte non transcrit (une en pleine phrase : ciseaux et stylos, CM1 p. 9 / CM2 p. 12) ; (3) relecture de `transcriptions/2.md` (fractions p. 5, vecteurs p. 9) ; titres ambigus 1_TECHNO p. 8-9, T_TECHNO p. 10-11.
 - **Pièges en cours** : `<embed>` bloqué par la CSP → `<iframe>` ; prettier ignore `transcriptions/` ; limiteur de connexions locales bloque les captures Playwright → test client pour le rendu.
-- **Worktree / branche** : `../ubumaths-wt-programmes`, branche `feat/programmes-transcriptions-cycles` ; serveur de test 5177.
+- **Worktree / branche** : `../ubumaths-wt-programmes` (branche `feat/programmes-transcriptions-cycles`, mergée) gardé tant que le serveur de test 5177 sert à la relecture ; à retirer ensuite.
 
 ## Décisions (2026-10-24, validées par David : « je suis tes recos »)
 
@@ -37,3 +37,4 @@ _Mis à jour le 2026-10-24, lot cycles en PR._
 - 2026-10-24 : #1679 mergée (lot lycée + titres en couleur sobres).
 - 2026-10-24 : 1_GEN p. 7 : c'est l'exposant $t/n$ (David), pas $1/n$ comme je l'avais affirmé sur un glyphe abîmé : corrigé.
 - 2026-10-24 : lot cycles (branche `feat/programmes-transcriptions-cycles`) : 12 agents Sonnet (commun + 3 niveaux par cycle), complétude par mots (manquent seulement sommaire et texte des illustrations), 551 formules validées MathLive ; expressions à moitié LaTeX (`a$x$ = c`) passées entièrement en maths ; siècles en texte (« XVIIe ») comme au lycée.
+- 2026-10-24 : #1688 mergée (lot cycles). La CI a attrapé un test de page qui supposait le CM1 non transcrit : corrigé.
