@@ -112,10 +112,10 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 - Démos et pages de mise au point : `/demo/*`, `/construction-demo`,
   tout `/dev/*` (admin seul : polices, cadres, pages d'erreur, Blockly, diaporama, structure…),
   tout `/aide-ecriture/*` (prof seul : géométrie, cercle trigonométrique).
-- Héritage remplacé par l'Atelier : `/calc` ([atelier.md](atelier.md)). `/cas` est retirée
-  (2026-10-13) : l'adresse mène à `/atelier`.
-- Routes sans lien ou en sommeil : `/tuteur`, `/calculatrice`, `/games/evoland`, Navadra,
-  `/spreadsheet` ([jeux-et-economie.md](jeux-et-economie.md), [outils-prof.md](outils-prof.md)).
+- Héritage remplacé par l'Atelier : `/calc` ([atelier.md](atelier.md)). `/cas` (2026-10-13) et
+  `/spreadsheet` (2026-10-24) sont retirées : leurs adresses mènent à `/atelier`.
+- Routes sans lien ou en sommeil : `/tuteur`, `/calculatrice`, `/games/evoland`, Navadra
+  ([jeux-et-economie.md](jeux-et-economie.md), [outils-prof.md](outils-prof.md)).
 - Tout `/dashboard/admin/*`.
 
 ## Comment un visiteur entre

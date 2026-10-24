@@ -44,7 +44,7 @@ et la façon d'**afficher** sans risque un contenu écrit par quelqu'un d'autre.
   (4), et `EDITOR_PRESETS`. Un preset choisit les sections de la barre d'outils et le jeu de
   modèles ; `RichTextEditor` prend `preset = 'full'` par défaut, une prop `toolbar` explicite
   l'emporte. Appelants : `minimal` (tableau blanc), `standard` (cahier de textes, kanban),
-  `full` (exercices). `TEXT_COLORS` sert aussi à `SpreadsheetToolbar.svelte`.
+  `full` (exercices).
 - `editor-config.ts` : `createEditorExtensions({ headingLevels })` construit la liste des
   extensions TipTap (StarterKit, listes, colonnes, code, liens, couleurs, alignement,
   indices, tâches, tableaux, images, vidéo, formules, variables de modèle, liens de ressource,
