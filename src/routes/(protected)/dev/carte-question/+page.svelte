@@ -1,9 +1,11 @@
 <!--
-	Question Display Component Debug Page
-	=======================================
+	Carte question (`/dev/carte-question`)
+	=====================================
 
-	Comprehensive debugging interface for QuestionDisplay component.
-	Shows all internal state, props, validation results, and statistics.
+	Banc d'essai de `FlashCard` : réglages, état interne, journaux des
+	événements. Fusion de l'ancienne page admin `debug/question-display` et de
+	la démo `/demo/question-display-demo`, dont trois questions sont reprises
+	(la quatrième, `x^2 - 9`, était déjà ici).
 -->
 
 <script lang="ts">
@@ -18,6 +20,9 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Input } from '$lib/components/ui/input';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { resolvedMarkdown } from '$lib/ubumark';
 	import { RefreshCw, Copy, Check } from '@lucide/svelte';
 	import { browser } from '$app/environment';
 
@@ -125,8 +130,92 @@
 				]
 			},
 			grades: ['3', '2']
+		},
+		// Reprises de la démo `/demo/question-display-demo`
+		fraction_sum: {
+			templateId: 'demo-numerical',
+			statement: resolvedMarkdown('Calculez $$\\frac{3}{4} + \\frac{1}{2} = $$ ____'),
+			// Sans `blanks`, getQuestionType() classe quand même la question en
+			// `fill_in_blanks` (il n'existe pas de type « numérique ») et la face
+			// réponse n'a alors rien à afficher.
+			blanks: [{ expectedAnswer: '5/4', expectedAnswerLatex: '\\frac{5}{4}', type: 'math' }],
+			grades: ['6', '5'],
+			theme: 'Algèbre',
+			domain: 'Fractions',
+			level: 1,
+			correction: {
+				steps: [
+					resolvedMarkdown(
+						'Pour additionner des fractions, il faut trouver un dénominateur commun :\n\n$$\\frac{3}{4} + \\frac{1}{2} = \\frac{3}{4} + \\frac{2}{4} = \\frac{5}{4}$$'
+					)
+				]
+			}
+		},
+		qcm_pi: {
+			templateId: 'demo-qcm',
+			statement: resolvedMarkdown('Quelle est la valeur de $$\\pi$$ arrondie au centième ?'),
+			correctChoiceIndex: '1',
+			choices: [
+				{ content: resolvedMarkdown('$$3{,}00$$'), isCorrect: false },
+				{ content: resolvedMarkdown('$$3{,}14$$'), isCorrect: true },
+				{ content: resolvedMarkdown('$$3{,}41$$'), isCorrect: false },
+				{ content: resolvedMarkdown('$$2{,}71$$'), isCorrect: false }
+			],
+			shuffledChoices: [
+				{ content: resolvedMarkdown('$$3{,}00$$'), originalIndex: 0 },
+				{ content: resolvedMarkdown('$$3{,}14$$'), originalIndex: 1 },
+				{ content: resolvedMarkdown('$$3{,}41$$'), originalIndex: 2 },
+				{ content: resolvedMarkdown('$$2{,}71$$'), originalIndex: 3 }
+			],
+			multipleAnswers: false,
+			grades: ['6'],
+			theme: 'Géométrie',
+			domain: 'Constantes',
+			level: 1,
+			correction: {
+				steps: [
+					resolvedMarkdown('$$\\pi \\approx 3{,}14159...$$ donc, arrondi au centième : $$3{,}14$$')
+				]
+			}
+		},
+		pythagore_blanks: {
+			templateId: 'demo-fill-blanks',
+			statement: resolvedMarkdown(
+				'Le théorème de Pythagore dit que, dans un triangle rectangle : $$a^2 + b^2 = ____^2$$, où ____ est l’hypoténuse.'
+			),
+			blanks: [
+				{ expectedAnswer: 'c', type: 'math' },
+				{ expectedAnswer: 'c', type: 'text' }
+			],
+			grades: ['4', '3'],
+			theme: 'Géométrie',
+			domain: 'Théorème de Pythagore',
+			level: 2,
+			correction: {
+				steps: [
+					resolvedMarkdown(
+						"Le théorème de Pythagore : $$a^2 + b^2 = c^2$$ où $$c$$ est l'hypoténuse (le côté opposé à l'angle droit)."
+					)
+				]
+			}
 		}
 	};
+
+	const QUESTION_ITEMS = [
+		{ value: 'numerical_exact', label: 'Numérique (exacte)' },
+		{ value: 'numerical_decimal', label: 'Numérique (décimale)' },
+		{ value: 'algebraic_transform', label: 'Transformation algébrique' },
+		{ value: 'fill_in_blanks', label: 'Texte à trous' },
+		{ value: 'multiple_choice', label: 'QCM' },
+		{ value: 'fraction_sum', label: 'Somme de fractions, à trou' },
+		{ value: 'qcm_pi', label: 'QCM : valeur de π' },
+		{ value: 'pythagore_blanks', label: 'Pythagore, deux trous' }
+	];
+	const SIZE_ITEMS = [
+		{ value: 'sm', label: 'Petite' },
+		{ value: 'md', label: 'Moyenne' },
+		{ value: 'lg', label: 'Grande' }
+	];
 
 	// Current question instance
 	let currentInstance = $derived(sampleQuestions[selectedQuestionType]);
@@ -190,12 +279,17 @@
 	const completionStatsJSON = $derived(JSON.stringify(completionStats, null, 2));
 </script>
 
-<div class="container mx-auto space-y-6 p-6">
+<svelte:head>
+	<title>Carte question · Pages de dev</title>
+	<meta name="robots" content="noindex" />
+</svelte:head>
+
+<div class="container mx-auto space-y-6 px-4 py-8">
 	<!-- Header -->
 	<div class="space-y-2">
-		<h2 class="text-3xl! font-bold">QuestionDisplay Component Debug</h2>
+		<h1 class="text-3xl font-bold">Carte question</h1>
 		<p class="text-muted-foreground">
-			Test and debug the QuestionDisplay component with real-time state inspection.
+			Le composant <code>FlashCard</code>, ses réglages et son état en direct.
 		</p>
 	</div>
 
@@ -210,19 +304,14 @@
 		<Card.Content class="space-y-4">
 			<!-- Question Type Selector -->
 			<div class="space-y-2">
-				<Label for="question-type">Question Type</Label>
-				<select
+				<Label for="question-type">Question</Label>
+				<MySelect
 					id="question-type"
+					type="single"
+					items={QUESTION_ITEMS}
 					bind:value={selectedQuestionType}
-					onchange={() => changeQuestion()}
-					class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-				>
-					<option value="numerical_exact">Numerical (Exact)</option>
-					<option value="numerical_decimal">Numerical (Decimal)</option>
-					<option value="algebraic_transform">Algebraic Transform</option>
-					<option value="fill_in_blanks">Fill-in-Blanks</option>
-					<option value="multiple_choice">Multiple Choice (QCM)</option>
-				</select>
+					onValueChange={() => changeQuestion()}
+				/>
 			</div>
 
 			<div class="grid grid-cols-2 gap-4">
@@ -255,30 +344,22 @@
 
 				<!-- Size -->
 				<div class="space-y-2">
-					<Label for="size-select">Size</Label>
-					<select
+					<Label for="size-select">Taille</Label>
+					<MySelect
 						id="size-select"
-						bind:value={size}
-						class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
-					>
-						<option value="sm">Small</option>
-						<option value="md">Medium</option>
-						<option value="lg">Large</option>
-					</select>
+						type="single"
+						items={SIZE_ITEMS}
+						bind:value={() => size, (v) => (size = v as typeof size)}
+					/>
 				</div>
 			</div>
 
 			<!-- Toggles -->
 			<div class="grid grid-cols-2 gap-4">
-				<label class="flex items-center gap-2">
-					<input
-						type="checkbox"
-						bind:checked={showCorrectionOnWrong}
-						class="h-4 w-4"
-						aria-label="Auto-flip on wrong answer"
-					/>
-					<span class="text-sm">Auto-flip on wrong answer</span>
-				</label>
+				<MyCheckbox
+					bind:checked={showCorrectionOnWrong}
+					label="Retourner la carte après une mauvaise réponse"
+				/>
 
 				<div class="space-y-1">
 					<Label for="max-attempts">Max attempts (0 = unlimited)</Label>

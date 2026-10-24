@@ -164,3 +164,9 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - `/dev/erreurs/surveillance` traduite en français. Carte « Test de Thème » retirée du carrefour `/demo` (page désormais admin). Exclusion sitemap `/blockly/**` retirée (plus de page).
 - Retour de CI : 10 pages tenaient leur `<h1>` du layout de debug → titre et marges ajoutés. Garde de couverture : `couvre:` de `surveillance-des-erreurs.md` étendu, `trous` Blockly repointé.
 - Vérifié sur 5178 (Playwright) : 20 pages en 200 pour l'admin, redirections justes, élève 403, anonyme → connexion. Erreurs de console déjà présentes avant (clés en double dans `rls` et `correction-generee`, boutons imbriqués dans `theme`, CSP de la feuille Swagger) : laissées telles quelles.
+
+## PR 3 — fusions et parts dev (phase 0 validée par David le 2026-10-24)
+
+- **Fusions** : ligne 7 → `/dev/carte-question` (page admin + les 4 questions de la démo, énoncés en français) ; ligne 8 → `/dev/editeur-riche` (page admin + onglet « Messagerie » repris de la démo) ; ligne 15 → `/dev/diaporama` (diapositives écrites une fois, bascule plein écran / dans un cadre aux 4 tailles / transitions ; pas de `+layout@`, qui sauterait la garde de `/dev` en navigation client).
+- **Parts dev** : ligne 1 → `/dev/structure` en entier (la formule sera recopiée vers `/demo/structure` en phase 6) ; ligne 5 → `/dev/cartes` + `/dev/cartes/exemples` ; ligne 6 → `/dev/mots-cliquables` ; ligne 10 → `/dev/bancs-essai` (champ MathLive, carte retournable, logger, toasts).
+- Anciennes adresses publiques → 308 vers `/dev` (le visiteur tombe sur la connexion jusqu'aux pages vitrine). Carrefour `/demo` jusqu'à la phase 7 : seulement les cartes vers des pages encore publiques (cercle trigo, Mathémo, Trio). Layout `admin/debug` supprimé. `<select>` et cases natives des pages fusionnées → `MySelect` / `MyCheckbox`.

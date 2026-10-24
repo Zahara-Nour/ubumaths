@@ -1,3 +1,7 @@
+<!--
+	Section « Transitions » de `/dev/diaporama` : une diapositive par transition.
+	Reprise de `/slides/test-transitions`.
+-->
 <script lang="ts">
 	import { Deck, Slide } from '$lib/slides';
 
@@ -8,10 +12,6 @@
 		console.log('Slide changed to:', event.h, event.v);
 	}
 </script>
-
-<svelte:head>
-	<title>Test Transitions - UbuSlides</title>
-</svelte:head>
 
 <div class="test-container">
 	<Deck onslidechanged={handleSlideChanged} config={{ slideNumber: true }}>
@@ -59,11 +59,9 @@
 
 <style>
 	.test-container {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100vw;
-		height: 100vh;
+		position: relative;
+		width: 100%;
+		height: 100%;
 		overflow: hidden;
 		background: #000;
 		font-size: 42px;
@@ -89,7 +87,7 @@
 	}
 
 	.debug-info {
-		position: fixed;
+		position: absolute;
 		top: 10px;
 		left: 10px;
 		background: rgba(0, 0, 0, 0.7);

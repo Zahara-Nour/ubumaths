@@ -88,6 +88,41 @@
 			description: 'Traduction d’un texte LaTeX en ubumark.'
 		},
 		{
+			href: '/dev/carte-question',
+			title: 'Carte question',
+			description: 'Le composant FlashCard, ses réglages, son état et ses événements.'
+		},
+		{
+			href: '/dev/editeur-riche',
+			title: 'Éditeur riche',
+			description: 'L’éditeur de texte avec formules : modes, import et export, messagerie.'
+		},
+		{
+			href: '/dev/structure',
+			title: 'Structure d’une expression',
+			description: 'Survol, lecture en français et déplacement des termes ; corpus des saisies.'
+		},
+		{
+			href: '/dev/mots-cliquables',
+			title: 'Mots cliquables',
+			description: 'Mots du lexique et indices, à essayer sur tablette ou téléphone.'
+		},
+		{
+			href: '/dev/cartes',
+			title: 'Cartes VIP',
+			description: 'Le catalogue des cartes holographiques, et les exemples de configuration.'
+		},
+		{
+			href: '/dev/diaporama',
+			title: 'Diaporama',
+			description: 'Diapositives de démonstration, en plein écran ou dans un cadre ; transitions.'
+		},
+		{
+			href: '/dev/bancs-essai',
+			title: 'Bancs d’essai',
+			description: 'Champ MathLive, cartes retournables, journalisation, toasts.'
+		},
+		{
 			href: '/dev/theme',
 			title: 'Thème',
 			description: 'Modes clair et sombre, palette de couleurs, composants Shadcn.'

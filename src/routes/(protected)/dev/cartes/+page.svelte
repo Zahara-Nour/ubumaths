@@ -28,9 +28,9 @@
 		<p class="subtitle">Effet holographique interactif inspiré des cartes Pokémon</p>
 
 		<nav class="demo-nav">
-			<a href={resolve('/')}>← Retour à l'application</a>
+			<a href={resolve('/dev')}>← Pages de dev</a>
 			<span class="nav-separator">|</span>
-			<a href={resolve('/demo/vip-cards-demo/examples')}>📖 Configuration Examples</a>
+			<a href={resolve('/dev/cartes/exemples')}>📖 Configuration Examples</a>
 		</nav>
 
 		<div class="intro-section">

@@ -4,7 +4,7 @@
  * Spécification validée par David le 2026-10-12 (`docs/archive/wip/longueurs-segments-progress.md`) :
  * - option `capitalPairs` : `'length'` ou `'product'` (comportement d'avant, à l'identique, et
  *   défaut du parseur depuis la décision Q-M du 2026-10-12 : seuls les questions et
- *   `/test-structure` demandent `'length'`) ;
+ *   `/dev/structure` demandent `'length'`) ;
  * - en mode longueur, deux majuscules COLLÉES dans la source (avec primes et indices) forment la
  *   longueur d'un segment ; trois ou plus, un nom de figure (`ABC`) gardé tel quel ;
  * - une espace ou une commande d'espacement entre les lettres garde le produit (`A B`) ;

@@ -43,7 +43,7 @@ const FIXTURE_PATH = fileURLToPath(
 	new URL('./fixtures/empreinte-majuscules-collees.json', import.meta.url)
 );
 
-/** Le mode longueur, demandé explicitement (questions, `/test-structure`). */
+/** Le mode longueur, demandé explicitement (questions, `/dev/structure`). */
 const LENGTH: LatexParserOptions = { capitalPairs: 'length' };
 
 const FIXTURE: ReadonlyArray<readonly [string, string]> = JSON.parse(

@@ -33,7 +33,19 @@ const MOVED_PAGES: Record<string, string> = {
 	'/dashboard/admin/debug/typst-preview': '/dev/pdf-typst',
 	'/dashboard/admin/debug/latex-preview': '/dev/pdf-latex',
 	'/dashboard/admin/debug/latex-transpiler': '/dev/latex-vers-ubumark',
-	'/dashboard/admin/debug/database': '/dashboard/admin/integrite-donnees'
+	'/dashboard/admin/debug/database': '/dashboard/admin/integrite-donnees',
+	// Fusions et parts dev (PR 3) ; la plus longue adresse avant son préfixe
+	'/dashboard/admin/debug/question-display': '/dev/carte-question',
+	'/demo/question-display-demo': '/dev/carte-question',
+	'/dashboard/admin/debug/rich-text': '/dev/editeur-riche',
+	'/demo/rich-text-editor-demo': '/dev/editeur-riche',
+	'/slides/demo-embedded': '/dev/diaporama',
+	'/slides/test-transitions': '/dev/diaporama',
+	'/slides/demo': '/dev/diaporama',
+	'/test-structure': '/dev/structure',
+	'/demo/vip-cards-demo/examples': '/dev/cartes/exemples',
+	'/demo/vip-cards-demo': '/dev/cartes',
+	'/demo/mots-cliquables': '/dev/mots-cliquables'
 };
 
 /** Nouvelle adresse d'une page déplacée, ou `null` si `pathname` n'en est pas une. */

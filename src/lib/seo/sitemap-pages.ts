@@ -157,8 +157,6 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	{ pattern: '/demo/**', reason: DEMO },
 	{ pattern: '/geometry-demo/**', reason: DEMO },
 	{ pattern: '/construction-demo', reason: DEMO },
-	{ pattern: '/test-*', reason: DEMO },
-	{ pattern: '/slides/**', reason: DEMO },
 
 	// Parcours d'authentification et de consentement
 	{ pattern: '/auth/**', reason: 'étape du parcours de connexion, pas une destination' },

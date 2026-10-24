@@ -1,9 +1,12 @@
+<!--
+	Onglet « Messagerie » de `/dev/editeur-riche` : reprise de l'ancienne démo
+	`/demo/rich-text-editor-demo` (conversation en mode `chat`).
+-->
 <script lang="ts">
 	import { tick } from 'svelte';
 	import RichTextEditor from '$lib/components/rich-text/RichTextEditor.svelte';
 	import RichTextDisplay from '$lib/components/rich-text/RichTextDisplay.svelte';
 	import * as Avatar from '$lib/components/ui/avatar';
-	import { Separator } from '$lib/components/ui/separator';
 
 	interface Message {
 		id: number;
@@ -109,33 +112,24 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Démo - Éditeur de texte enrichi avec mathématiques</title>
-</svelte:head>
-
-<div class="container mx-auto max-w-5xl p-4">
-	<!-- Header -->
-	<div class="mb-6">
-		<h1 class="mb-2 text-3xl font-bold text-foreground">Éditeur de texte enrichi</h1>
-		<p class="text-muted-foreground">
-			Démo d'un éditeur avec support des formules mathématiques interactives (MathLive + TipTap)
-		</p>
-	</div>
-
-	<Separator class="mb-6" />
+<div class="space-y-6">
+	<p class="text-muted-foreground">
+		Une conversation en mode <code>chat</code>, telle qu'un message au prof : on écrit, on envoie,
+		le message s'affiche avec <code>RichTextDisplay</code>.
+	</p>
 
 	<!-- Instructions -->
-	<div class="mb-6 rounded-lg border border-border bg-card p-4">
-		<h2 class="mb-2 text-lg font-semibold">Comment utiliser :</h2>
+	<div class="rounded-lg border border-border bg-card p-4">
+		<h3 class="mb-2 text-lg font-semibold">Comment utiliser :</h3>
 		<ul class="list-inside list-disc space-y-1 text-sm text-muted-foreground">
 			<li>
 				Utilisez les boutons <strong>Gras</strong> et <strong>Italique</strong> pour formater le texte
 			</li>
 			<li>Cliquez sur <strong>Formule</strong> pour insérer des formules mathématiques</li>
 			<li>
-				<strong>Nouveau :</strong> Tapez
+				Tapez
 				<code class="rounded bg-muted px-1 py-0.5">$$formule$$</code>
-				pour créer automatiquement une formule (ex:
+				pour créer automatiquement une formule (ex :
 				<code class="rounded bg-muted px-1 py-0.5">$$x^2+y^2$$</code>)
 			</li>
 			<li>Les formules en ligne s'insèrent dans le texte</li>
@@ -192,31 +186,6 @@
 				💡 Tapez <code class="rounded bg-muted px-1 py-0.5">$$x^2$$</code> ou utilisez le bouton "Formule"
 				pour insérer des mathématiques
 			</p>
-		</div>
-	</div>
-
-	<!-- Features showcase -->
-	<div class="mt-8 grid gap-4 md:grid-cols-2">
-		<div class="rounded-lg border border-border bg-card p-4">
-			<h3 class="mb-2 font-semibold">✨ Fonctionnalités</h3>
-			<ul class="space-y-1 text-sm text-muted-foreground">
-				<li>• Édition de texte enrichi (gras, italique)</li>
-				<li>• Formules mathématiques interactives</li>
-				<li>• Support LaTeX complet via MathLive</li>
-				<li>• Affichage en temps réel</li>
-				<li>• Mode lecture seule pour les messages</li>
-			</ul>
-		</div>
-
-		<div class="rounded-lg border border-border bg-card p-4">
-			<h3 class="mb-2 font-semibold">🔧 Technologies</h3>
-			<ul class="space-y-1 text-sm text-muted-foreground">
-				<li>• <strong>Svelte 5</strong> - Framework réactif</li>
-				<li>• <strong>TipTap</strong> - Éditeur de texte riche</li>
-				<li>• <strong>MathLive</strong> - Éditeur mathématique</li>
-				<li>• <strong>Shadcn-svelte</strong> - Composants UI</li>
-				<li>• <strong>Tailwind CSS</strong> - Styling</li>
-			</ul>
 		</div>
 	</div>
 </div>
