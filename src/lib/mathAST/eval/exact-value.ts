@@ -29,7 +29,7 @@ import {
 import { findNodes, mapNode } from '../transforms';
 import { extractRational, numericNode } from '../common/numeric';
 import { divRational, negRational } from '../normal/rational';
-import { flattenSumShallow, flipSign, unflattenSum, type FlatSum } from '../flatten';
+import { flattenSumShallow, flipSign, unflattenSum, type SignedTerm } from '../flatten';
 import { toLatex } from '../latex-generator';
 import { getVariables } from './substitute';
 
@@ -244,7 +244,7 @@ function decimalWriting(r: Rational): MathNode | null {
 function withCommonDenominator(node: MathNode): MathNode {
 	const terms = flattenSumShallow(node);
 	if (terms.length < 2) return node;
-	const numerators: FlatSum = [];
+	const numerators: SignedTerm[] = [];
 	let denominator: MathNode | null = null;
 	for (const { sign, term } of terms) {
 		const negated = isOpposite(term);
