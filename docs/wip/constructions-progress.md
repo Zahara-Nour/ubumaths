@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-10-24, PR 1 « écriture au prof seul » ouverte (#1665)._
 
-- **État** : #1665 ouverte (migration `20261024120000` + code), revues `code-reviewer` et `security-auditor` sans finding bloquant ; tests d'intégration rouges sans la migration, verts avec (46/46).
-- **Prochaine action** : CI verte → merge → `db:migrate` (4 conditions réunies) ; puis, après le `deploy:prod` demandé par David, PR 2 (`DROP COLUMN author_id`).
+- **État** : #1665 mergée (code + migration). Collision d'horodatage avec `passe_lycee_retouches_2` (même `20261024120000`, autre session) : migration renommée `20261024120100` (PR de correction), PAS encore jouée en prod.
+- **Prochaine action** : PR de renommage mergée → `migration list --linked` (seule la mienne sans `remote`, ou avec celle de passe-lycée) → `db:migrate` (4 conditions réunies) ; puis, après le `deploy:prod` demandé par David, PR 2 (`DROP COLUMN author_id`).
 - **En attente de David** : vérifier `/constructions` en prof et en élève (serveur de la branche) ; vérifications #1621 → #1659 dans `docs/wip/verifications-manuelles.md` ; suite possible : `etiquette="aucune"` pour les droites.
 - **Tranché (2026-10-24)** : écriture des constructions = **prof seul** (l'admin redevient lecteur, conversion XML comprise) ; scripts de démo inchangés (prof et admin) ; le prof lit tout, brouillons compris.
 - **Pièges en cours** : PR 2 — la vue `public.resources` lit `constructions.author_id` (`20260909020000`, `20260930140000`) : la recréer AVANT le `DROP` ; scripts `scripts/constructions-prod/appliquer.ts`, `scripts/convert-instrumenpoche.ts` et le test `lectures-ouvertes-fermees` écrivent `author_id`. `M'` refusé comme identifiant ; commits et PR sans mention Claude.
@@ -32,7 +32,7 @@ Décisions de David : écriture = **prof seul** (pas l'admin). Question d'accès
 9. Élève ou admin qui ouvre l'adresse d'un brouillon → **404** (au lieu de 403 : ne pas confirmer qu'il existe).
 10. Élève qui écrit directement en base : `insert` refusé (`42501`), `update`/`delete` → zéro ligne ; aucun brouillon lu.
 
-**PR 1 (#1665)** : migration `20261024120000` (`is_teacher()`, 4 policies), code par `CONSTRUCTION_AUTHOR_ROLES = ['teacher']`, `CONSTRUCTION_COLUMNS` sans `author_id`, scripts de démo sur leur propre constante `DEMO_SCRIPT_AUTHOR_ROLES` (prof et admin — la constante partagée les aurait fermés à l'admin), conversion XML au prof seul. Preuve rouge : 7 tests en échec sans la migration ; verts avec (46/46). Revues : aucun bloquant ; mineurs notés — vue `resources` à recréer en PR 2, `REVOKE ALL ON constructions FROM anon` possible à part (aucune policy anon, rien d'ouvert).
+**PR 1 (#1665)** : migration `20261024120000` (renommée `20261024120100` après collision avec `passe_lycee_retouches_2`) (`is_teacher()`, 4 policies), code par `CONSTRUCTION_AUTHOR_ROLES = ['teacher']`, `CONSTRUCTION_COLUMNS` sans `author_id`, scripts de démo sur leur propre constante `DEMO_SCRIPT_AUTHOR_ROLES` (prof et admin — la constante partagée les aurait fermés à l'admin), conversion XML au prof seul. Preuve rouge : 7 tests en échec sans la migration ; verts avec (46/46). Revues : aucun bloquant ; mineurs notés — vue `resources` à recréer en PR 2, `REVOKE ALL ON constructions FROM anon` possible à part (aucune policy anon, rien d'ouvert).
 
 Ensuite : `deploy:prod` (sur demande de David), puis PR 2 : `DROP COLUMN author_id` (+ index + clé étrangère), grep des usages collé, arrêt avant `db:migrate` (destructif).
 

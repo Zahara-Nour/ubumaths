@@ -91,7 +91,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 /**
  * PUT /api/constructions/[id]
  * Update construction
- * Prof seul (la RLS tient la même règle, migration 20261024120000)
+ * Prof seul (la RLS tient la même règle, migration 20261024120100)
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
@@ -149,7 +149,7 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 /**
  * DELETE /api/constructions/[id]
  * Delete construction
- * Prof seul (la RLS tient la même règle, migration 20261024120000)
+ * Prof seul (la RLS tient la même règle, migration 20261024120100)
  */
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
