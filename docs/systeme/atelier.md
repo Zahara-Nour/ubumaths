@@ -2832,7 +2832,7 @@ de `mathAST` contre flottants, `e` = Euler, `^` / `**`) donneraient deux résult
 objet ; `a = 3` dans une cellule laisserait croire que le curseur bouge ; le playground valide et
 note, l'atelier ne valide pas (décision 2). À la place, des **ponts à sens unique, visibles** :
 
-1. **« Ouvrir dans Python »** (après le tableur) : une fonction, une suite ou une liste s'ouvre dans
+1. **« Ouvrir dans Python »** (le tableur, fini et en prod, ne le retient plus) : une fonction, une suite ou une liste s'ouvre dans
    `/python` comme du code lisible (`def f(x): return …`, `L = [12, 15, 9]`), par l'entrée
    `?code=` qui existe déjà (`routes/(public)/python/+page.svelte`). Seul travail : la traduction
    `mathAST` → Python, refusée avec un message pour ce qui ne se traduit pas sans perte.
@@ -2872,18 +2872,21 @@ résolution / dérivation / simplification / factorisation / variations par éta
 (`.stats`, `.ajustement`, listes qualitatives, `.croiser`, `.filtrer`, `.comparer`, `.simuler`),
 lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`).
 
+**Livré aussi, en production** (vérifié le 2026-10-24 sur la branche `production`) :
+
+- **v2 géométrie** (v0.41.0) : lot 1 (modèle, vue Géométrie, 𝒞f), lot 2 (constructions au
+  clavier, mesures, `point_sur`, intersections, `.relever`), lot 3 (barre d'outils, glisser,
+  outils de construction, téléphone et tablette) ; chantier clos le 2026-10-19, journal :
+  [atelier-geometrie-progress.md](../archive/wip/atelier-geometrie-progress.md) ;
+- **tableur intégré** (option C) : lots 1 à 5 (#1410 → #1439 : grille, formules, `.tabuler`,
+  fonctions, hasard à graine) en v0.36.0, mise en forme, RESTE / ET / OU, ouvrir un CSV (v0.37.0),
+  NBVAL et NB.VIDE (v0.39.0). Journal : [atelier-tableur-progress.md](../wip/atelier-tableur-progress.md).
+
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
 - `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
-- **v2** géométrie : **livrée** (lot 1 : modèle, vue Géométrie, 𝒞f ; lot 2 : constructions au
-  clavier, mesures, `point_sur`, intersections, `.relever` ; lot 3 : barre d'outils, glisser,
-  outils de construction, téléphone et tablette), pas encore en prod ; chantier clos le
-  2026-10-19, journal : [atelier-geometrie-progress.md](../archive/wip/atelier-geometrie-progress.md). **v3** Python :
-  remplacée le 2026-10-24 par le pont « Ouvrir dans Python », à faire après le tableur (voir
-  Décisions) ;
-- tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1), collage /
-  copie / CSV / titres (PR 2), annulation (PR 3a), appariement par ligne (PR 3b) — lot 1 complet ;
-  à venir : les formules (lot 2) ;
+- le pont « Ouvrir dans Python » (remplace la v3 le 2026-10-24, voir Décisions) : une fonction,
+  une suite ou une liste ouverte dans `/python` en code lisible ; aucune phase 0 encore ;
 - dettes connues : action « Renommer » encore désactivée (« prochain lot »), saisie des unités
   sans palette. `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
   poste (< 0,1 ms ; voir « Ce qui se recalcule, et ce qui est gardé »).

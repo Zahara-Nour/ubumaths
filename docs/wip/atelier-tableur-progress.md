@@ -1,14 +1,15 @@
 # Atelier — tableur intégré : journal du chantier
 
-## Reprendre ici (2026-10-21)
+## Reprendre ici (2026-10-24)
 
-**Tout est livré sur `main`, rien n'est en production.** Lots 1 à 5 (#1410 → #1439), défauts
+**Tout est livré et en production** (lots 1-5 en v0.36.0, CSV en v0.37.0, NBVAL en v0.39.0 ;
+vérifié sur la branche `production` le 2026-10-24). Lots 1 à 5 (#1410 → #1439), défauts
 (#1442, #1444), mise en forme (#1466, #1469), RESTE et ET/OU (#1472), ouvrir un CSV (#1473),
 NBVAL et NB.VIDE (#1477). Aucune PR ouverte, aucun worktree du tableur.
 
 Reste, à décider par David :
 
-1. **Mise en production** (`pnpm deploy:prod`, sur sa demande seulement).
+1. ~~Mise en production~~ : faite.
 2. **Le sort de `/spreadsheet`** (V4) : retirer, rediriger vers l'atelier, ou garder. L'atelier en
    reprend l'essentiel ; ce qu'il ne reprend pas : NON, VRAI/FAUX, SIERREUR, ESTVIDE et
    compagnie, les fonctions de texte (CONCATENER…), VAR, MODE, PRODUIT, PUISSANCE, PLAFOND,
