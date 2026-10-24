@@ -5,9 +5,9 @@
 _Mis à jour le 2026-10-24, avant toute PR._
 
 - **État** : inventaire fait ; revue page par page en cours, lignes 1 à 18 tranchées (tableau ci-dessous).
-- **Prochaine action** : poursuivre la revue au premier `?` du tableau « Revue page par page ».
-- **En attente de David** : le sort de la ligne 19. Rien n'est codé : le plan viendra à la fin de la revue.
-- **Pièges en cours** : rien ne se supprime pour l'instant ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` sont de vraies fonctionnalités, hors chantier.
+- **Prochaine action** : présenter la ligne 19 (`/dashboard/admin/errors/test`, boutons qui provoquent des erreurs pour la surveillance ; reco : dev `/dev/erreurs/surveillance`, à côté de `/dev/erreurs/page` de la ligne 14, doc `surveillance-des-erreurs.md` à suivre). Puis : plan en phases (PR découpées : garde `/dev` + `/aide-ecriture` + redirections, déplacements, fusions, suppression ligne 17, pages vitrine une à une, robots/sitemap), à faire valider.
+- **En attente de David** : le sort de la ligne 19, puis la validation du plan. Rien n'est codé.
+- **Pièges en cours** : aucune suppression hors fusions (7, 8, 15) et ligne 17 ; `/test-font` intact (rien de « KaTeX » renommé) ; règle « contenu pédagogique = prof » ; chantier constructions en cours ailleurs → déplacer `/construction-demo` après ses merges ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` = vraies fonctionnalités, hors chantier.
 - **Worktree / branche** : aucun (rien de codé) ; journal commité sur `main`.
 
 ## Décisions de David (2026-10-24)
