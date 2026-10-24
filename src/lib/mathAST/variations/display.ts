@@ -48,6 +48,20 @@ import { toCustom } from '../custom-generator';
 /** Le budget de la politique `factoriser`, comme celui d'`auto` dans final-form. */
 const FACTOR_TIMEOUT_MS = 1000;
 
+/**
+ * Ce que la factorisation accepte en plus de la règle du tableau (D4, lot 5e) :
+ * une forme factorisée DEMANDÉE par l'énoncé n'a pas à servir la lecture du signe.
+ */
+export interface FactoredFormOptions {
+	/** Un nombre devant une somme : `8x − 8 → 8(x − 1)` (Q39, David 2026-10-24) */
+	readonly numberBeforeSum?: boolean;
+	/**
+	 * Un facteur qui porte une fraction (`x(x²/3 + 1)`) : refusé quand `false`
+	 * (primitive, Q34). Par défaut accepté, comme au tableau.
+	 */
+	readonly fractionInFactor?: boolean;
+}
+
 /** Les deux écritures de f′ d'une étude de variations. */
 export interface DisplayedDerivatives {
 	/** La forme finale de `.dériver` (lot 5a) */
@@ -80,20 +94,32 @@ export function reducedDerivative(derivative: MathNode, f: MathNode): MathNode {
 	return displayedDerivatives(derivative, f).factored;
 }
 
+/**
+ * `node` sous forme factorisée, ou `node` lui-même (même référence) quand rien
+ * ne se factorise : la forme demandée par l'énoncé (D4). Ne lève jamais.
+ */
+export function factoredForm(node: MathNode, options: FactoredFormOptions = {}): MathNode {
+	try {
+		return factoredForSign(node, options);
+	} catch {
+		return node;
+	}
+}
+
 /** Quotient (sous un éventuel −) : numérateur seul ; sinon l'expression entière. */
-function factoredForSign(node: MathNode): MathNode {
+function factoredForSign(node: MathNode, options: FactoredFormOptions = {}): MathNode {
 	if (isOpposite(node) && isDivision(node.operand)) {
 		const quotient = node.operand;
-		const top = factored(quotient.numerator);
+		const top = factored(quotient.numerator, options);
 		return top === quotient.numerator
 			? node
 			: opposite(divide(top, quotient.denominator, quotient.displayStyle));
 	}
 	if (isDivision(node)) {
-		const top = factored(node.numerator);
+		const top = factored(node.numerator, options);
 		return top === node.numerator ? node : divide(top, node.denominator, node.displayStyle);
 	}
-	return factored(node);
+	return factored(node, options);
 }
 
 /**
@@ -102,7 +128,7 @@ function factoredForSign(node: MathNode): MathNode {
  * porte des exponentielles n'est factorisé que HORS d'elles : leur exposant
  * reste écrit (`(2x − 2)e^{x²−2x}` → `2(x − 1)e^{x²−2x}`, jamais `e^{x(x−2)}`).
  */
-function factored(node: MathNode): MathNode {
+function factored(node: MathNode, options: FactoredFormOptions): MathNode {
 	const sign = isOpposite(node);
 	const inner = sign ? node.operand : node;
 	const factors = flattenProductShallow(inner);
@@ -120,7 +146,7 @@ function factored(node: MathNode): MathNode {
 	}
 	if (candidate === null) return node;
 	const written = withTypedDecimals(tidy(candidate, { order: 'kept' }), node);
-	return acceptable(written, node) ? written : node;
+	return acceptable(written, node, options) ? written : node;
 }
 
 /** La politique `factoriser` (lycée), ou `null` si le budget est dépassé. */
@@ -146,13 +172,24 @@ function kernelFactored(node: MathNode): MathNode | null {
  * - un décimal tapé reste décimal (S1) : pas de fraction de nombres que
  *   `withTypedDecimals` n'a pu récrire (`3x² − 0,75` garde ses décimaux).
  */
-function acceptable(candidate: MathNode, node: MathNode): boolean {
+function acceptable(
+	candidate: MathNode,
+	node: MathNode,
+	options: FactoredFormOptions = {}
+): boolean {
 	if (hashMathNode(candidate) === hashMathNode(node)) return false;
 	const inner = unwrap(isOpposite(candidate) ? candidate.operand : candidate);
 	if (isSum(inner)) return false;
 	const nonNumeric = flattenProductShallow(inner).filter(({ factor }) => !isNumericFactor(factor));
-	if (nonNumeric.length === 1 && isSum(unwrap(nonNumeric[0].factor))) {
-		if (!isPolynomialOfDegreeTwoOrMore(unwrap(nonNumeric[0].factor))) return false;
+	if (options.numberBeforeSum !== true && nonNumeric.length === 1) {
+		const only = unwrap(nonNumeric[0].factor);
+		if (isSum(only) && !isPolynomialOfDegreeTwoOrMore(only)) return false;
+	}
+	if (
+		options.fractionInFactor === false &&
+		nonNumeric.some(({ factor }) => findNodes(factor, isDivision).length > 0)
+	) {
+		return false;
 	}
 	if (flattenProductShallow(inner).some(({ factor }) => isRootWithFraction(factor))) return false;
 	if (exponentialKeys(candidate) !== exponentialKeys(node)) return false;
@@ -164,7 +201,7 @@ function acceptable(candidate: MathNode, node: MathNode): boolean {
  * Les fractions de nombres à écriture décimale finie récrites en décimal,
  * quand `node` portait un décimal tapé : `x(3x − 24/5)` → `x(3x − 4,8)`.
  */
-function withTypedDecimals(candidate: MathNode, node: MathNode): MathNode {
+export function withTypedDecimals(candidate: MathNode, node: MathNode): MathNode {
 	if (!hasDecimalLiteral(node)) return candidate;
 	return mapNode(candidate, (current) => {
 		if (!isNumericFraction(current)) return current;

@@ -19,6 +19,8 @@ import type { RenderedStep } from '../common/step-renderer-base';
 import { toLatex } from '../latex-generator';
 import { finalDerivative } from './final-form';
 import { transformAST } from '../visitor';
+import { requestedForm, requestedFormTitle } from '../requested-form';
+import type { RequestedForm } from '../requested-form';
 
 /** Les étapes complétées, et la dérivée rangée qu'elles démontrent. */
 export interface TidiedDerivation {
@@ -81,4 +83,37 @@ export function withTidyStep(
 		derivative: tidied,
 		derivativeLatex
 	};
+}
+
+/**
+ * Ajoute l'étape « On factorise » / « On développe » quand l'énoncé demande une
+ * forme (D4, lot 5e) et qu'elle change l'écriture de la dérivée finale.
+ *
+ * @param tidied - La dérivation complétée par `withTidyStep`
+ * @param form - La forme demandée par l'énoncé
+ * @param f - La fonction dérivée : son domaine est acquis pour f′ (S3)
+ */
+export function withRequestedFormStep(
+	tidied: TidiedDerivation,
+	form: RequestedForm,
+	f: MathNode
+): TidiedDerivation {
+	const result = requestedForm(tidied.derivative, form, { f, kind: 'derivative' });
+	const derivativeLatex = toLatex(result);
+	if (derivativeLatex === tidied.derivativeLatex) return tidied;
+	const last = tidied.steps.at(-1);
+	const step: RenderedStep = {
+		id: tidied.steps.length + 1,
+		rule: form === 'factorisee' ? 'factor-result' : 'expand-result',
+		title: requestedFormTitle(form),
+		...(last?.explanation !== undefined && {
+			explanation:
+				form === 'factorisee'
+					? 'On écrit la dérivée sous forme factorisée.'
+					: 'On écrit la dérivée sous forme développée.'
+		}),
+		expressionLatex: `${tidied.derivativeLatex} = ${derivativeLatex}`,
+		...(last?.schoolLevel !== undefined && { schoolLevel: last.schoolLevel })
+	};
+	return { steps: [...tidied.steps, step], derivative: result, derivativeLatex };
 }

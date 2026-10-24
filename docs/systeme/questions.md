@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24.
 
 ## À quoi ça sert
 
@@ -388,6 +388,22 @@ silencieux sur le mode A, jamais sur la trace. Tests : `correction-developper.te
 simplify-carte § 33, 2026-10-23) : `reduire` ne développe ni ne factorise (`2(x+3)` reste) ; `auto`
 simplifie les fractions de polynômes en montrant la factorisation et la condition, et ne développe
 que si c'est plus court. Aucun modèle en prod ne les emploie (mesuré le 2026-10-23).
+
+**Forme de la réponse finale demandée** (D4, chantier simplify-carte lot 5e, 2026-10-24) :
+`differentiate` et `integrate` acceptent `finalForm: 'developpee' | 'factorisee'` (`FinalForm`,
+`FINAL_FORMS` de `types.ts`, schémas souple et strict ; mode JSON seulement). Absent : la forme par
+défaut. Présent : une dernière étape « On factorise » / « On développe » (règles `factor-result` /
+`expand-result`) part de la forme par défaut, seulement si l'écriture change ; pour une primitive,
+elle vient avant « + C » (`mathAST/requested-form.ts`, décrit dans
+[mathast/README.md](mathast/README.md)). Sur une intégrale à bornes, `validateTemplate` refuse le
+réglage (Q36). La vérification du modèle (`checkTemplate`) juge, à chaque tirage, la réponse finale
+de la correction (`calculusFinalAnswerLatex`) par la forme exigée de chaque case dont elle donne la
+valeur (`isBlankValueCorrect`, puis `blank.requiredForm`, comme le juge de l'élève), avec ou sans `finalForm` : la forme par défaut doit aussi passer le juge
+(E1, Q37, David 2026-10-24). Pas de réponse finale (repli sur le mode A, intégrale sans valeur) :
+rien à juger. Aucun modèle de la prod n'emploie
+le mode B (mesuré le 2026-10-24) : la bascule des modèles existants vers la correction automatique
+est un chantier à venir (David). Tests : `correction-forme-demandee.test.ts`,
+`check-template-forme-demandee.test.ts`.
 
 Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\detail{…}`, les blocs
 `> [!méthode]`, `> [!rappel]`, `> [!attention]` et les spans `{.rappel}`… ; un seul interrupteur

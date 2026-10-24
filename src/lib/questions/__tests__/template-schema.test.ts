@@ -168,6 +168,28 @@ describe('generatedStepsSchema', () => {
 		});
 		expect(result.success).toBe(false);
 	});
+
+	// D4 (simplify-carte, lot 5e) : forme de la réponse finale demandée par l'énoncé
+	it('accepte finalForm sur une dérivée et une primitive', () => {
+		for (const finalForm of ['developpee', 'factorisee']) {
+			expect(
+				generatedStepsSchema.safeParse({ kind: 'differentiate', expression: 'x^3', finalForm })
+					.success
+			).toBe(true);
+			expect(
+				generatedStepsSchema.safeParse({ kind: 'integrate', expression: 'x^2', finalForm }).success
+			).toBe(true);
+		}
+	});
+
+	it('refuse une autre valeur de finalForm', () => {
+		const result = generatedStepsSchema.safeParse({
+			kind: 'differentiate',
+			expression: 'x^3',
+			finalForm: 'reduite'
+		});
+		expect(result.success).toBe(false);
+	});
 });
 
 describe('generatedStepsOptionsSchema', () => {

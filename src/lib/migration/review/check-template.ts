@@ -6,7 +6,10 @@
  * - `validateTemplate` (structure) et le schéma Zod strict (clés mal orthographiées) ;
  * - au moins une spec de test, et toutes vertes (même validateur que l'élève) ;
  *   sauf carte de cours : aucune spec, mais recto et verso non vides à chaque tirage ;
- * - chaque variation génère une instance sur `instances` tirages (0 échec).
+ * - chaque variation génère une instance sur `instances` tirages (0 échec) ;
+ * - E1 (Q37, chantier simplify-carte) : quand une case exige une forme de l'élève
+ *   (`requiredForm`), la réponse de la correction automatique d'une dérivée ou d'une
+ *   primitive passe ce juge à chaque tirage, qu'elle demande une forme (`finalForm`) ou non.
  *
  * Les avertissements (`warnings`) ne changent jamais le verdict : variable qui peut
  * être négative citée sans parenthèses (`x-{{a}}` → `x--3`), cf. negative-substitution.ts.
@@ -20,6 +23,11 @@ import { validateTemplate } from '$lib/questions/validators/template-validator';
 import { questionTemplateSchema } from '$lib/questions/template-schema';
 import { runAllTestSpecs, type TestSpecResult } from '$lib/questions/test-spec-runner';
 import { generateInstance } from '$lib/questions/generator/instance-generator';
+import { calculusFinalAnswerLatex } from '$lib/questions/generator/correction-generator';
+import { requiredFormVerdict } from '$lib/questions/required-form-validator';
+import { readingOf } from '$lib/questions/formula-reading';
+import type { QuestionInstance } from '$lib/questions/types';
+import { isBlankValueCorrect } from '$lib/utils/answer-validator';
 import {
 	findUnparenthesizedNegatives,
 	type VariableDraw
@@ -49,6 +57,12 @@ export interface TemplateCheckReport {
 		attempts: number;
 		failures: GenerationFailure[];
 	};
+	/** E1 (Q37) : la réponse de la correction jugée par la forme exigée de l'élève */
+	correctionForm: {
+		/** Tirages vérifiés (correction automatique de dérivée ou de primitive ET forme exigée) */
+		checked: number;
+		failures: GenerationFailure[];
+	};
 	passed: boolean;
 	/** Raisons de l'échec, en français (vide si `passed`) */
 	reasons: string[];
@@ -76,9 +90,14 @@ function withoutId(template: QuestionTemplate): Omit<QuestionTemplate, 'id'> {
 function checkGeneration(
 	template: QuestionTemplate,
 	instances: number
-): TemplateCheckReport['generation'] & { draws: VariableDraw[] } {
+): TemplateCheckReport['generation'] & {
+	draws: VariableDraw[];
+	correctionForm: TemplateCheckReport['correctionForm'];
+} {
 	const failures: GenerationFailure[] = [];
 	const draws: VariableDraw[] = [];
+	const correctionForm: TemplateCheckReport['correctionForm'] = { checked: 0, failures: [] };
+	const cleanCoefficients = template.shared?.cleanCoefficients === true;
 	let attempts = 0;
 
 	template.variations.forEach((variation, variationIndex) => {
@@ -92,6 +111,13 @@ function checkGeneration(
 			}
 			// Valeurs réellement tirées : de quoi dire si une variable peut être négative
 			draws.push({ variationIndex, seed, variables: result.instance.resolvedVariables ?? [] });
+			const formErrors = correctionFormErrors(result.instance, cleanCoefficients);
+			if (formErrors !== null) {
+				correctionForm.checked++;
+				if (formErrors.length > 0) {
+					correctionForm.failures.push({ variationIndex, seed, errors: formErrors });
+				}
+			}
 			if (isCourseCard(template)) {
 				// Carte de cours : recto et verso doivent être non vides APRÈS résolution
 				const errors: string[] = [];
@@ -102,7 +128,38 @@ function checkGeneration(
 		}
 	});
 
-	return { attempts, failures, draws };
+	return { attempts, failures, draws, correctionForm };
+}
+
+/**
+ * E1 (Q37) : les formes exigées que la réponse de la correction ne passe pas ;
+ * `null` quand il n'y a rien à vérifier (pas de correction automatique de dérivée ou de
+ * primitive, aucune forme exigée, ou pas de réponse finale). Avec ou sans `finalForm` :
+ * la forme par défaut doit, elle aussi, passer le juge (David, 2026-10-24).
+ */
+function correctionFormErrors(
+	instance: QuestionInstance,
+	cleanCoefficients: boolean
+): string[] | null {
+	const kind = instance.correction?.generatedSteps?.kind;
+	if (kind !== 'differentiate' && kind !== 'integrate') return null;
+	// Le juge de l'élève ne lit que la forme de chaque case (`blank.requiredForm`, où
+	// `instance-generator` reporte celle de la variation) : `instance.requiredForm` non
+	const blanks = (instance.blanks ?? []).flatMap((blank) =>
+		blank.requiredForm === undefined ? [] : [{ blank, form: blank.requiredForm }]
+	);
+	if (blanks.length === 0) return null;
+	const answer = calculusFinalAnswerLatex(instance, { cleanCoefficients });
+	// Rien de généré (repli sur la correction écrite) ou pas de valeur (V28) : rien à juger
+	if (answer === null) return null;
+	// Seules les cases dont la correction donne la VALEUR (f′(x), pas f′(2) à côté) :
+	// même pipeline que l'élève (`isBlankValueCorrect`, puis la forme)
+	const answered = blanks.filter(({ blank }) => isBlankValueCorrect(answer, blank, instance));
+	if (answered.length === 0) return null;
+	const reading = readingOf(instance);
+	return answered
+		.filter(({ form }) => requiredFormVerdict(answer, form, { ...reading }) !== 'ok')
+		.map(({ form }) => `correction : ${answer} (forme exigée ${JSON.stringify(form)})`);
 }
 
 export function checkTemplate(
@@ -119,7 +176,7 @@ export function checkTemplate(
 		? []
 		: schema.error.issues.map((issue) => `${issue.path.join('.')} : ${issue.message}`);
 	const specs = runAllTestSpecs(template);
-	const { draws, ...generation } = checkGeneration(template, instances);
+	const { draws, correctionForm, ...generation } = checkGeneration(template, instances);
 	const warnings = findUnparenthesizedNegatives(template, draws);
 
 	const reasons: string[] = [];
@@ -152,12 +209,18 @@ export function checkTemplate(
 	if (generation.failures.length > 0) {
 		reasons.push(`${generation.failures.length} tirage(s) en échec sur ${generation.attempts}`);
 	}
+	if (correctionForm.failures.length > 0) {
+		reasons.push(
+			`${correctionForm.failures.length} tirage(s) sur ${correctionForm.checked} où la correction n’a pas la forme exigée de l’élève`
+		);
+	}
 
 	return {
 		templateErrors,
 		schemaErrors,
 		specs,
 		generation,
+		correctionForm,
 		passed: reasons.length === 0,
 		reasons,
 		warnings
@@ -184,6 +247,16 @@ export function formatCheckReport(report: TemplateCheckReport): string {
 		);
 	}
 	if (failures.length > 5) lines.push(`  … et ${failures.length - 5} autre(s)`);
+	const { checked, failures: formFailures } = report.correctionForm;
+	if (checked > 0) {
+		lines.push(`Forme de la correction (E1) : ${checked - formFailures.length}/${checked} tirages`);
+		for (const failure of formFailures.slice(0, 5)) {
+			lines.push(
+				`  ❌ variation ${failure.variationIndex + 1}, tirage ${failure.seed} : ${failure.errors.join('; ')}`
+			);
+		}
+		if (formFailures.length > 5) lines.push(`  … et ${formFailures.length - 5} autre(s)`);
+	}
 	for (const error of report.templateErrors) lines.push(`Structure : ${error}`);
 	for (const error of report.schemaErrors) lines.push(`Schéma : ${error}`);
 	for (const warning of report.warnings) lines.push(`Avertissement : ${warning}`);

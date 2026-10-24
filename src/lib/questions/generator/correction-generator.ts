@@ -23,6 +23,7 @@ import { parseCustomSafe } from '$lib/mathAST';
 import { templateGenericFunctions } from '../generic-functions';
 import { readingOf } from '../formula-reading';
 import type { MathNode, RelationNode } from '$lib/mathAST/types';
+import { toLatex } from '$lib/mathAST/latex-generator';
 import type {
 	PedagogicalRenderOptions,
 	RenderedStep,
@@ -33,7 +34,10 @@ import { PedagogicalArithmeticRenderer } from '$lib/mathAST/pedagogical-arithmet
 import { extractPedagogicalTarget } from '$lib/mathAST/pedagogical-arithmetic/target-extractor';
 import { generatePedagogicalDifferentiationSteps } from '$lib/mathAST/pedagogical-differentiation/pipeline';
 import { PedagogicalDifferentiationRenderer } from '$lib/mathAST/pedagogical-differentiation/renderer';
-import { withTidyStep } from '$lib/mathAST/pedagogical-differentiation/tidy-step';
+import {
+	withRequestedFormStep,
+	withTidyStep
+} from '$lib/mathAST/pedagogical-differentiation/tidy-step';
 import {
 	generatePedagogicalIntegrationSteps,
 	PedagogicalIntegrationNotImplemented,
@@ -78,7 +82,7 @@ import { generateRationalInequalitySteps } from '$lib/mathAST/pedagogical-solve/
 import { InequalityNotSolvable } from '$lib/mathAST/solve/inequality/types';
 import type { LinearSchoolLevel, QuadraticSchoolLevel } from '$lib/mathAST/pedagogical-solve/types';
 
-import type { GeneratedStepsOptions, QuestionInstance } from '../types';
+import type { FinalForm, GeneratedSteps, GeneratedStepsOptions, QuestionInstance } from '../types';
 import { gradeLevelToSchoolLevel } from '../grade-level-to-school-level';
 import { resolveExpression } from './content-resolver';
 import { cleanCoefficientsAst, cleanCoefficientsCustom } from '../clean-coefficients';
@@ -146,14 +150,10 @@ export function generateCorrection(
 				});
 				break;
 			case 'differentiate':
-				renderedSteps = renderDifferentiate({
-					expression: generatedSteps.expression,
-					variable: generatedSteps.variable ?? 'x',
-					instance,
-					cleanCoefficients,
-					schoolLevel,
-					verbosity
-				});
+			case 'integrate':
+				renderedSteps =
+					calculusCorrection(generatedSteps, instance, cleanCoefficients, schoolLevel, verbosity)
+						?.steps ?? null;
 				break;
 			case 'linear-inequality':
 				renderedSteps = renderLinearInequality({
@@ -176,17 +176,6 @@ export function generateCorrection(
 			case 'rational-inequality':
 				renderedSteps = renderRationalInequality({
 					inequality: generatedSteps.inequality,
-					instance,
-					cleanCoefficients,
-					schoolLevel,
-					verbosity
-				});
-				break;
-			case 'integrate':
-				renderedSteps = renderIntegrate({
-					expression: generatedSteps.expression,
-					variable: generatedSteps.variable,
-					definite: generatedSteps.definite,
 					instance,
 					cleanCoefficients,
 					schoolLevel,
@@ -593,9 +582,82 @@ function renderRationalInequality({
 	return renderer.renderAll(steps, renderOptions);
 }
 
+/** Les étapes d'une dérivée ou d'une primitive, et la réponse sur laquelle elles finissent. */
+interface CalculusCorrection {
+	readonly steps: readonly RenderedStep[];
+	/**
+	 * f′, ou F sans « + C » ; la valeur pour une intégrale à bornes, `null` quand
+	 * f n'y est pas définie (V28 : les étapes disent le refus)
+	 */
+	readonly final: MathNode | null;
+}
+
+type CalculusDeclaration = Extract<GeneratedSteps, { kind: 'differentiate' | 'integrate' }>;
+
+function calculusCorrection(
+	generatedSteps: CalculusDeclaration,
+	instance: QuestionInstance,
+	cleanCoefficients: boolean,
+	schoolLevel: SchoolLevel,
+	verbosity: 'summarized' | 'detailed'
+): CalculusCorrection | null {
+	if (generatedSteps.kind === 'differentiate') {
+		return renderDifferentiate({
+			expression: generatedSteps.expression,
+			variable: generatedSteps.variable ?? 'x',
+			finalForm: generatedSteps.finalForm,
+			instance,
+			cleanCoefficients,
+			schoolLevel,
+			verbosity
+		});
+	}
+	return renderIntegrate({
+		expression: generatedSteps.expression,
+		variable: generatedSteps.variable,
+		definite: generatedSteps.definite,
+		finalForm: generatedSteps.finalForm,
+		instance,
+		cleanCoefficients,
+		schoolLevel,
+		verbosity
+	});
+}
+
+/**
+ * La réponse sur laquelle finit la correction automatique d'une dérivée ou
+ * d'une primitive (sans « + C »), en LaTeX ; `null` pour une autre correction
+ * ou si rien n'est généré. Pour la garde E1 de la vérification du modèle (Q37) :
+ * la correction doit passer le juge de la forme exigée de l'élève.
+ */
+export function calculusFinalAnswerLatex(
+	instance: QuestionInstance,
+	options: { cleanCoefficients?: boolean } = {}
+): string | null {
+	const generatedSteps = instance.correction?.generatedSteps;
+	if (generatedSteps?.kind !== 'differentiate' && generatedSteps?.kind !== 'integrate') {
+		return null;
+	}
+	try {
+		const opts: GeneratedStepsOptions = generatedSteps.options ?? {};
+		const correction = calculusCorrection(
+			generatedSteps,
+			instance,
+			options.cleanCoefficients === true,
+			resolveSchoolLevel(opts.schoolLevel, instance.grades),
+			opts.verbosity ?? 'detailed'
+		);
+		return correction?.final ? toLatex(correction.final) : null;
+	} catch {
+		return null;
+	}
+}
+
 interface DifferentiateDispatch {
 	readonly expression: string;
 	readonly variable: string;
+	/** Forme de la réponse finale demandée par l'énoncé (D4) */
+	readonly finalForm?: FinalForm;
 	readonly instance: QuestionInstance;
 	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
 	readonly cleanCoefficients: boolean;
@@ -606,11 +668,12 @@ interface DifferentiateDispatch {
 function renderDifferentiate({
 	expression,
 	variable,
+	finalForm,
 	instance,
 	cleanCoefficients,
 	schoolLevel,
 	verbosity
-}: DifferentiateDispatch): readonly RenderedStep[] | null {
+}: DifferentiateDispatch): CalculusCorrection | null {
 	const node = parseExpression(expression, instance, cleanCoefficients);
 	if (node === null) return null;
 
@@ -627,14 +690,21 @@ function renderDifferentiate({
 	const renderOptions: PedagogicalRenderOptions = { schoolLevel, verbosity };
 	// La dernière ligne est la dérivée RANGÉE : sans cette étape, la correction
 	// finissait sur `e^{3x} 3` ou `\cos x + (-\sin x)` (2026-10-06)
-	return withTidyStep(renderer.renderAll(result.steps, renderOptions), result.derivative, node)
-		.steps;
+	const tidied = withTidyStep(
+		renderer.renderAll(result.steps, renderOptions),
+		result.derivative,
+		node
+	);
+	const done = finalForm === undefined ? tidied : withRequestedFormStep(tidied, finalForm, node);
+	return { steps: done.steps, final: done.derivative };
 }
 
 interface IntegrateDispatch {
 	readonly expression: string;
 	readonly variable?: string;
 	readonly definite?: { readonly lower: string; readonly upper: string };
+	/** Forme de la primitive demandée par l'énoncé (D4) ; ignorée avec des bornes (Q36) */
+	readonly finalForm?: FinalForm;
 	readonly instance: QuestionInstance;
 	/** Option du modèle : la formule de départ est nettoyée comme dans l'énoncé */
 	readonly cleanCoefficients: boolean;
@@ -646,11 +716,12 @@ function renderIntegrate({
 	expression,
 	variable,
 	definite,
+	finalForm,
 	instance,
 	cleanCoefficients,
 	schoolLevel,
 	verbosity
-}: IntegrateDispatch): readonly RenderedStep[] | null {
+}: IntegrateDispatch): CalculusCorrection | null {
 	const node = parseExpression(expression, instance, cleanCoefficients);
 	if (node === null) return null;
 
@@ -677,7 +748,8 @@ function renderIntegrate({
 			level: integrationLevel,
 			variable,
 			verbosity,
-			definite: definiteParsed
+			definite: definiteParsed,
+			finalForm
 		});
 	} catch (err) {
 		// V1 scope refusals (partial fractions, cyclic IPP, parametric…) →
@@ -691,7 +763,10 @@ function renderIntegrate({
 		schoolLevel: integrationLevel,
 		verbosity
 	};
-	return renderer.renderAll(result.steps, renderOptions);
+	return {
+		steps: renderer.renderAll(result.steps, renderOptions),
+		final: result.value ?? result.antiderivative ?? null
+	};
 }
 
 interface SimplifyDispatch {

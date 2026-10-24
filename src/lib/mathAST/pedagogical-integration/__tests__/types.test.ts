@@ -266,13 +266,16 @@ describe('pedagogical-integration types', () => {
 			'apply-partial-fractions',
 			// Final
 			'add-constant',
-			'simplify-result'
+			'simplify-result',
+			// Forme demandée par l'énoncé (D4)
+			'factor-result',
+			'expand-result'
 		] as const satisfies readonly PedagogicalIntegrationRule[];
 
 		// Count sentinel — matches the union cardinality. Useful as a quick
 		// human-readable check ; the real exhaustiveness guarantee is the
 		// `_MissingFromAllRules` compile-time check below.
-		expect(allRules).toHaveLength(29);
+		expect(allRules).toHaveLength(31);
 
 		// Compile-time exhaustiveness check : if any rule of
 		// `PedagogicalIntegrationRule` is not in `allRules`, the type

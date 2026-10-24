@@ -298,7 +298,9 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 			: 'Intégration de chaque terme : $\\int \\dfrac{A}{x-r}\\,dx = A\\ln|x-r|$',
 	// ---- Final ----
 	'add-constant': () => "On ajoute la constante d'intégration C",
-	'simplify-result': () => 'On simplifie'
+	'simplify-result': () => 'On simplifie',
+	'factor-result': () => 'On factorise',
+	'expand-result': () => 'On développe'
 };
 
 const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
@@ -341,7 +343,9 @@ const SUPERIEUR_TITLES: RuleFnMap<TitleFn> = {
 			? '$\\int \\dfrac{A}{px+q}\\,dx = \\dfrac{A}{p}\\ln|px+q|$'
 			: '$\\int \\dfrac{A}{x-r}\\,dx = A\\ln|x-r|$',
 	'add-constant': () => '$+ C$',
-	'simplify-result': () => 'Simplification'
+	'simplify-result': () => 'Simplification',
+	'factor-result': () => 'Forme factorisée',
+	'expand-result': () => 'Forme développée'
 };
 
 export const TITLES: Record<SchoolLevel, RuleFnMap<TitleFn>> = {
@@ -419,6 +423,8 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 				? `On développe, puis on met ${bindMath(b, 'exponential')} en facteur.`
 				: `On met ${bindMath(b, 'exponential')} en facteur.`
 			: 'On écrit le résultat sous une forme simplifiée.',
+	'factor-result': () => 'On écrit la primitive sous forme factorisée.',
+	'expand-result': () => 'On écrit la primitive sous forme développée.',
 	'add-constant': () =>
 		'Une primitive est définie à une constante près : on ajoute toujours « + C » pour une intégrale indéfinie.'
 };
@@ -477,7 +483,9 @@ const DEFAULT_DESCRIPTIONS: Record<PedagogicalIntegrationRule, string> = {
 	'decompose-rational': 'Décomposition en éléments simples',
 	'apply-partial-fractions': 'Intégration des éléments simples',
 	'add-constant': "Constante d'intégration",
-	'simplify-result': 'Simplification'
+	'simplify-result': 'Simplification',
+	'factor-result': 'Forme factorisée',
+	'expand-result': 'Forme développée'
 };
 
 export function getDefaultDescription(rule: PedagogicalIntegrationRule): string {

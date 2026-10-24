@@ -23,7 +23,8 @@ import {
 	COMPLEX_FORMS,
 	EQUATION_FORMS,
 	SOLUTION_MODES,
-	VECTOR_MODES
+	VECTOR_MODES,
+	FINAL_FORMS
 } from './types';
 import { genericFunctionNamesSchema } from './generic-functions';
 import { capitalPairsSchema } from './capital-pairs';
@@ -180,6 +181,7 @@ const generatedStepsDifferentiate = z.object({
 	kind: z.literal('differentiate'),
 	expression: z.string().min(1),
 	variable: z.string().min(1).optional(),
+	finalForm: z.enum(FINAL_FORMS).optional(),
 	options: generatedStepsOptionsSchema.optional()
 });
 
@@ -211,6 +213,7 @@ const generatedStepsIntegrate = z.object({
 			upper: z.string().min(1)
 		})
 		.optional(),
+	finalForm: z.enum(FINAL_FORMS).optional(),
 	options: generatedStepsOptionsSchema.optional()
 });
 
@@ -442,6 +445,7 @@ const generatedStepsDifferentiateStrictZ = z
 		kind: z.literal('differentiate'),
 		expression: z.string().min(1),
 		variable: z.string().min(1).optional(),
+		finalForm: z.enum(FINAL_FORMS).optional(),
 		options: generatedStepsOptionsStrictZ.optional()
 	})
 	.strict();
@@ -482,6 +486,7 @@ const generatedStepsIntegrateStrictZ = z
 			})
 			.strict()
 			.optional(),
+		finalForm: z.enum(FINAL_FORMS).optional(),
 		options: generatedStepsOptionsStrictZ.optional()
 	})
 	.strict();
