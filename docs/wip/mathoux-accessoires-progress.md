@@ -66,3 +66,6 @@ _Mis à jour le 2026-10-24, #1689 en revue (plafond ajouté)._
 - 2026-10-24 — #1689 : revue de code et audit ; David choisit (1b) +2 de révision sans condition
   de Palotin, (2b) plafond des étapes contre les réussites forgées (20 / 24 h glissantes,
   recommandation acceptée : « je te suis ») ; +2 réservé aux élèves.
+- 2026-10-24 — audit de la migration du plafond : aucun bloquant. Preuve du verrou `profiles` :
+  sans lui (copie de travail, `pg_sleep(0.3)` ajouté pour élargir la course), le test « deux
+  versements simultanés » est rouge (36 au lieu de 18) ; vert avec la migration réelle.
