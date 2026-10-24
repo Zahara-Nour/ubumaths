@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR des corrections CP en cours._
+_Mis à jour le 2026-10-24, après #1702._
 
-- **État** : branche `fix/questions` — M1 `20261025000000_questions_cp_contenu` (générée par `docs/wip/questions/lot-corrections-cp.py`) + M2 `20261025000100_questions_cp_rangement_tags` (à la main) ; tests d'intégration verts, rouges sans les migrations ; `checkTemplate` OK sur les 4 contenus.
-- **Prochaine action** : revues (`code-reviewer` + `security-auditor`), PR, CI, merge, puis `db:migrate` (4 conditions) ; ensuite groupe A par lots.
-- **En attente de David** : rien.
-- **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017) ; le générateur (`scissions_outils`) ne sait ni retirer un tag ni changer les seuls niveaux d'un modèle → migration à la main ; horodatage : la prod a déjà joué `20261024235000` → migrations datées `20261025000000`/`000100` (relire `list_migrations` avant de dater).
-- **Worktree / branche** : `../ubumaths-wt-questions` · `fix/questions`.
+- **État** : corrections CP livrées (#1702 mergée, `db:migrate` fait, vérifié en prod : empreintes, tags, nœuds, niveaux) ; outil `horloge` lancé par David en parallèle dans sa propre session (journal `docs/wip/horloge-progress.md` sur `feat/horloge`).
+- **Prochaine action** : groupe A (33 points, texte seul, § 2) par lots — proposer le découpage des lots et les premiers modèles à David (phase 0), nouveau worktree.
+- **En attente de David** : vérification manuelle #1702 (`docs/wip/verifications-manuelles.md`).
+- **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017) ; le générateur (`scissions_outils`) ne sait ni retirer un tag ni changer les seuls niveaux → migration à la main ; dater après la dernière migration de la prod (`list_migrations`) ; `db:migrate` depuis le dépôt principal (le worktree n'est pas lié à Supabase) ; heredoc `python3 - <<EOF` bloque dans ce shell → script dans le scratchpad.
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1702).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (noter la méthode au fil de l'eau, § 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -105,3 +105,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 2 bis).
 - 2026-10-24 : décisions du § 4 (§ 4 bis).
 - 2026-10-24 : corrections CP — M1 (contenu, 4 modèles) + M2 (rangement, niveaux, tags), branche `fix/questions`.
+- 2026-10-24 : #1702 mergée, `db:migrate` (M1 + M2), vérifié en prod ; horloge lancée en parallèle (session « horloge »).
