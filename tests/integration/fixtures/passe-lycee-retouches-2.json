@@ -1,0 +1,1419 @@
+{
+	"modeles": [
+		{
+			"id": "0d2edda7-1d90-46ee-b07d-792ebbd43849",
+			"noeud": ["Nombres et calculs", "Racines carrées : calculs", "propriétés"],
+			"grades": ["2"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-261"
+				}
+			],
+			"avant": {
+				"title": "Vrai ou Faux : racines et opérations",
+				"description": null,
+				"variations": [
+					{
+						"statement": "Vrai ou Faux ?\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "sqrt({{a}})+sqrt({{b}})=sqrt({{eval:a+b}})"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Faux : en réalité, $\\sqrt{{{a}}} + \\sqrt{{{b}}} > \\sqrt{{{a}} + {{b}}}$.",
+								"En effet, les deux membres sont positifs, on peut donc comparer leurs carrés :",
+								"$$\\begin{align} \\left(\\sqrt{{{a}}} + \\sqrt{{{b}}}\\right)^2 &= \\left(\\sqrt{{{a}}}\\right)^2 +\\left(\\sqrt{{{b}}}\\right)^2 + 2\\sqrt{{{a}}}\\sqrt{{{b}}} \\\\ &= {{a}} +{{b}}\\textcolor{{{color:primary.1}}}{+2\\sqrt{{{eval:a*b}}}} \\\\ \\left(\\sqrt{{{a}}+{{b}}}\\right)^2 &= {{a}}+{{b}}\\end{align}$$",
+								"Comme $2\\sqrt{{{eval:a*b}}} > 0$, le carré de $\\sqrt{{{a}}} + \\sqrt{{{b}}}$ est plus grand que celui de $\\sqrt{{{a}} + {{b}}}$."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "Vrai ou Faux ?\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "sqrt({{a}})*sqrt({{b}})=sqrt({{eval:a*b}})"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Vrai : pour deux nombres positifs, $\\sqrt{x} \\times \\sqrt{y} = \\sqrt{x \\times y}$.",
+								"$$\\begin{align} \\sqrt{{{a}}} \\times \\sqrt{{{b}}} &= \\sqrt{{{a}} \\times {{b}}} \\\\ &= \\sqrt{{{eval:a*b}}} \\end{align}$$"
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Vrai"
+						},
+						{
+							"content": "Faux"
+						}
+					],
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9"
+						},
+						"description": "v0 a=7 b=9 bonne réponse",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2"
+						},
+						"description": "v0 a=2 b=2 bonne réponse",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "9"
+						},
+						"description": "v0 a=9 b=9 bonne réponse",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v0 mauvaise réponse",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9"
+						},
+						"description": "v1 a=7 b=9 bonne réponse",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2"
+						},
+						"description": "v1 a=2 b=2 bonne réponse",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "9"
+						},
+						"description": "v1 a=9 b=9 bonne réponse",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v1 mauvaise réponse",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					}
+				]
+			},
+			"apres": {
+				"title": "Vrai ou Faux : racines et opérations",
+				"description": null,
+				"variations": [
+					{
+						"statement": "Vrai ou Faux ?\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "sqrt({{a}})+sqrt({{b}})=sqrt({{eval:a+b}})"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Faux : en réalité, $\\sqrt{{{a}}} + \\sqrt{{{b}}} > \\sqrt{{{a}} + {{b}}}$.",
+								"En effet, les deux membres sont positifs, on peut donc comparer leurs carrés :",
+								"$$\\begin{align} \\left(\\sqrt{{{a}}} + \\sqrt{{{b}}}\\right)^2 &= \\left(\\sqrt{{{a}}}\\right)^2 +\\left(\\sqrt{{{b}}}\\right)^2 + 2\\sqrt{{{a}}}\\sqrt{{{b}}} \\\\ &= {{a}} +{{b}}\\textcolor{{{color:primary.1}}}{+2\\sqrt{{{eval:a*b}}}} \\\\ \\left(\\sqrt{{{a}}+{{b}}}\\right)^2 &= {{a}}+{{b}}\\end{align}$$",
+								"Comme $2\\sqrt{{{eval:a*b}}} > 0$, le carré de $\\sqrt{{{a}}} + \\sqrt{{{b}}}$ est plus grand que celui de $\\sqrt{{{a}} + {{b}}}$."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "Vrai ou Faux ?\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "sqrt({{a}})*sqrt({{b}})=sqrt({{eval:a*b}})"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Vrai : pour deux nombres positifs, $\\sqrt{x} \\times \\sqrt{y} = \\sqrt{x \\times y}$.",
+								"$$\\begin{align} \\sqrt{{{a}}} \\times \\sqrt{{{b}}} &= \\sqrt{{{a}} \\times {{b}}} \\\\ &= \\sqrt{{{eval:a*b}}} \\end{align}$$"
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "Vrai ou Faux ?\n\n$${{expression3}}$$",
+						"variables": [
+							{
+								"name": "expression3",
+								"expression": "sqrt({{a}})*sqrt({{b}})=sqrt({{eval:a+b}})"
+							}
+						],
+						"conditions": ["a*b != a+b"],
+						"correction": {
+							"steps": [
+								"Faux : le produit de deux racines est la racine du **produit**, pas de la somme.",
+								"$$\\sqrt{{{a}}} \\times \\sqrt{{{b}}} = \\sqrt{{{a}} \\times {{b}}} = \\sqrt{{{eval:a*b}}}$$",
+								"Or ${{eval:a*b}} \\neq {{eval:a+b}}$, donc $\\sqrt{{{eval:a*b}}} \\neq \\sqrt{{{eval:a+b}}}$."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "Vrai ou Faux ?\n\n$${{expression4}}$$",
+						"variables": [
+							{
+								"name": "expression4",
+								"expression": "sqrt({{a}})+sqrt({{a}})=2sqrt({{a}})"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Vrai : on ajoute deux fois le même nombre $\\sqrt{{{a}}}$.",
+								"$$\\sqrt{{{a}}} + \\sqrt{{{a}}} = 2 \\times \\sqrt{{{a}}} = 2\\sqrt{{{a}}}$$"
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Vrai"
+						},
+						{
+							"content": "Faux"
+						}
+					],
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9"
+						},
+						"description": "v0 a=7 b=9 bonne réponse",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2"
+						},
+						"description": "v0 a=2 b=2 bonne réponse",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "9"
+						},
+						"description": "v0 a=9 b=9 bonne réponse",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v0 mauvaise réponse",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9"
+						},
+						"description": "v1 a=7 b=9 bonne réponse",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2"
+						},
+						"description": "v1 a=2 b=2 bonne réponse",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "9"
+						},
+						"description": "v1 a=9 b=9 bonne réponse",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v1 mauvaise réponse",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v2 a=3 b=5 bonne réponse (faux)",
+						"variationIndex": 2,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "3"
+						},
+						"description": "v2 a=2 b=3 bonne réponse (faux)",
+						"variationIndex": 2,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "5"
+						},
+						"description": "v2 mauvaise réponse",
+						"variationIndex": 2,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9"
+						},
+						"description": "v3 a=7 bonne réponse (vrai)",
+						"variationIndex": 3,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9"
+						},
+						"description": "v3 mauvaise réponse",
+						"variationIndex": 3,
+						"selectedChoices": [1]
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Racines carrées",
+				"domain": "Manipuler",
+				"subdomain": "Propriétés",
+				"level": 1,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "e02fb162-ca4e-417c-ae37-e39a3798f16c",
+			"noeud": ["Équations différentielles", "y′ = ay + f"],
+			"grades": ["T_SPE"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-470"
+				}
+			],
+			"avant": {
+				"title": "Solution de y′ = ay + f à partir d'une solution particulière",
+				"description": "Une solution particulière g étant donnée, écrire les solutions Ce^{ax} + g(x) et fixer C par h(0) (spécialité seulement)",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:y0-q==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-q==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-q!=1 && y0-q!=-1|{{eval:y0-q}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:p==1|+x}}{{if:p==-1|-x}}{{if:p>0 && p!=1|+{{eval:p}}x}}{{if:p<0 && p!=-1|{{eval:p}}x}}{{if:q>0|+{{eval:q}}}}{{if:q<0|{{eval:q}}}}"
+							}
+						],
+						"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:-a*p==1|x}}{{if:-a*p==-1|-x}}{{if:-a*p!=1 && -a*p!=-1|{{eval:-a*p}}x}}{{if:p-a*q>0|+{{eval:p-a*q}}}}{{if:p-a*q<0|{{eval:p-a*q}}}}$.\n\nLa fonction $g$ définie sur $\\mathbb{R}$ par $g(x)={{if:p==1|x}}{{if:p==-1|-x}}{{if:p!=1 && p!=-1|{{eval:p}}x}}{{if:q>0|+{{eval:q}}}}{{if:q<0|{{eval:q}}}}$ est une solution de cette équation. Détermine la solution $h$ de cette équation telle que $h(0)={{eval:y0}}$.\n\n$h(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..3;±"
+							},
+							{
+								"name": "p",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "q",
+								"expression": "-4..4"
+							},
+							{
+								"name": "y0",
+								"expression": "-5..5"
+							}
+						],
+						"conditions": ["y0 != q", "p-a*q != 0"],
+						"correction": {
+							"steps": [
+								"Les solutions de cette équation sont les fonctions $x\\mapsto Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}+g(x)$ : solutions de l'équation homogène $y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$, plus la solution particulière $g$.",
+								"$h(x)=Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}{{if:p==1|+x}}{{if:p==-1|-x}}{{if:p>0 && p!=1|+{{eval:p}}x}}{{if:p<0 && p!=-1|{{eval:p}}x}}{{if:q>0|+{{eval:q}}}}{{if:q<0|{{eval:q}}}}$ et $h(0)=C{{if:q>0|+{{eval:q}}}}{{if:q<0|{{eval:q}}}}={{eval:y0}}$, donc $C={{eval:y0-q}}$.",
+								"$h(x)=\\textcolor{{{color:primary.0}}}{{{if:y0-q==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-q==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-q!=1 && y0-q!=-1|{{eval:y0-q}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:p==1|+x}}{{if:p==-1|-x}}{{if:p>0 && p!=1|+{{eval:p}}x}}{{if:p<0 && p!=-1|{{eval:p}}x}}{{if:q>0|+{{eval:q}}}}{{if:q<0|{{eval:q}}}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "(x{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}})e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}"
+							}
+						],
+						"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}+e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$.\n\nLa fonction $g$ définie sur $\\mathbb{R}$ par $g(x)=xe^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$ est une solution de cette équation. Détermine la solution $h$ de cette équation telle que $h(0)={{eval:y0}}$.\n\n$h(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "y0",
+								"expression": "1..5;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les solutions de cette équation sont les fonctions $x\\mapsto Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}+xe^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}=(x+C)e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$.",
+								"$h(0)=C={{eval:y0}}$.",
+								"$h(x)=\\textcolor{{{color:primary.0}}}{(x{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}})e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}$."
+							]
+						}
+					}
+				],
+				"shared": {
+					"cleanCoefficients": true
+				},
+				"test_specs": [
+					{
+						"answers": ["3e^{2x}+2x+1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"p": "2",
+							"q": "1",
+							"y0": "4"
+						},
+						"description": "v0 : y'=2y−4x, g=2x+1 → 3e^{2x}+2x+1",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4e^{2x}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"p": "2",
+							"q": "1",
+							"y0": "4"
+						},
+						"description": "v0 : g oubliée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4e^{2x}+2x+1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"p": "2",
+							"q": "1",
+							"y0": "4"
+						},
+						"description": "v0 : C = h(0) sans retrancher g(0)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["Ce^{2x}+2x+1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"p": "2",
+							"q": "1",
+							"y0": "4"
+						},
+						"description": "v0 : constante libre laissée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2x+1+3e^{2x}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"p": "2",
+							"q": "1",
+							"y0": "4"
+						},
+						"description": "v0 : ordre changé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["(x+2)e^{x}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"y0": "2"
+						},
+						"description": "v1 : y'=y+eˣ, g=xeˣ, h(0)=2 → (x+2)eˣ",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["xe^{x}+2e^{x}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"y0": "2"
+						},
+						"description": "v1 : développé",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2e^{x}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"y0": "2"
+						},
+						"description": "v1 : g oubliée",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["(x-1)e^{-2x}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"y0": "-1"
+						},
+						"description": "v1 : a=-2, h(0)=-1 → (x−1)e^{−2x}",
+						"variationIndex": 1
+					}
+				]
+			},
+			"apres": {
+				"title": "Solution de y′ = ay + f à partir d'une solution particulière",
+				"description": "Une solution particulière g étant donnée, écrire les solutions Ce^{ax} + g(x) et fixer C par h(0) (spécialité seulement)",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{if:y0-q==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-q==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-q!=1 && y0-q!=-1|{{eval:y0-q}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:p==1|+x}}{{if:p==-1|-x}}{{if:p>0 && p!=1|+{{eval:p}}x}}{{if:p<0 && p!=-1|{{eval:p}}x}}{{if:q>0|+{{eval:q}}}}{{if:q<0|{{eval:q}}}}"
+							}
+						],
+						"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}{{if:-a*p==1|+x}}{{if:-a*p==-1|-x}}{{if:-a*p>0 && -a*p!=1|+{{eval:-a*p}}x}}{{if:-a*p<0 && -a*p!=-1|{{eval:-a*p}}x}}{{if:p-a*q>0|+{{eval:p-a*q}}}}{{if:p-a*q<0|{{eval:p-a*q}}}}$.\n\nLa fonction $g$ définie sur $\\mathbb{R}$ par $g(x)={{if:p==1|x}}{{if:p==-1|-x}}{{if:p!=1 && p!=-1|{{eval:p}}x}}{{if:q>0|+{{eval:q}}}}{{if:q<0|{{eval:q}}}}$ est une solution de cette équation. Détermine la solution $h$ de cette équation telle que $h(0)={{eval:y0}}$.\n\n$h(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..3;±"
+							},
+							{
+								"name": "p",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "q",
+								"expression": "-4..4"
+							},
+							{
+								"name": "y0",
+								"expression": "-5..5"
+							}
+						],
+						"conditions": ["y0 != q", "p-a*q != 0"],
+						"correction": {
+							"steps": [
+								"Les solutions de cette équation sont les fonctions $x\\mapsto Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}+g(x)$ : solutions de l'équation homogène $y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}$, plus la solution particulière $g$.",
+								"$h(x)=Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}{{if:p==1|+x}}{{if:p==-1|-x}}{{if:p>0 && p!=1|+{{eval:p}}x}}{{if:p<0 && p!=-1|{{eval:p}}x}}{{if:q>0|+{{eval:q}}}}{{if:q<0|{{eval:q}}}}$ et $h(0)=C{{if:q>0|+{{eval:q}}}}{{if:q<0|{{eval:q}}}}={{eval:y0}}$, donc $C={{eval:y0-q}}$.",
+								"$h(x)=\\textcolor{{{color:primary.0}}}{{{if:y0-q==1|e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-q==-1|-e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:y0-q!=1 && y0-q!=-1|{{eval:y0-q}}e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}}{{if:p==1|+x}}{{if:p==-1|-x}}{{if:p>0 && p!=1|+{{eval:p}}x}}{{if:p<0 && p!=-1|{{eval:p}}x}}{{if:q>0|+{{eval:q}}}}{{if:q<0|{{eval:q}}}}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "(x{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}})e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}"
+							}
+						],
+						"statement": "On considère l'équation différentielle $(E) : y'={{if:a==1|y}}{{if:a==-1|-y}}{{if:a!=1 && a!=-1|{{eval:a}}y}}+e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$.\n\nLa fonction $g$ définie sur $\\mathbb{R}$ par $g(x)=xe^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$ est une solution de cette équation. Détermine la solution $h$ de cette équation telle que $h(0)={{eval:y0}}$.\n\n$h(x)=?$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3;±"
+							},
+							{
+								"name": "y0",
+								"expression": "1..5;±"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les solutions de cette équation sont les fonctions $x\\mapsto Ce^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}+xe^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}=(x+C)e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}$.",
+								"$h(0)=C={{eval:y0}}$.",
+								"$h(x)=\\textcolor{{{color:primary.0}}}{(x{{if:y0>0|+{{eval:y0}}}}{{if:y0<0|{{eval:y0}}}})e^{{{if:a==1|x}}{{if:a==-1|-x}}{{if:a!=1 && a!=-1|{{eval:a}}x}}}}$."
+							]
+						}
+					}
+				],
+				"shared": {
+					"cleanCoefficients": true
+				},
+				"test_specs": [
+					{
+						"answers": ["3e^{2x}+2x+1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"p": "2",
+							"q": "1",
+							"y0": "4"
+						},
+						"description": "v0 : y'=2y−4x, g=2x+1 → 3e^{2x}+2x+1",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4e^{2x}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"p": "2",
+							"q": "1",
+							"y0": "4"
+						},
+						"description": "v0 : g oubliée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4e^{2x}+2x+1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"p": "2",
+							"q": "1",
+							"y0": "4"
+						},
+						"description": "v0 : C = h(0) sans retrancher g(0)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["Ce^{2x}+2x+1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"p": "2",
+							"q": "1",
+							"y0": "4"
+						},
+						"description": "v0 : constante libre laissée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2x+1+3e^{2x}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"p": "2",
+							"q": "1",
+							"y0": "4"
+						},
+						"description": "v0 : ordre changé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["(x+2)e^{x}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"y0": "2"
+						},
+						"description": "v1 : y'=y+eˣ, g=xeˣ, h(0)=2 → (x+2)eˣ",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["xe^{x}+2e^{x}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"y0": "2"
+						},
+						"description": "v1 : développé",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2e^{x}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"y0": "2"
+						},
+						"description": "v1 : g oubliée",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["(x-1)e^{-2x}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-2",
+							"y0": "-1"
+						},
+						"description": "v1 : a=-2, h(0)=-1 → (x−1)e^{−2x}",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["2e^{2x}-x+1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"p": "-1",
+							"q": "1",
+							"y0": "3"
+						},
+						"description": "v0 : y'=2y+2x−1 (terme en x positif), g=−x+1 → 2e^{2x}−x+1",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Primitives et équations différentielles",
+				"domain": "Équations différentielles",
+				"subdomain": "Équation y′ = ay + f",
+				"level": 3,
+				"status": "draft"
+			},
+			"neufs": []
+		},
+		{
+			"id": "f796ffc0-d9cc-496b-97a8-9e10f07e6fc8",
+			"noeud": ["Dénombrement", "Problèmes de dénombrement"],
+			"grades": ["T_SPE"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-318"
+				}
+			],
+			"avant": {
+				"title": "Quel modèle ? k-uplet, k-uplet d'éléments distincts ou combinaison",
+				"description": "Reconnaître l'objet à dénombrer selon que l'ordre compte et que la répétition est permise : mot de passe, tiercé, copies tirées au sort, desserts de la semaine (pièges : kⁿ au lieu de nᵏ, combinaison quand l'ordre compte)",
+				"variations": [
+					{
+						"choices": [
+							{
+								"content": "${{n}}^{ {{k}} }$"
+							},
+							{
+								"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+							},
+							{
+								"content": "$\\binom{ {{n}} }{ {{k}} }$"
+							},
+							{
+								"content": "${{k}}^{ {{n}} }$"
+							}
+						],
+						"statement": "Un mot de passe est formé de ${{k}}$ caractères choisis parmi ${{n}}$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "20..40"
+							},
+							{
+								"name": "k",
+								"expression": "4..6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"L'ordre des caractères compte (« ab » ≠ « ba ») et la **répétition est permise** : ce sont des ${{k}}$-uplets d'un ensemble à ${{n}}$ éléments.",
+								"Il y en a $\\textcolor{{{color:primary.0}}}{{{n}}^{ {{k}} }}$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"choices": [
+							{
+								"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+							},
+							{
+								"content": "$\\binom{ {{n}} }{ {{k}} }$"
+							},
+							{
+								"content": "${{n}}^{ {{k}} }$"
+							},
+							{
+								"content": "${{k}}^{ {{n}} }$"
+							}
+						],
+						"statement": "${{n}}$ chevaux prennent le départ d'une course. Un parieur doit donner les ${{k}}$ premiers chevaux **dans l'ordre d'arrivée**.\n\nQuel est le nombre de pronostics possibles ?",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "10..18"
+							},
+							{
+								"name": "k",
+								"expression": "3..4"
+							}
+						],
+						"correction": {
+							"steps": [
+								"L'ordre compte et un cheval ne peut pas occuper deux places : ce sont des ${{k}}$-uplets d'éléments **distincts**.",
+								"Il y en a $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{n}}! }{ {{eval:n-k}}! }}$ (la combinaison ne tient pas compte de l'ordre)."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"choices": [
+							{
+								"content": "$\\binom{ {{n}} }{ {{k}} }$"
+							},
+							{
+								"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+							},
+							{
+								"content": "${{n}}^{ {{k}} }$"
+							},
+							{
+								"content": "${{k}}^{ {{n}} }$"
+							}
+						],
+						"statement": "Un professeur tire au sort ${{k}}$ copies parmi ${{n}}$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "20..35"
+							},
+							{
+								"name": "k",
+								"expression": "3..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Seul compte **l'ensemble** des copies choisies (pas d'ordre), et une copie n'est pas tirée deux fois : ce sont des parties à ${{k}}$ éléments.",
+								"Il y en a $\\textcolor{{{color:primary.0}}}{\\binom{ {{n}} }{ {{k}} }}$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"choices": [
+							{
+								"content": "${{n}}^{ {{k}} }$"
+							},
+							{
+								"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+							},
+							{
+								"content": "$\\binom{ {{n}} }{ {{k}} }$"
+							},
+							{
+								"content": "${{k}}^{ {{n}} }$"
+							}
+						],
+						"statement": "Chaque jour d'une période de ${{k}}$ jours, la cantine sert un dessert choisi parmi ${{n}}$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "5..9"
+							},
+							{
+								"name": "k",
+								"expression": "3..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Un programme associe un dessert à chaque jour : l'ordre des jours compte et un dessert peut revenir, ce sont des ${{k}}$-uplets.",
+								"Il y en a $\\textcolor{{{color:primary.0}}}{{{n}}^{ {{k}} }}$ (et non ${{k}}^{ {{n}} }$)."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "5",
+							"n": "26"
+						},
+						"description": "v0 : nᵏ",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5",
+							"n": "26"
+						},
+						"description": "v0 : arrangement (répétition oubliée)",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5",
+							"n": "26"
+						},
+						"description": "v0 : kⁿ",
+						"variationIndex": 0,
+						"selectedChoices": [3]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "3",
+							"n": "12"
+						},
+						"description": "v1 : arrangement",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"n": "12"
+						},
+						"description": "v1 : combinaison (ordre oublié)",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"n": "12"
+						},
+						"description": "v1 : nᵏ (répétitions)",
+						"variationIndex": 1,
+						"selectedChoices": [2]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "4",
+							"n": "30"
+						},
+						"description": "v2 : combinaison",
+						"variationIndex": 2,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "4",
+							"n": "30"
+						},
+						"description": "v2 : arrangement (ordre à tort)",
+						"variationIndex": 2,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "5",
+							"n": "6"
+						},
+						"description": "v3 : nᵏ",
+						"variationIndex": 3,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5",
+							"n": "6"
+						},
+						"description": "v3 : kⁿ",
+						"variationIndex": 3,
+						"selectedChoices": [3]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5",
+							"n": "6"
+						},
+						"description": "v3 : arrangement (desserts distincts à tort)",
+						"variationIndex": 3,
+						"selectedChoices": [1]
+					}
+				]
+			},
+			"apres": {
+				"title": "Quel modèle ? k-uplet, k-uplet d'éléments distincts ou combinaison",
+				"description": "Reconnaître l'objet à dénombrer selon que l'ordre compte et que la répétition est permise : mot de passe, tiercé, copies tirées au sort, desserts de la semaine (pièges : kⁿ au lieu de nᵏ, combinaison quand l'ordre compte)",
+				"variations": [
+					{
+						"choices": [
+							{
+								"content": "${{n}}^{ {{k}} }$"
+							},
+							{
+								"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+							},
+							{
+								"content": "$\\binom{ {{n}} }{ {{k}} }$"
+							},
+							{
+								"content": "${{k}}^{ {{n}} }$"
+							}
+						],
+						"statement": "Un mot de passe est formé de ${{k}}$ caractères choisis parmi ${{n}}$ symboles ; un symbole peut être utilisé plusieurs fois.\n\nQuel est le nombre de mots de passe possibles ?",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "20..40"
+							},
+							{
+								"name": "k",
+								"expression": "4..6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"L'ordre des caractères compte (« ab » ≠ « ba ») et la **répétition est permise** : ce sont des ${{k}}$-uplets d'un ensemble à ${{n}}$ éléments.",
+								"Il y en a $\\textcolor{{{color:primary.0}}}{{{n}}^{ {{k}} }}$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"choices": [
+							{
+								"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+							},
+							{
+								"content": "$\\binom{ {{n}} }{ {{k}} }$"
+							},
+							{
+								"content": "${{n}}^{ {{k}} }$"
+							},
+							{
+								"content": "${{k}}^{ {{n}} }$"
+							}
+						],
+						"statement": "${{n}}$ chevaux prennent le départ d'une course. Un parieur doit donner les ${{k}}$ premiers chevaux **dans l'ordre d'arrivée**.\n\nQuel est le nombre de pronostics possibles ?",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "10..18"
+							},
+							{
+								"name": "k",
+								"expression": "3..4"
+							}
+						],
+						"correction": {
+							"steps": [
+								"L'ordre compte et un cheval ne peut pas occuper deux places : ce sont des ${{k}}$-uplets d'éléments **distincts**.",
+								"Il y en a $\\textcolor{{{color:primary.0}}}{\\dfrac{ {{n}}! }{ {{eval:n-k}}! }}$ (la combinaison ne tient pas compte de l'ordre)."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"choices": [
+							{
+								"content": "$\\binom{ {{n}} }{ {{k}} }$"
+							},
+							{
+								"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+							},
+							{
+								"content": "${{n}}^{ {{k}} }$"
+							},
+							{
+								"content": "${{k}}^{ {{n}} }$"
+							}
+						],
+						"statement": "Un professeur tire au sort ${{k}}$ copies parmi ${{n}}$ pour les faire relire par un collègue.\n\nQuel est le nombre de tirages possibles ?",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "20..35"
+							},
+							{
+								"name": "k",
+								"expression": "3..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Seul compte **l'ensemble** des copies choisies (pas d'ordre), et une copie n'est pas tirée deux fois : ce sont des parties à ${{k}}$ éléments.",
+								"Il y en a $\\textcolor{{{color:primary.0}}}{\\binom{ {{n}} }{ {{k}} }}$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"choices": [
+							{
+								"content": "${{n}}^{ {{k}} }$"
+							},
+							{
+								"content": "$\\dfrac{ {{n}}! }{ {{eval:n-k}}! }$"
+							},
+							{
+								"content": "$\\binom{ {{n}} }{ {{k}} }$"
+							},
+							{
+								"content": "${{k}}^{ {{n}} }$"
+							}
+						],
+						"statement": "Chaque jour d'une période de ${{k}}$ jours, la cantine sert un dessert choisi parmi ${{n}}$ desserts ; le même dessert peut revenir plusieurs jours.\n\nQuel est le nombre de programmes de desserts possibles ?",
+						"variables": [
+							{
+								"name": "n",
+								"expression": "5..9"
+							},
+							{
+								"name": "k",
+								"expression": "3..5"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Un programme associe un dessert à chaque jour : l'ordre des jours compte et un dessert peut revenir, ce sont des ${{k}}$-uplets.",
+								"Il y en a $\\textcolor{{{color:primary.0}}}{{{n}}^{ {{k}} }}$ (et non ${{k}}^{ {{n}} }$)."
+							]
+						},
+						"correctChoiceIndex": ["0"],
+						"conditions": ["n > k"]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "5",
+							"n": "26"
+						},
+						"description": "v0 : nᵏ",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5",
+							"n": "26"
+						},
+						"description": "v0 : arrangement (répétition oubliée)",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5",
+							"n": "26"
+						},
+						"description": "v0 : kⁿ",
+						"variationIndex": 0,
+						"selectedChoices": [3]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "3",
+							"n": "12"
+						},
+						"description": "v1 : arrangement",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"n": "12"
+						},
+						"description": "v1 : combinaison (ordre oublié)",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "3",
+							"n": "12"
+						},
+						"description": "v1 : nᵏ (répétitions)",
+						"variationIndex": 1,
+						"selectedChoices": [2]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "4",
+							"n": "30"
+						},
+						"description": "v2 : combinaison",
+						"variationIndex": 2,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "4",
+							"n": "30"
+						},
+						"description": "v2 : arrangement (ordre à tort)",
+						"variationIndex": 2,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"k": "5",
+							"n": "6"
+						},
+						"description": "v3 : nᵏ",
+						"variationIndex": 3,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5",
+							"n": "6"
+						},
+						"description": "v3 : kⁿ",
+						"variationIndex": 3,
+						"selectedChoices": [3]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"k": "5",
+							"n": "6"
+						},
+						"description": "v3 : arrangement (desserts distincts à tort)",
+						"variationIndex": 3,
+						"selectedChoices": [1]
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Probabilités",
+				"domain": "Dénombrement",
+				"subdomain": "Reconnaître le modèle",
+				"level": 2,
+				"status": "draft"
+			},
+			"neufs": []
+		}
+	]
+}
