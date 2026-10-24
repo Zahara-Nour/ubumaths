@@ -95,6 +95,38 @@ function definiteIntegralTemplate(finalForm?: FinalForm): QuestionTemplate {
 	};
 }
 
+/**
+ * Deux cases : f′(x) factorisée (produit exigé), puis f′(1) = 0 avec sa propre
+ * forme exigée (une fraction) — la correction ne répond qu'à la première (revue).
+ */
+function twoBlanksTemplate(): QuestionTemplate {
+	const template = derivativeTemplate('factorisee', 'product');
+	const [variation] = template.variations;
+	return {
+		...template,
+		variations: [
+			{
+				...variation,
+				statement: templateMarkdown(
+					"Pour $$f(x) = {{a}}x^2 - {{eval:2*a}}x$$ : $f'(x) = ?$ et $f'(2) = ?$"
+				),
+				blanks: [
+					...(variation.blanks ?? []),
+					{ expectedAnswer: '{{eval:2*a}}', requiredForm: 'fraction' }
+				]
+			}
+		],
+		testSpecs: [
+			{
+				description: 'bonne réponse',
+				variables: { a: '3' },
+				answers: ['6(x-1)', '6'],
+				expected: { status: 'correct' }
+			}
+		]
+	};
+}
+
 // ============================================================================
 // Q36 — intégrale à bornes
 // ============================================================================
@@ -134,6 +166,20 @@ describe('Q37 : la correction passe le juge de la forme exigée (E1)', () => {
 		);
 		// a = 2 au premier tirage ou non : la ligne cite une forme développée `…x − …`
 		expect(formatCheckReport(report)).toMatch(/correction : \d+ x - \d+/);
+	});
+
+	it('deux cases : seule la case dont la valeur est celle de la correction est jugée (revue)', () => {
+		const report = checkTemplate(twoBlanksTemplate(), { instances: 3 });
+		expect(report.correctionForm.failures).toEqual([]);
+		expect(report.correctionForm.checked).toBe(3);
+	});
+
+	it('forme exigée au niveau de la variation : jugée une seule fois, comme l’élève (revue)', () => {
+		const template = derivativeTemplate('developpee');
+		template.variations[0] = { ...template.variations[0], requiredForm: 'product' };
+		const report = checkTemplate(template, { instances: 2 });
+		expect(report.correctionForm.failures).toHaveLength(2);
+		expect(report.correctionForm.failures.every((f) => f.errors.length === 1)).toBe(true);
 	});
 
 	it('sans forme exigée : rien n’est vérifié, importable', () => {

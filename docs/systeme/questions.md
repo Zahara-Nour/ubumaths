@@ -397,8 +397,8 @@ défaut. Présent : une dernière étape « On factorise » / « On développe �
 elle vient avant « + C » (`mathAST/requested-form.ts`, décrit dans
 [mathast/README.md](mathast/README.md)). Sur une intégrale à bornes, `validateTemplate` refuse le
 réglage (Q36). La vérification du modèle (`checkTemplate`) juge, à chaque tirage, la réponse finale
-de la correction (`calculusFinalAnswerLatex`) par chaque forme exigée de l'élève (`requiredForm` des
-cases et de l'instance), avec ou sans `finalForm` : la forme par défaut doit aussi passer le juge
+de la correction (`calculusFinalAnswerLatex`) par la forme exigée de chaque case dont elle donne la
+valeur (`isBlankValueCorrect`, puis `blank.requiredForm`, comme le juge de l'élève), avec ou sans `finalForm` : la forme par défaut doit aussi passer le juge
 (E1, Q37, David 2026-10-24). Pas de réponse finale (repli sur le mode A, intégrale sans valeur) :
 rien à juger. Aucun modèle de la prod n'emploie
 le mode B (mesuré le 2026-10-24) : la bascule des modèles existants vers la correction automatique

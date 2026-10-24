@@ -1171,8 +1171,9 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   un nombre devant une somme (`8x − 8 → 8(x − 1)`, Q39) ; pour une primitive, un facteur qui porte
   une fraction est refusé (`x³/3 + x` reste, Q34). Développée : terme à terme, d'un quotient le
   numérateur seul (dénominateur gardé, `−7/(x − 3)²` reste), dénominateur numérique distribué
-  (`(x + 1)³/3 → x³/3 + x² + x + 1/3`), jamais de même dénominateur (`2x − 4 + 1/x` reste), décimal
-  tapé gardé (S1), simple réordonnement ignoré. Primitives :
+  (`(x + 1)³/3 → x³/3 + x² + x + 1/3`), jamais de même dénominateur (`2x − 4 + 1/x` reste), − d'un terme distribué
+  (`−(x + 1)e^{−x} → −xe^{−x} − e^{−x}`), décimal tapé gardé (S1 : `3x²/2` redevient `1,5x²`, sinon
+  la forme par défaut reste), simple réordonnement ignoré. Primitives :
   `pushSimplifyStep` (`pedagogical-integration/pipeline.ts`) émet l'étape
   `simplify-result` avant le `+ C` (ou avant le théorème fondamental), **sauf** quand la
   primitive est un seul terme « coefficient en chiffres × une seule fonction » sous un `-`

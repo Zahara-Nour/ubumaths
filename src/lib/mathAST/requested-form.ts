@@ -19,10 +19,17 @@
  * @module mathAST/requested-form
  */
 
-import type { MathNode } from './types';
-import { divide, opposite, parentheses } from './factory';
-import { flattenSumShallow, unflattenSum } from './flatten';
-import type { SignedTerm } from './flatten';
+import type { MathNode, NumberNode } from './types';
+import { divide, multiply, number, opposite } from './factory';
+import {
+	flattenProductShallow,
+	flattenSumShallow,
+	unflattenProduct,
+	unflattenSum
+} from './flatten';
+import type { Sign, SignedTerm } from './flatten';
+import { findNodes, mapNode } from './transforms';
+import { decimalString, hasDecimalLiteral } from './tidy/decimal';
 import { isDelimiter, isDivision, isNumber, isOpposite } from './guards';
 import { hashMathNode } from './normal/hash';
 import { generatePedagogicalSimplifySteps } from './pedagogical-simplify/pipeline';
@@ -67,17 +74,61 @@ export function requestedFormTitle(form: RequestedForm): string {
 }
 
 function developed(node: MathNode, f: MathNode): MathNode {
-	const terms: SignedTerm[] = flattenSumShallow(node).map(({ sign, term }) => {
-		const result = developedTerm(term);
-		return { sign, term: isSum(result) ? parentheses(result) : result };
-	});
+	// Le − d'un terme est distribué sur sa forme développée : `−(x + 1)e^{−x}` →
+	// `−xe^{−x} − e^{−x}`, jamais `−(xe^{−x} + e^{−x})` (revue du lot 5e)
+	const terms: SignedTerm[] = flattenSumShallow(node).flatMap(({ sign, term }) =>
+		signedTerms(developedTerm(term), sign)
+	);
 	const sum = unflattenSum(terms);
 	if (sum === null) return node;
 	const options = { domain: [f] };
-	const result = withTypedDecimals(tidy(sum, options), node);
+	const result = withDecimalCoefficients(withTypedDecimals(tidy(sum, options), node), node);
+	// S1 : une fraction de nombres là où l'énoncé tapait des décimaux → la forme par défaut
+	if (hasDecimalLiteral(node) && fractionCount(result) > fractionCount(node)) return node;
 	// Un simple réordonnement n'est pas un développement : l'écriture reste
 	// (`2x − 4 + 1/x`, pas `2x + 1/x − 4`)
 	return hashMathNode(result) === hashMathNode(tidy(node, options)) ? node : result;
+}
+
+/** Les termes signés d'une somme, sous ses parenthèses et ses −, à plat. */
+function signedTerms(node: MathNode, sign: Sign): SignedTerm[] {
+	const inner = unwrap(node);
+	if (isOpposite(inner)) return signedTerms(inner.operand, sign === '+' ? '-' : '+');
+	if (!isSum(inner)) return [{ sign, term: inner }];
+	return flattenSumShallow(inner).flatMap((part) =>
+		signedTerms(part.term, part.sign === sign ? '+' : '-')
+	);
+}
+
+/**
+ * Quand l'énoncé tapait des décimaux, un coefficient en fraction redevient
+ * décimal (S1) : `3x²/2` → `1,5x²` (revue du lot 5e ; `withTypedDecimals` ne
+ * récrit que les fractions de deux nombres).
+ */
+function withDecimalCoefficients(node: MathNode, typed: MathNode): MathNode {
+	if (!hasDecimalLiteral(typed)) return node;
+	return mapNode(node, (current) => {
+		if (!isDivision(current) || !isInteger(current.denominator)) return current;
+		const factors = flattenProductShallow(current.numerator);
+		const numeric = factors.filter(({ factor }) => isNumber(factor));
+		if (numeric.length !== 1 || !isInteger(numeric[0].factor)) return current;
+		const decimal = decimalString({
+			n: BigInt(numeric[0].factor.value),
+			d: BigInt(current.denominator.value)
+		});
+		if (decimal === null) return current;
+		const rest = unflattenProduct(factors.filter(({ factor }) => !isNumber(factor)));
+		return rest === null ? number(decimal) : multiply(number(decimal), rest, 'implicit');
+	});
+}
+
+/** Un entier positif écrit : `5`. */
+function isInteger(node: MathNode): node is NumberNode {
+	return isNumber(node) && /^\d+$/.test(node.value) && node.value !== '0';
+}
+
+function fractionCount(node: MathNode): number {
+	return findNodes(node, isDivision).length;
 }
 
 /** Un terme développé ; d'un quotient, le numérateur seul. */

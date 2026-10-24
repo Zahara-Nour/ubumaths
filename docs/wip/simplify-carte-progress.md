@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, 5e codé (PR à ouvrir/ouverte, § 70)._
+_Mis à jour le 2026-10-24, 5e : PR #1696 ouverte, revue corrigée (§ 70)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; **5e D4** codé sur `feat/simplify-carte-5e-d4` (§ 70). Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; **5e D4** : #1696 ouverte, revue opus corrigée, CI à suivre (§ 70). Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → **5** (… → ~~Q33~~ → **5e D4** → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : PR de 5e — revue `code-reviewer` (opus), CI, merge ; puis 5f (primitive `simplify` → `tidy`, étapes de limite, bug `u′v − (uv′)` § 41, primitive `(x+1)eˣ − eˣ` non réduite, `0,6x + 1,2 → 3x²/10 + 1,2x`).
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) ; push de 5e bloqué par un renvoi mort venu de `main` (`b2d23f82c`, `docs/ref/programmes/Accompagnement/` non suivi) : reco validée, l'autre session corrige, sinon commit de doc sur `main`.
+- **Prochaine action** : #1696 — CI verte → merger, nettoyer, republier la page de synthèse ; puis 5f (primitive `simplify` → `tidy`, étapes de limite, bug `u′v − (uv′)` § 41, primitive `(x+1)eˣ − eˣ` non réduite, `0,6x + 1,2 → 3x²/10 + 1,2x`).
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) .
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : TABLEAU zsh et copie vérifiée (§ 64) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
 - **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5e-d4`.
 
@@ -951,4 +951,5 @@ Sondé (deux tests jetables, retirés ; 14 dérivées et 12 primitives de lycée
 - Q36 : `validateTemplate` refuse `finalForm` sur une intégrale à bornes. Q37 : `checkTemplate` juge à chaque tirage `calculusFinalAnswerLatex` par chaque `requiredForm` (cases + instance), seulement si le modèle a `finalForm` (§ 20) ; rapport `correctionForm`.
 - Tests : `correction-forme-demandee.test.ts` (11 rouges sur 22 sans le correctif, les 11 verts = cas inchangés), `check-template-forme-demandee.test.ts` (5 rouges sur 6), `template-schema.test.ts` (1 rouge sur 2). Suite serveur verte (60 861), `check:incremental` 0 erreur, cliquet tenu.
 - **Garde E1 étendue** (David, 2026-10-24 : « je valide », reco) : vérifiée aussi SANS `finalForm` — la forme par défaut doit passer le juge (revient sur le § 20). Pas de réponse finale (repli mode A, intégrale sans valeur V28) : rien à juger. Test inversé (vérifié, non importable). Corpus relu rejoué : vert.
-- **Laissé pour 5f** : primitive par défaut de `(x+1)eˣ` = `(x + 1)eˣ − eˣ`, pas réduite.
+- **Revue `code-reviewer` (opus) de #1696, corrigé** (46 sorties `areEquivalent`, aucun signe perdu) : (1) le − d'un terme n'était pas distribué sur sa forme développée (`−(xe^{−x} + e^{−x})`) ; (2) S1 — `0.5x³ − 1.5x` donnait `3x²/2 − 1,5` (le décor `0,5x² − 1,5x` gardait un coefficient 1 : décor ≠ cas) ; coefficient en fraction réécrit en décimal, sinon forme par défaut ; (3) E1 jugeait toutes les cases : seules celles dont la correction donne la VALEUR (`isBlankValueCorrect`) ; (4) E1 lisait `instance.requiredForm`, que le juge de l'élève ignore : retiré. 6 rouges avant correctif.
+- **Laissé pour 5f** : primitive par défaut de `(x+1)eˣ` = `(x + 1)eˣ − eˣ`, pas réduite ; `0.2x³ − 0.6x` factorisée ne donne pas `0,6(x − 1)(x + 1)` (refus « fraction là où un décimal était tapé » de D2 ; la garde E1 le signale si un produit est exigé).

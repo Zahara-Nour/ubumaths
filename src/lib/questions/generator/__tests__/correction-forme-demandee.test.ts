@@ -137,6 +137,16 @@ describe('finalForm — dérivée développée', () => {
 		expect(result.result).not.toContain('\\dfrac{2 x^2');
 	});
 
+	it('S1 : coefficient décimal devant x² (0,5x³ − 1,5x → 1,5x² − 1,5), pas de fraction ni d’étape (revue)', () => {
+		const result = derivative('0.5x^3 - 1.5x', 'developpee');
+		expect(result).toEqual(derivative('0.5x^3 - 1.5x'));
+		expect(result.result).not.toContain('frac');
+	});
+
+	it('S1 : 0,2x³ − 0,6x → 0,6x² − 0,6, pas de fraction (revue)', () => {
+		expect(derivative('0.2x^3 - 0.6x', 'developpee').result).not.toContain('frac');
+	});
+
 	it('S1 : un décimal tapé reste décimal (0,5x² − 1,5x → x − 1,5)', () => {
 		const result = derivative('0,5x^2 - 1,5x + 2', 'developpee');
 		expect(result).toEqual(derivative('0,5x^2 - 1,5x + 2'));
@@ -193,6 +203,19 @@ describe('finalForm — primitive développée', () => {
 		expect(antiderivative('x^2 e^x', 'developpee').result).toBe(
 			'x^2 \\exponentialE^x - 2 x \\exponentialE^x + 2 \\exponentialE^x'
 		);
+	});
+
+	it('un − devant un produit est distribué : x e^{−x} → −x e^{−x} − e^{−x} (revue)', () => {
+		const result = antiderivative('x e^(-x)', 'developpee');
+		expect(result.title).toBe('On développe');
+		expect(result.result).not.toContain('\\left(');
+		expect(result.result).toBe('-x \\exponentialE^{-x} - \\exponentialE^{-x}');
+	});
+
+	it('un − devant une somme développée est distribué : −2(x + 1)eˣ (revue)', () => {
+		const result = antiderivative('-2(x+1) e^x', 'developpee');
+		expect(result.title).toBe('On développe');
+		expect(result.result).not.toContain('\\left(');
 	});
 
 	it('déjà développée (3x² − 2x) : pas d’étape en plus', () => {

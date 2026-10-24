@@ -26,7 +26,8 @@ import { generateInstance } from '$lib/questions/generator/instance-generator';
 import { calculusFinalAnswerLatex } from '$lib/questions/generator/correction-generator';
 import { requiredFormVerdict } from '$lib/questions/required-form-validator';
 import { readingOf } from '$lib/questions/formula-reading';
-import type { QuestionInstance, RequiredForm } from '$lib/questions/types';
+import type { QuestionInstance } from '$lib/questions/types';
+import { isBlankValueCorrect } from '$lib/utils/answer-validator';
 import {
 	findUnparenthesizedNegatives,
 	type VariableDraw
@@ -142,21 +143,23 @@ function correctionFormErrors(
 ): string[] | null {
 	const kind = instance.correction?.generatedSteps?.kind;
 	if (kind !== 'differentiate' && kind !== 'integrate') return null;
-	const requiredForms: RequiredForm[] = [
-		...(instance.blanks ?? []).flatMap((blank) =>
-			blank.requiredForm === undefined ? [] : [blank.requiredForm]
-		),
-		...(instance.requiredForm === undefined ? [] : [instance.requiredForm])
-	];
-	if (requiredForms.length === 0) return null;
+	// Le juge de l'élève ne lit que la forme de chaque case (`blank.requiredForm`, où
+	// `instance-generator` reporte celle de la variation) : `instance.requiredForm` non
+	const blanks = (instance.blanks ?? []).flatMap((blank) =>
+		blank.requiredForm === undefined ? [] : [{ blank, form: blank.requiredForm }]
+	);
+	if (blanks.length === 0) return null;
 	const answer = calculusFinalAnswerLatex(instance, { cleanCoefficients });
 	// Rien de généré (repli sur la correction écrite) ou pas de valeur (V28) : rien à juger
 	if (answer === null) return null;
-	// Même lecture que le juge de l'élève (`answer-validator`)
+	// Seules les cases dont la correction donne la VALEUR (f′(x), pas f′(2) à côté) :
+	// même pipeline que l'élève (`isBlankValueCorrect`, puis la forme)
+	const answered = blanks.filter(({ blank }) => isBlankValueCorrect(answer, blank, instance));
+	if (answered.length === 0) return null;
 	const reading = readingOf(instance);
-	return requiredForms
-		.filter((form) => requiredFormVerdict(answer, form, { ...reading }) !== 'ok')
-		.map((form) => `correction : ${answer} (forme exigée ${JSON.stringify(form)})`);
+	return answered
+		.filter(({ form }) => requiredFormVerdict(answer, form, { ...reading }) !== 'ok')
+		.map(({ form }) => `correction : ${answer} (forme exigée ${JSON.stringify(form)})`);
 }
 
 export function checkTemplate(
