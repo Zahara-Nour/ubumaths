@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, décisions du § 4 prises._
+_Mis à jour le 2026-10-24, PR des corrections CP en cours._
 
-- **État** : inventaire CP fait ; David a validé les 6 recommandations (§ 4 bis).
-- **Prochaine action** : corrections `52c4d773` et `0e5372a4`, puis Double/moitié 1-3 → CE1 ; ensuite groupe A par lots (worktree `modeles-cp`).
+- **État** : branche `fix/questions` — M1 `20261024233000_questions_cp_contenu` (générée par `docs/wip/questions/lot-corrections-cp.py`) + M2 `20261024233100_questions_cp_rangement_tags` (à la main) ; tests d'intégration verts, rouges sans les migrations ; `checkTemplate` OK sur les 4 contenus.
+- **Prochaine action** : revues (`code-reviewer` + `security-auditor`), PR, CI, merge, puis `db:migrate` (4 conditions) ; ensuite groupe A par lots.
 - **En attente de David** : rien.
-- **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017).
-- **Worktree / branche** : aucun pour l'instant ; journal sur `main`.
+- **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017) ; le générateur (`scissions_outils`) ne sait ni retirer un tag ni changer les seuls niveaux d'un modèle → migration à la main ; horodatage `20261024230000` pris par mathoux.
+- **Worktree / branche** : `../ubumaths-wt-questions` · `fix/questions`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (noter la méthode au fil de l'eau, § 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -97,9 +97,11 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 3. Classer chaque point non couvert : A texte, B outil existant, C outil neuf, D non évaluable.
 4. Revoir les modèles non tagués : point du niveau, ou d'un niveau suivant (permis), ou rien.
 5. Questions à David, puis écriture par lots, puis tags par migration (page à cocher).
+6. Corriger un modèle en prod : relevé MCP (contenu complet, md5, nœuds, points, tags, 0 donnée d'élève), instantané dans `docs/wip/<chantier>/etat-prod-<date>/` (vérifier que ses md5 = prod), générateur `scissions_outils.generer` pour le contenu, `checkTemplate` sur les modèles écrits, test `decrireLotModifier` ; retrait de tag ou niveaux seuls → migration à la main sur le modèle de `tags_lycee`.
 
 ## Journal
 
 - 2026-10-24 : inventaire CP (lecture prod MCP read-only).
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 2 bis).
 - 2026-10-24 : décisions du § 4 (§ 4 bis).
+- 2026-10-24 : corrections CP — M1 (contenu, 4 modèles) + M2 (rangement, niveaux, tags), branche `fix/questions`.

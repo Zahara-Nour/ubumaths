@@ -1,0 +1,907 @@
+{
+	"modeles": [
+		{
+			"id": "0e5372a4-17af-4e8e-8eac-e7b3ed966f2f",
+			"noeud": ["Nombres et calculs", "Entiers : addition et soustraction", "complément"],
+			"grades": ["CP"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "CP",
+					"code": "CP-023"
+				}
+			],
+			"avant": {
+				"title": "Trouver le complément",
+				"description": "Complément à 10",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10-a}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "?+a=10"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10-a}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "a+?=10"
+							}
+						]
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "1..9"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "Bonne réponse 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["17"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "Erreur : addition au lieu du complément",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["03"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["zeros"]
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "Zéro inutile 03",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Bonne réponse 8",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["12"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Erreur : addition au lieu du complément",
+						"variationIndex": 1
+					}
+				]
+			},
+			"apres": {
+				"title": "Trouver le complément",
+				"description": "À 10 ou à la dizaine supérieure",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10-a}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "?+a=10"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10-a}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "a+?=10"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10-u}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{expression3}}$$",
+						"variables": [
+							{
+								"name": "d",
+								"expression": "1..9"
+							},
+							{
+								"name": "u",
+								"expression": "1..9"
+							},
+							{
+								"name": "n",
+								"expression": "eval:d*10+u"
+							},
+							{
+								"name": "m",
+								"expression": "eval:d*10+10"
+							},
+							{
+								"name": "expression3",
+								"expression": "n+?=m"
+							}
+						]
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:10-u}}"
+							}
+						],
+						"statement": "Complète.\n\n$${{expression4}}$$",
+						"variables": [
+							{
+								"name": "d",
+								"expression": "1..9"
+							},
+							{
+								"name": "u",
+								"expression": "1..9"
+							},
+							{
+								"name": "n",
+								"expression": "eval:d*10+u"
+							},
+							{
+								"name": "m",
+								"expression": "eval:d*10+10"
+							},
+							{
+								"name": "expression4",
+								"expression": "?+n=m"
+							}
+						]
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "1..9"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "Bonne réponse 3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["17"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "Erreur : addition au lieu du complément",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["03"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["zeros"]
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "Zéro inutile 03",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Bonne réponse 8",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["12"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2"
+						},
+						"description": "Erreur : addition au lieu du complément",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["6"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"d": "7",
+							"u": "4",
+							"n": "74",
+							"m": "80"
+						},
+						"description": "74 + ? = 80 → 6",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"d": "7",
+							"u": "4",
+							"n": "74",
+							"m": "80"
+						},
+						"description": "Erreur : chiffre des unités recopié",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"d": "9",
+							"u": "9",
+							"n": "99",
+							"m": "100"
+						},
+						"description": "borne : 99 + ? = 100 → 1",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"d": "3",
+							"u": "8",
+							"n": "38",
+							"m": "40"
+						},
+						"description": "? + 38 = 40 → 2",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["12"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"d": "3",
+							"u": "8",
+							"n": "38",
+							"m": "40"
+						},
+						"description": "Erreur : complément à 50",
+						"variationIndex": 3
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Entiers",
+				"domain": "Additionner",
+				"subdomain": "Complément",
+				"level": 1,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "25285413-ba15-401d-a0e8-fd0a84770f3a",
+			"noeud": ["Nombres et calculs", "Entiers : multiplication", "double et moitié"],
+			"grades": ["CP"],
+			"tags": [],
+			"tags_avant": [],
+			"avant": {
+				"title": "Trouver le double",
+				"description": "Nombre inférieur à $10$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:2*a}}"
+							}
+						],
+						"statement": "Quel est le double de ${{a}}$ ?\n\nLe double de ${{a}}$ est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Le double de ${{a}}$ est ${{eval:2*a}}$ car $2 \\times {{a}} = {{eval:2*a}}$."
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["14"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "double de 7 → 14",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0"
+						},
+						"description": "double de 0 → 0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "double de 7 : 7+2 refusé",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Trouver le double",
+				"description": "Nombre inférieur à $10$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:2*a}}"
+							}
+						],
+						"statement": "Quel est le double de ${{a}}$ ?\n\nLe double de ${{a}}$ est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Le double de ${{a}}$ est ${{eval:2*a}}$ car $2 \\times {{a}} = {{eval:2*a}}$."
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["14"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "double de 7 → 14",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "double de 7 : 7+2 refusé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1"
+						},
+						"description": "borne : double de 1 → 2",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Entiers",
+				"domain": "Multiplier",
+				"subdomain": "Double et moitié",
+				"level": 1,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "52c4d773-d86c-45a3-88e4-ddc99cc4beab",
+			"noeud": ["Nombres et calculs", "Entiers : numération", "décomposition"],
+			"grades": ["CP"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "CP",
+					"code": "CP-005"
+				}
+			],
+			"avant": {
+				"title": "Décomposer l'écriture décimale d'un nombre",
+				"description": "En dizaines et unités",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"requiredForm": {
+									"pattern": "a:multipleOf(10)+b:inN* & lt(10)"
+								},
+								"expectedAnswer": "{{eval:a*10}}+{{b}}"
+							}
+						],
+						"statement": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74=70+4$.\n\n$${{expression}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "1..9"
+							},
+							{
+								"name": "expression",
+								"expression": "eval:a*10+b"
+							}
+						],
+						"conditions": ["a*10+b != 74"],
+						"correction": {
+							"steps": [
+								"**Valeur d'un chiffre.** Un chiffre vaut plus ou moins selon son rang dans le nombre : au rang des dizaines, il compte pour ce chiffre $\\times 10$ ; au rang des centaines, pour ce chiffre $\\times 100$ ; et ainsi de suite. On range les chiffres du nombre dans le tableau de numération.",
+								"On place les chiffres de ${{expression}}$ dans le tableau. Chaque chiffre compte pour lui-même multiplié par la valeur de son rang. $$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.0}}}{{{b}}} \\end{array}$$",
+								"$$\\begin{align} {{expression}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times 10 + \\textcolor{{{color:primary.0}}}{{{b}}} \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["70+4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"description": "74 = 70 + 4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4+70"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"description": "ordre inversé accepté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["7+4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"description": "chiffres additionnés au lieu de dizaines",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["74"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"description": "nombre recopié non décomposé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["10+9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "9"
+						},
+						"description": "borne : 19 = 10 + 9",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["40+13"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "5",
+							"b": "3"
+						},
+						"description": "74 = 60 + 14 : décomposition refusée (unités > 9)",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Décomposer l'écriture décimale d'un nombre",
+				"description": "En dizaines et unités",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"requiredForm": {
+									"pattern": "a:multipleOf(10)+b:inN* & lt(10)"
+								},
+								"expectedAnswer": "{{eval:a*10}}+{{b}}"
+							}
+						],
+						"statement": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74=70+4$.\n\n$${{expression}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "1..9"
+							},
+							{
+								"name": "expression",
+								"expression": "eval:a*10+b"
+							}
+						],
+						"conditions": ["a*10+b != 74"],
+						"correction": {
+							"steps": [
+								"On range les chiffres de ${{expression}}$ dans le tableau de numération : le chiffre des dizaines, puis celui des unités. $$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.0}}}{{{b}}} \\end{array}$$",
+								"$\\textcolor{{{color:primary.0}}}{{{a}}}$ dizaines, c'est ${{eval:a*10}}$ ; $\\textcolor{{{color:primary.0}}}{{{b}}}$ unités, c'est ${{b}}$.",
+								"$${{expression}} = {{solution}}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["70+4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"description": "74 = 70 + 4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["4+70"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"description": "ordre inversé accepté",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["7+4"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"description": "chiffres additionnés au lieu de dizaines",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["74"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "7",
+							"b": "4"
+						},
+						"description": "nombre recopié non décomposé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["10+9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "9"
+						},
+						"description": "borne : 19 = 10 + 9",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["40+13"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "5",
+							"b": "3"
+						},
+						"description": "74 = 60 + 14 : décomposition refusée (unités > 9)",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Entiers",
+				"domain": "Apprivoiser",
+				"subdomain": "Décomposition",
+				"level": 1,
+				"status": "published"
+			},
+			"neufs": []
+		},
+		{
+			"id": "89bef942-2e3f-4f76-8712-4bf7e6f226cf",
+			"noeud": ["Nombres et calculs", "Entiers : multiplication", "double et moitié"],
+			"grades": ["CP"],
+			"tags": [],
+			"tags_avant": [],
+			"avant": {
+				"title": "Trouver la moitié",
+				"description": "Nombre pair inférieur à $20$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a}}"
+							}
+						],
+						"statement": "Quelle est la moitié de ${{eval:2*a}}$ ?\n\nLa moitié de ${{eval:2*a}}$ est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..10"
+							}
+						],
+						"correction": {
+							"steps": [
+								"La moitié de ${{eval:2*a}}$ est {{solution:html}} car $2 \\times \\textcolor{{{color:primary.2}}}{{{a}}}={{eval:2*a}}$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "moitié de 14 = 7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["28"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "Erreur : double",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0"
+						},
+						"description": "moitié de 0 = 0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "10"
+						},
+						"description": "moitié de 20 = 10",
+						"variationIndex": 0
+					}
+				]
+			},
+			"apres": {
+				"title": "Trouver la moitié",
+				"description": "Nombre pair inférieur à $20$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a}}"
+							}
+						],
+						"statement": "Quelle est la moitié de ${{eval:2*a}}$ ?\n\nLa moitié de ${{eval:2*a}}$ est $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..10"
+							}
+						],
+						"correction": {
+							"steps": [
+								"La moitié de ${{eval:2*a}}$ est {{solution:html}} car $2 \\times \\textcolor{{{color:primary.2}}}{{{a}}}={{eval:2*a}}$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "moitié de 14 = 7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["28"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7"
+						},
+						"description": "Erreur : double",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["10"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "10"
+						},
+						"description": "moitié de 20 = 10",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1"
+						},
+						"description": "borne : moitié de 2 = 1",
+						"variationIndex": 0
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Entiers",
+				"domain": "Multiplier",
+				"subdomain": "Double et moitié",
+				"level": 3,
+				"status": "published"
+			},
+			"neufs": []
+		}
+	]
+}

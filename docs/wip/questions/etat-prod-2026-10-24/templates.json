@@ -1,0 +1,497 @@
+[
+	{
+		"id": "0e5372a4-17af-4e8e-8eac-e7b3ed966f2f",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CP"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Additionner",
+		"subdomain": "Complément",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10-a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression1}}$$",
+				"variables": [
+					{
+						"name": "expression1",
+						"expression": "?+a=10"
+					}
+				]
+			},
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:10-a}}"
+					}
+				],
+				"statement": "Complète.\n\n$${{expression2}}$$",
+				"variables": [
+					{
+						"name": "expression2",
+						"expression": "a+?=10"
+					}
+				]
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Trouver le complément",
+		"description": "Complément à 10",
+		"shared": {
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				}
+			]
+		},
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["3"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "Bonne réponse 3",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["17"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "Erreur : addition au lieu du complément",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["03"],
+				"expected": {
+					"status": "unoptimal_form",
+					"constraintViolations": ["zeros"]
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "Zéro inutile 03",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["8"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "2"
+				},
+				"description": "Bonne réponse 8",
+				"variationIndex": 1
+			},
+			{
+				"answers": ["12"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "2"
+				},
+				"description": "Erreur : addition au lieu du complément",
+				"variationIndex": 1
+			}
+		],
+		"classification_node_id": "ee8abe8b-368f-4037-a4b2-9a3cab1d1afa"
+	},
+	{
+		"id": "25285413-ba15-401d-a0e8-fd0a84770f3a",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CP"],
+		"delay": 10,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Double et moitié",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*a}}"
+					}
+				],
+				"statement": "Quel est le double de ${{a}}$ ?\n\nLe double de ${{a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					}
+				],
+				"correction": {
+					"steps": ["Le double de ${{a}}$ est ${{eval:2*a}}$ car $2 \\times {{a}} = {{eval:2*a}}$."]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Trouver le double",
+		"description": "Nombre inférieur à $10$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["14"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "double de 7 → 14",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0"
+				},
+				"description": "double de 0 → 0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["9"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "double de 7 : 7+2 refusé",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "9ebf797e-aaf1-4cd9-869e-274d84f46d63"
+	},
+	{
+		"id": "52c4d773-d86c-45a3-88e4-ddc99cc4beab",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CP"],
+		"delay": 20,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Apprivoiser",
+		"subdomain": "Décomposition",
+		"level": 1,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"requiredForm": {
+							"pattern": "a:multipleOf(10)+b:inN* & lt(10)"
+						},
+						"expectedAnswer": "{{eval:a*10}}+{{b}}"
+					}
+				],
+				"statement": "Décompose ce nombre en dizaines et unités comme dans cet exemple : $74=70+4$.\n\n$${{expression}}$$",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*10+b"
+					}
+				],
+				"conditions": ["a*10+b != 74"],
+				"correction": {
+					"steps": [
+						"**Valeur d'un chiffre.** Un chiffre vaut plus ou moins selon son rang dans le nombre : au rang des dizaines, il compte pour ce chiffre $\\times 10$ ; au rang des centaines, pour ce chiffre $\\times 100$ ; et ainsi de suite. On range les chiffres du nombre dans le tableau de numération.",
+						"On place les chiffres de ${{expression}}$ dans le tableau. Chaque chiffre compte pour lui-même multiplié par la valeur de son rang. $$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.0}}}{{{b}}} \\end{array}$$",
+						"$$\\begin{align} {{expression}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times 10 + \\textcolor{{{color:primary.0}}}{{{b}}} \\\\ &= {{solution}} \\end{align}$$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Décomposer l'écriture décimale d'un nombre",
+		"description": "En dizaines et unités",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["70+4"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "74 = 70 + 4",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["4+70"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "ordre inversé accepté",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["7+4"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "chiffres additionnés au lieu de dizaines",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["74"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "7",
+					"b": "4"
+				},
+				"description": "nombre recopié non décomposé",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10+9"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "1",
+					"b": "9"
+				},
+				"description": "borne : 19 = 10 + 9",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["40+13"],
+				"expected": {
+					"status": "bad_form",
+					"constraintViolations": ["form"]
+				},
+				"variables": {
+					"a": "5",
+					"b": "3"
+				},
+				"description": "74 = 60 + 14 : décomposition refusée (unités > 9)",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "948c8b72-f671-4d2c-aace-4c14d51d7b06"
+	},
+	{
+		"id": "89bef942-2e3f-4f76-8712-4bf7e6f226cf",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CP"],
+		"delay": 10,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Double et moitié",
+		"level": 3,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:a}}"
+					}
+				],
+				"statement": "Quelle est la moitié de ${{eval:2*a}}$ ?\n\nLa moitié de ${{eval:2*a}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a",
+						"expression": "0..10"
+					}
+				],
+				"correction": {
+					"steps": [
+						"La moitié de ${{eval:2*a}}$ est {{solution:html}} car $2 \\times \\textcolor{{{color:primary.2}}}{{{a}}}={{eval:2*a}}$"
+					]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Trouver la moitié",
+		"description": "Nombre pair inférieur à $20$",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["7"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "moitié de 14 = 7",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["28"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "7"
+				},
+				"description": "Erreur : double",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["0"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "0"
+				},
+				"description": "moitié de 0 = 0",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["10"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10"
+				},
+				"description": "moitié de 20 = 10",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "9ebf797e-aaf1-4cd9-869e-274d84f46d63"
+	},
+	{
+		"id": "a3ef26ab-2334-4061-86f4-295f5e4e0bc4",
+		"type": "fill_in_blanks",
+		"options": null,
+		"precision": null,
+		"grades": ["CP"],
+		"delay": 10,
+		"multiple_answers": null,
+		"theme": "Entiers",
+		"domain": "Multiplier",
+		"subdomain": "Double et moitié",
+		"level": 2,
+		"variations": [
+			{
+				"blanks": [
+					{
+						"expectedAnswer": "{{eval:2*b}}"
+					}
+				],
+				"statement": "Quel est le double de ${{b}}$ ?\n\nLe double de ${{b}}$ est $?$.",
+				"variables": [
+					{
+						"name": "a1",
+						"expression": "1..5"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "eval:a"
+					}
+				],
+				"correction": {
+					"steps": ["Le double de ${{b}}$ est ${{eval:2*b}}$ car $2 \\times {{b}} = {{eval:2*b}}$."]
+				}
+			}
+		],
+		"exercise_instruction": null,
+		"status": "published",
+		"title": "Trouver le double",
+		"description": "Dizaines entières (jusqu'à $50$)",
+		"shared": null,
+		"default_display_options": null,
+		"test_specs": [
+			{
+				"answers": ["100"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "50",
+					"b": "50",
+					"a1": "5"
+				},
+				"description": "double de 50 → 100",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["20"],
+				"expected": {
+					"status": "correct"
+				},
+				"variables": {
+					"a": "10",
+					"b": "10",
+					"a1": "1"
+				},
+				"description": "double de 10 → 20",
+				"variationIndex": 0
+			},
+			{
+				"answers": ["60"],
+				"expected": {
+					"status": "incorrect"
+				},
+				"variables": {
+					"a": "40",
+					"b": "40",
+					"a1": "4"
+				},
+				"description": "double de 40 : 60 refusé",
+				"variationIndex": 0
+			}
+		],
+		"classification_node_id": "9ebf797e-aaf1-4cd9-869e-274d84f46d63"
+	}
+]
