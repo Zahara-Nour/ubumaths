@@ -454,9 +454,10 @@ describe('{{eval}} : registre décimal de la saisie (S1)', () => {
 		expect(evalLatex('0.1+0.2')).toBe('0.3');
 	});
 
-	it('écrit 0,5√2 comme √2/2 (Q22)', () => {
-		// Avant : 0.707106781186547
-		expect(evalLatex('0.5\\sqrt{2}')).toBe('\\dfrac{\\sqrt{2}}{2}');
+	// Exception à Q22 pour `{{eval}}` : un décimal tapé et une valeur irrationnelle
+	// restent décimaux — coordonnées de figure (`A-03-perpendiculaire…`)
+	it('garde la valeur décimale d’un irrationnel calculé avec un décimal', () => {
+		expect(evalLatex('0.5\\sqrt{2}')).toBe('0.707106781186547');
 	});
 
 	it('écrit un angle quelconque comme au tableau', () => {

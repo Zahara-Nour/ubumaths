@@ -26,7 +26,7 @@ import { divide, number, opposite, withUnit } from '../factory';
 import { isNumber, isSuperscript } from '../guards';
 import { extractRational } from '../common/numeric';
 import { divRational, negRational } from '../normal/rational';
-import { decimalString } from '../tidy/decimal';
+import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { exactValueToShow } from './exact-value';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { exactConversion } from '../units/exact';
@@ -271,6 +271,12 @@ function formatExact(ast: MathNode, numValue: number): string {
 		// saisie (S1 : `0,1+0,2 → 0,3`, `1/3+0,5 → 5/6`), `\dfrac{5\pi}{6}`,
 		// `\dfrac{\sqrt{21}}{5}` — la bonne réponse de l'élève n'est plus jugée
 		// « mauvaise forme » face à `\dfrac{1}{5}\sqrt{21}`
+		// Un décimal tapé et une valeur irrationnelle : la valeur décimale, comme avant.
+		// Les auteurs s'en servent pour des coordonnées de figure (`texte({{eval:…}}, …)`,
+		// `A-03-perpendiculaire…`), que le LaTeX d'un radical casserait
+		if (hasDecimalLiteral(ast) && rationalOf(exact.value) === null) {
+			return formatNumber(numValue, ast);
+		}
 		const shown = exactValueToShow(exact.value, { source: ast });
 		// Un nombre garde l'écriture des nombres d'un énoncé (`formatNumber`), lue sur
 		// la valeur EXACTE : `cos(π/2)` vaut 0, pas le flottant 6·10⁻¹⁷
