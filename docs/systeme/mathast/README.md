@@ -1162,9 +1162,16 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   `x(x + 2)/(x + 1)²`, `x(2 − x)e^{−x}`, `(x − √2)(x + √2)`, `−2(x² + 9)/(x² − 9)²`. Rien ne se
   factorise (`x² + 1`), reste une somme, nombre seul devant une somme qui n'est pas un polynôme de
   degré ≥ 2 (`2(e^{2x} − 2eˣ)`, `4(x − 2)`), exponentielle ou exposant changé (`e^{x²−1}` reste),
-  fraction là où un décimal était tapé (S1 : `x(3x − 4,8)`), facteur mêlant racine et fraction (`x − √2/2` :
+  fraction là où un décimal était tapé (S1 : `x(3x − 4,8)` ; `\dfrac{3x}{10}` redevient `0,3x`,
+  `withDecimalCoefficients`, qui ne descend ni dans un exposant ni dans un argument et laisse
+  `π/4`), facteur mêlant racine et fraction (`x − √2/2` :
   `(1 − 2x²)e^{−x²}` reste, David 2026-10-24 ; `x − 2√3` passe), ou budget dépassé (1 s) → la forme finale. `reducedDerivative`
   (CLI) rend la forme factorisée ; le signe se calcule toujours sur `result.derivative`.
+  Polynôme à décimaux de coefficient de tête décimal (`decimalLeadFactored`, R6/Q44 a et
+  Q44-bis) : ce coefficient sort devant, le polynôme divisé est factorisé par la politique
+  (`1,5x² − 3x → 1,5x(x − 2)`, `0,3x² − 0,3 → 0,3(x − 1)(x + 1)`, `0,2x³ − 0,6x → 0,2x(x − √3)(x + √3)`,
+  `0,3x² + 0,1x → 0,1x(3x + 1)`) ; refusé par les mêmes règles, la politique seule ensuite. Vaut
+  aussi pour la forme demandée (D4).
   **Forme demandée par l'énoncé** (`requested-form.ts`, `requestedForm`, simplify-carte lot 5e, D4) :
   `finalForm` d'une correction automatique ajoute « On factorise » / « On développe » après la
   forme par défaut (`withRequestedFormStep` de `tidy-step.ts` pour f′ ; option `finalForm` de
@@ -1190,6 +1197,14 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   pour l'instant), ∫eˣ sin x → `\left(\dfrac{\sin x}{2}-\dfrac{\cos x}{2}\right)e^x`, ∫x²e^{2x}+x →
   `(…)e^{2x}+\dfrac{x^2}{2}`. Le rendu montre brute = développée = factorisée, la ligne
   développée omise (et le texte réduit à « On met eᵘ en facteur ») si elle égale la brute.
+  Des termes qui portaient la même `e^{u}` s'annulent au développement : la forme développée
+  (∫(x+1)eˣ → `(x+1)e^x - e^x = xe^x`, simplify-carte R4/Q43). **Décimal tapé dans
+  l'intégrande** (`withUniformCoefficients`, `integration/coefficient-register.ts`, R5/Q42 b) : la
+  primitive s'écrit dans un seul registre — tous ses coefficients en décimal si chacun a une
+  écriture finie (`0,3x² + 1,2x`, `0,3e^{2x}`, `0,5\ln|x|`), sinon tous en fraction (`x³/3 + x/2`) ;
+  sont lus les coefficients devant les termes (`-\dfrac{3}{10}x^2` compris) et ceux d'UNE somme
+  facteur (∫0,5xeˣ → `(0,5x − 0,5)e^x`) ; un nombre non entier ailleurs (exposant, argument)
+  laisse la primitive telle quelle. Même règle pour `.intégrer` de l'atelier (primitive sans bornes).
   Sans exponentielle partagée, une parenthèse de `- ∫ v du` est développée puis rangée par `tidy`
   (∫x² sin x) ; sinon `tidy` seul (∫x cos x, ∫ln x, la parenthèse de u dans ∫(2x+1) sin x). Seul
   `PedagogicalSimplifyNotImplemented` fait revenir à `tidy` ; les autres erreurs remontent. L'IPP accepte `e^{ax+b}`

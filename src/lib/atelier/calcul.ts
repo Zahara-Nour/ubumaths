@@ -100,6 +100,8 @@ import { UNREADABLE_STUDY_DOMAIN } from '$lib/mathAST/domain/study';
 import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { simplify } from '$lib/mathAST/simplify/simplify';
+import { tidy } from '$lib/mathAST/tidy';
+import { withUniformCoefficients } from '$lib/mathAST/integration/coefficient-register';
 import { getPolynomialDegree } from '$lib/mathAST/analysis/expression-classify';
 import { differentiateN } from '$lib/mathAST/differentiation/differentiate';
 import { findNodes, mapNode } from '$lib/mathAST/transforms';
@@ -2717,9 +2719,16 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		const reduced =
 			finalArgs?.bounds != null &&
 			(citesParameterized(session, typedArgument) || parameters.length > 0)
-				? simplify(result.ast).result
+				? tidy(result.ast)
 				: result.ast;
-		const shown = parameters.length > 0 ? reducedExponents(reduced, integrationVariable) : reduced;
+		const exponents =
+			parameters.length > 0 ? reducedExponents(reduced, integrationVariable) : reduced;
+		// Une primitive d'une fonction à décimaux : un seul registre, comme les
+		// corrections (R5, Q42 b — David, 2026-10-24)
+		const shown =
+			integrand === undefined || finalArgs?.bounds != null
+				? exponents
+				: withUniformCoefficients(exponents, integrand);
 		// Q3 (David, 2026-10-14) : une primitive qui DIVISE par le paramètre
 		// (`e^{ax}` → `e^{ax}/a`) le dit — « (a ≠ 0) »
 		const conditions =

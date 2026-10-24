@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, 5f-1 mesuré sur la version finale (§ 73), PR ouverte._
+_Mis à jour le 2026-10-24, après #1703 (5f-1)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; ~~5e D4~~ (#1696, § 70) mergés. Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; ~~5e D4~~ (#1696, § 70), ~~5f-1 `tidy`~~ (#1703, § 73) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (… → ~~Q33~~ → ~~5e D4~~ → **5f restes**) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5f-1 en PR (banc + comparaison relancés sur la version finale : 0 différence, § 73) → CI, merge ; prévenir la session `atelier-python` (retrait-calc) au merge pour qu'elle rebase ; republier la page de synthèse. Puis 5f-2 primitives (R1, R4, R5, R6 ; Q42 b, Q43, Q44 a + bis) → 5f-3 → 5f-4 → 5f-5 (§ 71-72).
+- **Ordre des lots** : … → **5** (… → ~~Q33~~ → ~~5e D4~~ → 5f restes : ~~5f-1~~ → **5f-2** → 5f-3 → 5f-4 → 5f-5) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : 5f-2 primitives, phase de code (Q tranchées § 72) : R1 primitive `simplify` → `tidy` (`atelier/calcul.ts`), R4/Q43 `(x+1)eˣ − eˣ → xeˣ` avec étape, R5/Q42 b décimaux d'une primitive (tous décimaux si chacun tombe juste, sinon fractions), R6/Q44 a + bis coefficient décimal de tête sorti (aussi dans D2). Tests rouges d'abord ; mesurer suite, oracle, banc (`zz-tirages.mts`, scratchpad de la session `1d182aed…/banc`, `main.txt` = référence). Atelier-python prévenue du merge de #1703.
 - **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) .
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : script `zz-tirages.mts` copié à la racine, `pnpm exec tsx`, base = dépôt principal sur `origin/main`, TABLEAU zsh et copie vérifiée (§ 64, § 73) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f` (5f-1 codé).
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-2` (partie d'`origin/main` après #1703).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -996,3 +996,18 @@ Q40 oui · Q41 oui · Q42 b · Q43 oui · Q44 a, Q44-bis oui · Q45 les deux · 
 - Mesures : suite serveur `src/lib` 57 843 verts, 1 rouge (corrigé ci-dessus, dossiers dérivées et variations verts : 1 422) ; oracle des dérivées inchangé (égalité exacte à `KNOWN_FORM_DIFF`) ; **banc 1 102 modèles de prod × 8 tirages (25 672) : 0 différence** (témoin non construit) ; `check:incremental` 0 ; cliquet tenu ; doc `tidy-spec.md` (§A, §G.1, historique).
 - **Revue `code-reviewer` (opus), corrigé, tests rouges d'abord** : (1, bloquant) la forme finale de f′ (`finalDerivative` : carte f′, bouton Dériver, tableau de variations) comptait sur `tidy` pour ouvrir `a − (u′v + uv′)` — 18 écarts sur 20 fonctions (`1 − xeˣ → −(eˣ + xeˣ)` au lieu de `−(x + 1)eˣ`) ; la suite, l'oracle et le banc ne passent pas par là. `withImpliedSumsOpened` à l'entrée de `finalForm` (`final-form-parentheses.test.ts`, 8 rouges avant). (2) `tidy` non idempotent sur `(x − (x+1))/2` (déjà vrai écrit, désormais atteint par le moteur) : `flipNumerator` ne retourne plus un numérateur dont un terme contient une somme (3 rouges avant). (3) `hasOddIndex` exige un indice positif (`sqrt[-3](x)`, 2 rouges avant). Script de comparaison de la revue (ancien/nouveau moteur, 114 entrées, simplify, étapes, dérivées, intégration, variations, réciproque) : **0 différence**.
 - **Mesures sur la version finale (après la revue)** : banc 1 102 modèles × 8 tirages (25 672) identique à `origin/main` (`cmp` octet à octet) ; script de comparaison (114 entrées, ancien moteur = `src/lib/mathAST` de la base `f628f1064`, vérifié par `diff -r`) : 0 différence ; `check:incremental` 0 ; cliquet : 1 erreur introduite par la revue (`divide` sans `displayStyle` dans `tidy-parentheses-sous-entendues.test.ts`), corrigée.
+
+## 74. 5f-1 mergé (#1703, 2026-10-24)
+
+CI verte, mergée. Session `atelier-python` prévenue pour son rebase. Page de synthèse republiée (Q40-Q48, 5f-1).
+
+## 75. Lot 5f-2 (primitives, R1 R4 R5 R6) codé (branche `feat/simplify-carte-5f-2`, 2026-10-24)
+
+- **R1** : `simplify` → `tidy` pour la valeur d'une intégrale bornée à paramètre (`atelier/calcul.ts`) ; 14 cas sondés, sortie identique ; garde dans `integrer-decimaux.test.ts`.
+- **R4 (Q43)** : `developAndFactor` — des termes qui portaient la même `e^{u}` s'annulent au développement (`cancelsSharedExponential`) : la forme développée, étape « On simplifie » (`∫(x+1)eˣ = xeˣ`). Effet de bord voulu : `∫−2(x+1)eˣ = −2xeˣ` d'emblée (test de la forme développée passé sur `∫−2xeˣ`).
+- **R5 (Q42 b)** : `withUniformCoefficients` (`integration/coefficient-register.ts`), dans `pushSimplifyStep` (restructuré : `simplifiedPrimitive`) et `.intégrer` de l'Atelier (sans bornes). Seuls les coefficients DEVANT les termes sont lus. `.intégrer 1.5x` → `0,75x² + C` (test `seuils-ecriture` mis à jour).
+- **R6 (Q44 a, Q44-bis)** : `decimalLeadFactored` dans `factored` (`variations/display.ts`), essayé avant la politique seule ; `withDecimalCoefficients` déplacé de `requested-form.ts` vers `display.ts`, étendu (`x²/5 → 0,2x²`), appliqué aussi à la forme factorisée. Non prévu, gardé : `0,3x² + 0,1x → 0,1x(3x + 1)`.
+- **Laissé (à trancher par David)** : la VALEUR d'une intégrale bornée à décimaux reste en fraction (`∫₀¹ 0,5x = 1/4`) — Q42 ne visait que la primitive.
+- Mesures : suite serveur `src/lib` 57 922 verts, 2 rouges = changements voulus (ci-dessus), corrigés ; banc 1 102 modèles × 8 tirages : identique à `main.txt` (`cmp`) — **mais aucun modèle de prod n'a de correction automatique** (corrections toutes rédigées) : le banc ne mesure pas R4-R6 ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre ; doc `mathast/README.md`, `atelier.md`.
+- **Revue `code-reviewer` (opus), corrigé, tests rouges d'abord** : (1, régression) `withDecimalCoefficients` descendait dans les exposants (`e^{x/2}` → `e^{0,5x}`, factorisation rejetée par `exponentialKeys`) — il ne lit plus que les coefficients (ni exposant, ni argument, ni constante : `π/4` reste) ; (2) un premier coefficient opposé (`opposite(3/10)·x²`, moteur de l'Atelier) n'était pas lu : `.intégrer -0,6x+1,2` → `-0,3x² + 1,2x + C` ; (3) la somme facteur d'une exponentielle suit le registre (`∫0,5xeˣ = (0,5x − 0,5)eˣ`). 5 rouges avant. **Laissés (mineurs)** : `0,5x² + x/3` factorisée → `x(3x+2)/6` (fraction ET décimal tapés) ; factoriser deux fois `2,5x² − 5` réordonne `(√2 + x)` (une seule passe en pratique).
+- Mesures finales : suite serveur `src/lib` 57 928 verts ; `check:incremental` 0 ; cliquet tenu ; `docs:check-a-jour` propre.

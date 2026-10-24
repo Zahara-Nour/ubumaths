@@ -128,6 +128,7 @@ import type {
 import { abs, ln } from '../factory';
 import { findProportionalityConstant, findProportionalityRatio } from '../integration/patterns';
 import { forbiddenValueOnInterval, numericValue } from '../integration/forbidden-value';
+import { withUniformCoefficients } from '../integration/coefficient-register';
 import { isCertainlyPositive } from './positivity';
 import { isMinusOneCoefficient, onlyConstantOut } from './descriptions-fr';
 import { arcsinRule, arctanRule } from '../integration/rules';
@@ -277,7 +278,7 @@ function generateIndefiniteSteps(
 
 	const { antiderivative: raw, steps: coreSteps } = integrateNode(integrand, ctx);
 	steps.push(...coreSteps);
-	const simplified = pushSimplifyStep(steps, raw, ctx);
+	const simplified = pushSimplifyStep(steps, raw, integrand, ctx);
 	const antiderivative =
 		finalForm === undefined
 			? simplified
@@ -355,7 +356,7 @@ function generateDefiniteSteps(
 	// (the constant cancels in F(b) - F(a)).
 	const { antiderivative: raw, steps: coreSteps } = integrateNode(integrand, innerCtx);
 	steps.push(...coreSteps);
-	const antiderivative = pushSimplifyStep(steps, raw, ctx);
+	const antiderivative = pushSimplifyStep(steps, raw, integrand, ctx);
 
 	// Fundamental theorem : ∫_a^b f(x) dx = [F(x)]_a^b.
 	steps.push(
@@ -412,48 +413,47 @@ function generateDefiniteSteps(
 function pushSimplifyStep(
 	steps: PedagogicalIntegrationStep[],
 	raw: MathNode,
+	integrand: MathNode,
 	ctx: DispatchContext
 ): MathNode {
-	const single = singleCoefficientTerm(raw);
-	if (single?.canonical) return raw;
-	const developed = single ? null : developAndFactor(raw, ctx);
-	// Somme de ln regroupée puis rangée : chaque ln garde son coefficient devant
-	const rewriting = developed && {
-		...developed,
-		result: lnCoefficientForm(developed.result) ?? developed.result
-	};
-	if (rewriting) {
-		if (toLatex(rewriting.result) === toLatex(raw)) return raw;
-		steps.push(
-			buildStep(ctx, {
-				rule: 'simplify-result',
-				before: raw,
-				after: rewriting.result,
-				variable: ctx.variable,
-				// `developed` : ligne montrée par le rendu ; `exponential` : nommée par l'explication
-				bindings: rewriting.bindings
-			})
-		);
-		return rewriting.result;
-	}
-	// Coefficient à réduire (`\dfrac{2}{4}e^x` → `\dfrac{1}{2}e^x`) : on le réduit
-	// en gardant la forme « k · fonction » ; sinon, `tidy`. Le domaine de la
-	// primitive est acquis (celui de l'intégrande) : `ln|x| − ln|x| → 0` (S3)
-	const tidy = (node: MathNode): MathNode => {
-		const tidiedSum = tidyTerms(node, { domain: [raw] });
-		return lnCoefficientForm(tidiedSum) ?? tidiedSum;
-	};
-	const tidied = single ? withRationalCoefficient(single.k, single.fn) : tidy(raw);
-	if (toLatex(tidied) === toLatex(raw)) return raw;
+	const { result, bindings } = simplifiedPrimitive(raw, ctx);
+	// Un décimal tapé : la primitive dans un seul registre (R5, Q42 b)
+	const written = withUniformCoefficients(result, integrand);
+	if (toLatex(written) === toLatex(raw)) return raw;
 	steps.push(
 		buildStep(ctx, {
 			rule: 'simplify-result',
 			before: raw,
-			after: tidied,
-			variable: ctx.variable
+			after: written,
+			variable: ctx.variable,
+			// `developed` : ligne montrée par le rendu ; `exponential` : nommée par l'explication
+			...(bindings !== undefined && { bindings })
 		})
 	);
-	return tidied;
+	return written;
+}
+
+/** La primitive simplifiée de `pushSimplifyStep`, `raw` quand il n'y a rien à simplifier. */
+function simplifiedPrimitive(
+	raw: MathNode,
+	ctx: DispatchContext
+): { readonly result: MathNode; readonly bindings?: IntegrationBindings } {
+	const single = singleCoefficientTerm(raw);
+	if (single?.canonical) return { result: raw };
+	const developed = single ? null : developAndFactor(raw, ctx);
+	// Somme de ln regroupée puis rangée : chaque ln garde son coefficient devant
+	if (developed) {
+		return {
+			result: lnCoefficientForm(developed.result) ?? developed.result,
+			bindings: developed.bindings
+		};
+	}
+	// Coefficient à réduire (`\dfrac{2}{4}e^x` → `\dfrac{1}{2}e^x`) : on le réduit
+	// en gardant la forme « k · fonction » ; sinon, `tidy`. Le domaine de la
+	// primitive est acquis (celui de l'intégrande) : `ln|x| − ln|x| → 0` (S3)
+	if (single) return { result: withRationalCoefficient(single.k, single.fn) };
+	const tidiedSum = tidyTerms(raw, { domain: [raw] });
+	return { result: lnCoefficientForm(tidiedSum) ?? tidiedSum };
 }
 
 /**
@@ -524,6 +524,12 @@ function developAndFactor(raw: MathNode, ctx: DispatchContext): SimplifyRewritin
 			};
 		}
 	}
+	// R4 (Q43) : les termes qui portaient la même exponentielle s'annulent au
+	// développement (`(x + 1)eˣ − eˣ = xeˣ`) — plus rien à mettre en facteur,
+	// la forme développée reste
+	if (!exponential && cancelsSharedExponential(raw, terms.length)) {
+		return { result: tidyTerms(developed), bindings: {} };
+	}
 	if (!hasGroupedSum(raw)) return null;
 	return { result: tidyTerms(developed), bindings: {} };
 }
@@ -558,6 +564,12 @@ function appendTerms(start: MathNode, terms: readonly SignedTerm[]): MathNode {
 		(acc, { term, sign }) => (sign === 1 ? add(acc, term) : subtract(acc, term)),
 		start
 	);
+}
+
+/** Les termes de `raw` partagent une exponentielle, et le développement en a perdu. */
+function cancelsSharedExponential(raw: MathNode, developedCount: number): boolean {
+	const rawTerms = flattenSum(raw).map(({ term }) => term);
+	return developedCount < rawTerms.length && sharedExponential(rawTerms) !== null;
 }
 
 /**

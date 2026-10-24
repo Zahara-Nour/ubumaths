@@ -35,10 +35,14 @@ import {
 	isOpposite,
 	isSuperscript
 } from '../guards';
-import { delimiter, divide, number, opposite } from '../factory';
+import { delimiter, divide, multiply, number, opposite, variable } from '../factory';
 import { findNodes, mapNode } from '../transforms';
 import { flattenProductShallow, unflattenProduct } from '../flatten';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
+import { getVariables } from '../eval/substitute';
+import { toPolynomial } from '../factor/polynomial';
+import { rationalPolynomialNode } from '../factor/polynomial-node';
+import { absRational, divRational } from '../normal/rational';
 import { tidy } from '../tidy';
 import { hashMathNode } from '../normal/hash';
 import { generatePedagogicalSimplifySteps } from '../pedagogical-simplify/pipeline';
@@ -129,24 +133,64 @@ function factoredForSign(node: MathNode, options: FactoredFormOptions = {}): Mat
  * reste écrit (`(2x − 2)e^{x²−2x}` → `2(x − 1)e^{x²−2x}`, jamais `e^{x(x−2)}`).
  */
 function factored(node: MathNode, options: FactoredFormOptions): MathNode {
+	// Le coefficient décimal de tête devant d'abord (Q44 a), sinon la politique seule
+	for (const kernel of [decimalLeadFactored, kernelFactored]) {
+		const candidate = factoredWith(node, kernel);
+		if (candidate === null) continue;
+		const written = withDecimalCoefficients(
+			withTypedDecimals(tidy(candidate, { order: 'kept' }), node),
+			node
+		);
+		if (acceptable(written, node, options)) return written;
+	}
+	return node;
+}
+
+/** `node` factorisée par `kernel`, hors de ses exponentielles ; `null` si `kernel` échoue. */
+function factoredWith(
+	node: MathNode,
+	kernel: (node: MathNode) => MathNode | null
+): MathNode | null {
 	const sign = isOpposite(node);
 	const inner = sign ? node.operand : node;
 	const factors = flattenProductShallow(inner);
 	const exponentials = factors.filter(({ factor }) => isExponential(factor));
 	const others = factors.filter(({ factor }) => !isExponential(factor));
 	const rest = unflattenProduct(others);
-	let candidate: MathNode | null;
-	if (exponentials.length > 0 && rest !== null) {
-		const top = kernelFactored(rest);
-		const whole =
-			top === null ? null : unflattenProduct([{ style: 'implicit', factor: top }, ...exponentials]);
-		candidate = whole === null ? null : sign ? opposite(whole) : whole;
-	} else {
-		candidate = kernelFactored(node);
-	}
-	if (candidate === null) return node;
-	const written = withTypedDecimals(tidy(candidate, { order: 'kept' }), node);
-	return acceptable(written, node, options) ? written : node;
+	if (exponentials.length === 0 || rest === null) return kernel(node);
+	const top = kernel(rest);
+	const whole =
+		top === null ? null : unflattenProduct([{ style: 'implicit', factor: top }, ...exponentials]);
+	return whole === null ? null : sign ? opposite(whole) : whole;
+}
+
+/**
+ * Q44 a (David, 2026-10-24) : un polynôme à décimaux de coefficient de tête
+ * décimal le sort devant, le reste factorisé par la politique :
+ * `1,5x² − 3x → 1,5x(x − 2)`, `0,3x² − 0,3 → 0,3(x − 1)(x + 1)`. `null` pour
+ * tout autre `node` (pas un polynôme en une lettre, tête entière).
+ */
+function decimalLeadFactored(node: MathNode): MathNode | null {
+	if (!hasDecimalLiteral(node)) return null;
+	const letters = [...getVariables(node)];
+	if (letters.length !== 1) return null;
+	const p = toPolynomial(node, letters[0]);
+	if (p === null || p.length < 2) return null;
+	const lead = p[p.length - 1];
+	const written = decimalString(absRational(lead));
+	if (lead.d === 1n || written === null) return null;
+	const monic = rationalPolynomialNode(
+		p.map((c) => divRational(c, lead)),
+		variable(letters[0])
+	);
+	const kernel = kernelFactored(monic);
+	if (kernel === null) return null;
+	const product = multiply(
+		number(written),
+		isSum(kernel) ? delimiter('parentheses', kernel) : kernel,
+		'implicit'
+	);
+	return lead.n < 0n ? opposite(product) : product;
 }
 
 /** La politique `factoriser` (lycée), ou `null` si le budget est dépassé. */
@@ -211,6 +255,68 @@ export function withTypedDecimals(candidate: MathNode, node: MathNode): MathNode
 		});
 		return decimal === null ? current : number(decimal);
 	});
+}
+
+/**
+ * Quand `node` portait un décimal tapé, un coefficient en fraction redevient
+ * décimal (S1) : `3x²/10` → `0,3x²`, `x²/5` → `0,2x²` (revue du lot 5e, R6) —
+ * `withTypedDecimals` ne récrit que les fractions de deux nombres.
+ */
+export function withDecimalCoefficients(candidate: MathNode, node: MathNode): MathNode {
+	if (!hasDecimalLiteral(node)) return candidate;
+	return decimalCoefficientsOf(candidate);
+}
+
+/**
+ * Les coefficients de `node` seulement : ni l'exposant d'une puissance, ni
+ * l'argument d'une fonction (`e^{x/2}`, `\sqrt{x/4}` restent), ni une constante
+ * (`π/4` reste) — revue de 5f-2.
+ */
+function decimalCoefficientsOf(node: MathNode): MathNode {
+	switch (node.type) {
+		case 'addition':
+		case 'subtraction':
+		case 'multiplication':
+			return {
+				...node,
+				left: decimalCoefficientsOf(node.left),
+				right: decimalCoefficientsOf(node.right)
+			};
+		case 'opposite':
+			return { ...node, operand: decimalCoefficientsOf(node.operand) };
+		case 'delimiter':
+			return { ...node, content: decimalCoefficientsOf(node.content) };
+		case 'superscript':
+			return { ...node, base: decimalCoefficientsOf(node.base) };
+		case 'division':
+			return decimalQuotient(node) ?? node;
+		default:
+			return node;
+	}
+}
+
+/** `3x²/10` → `0,3x²`, `x²/5` → `0,2x²` ; `null` hors de cette forme. */
+function decimalQuotient(node: DivisionNode): MathNode | null {
+	if (!isPositiveInteger(node.denominator)) return null;
+	const factors = flattenProductShallow(node.numerator);
+	const numeric = factors.map(({ factor }) => factor).filter(isNumber);
+	if (numeric.length > 1 || (numeric.length === 1 && !isPositiveInteger(numeric[0]))) return null;
+	const others = factors.filter(({ factor }) => !isNumber(factor));
+	if (others.some(({ factor }) => findNodes(factor, (n) => n.type === 'constant').length > 0)) {
+		return null;
+	}
+	const decimal = decimalString({
+		n: numeric.length === 1 ? BigInt(numeric[0].value) : 1n,
+		d: BigInt(node.denominator.value)
+	});
+	if (decimal === null) return null;
+	const rest = unflattenProduct(others);
+	return rest === null ? number(decimal) : multiply(number(decimal), rest, 'implicit');
+}
+
+/** Un entier positif écrit : `5`. */
+function isPositiveInteger(node: MathNode): node is NumberNode {
+	return isNumber(node) && /^\d+$/.test(node.value) && node.value !== '0';
 }
 
 /** `24/5` : un quotient de deux entiers positifs écrits. */
