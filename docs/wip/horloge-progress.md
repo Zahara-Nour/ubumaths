@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1707._
+_Mis à jour le 2026-10-25, après la recette de David._
 
-- **État** : bloc ```horloge LIVRÉ (#1707 mergée, sur `main`, pas en prod) : parseur, scène, écran, PDF, QCM (écran, correction, série figée), éditeur riche, `check:ubumark`, doc système à jour.
-- **Prochaine action** : aucune dans ce chantier ; les modèles CP-046/047 (puis CE1/CE2) reviennent au chantier « questions ». Fin de chantier : verser ce journal dans `docs/archive/` (le durable est déjà dans `docs/systeme/ubumark.md`).
-- **En attente de David** : vérification à l'œil (ligne #1707 de `docs/wip/verifications-manuelles.md`) ; la grande aiguille qui passe sur les chiffres est-elle acceptable ?
-- **Pièges en cours** : aucun. Hors périmètre noté : placer les aiguilles (« réponses à placer »).
-- **Worktree / branche** : supprimés après merge.
+- **État** : CHANTIER CLOS. Bloc ```horloge livré (#1707, sur `main`, pas en prod) ; recette de David du 2026-10-25 : 24 cas sur 24 OK (21 cas dessinés par le code livré + captures écran clair/sombre et PDF), dont la grande aiguille qui passe sur les chiffres (rendu gardé).
+- **Prochaine action** : aucune ici. Modèles CP-046/047 puis CE1/CE2 : chantier « questions ». Archivage de ce journal : avec le prochain passage de code qui touche les 5 commentaires de `src/` qui y renvoient.
+- **En attente de David** : vérification en prod après `deploy:prod` (ligne #1707 de `verifications-manuelles.md`).
+- **Pièges en cours** : aucun.
+- **Worktree / branche** : supprimés.
 
 ---
 
@@ -231,3 +231,5 @@ Toutes les recommandations du § 7 retenues :
   vérifiées à l'œil. Constat : la grande aiguille passe sur les chiffres (12 à midi) comme sur une vraie horloge.
 - 2026-10-24 : revue `code-reviewer` : choix de QCM en horloge affichés en texte brut dans la correction
   (`ExpectedResultView`) → corrigé ; `-0 h` refusé ; `;` interdit dans une légende (documenté). #1707 mergée.
+- 2026-10-25 : recette de David sur une page d'artefact (21 cas + 3 captures) : tout OK ; la grande aiguille qui
+  passe sur les chiffres est gardée. Chantier clos.
