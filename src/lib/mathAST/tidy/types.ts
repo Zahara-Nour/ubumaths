@@ -27,6 +27,12 @@ export type TidyFactor = {
 	readonly base: MathNode;
 	readonly exponent: Rational;
 	readonly key: string;
+	/**
+	 * Clé de regroupement des termes semblables, quand elle diffère de
+	 * `key^exposant` : une puissance tapée d'exponentielle (`(eˣ)²`) se regroupe
+	 * avec sa forme selon la règle des exposants (`e^{2x}`, Q29).
+	 */
+	readonly likeKey?: string;
 };
 
 /**

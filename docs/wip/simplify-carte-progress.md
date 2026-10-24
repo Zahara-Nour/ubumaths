@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1670 (5c-bis mergé, pas en prod)._
+_Mis à jour le 2026-10-24, après #1673 (Q30 mergé, pas en prod)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663) et ~~5c-bis~~ (#1670, § 60) mergés ; 5c-bis : exception de `formatExact` retirée, A-03 écrit ses coordonnées d'étiquette avec `;d` (brouillon mis à jour en base le 2026-10-24, vérifié). Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670) et ~~Q30~~ (#1673, § 62 : `2√2 x`, `ln(2) x`, corpus des dérivées mis à jour) mergés. Phase 0 de 5d au § 61, Q27-Q30 au § 62. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a~~ → ~~5b~~ → ~~5c~~ → ~~5c-bis~~ → **5d D3** → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5d D3 (phase 0 d'abord).
-- **En attente de David** : vérifications manuelles de #1670 (ajoutée), #1663, des espaces (#1642), de f′ (#1656), des variations (#1658/#1660) ; choix pour `pnpm math` (§ 54) ; futur chantier hors simplify-carte : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
-- **Pièges en cours** : ne plus sonder avec `pnpm math` ; `2^{0,5}` s'écrit `2^{1/2}` (5f) ; une valeur sans source (limite, solution) garde la décomposition d'`evaluate` (`3 ln 2 + 3 ln 5`) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, 5f) ; relevés : bancs jetables du § 60 (modèles de la PROD, base contre branche) ; worktree neuf : `pnpm exec svelte-kit sync` avant `pnpm tsx` (sinon `$lib` introuvable) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun (retirés après #1670 ; bancs jetables supprimés, David). À créer pour 5d. Plus tard : contrôle des ```figure dans `scripts/audit-question-draws.ts` (petite PR, reco du 2026-10-24).
+- **Ordre des lots** : … → **5** (~~Q19~~ → ~~5a~~ → ~~5b~~ → ~~5c~~ → ~~5c-bis~~ → ~~Q30~~ → ~~Q29~~ → **5d D3** → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : merger la PR de Q29 (`fix/simplify-carte-exponentielles`), puis 5d (« Garder » range l'affiché, Q27).
+- **En attente de David** : vérifications manuelles de #1670, #1663, #1642, #1656, #1658/#1660 ; choix pour `pnpm math` (§ 54) ; futur chantier : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
+- **Pièges en cours** : Q28 était déjà tranchée (§ 35 Q1, `x⁰ → 1`) — relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc des modèles : script jetable dans le scratchpad (prod en lecture, base contre branche en échangeant le fichier depuis une copie) ; l'oracle des dérivées ignore l'ordre des facteurs ; worktree neuf : `pnpm exec svelte-kit sync` avant `pnpm tsx` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `fix/simplify-carte-exponentielles` (rebasée sur #1673).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -888,3 +888,9 @@ Décision déjà prise au § 19 : une expression littérale tapée dans Calcul e
 - **Q28 : retirée.** Déjà tranchée au lot 4a (§ 35, Q1 : `x⁰ → 1` gardé, convention des polynômes) ; reproposée par erreur, David a suivi la reco sans le rappel. Prototype mesuré (2 tests seulement en dépendaient, `tidy-domaine`, `tidy-review`) puis retiré.
 - **Q29** : reco suivie (`eˣ·eˣ → e^{2x}`) ; précision en attente — seulement quand des facteurs se regroupent, un `(eˣ)²` tapé restant tel quel (`tidy` ne distingue pas les deux aujourd'hui).
 - **Q30 : b** (David, maintenu après le relevé). Une fonction usuelle en un nombre (`√2`, `ln 2`, `sin 1`, `|−3|`) se range comme un coefficient, devant les lettres : `2√2 x`, `√2 (x+1)`, `ln(2) x`, `1/(ln(2) x)`, `2 ln(2) x·2^{x²}`. Une fonction de l'énoncé (`f(2)`) reste une inconnue. Branche `fix/simplify-carte-ordre-valeurs`, PR avant 5d. `order.ts` : catégorie `CATEGORY_VALUE`. Tests : 20 rouges sur 128 sans le correctif (`tidy-ordre-facteurs`). Suite serveur : 4 rouges, tous des attentes de l'ancien ordre, mises à jour. **Corpus des dérivées mis à jour** (David : « il faudra mettre à jour le corpus ») : 4 formes (`log₂`, `log` ×2, `2^{x²}`) — l'oracle compare sans l'ordre des facteurs, il ne l'avait pas vu.
+
+## 63. Q29 codé, Q31 tranchée (David, 2026-10-24 : « je valide tes recos » ; branche `fix/simplify-carte-exponentielles`)
+
+- **Q31 : non.** `tidy` ne regroupe pas deux exponentielles d'exposants différents (`eˣ·e^{2x}`, `eˣ·e^{−x}`, `e^{2x}/eˣ`, `eˣ·e` restent) : propriété enseignée, rôle de `réduire` (S4). À vérifier en 5f : `réduire` le fait-il, avec son étape ?
+- **Q29** : `collect.ts` — drapeau `grouped` sur un facteur rejoint par un autre de même base ; `withExponentRule` réécrit une exponentielle (base sans inconnue, exposant non rationnel) d'exposant entier |k| ≥ 2 en `base^{k·u}` mis au propre. `eˣ·eˣ → e^{2x}`, `3eˣ·2eˣ → 6e^{2x}`, `(eˣ)²·eˣ → e^{3x}`, `e^{x+1}·e^{x+1} → e^{2(x+1)}`, `2ˣ·2ˣ → 2^{2x}`, `(eˣ)³/eˣ → e^{2x}`, `1/(eˣ·eˣ) → 1/e^{2x}` ; gardés : `(eˣ)²` tapé, `x^x·x^x → (x^x)²`, `(eˣ+1)(eˣ+1) → (eˣ+1)²`. Tests : 18 rouges sur 45 sans le correctif (`tidy-exponentielles-regroupees`). Suite serveur complète : verte (60 621), aucune attente ne dépendait de `(eˣ)²`. Banc des modèles de la prod (19 254 tirages, base contre branche) : aucun changement.
+- **Revue `code-reviewer` (opus) de #1674, corrigé** : (1) régression — `(eˣ)² + eˣ·eˣ` ne se regroupait plus (`2(eˣ)²` sur `main`) : clé de regroupement `likeKey` (une puissance tapée se regroupe avec sa forme `e^{2x}`) ; `(eˣ)² + eˣ·eˣ → 2(eˣ)²`, `eˣ·eˣ + (eˣ)² → 2e^{2x}`, `(eˣ)² − e^{2x} → 0` (pas regroupé sur `main`). (2) `πˣ·πˣ → π^{2x}` jugé non équivalent par `areEquivalent` : règle restreinte à `e` et aux rationnels positifs (`(πˣ)²`, `((−2)ˣ)²` gardés). Tests : 69 (rouges des deux points vérifiés avant correctif). Suite serveur verte (60 645). **À montrer à David** : `eˣ·eˣ·e^{−x} → e^{−x}e^{2x}` (sur `main` : `(eˣ)²e^{−x}`), conforme à Q31 mais se lit mal.

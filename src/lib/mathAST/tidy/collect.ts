@@ -53,6 +53,7 @@ import {
 } from '../normal/rational';
 import {
 	func,
+	multiply,
 	number,
 	opposite,
 	subscript,
@@ -60,7 +61,7 @@ import {
 	withUnit,
 	sqrt as sqrtNode
 } from '../factory';
-import { isDelimiter, isFunction } from '../guards';
+import { isDelimiter, isEulerConstant, isFunction } from '../guards';
 import { parse as parseUnit, parseUnitTerms } from '../units/parser';
 import { format as formatUnit } from '../units/formatter';
 import { exactConversion, dimensionKey } from '../units/exact';
@@ -116,6 +117,8 @@ type MutableFactor = {
 	 * `keepDomain` qui dira si elle se simplifie, donc si le geste se nomme.
 	 */
 	crossed: boolean;
+	/** Deux facteurs de cette base se sont rejoints (`eˣ·eˣ`, Q29). */
+	grouped: boolean;
 };
 
 /**
@@ -482,9 +485,10 @@ function addFactor(acc: Accumulator, base: MathNode, exponent: Rational): void {
 
 	if (existing === undefined) {
 		if (isZeroRational(exponent)) return;
-		acc.factors.set(key, { base, exponent, key, denominator, crossed: false });
+		acc.factors.set(key, { base, exponent, key, denominator, crossed: false, grouped: false });
 		return;
 	}
+	existing.grouped = true;
 
 	// Deux facteurs de même base se rejoignent : « on regroupe les facteurs ».
 	// De part et d'autre de la barre, le geste n'est nommé que s'il a lieu (S3).
@@ -518,7 +522,53 @@ function keepDomain(factor: MutableFactor, settings: Settings, watch: FamilyWatc
 		];
 	}
 	if (factor.crossed) watch?.add('factors');
-	return isZeroRational(exponent) ? [] : [{ base, exponent, key }];
+	if (isZeroRational(exponent)) return [];
+	const power = exponentRulePower(base, exponent, settings);
+	if (power === null) return [{ base, exponent, key }];
+	const powerKey = factorKey(power, settings);
+	const sign = isNegativeRational(exponent) ? negRational(ONE) : ONE;
+	return [
+		factor.grouped
+			? { base: power, exponent: sign, key: powerKey }
+			: { base, exponent, key, likeKey: `${powerKey}^${sign.n}/${sign.d}` }
+	];
+}
+
+/**
+ * Q29 (David, 2026-10-24) — des exponentielles identiques regroupées s'écrivent
+ * avec la règle des exposants, comme en classe : `eˣ·eˣ → e^{2x}`, `(eˣ)²·eˣ →
+ * e^{3x}`, et non `(eˣ)²`. Une exponentielle : base `e` ou rationnel positif,
+ * exposant non rationnel. Une puissance tapée seule (`(eˣ)²`) reste écrite,
+ * mais se regroupe avec sa forme `e^{2x}` (`likeKey`) ; deux exposants
+ * différents (`eˣ·e^{−x}`) ne se regroupent pas : c'est `réduire` (Q31, S4).
+ * La puissance réécrite, ou `null` si la règle ne s'applique pas.
+ */
+function exponentRulePower(
+	base: MathNode,
+	exponent: Rational,
+	settings: Settings
+): MathNode | null {
+	if (base.type !== 'superscript' || extractRational(base.superscript) !== null) return null;
+	if (!isExponentRuleBase(base.base) || !isIntegerRational(exponent)) return null;
+	const times = absRational(exponent);
+	if (isOneRational(times)) return null;
+	return tidyAtom(
+		superscript(base.base, multiply(number(times.n.toString()), base.superscript, 'implicit')),
+		settings
+	);
+}
+
+/**
+ * `e` ou un rationnel strictement positif (`2`, `1/2`). Ni `π` (`π^{2x}` et
+ * `(πˣ)²` sont jugés différents par `areEquivalent`, revue de #1674), ni une
+ * base négative ou nulle (`(−2)ˣ`, `0ˣ`).
+ */
+function isExponentRuleBase(node: MathNode): boolean {
+	let inner = node;
+	while (isDelimiter(inner)) inner = inner.content;
+	if (isEulerConstant(inner)) return true;
+	const value = extractRational(inner);
+	return value !== null && isPositiveRational(value);
 }
 
 /**
@@ -1240,7 +1290,7 @@ function flipNumerator(term: TidyTerm, settings: Settings): TidyTerm | null {
  */
 function factorsKey(term: TidyTerm): string {
 	return term.factors
-		.map((factor) => `${factor.key}^${factor.exponent.n}/${factor.exponent.d}`)
+		.map((factor) => factor.likeKey ?? `${factor.key}^${factor.exponent.n}/${factor.exponent.d}`)
 		.sort()
 		.join('*');
 }
