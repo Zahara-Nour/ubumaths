@@ -78,3 +78,8 @@ decorations.test.ts`), puis question d'accès et migration (catalogue, achat ato
   proposés 10 cœur et étoile / 20 gidouille et cocarde / 40 médaille et blason ; options des races
   à motif). Rendus tirés du vrai `MathouAvatar` par `scripts/mathoux-planches/decorations.test.ts`
   (`PLANCHE=1`, sauté sinon).
+- 2026-10-24 — choix de David sur la page (lus dans sa base) : cœur A (rouge) 10, étoile B (rouge
+  sur pastille crème) 10, petite gidouille A (spirale noire sur pastille crème) 20, cocarde A (à
+  rubans) 20, médaille A (à ruban) 40, blason A (rouge au chevron d'or) 40. Races à motif :
+  smoking, marbré, arlequin → par-dessus ; Lunaire → dans le creux du croissant (centre
+  `waistY - 4 - moon × 0,12`, échelle × 0,9).
