@@ -814,3 +814,11 @@ Sondé sur `main` (2 sondes jetables, retirées) : 24 valeurs exactes passées p
 - **Q24** — `3×10^{20}` tapé en mode exact : garder la notation scientifique (registre, S1) ou écrire l'entier ? Reco : la garder quand l'entrée est déjà écrite `a × 10ⁿ` ; `2^{10}`, `10^3·7` se calculent.
 - **Q25** — `{{eval}}` : `1/3+0,5` rend aujourd'hui `0.833333333333333` dans un énoncé. Le passer à `5/6` (S1) change des énoncés existants. Reco : oui, avec un relevé avant (modèles qui mêlent fraction et décimal dans un `{{eval}}` sans modificateur `decimal`), liste montrée avant merge.
 - **Q26** — `.résoudre` : la ligne `S = …` passe par la fonction (`±√2/2`, `x = 0,3`, `x = −1,6`) ; les étapes du solveur (« On divise les deux membres par 2 : x = 3/10 ») restent en 5f ? Reco : oui, S seule en 5c.
+
+## 58. Q22-Q26 tranchées (David, 2026-10-24 : « je suis tes recos »)
+
+- **Q22 : `√2/2`.** Le décimal n'est gardé que si le résultat a une écriture décimale finie.
+- **Q23 : une seule fraction** quand les termes ont le même dénominateur : `(1+√5)/2`, solutions `(1 ± √5)/2`.
+- **Q24 : notation scientifique gardée** quand l'entrée est écrite `a × 10ⁿ` ; `2^{10}` se calcule.
+- **Q25 : `{{eval}}` passe à `5/6`**, avec un relevé des modèles touchés montré avant le merge.
+- **Q26 : `.résoudre`** : la ligne `S = …` seule en 5c, les étapes du solveur en 5f.
