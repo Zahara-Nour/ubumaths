@@ -129,7 +129,10 @@ recherche INPI n'est exigée que pour un élément de marque (Compendium § IV).
 
 1. Réparer la boucle des Palotins : XP sur Entraînement, fiches et révisions ; images.
 2. Mathoux v1 : collection et sieste, calculées depuis l'acquisition ; page « Chatterie », sans combat.
-3. Pelages et accessoires en gidouilles.
+3. Pelages et accessoires en gidouilles. **Idée de David (2026-10-24)** : la panse, libérée de la
+   gidouille (#1681), sert d'emplacement à une décoration achetée en gidouilles. Attention aux races
+   dont la panse porte déjà le motif : le croissant du Lunaire de Patatovie, le plastron blanc du
+   smoking, les losanges du Matouriciel, les volutes du Marbré.
 4. Combats contre les erreurs typiques (= réécriture de Navadra).
 
 ## 5. Autres idées
