@@ -9,7 +9,7 @@
  *
  * Chaque race combine une couleur et un motif distincts : elle doit rester reconnaissable
  * à 64 px, quand le motif se réduit à quelques taches de couleur. Le dessin (direction « AB3 »,
- * chat-poire à gidouille sur une affiche jaune) est dans mathou-dessin.ts.
+ * chat-poire sur une affiche jaune) est dans mathou-dessin.ts.
  */
 
 export type MathouStage = 'chaton' | 'matou' | 'grand_matou';
@@ -33,7 +33,7 @@ export type MathouPattern =
 	| 'chaussettes'
 	| 'marbre'
 	| 'fume'
-	| 'gidouille'
+	| 'arabesque'
 	| 'arlequin'
 	| 'plastron'
 	| 'etoile';
@@ -50,6 +50,8 @@ export interface MathouRace {
 	pattern: MathouPattern;
 	/** Couleur de l'iris */
 	eyes: string;
+	/** Iris du second œil (à droite du dessin) quand il diffère : yeux vairons */
+	eyesRight?: string;
 	/** Auréole derrière la tête (et gloire du grand matou, lune de la sieste) */
 	halo: string;
 }
@@ -135,8 +137,9 @@ export const MATHOU_RACES: readonly MathouRace[] = [
 		name: 'le Al Jabr Oriental',
 		primary: FUR.blanc,
 		secondary: CHAT_NOIR.rouge,
-		pattern: 'gidouille',
-		eyes: EYES.cuivre,
+		pattern: 'arabesque',
+		eyes: EYES.bleu,
+		eyesRight: EYES.cuivre,
 		halo: HALO.bleu
 	},
 	{

@@ -1,6 +1,6 @@
 <!--
 	MathouAvatar — un Mathou (chat du Docteur Faustroll) dessiné en SVG inline, direction « AB3 » :
-	le chat-poire bonhomme-digne, gidouille sur la panse, sur une affiche jaune avec auréole.
+	le chat-poire bonhomme-digne, sur une affiche jaune avec auréole.
 
 	La race (couleurs + motif) vient de mathou-races.ts, le gabarit du stade (mathou-dessin.ts) :
 	chaton (grosse tête, petite panse), matou, grand matou (panse royale, couronne, fraise et bâton,
@@ -292,14 +292,6 @@
 				/>
 			{/each}
 			<path d={geo.body} />
-			<path
-				d={geo.gidouille}
-				fill="none"
-				stroke={SILHOUETTE_LINE}
-				stroke-width="3"
-				stroke-dasharray="2 5"
-				stroke-linecap="round"
-			/>
 		</g>
 	{:else}
 		{#if majesty}
@@ -384,16 +376,6 @@
 						</g>
 						<path d={geo.body} fill="none" stroke={INK} stroke-width={STROKE} />
 
-						<!-- La gidouille -->
-						<path
-							d={geo.gidouille}
-							fill="none"
-							stroke={dr.gidouille.color}
-							stroke-width={dr.gidouille.width}
-							stroke-linecap="round"
-							data-part="gidouille"
-						/>
-
 						<!-- Yeux -->
 						<g class:ouverture={waking}>
 							<g data-part="yeux" class:paupieres={!sleeping}>
@@ -407,7 +389,11 @@
 									/>
 								{/each}
 								{#each face.eyes as eye, i (i)}
-									<path d={eye.shape} fill={race.eyes} />
+									<path
+										d={eye.shape}
+										fill={i === 1 && race.eyesRight ? race.eyesRight : race.eyes}
+										data-part="iris"
+									/>
 									<g clip-path={`url(#${eyeClipId(i)})`}>
 										<ellipse
 											cx={eye.pupil.cx}
