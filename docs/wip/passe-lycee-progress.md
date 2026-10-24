@@ -6,18 +6,16 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1657._
+_Mis à jour le 2026-10-24, après le `db:migrate` de #1657._
 
-- **État** : scissions CLOSES (#1646, #1651, #1654 jouées, prod 19/19). #1657 (retouches de forme de 5 brouillons
-  de #1651) MERGÉE ; migration `20261024020000_passe_lycee_retouches` pas encore jouée.
-- **Prochaine action** : après le `db:migrate` de David, relire la prod (MCP : md5 des 5 = `apres` de la fixture,
-  1 tag chacun, brouillons) ; puis versement (fin de chantier). Rollbacks « trop stricts » de #1651 / #1654 :
-  classés sans suite (David, 2026-10-23), à noter au versement.
-- **En attente de David** : `db:migrate` depuis le dépôt principal (refusé au mode auto).
+- **État** : passe lycée FINIE côté données : scissions (#1646, #1651, #1654) et retouches (#1657) jouées en prod et
+  relues par le MCP (19/19 ; retouches 5/5 conformes).
+- **Prochaine action** : versement (fin de chantier) : le durable dans `docs/systeme/`, journal archivé. Y noter :
+  rollbacks « trop stricts » de #1651 / #1654 classés sans suite (David, 2026-10-23).
+- **En attente de David** : son go pour le versement.
 - **Pièges en cours** : un modèle a au plus un point par programme (trigger) ; `question:specs --file` : convertir par
-  `toQuestionTemplate` (retirer `created_at`, `updated_at`, `created_by`) ; `REECRIRE_MIGRATION=1` pour une
-  migration jamais jouée.
-- **Worktree / branche** : aucun (worktree `passe-lycee` retiré après #1657).
+  `toQuestionTemplate` (retirer `created_at`, `updated_at`, `created_by`).
+- **Worktree / branche** : aucun.
 
 ## Les 5 étapes
 
@@ -329,3 +327,5 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
 - **2026-10-24 — #1657 mergée.** CI bloquée par `derivatives-oracle.test.ts` (hook > 10 s, rouge sur `main` depuis
   #1656) ; réparé par la session simplify-carte (#1661, à la demande de David), branche mise à jour, CI verte.
   `db:migrate` à lancer par David.
+- **2026-10-24 — `db:migrate` de #1657 fait (par David).** Prod (MCP) : les 5 modèles ont l'empreinte md5 de leur
+  `apres` (fixture), brouillons, 1 tag chacun (1SPE-245, 230, 383, 216, 379), nœuds et niveaux inchangés.
