@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-24, avant toute PR._
 
-- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 15 tranchées (tableau ci-dessous).
+- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 16 tranchées (tableau ci-dessous).
 - **Prochaine action** : poursuivre la revue au premier `?` du tableau « Revue page par page ».
-- **En attente de David** : le sort des lignes 16 à 19. Rien n'est codé : le plan viendra à la fin de la revue.
+- **En attente de David** : le sort des lignes 17 à 19. Rien n'est codé : le plan viendra à la fin de la revue.
 - **Pièges en cours** : rien ne se supprime pour l'instant ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` sont de vraies fonctionnalités, hors chantier.
 - **Worktree / branche** : aucun (rien de codé) ; journal commité sur `main`.
 
@@ -71,7 +71,7 @@ Sort : **vitrine** (`/demo/…`, public) · **aide** (`/aide-ecriture/…`, prof
 | 13  | `/test-font`                    | dev + vitrine           | → `/dev/polices`, contenu INTACT (rien de « KaTeX » renommé), ancienne adresse redirigée ; vitrine : `/demo/corriges`, extrait de corrigé PDF en écriture manuscrite (Shantell), en image fixe                                                                                                                                                                                            |
 | 14  | `/test-erreur`                  | dev                     | → `/dev/erreurs/page` telle quelle, avec `[code]` et `plantage` ; rien en vitrine (le clin d'œil de π se découvre par hasard) ; voisine de la ligne 19 (`/dev/erreurs/surveillance`)                                                                                                                                                                                                      |
 | 15  | `/slides/*` (3 pages)           | dev (fusion) + vitrine  | fusion des 3 → `/dev/diaporama` (bascule plein écran / dans un cadre, taille réglable, section transitions) ; vitrine `/demo/diaporama` : diaporama qui se présente lui-même, façon démo reveal.js + atouts Chiphre (plan ci-dessous)                                                                                                                                                     |
-| 16  | `/blockly/playground`           | ?                       |                                                                                                                                                                                                                                                                                                                                                                                           |
+| 16  | `/blockly/playground`           | dev                     | → `/dev/blockly` tel quel ; rien en vitrine (fonctionnalité pas encore ouverte aux élèves) ; deviendra une vraie fonctionnalité plus tard (David)                                                                                                                                                                                                                                         |
 | 17  | `/test-exercises`               | ?                       |                                                                                                                                                                                                                                                                                                                                                                                           |
 | 18  | `/dashboard/admin/debug/*` (14) | ?                       |                                                                                                                                                                                                                                                                                                                                                                                           |
 | 19  | `/dashboard/admin/errors/test`  | ?                       |                                                                                                                                                                                                                                                                                                                                                                                           |
@@ -114,5 +114,8 @@ si l'une ne marche pas, le dire à David plutôt que contourner.
   `api/admin/dictionnaire/`) : contenu pédagogique, donc du ressort du prof (règle 5).
 - **`/test-saisie`** : prototype jetable dont le travail est fait (#1355) ; candidate à la
   suppression, à trancher par David.
+- **Blockly → vraie fonctionnalité** (décidé par David le 2026-10-24) : algorithmique par blocs
+  (cycle 4, Scratch), relais vers Python ; prototype dans `$lib/components/blockly`,
+  `$lib/shared/blockly`, inchangé depuis le 2026-06-23. Phase 0 à ouvrir.
 - **Scripts de démo de constructions / brouillons de `/constructions`** : doublon possible, à revoir
   après la revue (aucune suppression pour l'instant).
