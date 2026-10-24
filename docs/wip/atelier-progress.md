@@ -1,7 +1,7 @@
 ---
 title: Atelier de recherche — chapeau du chantier
 date: 2026-10-10
-status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10-13) ; v2 et tableur livrés, en prod ; v3 remplacée par le pont « Ouvrir dans Python » (2026-10-24)
+status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10-13) ; v2 et tableur livrés, en prod ; v3 remplacée par le pont « Ouvrir dans Python », livré (#1697, 2026-10-24)
 ---
 
 # Atelier — où en est le chantier
@@ -15,11 +15,11 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 
 ## Les trois versions du cadrage
 
-| Version | Contenu                                                              | État                                                                                                   |
-| ------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **v1**  | page publique, panneau d'objets, vues Calcul · Graphe · Données, URL | ✅ livrée, `/grapheur` compris (#811)                                                                  |
-| **v2**  | géométrie (vue Figure, points, courbes par équations, puis souris)   | ✅ lots 1-3 livrés ([journal](../archive/wip/atelier-geometrie-progress.md)), en prod (v0.41.0)        |
-| **v3**  | Python, banc d'essai de conjecture (lycée, réseau requis)            | ❌ remplacée le 2026-10-24 : pont « Ouvrir dans Python » ([décision](../systeme/atelier.md#décisions)) |
+| Version | Contenu                                                              | État                                                                                                                |
+| ------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **v1**  | page publique, panneau d'objets, vues Calcul · Graphe · Données, URL | ✅ livrée, `/grapheur` compris (#811)                                                                               |
+| **v2**  | géométrie (vue Figure, points, courbes par équations, puis souris)   | ✅ lots 1-3 livrés ([journal](../archive/wip/atelier-geometrie-progress.md)), en prod (v0.41.0)                     |
+| **v3**  | Python, banc d'essai de conjecture (lycée, réseau requis)            | ❌ remplacée le 2026-10-24 : pont « Ouvrir dans Python » livré, #1697 ([décision](../systeme/atelier.md#décisions)) |
 
 ## Reste à faire
 
@@ -36,7 +36,7 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
    le retrait de la page. `/calc` existe aussi (et figure dans le sitemap) ; le cadrage visait la fusion
    `/calc` + `/cas`. **Inventaire fait le 2026-10-11** : [atelier-cas-phase0.md](atelier-cas-phase0.md)
    (↑/↓, bouton exact ⇄ décimal, complétion — PR 1 à 3 livrées le 2026-10-11, PR 4 le 2026-10-13).
-2. **v2, puis v3** : v2 livrée, chantier clos le 2026-10-19 ([phase 0](../archive/wip/atelier-geometrie-phase0.md), [journal](../archive/wip/atelier-geometrie-progress.md)) ; v3 remplacée le 2026-10-24 par le pont « Ouvrir dans Python » (le tableur est fini et en prod).
+2. **v2, puis v3** : v2 livrée, chantier clos le 2026-10-19 ([phase 0](../archive/wip/atelier-geometrie-phase0.md), [journal](../archive/wip/atelier-geometrie-progress.md)) ; v3 remplacée le 2026-10-24 par le pont « Ouvrir dans Python », livré par #1697 ([journal](../archive/wip/atelier-python-progress.md)).
    Après la PR 1 de la géométrie : « Remplacer mon atelier » par un atelier reçu ([atelier-remplacer-phase0.md](atelier-remplacer-phase0.md), validée le 2026-10-18).
 3. **Étapes rédigées : plan décidé par David le 2026-10-13** (ses réponses Q1-Q4 = mes recommandations).
    - **2a. Sélecteur « résumé / détaillé »** — **fait (PR à venir)** (`steps-summary.ts`, tests
