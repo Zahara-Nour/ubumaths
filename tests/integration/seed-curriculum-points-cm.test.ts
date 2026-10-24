@@ -5,13 +5,13 @@
  * Migration `20261008120000_seed_curriculum_points_cm` : le premier programme
  * écrit dans l'architecture points → nœuds (ADR 0020) — 130 points CM1 +
  * 116 points CM2 du BOENJS du 17 avril 2025, VALIDÉS par David le 2026-10-07
- * (docs/wip/arbre-notions/seed-cm.md), plus les ajustements d'arbre tranchés :
+ * (docs/archive/wip/arbre-notions/seed-cm.md), plus les ajustements d'arbre tranchés :
  * « arrondir » → « arrondis et ordres de grandeur », « moitié » → « double et
  * moitié », sous-notions « calcul réfléchi » (division) et « droite graduée »
  * (décimaux), notion « Préalgorithmique » en tête de la branche Algorithmique.
  * Puis les scissions validées par David (migration `20261017090000_scission_points_programme`) :
  * +67 points → 329 points (171 CM1 + 158 CM2), fixture transformée par
- * docs/wip/arbre-notions/c5-scissions-generer.py.
+ * docs/archive/wip/arbre-notions/c5-scissions-generer.py.
  *
  * La preuve est INTÉGRALE, pas un échantillon : chaque point de la fixture
  * (générée depuis le document validé) doit se retrouver en base avec TOUS ses

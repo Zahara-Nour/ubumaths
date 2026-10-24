@@ -7,7 +7,7 @@
  * échelle « 1 cm représente … », écriture simplifiée des relatifs, factorisation par une
  * constante), avec leurs corrigés, leurs specs et, pour les comparaisons, `options` (choix non
  * mélangés) ; puis reçoivent le tag de leur point, d'après la liste VALIDÉE par David
- * (docs/wip/arbre-notions/analyse/lot-2bis-modifications.md, copie figée — contenu d'avant et
+ * (docs/archive/wip/arbre-notions/analyse/lot-2bis-modifications.md, copie figée — contenu d'avant et
  * d'après — dans tests/integration/fixtures/lot-2bis-consignes.json).
  * Méthode (copies de la prod, rejeu du fichier, rollback) : tests/helpers/database/lot-2bis-migration.ts.
  *

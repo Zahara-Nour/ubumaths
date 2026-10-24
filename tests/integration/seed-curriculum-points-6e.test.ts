@@ -6,7 +6,7 @@
  * (95 « Connaissances et capacités attendues » + 2 lignes d'Automatismes au
  * contenu neuf, codes 6-101…6-197) et les 28 RÉFÉRENCES d'automatismes vers
  * les points CM1/CM2/CE1/CE2 (`curriculum_point_automatismes`, grade '6') —
- * VALIDÉS par David le 2026-10-08 (docs/wip/arbre-notions/seed-6e.md, A1-A4).
+ * VALIDÉS par David le 2026-10-08 (docs/archive/wip/arbre-notions/seed-6e.md, A1-A4).
  * Premier grade à références (ADR 0020, règle des Automatismes de David).
  *
  * La preuve est INTÉGRALE : chaque point de la fixture doit se retrouver en
@@ -14,7 +14,7 @@
  * codes 6-1xx, ET l'ensemble exact des 28 références. (L'ancien seed 2020 est supprimé en étape 4.) Lecture ANONYME (B6). Puis les scissions
  * validées par David (migration `20261017090000_scission_points_programme`) : 8 points
  * scindés (+9), un point ⚙ « tiers » (6-211) → 111 points, 39 références ; fixture
- * transformée par docs/wip/arbre-notions/c5-scissions-generer.py.
+ * transformée par docs/archive/wip/arbre-notions/c5-scissions-generer.py.
  *
  * @vitest-environment node
  */

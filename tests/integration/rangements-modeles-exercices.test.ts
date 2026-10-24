@@ -4,7 +4,7 @@
  *
  * Migration `20261011200000_rangements_modeles_exercices` : chaque modèle de questions
  * (1 005) et chaque exercice (328, « debug » exclu) rangé dans l'arbre, d'après la
- * correspondance VALIDÉE par David (docs/wip/arbre-notions/correspondance/, copie figée
+ * correspondance VALIDÉE par David (docs/archive/wip/arbre-notions/correspondance/, copie figée
  * dans tests/integration/fixtures/rangements.json) ; types de source « Bac » et « Concours ».
  *
  * Les modèles et exercices n'existent qu'en production. Le test fabrique donc l'état de la

@@ -6,7 +6,7 @@
  * « tables »), 168 points neufs (moitiés), 7 points ⚙ nés d'une ligne d'automatisme, 3-002 et
  * 3-038 archivés, et les références d'automatismes des points scindés reportées sur les moitiés
  * choisies. La fixture `fixtures/scission-points-programme.json` est GÉNÉRÉE depuis les fichiers
- * de décision (docs/wip/arbre-notions/c5-scissions-generer.py) : codes, libellés, nœuds, ordre
+ * de décision (docs/archive/wip/arbre-notions/c5-scissions-generer.py) : codes, libellés, nœuds, ordre
  * complet de chaque grade touché, références (point × grade référent) avant et après.
  *
  * 1. Après les migrations (base locale) : l'ordre d'affichage EXACT de chaque grade touché, les

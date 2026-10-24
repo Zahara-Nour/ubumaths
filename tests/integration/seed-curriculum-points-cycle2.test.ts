@@ -5,14 +5,14 @@
  * Migration `20261008150000_seed_curriculum_points_cycle2` : les 227 points du
  * cycle 2 (69 CP + 82 CE1 + 76 CE2) de l'Annexe 4 (arrêté du 22-10-2024,
  * BOENJS n° 41 du 31 octobre 2024), VALIDÉS par David le 2026-10-08
- * (docs/wip/arbre-notions/seed-cycle2.md). Aucun changement de l'arbre : les
+ * (docs/archive/wip/arbre-notions/seed-cycle2.md). Aucun changement de l'arbre : les
  * points se rattachent à l'arbre 2026-10-07.13 tel quel. Puis la passe « puces et
  * points » (migration `20261011080000_passe_puces_points_cycle2`, validée le
- * 2026-10-08, docs/wip/arbre-notions/passe-cycle2.md) : 16 puces scindées (+17 points),
+ * 2026-10-08, docs/archive/wip/arbre-notions/passe-cycle2.md) : 16 puces scindées (+17 points),
  * 9 points spécifiés → 244 points (72 CP + 89 CE1 + 83 CE2). Puis les scissions validées par
  * David (migration `20261017090000_scission_points_programme`, tables comprises) : +44 points
  * → 288 points (84 CP + 107 CE1 + 97 CE2). La fixture est transformée par
- * docs/wip/arbre-notions/c5-scissions-generer.py.
+ * docs/archive/wip/arbre-notions/c5-scissions-generer.py.
  *
  * La preuve est INTÉGRALE, pas un échantillon : chaque point de la fixture
  * (générée depuis le document validé) doit se retrouver en base avec TOUS ses

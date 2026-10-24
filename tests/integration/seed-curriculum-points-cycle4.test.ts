@@ -7,7 +7,7 @@
  * BO n° 10 du 05-03-2026), la sous-notion « ratio » (décision David), et les
  * références d'automatismes de chaque grade vers le parcours antérieur — y
  * compris intra-cycle (4e → points 5e, 3e → points 4e/5e). VALIDÉS par David le
- * 2026-10-08 (docs/wip/arbre-notions/seed-cycle4.md, points 1-10 + C1 + C2).
+ * 2026-10-08 (docs/archive/wip/arbre-notions/seed-cycle4.md, points 1-10 + C1 + C2).
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre sous les codes 5-/4-/3-, et l'ensemble
@@ -17,7 +17,7 @@
  * par David le 2026-10-11) : elle visait CE2-020, devenu le sens direct. Les scissions validées
  * par David (même migration) : +48 moitiés et 4 points ⚙ (3-068, 3-069, 4-082, 5-144) → 293
  * points (143 en 5e, 82 en 4e, 68 en 3e) ; fixture transformée par
- * docs/wip/arbre-notions/c5-scissions-generer.py. Depuis le lot 2 bis des tags (migration
+ * docs/archive/wip/arbre-notions/c5-scissions-generer.py. Depuis le lot 2 bis des tags (migration
  * `20261020233600_tags_lot_2bis_primaire_college`, décision de David du 2026-10-20), 4-004 et
  * sa moitié 4-073 sont rangés sous Entiers : priorités opératoires > écriture d'une expression.
  *

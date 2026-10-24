@@ -7,11 +7,11 @@
  * grade '1_SPE'), les références d'automatismes du grade '1_SPE' (lignes propres de
  * la 1re, liste de 2de reprise — C16 —, entretien du vocabulaire de 2de — V1 —, une
  * auto-référence), et la correction E1 des Exemples d'algorithme de 2de. VALIDÉS par
- * David le 2026-10-08 (docs/wip/arbre-notions/seed-1spe.md).
+ * David le 2026-10-08 (docs/archive/wip/arbre-notions/seed-1spe.md).
  *
  * Références reportées par les scissions validées par David (migration
  * `20261017090000_scission_points_programme`) : fixture transformée par
- * docs/wip/arbre-notions/c5-scissions-generer.py.
+ * docs/archive/wip/arbre-notions/c5-scissions-generer.py.
  *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade '1_SPE', l'ensemble exact des

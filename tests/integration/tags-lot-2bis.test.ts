@@ -5,7 +5,7 @@
  * Migration `20261020233600_tags_lot_2bis_primaire_college` : 306 modèles du CP à la 3e
  * reçoivent leur point de programme, après 91 déplacements de nœud (R2), 3 reclassements
  * de 5e en 4e et le rattachement des points 4-073 et 4-004, d'après les verdicts VALIDÉS par David
- * (docs/wip/arbre-notions/analyse/, copie figée dans tests/integration/fixtures/tags-lot-2bis.json).
+ * (docs/archive/wip/arbre-notions/analyse/, copie figée dans tests/integration/fixtures/tags-lot-2bis.json).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des
  * copies minimales portant les VRAIS identifiants, à leur nœud et leurs niveaux d'avant — puis

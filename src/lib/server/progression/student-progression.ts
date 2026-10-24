@@ -19,7 +19,7 @@
  * Toute surface qui affiche une progression élève passe désormais par ici.
  *
  * Spec : docs/archive/wip/progression-eleve-progress.md ; bascule sur l'arbre
- * des notions : docs/wip/arbre-notions-progress.md (C5, étape 3, PR D).
+ * des notions : docs/archive/wip/arbre-notions-progress.md (C5, étape 3, PR D).
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
