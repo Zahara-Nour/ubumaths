@@ -6,7 +6,7 @@
 --     « écritures », où vit CP-004 (sans quoi question_template_points_check_rules refuse le tag) ;
 --   - 25285413, a3ef26ab (doubles), 89bef942 (moitiés) : niveaux [CP] → [CE1] (le × de leur corrigé
 --     est hors CP, borne CP-017), tags CE1-028 (doubles) et CE1-101 (moitiés) ; nœud inchangé.
--- Le contenu ne change pas ici (migration précédente, 20261024233000_questions_cp_contenu) :
+-- Le contenu ne change pas ici (migration précédente, 20261025000000_questions_cp_contenu) :
 -- `updated_at` est PRÉSERVÉ.
 -- ============================================================================
 -- Décision de David le 2026-10-24 (journal docs/wip/questions-progress.md § 4 bis). Écrite à la

@@ -4,10 +4,10 @@
 
 _Mis à jour le 2026-10-24, PR des corrections CP en cours._
 
-- **État** : branche `fix/questions` — M1 `20261024233000_questions_cp_contenu` (générée par `docs/wip/questions/lot-corrections-cp.py`) + M2 `20261024233100_questions_cp_rangement_tags` (à la main) ; tests d'intégration verts, rouges sans les migrations ; `checkTemplate` OK sur les 4 contenus.
+- **État** : branche `fix/questions` — M1 `20261025000000_questions_cp_contenu` (générée par `docs/wip/questions/lot-corrections-cp.py`) + M2 `20261025000100_questions_cp_rangement_tags` (à la main) ; tests d'intégration verts, rouges sans les migrations ; `checkTemplate` OK sur les 4 contenus.
 - **Prochaine action** : revues (`code-reviewer` + `security-auditor`), PR, CI, merge, puis `db:migrate` (4 conditions) ; ensuite groupe A par lots.
 - **En attente de David** : rien.
-- **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017) ; le générateur (`scissions_outils`) ne sait ni retirer un tag ni changer les seuls niveaux d'un modèle → migration à la main ; horodatage `20261024230000` pris par mathoux.
+- **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017) ; le générateur (`scissions_outils`) ne sait ni retirer un tag ni changer les seuls niveaux d'un modèle → migration à la main ; horodatage : la prod a déjà joué `20261024235000` → migrations datées `20261025000000`/`000100` (relire `list_migrations` avant de dater).
 - **Worktree / branche** : `../ubumaths-wt-questions` · `fix/questions`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (noter la méthode au fil de l'eau, § 5).
 

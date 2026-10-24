@@ -1,6 +1,6 @@
 """Génère la migration de CONTENU du chantier « questions », corrections CP (inventaire du 2026-10-24) :
 4 modèles réécrits, sans modèle neuf ; ni tag, ni nœud, ni niveau ne changent ici (c'est la migration
-suivante, `20261024233100_questions_cp_rangement_tags.sql`, écrite à la main).
+suivante, `20261025000100_questions_cp_rangement_tags.sql`, écrite à la main).
 
 Décisions de David (2026-10-24, § 4 bis du journal `docs/wip/questions-progress.md`) :
 
@@ -54,8 +54,9 @@ def decomposition_sans_fois(t: dict) -> None:
         "On range les chiffres de ${{expression}}$ dans le tableau de numération : le chiffre des dizaines,"
         " puis celui des unités. $$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\"
         " \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.0}}}{{{b}}} \\end{array}$$",
-        "$\\textcolor{{{color:primary.0}}}{{{a}}}$ dizaines, c'est ${{eval:a*10}}$ ;"
-        " $\\textcolor{{{color:primary.0}}}{{{b}}}$ unités, c'est ${{b}}$.",
+        "$\\textcolor{{{color:primary.0}}}{{{a}}}$ {{if:a==1|dizaine}}{{if:a!=1|dizaines}},"
+        " c'est ${{eval:a*10}}$ ; $\\textcolor{{{color:primary.0}}}{{{b}}}$"
+        " {{if:b==1|unité}}{{if:b!=1|unités}}, c'est ${{b}}$.",
         "$${{expression}} = {{solution}}$$",
     ]
 
@@ -148,7 +149,7 @@ ENTETE = """-- =================================================================
 --     supérieure, CP-023), le complément à 10 gardé ;
 --   - 25285413 (Double/1), 89bef942 (Moitié/3) : la valeur 0 retirée (bornes CE1-028, CE1-101).
 -- Ni tag, ni nœud, ni niveau, ni statut ne changent ici : rangement, niveaux et tags dans la
--- migration suivante (20261024233100_questions_cp_rangement_tags).
+-- migration suivante (20261025000100_questions_cp_rangement_tags).
 -- ============================================================================
 -- Décision de David le 2026-10-24 (journal docs/wip/questions-progress.md § 4 bis). Fichier GÉNÉRÉ
 -- par docs/wip/questions/lot-corrections-cp.py — ne pas éditer à la main.
@@ -173,5 +174,5 @@ ENTETE = """-- =================================================================
 if __name__ == '__main__':
     releve = [RELEVE[c] for c in CONTENU]
     generer(LOT, releve=releve, etat=ETAT, niveaux_pris={},
-            migration='supabase/migrations/20261024233000_questions_cp_contenu.sql',
+            migration='supabase/migrations/20261025000000_questions_cp_contenu.sql',
             fixture='tests/integration/fixtures/questions-cp-contenu.json', prefixe='qcp', entete=ENTETE)

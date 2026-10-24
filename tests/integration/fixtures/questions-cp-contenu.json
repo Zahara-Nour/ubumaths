@@ -651,7 +651,7 @@
 						"correction": {
 							"steps": [
 								"On range les chiffres de ${{expression}}$ dans le tableau de numération : le chiffre des dizaines, puis celui des unités. $$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{a}}} & \\textcolor{{{color:primary.0}}}{{{b}}} \\end{array}$$",
-								"$\\textcolor{{{color:primary.0}}}{{{a}}}$ dizaines, c'est ${{eval:a*10}}$ ; $\\textcolor{{{color:primary.0}}}{{{b}}}$ unités, c'est ${{b}}$.",
+								"$\\textcolor{{{color:primary.0}}}{{{a}}}$ {{if:a==1|dizaine}}{{if:a!=1|dizaines}}, c'est ${{eval:a*10}}$ ; $\\textcolor{{{color:primary.0}}}{{{b}}}$ {{if:b==1|unité}}{{if:b!=1|unités}}, c'est ${{b}}$.",
 								"$${{expression}} = {{solution}}$$"
 							]
 						}

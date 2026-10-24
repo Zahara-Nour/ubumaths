@@ -2,7 +2,7 @@
  * Chantier « questions », corrections CP : rangement, niveaux et tags (Supabase local requis)
  * ======================================================================================
  *
- * Migration `20261024233100_questions_cp_rangement_tags` : 52c4d773 perd CP-005, passe de
+ * Migration `20261025000100_questions_cp_rangement_tags` : 52c4d773 perd CP-005, passe de
  * « décomposition » à « écritures » et reçoit CP-004 ; les doubles et moitiés (25285413, a3ef26ab,
  * 89bef942) passent de [CP] à [CE1] et reçoivent CE1-028 / CE1-101. Décision de David du
  * 2026-10-24 (journal docs/wip/questions-progress.md § 4 bis).
@@ -49,7 +49,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261024233100_questions_cp_rangement_tags.sql';
+const MIGRATION = 'supabase/migrations/20261025000100_questions_cp_rangement_tags.sql';
 const DOUBLE_ET_MOITIE = 'Nombres et calculs > Entiers : multiplication > double et moitié';
 /** Le lot, tel que relevé en prod le 2026-10-24 (tags en « programme§code »). */
 const LOT: Modele[] = [
@@ -266,6 +266,18 @@ describe('Questions CP, rangement et tags : les branches d’échec de la migrat
 			);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
 				/modèles déplacés depuis le relevé : 1/
+			);
+		});
+	});
+
+	it('un point du lot archivé depuis le relevé fait échouer la migration (résolution stricte)', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(
+				`update public.curriculum_points set archived_at = now() where grade = 'CP' and code = 'CP-004' and archived_at is null`
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				/chemins ou points introuvables : 0 nœud\(s\) de modèle, 1 point\(s\)/
 			);
 		});
 	});
