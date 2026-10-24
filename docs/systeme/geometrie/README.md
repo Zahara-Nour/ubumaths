@@ -8,7 +8,7 @@ couvre:
   - 'src/lib/ubumark/generators/figure-typst*.ts'
   - 'src/routes/(protected)/constructions/**'
   - 'src/routes/(public)/construction-demo/**'
-  - 'src/routes/(public)/geometry-demo/**'
+  - 'src/routes/(protected)/aide-ecriture/geometrie/**'
   - 'src/routes/api/constructions/**'
   - 'src/routes/api/construction-demo-scripts/**'
   - 'src/lib/server/geometry-figures.ts'
@@ -46,12 +46,12 @@ I = integrale(f, 0, \pi)
 
 Le même script sert à quatre usages :
 
-| Usage                                         | Où                                                                | Interactif ? |
-| --------------------------------------------- | ----------------------------------------------------------------- | ------------ |
-| Figure dans un contenu (énoncé, cours, chat)  | bloc ubumark ` ```figure ` → écran (SVG) + PDF (Typst)            | non          |
-| Figure dynamique (démos, éditeur)             | `GeometryCanvas.svelte` : glisser les points, curseurs            | oui          |
-| Construction animée (règle, compas, équerre…) | `constructions-v2` : lecteur pas à pas, routes `/constructions/*` | lecture      |
-| Pages de démonstration                        | `/geometry-demo/*` (30 pages), `/construction-demo`               | oui          |
+| Usage                                         | Où                                                                  | Interactif ? |
+| --------------------------------------------- | ------------------------------------------------------------------- | ------------ |
+| Figure dans un contenu (énoncé, cours, chat)  | bloc ubumark ` ```figure ` → écran (SVG) + PDF (Typst)              | non          |
+| Figure dynamique (démos, éditeur)             | `GeometryCanvas.svelte` : glisser les points, curseurs              | oui          |
+| Construction animée (règle, compas, équerre…) | `constructions-v2` : lecteur pas à pas, routes `/constructions/*`   | lecture      |
+| Pages de démonstration                        | `/aide-ecriture/geometrie/*` (30 pages, prof), `/construction-demo` | oui          |
 
 Le moteur calcule en **exact** quand il peut (coordonnées `MathNode` de mathAST) et en flottant
 sinon (déplacement à la souris, transcendantes, échantillonnage), avec des solveurs numériques

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1680._
+_Mis à jour le 2026-10-24, PR 4 en cours._
 
-- **État** : PR 1 (#1675), PR 2 (#1677) et PR 3 (#1680, fusions 7, 8, 15 et parts dev 1, 5, 6, 10) mergées, pas en prod. 25 pages sous `/dev` ; `/demo` ne relie que cercle trigo, Mathémo, Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
-- **Prochaine action** : PR 4, aide à l'écriture : ligne 2 (`/geometry-demo/*`, 30 pages → `/aide-ecriture/geometrie/…`) et ligne 3 (catalogue trigo → `/aide-ecriture/cercle-trigo`). Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main`.
-- **En attente de David** : rien.
-- **Pièges en cours** : sous `/dev`, jamais de `+layout@` (saute la garde en navigation client) ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; un test déplacé d'un niveau → recompter ses `../` ; limiteur de connexion local (5 connexions / 15 min par IP) : garder l'état de session Playwright ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : aucun (PR 3 nettoyée).
+- **État** : PR 1 (#1675), PR 2 (#1677), PR 3 (#1680) mergées, pas en prod ; PR 4 (aide à l'écriture : géométrie et cercle trigo sous `/aide-ecriture`) codée et vérifiée, à ouvrir. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
+- **Prochaine action** : PR 4 → CI → merge ; puis PR 5, suppression de la ligne 17 (`/test-exercises`, re-greper les orphelins avant).
+- **En attente de David** : ouvrir `/aide-ecriture/geometrie` aussi à l'admin ? (sans réponse : admin en 403, règle du socle).
+- **Pièges en cours** : sous `/dev`, jamais de `+layout@` (saute la garde en navigation client) ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; un test déplacé d'un niveau → recompter ses `../` ; limiteur de connexion local (5 connexions / 15 min par IP) : garder l'état de session Playwright ; pnpm 12 refuse `pnpm -s` (l'autofixer ne tourne pas, en silence) ; ligne 4 après le chantier constructions.
+- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `refactor/demo-debug-aide-ecriture`.
 
 ## Décisions de David (2026-10-24)
 
@@ -173,3 +173,11 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - **Fait** : 8 pages sous `/dev` (`carte-question`, `editeur-riche`, `diaporama`, `structure`, `mots-cliquables`, `cartes` + `exemples`, `bancs-essai`), 12 redirections de plus dans `MOVED_PAGES`. Questions de la démo : 3 reprises, la 4ᵉ (`x^2 - 9`) était déjà dans la page admin. Exclusions du sitemap `/slides/**` et `/test-*` retirées (plus aucune page à couvrir).
 - Trouvé en route : `MySelect` ignore son `id` → un `<Label for>` ne le nomme pas ; nom accessible par `triggerAriaLabel` (avec la valeur choisie). Le chemin relatif de la fixture du dictionnaire dans les tests de `/dev/structure` avait un niveau de trop peu après le déplacement (test client rouge, corrigé).
 - Vérifié sur 5178 (Playwright) : 10 pages en 200 pour l'admin, 403 pour l'élève, connexion pour le visiteur, anciennes adresses comprises. Erreur de console déjà présente : images des cartes VIP sur le stockage de la prod refusées par la CSP locale.
+
+## PR 4 — aide à l'écriture (phase 0 validée par David le 2026-10-24)
+
+- `/geometry-demo/*` (30 pages, `DslDemo.svelte`, `koch-dsl.ts` et son test) → `/aide-ecriture/geometrie/…` par `git mv`, noms des sous-pages inchangés ; `/demo/trig-circle-demo` → `/aide-ecriture/cercle-trigo`. Deux entrées dans `AIDE_PAGES`. Anciennes adresses en 308 (`MOVED_PAGES`), sous-pages et query string comprises (test rouge d'abord).
+- Carte « cercle trigo » retirée du carrefour `/demo` (reste Mathémo, Trio). Exclusion sitemap `/geometry-demo/**` retirée (plus de page à couvrir, le test l'exige) ; `Disallow: /geometry-demo` gardé dans `robots.txt`, comme `/test-`, `/slides/`, `/blockly`.
+- Retouches : accueil de la géométrie en français (titre, `<title>`, `BackLink` vers `/aide-ecriture`) ; retours des pages → « Retour à la géométrie » ; liens maison « ← Sliders » des 13 pages de sliders → `BackLink` ; liens des deux accueils par `resolve()` ; lien mort vers une doc d'étude (non servie) → chemin du journal archivé en texte.
+- Admin : question posée à David (ouvrir `/aide-ecriture/geometrie` à l'admin ?), sans réponse → règle du socle gardée, un vrai compte admin reçoit 403.
+- Vérifié sur 5178 (Playwright) : prof 33 pages en 200 sans erreur de page, clics accueil → sliders → Koch ; anciennes adresses → nouvelles ; élève et admin 403 (navigation client comprise pour l'élève) ; visiteur → connexion.

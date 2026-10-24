@@ -6,7 +6,19 @@
 <script lang="ts">
 	import PageIndex, { type IndexedPage } from '$lib/components/PageIndex.svelte';
 
-	const AIDE_PAGES: IndexedPage[] = [];
+	const AIDE_PAGES: IndexedPage[] = [
+		{
+			href: '/aide-ecriture/geometrie',
+			title: 'Géométrie',
+			description: 'Figures interactives du langage de figures, thème par thème, script compris.'
+		},
+		{
+			href: '/aide-ecriture/cercle-trigo',
+			title: 'Cercle trigonométrique',
+			description:
+				'Tous les réglages du bloc `trig` : préréglages, tableau, équations, inéquations.'
+		}
+	];
 </script>
 
 <svelte:head>

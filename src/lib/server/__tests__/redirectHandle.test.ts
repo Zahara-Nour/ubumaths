@@ -55,7 +55,7 @@ describe('redirectHandle — /cas, remplacée par l’atelier', () => {
 	});
 });
 
-describe('redirectHandle — pages de démo et de debug rangées sous /dev', () => {
+describe('redirectHandle — pages de démo et de debug rangées sous /dev et /aide-ecriture', () => {
 	it.each([
 		['/demo/theme-test', '/dev/theme'],
 		['/test-saisie', '/dev/saisie-naturelle'],
@@ -85,7 +85,9 @@ describe('redirectHandle — pages de démo et de debug rangées sous /dev', () 
 		['/slides/test-transitions', '/dev/diaporama'],
 		['/test-structure', '/dev/structure'],
 		['/demo/vip-cards-demo', '/dev/cartes'],
-		['/demo/mots-cliquables', '/dev/mots-cliquables']
+		['/demo/mots-cliquables', '/dev/mots-cliquables'],
+		['/geometry-demo', '/aide-ecriture/geometrie'],
+		['/demo/trig-circle-demo', '/aide-ecriture/cercle-trigo']
 	])('%s mène à %s, en 308', async (from, to) => {
 		expect(await redirectionOf(from)).toEqual({ status: 308, location: to });
 	});
@@ -103,6 +105,10 @@ describe('redirectHandle — pages de démo et de debug rangées sous /dev', () 
 			status: 308,
 			location: '/dev/cartes/exemples'
 		});
+		expect(await redirectionOf('/geometry-demo/sliders/koch?n=3')).toEqual({
+			status: 308,
+			location: '/aide-ecriture/geometrie/sliders/koch?n=3'
+		});
 	});
 
 	it('les images de /test-font/ restent servies, sans redirection', async () => {
@@ -114,7 +120,7 @@ describe('redirectHandle — pages de démo et de debug rangées sous /dev', () 
 		expect(await redirectionOf('/dashboard/admin/errors')).toBeNull();
 		expect(await redirectionOf('/dashboard/admin/errors/42')).toBeNull();
 		expect(await redirectionOf('/slides/demox')).toBeNull();
-		expect(await redirectionOf('/demo/trig-circle-demo')).toBeNull();
+		expect(await redirectionOf('/geometry-demos')).toBeNull();
 		expect(await redirectionOf('/demo')).toBeNull();
 	});
 });

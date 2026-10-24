@@ -1,0 +1,485 @@
+<script lang="ts">
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
+	import DslDemo from '../DslDemo.svelte';
+
+	// Note: \\pi and e (Euler) are now first-class DSL constants thanks to the
+	// mathAST routing. Math functions (sqrt, exp, ln, log, …) and arithmetic
+	// expressions in the RHS are also routed to mathAST automatically.
+	//
+	// The DSL angle mode defaults to degrees. These trigonometric demos opt
+	// into radians via `unite_angle("radians")` so cos(t)/sin(t) on intervals
+	// relative to π behave as expected.
+
+	const circleDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")`;
+
+	const parabolaDsl = `c = courbe("x = t", "y = t^2", t_min=-2, t_max=2, couleur="rouge")`;
+
+	const cardioidDsl = `unite_angle("radians")
+c = courbe("x = (1 - cos(t)) * cos(t)", "y = (1 - cos(t)) * sin(t)", t_min=0, t_max=2*\\pi, couleur="violet")`;
+
+	const lissajousDsl = `unite_angle("radians")
+c1 = courbe("x = sin(3*t)", "y = sin(2*t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+c2 = courbe("x = sin(4*t)", "y = sin(3*t)", t_min=0, t_max=2*\\pi, couleur="rouge")
+c3 = courbe("x = sin(5*t)", "y = sin(4*t)", t_min=0, t_max=2*\\pi, couleur="vert")`;
+
+	const cycloidDsl = `unite_angle("radians")
+c = courbe("x = t - sin(t)", "y = 1 - cos(t)", t_min=0, t_max=4*\\pi, couleur="orange")`;
+
+	const archimedeanSpiralDsl = `unite_angle("radians")
+c = courbe("x = t * cos(t)", "y = t * sin(t)", t_min=0, t_max=6*\\pi, couleur="cyan")`;
+
+	const sliderTmaxDsl = `unite_angle("radians")
+s = slider(min=0.1, max=2*\\pi, valeur=\\pi)
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=s, couleur="bleu")`;
+
+	const sliderRadiusDsl = `unite_angle("radians")
+r = slider(min=0.5, max=4, valeur=2)
+c = courbe("x = r * cos(t)", "y = r * sin(t)", t_min=0, t_max=2*\\pi, param="t", couleur="rouge")`;
+
+	const closedFillDsl = `unite_angle("radians")
+c = courbe("x = 2 * cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="violet", remplissage="violet")`;
+
+	// New: variables and constants — math-pure RHS routed through mathAST.
+	// Note: inside the equation strings we write \phi (Greek-letter command);
+	// mathAST would otherwise split the bare word `phi` into p·h·i.
+	const variablesDsl = `unite_angle("radians")
+phi = (1 + sqrt(5)) / 2
+c = courbe("x = \\phi*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="orange")`;
+
+	// New: derived reactive scalar — k follows s, the curve follows k.
+	const reactiveDsl = `unite_angle("radians")
+s = slider(min=0.5, max=4, valeur=2)
+k = 2 * s
+c = courbe("x = k*cos(t)", "y = k*sin(t)", t_min=0, t_max=2*\\pi, couleur="rouge")`;
+
+	// Tangente paramétrique : (d, v) = tangente(c, t0)
+	// d = droite tangente (pointillés), v = vecteur tangent γ'(t0)
+	const tangenteParabolaDsl = `c = courbe("x = t", "y = t^2", t_min=-2, t_max=2, couleur="bleu")
+(d, v) = tangente(c, 1)`;
+
+	const tangenteLissajousDsl = `unite_angle("radians")
+c = courbe("x = sin(3*t)", "y = sin(2*t)", t_min=0, t_max=2*\\pi, couleur="violet")
+(d, v) = tangente(c, 0.6)`;
+
+	const tangenteSliderDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+t0 = slider(min=0, max=2*\\pi, valeur=\\pi/4)
+(d, v) = tangente(c, t0)`;
+
+	// Point sur courbe paramétrique : P = point_sur(c, t0)
+	const pointSurEllipseDsl = `unite_angle("radians")
+c = courbe("x = 2*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+t = slider(min=0, max=2*\\pi, valeur=\\pi/3)
+P = point_sur(c, t)`;
+
+	// Lieu de milieu via point_sur sur cercle paramétrique
+	const lieuMilieuCircleDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)*cos(t)", t_min=0, t_max=2*\\pi, couleur="violet")
+t = slider(min=0, max=2*\\pi, valeur=0)
+O = point(0, 0)
+P = point_sur(c, t)
+M = milieu(O, P)
+L = lieu(M, P)`;
+
+	// Intersection de courbes paramétriques (Newton 2D multi-start)
+	const intersectionEllipsesDsl = `unite_angle("radians")
+c1 = courbe("x = 2*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+c2 = courbe("x = cos(t)", "y = 2*sin(t)", t_min=0, t_max=2*\\pi, couleur="rouge")
+A = intersection(c1, c2, 1)
+B = intersection(c1, c2, 2)
+C = intersection(c1, c2, 3)
+D = intersection(c1, c2, 4)`;
+
+	const intersectionLissajousDsl = `unite_angle("radians")
+c1 = courbe("x = sin(2*t)", "y = sin(3*t)", t_min=0, t_max=2*\\pi, couleur="violet")
+c2 = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="orange")
+P = intersection(c1, c2, 1)
+Q = intersection(c1, c2, 2)`;
+
+	// V2 — paramétrique × droite/cercle/fonction (Newton 1D)
+	const intersectionParamLineDsl = `unite_angle("radians")
+c = courbe("x = 2*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+A = point(-3, 0.5)
+B = point(3, 0.5)
+d = droite(A, B)
+P1 = intersection(c, d, 1)
+P2 = intersection(c, d, 2)`;
+
+	const intersectionParamCircleDsl = `unite_angle("radians")
+c = courbe("x = 2*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+O = point(0, 0)
+cercle1 = cercle(O, rayon=1.2)
+P1 = intersection(c, cercle1, 1)
+P2 = intersection(c, cercle1, 2)
+P3 = intersection(c, cercle1, 3)
+P4 = intersection(c, cercle1, 4)`;
+
+	const intersectionParamFunctionDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+f = courbe("y = x^2 - 0.3", couleur="rouge")
+P1 = intersection(c, f, 1)
+P2 = intersection(c, f, 2)`;
+
+	// V3 — paramétrique × segment / demidroite (Newton 1D ligne + clipping)
+	const intersectionParamSegmentDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+A = point(-2, 0.3)
+B = point(2, 0.3)
+seg = segment(A, B)
+P1 = intersection(c, seg, 1)
+P2 = intersection(c, seg, 2)`;
+
+	const intersectionParamRayDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+O = point(0, 0)
+T = point(2, 0.5)
+ray = demidroite(O, T)
+P = intersection(c, ray, 1)`;
+
+	// C — Géométrie différentielle paramétrique
+	const longueurCircleDsl = `unite_angle("radians")
+c = courbe("x = cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+L = longueur(c)`;
+
+	const longueurCardioidDsl = `unite_angle("radians")
+c = courbe("r = 1 - cos(theta)", theta_min=0, theta_max=2*\\pi, couleur="violet")
+L = longueur(c)`;
+
+	const cercleOsculateurEllipseDsl = `unite_angle("radians")
+c = courbe("x = 2*cos(t)", "y = sin(t)", t_min=0, t_max=2*\\pi, couleur="bleu")
+t = slider(min=0, max=2*\\pi, valeur=\\pi/4)
+P = point_sur(c, t)
+oc = cercle_osculateur(c, t)`;
+
+	const cercleOsculateurParabolaDsl = `unite_angle("radians")
+c = courbe("x = t", "y = t^2", t_min=-2, t_max=2, couleur="bleu")
+t = slider(min=-1.5, max=1.5, valeur=0)
+P = point_sur(c, t)
+oc = cercle_osculateur(c, t)`;
+</script>
+
+<div class="container mx-auto max-w-6xl px-4 py-8">
+	<BackLink href="/aide-ecriture/geometrie" label="Retour à la géométrie" />
+
+	<h1 class="mt-4 mb-8 text-2xl font-bold">Courbes paramétriques — geometry-core</h1>
+
+	<p class="mb-6 text-muted-foreground">
+		Tracé d'une courbe t → (x(t), y(t)) via le builtin <code>courbe()</code> avec deux équations
+		<code>"x = ..."</code> et <code>"y = ..."</code>. Le paramètre est auto-détecté ; les bornes
+		<code>t_min</code> et <code>t_max</code> peuvent référencer un slider pour animer le tracé.
+	</p>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={circleDsl}
+		title="Cercle — (cos t, sin t)"
+		description="La courbe paramétrique la plus classique. Détection automatique de courbe fermée."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={parabolaDsl}
+		title="Parabole — (t, t²)"
+		description="Forme paramétrique de y = x². Sampling adaptatif via ‖vitesse‖."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={cardioidDsl}
+		title="Cardioïde — (1 − cos t)·(cos t, sin t)"
+		description="Forme polaire r = 1 − cos θ exprimée en paramétrique."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={lissajousDsl}
+		title="Courbes de Lissajous — (sin nt, sin mt)"
+		description="Trois ratios de fréquences (3:2, 4:3, 5:4). Densité d'échantillonnage plus élevée dans les régions à forte courbure."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={cycloidDsl}
+		title="Cycloïde — (t − sin t, 1 − cos t)"
+		description="Trajectoire d'un point d'un cercle qui roule sans glisser sur une droite."
+		width={700}
+		height={500}
+		center={{ x: 6, y: 1 }}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={archimedeanSpiralDsl}
+		title="Spirale d'Archimède — (t cos t, t sin t)"
+		description="r = t en polaire. Sampling dense près de l'origine, plus large vers l'extérieur."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={sliderTmaxDsl}
+		title="Tracé animé — slider sur t_max"
+		description="Déplace le slider pour faire varier t_max de 0 à 2π : la courbe se construit progressivement et bascule en courbe fermée à 2π."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={sliderRadiusDsl}
+		title="Coefficient dynamique — slider dans x(t), y(t)"
+		description="Le rayon r est contrôlé par un slider ; toutes les courbes paramétriques se redessinent quand le slider bouge."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={closedFillDsl}
+		title="Courbe fermée — remplissage"
+		description="Ellipse paramétrique avec fond. Le sampler détecte la fermeture et le rendu SVG ferme le path (Z) pour permettre le fill."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={variablesDsl}
+		title="Variables et constantes — phi = (1 + √5) / 2"
+		description="Les RHS math-pures sont routées vers mathAST : sqrt(), \pi, e et toutes les fonctions math sont disponibles. La variable phi est substituée dans les équations avant compilation."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={reactiveDsl}
+		title="Variable réactive — k = 2·s"
+		description="La variable k dépend du slider s. Toute expression contenant un slider/scalar produit un GeoScalar réactif ; la courbe se redessine quand s bouge."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Tangente à une courbe paramétrique</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		Le builtin <code>tangente(c, t0)</code> appliqué à une courbe paramétrique retourne deux
+		éléments : la <strong>droite tangente</strong> (pointillés par défaut) et le
+		<strong>vecteur tangent</strong> <code>γ'(t0)</code> ancré en <code>γ(t0)</code>. La syntaxe
+		impose le destructuring <code>(d, v) = tangente(c, t0)</code>.
+	</p>
+
+	<DslDemo
+		dsl={tangenteParabolaDsl}
+		title="Tangente sur parabole — (t, t²) à t = 1"
+		description="γ(1) = (1, 1), γ'(1) = (1, 2). Pente 2 = dérivée de y = x² en x = 1."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={tangenteLissajousDsl}
+		title="Tangente sur Lissajous (3:2) à t ≈ 0.6"
+		description="La direction et la magnitude du vecteur tangent varient le long du chemin — particulièrement marqué près des points de rebroussement."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={tangenteSliderDsl}
+		title="Tangente animée — slider sur t0"
+		description="Déplace le slider pour faire glisser le point de tangence sur le cercle. Le vecteur tangent (cos t pi/2 + 1, sin t pi/2 + 1) reste de norme 1 (vitesse constante)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Point sur courbe paramétrique</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		<code>point_sur(c, t0)</code> crée un point ancré sur une courbe paramétrique au paramètre
+		<code>t0</code>. Le paramètre peut être un nombre, un slider ou un scalaire — la position du
+		point se met à jour automatiquement quand le paramètre change.
+	</p>
+
+	<DslDemo
+		dsl={pointSurEllipseDsl}
+		title="Point glissant sur ellipse"
+		description="Le slider t pilote la position du point P = γ(t) sur l'ellipse (2 cos t, sin t)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={lieuMilieuCircleDsl}
+		title="Lieu d'un milieu — courbe paramétrique"
+		description="Quand P parcourt la courbe c, le milieu M de [OP] décrit la courbe c/2 (homothétie de rapport 1/2 centrée en O). Le lieu est calculé sur 32 échantillons de t."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Intersection de courbes paramétriques</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		<code>intersection(c1, c2, k)</code> retourne le k-ème point d'intersection de deux courbes paramétriques
+		(ou polaires). L'algorithme est un Newton 2D multi-start sur la grille 8×8 du domaine produit. Si
+		k dépasse le nombre d'intersections, la position est null.
+	</p>
+
+	<DslDemo
+		dsl={intersectionEllipsesDsl}
+		title="Ellipses orthogonales — 4 points d'intersection"
+		description="Deux ellipses (2cos t, sin t) et (cos t, 2sin t) se croisent en 4 points symétriques. Triés lexicographiquement par (t1, t2)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={intersectionLissajousDsl}
+		title="Lissajous × cercle — 2+ intersections"
+		description="Une courbe de Lissajous (sin 2t, sin 3t) croise le cercle unité en plusieurs points. Newton 2D les trouve robustement malgré les self-intersections de Lissajous."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">
+		Intersection paramétrique × ligne / cercle / fonction
+	</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		<code>intersection(c, droite/cercle/fonction, k)</code> traite les combinaisons mixtes via Newton
+		1D (16 starts). Les courbes paramétriques peuvent ainsi être combinées avec les autres types géométriques.
+	</p>
+
+	<DslDemo
+		dsl={intersectionParamLineDsl}
+		title="Ellipse × droite horizontale — 2 points"
+		description="L'ellipse (2cos t, sin t) coupe la droite y = 0.5 en 2 points symétriques. Newton 1D résout cross(γ(t)−P, v) = 0."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={intersectionParamCircleDsl}
+		title="Ellipse × cercle — 4 points"
+		description="L'ellipse (2cos t, sin t) coupe un cercle de rayon 1.2 en 4 points. Newton 1D résout ‖γ(t)−center‖² − r² = 0."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={intersectionParamFunctionDsl}
+		title="Cercle paramétrique × parabole — 2 points"
+		description="Cercle unité × parabole y = x² − 0.3. Newton 1D résout γ_y(t) − f(γ_x(t)) = 0."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={intersectionParamSegmentDsl}
+		title="Cercle × segment — clipping s ∈ [0, 1]"
+		description="L'intersection avec un segment [AB] : Newton 1D sur la ligne support, puis filtrage par paramètre s ∈ [0, 1]. Ici 2 points sur le cercle dans le segment."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={intersectionParamRayDsl}
+		title="Cercle × demidroite — clipping s ≥ 0"
+		description="Demidroite issue de O dans la direction de T : seules les intersections avec s ≥ 0 (devant l'origine) sont retenues. Le point sur le cercle à s < 0 est filtré."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<h2 class="mt-12 mb-4 text-xl font-bold">Géométrie différentielle</h2>
+
+	<p class="mb-6 text-muted-foreground">
+		Trois nouveaux builtins pour la géométrie différentielle : <code>longueur(c)</code>
+		(arc length, Simpson composite N=64), <code>courbure(c, t0)</code> (κ signée), et
+		<code>cercle_osculateur(c, t0)</code> (cercle tangent à la courbure locale).
+	</p>
+
+	<DslDemo
+		dsl={longueurCircleDsl}
+		title="Longueur d'arc — cercle unité"
+		description="∫|γ'(t)| dt = 2π ≈ 6.283 (longueur du cercle unité)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={longueurCardioidDsl}
+		title="Longueur d'arc — cardioïde"
+		description="Longueur exacte d'une cardioïde r = 1 − cos(θ) sur [0, 2π] : 8."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={cercleOsculateurEllipseDsl}
+		title="Cercle osculateur — ellipse"
+		description="Le cercle osculateur tangent à la courbe au point P glisse avec le slider t. Son rayon = 1/|κ| (rayon de courbure)."
+		width={700}
+		height={500}
+	/>
+
+	<hr class="my-8" />
+
+	<DslDemo
+		dsl={cercleOsculateurParabolaDsl}
+		title="Cercle osculateur — parabole"
+		description="Au sommet (t=0), le cercle osculateur a rayon 1/2 (κ=2). Le rayon explose vers ∞ aux extrémités où la parabole devient quasi-droite."
+		width={700}
+		height={500}
+	/>
+</div>

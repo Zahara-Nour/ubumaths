@@ -57,7 +57,7 @@ describe('Sidebar (Outils libres)', () => {
 
 			expect(container.querySelector('a[href="/atelier"]')).not.toBeNull();
 			expect(container.querySelector('a[href="/grapheur"]')).toBeNull();
-			expect(container.querySelector('a[href="/geometry-demo"]')).toBeNull();
+			expect(container.querySelector('a[href="/aide-ecriture/geometrie"]')).toBeNull();
 			expect(container.querySelector('a[href="/automaths"]')).not.toBeNull();
 			expect(container.querySelector('a[href="/shtam"]')).not.toBeNull();
 		});

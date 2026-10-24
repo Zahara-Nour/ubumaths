@@ -307,7 +307,7 @@ rendent un **scalaire** réactif ET dessinent une zone liée (les arguments de s
 - **Rendu** : la zone passe sous la courbe ; opacité de fond 0,3 par défaut. `integrale` éclaircit
   les sous-régions où f < 0 ; `aire` et `aire_entre` gardent une teinte uniforme.
 - Hors périmètre : plus de deux courbes, détection automatique des intersections (donner [a ; b]).
-- Démos : `/geometry-demo/sliders/integrale`, `…/aire`, `…/aire-entre`, `…/integrale-improper`.
+- Démos : `/aide-ecriture/geometrie/sliders/integrale`, `…/aire`, `…/aire-entre`, `…/integrale-improper`.
   Tests : `dsl/__tests__/interpreter-integrale.test.ts`, `interpreter-aire-undercurve.test.ts`,
   `interpreter-aire-entre.test.ts`, `interpreter-improper.test.ts`,
   `interpreter-singularity-nan.test.ts`.
