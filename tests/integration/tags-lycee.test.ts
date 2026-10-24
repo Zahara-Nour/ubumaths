@@ -4,7 +4,7 @@
  *
  * Migration `20261023180000_tags_lycee` : 221 modèles de la 2de à la Tle. 185 tags non
  * confirmés retirés, 175 tags posés, 32 modèles déplacés sur le nœud de leur point (R2),
- * d'après les verdicts VALIDÉS par David (docs/wip/passe-lycee/analyse/, copie figée dans
+ * d'après les verdicts VALIDÉS par David (docs/archive/wip/passe-lycee/analyse/, copie figée dans
  * tests/integration/fixtures/tags-lycee.json).
  *
  * Les modèles n'existent qu'en production. Le test fabrique donc l'état de la prod — des

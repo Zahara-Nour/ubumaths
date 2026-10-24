@@ -20,12 +20,12 @@
  *
  * Puis la passe des points du lycée (migration `20261022180000_passe_points_lycee`, validée
  * le 2026-10-22) : coupes, points ⚙ et puces rétablies → 325 points ; fixture transformée par
- * docs/wip/passe-lycee/generer-migration.py.
+ * docs/archive/wip/passe-lycee/generer-migration.py.
  *
  * Puis la PR 2 de l'étape e (migration `20261023220000_passe_lycee_libelles_points`, décidée le
  * 2026-10-23) : TSPE-626, l'équation fonctionnelle de l'exponentielle pour transformer une
  * écriture, juste après son jumeau logarithme → 326 points ; fixture transformée par
- * docs/wip/passe-lycee/generer-libelles-points.py.
+ * docs/archive/wip/passe-lycee/generer-libelles-points.py.
  *
  * @vitest-environment node
  */

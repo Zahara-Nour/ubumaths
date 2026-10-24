@@ -6,7 +6,7 @@
  * 25 points ajoutés (14 points ⚙, 11 puces rétablies), 2-373 et 2-374 archivés, l'ordre d'affichage
  * des huit grades du lycée réécrit, et les références d'automatismes des points en jeu. La fixture
  * `fixtures/passe-lycee.json` est GÉNÉRÉE depuis les décisions de David
- * (docs/wip/passe-lycee/generer-migration.py) : codes, libellés, nœuds, ordre complet de chaque
+ * (docs/archive/wip/passe-lycee/generer-migration.py) : codes, libellés, nœuds, ordre complet de chaque
  * grade, références (point × grade référent) avant et après.
  *
  * 1. Après les migrations (base locale) : l'ordre d'affichage EXACT de chaque grade, les libellés

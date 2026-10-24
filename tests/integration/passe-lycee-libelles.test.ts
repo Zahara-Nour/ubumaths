@@ -6,7 +6,7 @@
  * (2-273, 1GEN-029/030/031) et deux points neufs, « Utiliser l'équation fonctionnelle de
  * l'exponentielle pour transformer une écriture », en Tle spé (TSPE-626) et en Tle compl.
  * (TCOMP-379), juste après leur jumeau logarithme. Décisions de David du 2026-10-23 ; fixture
- * `fixtures/passe-lycee-libelles.json` GÉNÉRÉE par docs/wip/passe-lycee/generer-libelles-points.py.
+ * `fixtures/passe-lycee-libelles.json` GÉNÉRÉE par docs/archive/wip/passe-lycee/generer-libelles-points.py.
  *
  * 1. Après les migrations (base locale) : libellés, points neufs (attributs du jumeau, nœud),
  *    ordre d'affichage EXACT des deux grades touchés.
