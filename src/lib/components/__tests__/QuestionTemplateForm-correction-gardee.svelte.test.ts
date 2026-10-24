@@ -38,13 +38,17 @@ function baseTemplate(overrides: Partial<QuestionTemplate>): QuestionTemplate {
 	} as unknown as QuestionTemplate;
 }
 
-async function renderAndSave(template: QuestionTemplate): Promise<SavedTemplate> {
+async function renderAndSave(
+	template: QuestionTemplate,
+	beforeSave?: () => Promise<void>
+): Promise<SavedTemplate> {
 	const onSave = vi.fn<(t: SavedTemplate, options?: { silent?: boolean }) => void>();
 	const main = document.body.appendChild(document.createElement('main'));
 	await render(QuestionTemplateForm, {
 		target: main,
 		props: { template, onSave, onCancel: () => {}, isSubmitting: false }
 	});
+	await beforeSave?.();
 	await page.getByRole('button', { name: 'Enregistrer brouillon' }).click();
 	await expect.poll(() => onSave.mock.calls.length).toBe(1);
 	return onSave.mock.calls[0][0];
@@ -89,6 +93,27 @@ describe('QuestionTemplateForm — correction gardée à l’enregistrement', ()
 		);
 
 		expect(saved.variations[0].correction).toEqual(correction);
+	});
+
+	it('dupliquer une variation copie toute sa correction', async () => {
+		const saved = await renderAndSave(
+			baseTemplate({
+				variations: [
+					{ statement: templateMarkdown('Dériver $x^2$.'), correction: FULL_CORRECTION },
+					{
+						statement: templateMarkdown('Dériver $x^3$.'),
+						correction: { steps: [templateMarkdown('Autre correction.')] }
+					}
+				]
+			} as Partial<QuestionTemplate>),
+			async () => {
+				await page.getByRole('button', { name: /^Variation 2/ }).click();
+				await page.getByRole('button', { name: 'Dupliquer depuis une autre variation' }).click();
+				await page.getByRole('button', { name: 'Dupliquer', exact: true }).click();
+			}
+		);
+
+		expect(saved.variations[1].correction).toEqual(FULL_CORRECTION);
 	});
 
 	it('une variation sans correction reste sans correction', async () => {
