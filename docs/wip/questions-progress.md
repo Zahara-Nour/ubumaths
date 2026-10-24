@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-25, lot A1 écrit._
 
 - **État** : lot A1 (6 modèles de calcul mental, CP-020/081/021/082/028/027) écrit dans `scripts/questions/cp-a1/` (générateur `docs/wip/questions/lot-a1.py`), `checkTemplate` vert (34 specs, 50/50 tirages), rendu relu ; simulation `create-questions` : 6 à créer. Horloge terminée (session « horloge ») ; outil « opérations posées » lancé dans une autre session.
-- **Prochaine action** : sur le go de David, `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cp-a1 --publier` (brouillons en prod), puis migration nœud + tags (modèle M2 de #1702, test d'intégration rouge sans elle), PR, page à cocher.
-- **En attente de David** : go pour l'écriture en prod ; ou nœuds/tags posés par lui dans la page admin (pas de migration) ; vérification manuelle #1702.
+- **Prochaine action** : migration nœud + tags des 6 brouillons créés en prod le 2026-10-25 (`7eb376bf` CP-020, `85f93a6e` CP-081, `882c436f` CP-021, `87a869c2` CP-082, `ee822bbc` CP-028, `eccf910b` CP-027 ; sans nœud ni tag) — modèle M2 de #1702, test d'intégration rouge sans elle ; PR ; page à cocher.
+- **En attente de David** : question d'accès de la migration ; vérification manuelle #1702.
 - **Pièges en cours** : la case naît d'une variable `expression1` (sinon « Blank count mismatch ») ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; `create-questions` ne pose ni nœud ni tag ; un modèle CP peut prendre un point CE1 (pas l'inverse) ; dater les migrations après la prod (`list_migrations`) ; `db:migrate` depuis le dépôt principal.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-cp-a1`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
