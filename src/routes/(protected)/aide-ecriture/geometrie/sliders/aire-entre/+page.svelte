@@ -5,7 +5,8 @@
 	// Cas pédagogique classique de Terminale spé maths : aire entre y = sin(x)
 	// et y = cos(x) sur [π/4, 5π/4] = 2√2 ≈ 2.828.
 	// Les bornes par défaut (≈ π/4 et ≈ 5π/4) sont les intersections naturelles.
-	const dsl = `f = courbe("y = sin(x)", couleur="bleu")
+	const dsl = `unite_angle("radians")
+f = courbe("y = sin(x)", couleur="bleu")
 g = courbe("y = cos(x)", couleur="vert")
 a = slider(min=-1, max=1.5, valeur=0.7853981633974483, pas=0.05)
 b = slider(min=2, max=5, valeur=3.9269908169872414, pas=0.05)

@@ -32,9 +32,9 @@
 			href={resolve('/aide-ecriture/geometrie/sliders/epicycloide')}
 			class="rounded-lg border p-4 hover:bg-muted"
 		>
-			<h2 class="font-bold">Epicycloide parametrique</h2>
+			<h2 class="font-bold">Rotation autour d'un point mobile</h2>
 			<p class="text-sm text-muted-foreground">
-				Rotation autour du driver. Deltoide, asteroide, etoiles.
+				B tourne autour de A, qui parcourt un cercle : B décrit un cercle.
 			</p>
 		</a>
 		<a

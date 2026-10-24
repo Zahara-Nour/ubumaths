@@ -16,7 +16,7 @@ r = t / 360
 C = homothetie(B, centre=O, rapport=r, couleur="orange")
 T = trace(C, couleur="violet")`;
 
-	// ── 3. Epicycloide via slider ────────────────────────────────
+	// ── 3. Deux rotations combinées (hypotrochoïde) ──────────────
 
 	const epicycloideDsl = `O = point(0, 0, couleur="bleu")
 t = slider(min=0, max=1080, valeur=0, pas=3)
@@ -98,8 +98,8 @@ T = trace(M, couleur="violet")`;
 
 	<DslDemo
 		dsl={epicycloideDsl}
-		title="3. Epicycloide"
-		description="Le point B tourne autour de A qui tourne autour de O, a des vitesses differentes (rapport -3). Glissez t pour dessiner l'epicycloide. Poussez jusqu'a 1080 pour voir le motif complet."
+		title="3. Deux rotations combinées"
+		description="Le point B tourne autour de A qui tourne autour de O, trois fois plus vite et en sens inverse. Glissez t pour dessiner la courbe, une hypotrochoïde à trois lobes : le motif est complet dès 360."
 		width={600}
 		height={500}
 		pixelsPerUnit={30}
@@ -130,7 +130,7 @@ T = trace(M, couleur="violet")`;
 	<DslDemo
 		dsl={compareDsl}
 		title="6. lieu() (cyan) vs trace() (violet)"
-		description="Le lieu (cyan) affiche l'ellipse complete instantanement. La trace (violet) se construit au fur et a mesure que vous deplacez A sur le cercle. Deplacez P (vert) : le lieu se recalcule, mais la trace garde la memoire des anciennes positions."
+		description="Le lieu (cyan) affiche le cercle complet instantanément. La trace (violet) se construit au fur et a mesure que vous deplacez A sur le cercle. Deplacez P (vert) : le lieu se recalcule, mais la trace garde la memoire des anciennes positions."
 		width={600}
 		height={400}
 	/>

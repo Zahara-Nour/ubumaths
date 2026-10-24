@@ -23,6 +23,9 @@ couvre:
   - 'src/routes/(public)/demo/lexique/+page.svelte'
   - 'src/routes/(public)/demo/corriges/+page.svelte'
   - 'src/routes/(public)/demo/corriges/corriges.ts'
+  - 'src/routes/(public)/demo/geometrie/+page.svelte'
+  - 'src/routes/(public)/demo/geometrie/DemoFigureCard.svelte'
+  - 'src/routes/(public)/demo/geometrie/figures.ts'
   - src/lib/components/structure/structure-lexicon.svelte.ts
   - 'src/routes/(protected)/dev/saisie-naturelle/*.svelte'
   - 'src/routes/(protected)/dev/polices/+page.svelte'
@@ -126,7 +129,7 @@ Les anciennes adresses sont redirigées en 308 par `redirectHandle` (table `MOVE
 [auth.md](auth.md#la-chaîne-de-handles)), sous-pages comprises ; une ancienne adresse publique mène
 donc le visiteur à la connexion. `/test-font` ne l'est qu'à l'adresse exacte, ses images restant
 sous `static/test-font/`. Les pages vitrine (`/demo/…`) arrivent une par une (phase 6 du
-chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d), `/demo/corriges` (PR 6e). Elles ne sont reliées de nulle part avant l'accueil de la
+chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d), `/demo/corriges` (PR 6e), `/demo/geometrie` (PR 6f). Elles ne sont reliées de nulle part avant l'accueil de la
 vitrine (phase 7).
 
 Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` ; `/dev` est
@@ -151,6 +154,7 @@ protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo
 | `/demo/cartes`                | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 4 cartes VIP écrites dans le code, une par rareté, avec leur effet holographique                                                                           | Vitrine, non liée     |
 | `/demo/lexique`               | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : mots du dictionnaire soulignés dans une question et 5 phrases, sélecteur de niveau                                                                         | Vitrine, non liée     |
 | `/demo/corriges`              | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : une page de Corrigé de fiche (écriture manuscrite) en image fixe, `static/demo/corriges/`                                                                  | Vitrine, non liée     |
+| `/demo/geometrie`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 10 figures manipulables (collège, lycée, pour le plaisir), script replié, réduites à la largeur de l'écran                                                 | Vitrine, non liée     |
 | `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable     |
 
 Précisions :
@@ -204,6 +208,14 @@ Précisions :
   `pdftoppm -r 200`, recadrée sans le pied de page (`magick … -crop 1654x2225+0+0 -quality 85`).
   À refaire quand le modèle de fiche ou les polices du Corrigé changent. `noindex` jusqu'à la
   phase 7.
+- **`/demo/geometrie`** (vitrine, PR 6f) : 10 figures manipulables en trois sections (Au collège,
+  Au lycée, Pour le plaisir), titre, texte et script replié sous « Voir le script ». Scripts dans
+  `figures.ts`, repris des pages d'aide `/aide-ecriture/geometrie/…`, sauf l'épicycloïde, écrite
+  pour la vitrine (courbe paramétrée jusqu'au curseur t, petit cercle qui roule) ; le flocon de
+  Koch vient de `$lib/components/geometry/koch-dsl.ts`, partagé avec l'aide. Un test construit
+  chaque figure. Textes rendus par le serveur, figures montées dans le navigateur
+  (`DemoFigureCard.svelte`) et réduites à la largeur disponible, l'échelle suivant (la toile de
+  `GeometryCanvas` a une largeur fixe). `noindex` jusqu'à la phase 7.
 - **`/dev/polices`** (ex-`/test-font`) : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles

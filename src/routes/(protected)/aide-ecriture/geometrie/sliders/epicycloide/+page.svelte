@@ -12,16 +12,17 @@ L = lieu(B, A, couleur="violet")`;
 </script>
 
 <svelte:head>
-	<title>Epicycloide parametrique — Sliders</title>
+	<title>Rotation autour d'un point mobile — Sliders</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl space-y-6 p-4">
 	<div>
 		<BackLink href="/aide-ecriture/geometrie/sliders" label="Retour aux sliders" />
-		<h1 class="mt-2 text-2xl font-bold">Epicycloide parametrique</h1>
+		<h1 class="mt-2 text-2xl font-bold">Rotation autour d'un point mobile</h1>
 		<p class="text-muted-foreground">
-			A parcourt le cercle. B = rotation(P, centre=A, angle=a). Essayez 120 = deltoide, 90 =
-			asteroide, 72 = 5 boucles, 60 = hexagone. Deplacez aussi P (vert) pour changer la taille.
+			A parcourt le cercle. B = rotation(P, centre=A, angle=a). Pour un angle a fixé, B dépend de A
+			par une similitude : B décrit donc un cercle, dont le curseur a change le rayon et le centre.
+			Déplacez aussi P (vert).
 		</p>
 	</div>
 
