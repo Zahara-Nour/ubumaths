@@ -141,8 +141,8 @@ export const actions = {
 
 		const { email, password } = validation.data;
 
-		// Rate limiting (with HMR-safe globalThis singleton)
-		// Levé seulement sous `pnpm dev` depuis la boucle locale (cf. local-login-rate-limit.ts).
+		// Limiteurs de débit (singleton globalThis, résistant au HMR).
+		// Levés seulement sous `pnpm dev` depuis la boucle locale (cf. local-login-rate-limit.ts).
 		const ip = getClientAddress();
 		if (!skipsLoginRateLimit(dev, ip)) {
 			const ipLimit = await checkLoginRateLimitByIP(ip);

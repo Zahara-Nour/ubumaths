@@ -47,3 +47,7 @@ ou build → limiteur ; IP vide/bizarre → limiteur ; erreurs Zod / identifiant
 - Tests : `src/lib/server/__tests__/local-login-rate-limit.test.ts`,
   `src/routes/(public)/auth/login/__tests__/login-limiteur-local.test.ts` (rouges avant le code,
   `dev` réglable par test, cas build + 127.0.0.1 prouvé).
+- Revues (Opus) : `security-auditor` et `code-reviewer` sans bloquant. Ajouté : ligne « jamais de
+  tunnel public vers `pnpm dev` » (auth.md + environnement-de-dev.md). Mutations du reviewer :
+  retirer la condition `dev` rend le test « hors dev » rouge. Reste théorique : `NODE_ENV=development`
+  posé dans l'environnement Vercel rendrait `dev` vrai dans le build (non vérifié au tableau de bord).

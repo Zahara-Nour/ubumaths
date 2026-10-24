@@ -110,7 +110,8 @@ local, pour les appels du navigateur). Le serveur n'a pas besoin de `--host`. Co
 connexions depuis `localhost` ne passent pas par le limiteur de connexion (`skipsLoginRateLimit`,
 `docs/systeme/auth.md`) : sessions et scripts Playwright peuvent se connecter sans compter. Depuis
 une autre IP (téléphone sur le réseau local) ou dans un build (`pnpm preview`), le limiteur
-s'applique : 5 essais par IP en 15 min, table `rate_limits` locale.
+s'applique : 5 essais par IP en 15 min, table `rate_limits` locale. Un tunnel vers `pnpm dev`
+(`ssh -L`, ngrok…) arrive en `127.0.0.1` et contourne aussi le limiteur : jamais de tunnel public.
 
 **Supabase local.** Une seule pile pour tout le dépôt (ports 54321-54329, `project_id` figé), d'où le
 verrou `supabase`. CLI = devDependency exacte, lancée par `pnpm db:*` ou `pnpm exec supabase`.

@@ -239,7 +239,9 @@ exacte, ses images restant sous `static/test-font/`.
   `::ffff:127.0.0.1`, formes exactes) : `skipsLoginRateLimit(dev, ip)`
   (`local-login-rate-limit.ts`). `dev` n'est vrai dans aucun build, donc la prod garde la
   limite ; pas de variable d'environnement, qu'on pourrait recopier sur Vercel. Le limiteur
-  OAuth n'est pas concerné. Toute
+  OAuth n'est pas concerné. Tout client relayé par un tunnel ou un proxy local (`ssh -L`,
+  ngrok, cloudflared) arrive en `127.0.0.1` et échappe donc aussi au limiteur : **ne jamais
+  exposer `pnpm dev` par un tunnel public**. Toute
   erreur rend le **même** message « Identifiants invalides. » (pas d'énumération des comptes).
   Le champ « Adresse email ou identifiant » accepte aussi l'**identifiant** d'un enfant inscrit
   par son parent (`noelie042`) : une saisie sans `@` est ramenée à `[a-z0-9]` (sans accent ni
