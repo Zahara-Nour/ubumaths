@@ -36,7 +36,6 @@ src/
 │   ├── (public)/           # pages sans authentification
 │   ├── (protected)/        # authentification requise
 │   ├── api/                # endpoints +server.ts
-│   ├── slides/             # hors groupe (layout réinitialisé, page de test)
 │   └── sitemap.xml/        # +server.ts du plan du site
 └── lib/
     ├── components/         # ui/ = Shadcn ; MySelect, MyCheckbox…
@@ -177,5 +176,3 @@ commandes : [commandes.md](../pratiques/commandes.md).
 
 - L'en-tête de `src/routes/(protected)/+layout.server.ts` documente `/login` et conseille
   `await parent()` ; la redirection réelle va vers `/auth/login`, et `locals` suffit.
-- `src/routes/slides/` est hors des groupes : sa page `test-transitions` est publique (page de
-  test, sans donnée).

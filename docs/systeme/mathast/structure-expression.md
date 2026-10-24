@@ -7,7 +7,7 @@ couvre:
 
 # Structure d'une expression
 
-> Outil **« Structure d'une expression »** : page publique `/test-structure`
+> Outil **« Structure d'une expression »** : page de mise au point `/dev/structure` (admin seul, ex-`/test-structure`)
 > ([utilitaires-et-demos.md](../utilitaires-et-demos.md)) ; moteur `src/lib/mathAST/structure/`
 > ([README.md](README.md)). Héritier d'Algebria (outil Flash/Haxe de David, Sésamath, article 487
 > de MathemaTICE). Vocabulaire : [CONTEXT.md](../../../CONTEXT.md) § « La structure d'une
@@ -129,8 +129,9 @@ Texte : « Ajoute des parenthèses pour montrer ce que tu calcules d'abord : (5 
 
 ### D. Accès
 
-Page publique **`/test-structure`** (la démo devient la page, décision de David) ; rien n'est
-enregistré ; niveau lu par `readReaderGrade()` (`profiles.grade`).
+Page **`/dev/structure`** (ex-`/test-structure`), réservée à l'admin depuis le rangement des pages
+de démo (chantier demo-debug, 2026-10-24) ; la formule seule (`StructureField`) reviendra au public
+dans la vitrine `/demo/structure`. Rien n'est enregistré ; niveau lu par `readReaderGrade()` (`profiles.grade`).
 
 Points proposés par Claude et acceptés : « x puissance 4 » (B9) ; survol de « sin » = la fonction
 appliquée (A8) ; cadres englobants en pointillés gris (A10).
@@ -181,7 +182,7 @@ appliquée (A8) ; cadres englobants en pointillés gris (A10).
 ## Le champ de formule (glisser-déposer, lot 2, 2026-10-14)
 
 `$lib/components/structure/StructureField.svelte` : une seule formule, qu'on écrit et qu'on
-manipule, réutilisable (l'outil `/test-structure` d'abord, l'Atelier ensuite). Spécification F
+manipule, réutilisable (l'outil `/dev/structure` d'abord, l'Atelier ensuite). Spécification F
 et décisions G1-G11 : [structure-glisser-deposer-progress.md](../../wip/structure-glisser-deposer-progress.md).
 
 - **Réglages** : `structure` (cadres au survol, règles A), `reading` (lecture de l'expression

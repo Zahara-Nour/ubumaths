@@ -15,7 +15,7 @@ couvre:
   - 'src/routes/(protected)/whiteboard/**'
   - 'src/routes/(protected)/spreadsheet/**'
   - 'src/routes/(protected)/organisation/kanban/**'
-  - 'src/routes/slides/**'
+  - 'src/routes/(protected)/dev/diaporama/**'
   - 'src/routes/(protected)/dashboard/teacher/google/**'
   - 'src/routes/(protected)/dashboard/teacher/settings/google/**'
   - 'src/routes/(protected)/dashboard/student/{classroom,devoirs,materials}/**'
@@ -134,11 +134,13 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
   du notebook Python (`/python-notebook/[id]/present`) : `Deck`, `Slide`, `UbuMarkSlide`.
 - `src/lib/components/test/ClassroomSeries.svelte` — série de questions projetée en classe,
   montée par `QuestionPreviewTabs.svelte` et `/automaths/test`.
-- `src/routes/slides/test-transitions/+page.svelte` — page de démonstration des transitions,
-  sans lien.
-- `src/routes/slides/demo/+page.svelte` et `src/routes/slides/demo-embedded/+page.svelte` —
-  démonstrations de tout le moteur (transitions, fragments, arrière-plans, code, UbuMark, QCM en
-  `FlashCard`, annotation, tableau blanc), plein écran et embarquée dans une page ; sans lien.
+- `/dev/diaporama` (`src/routes/(protected)/dev/diaporama/`, admin seul, ex-`/slides/demo`,
+  `/slides/demo-embedded` et `/slides/test-transitions`) — `DemoDeck.svelte` démontre tout le
+  moteur (transitions, fragments, arrière-plans, code, UbuMark, QCM en `FlashCard`, annotation,
+  tableau blanc), affiché en plein écran (conteneur fixe) ou dans un cadre de 4 tailles
+  (`fullscreen: false`, `minScale: 0.5`) ; `TransitionsDeck.svelte`, une diapositive par
+  transition. Pas de `+layout@` : il sauterait le `+layout.server.ts` de `/dev`, donc la garde en
+  navigation côté client.
 
 **Annotation des diapositives.** `AnnotatableSlide` (couche de dessin sur n'importe quelle
 diapositive) et `WhiteboardSlide` (une page du tableau blanc en diapositive, annotable) sont les
@@ -417,5 +419,5 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
    `auth/disconnect` et `auth/status`).
 5. **Kanban** : l'en-tête de `src/lib/server/kanban.ts` cite une migration d'avant le baseline.
 6. **Diaporamas** : l'annotation (`AnnotatableSlide`, `WhiteboardSlide`, `slideAnnotationStore`)
-   n'est montée que par les démos `/slides/demo{,-embedded}` (remises en place le 2026-10-11) ;
+   n'est montée que par la démo `/dev/diaporama` (remise en place le 2026-10-11) ;
    la brancher dans les carnets ou les séries en classe serait un choix de produit.

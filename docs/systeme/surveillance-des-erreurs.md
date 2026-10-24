@@ -206,9 +206,8 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   Markdown en HTML (`src/lib/server/markdown-parser.ts`, `marked`). `getDocumentContent`
   refuse un chemin qui sort de `docs/` (`..`).
 - `/dev/*` (admin seul, hors du tableau de bord) : pages d'essai (session, RLS, avatar, roue,
-  PDF Typst et LaTeX, MathField…), listées par `/dev`. Restent sous `/dashboard/admin/debug/` :
-  `question-display` et `rich-text` (menu dans `debug/+layout.svelte`). Les anciennes adresses
-  sont redirigées en 308 ([auth.md](auth.md)).
+  PDF Typst et LaTeX, MathField, carte question, éditeur riche…), listées par `/dev`. Plus rien
+  sous `/dashboard/admin/debug/`. Les anciennes adresses sont redirigées en 308 ([auth.md](auth.md)).
 - `/dashboard/admin/integrite-donnees` (ex-`/dashboard/admin/debug/database`, « Intégrité des
   données ») : comptes par rôle, élèves non activés, profils sans nom, sans école ou sans classe,
   dernières inscriptions (`requireAdmin`, e-mails masqués).

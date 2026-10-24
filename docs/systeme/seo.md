@@ -80,7 +80,7 @@ Deux appelants :
 - **Ne pas passer une URL absolue à `image`** : `absoluteUrl` préfixe toujours `SITE_URL`.
 - **`robots.txt` bloque l'exploration, pas l'indexation.** Une page `Disallow` n'est pas lue,
   donc son `noindex` non plus. Les pages de mise au point qui ont aussi un `noindex`
-  (`/test-structure` ; sous `/dev`, réservé à l'admin, `/dev/cadres` et `/dev/erreurs/page`) le doublent par précaution.
+  (sous `/dev`, réservé à l'admin : `/dev/structure`, `/dev/cadres`, `/dev/erreurs/page` et d'autres) le doublent par précaution.
 - `SeoHead` écrit `<title>` : une page qui l'utilise ne doit pas en ajouter un second dans son
   propre `<svelte:head>`.
 

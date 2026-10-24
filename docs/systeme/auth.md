@@ -184,7 +184,8 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
 `src/lib/server/__tests__/redirectHandle.test.ts`). Même filet pour `/cas`, retirée le 2026-10-13 :
 `/cas` et `/cas/` mènent à `/atelier` en 308, query string comprise. Même filet pour les pages de
 démo et de debug rangées sous `/dev` (table `MOVED_PAGES` : `/test-saisie`, `/test-cadres`,
-`/test-erreur`, `/demo/theme-test`, `/dashboard/admin/debug/*`…) ; `/test-font` seulement à l'adresse
+`/test-erreur`, `/test-structure`, `/slides/*`, `/demo/theme-test`, `/demo/vip-cards-demo`,
+`/dashboard/admin/debug/*`…), sous-pages et query string comprises ; `/test-font` seulement à l'adresse
 exacte, ses images restant sous `static/test-font/`.
 
 ## Processus 1 — la connexion (Supabase Auth)

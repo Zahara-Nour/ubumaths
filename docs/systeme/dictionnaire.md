@@ -11,7 +11,7 @@ couvre:
   - 'src/routes/(protected)/dashboard/admin/dictionnaire/**'
   - 'src/routes/(public)/glossaire/**'
   - 'src/routes/(public)/games/mathemo/dictionary-words.ts'
-  - 'src/routes/(public)/demo/mots-cliquables/**'
+  - 'src/routes/(protected)/dev/mots-cliquables/**'
   - 'supabase/migrations/*_dictionnaire_*.sql'
 ---
 
@@ -61,7 +61,7 @@ cliquables s'appelle `src/lib/lexicon/` (nom historique du chantier « lexique �
 | `supabase/migrations/20261015090000_dictionnaire_historique_*.sql`    | Historique écrit par le trigger seul (SECURITY DEFINER gardé par `is_admin()`)           |
 | `supabase/migrations/20261016090300_dictionnaire_mots_lecture.sql`    | Données : les 4 mots de la lecture (copie figée `mots-lecture-2026-10-11.ts`)            |
 
-Page de démonstration : `src/routes/(public)/demo/mots-cliquables/+page.svelte`.
+Page de test (admin seul) : `/dev/mots-cliquables` (`src/routes/(protected)/dev/mots-cliquables/+page.svelte`, ex-`/demo/mots-cliquables`).
 
 ## Modèle
 
