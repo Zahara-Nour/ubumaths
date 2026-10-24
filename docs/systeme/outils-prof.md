@@ -2,25 +2,20 @@
 couvre:
   - 'src/lib/whiteboard/**'
   - 'src/lib/slides/**'
-  - 'src/lib/spreadsheet/**'
   - 'src/lib/constructions/**'
-  - 'src/lib/components/spreadsheet/**'
   - 'src/lib/components/google/**'
   - 'src/lib/server/google/**'
   - src/lib/server/kanban.ts
-  - src/lib/server/spreadsheet-access.ts
-  - 'src/lib/server/validation/{kanban,spreadsheet,google,whiteboard-drive,whiteboard-templates}.ts'
+  - 'src/lib/server/validation/{kanban,google,whiteboard-drive,whiteboard-templates}.ts'
   - src/lib/types/google.ts
   - src/lib/utils/google-oauth-error.ts
   - 'src/routes/(protected)/whiteboard/**'
-  - 'src/routes/(protected)/spreadsheet/**'
   - 'src/routes/(protected)/organisation/kanban/**'
   - 'src/routes/(protected)/dev/diaporama/**'
   - 'src/routes/(protected)/dashboard/teacher/google/**'
   - 'src/routes/(protected)/dashboard/teacher/settings/google/**'
   - 'src/routes/(protected)/dashboard/student/{classroom,devoirs,materials}/**'
   - 'src/routes/api/whiteboard/**'
-  - 'src/routes/api/spreadsheets/**'
   - 'src/routes/api/organisation/kanban/**'
   - 'src/routes/api/google/**'
   - 'src/routes/api/constructions/**'
@@ -28,7 +23,7 @@ couvre:
   - 'src/routes/api/teacher/categories/**'
 ---
 
-# Outils du prof : tableau blanc, diaporamas, tableur, kanban, anciennes constructions, Google Classroom
+# Outils du prof : tableau blanc, diaporamas, ancien tableur, kanban, anciennes constructions, Google Classroom
 
 > Six outils périphériques, sans doc jusqu'ici. Écrit depuis le code, le schéma
 > (`supabase/migrations/20260616220000_baseline_schema.sql` et suivantes) et un comptage
@@ -40,7 +35,7 @@ couvre:
 | ----------------------- | -------------------------------------- | ------------------------------------------- | -------------------------------------------- | ---------------------------- |
 | Tableau blanc           | `/whiteboard`                          | « Whiteboard » (Header, Sidebar), prof      | 11 modèles ; documents hors base             | **vivant**                   |
 | Diaporamas (UbuSlides)  | aucune propre (bibliothèque)           | via le notebook Python et `ClassroomSeries` | aucune table                                 | **vivant** (bibliothèque)    |
-| Tableur                 | `/spreadsheet`, `/spreadsheet/[id]`    | aucun                                       | 1 tableur, modifié le 2025-12-05             | **en sommeil**               |
+| Tableur (V4)            | `/spreadsheet` → `/atelier` (308)      | aucun                                       | 1 tableur, modifié le 2025-12-05             | **retiré** le 2026-10-24     |
 | Kanban                  | `/organisation/kanban`                 | « Suivi du site », menu **admin** seul      | 2 tableaux, 3 cartes (mai 2026)              | vivant, usage interne        |
 | Anciennes constructions | `/constructions/conversion`            | bouton depuis `/constructions`              | 0 construction au format `json` (sur 9)      | **résiduel**                 |
 | Google Classroom        | `/dashboard/teacher/settings/google` … | masqués (`GOOGLE_CLASSROOM_ENABLED`)        | 1 intégration, 3 cours (derniers en 2025-12) | **éteint**, plomberie gardée |
@@ -178,65 +173,19 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
 
 ---
 
-## 3. Tableur (`src/lib/spreadsheet/`)
+## 3. Tableur V4 — retiré le 2026-10-24
 
-### À quoi ça sert
+Le tableur 20 × 20 à moteur de formules dédié (`src/lib/spreadsheet/`, page `/spreadsheet`,
+API `/api/spreadsheets`) est **retiré** sur décision de David : la grille de la vue Données de
+l'atelier le remplace (formules calculées par mathAST, CSV, mise en forme ; voir
+[atelier.md](atelier.md)). `/spreadsheet` et `/spreadsheet/<id>` mènent à `/atelier` en 308
+(`src/lib/server/redirectHandle.ts`). Ce que l'atelier ne reprend pas (NON, SIERREUR, fonctions
+de texte, VAR, MODE…) : [atelier-tableur-progress.md](../wip/atelier-tableur-progress.md).
 
-Un tableur 20 × 20 (colonnes A–T, lignes 1–20) avec formules à noms français ou anglais,
-mise en forme de cellule et import / export CSV. Moteur de formules **dédié**, séparé de
-mathAST. **En sommeil** : aucune page ne mène à `/spreadsheet` ; un seul tableur en prod.
-(L'atelier n'utilise pas ce module : son tableur intégré reste une question ouverte,
-voir [atelier.md](atelier.md).)
-
-### Carte du code
-
-| Fichier                                    | Rôle                                                                                                                                          |
-| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/spreadsheet/types.ts`             | `MAX_ROWS`, `MAX_COLS` (20), `MAX_CELL_VALUE_LENGTH` (5 000), `ERROR_CODES`, schémas Zod (`spreadsheetDataSchema`…), `createEmptySpreadsheet` |
-| `src/lib/spreadsheet/store.svelte.ts`      | `spreadsheetStore` (runes) : cellules, sélection, navigation, `exportData` / `importData`                                                     |
-| `src/lib/spreadsheet/parser/`              | `lexer.ts` → `parser.ts` (descente récursive) → `evaluator.ts` (`evaluateFormula`, plage ≤ 400 cellules)                                      |
-| `src/lib/spreadsheet/dependency-graph.ts`  | `DependencyGraph` : recalcul en cascade, cycles → `#CIRC!`                                                                                    |
-| `src/lib/spreadsheet/functions/`           | Registre (`executeFunction`, `hasFunction`) ; `math.ts`, `logic.ts`, `text.ts` ; `aliases.ts` (`FUNCTION_ALIASES` français → anglais)         |
-| `src/lib/spreadsheet/cell-reference.ts`    | `colToLetter`, `parseCellRef`, `parseRange`, `expandRange`, `isValidCellRef`…                                                                 |
-| `src/lib/spreadsheet/csv.ts`, `format.ts`  | `parseCsv` / `generateCsv` / `downloadCsv` ; affichage d'une valeur calculée                                                                  |
-| `src/lib/components/spreadsheet/`          | `Spreadsheet.svelte`, grille, cellule, barre de formule, barre d'outils, import / export                                                      |
-| `src/lib/server/validation/spreadsheet.ts` | Schémas des requêtes API                                                                                                                      |
-| `src/routes/api/spreadsheets/`             | `GET`/`POST` liste ; `GET`/`PUT`/`DELETE` par id                                                                                              |
-
-### Modèle
-
-Table `spreadsheets` : `user_id`, `name`, `description`, `data` (jsonb : `cells`,
-`version`, `metadata`). RLS : chacun ne lit et n'écrit que ses tableurs (`auth.uid() = user_id`).
-Accès : élèves et prof, par une garde unique `requireSpreadsheetUser`
-(`src/lib/server/spreadsheet-access.ts`) sur les deux pages et les cinq méthodes de l'API ; le
-compte admin est refusé (décision du 2026-10-12). La suppression vérifie les lignes rendues :
-0 ligne supprimée → 404, jamais un faux succès.
-Une valeur calculée est une union `number | string | boolean | error | empty` ; codes
-d'erreur `#REF!`, `#DIV/0!`, `#VALUE!`, `#NAME?`, `#CIRC!`, `#NUM!`.
-
-**Fonctions réellement implémentées** (59, noms canoniques anglais) — maths : SUM, AVERAGE,
-MIN, MAX, COUNT, COUNTA, PRODUCT, ABS, ROUND, FLOOR, CEILING, INT, TRUNC, SIGN, MOD, POWER,
-SQRT, LOG, LOG10, LN, EXP, SIN, COS, TAN, ASIN, ACOS, ATAN, PI, RAND, RANDBETWEEN ; logique :
-IF, AND, OR, NOT, XOR, IFERROR, ISERROR, ISBLANK, ISNUMBER, ISTEXT, ISLOGICAL, TRUE, FALSE ;
-texte : CONCAT, CONCATENATE, LEFT, RIGHT, MID, LEN, UPPER, LOWER, PROPER, TRIM, FIND, SEARCH,
-SUBSTITUTE, REPLACE, TEXT, REPT. Noms français : table `FUNCTION_ALIASES` (SOMME, MOYENNE,
-SI, ARRONDI, RESTE, ALEA_ENTRE_BORNES…).
-
-Clavier : flèches, Entrée, Tab / Maj+Tab, Échap, F2, Suppr, Ctrl/Cmd+B et +I
-(`Spreadsheet.svelte`).
-
-### Invariants
-
-- Toute cellule et tout document passent par les schémas Zod de `types.ts` (bornes 20 × 20,
-  5 000 caractères) côté client comme côté API.
-- Une fonction inconnue rend `#NAME?`, jamais une exception.
-
-### Tests
-
-`src/lib/spreadsheet/__tests__/` : lexer, parser, evaluator, functions, dependency-graph,
-csv, types-import. Accès : `src/lib/server/__tests__/spreadsheet-access.test.ts` et
-`src/routes/api/spreadsheets/__tests__/server.test.ts` (prof et élève acceptés, admin refusé),
-`src/routes/api/spreadsheets/[id]/__tests__/server.test.ts` (suppression sans ligne → 404).
+**Reste en base** : la table `spreadsheets` (1 ligne en prod, d'un seul compte, modifiée le
+2025-12-05), plus lue par aucun code. La supprimer est une migration destructive, à décider par
+David après le `deploy:prod` qui livre ce retrait. Le code retiré se relit dans l'historique git
+(commit parent du retrait).
 
 ---
 
@@ -388,8 +337,6 @@ dossiers `__tests__` de `coursework/bulk-share`, `materials/[id]/share`,
 - **Tableau blanc** : un nouvel élément = un membre de l'union `WhiteboardElement`
   (`types/document.ts`) **et** son schéma dans `types/file-format.ts` (sinon le fichier
   `.ubw` est refusé au rechargement), plus son rendu export (`core/pdf-export.ts`).
-- **Tableur** : une fonction = une entrée dans `math.ts` / `logic.ts` / `text.ts` ; son nom
-  français dans `FUNCTION_ALIASES`.
 - **Diaporama** : un nouveau consommateur importe depuis `src/lib/slides/index.ts`.
 - **Constructions** : jamais dans l'ancien module — voir [geometrie/README.md](geometrie/README.md).
 
@@ -400,13 +347,9 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
 
 ## Écarts connus
 
-1. **Tableur — accès du prof** : corrigé le 2026-10-12 (le prof recevait 403 ; voir « Modèle »).
-2. **Tableur — alias sans fonction** : `FUNCTION_ALIASES` nomme COUNTBLANK, STDEV, VAR,
-   MEDIAN, MODE, TODAY, NOW, YEAR, MONTH, DAY, VLOOKUP, HLOOKUP, INDEX, MATCH, qu'aucun
-   fichier n'implémente → `#NAME?`. Plan retenu par David le 2026-10-12, **après** la décision
-   A/B du tableur de l'atelier : implémenter MEDIANE, MODE, ECARTYPE (n − 1, comme Excel),
-   ECARTYPEP (n), VAR, NB.VIDE en branchant `src/lib/statistics/`, retirer les alias de dates et
-   de recherche ; l'alias s'écrit aujourd'hui `ECARTTYPE` (deux T), à corriger en `ECARTYPE`.
+1. **Tableur V4** : retiré le 2026-10-24 (§ 3) ; ses deux écarts (accès du prof, alias sans
+   fonction) sont sans objet.
+2. **Table `spreadsheets`** : orpheline depuis le retrait, à supprimer sur décision de David.
 3. **Tableau blanc** : réservé au prof et à l'admin depuis le 2026-10-11 (D5, décision de David :
    outil de projection mono-utilisateur ; test `src/routes/(protected)/whiteboard/__tests__/page.server.test.ts`).
    Le panneau de fichiers ne propose plus rien de Google quand le drapeau est éteint (V5, test

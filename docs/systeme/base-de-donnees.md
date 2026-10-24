@@ -506,7 +506,7 @@ l'admin) → `google_classroom_courses`, `_coursework`, `_materials`, `_topics` 
   cartes ; colonnes et tableau restent au propriétaire). Aides `can_access_kanban_board` /
   `_column`. Code : `src/lib/server/kanban.ts`, `src/routes/api/organisation/kanban`. Test :
   `tests/integration/kanban-rls.test.ts`.
-- `spreadsheets`, `constructions` : à leur auteur (les constructions `is_public` sont lisibles par
+- `spreadsheets` (orpheline depuis le retrait de `/spreadsheet`, 2026-10-24), `constructions` : à leur auteur (les constructions `is_public` sont lisibles par
   tout compte connecté). `whiteboard_templates` : modèles publics, de l'auteur ou système.
 - **Figures géométriques** (ADR 0027) : `geometry_figures`, scripts du DSL `geometry-core`, distinctes
   des `constructions` animées. Publique (`is_public`) = lisible par tous, `anon` compris ; privée =
