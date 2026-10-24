@@ -206,9 +206,9 @@ l'Atelier). `evaluate` reste inchangé pour les calculs internes.
 - **Registre décimal** (S1) : avec une `source` décimale, la règle de `tidy` sur la source
   (`0,1+0,2 → 0,3`, `1/4+0,5 → 3/4`, `1,5/3 → 1/2`) ; ce que `tidy` ne calcule pas
   (`max(2,5 ; 1)`) ou `decimal: true` sans source (équation à décimaux) : décimal si l'écriture est
-  finie. Un irrationnel n'a pas d'écriture décimale finie (`0,5√2 → √2/2`, Q22) — sauf dans
-  `{{eval}}`, qui garde la valeur décimale d'un irrationnel calculé avec un décimal (coordonnées de
-  figure des modèles).
+  finie. Un irrationnel n'a pas d'écriture décimale finie (`0,5√2 → √2/2`, Q22), y compris dans
+  `{{eval}}` : une coordonnée de figure s'écrit `{{eval:x;d}}`, le langage des figures ne lisant pas
+  le LaTeX.
 - **Notation scientifique tapée** (`a × 10ⁿ`, 1 ≤ |a| < 10, n ≠ 0) gardée avec `keepScientific` — la saisie
   de l'Atelier seulement : dans `{{eval}}` la forme dépendrait du tirage — écrite avec ×, sans zéro final à
   la mantisse (Q24). Un nombre seul (valeur approchée du mode décimal) est rendu tel quel.

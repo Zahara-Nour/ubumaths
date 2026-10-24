@@ -454,10 +454,16 @@ describe('{{eval}} : registre décimal de la saisie (S1)', () => {
 		expect(evalLatex('0.1+0.2')).toBe('0.3');
 	});
 
-	// Exception à Q22 pour `{{eval}}` : un décimal tapé et une valeur irrationnelle
-	// restent décimaux — coordonnées de figure (`A-03-perpendiculaire…`)
-	it('garde la valeur décimale d’un irrationnel calculé avec un décimal', () => {
-		expect(evalLatex('0.5\\sqrt{2}')).toBe('0.707106781186547');
+	// Lot 5c-bis : plus d'exception à Q22 — une coordonnée de figure s'écrit avec `;d`
+	// (`A-03-perpendiculaire…`). Avant : 0.707106781186547
+	it('écrit exacte une valeur irrationnelle calculée avec un décimal', () => {
+		expect(evalLatex('0.5\\sqrt{2}')).toBe('\\dfrac{\\sqrt{2}}{2}');
+	});
+
+	it('`;d` garde la valeur décimale d’un irrationnel (coordonnée de figure)', () => {
+		expect(evaluateAstWithModifiers(parseLatex('0.5\\sqrt{2}'), { decimal: true })).toBe(
+			'0.707106781186547'
+		);
 	});
 
 	it('écrit un angle quelconque comme au tableau', () => {

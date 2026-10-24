@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1663 (5c mergé, pas en prod)._
+_Mis à jour le 2026-10-24, 5c-bis codé (branche `feat/simplify-carte-5c-bis-figures`, PR à ouvrir)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~ et ~~5c~~ (#1663, § 57-59) mergés : `exactValueToShow` (`eval/exact-value.ts`) écrit toute valeur exacte affichée (Atelier, `.eval`, `{{eval}}`, tableau, grapheur, limites, `S = …` de `.résoudre`) ; logarithmes : B + b (David, 2026-10-24).
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663) mergés ; 5c-bis (§ 60) : exception de `formatExact` retirée, A-03 écrit ses coordonnées d'étiquette avec `;d`. Pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a~~ → ~~5b~~ → ~~5c~~ → **5c-bis figures** → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5c-bis (David, 2026-10-24, « A ») : le langage des figures accepte une coordonnée exacte en LaTeX (`texte(\dfrac{3\sqrt{26}}{130} - 1, …)`) et la calcule (parseur geometry-core, agent `geometry-expert`) ; puis retirer l'exception de `formatExact` (`{{eval}}` : décimal gardé pour un irrationnel) et vérifier `A-03-perpendiculaire-passant-par-un-point`. Phase 0 d'abord.
-- **En attente de David** : vérifications manuelles de #1663 (ajoutée), des espaces (#1642), de f′ (#1656), des variations (#1658/#1660) ; choix pour `pnpm math` (§ 54).
-- **Pièges en cours** : ne plus sonder avec `pnpm math` ; `2^{0,5}` s'écrit `2^{1/2}` (5f) ; une valeur sans source (limite, solution) garde la décomposition d'`evaluate` (`3 ln 2 + 3 ln 5`) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, 5f) ; relevé des modèles : script jetable du § 59 (graines fixes, base contre branche) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun (à créer pour 5c-bis).
+- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a~~ → ~~5b~~ → ~~5c~~ → **5c-bis** → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : PR 5c-bis → CI → merge ; puis 5d D3.
+- **En attente de David** : écriture en prod du brouillon A-03 (`518f7f0b`, `create-questions --publier --mettre-a-jour`, seule différence : `;d`) ; vérifications manuelles de #1663, des espaces (#1642), de f′ (#1656), des variations (#1658/#1660) ; choix pour `pnpm math` (§ 54) ; futur chantier hors simplify-carte : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
+- **Pièges en cours** : ne plus sonder avec `pnpm math` ; `2^{0,5}` s'écrit `2^{1/2}` (5f) ; une valeur sans source (limite, solution) garde la décomposition d'`evaluate` (`3 ln 2 + 3 ln 5`) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, 5f) ; relevés : bancs jetables du § 60 (modèles de la PROD, base contre branche) ; worktree neuf : `pnpm exec svelte-kit sync` avant `pnpm tsx` (sinon `$lib` introuvable) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte` · `feat/simplify-carte-5c-bis-figures`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -852,3 +852,14 @@ Aucun énoncé ne change. Limite : instantané du corpus, pas les modèles modif
 **Logarithmes (David, 2026-10-24)** : question « pourquoi `ln 8` reste `ln 8` ? » — c'était le coût qui départageait (`ln 4 + ln 2 → 3 ln 2` mais `ln 8 → ln 8`), main décomposait tout en facteurs premiers via `evaluate`. Options A (facteurs premiers), B (puissance d'un seul entier → `n ln p`, sinon tel quel), C (aucune propriété). **David : « B »**, puis pour la borne d'un seuil (`2ⁿ > 1000`), **« b »** : un quotient de deux logarithmes garde l'écriture de l'énoncé (`ln 1000 / ln 2`). Décimal dans le logarithme gardé (`ln(0,1)`, règle des seuils du 2026-10-09). Relevé rejoué : les mêmes 4 modèles.
 
 **Écart Q22 de `{{eval}}`** : vérifié — un radical en LaTeX dans `texte(x, y, "d")` fait disparaître toute la figure (« Séquence `\dfrac` inconnue »). David (2026-10-24) : « je préférerai qu'on gère l'affichage latex dans les étiquettes » — à préciser (le LaTeX est dans la POSITION de l'étiquette, pas dans son texte).
+
+## 60. Lot 5c-bis : coordonnées de figure avec `;d` (branche `feat/simplify-carte-5c-bis-figures`, 2026-10-24)
+
+**Décision (David, 2026-10-24)** : phase 0 « le langage des figures lit le LaTeX » abandonnée, « solution simple ». Un seul modèle concerné ; un auteur qui veut une coordonnée exacte écrit déjà `sqrt(2)/2`. Son « affichage latex dans les étiquettes » visait le **texte** affiché d'une étiquette (`"$\sqrt{2}$"`) : futur chantier, hors simplify-carte.
+
+- `formatExact` : exception retirée — un irrationnel calculé avec un décimal s'écrit exact (`0.5\sqrt{2}` → `\dfrac{\sqrt{2}}{2}`), Q22 sans écart. Test rouge vérifié sans le correctif.
+- A-03 (`518f7f0b`, brouillon en prod) : `{{eval:P1x;d}}` etc. dans `texte(…)`. **Trouvé en route** : A-03 cassait déjà en prod avec l'exception (v2 graine 16) — quand a² + b² est un carré, `P1x` est rationnel → `\dfrac` → figure disparue. `;d` corrige les deux.
+- **Banc figures** (18 modèles de la prod avec ```figure, 20 graines par variation, 1 160 tirages, `runDsl` sur chaque figure) : base = 1 erreur (A-03 v2 s16) ; sans l'exception, sans `;d` = 20 (A-03 v2) ; aucun autre modèle.
+- **Relevé des textes** (tous les modèles de la prod, 6 graines, 19 254 tirages, base contre branche) : 6 tirages changent, tous A-03 v2. Aucun autre énoncé.
+- JSON du dépôt identique à la prod avant `;d` (simulation `create-questions` : « déjà en base », sans différence).
+- Doc : `docs/systeme/mathast/README.md` (registre décimal), `docs/pratiques/fiches-exercices.md` (bloc figure : `{{eval:x;d}}`).

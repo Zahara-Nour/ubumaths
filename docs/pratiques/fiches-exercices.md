@@ -441,7 +441,9 @@ Toujours vrai :
   directions `haut`, `bas`, `gauche`, `droite`, `haut-gauche`, `haut-droite` — défaut —,
   `bas-gauche`, `bas-droite` ; `"aucune"` masque le nom seul), sur `point(…)` comme sur tout point
   construit (`milieu`, `intersection`, `projection`…) ou après coup avec `style(A, etiquette=…)` ;
-  plus de `masque(A)` + `texte` (corrigé le 2026-10-02 : le nom restait en haut à droite). Un
+  plus de `masque(A)` + `texte` (corrigé le 2026-10-02 : le nom restait en haut à droite).
+  Coordonnée calculée : `{{eval:x;d}}` (`texte({{eval:P1x;d}}, …)`) — sans `;d`, une valeur non
+  entière s'écrit en LaTeX (`\dfrac{…}{…}`, `\sqrt{…}`), que la figure ne lit pas. Un
   `texte(x, y, "…")` est CENTRÉ sur `(x, y)` à l'écran comme au PDF ; `ancre="bas-gauche"` pose son
   coin bas-gauche sur `(x, y)`. Nombre dans un texte : l'écrire avec un POINT (`texte(3, 0.8, "0.3")`,
   `"0.{{p}}"`) ; affiché « 0,3 » en français, « 0.3 » en anglais, écran et PDF (2026-10-05) — une
