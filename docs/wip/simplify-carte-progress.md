@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1691 (Q33 : le formulaire garde feedback et correction automatique)._
+_Mis à jour le 2026-10-24, 5e codé (PR à ouvrir/ouverte, § 70)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684) et ~~Q33~~ (#1691, § 69) mergés. Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; **5e D4** codé sur `feat/simplify-carte-5e-d4` (§ 70). Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (… → ~~5d D3~~ → ~~Q33~~ → **5e D4** → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : coder 5e selon § 67-68 (comportements validés, Q34-Q38 tranchées) : réglage facultatif de forme (développée / factorisée) sur `generatedSteps` `differentiate` et `integrate`, Zod souple + strict, `renderDifferentiate`/`renderIntegrate`, refus sur intégrale à bornes, garde E1 dans la vérification du modèle, JSON seulement. Tests rouges d'abord ; `mathast-expert` pour la forme développée (numérateur seul, décimaux gardés, signe devant la barre). Nouvelle branche depuis `origin/main` dans le worktree.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; futur chantier : LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
-- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : script jetable (prod en lecture), TABLEAU zsh et copie vérifiée (§ 64) ; 5f : primitive `0,6x + 1,2 → 3x²/10 + 1,2x` (S1), ordre canonique des termes gardés, récit en aller-retour (§ 64), `réduire` fait-il `eˣ·e^{−x} → 1` ? ; `check:incremental` : erreurs fantômes de routes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, détaché sur `origin/main` (aucune branche en cours).
+- **Ordre des lots** : … → **5** (… → ~~Q33~~ → **5e D4** → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : PR de 5e — revue `code-reviewer` (opus), CI, merge ; puis 5f (primitive `simplify` → `tidy`, étapes de limite, bug `u′v − (uv′)` § 41, primitive `(x+1)eˣ − eˣ` non réduite, `0,6x + 1,2 → 3x²/10 + 1,2x`).
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) ; garde E1 étendue aux modèles à `requiredForm` sans `finalForm` (§ 70) ?
+- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : TABLEAU zsh et copie vérifiée (§ 64) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5e-d4`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -943,3 +943,11 @@ Sondé (deux tests jetables, retirés ; 14 dérivées et 12 primitives de lycée
 ## 69. Q33 mergé (#1691, 2026-10-24)
 
 `QuestionTemplateForm.svelte` : `stringToCorrection(texte, correctionChargée)` garde `feedback` et `generatedSteps` (variation, correction partagée, rechargement JSON → formulaire, duplication) ; `correctionToString` ne montre plus `feedback.correct` à la place d'étapes absentes. Tests : `QuestionTemplateForm-correction-gardee.svelte.test.ts`, 4 rouges sur 5 sans le correctif. Revue `code-reviewer` (sonnet) : deux mineurs sans action. CI verte. Doc : `docs/systeme/questions.md` § 7.
+
+## 70. Lot 5e (D4) codé (branche `feat/simplify-carte-5e-d4`, 2026-10-24)
+
+- **Q39** (David, 2026-10-24 : « 8(x − 1) ») : une forme factorisée DEMANDÉE accepte un nombre devant une somme (`8x − 8 → 8(x − 1)`) ; les autres refus de D2 restent.
+- `generatedSteps.finalForm: 'developpee' | 'factorisee'` sur `differentiate` et `integrate` (`FinalForm`, `FINAL_FORMS`, Zod souple et strict, JSON seulement). `mathAST/requested-form.ts` : factorisée = `factoredForm` (`variations/display.ts`, D2 + Q39 ; primitive : facteur à fraction refusé, Q34) ; développée = terme à terme, numérateur seul d'un quotient, dénominateur numérique distribué, décimaux tapés gardés, simple réordonnement ignoré. Étape « On factorise » / « On développe » : `withRequestedFormStep` (`tidy-step.ts`) pour f′ ; règles `factor-result` / `expand-result` du pipeline des primitives, avant « + C ».
+- Q36 : `validateTemplate` refuse `finalForm` sur une intégrale à bornes. Q37 : `checkTemplate` juge à chaque tirage `calculusFinalAnswerLatex` par chaque `requiredForm` (cases + instance), seulement si le modèle a `finalForm` (§ 20) ; rapport `correctionForm`.
+- Tests : `correction-forme-demandee.test.ts` (11 rouges sur 22 sans le correctif, les 11 verts = cas inchangés), `check-template-forme-demandee.test.ts` (5 rouges sur 6), `template-schema.test.ts` (1 rouge sur 2). Suite serveur verte (60 861), `check:incremental` 0 erreur, cliquet tenu.
+- **Laissé, à proposer** : un modèle à `requiredForm` SANS `finalForm` n'est pas vérifié (correction par défaut développée, élève jugé sur un produit : même trou E1) ; primitive par défaut de `(x+1)eˣ` = `(x + 1)eˣ − eˣ`, pas réduite (5f).

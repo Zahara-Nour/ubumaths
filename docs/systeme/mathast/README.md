@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24).
 
 ## À quoi ça sert
 
@@ -1162,7 +1162,17 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   degré ≥ 2 (`2(e^{2x} − 2eˣ)`, `4(x − 2)`), exponentielle ou exposant changé (`e^{x²−1}` reste),
   fraction là où un décimal était tapé (S1 : `x(3x − 4,8)`), facteur mêlant racine et fraction (`x − √2/2` :
   `(1 − 2x²)e^{−x²}` reste, David 2026-10-24 ; `x − 2√3` passe), ou budget dépassé (1 s) → la forme finale. `reducedDerivative`
-  (CLI) rend la forme factorisée ; le signe se calcule toujours sur `result.derivative`. Primitives :
+  (CLI) rend la forme factorisée ; le signe se calcule toujours sur `result.derivative`.
+  **Forme demandée par l'énoncé** (`requested-form.ts`, `requestedForm`, simplify-carte lot 5e, D4) :
+  `finalForm` d'une correction automatique ajoute « On factorise » / « On développe » après la
+  forme par défaut (`withRequestedFormStep` de `tidy-step.ts` pour f′ ; option `finalForm` de
+  `generatePedagogicalIntegrationSteps`, étape `factor-result` / `expand-result` avant `+ C`, ignorée
+  avec des bornes). Factorisée : `factoredForm` de `variations/display.ts`, la règle du tableau plus
+  un nombre devant une somme (`8x − 8 → 8(x − 1)`, Q39) ; pour une primitive, un facteur qui porte
+  une fraction est refusé (`x³/3 + x` reste, Q34). Développée : terme à terme, d'un quotient le
+  numérateur seul (dénominateur gardé, `−7/(x − 3)²` reste), dénominateur numérique distribué
+  (`(x + 1)³/3 → x³/3 + x² + x + 1/3`), jamais de même dénominateur (`2x − 4 + 1/x` reste), décimal
+  tapé gardé (S1), simple réordonnement ignoré. Primitives :
   `pushSimplifyStep` (`pedagogical-integration/pipeline.ts`) émet l'étape
   `simplify-result` avant le `+ C` (ou avant le théorème fondamental), **sauf** quand la
   primitive est un seul terme « coefficient en chiffres × une seule fonction » sous un `-`

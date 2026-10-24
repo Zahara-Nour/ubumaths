@@ -16,7 +16,7 @@ couvre:
 > Ce que fait le code qui transforme les questions de l'ancien site (TinyMath) en modèles de questions Chiphre, les fait relire, puis les importe en brouillon.
 > Ce qui n'est **pas** recopié ici : le format d'un modèle et son cycle de vie ([questions.md](questions.md)), la notation des énoncés ([ubumark.md](ubumark.md)), les exercices de fiche ([exercices.md](exercices.md)), le vocabulaire ([CONTEXT.md](../../CONTEXT.md), entrée « Relecture »). Le circuit de relecture pas à pas est dans [`data/relecture/README.md`](../../data/relecture/README.md).
 >
-> Vérifié contre le code le 2026-10-13 (commit `4f3eb2b3e`).
+> Vérifié contre le code le 2026-10-13 (commit `4f3eb2b3e`) ; garde E1 de `checkTemplate` le 2026-10-24.
 
 ## À quoi ça sert
 
@@ -61,7 +61,7 @@ Deux convertisseurs AsciiMath existent mais **ne sont pas branchés** : `src/lib
 
 - **Zod des routes** : `src/lib/server/validation/migration-review.ts`. `globalIndexSchema` (entier de 0 à 632), `approveQuestionSchema` et `rejectQuestionSchema` (notes ou motif, 1 000 caractères au plus), `batchApproveSchema` (100 numéros au plus), `saveEditSchema` et `editedQuestionTemplateSchema` (modèle corrigé, champs bornés).
 - **Zod du suivi** : `src/lib/server/validation/migration.ts`. `migrationTrackingInsertSchema` valide chaque ligne que `MigrationStateManager` écrit dans `migration_tracking` ; `migrationStateSchema` valide le fichier d'état.
-- **Contrôle d'un modèle avant import** : `checkTemplate` dans `src/lib/migration/review/check-template.ts`. Un modèle passe seulement si : `validateTemplate` et le schéma strict passent, il a au moins une spec de test et toutes sont vertes (sauf carte de cours, qui doit avoir recto et verso non vides), et chaque variation se génère sur `instances` tirages sans échec (50 par défaut : `DEFAULT_INSTANCES_PER_VARIATION`).
+- **Contrôle d'un modèle avant import** : `checkTemplate` dans `src/lib/migration/review/check-template.ts`. Un modèle passe seulement si : `validateTemplate` et le schéma strict passent, il a au moins une spec de test et toutes sont vertes (sauf carte de cours, qui doit avoir recto et verso non vides), et chaque variation se génère sur `instances` tirages sans échec (50 par défaut : `DEFAULT_INSTANCES_PER_VARIATION`). Quand la correction automatique d'une dérivée ou d'une primitive demande une forme (`finalForm`) et qu'une case exige une forme de l'élève (`requiredForm`), la réponse de la correction doit passer ce juge à chaque tirage (`correctionForm` du rapport, E1, chantier simplify-carte Q37, 2026-10-24) ; test : `check-template-forme-demandee.test.ts`.
 
 ### 4. Écran admin de relecture
 
