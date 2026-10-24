@@ -54,6 +54,7 @@ on:
       - 'src/lib/mathAST/**'
       - 'src/lib/mathoux/**'
       - 'src/lib/migration/**'
+      - 'src/lib/programmes/**'
       - 'src/lib/questions/**'
       - 'src/lib/resources/**'
       - 'src/lib/server/**'
