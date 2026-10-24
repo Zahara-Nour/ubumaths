@@ -50,24 +50,24 @@ vitrine du Tour du Royaume.
 
 Sort : **vitrine** (`/demo/…`, public) · **dev** (`/dev/…`, admin) · **à revoir**.
 
-| #   | Page                            | Sort | Note |
-| --- | ------------------------------- | ---- | ---- |
-| 1   | `/test-structure`               | ?    |      |
-| 2   | `/geometry-demo/*`              | ?    |      |
-| 3   | `/demo/trig-circle-demo`        | ?    |      |
-| 4   | `/construction-demo`            | ?    |      |
-| 5   | `/demo/vip-cards-demo`          | ?    |      |
-| 6   | `/demo/mots-cliquables`         | ?    |      |
-| 7   | `/demo/question-display-demo`   | ?    |      |
-| 8   | `/demo/rich-text-editor-demo`   | ?    |      |
-| 9   | `/demo/theme-test`              | ?    |      |
-| 10  | `/demo` (carrefour)             | ?    |      |
-| 11  | `/test-saisie`                  | ?    |      |
-| 12  | `/test-cadres`                  | ?    |      |
-| 13  | `/test-font`                    | ?    |      |
-| 14  | `/test-erreur`                  | ?    |      |
-| 15  | `/slides/*` (3 pages)           | ?    |      |
-| 16  | `/blockly/playground`           | ?    |      |
-| 17  | `/test-exercises`               | ?    |      |
-| 18  | `/dashboard/admin/debug/*` (14) | ?    |      |
-| 19  | `/dashboard/admin/errors/test`  | ?    |      |
+| #   | Page                            | Sort          | Note                                                                                                               |
+| --- | ------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1   | `/test-structure`               | vitrine + dev | coupée en deux : formule (`StructureField`) → `/demo/structure` ; corpus et case « AB produit » → `/dev/structure` |
+| 2   | `/geometry-demo/*`              | ?             |                                                                                                                    |
+| 3   | `/demo/trig-circle-demo`        | ?             |                                                                                                                    |
+| 4   | `/construction-demo`            | ?             |                                                                                                                    |
+| 5   | `/demo/vip-cards-demo`          | ?             |                                                                                                                    |
+| 6   | `/demo/mots-cliquables`         | ?             |                                                                                                                    |
+| 7   | `/demo/question-display-demo`   | ?             |                                                                                                                    |
+| 8   | `/demo/rich-text-editor-demo`   | ?             |                                                                                                                    |
+| 9   | `/demo/theme-test`              | ?             |                                                                                                                    |
+| 10  | `/demo` (carrefour)             | ?             |                                                                                                                    |
+| 11  | `/test-saisie`                  | ?             |                                                                                                                    |
+| 12  | `/test-cadres`                  | ?             |                                                                                                                    |
+| 13  | `/test-font`                    | ?             |                                                                                                                    |
+| 14  | `/test-erreur`                  | ?             |                                                                                                                    |
+| 15  | `/slides/*` (3 pages)           | ?             |                                                                                                                    |
+| 16  | `/blockly/playground`           | ?             |                                                                                                                    |
+| 17  | `/test-exercises`               | ?             |                                                                                                                    |
+| 18  | `/dashboard/admin/debug/*` (14) | ?             |                                                                                                                    |
+| 19  | `/dashboard/admin/errors/test`  | ?             |                                                                                                                    |

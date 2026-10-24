@@ -1,5 +1,22 @@
 # Structure d'une expression : glisser-déposer — phase 0
 
+## Reprendre ici
+
+_Mis à jour le 2026-10-24, après #1358 (état vérifié dans git et sur `production`)._
+
+- **État** : lot 1 (#1332) et lot 2 (#1358, `StructureField`) en prod depuis la v0.30.0 ;
+  correctif d'exposant #1346 en prod. Le champ ne sert que dans `/test-structure`.
+- **Prochaine action** : lot 3 — G7 (numérateur / dénominateur et côtés d'un `÷` refusés, avec
+  la phrase E2.6-E2.7) et E6 (déplacer aux flèches). Rien de codé.
+- **En attente de David** : au doigt, plus d'exploration de la structure (le toucher bref
+  écrit) ? ; vérifications manuelles #1346 et #1358 (`verifications-manuelles.md`) ; branchement
+  dans l'Atelier (« pas pour l'instant »).
+- **Pièges en cours** : `toLatex(multiply(2, divide(12, 3, 'ratio')))` écrit `2 \times 12 : 3`
+  (repéré à la revue du lot 1, jamais signalé ni corrigé).
+- **Lié** : chantier `demo-debug` — `/test-structure` sera coupée en deux, la formule dans la
+  vitrine (`/demo/structure`), le corpus dans `/dev/structure`.
+- **Worktree / branche** : aucun (`ubumaths-wt-champ` retiré le 2026-10-24).
+
 > Chantier ouvert le 2026-10-13 à la demande de David (Q6 de la
 > [structure d'une expression](../systeme/mathast/structure-expression.md) : « pas en v1, phase 0 à
 > part »). L'Atelier n'est **pas** concerné pour l'instant (décision de David du 2026-10-13).
@@ -293,3 +310,5 @@ S'ajoute aux sections A à D de [structure-expression.md](../systeme/mathast/str
   pointercancel, clavier (rôle bouton, Entrée), contours tactiles, gardes « changé d'ailleurs ».
   Question ouverte à David : au doigt, plus d'exploration de la structure (le toucher bref écrit).
   Pas en prod. Serveur d'essai : worktree `../ubumaths-wt-champ`, port 5179.
+- 2026-10-24 — état vérifié : lots 1 et 2 en prod (v0.30.0) ; lot 3 pas commencé. Worktree
+  `ubumaths-wt-champ` retiré (accord de David). Bloc « Reprendre ici » ajouté.
