@@ -2704,8 +2704,14 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
     saisie pour source : registre décimal gardé (`0,1+0,2 → 0,3`, `2,50 → 2,5`, `1/3+0,5 → 5/6`,
     `0,5√2 → √2/2`), `cos(π/6)` calculé, une seule fraction sur un dénominateur commun
     (`(1+√5)/2`), notation scientifique tapée gardée (`3 × 10²⁰`) ; un nombre
-    seul — la valeur approchée `≈ 5,0990`, zéro final compris — et un résultat à variable
-    libre sont laissés tels quels — `x/x` ne devient pas 1. La ligne `S = …` de `.résoudre`
+    seul — la valeur approchée `≈ 5,0990`, zéro final compris — est laissé tel quel. Une
+    **expression littérale** est mise au propre par `tidy` dans l'ordre de l'élève
+    (`order: 'kept'`, lot 5d) : `2x+3x → 5x`, `x*2 → 2x`, `2(1+x)+3(x+1) → 5(1+x)`,
+    `x/2+x/3 → 5x/6`, `eˣ·eˣ → e^{2x}` ; `3−2x+x²` n'est pas réordonnée, `x/x` ne devient
+    pas 1 (S3), rien n'est développé (`2(x+1)`) ni réduit par une identité (`ln(eˣ)`, S4).
+    Les facteurs suivent l'ordre de `tidy` (`x m → m x`, `sin²(x) → sin(x)²`). **« Garder »
+    range l'écriture affichée** (Q27 : `RenderedResult.ast`, `2x+3x` se garde `5x`), sauf une
+    grandeur, gardée par `quantityAst`. La ligne `S = …` de `.résoudre`
     (`solve-steps.ts`, `shownAnswer`) s'écrit de même depuis les solutions conclues (`−√2/2`,
     `(1 − √5)/2`, `2x = 0,6` → `x = 0,3`) ; les étapes gardent l'écriture du moteur pédagogique, unités traduites par `displayUnitsInLatex` ; seule une **commande** peut encore montrer
     son texte s'il ne contient que du LaTeX sûr (lot B des grandeurs, 2026-10-11).

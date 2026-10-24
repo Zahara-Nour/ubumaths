@@ -122,7 +122,8 @@ describe('dans Calcul', () => {
 		const s = session();
 		runInput(s, 'r = 3');
 		expect(latexOf(runInput(s, '2πr[m]'))).toBe('6 \\pi~\\mathrm{m}');
-		expect(latexOf(runInput(s, '2πr m'))).toBe('2 \\pi r m');
+		// Un produit de lettres, mis au propre par `tidy` (lot 5d) : lettres dans l'ordre alphabétique
+		expect(latexOf(runInput(s, '2πr m'))).toBe('2 \\pi m r');
 	});
 
 	it('m g avec m = 70 : un produit, pas des grammes', () => {
@@ -167,6 +168,6 @@ describe('dans Calcul', () => {
 	});
 
 	it('x m reste un produit', () => {
-		expect(latexOf(runInput(session(), 'x m'))).toBe('x m');
+		expect(latexOf(runInput(session(), 'x m'))).toBe('m x');
 	});
 });

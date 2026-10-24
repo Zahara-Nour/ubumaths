@@ -42,17 +42,81 @@ describe('une réponse s’écrit depuis l’arbre, mise au propre par tidy', ()
 		expect(result.kind === 'calcul' && result.alternative?.latex).toBe('\\dfrac{\\pi}{3}');
 	});
 
-	// Revue du lot B : `tidy` simplifiait `x/x` en 1 (faux en 0) et réordonnait
-	// `3-2x+x^2` — une expression à variables reste écrite comme le moteur la rend
-	it('une expression à variables n’est ni simplifiée ni réordonnée', () => {
-		expect(latexOf(runInput(session(), 'x/x'))).not.toBe('1');
-		expect(latexOf(runInput(session(), '3-2x+x^2'))).toMatch(/^3/);
-	});
-
 	// Non-régression (déjà juste avant ce lot : l'unité passe par l'arbre depuis le lot A)
 	it('une grandeur garde son unité, traduite pour l’écran', () => {
 		expect(latexOf(runInput(session(), '5[km]'))).toBe('5~\\mathrm{km}');
 		expect(latexOf(runInput(session(), '10[km]/3'))).toBe('\\dfrac{10}{3}~\\mathrm{km}');
+	});
+});
+
+/**
+ * Lot 5d (D3, § 19 et § 61 du journal `simplify-carte`) : une expression
+ * littérale est mise au propre, dans l'ordre de l'élève (`tidy`, ordre gardé).
+ * Avant : tout ressortait tel que tapé (`2x+3x`, `x * 2`).
+ */
+describe('une expression littérale est mise au propre, ordre de l’élève gardé', () => {
+	it.each([
+		['3+2*x', '3 + 2 x'],
+		['2x+3x', '5 x'],
+		['x*2', '2 x'],
+		['x+0', 'x'],
+		['1*x', 'x'],
+		['x^1', 'x'],
+		['-(-x)', 'x'],
+		['1+2x+3x', '1 + 5 x'],
+		['2(1+x)+3(x+1)', '5 \\left( 1 + x \\right)'],
+		['3x^2+2x^2-x', '5 x^2 - x'],
+		['a+b+a', '2 a + b'],
+		['2*3x', '6 x'],
+		['x*x', 'x^2'],
+		['x^2*x^3', 'x^5'],
+		['sin(x)+sin(x)', '2 \\sin\\left( x \\right)'],
+		['x-(-3)', 'x + 3'],
+		['x/2+x/3', '\\dfrac{5 x}{6}'],
+		['(2x)/2', 'x'],
+		['x+1/3+1/6', 'x + \\dfrac{1}{2}'],
+		['0,5x+1,5x', '2 x'],
+		// Q30 : une racine d'un nombre se range comme un coefficient
+		['\\sqrt{8}x', '2 \\sqrt{2} x'],
+		// Q29 : des exponentielles identiques regroupées
+		['e^x*e^x', '\\exponentialE^{2 x}']
+	])('%s', (input, latex) => {
+		expect(latexOf(runInput(session(), input))).toBe(latex);
+	});
+
+	// Les limites de `tidy` : rien d'autre que ce qu'elle fait ailleurs
+	it.each([
+		// S3 : `x/x` n'est pas 1 en 0
+		['x/x', '\\dfrac{x}{x}'],
+		// S1 : le registre décimal de l'élève
+		['0,5x+1', '0{,}5 x + 1'],
+		// l'ordre tapé est gardé
+		['3-2x+x^2', '3 - 2 x + x^2'],
+		// on ne développe pas
+		['2x-(x+1)', '2 x - \\left( x + 1 \\right)'],
+		['2(x+1)', '2 \\left( x + 1 \\right)'],
+		['x-1-(x+1)', 'x - 1 - \\left( x + 1 \\right)'],
+		// S4 : une identité est le rôle de `réduire`
+		['ln(e^x)', '\\ln\\left( \\exponentialE^x \\right)'],
+		// simplifier une fraction est le rôle de `.simplifier`
+		['(x^2-1)/(x+1)', '\\dfrac{x^2 - 1}{x + 1}']
+	])('%s reste %s', (input, latex) => {
+		expect(latexOf(runInput(session(), input))).toBe(latex);
+	});
+
+	// Q27 : « Garder » range ce qui est affiché, pas l'arbre tapé
+	it('« Garder » range l’écriture affichée', () => {
+		const s = session();
+		const kept = promote(s, runInput(s, '2x+3x'));
+
+		expect(kept.ok && kept.object.definition).toBe('5x');
+	});
+
+	it('« Garder » une fraction non simplifiable garde son domaine', () => {
+		const s = session();
+		const kept = promote(s, runInput(s, 'x/x'));
+
+		expect(kept.ok && kept.object.definition).toBe('x/x');
 	});
 });
 
