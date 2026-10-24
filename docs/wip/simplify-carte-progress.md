@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1682 (annulation des termes, § 64) ; PR de 5d ouverte._
+_Mis à jour le 2026-10-24, après #1684 (5d mergé, pas en prod)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682) mergés. **5d** (§ 65) : PR ouverte, revue faite. Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682, § 64) et ~~5d D3~~ (#1684, § 65) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (… → ~~Q29~~ → ~~annulation-domaine~~ → **5d D3** → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : merger 5d dès la CI verte ; republier la page de synthèse ; puis 5e D4 (phase 0).
-- **En attente de David** : à lui montrer, l'affichage de 5d : `sin^2(x) → sin(x)^2`, `x m → m x`, `2πr m → 2πmr` ; `eˣ·eˣ·e^{−x} → e^{−x}e^{2x}` (conforme à Q31) ; vérifications manuelles de #1670, #1663, #1642, #1656, #1658/#1660 ; choix pour `pnpm math` (§ 54) ; futur chantier : LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
+- **Ordre des lots** : … → **5** (… → ~~5d D3~~ → **5e D4** → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : 5e D4, phase 0 (relire D4 dans le journal, sonder par le moteur de l'Atelier, comportements à valider par David). Nouvelle branche depuis `origin/main` dans le worktree (laissé détaché sur `main`).
+- **En attente de David** : à lui montrer, l'affichage de 5d : `sin^2(x) → sin(x)^2`, `x m → m x`, `2πr m → 2πmr` ; `eˣ·eˣ·e^{−x} → e^{−x}e^{2x}` (conforme à Q31) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) ; vérifications manuelles de #1684, #1682, #1674, #1673, #1670, #1663, #1642, #1656, #1658/#1660 ; choix pour `pnpm math` (§ 54) ; futur chantier : LaTeX dans le TEXTE d'une étiquette de figure (§ 60).
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc des modèles : script jetable (prod en lecture), échange de fichiers avec un TABLEAU zsh et une copie vérifiée (§ 64) ; 5f : ordre canonique des termes gardés, récit en aller-retour (§ 64), `réduire` fait-il `eˣ·e^{−x} → 1` ? ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-5d-d3` (rebasée sur `main` après #1682).
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, détaché sur `origin/main` (aucune branche en cours).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
