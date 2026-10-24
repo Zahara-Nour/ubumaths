@@ -11,11 +11,11 @@ import { evaluate } from '../evaluate';
 import { exactValueToShow } from '../exact-value';
 
 /** L'écriture affichée d'une valeur tapée : calculée par `evaluate`, la saisie en source. */
-function shown(latex: string): string {
+function shown(latex: string, keepScientific = false): string {
 	const source = parseLatex(latex);
 	const result = evaluate(source, { mode: 'exact' });
 	if (result.status !== 'value') throw new Error(`non calculable : ${latex}`);
-	return toLatex(exactValueToShow(result.node, { source }));
+	return toLatex(exactValueToShow(result.node, { source, keepScientific }));
 }
 
 /** L'écriture affichée d'une valeur déjà calculée, sans source (limite, solution). */
@@ -119,15 +119,15 @@ describe('une seule fraction sur un dénominateur commun', () => {
 // Q24 : la notation scientifique tapée est un registre
 describe('notation scientifique', () => {
 	it('garde 3 × 10²⁰ tapé', () => {
-		expect(shown('3\\times10^{20}')).toBe('3 \\times 10^{20}');
+		expect(shown('3\\times10^{20}', true)).toBe('3 \\times 10^{20}');
 	});
 
 	it('garde 2,5 × 10⁻³ tapé', () => {
-		expect(shown('2.5\\times10^{-3}')).toBe('2.5 \\times 10^{-3}');
+		expect(shown('2.5\\times10^{-3}', true)).toBe('2.5 \\times 10^{-3}');
 	});
 
 	it('calcule un produit qui n’est pas une notation scientifique', () => {
-		expect(shown('12\\times10^{2}')).toBe('1200');
+		expect(shown('12\\times10^{2}', true)).toBe('1200');
 	});
 });
 
@@ -148,5 +148,21 @@ describe('le registre décimal suit la règle S1 de tidy', () => {
 
 	it('écrit en décimal ce que tidy ne calcule pas', () => {
 		expect(shown('\\max(2.5,1)')).toBe('2.5');
+	});
+});
+
+// Revue de la PR #1663
+describe('ce que la revue a relevé', () => {
+	it('calcule sans garder la notation scientifique hors de l’Atelier ({{eval}})', () => {
+		expect(shown('7\\times10^{-3}')).toBe('\\dfrac{7}{1000}');
+	});
+
+	it('ne garde pas 3 × 10⁰', () => {
+		expect(shown('3\\times10^{0}', true)).toBe('3');
+	});
+
+	it('rend le dénominateur rationnel : 1/(√3 − 1) → (1 + √3)/2', () => {
+		expect(shown('\\frac{1}{\\sqrt{3}-1}')).toBe('\\dfrac{1 + \\sqrt{3}}{2}');
+		expect(shown('\\frac{1}{1+\\sqrt{2}}')).toBe('\\sqrt{2} - 1');
 	});
 });

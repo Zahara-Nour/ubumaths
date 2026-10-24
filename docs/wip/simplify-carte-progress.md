@@ -846,3 +846,5 @@ Trouvés en route :
 | `C-01-seuil-par-le-logarithme`                  | variable interne : `(ln 2 + ln 5)/ln 2` → `ln(1/10)/ln(1/2)` ; réponses inchangées                                                                                    |
 
 Aucun énoncé ne change. Limite : instantané du corpus, pas les modèles modifiés depuis en base.
+
+**Revue `code-reviewer` (opus)** : aucune valeur fausse (~100 saisies sondées). Traités : candidates comparées APRÈS le regroupement sur dénominateur commun, et radical au dénominateur compté comme « à calculer » (`1/(√3 − 1)` restait tel quel, `(1 + √3)/2` désormais) ; notation scientifique gardée seulement pour l'Atelier (`keepScientific`) — dans `{{eval}}`, `a × 10⁻³` aurait changé de forme selon la mantisse tirée ; exposant 0 exclu. Laissés : `ln 8` reste `ln 8` (main écrivait `3 ln 2`, identité appliquée par `evaluate`) ; `2^{0,5}` s'écrit `2^{1/2}` (ni `√2` ni décimal), à 5f. Relevé rejoué : les mêmes 4 modèles.

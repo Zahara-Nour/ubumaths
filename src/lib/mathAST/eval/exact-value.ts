@@ -49,6 +49,12 @@ export interface ExactValueOptions {
 	 * (`2x = 0,6` → `x = 0,3`). Par défaut, lu sur la source.
 	 */
 	readonly decimal?: boolean;
+	/**
+	 * Garder une notation scientifique tapée (`3 × 10²⁰`, Q24) : la saisie de
+	 * l'Atelier seulement. Dans un énoncé (`{{eval:a*10^{-3}}}`), la forme
+	 * dépendrait du tirage de la mantisse.
+	 */
+	readonly keepScientific?: boolean;
 }
 
 // =============================================================================
@@ -61,7 +67,8 @@ export interface ExactValueOptions {
  * - le registre décimal de la saisie est gardé, avec la règle S1 de `tidy`
  *   (`0,1+0,2 → 0,3`, `1/3+0,5 → 5/6`) ; un irrationnel n'a pas d'écriture
  *   décimale finie (`0,5√2 → √2/2`, Q22) ;
- * - une notation scientifique tapée (`3 × 10²⁰`) reste telle quelle (Q24) ;
+ * - une notation scientifique tapée (`3 × 10²⁰`) reste telle quelle avec
+ *   `keepScientific` (Q24, Atelier) ;
  * - un rationnel s'écrit depuis la valeur seule (la source n'apporterait rien,
  *   et `normalize` coûte cher sur une grosse saisie) ;
  * - sinon, parmi les écritures candidates (la valeur, la forme normale de la
@@ -78,7 +85,13 @@ export interface ExactValueOptions {
  */
 export function exactValueToShow(value: MathNode, options: ExactValueOptions = {}): MathNode {
 	const { source } = options;
-	if (source !== undefined && isTypedScientificNotation(source)) return withCross(source);
+	if (
+		options.keepScientific === true &&
+		source !== undefined &&
+		isTypedScientificNotation(source)
+	) {
+		return withCross(source);
+	}
 	if (isWrittenNumber(value) || isTypedScientificNotation(value)) return value;
 
 	const rational = rationalOf(value);
@@ -94,14 +107,18 @@ export function exactValueToShow(value: MathNode, options: ExactValueOptions = {
 		if (normalized !== null) candidates.push(normalized);
 		candidates.push(source);
 	}
-	const tidied = candidates.map((candidate) => tidySafe(toEulerPowers(candidate)));
+	// Chaque candidate est jugée sous sa forme finale, dénominateur commun compris
+	// (`1/2 + √3/2` se compare en `(1 + √3)/2`)
+	const tidied = candidates.map((candidate) =>
+		withCommonDenominator(tidySafe(toEulerPowers(candidate)))
+	);
 	// Un décimal n'est gardé que s'il écrit exactement la valeur (Q22)
 	const withoutDecimals = tidied.filter((candidate) => !hasDecimalLiteral(candidate));
 	const kept = withoutDecimals.length > 0 ? withoutDecimals : tidied;
 
 	let best = kept[0];
 	for (const candidate of kept.slice(1)) best = better(best, candidate);
-	return withCommonDenominator(best);
+	return best;
 }
 
 // =============================================================================
@@ -117,11 +134,10 @@ const LATER_CANDIDATE_BIAS = 1.2;
  * tableau de variations (`-1/(2e)` plutôt que `-½ e^{2·(−½)}`).
  */
 function better(current: MathNode, candidate: MathNode): MathNode {
-	const [currentCalls, currentPowers] = uncomputed(current);
-	const [candidateCalls, candidatePowers] = uncomputed(candidate);
-	if (candidateCalls !== currentCalls) return candidateCalls < currentCalls ? candidate : current;
-	if (candidatePowers !== currentPowers) {
-		return candidatePowers < currentPowers ? candidate : current;
+	const left = uncomputed(current);
+	const right = uncomputed(candidate);
+	for (let i = 0; i < left.length; i++) {
+		if (left[i] !== right[i]) return right[i] < left[i] ? candidate : current;
 	}
 	return computeCost(candidate) <= LATER_CANDIDATE_BIAS * computeCost(current)
 		? candidate
@@ -132,17 +148,24 @@ function better(current: MathNode, candidate: MathNode): MathNode {
 const RADICALS = new Set(['sqrt', 'root']);
 
 /**
- * Ce qu'une écriture laisse à calculer : les appels de fonction sans variable
- * (`cos(π/6)`, `ln 2`, pas `√3`), puis les puissances entières d'une somme
- * (`(1+√2)^{100}`).
+ * Ce qu'une écriture laisse à calculer, dans l'ordre : les appels de fonction
+ * sans variable (`cos(π/6)`, `ln 2`, pas `√3`), les puissances entières d'une
+ * somme (`(1+√2)^{100}`), les radicaux au dénominateur (`1/(√3 − 1)`, dont la
+ * classe rend le dénominateur rationnel).
  */
-function uncomputed(node: MathNode): readonly [number, number] {
+function uncomputed(node: MathNode): readonly number[] {
 	const calls = findNodes(
 		node,
 		(n) => isFunction(n) && !RADICALS.has(n.name) && getVariables(n).size === 0
 	).length;
 	const powers = findNodes(node, isPowerOfSum).length;
-	return [calls, powers];
+	const radicalDenominators = findNodes(
+		node,
+		(n) =>
+			isDivision(n) &&
+			findNodes(n.denominator, (d) => isFunction(d) && RADICALS.has(d.name)).length > 0
+	).length;
+	return [calls, powers, radicalDenominators];
 }
 
 /** `(a + b)^n`, n entier écrit. */
@@ -178,7 +201,8 @@ function isTypedScientificNotation(node: MathNode): boolean {
 		isNumber(right.base) &&
 		right.base.value === '10' &&
 		isNumber(exponent) &&
-		/^\d+$/.test(exponent.value)
+		/^\d+$/.test(exponent.value) &&
+		exponent.value !== '0'
 	);
 }
 

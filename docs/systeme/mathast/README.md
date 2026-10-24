@@ -209,13 +209,15 @@ l'Atelier). `evaluate` reste inchangé pour les calculs internes.
   finie. Un irrationnel n'a pas d'écriture décimale finie (`0,5√2 → √2/2`, Q22) — sauf dans
   `{{eval}}`, qui garde la valeur décimale d'un irrationnel calculé avec un décimal (coordonnées de
   figure des modèles).
-- **Notation scientifique tapée** (`a × 10ⁿ`, 1 ≤ |a| < 10) gardée, écrite avec ×, sans zéro final
-  à la mantisse (Q24). Un nombre seul (valeur approchée du mode décimal) est rendu tel quel.
+- **Notation scientifique tapée** (`a × 10ⁿ`, 1 ≤ |a| < 10, n ≠ 0) gardée avec `keepScientific` — la saisie
+  de l'Atelier seulement : dans `{{eval}}` la forme dépendrait du tirage — écrite avec ×, sans zéro final à
+  la mantisse (Q24). Un nombre seul (valeur approchée du mode décimal) est rendu tel quel.
 - **Choix de l'écriture** : un rationnel s'écrit depuis la valeur seule ; sinon, entre la valeur, la
-  forme normale de la source et la source (chacune passée par `tidy`, `exp(u)` réécrit `e^{u}`), la
-  plus calculée — le moins d'appels de fonction sans variable hors radicaux (`cos(π/6)` calculé),
-  puis le moins de puissances entières d'une somme (`(1+√2)^{100}` développée) —, puis la moins
-  chère (`computeCost`, la plus tardive gagne à 20 % près).
+  forme normale de la source et la source (chacune passée par `tidy`, `exp(u)` réécrit `e^{u}`, puis
+  regroupée sur un dénominateur commun), la plus calculée — le moins d'appels de fonction sans variable
+  hors radicaux (`cos(π/6)` calculé), puis le moins de puissances entières d'une somme (`(1+√2)^{100}`
+  développée), puis le moins de radicaux au dénominateur (`1/(√3 − 1) → (1 + √3)/2`) —, puis la moins
+  chère (`computeCost`, la plus tardive gagne à 20 % près : `ln 8` reste `ln 8`).
 - **Dénominateur commun** (Q23) : une somme dont tous les termes sont des fractions de même
   dénominateur s'écrit en une seule (`1/2 + √5/2 → (1 + √5)/2`).
 

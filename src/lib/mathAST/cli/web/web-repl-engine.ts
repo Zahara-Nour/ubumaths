@@ -140,7 +140,8 @@ function approximationFields(
  */
 function readableExact(node: MathNode, source: MathNode): MathNode {
 	if (getVariables(node).size > 0) return node;
-	return exactValueToShow(node, { source });
+	// La notation scientifique tapée est gardée (Q24) : ici seulement, pas dans `{{eval}}`
+	return exactValueToShow(node, { source, keepScientific: true });
 }
 
 /**
