@@ -14,7 +14,9 @@ _Mis à jour le 2026-10-24, PR 1 du lot B (migration) ouverte._
   verts avec ; appliquée en LOCAL seulement.
 - **Prochaine action** : revue + audit sécurité de la PR 1 ; CI verte → merge ; `db:migrate` (les
   4 conditions) ; `db:types`. Puis PR 2 = code (catalogue TS, dessins dans `MathouAvatar`,
-  Chatterie « Décorer », vitrine Boutique, vue prof, export RGPD, consentement à la route).
+  Chatterie « Décorer », vitrine Boutique, vue prof, export RGPD — colonnes en dur dans
+  `api/account/export/+server.ts` : ajouter `decoration` et la table des achats —, consentement à la
+  route).
 - **En attente de David** : rien.
 - **Pièges en cours** : rendu serveur de plusieurs `MathouAvatar` = ids `s1-…` répétés ; les prix
   font foi en SQL (`mathou_decoration_catalog`) : le catalogue TS de la PR 2 doit les recopier
@@ -113,3 +115,7 @@ _Mis à jour le 2026-10-24, PR 1 du lot B (migration) ouverte._
   lignes négatives « Chatterie : … », hors plafond (qui ne compte que les positives). Preuve
   rouge : 23/23 échouent sans la migration, 23/23 verts avec ; suites mémoire, étapes, vue prof,
   collection : 74 verts.
+- 2026-10-24 — revue (Sonnet) et audit (Opus) de #1699 : aucun bloquant. Corrigés : `search_path`
+  des fonctions DEFINER finit par `pg_temp` (garde CI `definer-guard`), rollback complet (catalogue),
+  assertion « Élève introuvable » ; tests ajoutés : un achat ne libère pas le plafond, catalogue
+  refusé aux clients connectés. Rollback rejoué en local puis migration : 25 + garde verts.

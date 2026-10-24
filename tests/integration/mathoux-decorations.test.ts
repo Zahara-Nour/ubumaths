@@ -383,7 +383,7 @@ describe('Décorations de panse des Mathoux', () => {
 				p_decoration: 'heart',
 				p_notion_id: await newNotion()
 			});
-			expect(error).not.toBeNull();
+			expect(error?.message).toContain('Élève introuvable');
 			expect(await ownedBy(teacherId)).toEqual([]);
 		});
 
@@ -398,6 +398,26 @@ describe('Décorations de panse des Mathoux', () => {
 			}
 			expect(await balanceOf(student.id)).toBe(50);
 			expect(await ownedBy(student.id)).toEqual([]);
+		});
+
+		it('un achat ne libère pas le plafond des étapes (20 sur 24 h, gains seuls)', async () => {
+			const student = await newStudent(40);
+			const mathou = await newMathou(student.id);
+			await buy(student.id, 'medal', mathou);
+			// Grand matou jamais payé : 3 + 5 + 10 = 18 tiennent sous le plafond, l'étoile (5) non
+			const pg = await getPostgresClient();
+			await pg.query(
+				`update public.student_mathoux set best_stage = 'grand_matou', starred_grades = '{2}'
+					where student_id = $1 and notion_id = $2`,
+				[student.id, mathou]
+			);
+
+			const { data, error } = await service.rpc('pay_mathou_milestones', {
+				p_student_id: student.id
+			});
+			expect(error).toBeNull();
+			expect((data as { delta: number }[]).map((p) => p.delta)).toEqual([3, 5, 10]);
+			expect(await balanceOf(student.id)).toBe(18);
 		});
 	});
 
@@ -524,6 +544,16 @@ describe('Décorations de panse des Mathoux', () => {
 	});
 
 	describe('accès', () => {
+		it('le catalogue est réservé au serveur', async () => {
+			const student = await newStudent(0);
+			for (const client of [student.client, anon]) {
+				const { error } = await client.rpc('mathou_decoration_catalog', {
+					p_decoration: 'heart'
+				});
+				expect(error?.code).toBe(PERMISSION_DENIED);
+			}
+		});
+
 		it('l’élève lit ses décorations, pas celles d’un autre ; le prof lit ; le visiteur rien', async () => {
 			const student = await newStudent(20);
 			const other = await newStudent(20);

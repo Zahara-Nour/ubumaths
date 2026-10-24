@@ -46,6 +46,7 @@
 -- ROLLBACK (à exécuter tel quel) :
 --   drop function if exists public.buy_mathou_decoration(uuid, text, uuid);
 --   drop function if exists public.set_mathou_decoration(uuid, uuid, text);
+--   drop function if exists public.mathou_decoration_catalog(text);
 --   alter table public.student_mathoux drop column if exists decoration;
 --   drop table if exists public.student_mathou_decorations;
 --   (les gidouilles dépensées restent dépensées, avec leur ligne au journal.)
@@ -123,7 +124,7 @@ create or replace function public.mathou_decoration_catalog(p_decoration text)
 returns table (price integer, label text)
 language sql
 immutable
-set search_path to ''
+set search_path to 'public', 'pg_temp'
 as $function$
 	select c.price, c.label
 	from (values
@@ -157,7 +158,7 @@ create or replace function public.buy_mathou_decoration(
 returns jsonb
 language plpgsql
 security definer
-set search_path to ''
+set search_path to 'public', 'pg_temp'
 as $function$
 declare
 	v_prefix constant text := 'Chatterie : ';
@@ -255,7 +256,7 @@ create or replace function public.set_mathou_decoration(
 returns jsonb
 language plpgsql
 security definer
-set search_path to ''
+set search_path to 'public', 'pg_temp'
 as $function$
 begin
 	-- Serveur seul (en plus des droits d'exécution, retirés à tous sauf service_role)
