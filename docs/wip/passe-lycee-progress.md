@@ -6,16 +6,17 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après le `db:migrate` de #1657._
+_Mis à jour le 2026-10-24, PR des retouches 2 ouverte._
 
-- **État** : passe lycée FINIE côté données : scissions (#1646, #1651, #1654) et retouches (#1657) jouées en prod et
-  relues par le MCP (19/19 ; retouches 5/5 conformes).
-- **Prochaine action** : versement (fin de chantier) : le durable dans `docs/systeme/`, journal archivé. Y noter :
-  rollbacks « trop stricts » de #1651 / #1654 classés sans suite (David, 2026-10-23).
-- **En attente de David** : son go pour le versement.
+- **État** : inventaire d'avant versement fait (2026-10-24) ; PR `fix/passe-lycee-retouches-2` (3 modèles : e02fb162
+  V1 signe +, f796ffc0 V4 n > k, 0d2edda7 deux variations) prouvée, en revue / CI.
+- **Prochaine action** : merge → `db:migrate` (par David, refusé au mode auto) → relecture MCP → versement (le
+  durable dans `docs/systeme/`, journal archivé ; y reporter les « Suites » de l'inventaire ci-dessous).
+- **En attente de David** : `db:migrate` après merge.
 - **Pièges en cours** : un modèle a au plus un point par programme (trigger) ; `question:specs --file` : convertir par
-  `toQuestionTemplate` (retirer `created_at`, `updated_at`, `created_by`).
-- **Worktree / branche** : aucun.
+  `toQuestionTemplate` (scratchpad `convertir.ts`) ; worktree neuf : `svelte-kit sync` avant `tsx` ; régénérer un lot
+  reformate sa fixture (prettier) : restaurer les fixtures des lots joués.
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `fix/passe-lycee-retouches-2`.
 
 ## Les 5 étapes
 
@@ -329,3 +330,27 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   `db:migrate` à lancer par David.
 - **2026-10-24 — `db:migrate` de #1657 fait (par David).** Prod (MCP) : les 5 modèles ont l'empreinte md5 de leur
   `apres` (fixture), brouillons, 1 tag chacun (1SPE-245, 230, 383, 216, 379), nœuds et niveaux inchangés.
+- **2026-10-24 — Inventaire avant versement (demande de David).** Journal relu en entier, prod relue (MCP). Ouverts :
+  e02fb162 V1 (« y′ = 3y9x − 15 ») et f796ffc0 V4 (n = k = 5 : deux choix « 5⁵ ») notés à l'étape d, jamais corrigés ;
+  0d2edda7 (publié) : la forme de l'égalité donne la réponse (« + → faux, × → vrai »). Laissés en suites (brouillons,
+  aucun élève) : termes nuls des corrigés (646b4cd3 V2-V3, 93539700 V1, f2cc01fc V4) et les 11 modèles à défauts de
+  #1646 (`1/(6-0)`, 119b9148 « 17 = 9 + 8 » ; liste à refaire par l'audit) ; specs rouges de 27d77564 / 103cf8d9
+  (« nombre sans espace ») ; 9a6087c5 (12/600 au relevé, jamais examiné). Modèles du lycée sans point : 7, dont 3
+  publiés (f8ccc8b6, 318ea542 : par décision ; eae2ff6a, ci-dessous). Couverture (points avec un modèle) : 2de 36/292,
+  1SPE 91/237, 1GEN 14/64, 1TECHNO 31/143, TSPE 135/326, TCOMP 78/179, TEXP 60/176, TTECHNO 1/92.
+- **2026-10-24 — eae2ff6a laissé sans point (David, option A).** La note « à taguer 1SPE-244 » (2026-10-23) contredit
+  le verdict validé à l'étape d (HORS_PROGRAMME en 1re spé et en 2de : racines LUES sur une parabole, 1SPE-244 vise la
+  forme factorisée) et le retrait R1 de 1TECHNO-059 (autre nœud). Ma première reco (le taguer) était fausse, vue en
+  relisant son énoncé. Il va dans la liste du futur chantier « modèles 1re gén. / techno » (1TECHNO-059).
+- **2026-10-24 — PR des retouches 2 écrite et prouvée (worktree `passe-lycee`, branche `fix/passe-lycee-retouches-2`).**
+  Question d'accès tranchée par David : personne ne gagne d'accès. Prod relue par le MCP : empreintes md5 des 3 =
+  relevé de l'étape c (aucun n'a bougé), 0 donnée d'élève, tags 2-261 / TSPE-470 / TSPE-318 ; nœuds et points
+  concernés = `etat-prod-2026-10-23c/` (copiés dans `etat-prod-2026-10-24/`). `analyse/lot-retouches-2.py` :
+  e02fb162 V1 terme en x avec son signe + (spec ajoutée : −ap > 0 ; description corrigée après la revue : y′ = 2y + 2x − 3) ; f796ffc0 V4 `n > k` ; 0d2edda7 V3
+  « √a × √b = √(a + b) » faux (condition ab ≠ a + b : a = b = 2 la rendait vraie), V4 « √a + √a = 2√a » vrai.
+  Specs 100 % vertes, tirages 3 000/3 000, audit du rendu sans défaut, signes relus à l'œil (l'audit ne voit pas
+  « 3y9x »). Banc : « reclassé » prend le premier modèle qui n'est pas déjà en 2de ; « tag déjà posé » cherche un
+  point d'un autre programme sur le nœud de TOUS les modèles du lot (ordre de la fixture), et à défaut en fabrique un
+  de 1re générale. Intégration : 13 verts ; sans l'étape 4, la suite nominale tombe à sa mise en place et le rollback
+  rougit ; suite d'intégration complète verte (271 fichiers, 3 499 tests). `check:incremental` 0 erreur, cliquet
+  tenu, `lint:fast` propre.

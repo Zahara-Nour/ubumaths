@@ -1,0 +1,20 @@
+[
+	{
+		"template_id": "0d2edda7-1d90-46ee-b07d-792ebbd43849",
+		"grade": "2",
+		"code": "2-261",
+		"point_id": "833e5dea-2e98-4cd5-90b0-281e3f3e69b6"
+	},
+	{
+		"template_id": "e02fb162-ca4e-417c-ae37-e39a3798f16c",
+		"grade": "T_SPE",
+		"code": "TSPE-470",
+		"point_id": "beabc41a-4c29-4109-b431-a546fdb5d809"
+	},
+	{
+		"template_id": "f796ffc0-d9cc-496b-97a8-9e10f07e6fc8",
+		"grade": "T_SPE",
+		"code": "TSPE-318",
+		"point_id": "b8349e01-6e66-4cf3-80d5-8b079be18d4a"
+	}
+]

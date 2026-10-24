@@ -553,10 +553,12 @@ export function decrireLotModifier(lot: LotModifier): void {
 		);
 
 		it('un modèle déplacé ou reclassé depuis le relevé fait échouer la migration', async () => {
+			// Le premier modèle qui n'est pas déjà en 2de (sinon la mise à jour ne change rien).
+			const m = modeles.find((x) => canonique(x.grades) !== canonique(['2']))!;
 			await echoue(
 				() =>
 					pg.query(`update public.question_templates set grades = array['2'] where id = $1`, [
-						ids[0]
+						m.id
 					]),
 				/modèles déplacés ou reclassés depuis le relevé : 1/
 			);
@@ -581,8 +583,8 @@ export function decrireLotModifier(lot: LotModifier): void {
 			const m = modeles.find((x) => x.tags.length > 0 && !x.noeud_apres);
 			// Lot sans tag posé (retouches) : le trigger refuse un 2e point du même programme, mais
 			// accepte celui d'un AUTRE programme (1re générale, 1re techno…) sur le nœud du modèle ou sa
-			// notion.
-			const autre = modeles.find((x) => (x.tags_avant ?? []).length > 0 && !x.noeud_apres)!;
+			// notion. Premier modèle du lot (ordre de la fixture) dont le nœud porte un tel point.
+			const autres = modeles.filter((x) => (x.tags_avant ?? []).length > 0 && !x.noeud_apres);
 			await echoue(async () => {
 				const r = m
 					? await pg.query(
@@ -592,15 +594,37 @@ export function decrireLotModifier(lot: LotModifier): void {
 						)
 					: await pg.query(
 							`insert into public.question_template_points (template_id, point_id)
-							 select q.id, p.id from public.question_templates q
+							 select q.id, p.id
+							   from unnest($1::uuid[], $2::text[]) with ordinality as c(id, grades, rang)
+							   join public.question_templates q on q.id = c.id
 							   join public.classification_nodes n on n.id = q.classification_node_id
 							   join public.curriculum_points p
 							     on p.node_id in (n.id, case when n.kind = 'subnotion' then n.parent_id end)
-							  where q.id = $1 and p.archived_at is null and p.grade <> all ($2::text[])
-							  order by p.grade, p.code
+							  where p.archived_at is null and p.grade <> all (string_to_array(c.grades, ','))
+							  order by c.rang, p.grade, p.code
 							  limit 1`,
-							[autre.id, autre.tags_avant!.map((t) => t.grade)]
+							[
+								autres.map((x) => x.id),
+								autres.map((x) => x.tags_avant!.map((t) => t.grade).join(','))
+							]
 						);
+				// Aucun point d'un autre programme sur ces nœuds (retouches 2) : on en fabrique un, de 1re
+				// générale, sur le nœud du premier modèle qui n'en porte pas déjà un (défait avec la
+				// transaction du test).
+				if (!m && r.rowCount === 0) {
+					const x = autres.find((y) => !y.tags_avant!.some((t) => t.grade === '1_GEN'))!;
+					const fabrique = await pg.query(
+						`with p as (
+						   insert into public.curriculum_points (name, kind, code, grade, node_id)
+						   select 'Point fabriqué par le test', 'savoir_faire', '1GEN-TEST', '1_GEN', classification_node_id
+						     from public.question_templates where id = $1
+						   returning id)
+						 insert into public.question_template_points (template_id, point_id) select $1, id from p`,
+						[x.id]
+					);
+					expect(fabrique.rowCount).toBe(1);
+					return;
+				}
 				expect(r.rowCount).toBe(1);
 			}, /tags déjà posés sur ces modèles : 1/);
 		});
