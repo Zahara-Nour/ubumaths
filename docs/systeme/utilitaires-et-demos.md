@@ -1,6 +1,11 @@
 ---
 couvre:
   - 'src/routes/(protected)/test-exercises/+page.svelte'
+  - 'src/routes/(protected)/dev/+page.svelte'
+  - 'src/routes/(protected)/dev/+layout.server.ts'
+  - 'src/routes/(protected)/aide-ecriture/+layout.server.ts'
+  - 'src/routes/(protected)/aide-ecriture/+page.svelte'
+  - src/lib/components/PageIndex.svelte
   - 'src/routes/(public)/a-propos/+page.svelte'
   - 'src/routes/(public)/demo/+page.svelte'
   - 'src/routes/(public)/demo/+page.ts'
@@ -78,6 +83,13 @@ Un appelant compté ici est un import réel (`git grep "<chemin d'import>" -- sr
 ---
 
 ## 1. Pages de démo et de mise au point
+
+**Rangement en cours** (chantier demo-debug, `docs/wip/demo-debug-progress.md`) : les pages de
+mise au point passent sous `/dev/…` (admin seul), les aides pour écrire du contenu sous
+`/aide-ecriture/…` (prof seul) ; les deux espaces sont gardés dans le hook
+(`reservedAreasHandle`, [auth.md](auth.md#la-chaîne-de-handles)), contrôle refait par le
+`+layout.server.ts` de chaque espace (navigation côté client), et fermés aux robots. Leur
+accueil (`/dev`, `/aide-ecriture`) liste leurs pages par `PageIndex.svelte` ; vides pour l'instant.
 
 Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` et `/test-*`) et
 interdites aux robots par `static/robots.txt` (`/demo`, `/test-`), sauf `/a-propos` et

@@ -6,6 +6,9 @@ User-agent: *
 Disallow: /dashboard/
 Disallow: /auth/
 Disallow: /api/
+Disallow: /dev$
+Disallow: /dev/
+Disallow: /aide-ecriture
 
 # Pages de démonstration et de mise au point : sans intérêt pour un visiteur,
 # elles dilueraient le site dans les résultats.

@@ -60,7 +60,8 @@ Supabase, pour fonctionner base gelée) → `supabaseHandle` (`src/lib/server/su
 `userProfileHandle` (`locals.user`, `locals.profile`) → `accountStatusHandle` (compte non
 approuvé : 403 sur API et écritures) → `passwordChangeHandle` (mot de passe provisoire à
 changer) → `studentPresenceHandle` (présence de l'élève, une fois par jour, pages seulement :
-« tu m'as manqué » du Palotin) → `adminElevationHandle` →
+« tu m'as manqué » du Palotin) → `adminElevationHandle` → `reservedAreasHandle` (`/dev`
+admin seul, `/aide-ecriture` prof seul) →
 `csrfHandle` → `securityHeadersHandle` → `errorMonitoringHandle`. Détail de chaque maillon :
 [auth.md](auth.md#la-chaîne-de-handles) · ce que les hooks font pour tous les endpoints :
 [serveur.md](serveur.md#17-ce-que-les-hooks-font-pour-tous).
