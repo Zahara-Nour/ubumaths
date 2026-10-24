@@ -53,6 +53,7 @@
 	import StatChart from './nodes/StatChart.svelte';
 	import FigureBlock from './nodes/FigureBlock.svelte';
 	import QrBlock from './nodes/QrBlock.svelte';
+	import Horloge from './nodes/Horloge.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -367,6 +368,8 @@
 					<StatChart {node} />
 				{:else if node.type === 'qr'}
 					<QrBlock {node} />
+				{:else if node.type === 'horloge'}
+					<Horloge {node} />
 				{/if}
 			{/each}
 		{:else}

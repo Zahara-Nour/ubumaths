@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-24, phase 0 écrite._
 
-- **État** : phase 0 rédigée (ci-dessous), aucun code.
-- **Prochaine action** : David valide la phase 0 et répond aux questions du § 7 ; puis tests rouges.
-- **En attente de David** : § 7 (questions Q1 à Q7).
+- **État** : phase 0 VALIDÉE (§ 7 bis, recommandations retenues) ; implémentation en cours.
+- **Prochaine action** : tests rouges → parseur, scène, écran, PDF, QCM.
+- **En attente de David** : rien.
 - **Pièges en cours** : Supabase local et verrou typecheck partagés avec la session « questions » (exit 2 = attendre). Aucune migration prévue ; si besoin, relire `list_migrations` en prod (dernière connue : `20261025000100`). Aucun modèle de question dans ce chantier (retour au chantier « questions »).
 - **Worktree / branche** : `../ubumaths-wt-horloge` · `feat/horloge` · port 5176.
 
@@ -209,7 +209,20 @@ Découpage proposé : **une PR** (parseur + scène + écran + PDF), ou deux si l
 7. **Bouton « Insérer une horloge »** dans l'éditeur riche : en v1 ou plus tard (recommandé : plus tard,
    les modèles s'écrivent en source) ?
 
+## 7 bis. Décisions (David, 2026-10-24)
+
+Toutes les recommandations du § 7 retenues :
+
+1. Défauts `chiffres: tous`, `graduations: minutes`, deux aiguilles ; le modèle règle son niveau.
+2. Seulement `9 h 30` (espaces facultatives, `9 h 5` accepté) ; pas de `9:30`.
+3. Plusieurs cadrans en v1 : `heure: 8 h 30 ; 8 h 45`, `légendes: Départ ; Arrivée`, 1 à 4 cadrans.
+4. Cadran 24 h : couronne intérieure 13 à 24.
+5. QCM d'horloges en v1 : vérifier et adapter l'affichage des choix (écran et série figée au PDF).
+6. Taille : 4 cm par défaut, 3 cm dans un choix de QCM ; `taille:` de 2 à 8 cm.
+7. Pas de bouton « Insérer une horloge » en v1.
+
 ## Journal
 
 - 2026-10-24 : worktree créé ; lecture des bornes (CP-046/047, CE1-059 à 063, CE1-104, CE2-057 à 059,
   CE2-094), de `ubumark.md`, de `number-line-parser.ts` et `stat-chart-parser.ts` ; phase 0 écrite.
+- 2026-10-24 : phase 0 validée par David (§ 7 bis).

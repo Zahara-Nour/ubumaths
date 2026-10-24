@@ -25,6 +25,7 @@ import { toLatex } from '$lib/mathAST';
 import type { CapitalPairs, GenericFunctionConfig } from '$lib/mathAST/parser/types';
 import { withDigitGrouping } from '$lib/utils/french-math';
 import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '$lib/mathAST/digit-grouping';
+import { withChoiceClockSize } from '$lib/ubumark/parser/horloge-parser';
 
 export type SerieItem = { templateId: string; seed: number };
 /**
@@ -170,14 +171,25 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 		.replace(PLACEHOLDER, (_m, i: string) => reponse(instance, Number(i), true, minDigits))
 		.replace(TEXT_BLANK, (_m, i: string) => reponse(instance, Number(i), false, minDigits));
 
-	const choix = (instance.choices ?? []).map((c) => ({ ...c, content: enLatex(c.content) }));
+	const choix = (instance.choices ?? []).map((c) => ({
+		...c,
+		content: withChoiceClockSize(enLatex(c.content))
+	}));
 	if (choix.length > 0) {
 		// Lettre en gras, pas `a) …` : une ligne `a)` serait une sous-liste, que le PDF
 		// renumérote selon sa profondeur (« 1) 2) ») alors que le corrigé dit « a) »
 		const lettre = (i: number) => `**${String.fromCharCode(97 + i)})**`;
-		const liste = choix.map((c, i) => `${lettre(i)} ${c.content}`).join('\n\n');
+		// Un choix qui est un bloc (```horloge) : la lettre sur sa ligne, le bloc
+		// dessous (collé à la lettre, sa fence ne serait plus lue) ; la réponse du
+		// corrigé ne redessine pas le bloc
+		const enBloc = (contenu: string) => contenu.trimStart().startsWith('```');
+		const liste = choix
+			.map((c, i) => `${lettre(i)}${enBloc(c.content) ? '\n\n' : ' '}${c.content}`)
+			.join('\n\n');
 		const bonnes = choix
-			.map((c, i) => (c.isCorrect ? `${lettre(i)} ${c.content}` : null))
+			.map((c, i) =>
+				c.isCorrect ? (enBloc(c.content) ? lettre(i) : `${lettre(i)} ${c.content}`) : null
+			)
 			.filter((c): c is string => c !== null);
 		return {
 			statement: `${enonce}\n\n${liste}`,
