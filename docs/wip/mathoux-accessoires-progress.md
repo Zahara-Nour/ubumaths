@@ -6,21 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 2 du lot B (code des décorations) ouverte._
+_Mis à jour le 2026-10-24, après #1704._
 
-- **État** : lot A clos. Lot B : migration (#1699) en prod ; PR 2 (code) ouverte sur
-  `feat/mathoux-decorations-code` : catalogue + dessins, mémoire → `Mathou.decoration`, routes
-  `buy`/`wear` (Zod, consentement à l'achat), fenêtre « Décorer » de la Chatterie, vitrine au
-  Marché, vue prof, export RGPD, doc système. Tests verts, typecheck 0.
-- **Prochaine action** : revue (code-reviewer + security-auditor), CI verte → merge ; puis
-  vérification manuelle de David (serveur de la branche : `http://localhost:5178`).
-- **En attente de David** : vérifier à l'écran la fenêtre « Décorer » (il faut un élève avec un
-  Mathou né et des gidouilles : la base locale n'a pas d'élève de démo).
-- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; poser
-  une décoration change `updated_at` (la mémoire rejoue sa mise à jour conditionnelle) ;
-  `ConsentButton` exige un `Tooltip.Provider` (d'où un `Button` grisé par `consent.isReadOnly`) ;
-  le worktree n'est pas lié à Supabase ; après un rebase, `FRESH=1`.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-decorations-code`.
+- **État** : lot A clos (en prod via migrations ; code au prochain `deploy:prod`). Lot B clos :
+  migration #1699 (prod), code #1704 (sur `main`, pas encore en prod). Revue et audit sans bloquant,
+  findings corrigés.
+- **Prochaine action** : rien d'engagé. Suite possible : colliers (lot suivant, phase 0 à faire :
+  règle pour la fraise du grand matou), puis versement du chantier dans `docs/systeme/mathoux.md`.
+- **En attente de David** : vérification à l'écran de #1704 (`docs/wip/verifications-manuelles.md`) ;
+  dire s'il veut les colliers ou clore le chantier.
+- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ;
+  `ConsentButton` exige un `Tooltip.Provider` ; la base locale n'a pas d'élève de démo.
+- **Worktree / branche** : aucun (worktree supprimé après #1704).
 
 ## Constat (2026-10-24)
 
@@ -124,3 +121,7 @@ _Mis à jour le 2026-10-24, PR 2 du lot B (code des décorations) ouverte._
   dessins dans `MathouAvatar`, mémoire, routes, « Décorer », vitrine, vue prof, export RGPD).
   Consentement exigé à l'achat seulement (la pose est gratuite et ne porte que l'acheté). Base
   locale sans élève de démo : vérification à l'écran laissée à David.
+- 2026-10-24 — revue (Sonnet) et audit (Opus) de #1704 : aucun bloquant. Corrigés : libellé
+  « Retirer … de le Mathou », majuscule du toast, refus (404/409) qui rechargent la page, boutons
+  jamais bloqués, décoration sur la carte de fin de séance (schéma Zod du résumé compris), routes
+  au registre du client service, limite de 30 achats ou poses par minute. #1704 mergée, CI verte.
