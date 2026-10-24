@@ -2,7 +2,7 @@
 	import '$lib/utils/mathlive-styles';
 	/**
 	 * Le panneau « Propriétés » d'un objet, déplié sous sa carte (chantier
-	 * `docs/wip/atelier-proprietes-progress.md`, validé par David le 2026-10-23).
+	 * `docs/archive/wip/atelier-proprietes-progress.md`, validé par David le 2026-10-23).
 	 *
 	 * Ce qui se MODIFIE : le nom (`Atelier.rename`, qui réécrit les objets qui le
 	 * citent), le style (les réglages du point de couleur), l'étiquette d'un

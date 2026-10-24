@@ -464,8 +464,9 @@ passer `defaultToNull: false` ou toujours fournir la colonne. Test :
 `rewarded_stage` (NULL : rien payé) et `rewarded_grades` retiennent ce qui a été payé, lus comme
 le reste de la ligne ; `pay_mathou_milestones` (SECURITY DEFINER, EXECUTE à `service_role` seul,
 garde `auth.role()`) verrouille les lignes de l'élève, verse l'écart (naissance 3, matou 5, grand
-matou 10, étoile 5) sur `profiles.gidouilles` avec une ligne `gidouilles_activity` par étape, et
-ne fait jamais redescendre le payé. Test : `tests/integration/mathoux-gidouilles-etapes.test.ts`.
+matou 10, étoile 5) sur `profiles.gidouilles` avec une ligne `gidouilles_activity` par étape
+(libellé « Chatterie : … »), 20 au plus sur 24 heures glissantes (migration `20261024230000`,
+verrou de la ligne `profiles` de l'élève), et ne fait jamais redescendre le payé. Test : `tests/integration/mathoux-gidouilles-etapes.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
 jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible
@@ -506,7 +507,7 @@ l'admin) → `google_classroom_courses`, `_coursework`, `_materials`, `_topics` 
   cartes ; colonnes et tableau restent au propriétaire). Aides `can_access_kanban_board` /
   `_column`. Code : `src/lib/server/kanban.ts`, `src/routes/api/organisation/kanban`. Test :
   `tests/integration/kanban-rls.test.ts`.
-- `spreadsheets`, `constructions` : à leur auteur (les constructions `is_public` sont lisibles par
+- `spreadsheets` (orpheline depuis le retrait de `/spreadsheet`, 2026-10-24), `constructions` : à leur auteur (les constructions `is_public` sont lisibles par
   tout compte connecté). `whiteboard_templates` : modèles publics, de l'auteur ou système.
 - **Figures géométriques** (ADR 0027) : `geometry_figures`, scripts du DSL `geometry-core`, distinctes
   des `constructions` animées. Publique (`is_public`) = lisible par tous, `anon` compris ; privée =

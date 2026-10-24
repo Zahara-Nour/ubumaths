@@ -29,7 +29,7 @@
 	import StructureField from '$lib/components/structure/StructureField.svelte';
 	import StructureReading from '$lib/components/structure/StructureReading.svelte';
 	import StructureFormula from './StructureFormula.svelte';
-	import { provideStructureLexicon } from './structure-lexicon.svelte';
+	import { provideStructureLexicon } from '$lib/components/structure/structure-lexicon.svelte';
 
 	// Types
 	interface Example {

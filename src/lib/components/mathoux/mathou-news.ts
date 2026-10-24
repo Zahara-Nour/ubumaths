@@ -12,7 +12,7 @@
  */
 
 import { mathouxSummarySchema } from '$lib/mathoux/summary';
-import type { MathouNews } from '$lib/mathoux/news';
+import { hasNews, type MathouNews } from '$lib/mathoux/news';
 
 /** Les nouveautés de ce calcul, ou `null` s'il n'y a rien à annoncer. */
 export async function fetchMathouNews(): Promise<MathouNews | null> {
@@ -22,7 +22,7 @@ export async function fetchMathouNews(): Promise<MathouNews | null> {
 		const parsed = mathouxSummarySchema.safeParse(await response.json());
 		if (!parsed.success) return null;
 		const { news } = parsed.data;
-		return news.total > 0 && news.items.length > 0 ? news : null;
+		return hasNews(news) ? news : null;
 	} catch (error) {
 		console.error('Nouveautés de la Chatterie illisibles :', error);
 		return null;

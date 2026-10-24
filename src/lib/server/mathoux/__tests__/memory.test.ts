@@ -57,8 +57,8 @@ function isWrite(query: Query, method: 'upsert' | 'update'): boolean {
 	return query.calls.some(([m]) => m === method);
 }
 
-function stored(entry: Omit<StoredMathouMemory, 'updatedAt'>, updatedAt = T0) {
-	return { ...entry, updatedAt };
+function stored(entry: Omit<StoredMathouMemory, 'updatedAt' | 'paid'>, updatedAt = T0) {
+	return { ...entry, updatedAt, paid: true };
 }
 
 // =============================================================================
@@ -74,14 +74,46 @@ describe('readMathouMemory', () => {
 					best_stage: 'matou',
 					starred_grades: ['2'],
 					asleep: true,
-					updated_at: T0
+					updated_at: T0,
+					rewarded_stage: 'matou',
+					rewarded_grades: ['2']
+				},
+				{
+					notion_id: 'n3',
+					best_stage: 'grand_matou',
+					starred_grades: ['2', '1_SPE'],
+					asleep: false,
+					updated_at: T0,
+					rewarded_stage: 'grand_matou',
+					rewarded_grades: ['2']
+				},
+				{
+					// Stade corrigé à la main sous le payé : rien à redemander
+					notion_id: 'n5',
+					best_stage: 'matou',
+					starred_grades: [],
+					asleep: false,
+					updated_at: T0,
+					rewarded_stage: 'grand_matou',
+					rewarded_grades: []
+				},
+				{
+					notion_id: 'n4',
+					best_stage: 'chaton',
+					starred_grades: [],
+					asleep: false,
+					updated_at: T0,
+					rewarded_stage: null,
+					rewarded_grades: []
 				},
 				{
 					notion_id: 'n2',
 					best_stage: 'n_importe',
 					starred_grades: [],
 					asleep: false,
-					updated_at: T0
+					updated_at: T0,
+					rewarded_stage: null,
+					rewarded_grades: []
 				}
 			],
 			error: null
@@ -89,9 +121,22 @@ describe('readMathouMemory', () => {
 		const memory = await readMathouMemory(client, STUDENT);
 		expect(queries[0].table).toBe('student_mathoux');
 		expect(callOf(queries[0], 'eq')).toEqual(['student_id', STUDENT]);
-		// Un stade inconnu est écarté (la base l'interdit : défense en profondeur)
+		// Un stade inconnu est écarté (la base l'interdit : défense en profondeur).
+		// Payé = stade payé égal au meilleur stade ET toutes les étoiles payées.
 		expect([...memory.entries()]).toEqual([
-			['n1', { bestStage: 'matou', starredGrades: ['2'], asleep: true, updatedAt: T0 }]
+			['n1', { bestStage: 'matou', starredGrades: ['2'], asleep: true, updatedAt: T0, paid: true }],
+			[
+				'n3',
+				{
+					bestStage: 'grand_matou',
+					starredGrades: ['2', '1_SPE'],
+					asleep: false,
+					updatedAt: T0,
+					paid: false
+				}
+			],
+			['n5', { bestStage: 'matou', starredGrades: [], asleep: false, updatedAt: T0, paid: true }],
+			['n4', { bestStage: 'chaton', starredGrades: [], asleep: false, updatedAt: T0, paid: false }]
 		]);
 	});
 

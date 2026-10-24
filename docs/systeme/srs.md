@@ -223,13 +223,20 @@ compte du jour = cartes distinctes dont `srs_card_stats.last_review` tombe aujou
 par le serveur seul, Q171 ; elle inclut aussi les réponses d'Entraînement et de flash, qui passent par
 FSRS). Une révision forcée d'un paquet sans carte due rapporte donc le forfait dès la 3e carte.
 
-« Une fois par jour » : `srs_review_sessions.completed_at` marque la séance qui a rapporté le forfait.
-Une séance déjà marquée aujourd'hui → rien, sans autre lecture. Plafond déjà atteint ou élève sans
-Palotin → pas de réclamation. Réclamation conditionnelle (`completed_at is null`, vérifiée par
-`.select()`), relâchée si le crédit échoue ou rapporte 0 ; réclamation et relâche au client
-service, filtrées sur le `userId` de la session. Deux paquets réclamés au même instant :
-chacun voit l'autre, aucun forfait ce jour-là (côté sûr). `api/srs/review/submit` rend le gain sous
-`buddy_xp`, même forme que `api/tests/save` ; toute panne rend `null` sans toucher la révision.
+**Gidouilles de la séance** (décision de David, 2026-10-24) : la même séance terminée rapporte **+2
+gidouilles** (`REVIEW_DAY_GIDOUILLES`, `creditStudentGidouilles`), **avec ou sans Palotin**, plafond
+d'XP atteint ou non ; élèves seulement (la route ne demande la récompense que pour le rôle
+`student`).
+
+« Une fois par jour » : `srs_review_sessions.completed_at` marque la séance récompensée. Une séance
+déjà marquée aujourd'hui → rien, sans autre lecture. Réclamation conditionnelle (`completed_at is
+null`, vérifiée par `.select()`), puis l'XP (s'il y a un Palotin sous le plafond) et les gidouilles ;
+relâchée seulement si **rien** n'a été donné (relâcher après les gidouilles les ferait verser deux
+fois : un forfait d'XP en échec est alors perdu pour la journée, journalisé). Réclamation et relâche
+au client service, filtrées sur le `userId` de la session. Deux paquets réclamés au même instant :
+chacun voit l'autre, rien ce jour-là (côté sûr). `api/srs/review/submit` rend le gain sous
+`buddy_xp`, même forme que `api/tests/save`, et les gidouilles sous `review_gidouilles` (affichées
+en fin de séance par `ReviewSession`) ; toute panne rend `null` / 0 sans toucher la révision.
 RLS (migration `20261017090100_palotin_constance_et_ecritures_serveur.sql`) : l'élève n'a plus de
 policy INSERT ni UPDATE sur `srs_review_sessions` (seule reste « Users can view their own review
 sessions ») ; il ne peut donc plus remettre `completed_at` à vide pour toucher deux fois le forfait.

@@ -6,6 +6,9 @@
  * `docs/wip/atelier-cas-phase0.md`, PR 4). Un lien gardé ou un favori mène à
  * `/atelier` en 308 (permanente, comme les autres anciennes routes), la query
  * string comprise.
+ *
+ * `/spreadsheet` (V4) est retiré le 2026-10-24 : la grille de l'atelier le
+ * remplace. `/spreadsheet` et `/spreadsheet/<id>` mènent à `/atelier`.
  */
 import { describe, it, expect, vi } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
@@ -52,6 +55,25 @@ describe('redirectHandle — /cas, remplacée par l’atelier', () => {
 		expect(await redirectionOf('/casino')).toBeNull();
 		expect(await redirectionOf('/calc')).toBeNull();
 		expect(await redirectionOf('/atelier')).toBeNull();
+	});
+});
+
+describe('redirectHandle — /spreadsheet, remplacé par la grille de l’atelier', () => {
+	it('/spreadsheet mène à /atelier, en 308', async () => {
+		expect(await redirectionOf('/spreadsheet')).toEqual({ status: 308, location: '/atelier' });
+		expect(await redirectionOf('/spreadsheet/')).toEqual({ status: 308, location: '/atelier' });
+	});
+
+	it('un tableur enregistré (/spreadsheet/<id>) aussi, sans son identifiant', async () => {
+		expect(await redirectionOf('/spreadsheet/0b7e6c1a-4d2f-4f3e-9a51-2c8d7e6f5a40')).toEqual({
+			status: 308,
+			location: '/atelier'
+		});
+	});
+
+	it('une adresse qui commence seulement par « /spreadsheet » passe', async () => {
+		expect(await redirectionOf('/spreadsheets')).toBeNull();
+		expect(await redirectionOf('/api/spreadsheets')).toBeNull();
 	});
 });
 

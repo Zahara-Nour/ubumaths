@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; espaces de groupement dès 5 chiffres, 2026-10-23).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23).
 
 ## À quoi ça sert
 
@@ -1622,7 +1622,7 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
 
 ### Le panneau Propriétés
 
-Chantier `docs/wip/atelier-proprietes-progress.md` (validé par David le 2026-10-23). Toutes les
+Chantier `docs/archive/wip/atelier-proprietes-progress.md` (validé par David le 2026-10-23). Toutes les
 cartes ont, en fin de menu, **Propriétés**, **Renommer** et **Supprimer** (`ALWAYS`, `actions.ts` ;
 le plafond d'actions d'une liste passe de 11 à 12, David, même jour). Propriétés et Renommer ne
 sortent pas de la carte (`PROPERTIES_ACTIONS`) : ils déplient `ObjectProperties` juste sous elle,
@@ -1661,7 +1661,10 @@ emporte son panneau : un homonyme recréé ne le rouvre pas.
 - **Formes du cahier** (revue de #1630) : des coefficients irrationnels mais proportionnels se
   réduisent (la droite par (0 ; 0) et (√2 ; √2) : `x - y = 0`, vecteur `(1 ; 1)` ;
   `proportionalIntegers`) ; une longueur ou un rayon racine d'une fraction s'écrit sans racine au
-  dénominateur, `√3/3` pour `3x² + 3y² = 1` (`withoutRootOfFraction`, `rootOverInteger`).
+  dénominateur, `√3/3` pour `3x² + 3y² = 1` (`withoutRootOfFraction`, `rootOverInteger`) ;
+  un périmètre ou une aire à coefficient fractionnaire met π au numérateur, `2π√3/3` et `π/3`
+  (et non `(2/3)π√3`), `π/4` pour un rayon 1/2 (`piTimes`, David, #1634) ; au-delà de 2^53,
+  l'écriture `(n/d)π` garde les chiffres exacts.
 
 ### Vues
 

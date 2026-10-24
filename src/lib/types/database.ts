@@ -11550,6 +11550,8 @@ export type Database = {
           best_stage: string
           first_seen_at: string
           notion_id: string
+          rewarded_grades: string[]
+          rewarded_stage: string | null
           starred_grades: string[]
           student_id: string
           updated_at: string
@@ -11559,6 +11561,8 @@ export type Database = {
           best_stage: string
           first_seen_at?: string
           notion_id: string
+          rewarded_grades?: string[]
+          rewarded_stage?: string | null
           starred_grades?: string[]
           student_id: string
           updated_at?: string
@@ -11568,6 +11572,8 @@ export type Database = {
           best_stage?: string
           first_seen_at?: string
           notion_id?: string
+          rewarded_grades?: string[]
+          rewarded_stage?: string | null
           starred_grades?: string[]
           student_id?: string
           updated_at?: string
@@ -16034,6 +16040,14 @@ export type Database = {
         Returns: string[]
       }
       normalize_grade_value: { Args: { input_grade: string }; Returns: string }
+      pay_mathou_milestones: {
+        Args: { p_names?: Json; p_student_id: string }
+        Returns: {
+          delta: number
+          notion_id: string
+          reason: string
+        }[]
+      }
       process_achievement_event: {
         Args: {
           p_event_data?: Json

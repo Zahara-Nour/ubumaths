@@ -85,7 +85,7 @@ Quand on a des éléments SVG interactifs (handles de redimensionnement, points 
 | `src/routes/(public)/games/2048/Game2048.svelte`            | Game board touch handlers           |
 | `src/routes/(public)/games/2048/Tile2048.svelte`            | Tile tabindex                       |
 
-(Plus quelques fichiers pré-existants : `MarkdownRaw`, `TrigCircle`, `PythonSplitter`, `Spreadsheet`, `VipCard`, `ElementPopover`.)
+(Plus quelques fichiers pré-existants : `MarkdownRaw`, `TrigCircle`, `PythonSplitter`, `VipCard`, `ElementPopover`.)
 
 ### Ce qu'il faudrait vraiment faire (à terme)
 

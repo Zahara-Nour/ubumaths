@@ -664,6 +664,50 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		});
 	});
 
+	it('gidouilles : naissance et croissance payées une fois, sous le plafond, annoncées, au journal avec le nom du Mathou', async () => {
+		const { id, client } = await newStudent(GRADE);
+		const balance = async () => {
+			const { data } = await service.from('profiles').select('gidouilles').eq('id', id).single();
+			return Number(data?.gidouilles);
+		};
+		const before = await balance();
+
+		// Né matou : naissance 3 + matou 5
+		await setState(id, pointIds.p1, { is_acquired: true, total_successes: 2 });
+		const ne = await loadMathouCollectionWithNews(client, id, GRADE);
+		expect(ne.news.gidouilles).toBe(8);
+		expect(await balance()).toBe(before + 8);
+
+		// Même état : rien de plus
+		const encore = await loadMathouCollectionWithNews(client, id, GRADE);
+		expect(encore.news.gidouilles).toBeUndefined();
+		expect(await balance()).toBe(before + 8);
+
+		// Grand matou ★ : 10, l'étoile (5) attend sous le plafond de 20 sur 24 heures
+		await setState(id, pointIds.p2, { is_acquired: true, total_successes: 2 });
+		const grandi = await loadMathouCollectionWithNews(client, id, GRADE);
+		expect(grandi.news.gidouilles).toBe(10);
+		expect(await balance()).toBe(before + 18);
+
+		// Libellés du journal : le nom affiché du Mathou (celui de la collection)
+		const name = grandi.collection.races
+			.flatMap((race) => race.mathoux)
+			.find((m) => m.notionId === notionFractions)?.name;
+		const { data: lines } = await service
+			.from('gidouilles_activity')
+			.select('delta, reason')
+			.eq('student_id', id);
+		// Même transaction = même `created_at` : l'ordre n'est pas garanti, on compare triés
+		const sorted = (rows: [number, string][]) => [...rows].sort((x, y) => x[1].localeCompare(y[1]));
+		expect(sorted((lines ?? []).map((l) => [Number(l.delta), l.reason ?? '']))).toEqual(
+			sorted([
+				[3, `Chatterie : naissance de ${name}`],
+				[5, `Chatterie : ${name} devient matou`],
+				[10, `Chatterie : ${name} devient grand matou`]
+			])
+		);
+	});
+
 	it('réveil : endormi sans annonce, puis « réveillé » annoncé une fois (mémoire `asleep`)', async () => {
 		const { id, client } = await newStudent(GRADE);
 		await setState(id, pointIds.p1, { is_acquired: true, total_successes: 2 });

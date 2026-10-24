@@ -8,6 +8,8 @@
 	Props :
 	- news : `fetchMathouNews()` ; `null` ou rien de nouveau → rien n'est affiché.
 	  Premier passage avec plusieurs Mathoux : une seule phrase, pas de liste.
+	  Gidouilles versées pour les étapes : une ligne sous les nouveautés, ou seule
+	  (rattrapage, sans nouveauté détaillée).
 -->
 
 <script lang="ts">
@@ -15,8 +17,11 @@
 	import MathouAvatar from './MathouAvatar.svelte';
 	import {
 		firstVisitPhrase,
+		gidouillesPhrase,
+		hasNews,
 		isFirstVisitGroup,
 		moreNewsPhrase,
+		newsGidouilles,
 		newsItemPhrase,
 		type MathouNews,
 		type MathouNewsKind
@@ -40,16 +45,20 @@
 	let { news }: Props = $props();
 
 	const remaining = $derived(news ? news.total - news.items.length : 0);
+	const hasItems = $derived(news !== null && news.total > 0 && news.items.length > 0);
+	const gidouilles = $derived(news ? newsGidouilles(news) : 0);
 </script>
 
-{#if news && news.total > 0 && news.items.length > 0}
+{#if news && hasNews(news)}
 	<section
 		class="space-y-2 rounded-lg border bg-muted/40 p-3"
 		aria-label="Du nouveau à la Chatterie"
 		aria-live="polite"
 		data-testid="mathou-news-card"
 	>
-		{#if isFirstVisitGroup(news)}
+		{#if !hasItems}
+			<!-- Rattrapage : des gidouilles sans nouveauté détaillée -->
+		{:else if isFirstVisitGroup(news)}
 			<div class="flex items-center gap-3">
 				<MathouAvatar
 					raceIndex={news.items[0].raceIndex}
@@ -78,6 +87,11 @@
 			{#if remaining > 0}
 				<p class="text-sm text-muted-foreground">{moreNewsPhrase(remaining)}</p>
 			{/if}
+		{/if}
+		{#if gidouilles > 0}
+			<p class="text-sm font-medium" data-testid="mathou-news-gidouilles">
+				{gidouillesPhrase(gidouilles, !hasItems)}
+			</p>
 		{/if}
 		<a
 			href={resolve('/dashboard/student/chatterie')}
