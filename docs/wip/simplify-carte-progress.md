@@ -927,3 +927,15 @@ Sondé (deux tests jetables, retirés ; 14 dérivées et 12 primitives de lycée
 - **Primitive, factorisée** (règle du tableau) : `x(x − 1)²`, `x²(x − 1)(x + 1)`, `(x + 1)eˣ`, `x(x − 2√3)(x + 2√3)` ; mais `x(x²/3 + 1)` et `x(3x/10 + 1,2)`.
 - **Réduite** = la forme par défaut, au rangement près : valeur inutile.
 - **Trouvé en route** : (1) le formulaire de modèle n'a aucun champ de correction automatique (mode JSON seulement) et, enregistré en mode formulaire, il **réécrit la correction en `{ steps }`** (`QuestionTemplateForm.svelte:734`) : `generatedSteps` et `feedback` effacés — 7 modèles publiés ont un `feedback`. (2) primitive par défaut de `0,6x + 1,2` : `3x²/10 + 1,2x` (écart S1, à mettre en 5f).
+
+## 68. Q33-Q38 tranchées (David, 2026-10-24 : « bug Q33 avant 5e dans une PR ; je suis tes recos pour les autres questions »)
+
+- **Q33 : oui.** PR à part avant 5e : le formulaire de modèle garde `generatedSteps` et `feedback` à l'enregistrement.
+- **Q34** : une primitive factorisée avec une fraction dans un facteur reste développée (`x³/3 + x`).
+- **Q35** : deux valeurs, développée et factorisée ; vide = forme par défaut.
+- **Q36** : la vérification du modèle refuse ce réglage sur une intégrale à bornes.
+- **Q37** : garde E1 dans la vérification du modèle (instances tirées, réponse de la correction passée au juge du `requiredForm`).
+- **Q38** : champ en mode JSON seulement pour 5e.
+- **Bascule des modèles existants** (correction écrite → automatique) : plus tard (David).
+- **`eˣ·eˣ·e^{−x} → e^{−x}e^{2x}` : accepté.**
+- **`pnpm math` : à brancher sur l'Atelier** (console Calcul en ligne de commande) — futur chantier, après simplify-carte.
