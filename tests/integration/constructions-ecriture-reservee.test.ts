@@ -1,16 +1,17 @@
 /**
- * Constructions : création et modification réservées au prof et à l'admin
- * ======================================================================
+ * Constructions : écriture réservée au prof, qui lit tout
+ * =======================================================
  *
  * Relevé le 2026-10-22 (doc `docs/systeme/geometrie/constructions.md`) : tout compte
- * connecté, élève compris, pouvait créer une construction publique, dont le titre et la
- * description (texte libre) étaient lus par tous les comptes connectés, toutes écoles
- * confondues. Un client Supabase tournant dans le navigateur, la règle doit être tenue
- * par la base, pas seulement par l'API.
+ * connecté, élève compris, pouvait créer une construction publique. Un client Supabase
+ * tournant dans le navigateur, la règle doit être tenue par la base, pas seulement par
+ * l'API.
  *
- * Décision de David (2026-10-22) : créer, modifier, publier = prof et admin seuls ; la
- * lecture des constructions publiées reste ouverte à tout compte connecté ; un auteur
- * garde la suppression de ses constructions.
+ * Décision de David (2026-10-24) : mono-professeur, la propriété ne sert à rien — le rôle
+ * suffit. Le prof crée, modifie, publie, supprime et lit TOUTES les constructions,
+ * brouillons compris, même sans auteur (cas des 9 constructions de la prod, dont les
+ * comptes ont été supprimés). L'admin et l'élève lisent les constructions publiées, rien
+ * d'autre.
  *
  * @vitest-environment node
  */
@@ -33,6 +34,14 @@ const ANON_KEY =
 
 const TITRE = 'zz-construction écriture réservée';
 
+const NOUVELLE = {
+	title: TITRE,
+	format: 'dsl',
+	dsl_script: 'A = point(0, 0)',
+	script: {},
+	is_public: true
+};
+
 // ============================================================================
 // HELPERS
 // ============================================================================
@@ -49,8 +58,8 @@ async function clientFor(email: string): Promise<SupabaseClient<Database>> {
 	return client;
 }
 
-/** Une construction DSL au nom de `authorId`, posée par la base (hors RLS). */
-async function constructionDe(authorId: string, isPublic: boolean): Promise<string> {
+/** Une construction DSL posée par la base (hors RLS) ; sans auteur par défaut, comme en prod. */
+async function construction(isPublic: boolean, authorId: string | null = null): Promise<string> {
 	const pg = await getPostgresClient();
 	const { rows } = await pg.query<{ id: string }>(
 		`insert into constructions (title, format, dsl_script, script, is_public, author_id)
@@ -60,11 +69,17 @@ async function constructionDe(authorId: string, isPublic: boolean): Promise<stri
 	return rows[0].id;
 }
 
+async function existe(id: string): Promise<boolean> {
+	const pg = await getPostgresClient();
+	const { rows } = await pg.query('select 1 from constructions where id = $1', [id]);
+	return rows.length === 1;
+}
+
 // ============================================================================
 // TESTS
 // ============================================================================
 
-describe('constructions : écriture réservée au prof et à l’admin', () => {
+describe('constructions : écriture réservée au prof, qui lit tout', () => {
 	let prof: { id: string; email: string };
 	let admin: { id: string; email: string };
 	let eleve: { id: string; email: string };
@@ -82,86 +97,107 @@ describe('constructions : écriture réservée au prof et à l’admin', () => {
 		await cleanupAllTestData();
 	});
 
-	const nouvelle = (authorId: string) => ({
-		title: TITRE,
-		format: 'dsl',
-		dsl_script: 'A = point(0, 0)',
-		script: {},
-		is_public: true,
-		author_id: authorId
+	it('le prof crée une construction sans auteur', async () => {
+		const client = await clientFor(prof.email);
+		const { data, error } = await client.from('constructions').insert(NOUVELLE).select('id');
+		expect(error).toBeNull();
+		expect(data).toHaveLength(1);
 	});
 
-	it('un prof crée, modifie et supprime sa construction', async () => {
+	it('le prof lit, modifie et supprime un brouillon sans auteur', async () => {
+		const id = await construction(false);
 		const client = await clientFor(prof.email);
-		const { data: cree, error } = await client
-			.from('constructions')
-			.insert(nouvelle(prof.id))
-			.select('id')
-			.single();
-		expect(error).toBeNull();
+		const { data: lue } = await client.from('constructions').select('id').eq('id', id);
+		expect(lue).toHaveLength(1);
 		const { data: modifiee } = await client
 			.from('constructions')
-			.update({ title: TITRE, is_public: false })
-			.eq('id', cree!.id)
+			.update({ is_public: true })
+			.eq('id', id)
 			.select('id');
 		expect(modifiee).toHaveLength(1);
 		const { data: supprimee } = await client
 			.from('constructions')
 			.delete()
-			.eq('id', cree!.id)
+			.eq('id', id)
 			.select('id');
 		expect(supprimee).toHaveLength(1);
 	});
 
-	it('l’admin crée une construction', async () => {
-		const client = await clientFor(admin.email);
-		const { error } = await client.from('constructions').insert(nouvelle(admin.id));
-		expect(error).toBeNull();
-	});
+	for (const qui of ['admin', 'eleve'] as const) {
+		const compte = () => (qui === 'admin' ? admin : eleve);
 
-	it('un élève ne peut pas créer de construction (42501)', async () => {
-		const client = await clientFor(eleve.email);
-		const { error } = await client.from('constructions').insert(nouvelle(eleve.id));
-		expect(error?.code).toBe('42501');
-	});
+		it(`${qui} : création refusée (42501)`, async () => {
+			const client = await clientFor(compte().email);
+			const { error } = await client.from('constructions').insert(NOUVELLE);
+			expect(error?.code).toBe('42501');
+		});
 
-	it('un élève ne peut pas créer de construction privée non plus', async () => {
-		const client = await clientFor(eleve.email);
-		const { error } = await client
-			.from('constructions')
-			.insert({ ...nouvelle(eleve.id), is_public: false });
-		expect(error?.code).toBe('42501');
-	});
+		it(`${qui} : création refusée même en se déclarant auteur`, async () => {
+			const client = await clientFor(compte().email);
+			const { error } = await client
+				.from('constructions')
+				.insert({ ...NOUVELLE, is_public: false, author_id: compte().id });
+			expect(error?.code).toBe('42501');
+		});
 
-	it('un élève auteur ne peut plus modifier sa construction (0 ligne)', async () => {
-		const id = await constructionDe(eleve.id, false);
-		const client = await clientFor(eleve.email);
-		const { data, error } = await client
-			.from('constructions')
-			.update({ is_public: true })
-			.eq('id', id)
-			.select('id');
-		expect(error).toBeNull();
-		expect(data).toEqual([]);
-		const pg = await getPostgresClient();
-		const { rows } = await pg.query<{ is_public: boolean }>(
-			'select is_public from constructions where id = $1',
-			[id]
-		);
-		expect(rows[0].is_public).toBe(false);
-	});
+		it(`${qui} : modification d’une publiée sans effet (0 ligne)`, async () => {
+			const id = await construction(true);
+			const client = await clientFor(compte().email);
+			const { data, error } = await client
+				.from('constructions')
+				.update({ is_public: false })
+				.eq('id', id)
+				.select('id');
+			expect(error).toBeNull();
+			expect(data).toEqual([]);
+			const pg = await getPostgresClient();
+			const { rows } = await pg.query<{ is_public: boolean }>(
+				'select is_public from constructions where id = $1',
+				[id]
+			);
+			expect(rows[0].is_public).toBe(true);
+		});
 
-	it('un élève auteur garde la suppression de sa construction', async () => {
-		const id = await constructionDe(eleve.id, false);
-		const client = await clientFor(eleve.email);
-		const { data } = await client.from('constructions').delete().eq('id', id).select('id');
-		expect(data).toHaveLength(1);
-	});
+		it(`${qui} : suppression d’une publiée sans effet (0 ligne)`, async () => {
+			const id = await construction(true);
+			const client = await clientFor(compte().email);
+			const { data } = await client.from('constructions').delete().eq('id', id).select('id');
+			expect(data).toEqual([]);
+			expect(await existe(id)).toBe(true);
+		});
 
-	it('un élève lit toujours les constructions publiées par le prof', async () => {
-		const id = await constructionDe(prof.id, true);
-		const client = await clientFor(eleve.email);
-		const { data } = await client.from('constructions').select('id').eq('id', id);
-		expect(data).toHaveLength(1);
-	});
+		it(`${qui} : « sa » construction, ni lue en brouillon, ni modifiée, ni supprimée`, async () => {
+			const id = await construction(false, compte().id);
+			const client = await clientFor(compte().email);
+			const { data: lue } = await client.from('constructions').select('id').eq('id', id);
+			expect(lue).toEqual([]);
+			const { data: modifiee } = await client
+				.from('constructions')
+				.update({ is_public: true })
+				.eq('id', id)
+				.select('id');
+			expect(modifiee).toEqual([]);
+			const { data: supprimee } = await client
+				.from('constructions')
+				.delete()
+				.eq('id', id)
+				.select('id');
+			expect(supprimee).toEqual([]);
+			expect(await existe(id)).toBe(true);
+		});
+
+		it(`${qui} : ne lit pas les brouillons`, async () => {
+			const id = await construction(false);
+			const client = await clientFor(compte().email);
+			const { data } = await client.from('constructions').select('id').eq('id', id);
+			expect(data).toEqual([]);
+		});
+
+		it(`${qui} : lit les constructions publiées`, async () => {
+			const id = await construction(true);
+			const client = await clientFor(compte().email);
+			const { data } = await client.from('constructions').select('id').eq('id', id);
+			expect(data).toHaveLength(1);
+		});
+	}
 });

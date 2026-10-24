@@ -86,6 +86,12 @@ describe('gardes de rôle : is_teacher_or_admin et is_admin', () => {
 		expect(await garde(eleve, 'is_admin')).toBe(false);
 	});
 
+	it('is_teacher : vrai pour le professeur seul (constructions, 2026-10-24)', async () => {
+		expect(await garde(prof, 'is_teacher')).toBe(true);
+		expect(await garde(admin, 'is_teacher')).toBe(false);
+		expect(await garde(eleve, 'is_teacher')).toBe(false);
+	});
+
 	it('hors session, elles ne s’ouvrent pas — et ne sont même pas appelables', async () => {
 		// Deux barrières, et c'est la plus externe qui répond : `anon` n'a pas
 		// EXECUTE sur ces fonctions, donc l'appel est refusé (42501) avant même
@@ -94,7 +100,7 @@ describe('gardes de rôle : is_teacher_or_admin et is_admin', () => {
 		const anonyme = createClient<Database>(SUPABASE_URL, ANON_KEY, {
 			auth: { persistSession: false, autoRefreshToken: false }
 		});
-		for (const nom of ['is_teacher_or_admin', 'is_admin']) {
+		for (const nom of ['is_teacher_or_admin', 'is_admin', 'is_teacher']) {
 			const { data, error } = await anonyme.rpc(nom as never);
 			if (error) {
 				expect(error.code, `${nom} : refus attendu`).toBe('42501');

@@ -12,7 +12,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
+import { DEMO_SCRIPT_AUTHOR_ROLES } from '$lib/server/constructions-access';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/construction-demo-scripts/+server');
@@ -28,7 +28,7 @@ const deleteSchema = z.object({
 
 // GET — list all demo scripts for the authenticated user
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
+	const { user } = await requireRoles(locals, DEMO_SCRIPT_AUTHOR_ROLES);
 
 	const { data, error: dbError } = await locals.supabase
 		.from('construction_demo_scripts')
@@ -46,7 +46,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 // POST — create or update a demo script (upsert by name)
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
+	const { user } = await requireRoles(locals, DEMO_SCRIPT_AUTHOR_ROLES);
 
 	const body = await request.json().catch(() => {
 		throw error(400, 'Corps de requête JSON invalide');
@@ -75,7 +75,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 // DELETE — delete a demo script by id
 export const DELETE: RequestHandler = async ({ url, locals }) => {
-	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
+	const { user } = await requireRoles(locals, DEMO_SCRIPT_AUTHOR_ROLES);
 
 	const validation = deleteSchema.safeParse({ id: url.searchParams.get('id') });
 	if (!validation.success) {

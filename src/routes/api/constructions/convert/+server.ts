@@ -7,6 +7,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRoles } from '$lib/server/middleware/auth';
+import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
 import { convertInstrumenPoche } from '$lib/constructions/converter';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -38,11 +39,10 @@ const convertRequestSchema = z.object({
 /**
  * POST /api/constructions/convert
  * Convert InstrumenPoche XML to Chiphre JSON
- * Teachers and admins only
+ * Prof seul, comme la page de conversion qu'elle sert
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	// Check authentication and authorization (teachers and admins only)
-	await requireRoles(locals, ['teacher', 'admin']);
+	await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	// Parse and validate request body
 	let body: unknown;

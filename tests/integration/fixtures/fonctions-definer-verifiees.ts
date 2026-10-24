@@ -717,6 +717,10 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'predicat-rls',
 		justification: 'student_id = auth.uid()'
 	},
+	'is_teacher()': {
+		categorie: 'predicat-rls',
+		justification: 'rôle de auth.uid()'
+	},
 	'is_teacher_or_admin()': {
 		categorie: 'predicat-rls',
 		justification: 'rôle de auth.uid()'
