@@ -2784,7 +2784,7 @@ carte, fusion — et la migration si un nom devient réservé (`migrateReservedN
 v2 (`point`, `curve`, 2026-10-18) : `types.ts`, `names.ts` (`PREFERRED_NAMES`), `parse.ts`
 (`parseDefinition`), `atelier.svelte.ts` (`build`, `#cited`, plafond), `actions.ts` (`BY_KIND`),
 `calcul.ts`, `persistence.ts`, `ObjectCard.svelte`, `ObjectPanel.svelte` ; les `Record` indexés
-par le type (`KIND_WORDS`, `KIND_NAMES`) sont signalés par le typecheck. Prévu pour la v3 (Python).
+par le type (`KIND_WORDS`, `KIND_NAMES`) sont signalés par le typecheck.
 
 ---
 
@@ -2826,6 +2826,21 @@ décisions figées) : 1 l'atelier possède l'état · 2 on ne valide pas · 3 pa
 `geometry-core` · 4 pas de sélecteur de niveau · 5 remplacée par G1/G2 (atelier = entrée unique,
 `/grapheur` ouvre l'atelier).
 
+**v3 Python remplacée (David, 2026-10-24, après un conseil à cinq voix)** : **pas d'onglet Python
+ni d'état partagé** entre l'atelier et l'espace de noms Python. Raisons : deux sémantiques (exact
+de `mathAST` contre flottants, `e` = Euler, `^` / `**`) donneraient deux résultats pour le même
+objet ; `a = 3` dans une cellule laisserait croire que le curseur bouge ; le playground valide et
+note, l'atelier ne valide pas (décision 2). À la place, des **ponts à sens unique, visibles** :
+
+1. **« Ouvrir dans Python »** (après le tableur) : une fonction, une suite ou une liste s'ouvre dans
+   `/python` comme du code lisible (`def f(x): return …`, `L = [12, 15, 9]`), par l'entrée
+   `?code=` qui existe déjà (`routes/(public)/python/+page.svelte`). Seul travail : la traduction
+   `mathAST` → Python, refusée avec un message pour ce qui ne se traduit pas sans perte.
+2. **Plus tard, si l'usage le justifie** : le sens inverse, une liste produite par un programme
+   (simulation, seuil d'une suite) gardée comme objet de l'atelier.
+
+Blockly reste l'entrée vers Python au cycle 4 ; ce n'est pas un argument pour fusionner.
+
 **Phase 0 v1** ([atelier-recherche-eleve-phase0.md](../archive/wip/atelier-recherche-eleve-phase0.md) §9), état au 2026-10-10 :
 
 | #   | Décision                                                     | Toujours vraie ?                                                                   |
@@ -2863,8 +2878,9 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 - **v2** géométrie : **livrée** (lot 1 : modèle, vue Géométrie, 𝒞f ; lot 2 : constructions au
   clavier, mesures, `point_sur`, intersections, `.relever` ; lot 3 : barre d'outils, glisser,
   outils de construction, téléphone et tablette), pas encore en prod ; chantier clos le
-  2026-10-19, journal : [atelier-geometrie-progress.md](../archive/wip/atelier-geometrie-progress.md). **v3** Python : non
-  commencée, sans phase 0 ;
+  2026-10-19, journal : [atelier-geometrie-progress.md](../archive/wip/atelier-geometrie-progress.md). **v3** Python :
+  remplacée le 2026-10-24 par le pont « Ouvrir dans Python », à faire après le tableur (voir
+  Décisions) ;
 - tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1), collage /
   copie / CSV / titres (PR 2), annulation (PR 3a), appariement par ligne (PR 3b) — lot 1 complet ;
   à venir : les formules (lot 2) ;
