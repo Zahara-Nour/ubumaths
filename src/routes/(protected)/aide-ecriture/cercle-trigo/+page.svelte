@@ -125,6 +125,7 @@ color: orange
 			description: 'Glissez sur le cercle pour explorer',
 			markdown: `\`\`\`trig
 preset: custom
+angles: pi/4
 mode: interactive
 display: circle+table
 color: purple

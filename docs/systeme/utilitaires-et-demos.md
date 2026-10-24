@@ -17,6 +17,7 @@ couvre:
   - 'src/routes/(protected)/dev/structure/*.svelte'
   - 'src/routes/(protected)/dev/structure/*.ts'
   - 'src/routes/(public)/demo/structure/+page.svelte'
+  - 'src/routes/(public)/demo/cercle-trigo/+page.svelte'
   - src/lib/components/structure/structure-lexicon.svelte.ts
   - 'src/routes/(protected)/dev/saisie-naturelle/*.svelte'
   - 'src/routes/(protected)/dev/polices/+page.svelte'
@@ -120,7 +121,7 @@ Les anciennes adresses sont redirigées en 308 par `redirectHandle` (table `MOVE
 [auth.md](auth.md#la-chaîne-de-handles)), sous-pages comprises ; une ancienne adresse publique mène
 donc le visiteur à la connexion. `/test-font` ne l'est qu'à l'adresse exacte, ses images restant
 sous `static/test-font/`. Les pages vitrine (`/demo/…`) arrivent une par une (phase 6 du
-chantier) : `/demo/structure` (PR 6a). Elles ne sont reliées de nulle part avant l'accueil de la
+chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b). Elles ne sont reliées de nulle part avant l'accueil de la
 vitrine (phase 7).
 
 Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` ; `/dev` est
@@ -141,6 +142,7 @@ protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo
 | `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée |
 | `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**   |
 | `/demo/structure`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                      | Vitrine, non liée     |
+| `/demo/cercle-trigo`          | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                              | Vitrine, non liée     |
 | `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable     |
 
 Précisions :
@@ -166,6 +168,11 @@ Précisions :
   cocher (réglages par défaut : `AB` lu comme une longueur, terme soulevé pendant un déplacement),
   6 exemples (priorités, somme algébrique, différence, puissance, fractions, équation) ; à
   l'ouverture, l'expression de l'article Sésamath. `noindex` jusqu'à la phase 7.
+- **`/demo/cercle-trigo`** (vitrine, PR 6b) : 4 exemples du bloc `trig` rendus par
+  `MarkdownRenderer`, sans leur texte : mode interactif (angle de départ π/4, le parseur refuse
+  `preset: custom` sans angle), π/6 seul avec projections et tableau, cos x = 1/2, cos x > 1/2 en
+  arc. Le catalogue complet et la syntaxe restent sur `/aide-ecriture/cercle-trigo`, dont un test
+  vérifie que chaque exemple se dessine. `noindex` jusqu'à la phase 7.
 - **`/dev/polices`** (ex-`/test-font`) : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles

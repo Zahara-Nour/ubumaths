@@ -6,17 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, #1689 en revue (plafond ajouté)._
+_Mis à jour le 2026-10-24, après #1689._
 
-- **État** : #1685 mergée et migrée. #1689 (branche `feat/mathoux-gidouilles-travail`) : versement
-  des étapes, annonce, +2 de révision avec ou sans Palotin (choix 1b de David), plafond 20 / 24 h
-  glissantes + libellés « Chatterie : » (choix 2b, migration `20261024230000`, appliquée en local).
-- **Prochaine action** : audit de sécurité de la migration du plafond → CI verte → merge →
-  `db:migrate` (question d'accès tranchée : personne ne lit rien de neuf) → lot B (page de dessins).
+- **État** : lot A COMPLET sur `main` : #1685 (versement) et #1689 (code, +2 de révision sans
+  condition de Palotin, plafond 20 / 24 h) mergées ; migrations `20261024210000` et
+  `20261024230000` appliquées en prod ; code pas en prod (prochain `deploy:prod`, vérification
+  notée dans `verifications-manuelles.md`).
+- **Prochaine action** : lot B — page de dessins des 6 décorations de panse et des 4 races à motif
+  (smoking, marbré, arlequin, Lunaire), à faire choisir par David AVANT toute migration.
 - **En attente de David** : rien.
 - **Pièges en cours** : lignes d'un même versement = même `created_at` ; tests qui paient en
-  plusieurs fois : `ageActivity` pour libérer le plafond ; après rebase, `FRESH=1` au typecheck.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-gidouilles-travail`.
+  plusieurs fois : `ageActivity` ; après un rebase, `FRESH=1` au typecheck.
+- **Worktree / branche** : `../ubumaths-wt-mathoux-accessoires` · `feat/mathoux-decorations`.
 
 ## Constat (2026-10-24)
 
@@ -69,3 +70,4 @@ _Mis à jour le 2026-10-24, #1689 en revue (plafond ajouté)._
 - 2026-10-24 — audit de la migration du plafond : aucun bloquant. Preuve du verrou `profiles` :
   sans lui (copie de travail, `pg_sleep(0.3)` ajouté pour élargir la course), le test « deux
   versements simultanés » est rouge (36 au lieu de 18) ; vert avec la migration réelle.
+- 2026-10-24 — #1689 mergée ; `db:migrate` du plafond, droits vérifiés en prod. Lot A clos.

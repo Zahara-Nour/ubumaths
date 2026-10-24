@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1693._
+_Mis à jour le 2026-10-24, après #1695._
 
-- **État** : PR 1 à 5 (#1675, #1677, #1680, #1687, #1690) et PR 6a (#1693, vitrine `/demo/structure`) mergées, pas en prod. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
-- **Prochaine action** : phase 6 suite, une PR par page : cercle-trigo, cartes, lexique, corrigés, géométrie, questions, éditeur, diaporama. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main` ; phase 0 de la page à faire valider.
+- **État** : PR 1 à 5, 6a (#1693, `/demo/structure`) et 6b (#1695, `/demo/cercle-trigo`) mergées, pas en prod. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
+- **Prochaine action** : phase 6 suite, une PR par page : cartes, lexique, corrigés, géométrie, questions, éditeur, diaporama. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main` ; phase 0 de la page à faire valider.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` (saute la garde en navigation client) ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; un test déplacé d'un niveau → recompter ses `../` ; `await render(…)` exigé par `lint:fast` ; limiteur de connexion local (5 connexions / 15 min par IP) : garder l'état de session Playwright ; pnpm 12 refuse `pnpm -s` (l'autofixer ne tourne pas, en silence) ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : aucun (PR 6a nettoyée).
+- **Worktree / branche** : aucun (PR 6b nettoyée).
 
 ## Décisions de David (2026-10-24)
 
@@ -200,3 +200,14 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
   `$lib/components/structure/` (partagé par les deux pages).
 - Vérifié sans compte sur le serveur de la branche : page 200, `/api/dictionnaire` 200.
 - Pas de revue (page qui assemble des composants existants, validé par David).
+
+## PR 6b — vitrine `/demo/cercle-trigo` (phase 0 validée par David le 2026-10-24)
+
+- 4 exemples du bloc `trig`, sans le texte du bloc ni « Voir le code » : mode interactif,
+  π/6 **seul** (recommandation suivie par David : un angle se lit, douze projections non) avec
+  projections et tableau, cos x = 1/2, cos x > 1/2 en arc. `BackLink` vers `/demo`, `noindex`.
+- Trouvé en route : `preset: custom` + `mode: interactive` sans angle est refusé par le parseur
+  (« demande au moins un angle »). Le catalogue `/aide-ecriture/cercle-trigo` montrait donc au
+  prof « Bloc trig : figure non dessinée ». Corrigé des deux côtés par un angle de départ π/4 ;
+  test ajouté au catalogue (chaque exemple se dessine), vu rouge sans la correction.
+- Pas de revue (page qui assemble des composants existants, comme la 6a).
