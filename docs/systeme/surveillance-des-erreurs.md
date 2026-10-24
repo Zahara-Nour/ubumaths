@@ -1,7 +1,8 @@
 ---
 couvre:
   - 'src/routes/api/{errors,bug-reports,search,openapi.json}/**'
-  - 'src/routes/(protected)/dashboard/admin/{errors,bug-reports,docs,debug}/**'
+  - 'src/routes/(protected)/dashboard/admin/{errors,bug-reports,docs,debug,integrite-donnees}/**'
+  - 'src/routes/(protected)/dev/{session,rls,avatar,roue,champ-math,apercu-question,correction-generee,pdf-typst,pdf-latex,latex-vers-ubumark}/**'
   - 'src/routes/(protected)/dev/erreurs/surveillance/**'
   - 'src/routes/(protected)/dashboard/bug-reports/**'
   - 'src/lib/components/bug-reports/**'
@@ -208,6 +209,9 @@ défaut `DEFAULT_BUG_REPORTS_CONFIG` (tout à `true`). Réglage : `BugReportsCon
   PDF Typst et LaTeX, MathField…), listées par `/dev`. Restent sous `/dashboard/admin/debug/` :
   `question-display` et `rich-text` (menu dans `debug/+layout.svelte`). Les anciennes adresses
   sont redirigées en 308 ([auth.md](auth.md)).
+- `/dashboard/admin/integrite-donnees` (ex-`/dashboard/admin/debug/database`, « Intégrité des
+  données ») : comptes par rôle, élèves non activés, profils sans nom, sans école ou sans classe,
+  dernières inscriptions (`requireAdmin`, e-mails masqués).
 - `POST /api/latex/compile` (vérifié le 2026-10-13) : relais vers `texlive.net`
   (`latexcgi`) pour la page `/dev/pdf-latex`, son seul appelant. Compte exigé
   (`requireAuth`, l'ancien relais ouvert du finding H13) ; Zod `compileLatexSchema`
