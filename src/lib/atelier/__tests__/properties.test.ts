@@ -1,6 +1,6 @@
 /**
  * Les propriétés d'un objet (panneau « Propriétés », chantier
- * `docs/wip/atelier-proprietes-progress.md`, validé par David le 2026-10-23) :
+ * `docs/archive/wip/atelier-proprietes-progress.md`, validé par David le 2026-10-23) :
  * valeur, fonction, suite, liste, dépendances. Les mesures de la figure ont
  * leurs tests (`figure-properties.test.ts`).
  */

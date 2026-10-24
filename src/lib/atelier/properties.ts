@@ -1,7 +1,7 @@
 /**
  * Atelier — les propriétés d'un objet, que son panneau « Propriétés » affiche
  *
- * Phase 0 du chantier `docs/wip/atelier-proprietes-progress.md` (validée par
+ * Phase 0 du chantier `docs/archive/wip/atelier-proprietes-progress.md` (validée par
  * David le 2026-10-23) : ce qu'on sait d'un objet sans le lire sur sa carte —
  * mesures d'une figure, valeur exacte et approchée, ensemble de définition,
  * mode d'une suite, effectif d'une liste —, puis ses dépendances. Le nom et le
