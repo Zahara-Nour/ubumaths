@@ -4,11 +4,11 @@
 
 _Mis à jour le 2026-10-24, avant toute PR._
 
-- **État** : inventaire fait ; revue page par page en cours, lignes 1 à 18 tranchées (tableau ci-dessous).
-- **Prochaine action** : présenter la ligne 19 (`/dashboard/admin/errors/test`, boutons qui provoquent des erreurs pour la surveillance ; reco : dev `/dev/erreurs/surveillance`, à côté de `/dev/erreurs/page` de la ligne 14, doc `surveillance-des-erreurs.md` à suivre). Puis : plan en phases (PR découpées : garde `/dev` + `/aide-ecriture` + redirections, déplacements, fusions, suppression ligne 17, pages vitrine une à une, robots/sitemap), à faire valider.
-- **En attente de David** : le sort de la ligne 19, puis la validation du plan. Rien n'est codé.
-- **Pièges en cours** : aucune suppression hors fusions (7, 8, 15) et ligne 17 ; `/test-font` intact (rien de « KaTeX » renommé) ; règle « contenu pédagogique = prof » ; chantier constructions en cours ailleurs → déplacer `/construction-demo` après ses merges ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` = vraies fonctionnalités, hors chantier.
-- **Worktree / branche** : aucun (rien de codé) ; journal commité sur `main`.
+- **État** : revue page par page FINIE (19 lignes tranchées) ; plan en phases écrit (§ « Plan en phases »), à faire valider.
+- **Prochaine action** : faire valider le plan, puis phase 0 de la PR 1 (comportements en français, attendre la validation avant de coder).
+- **En attente de David** : la validation du plan (découpage, ordre).
+- **Pièges en cours** : aucune suppression hors fusions (7, 8, 15) et ligne 17 ; `/test-font` intact (rien de « KaTeX » renommé) ; règle « contenu pédagogique = prof » ; chantier constructions en cours ailleurs → ligne 4 après ses merges ; `/automaths/test`, `/api/tests/save`, `/api/test-mode` = vraies fonctionnalités, hors chantier.
+- **Worktree / branche** : aucun (rien de codé) ; journal commité sur `main`. Au premier code : `../ubumaths-wt-demo-debug`.
 
 ## Décisions de David (2026-10-24)
 
@@ -74,7 +74,7 @@ Sort : **vitrine** (`/demo/…`, public) · **aide** (`/aide-ecriture/…`, prof
 | 16  | `/blockly/playground`           | dev                     | → `/dev/blockly` tel quel ; rien en vitrine (fonctionnalité pas encore ouverte aux élèves) ; deviendra une vraie fonctionnalité plus tard (David)                                                                                                                                                                                                                                         |
 | 17  | `/test-exercises`               | **supprimée** (David)   | avec ses orphelins : `ExerciseMarkdownEditor.svelte`, `exercises/services/image-markdown-editor.ts` + son test. GARDER `ExerciseMarkdownPreview` (sert à `LaTeXImportDialog` → `ExerciseForm`), `ImageAttributePanel`, `image-upload.ts`, `MarkdownEditor`. Re-greper avant de supprimer                                                                                                  |
 | 18  | `/dashboard/admin/debug/*` (14) | dev (13) + admin (1)    | → `/dev/` : `session`, `rls`, `api`, `avatar`, `roue`, `champ-math`, `apercu-question`, `correction-generee`, `pdf-typst`, `pdf-latex`, `latex-vers-ubumark` ; `question-display` et `rich-text` fusionnées (lignes 7, 8) ; `database` RESTE dans l'admin, renommée « Intégrité des données » ; lien « Debug » du menu admin → accueil de `/dev` (liste de toutes les pages de dev)       |
-| 19  | `/dashboard/admin/errors/test`  | ?                       |                                                                                                                                                                                                                                                                                                                                                                                           |
+| 19  | `/dashboard/admin/errors/test`  | dev                     | → `/dev/erreurs/surveillance`, voisine de `/dev/erreurs/page` (ligne 14), ancienne adresse redirigée ; textes traduits en français (UI en anglais aujourd'hui) ; `surveillance-des-erreurs.md` (ligne 108) mise à jour dans la même PR ; rien en vitrine                                                                                                                                  |
 
 ### Galerie de géométrie `/demo/geometrie` (validée par David le 2026-10-24)
 
@@ -105,6 +105,25 @@ automatique ($(x+1)^2$ développé pas à pas) · **propre à Chiphre** : 6 form
 (forme « En classe ») · 10 annoter par-dessus · 11 tableau blanc · 12 fin, liens `/demo` et Atelier.
 À vérifier avant de coder : `trig` et figures dans une diapositive ubumark, question sans compte ;
 si l'une ne marche pas, le dire à David plutôt que contourner.
+
+## Plan en phases (proposé le 2026-10-24, à valider)
+
+Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« un temps »).
+
+1. **Socle** : groupe `/dev` (garde admin, plein écran, accueil = liste des pages de dev),
+   groupe `/aide-ecriture` (garde prof, accueil = liste), mécanisme de redirections, robots
+   (`/dev`, `/aide-ecriture` fermés). Aucune page déplacée. Revue : `code-reviewer` + `security-auditor`.
+2. **Déplacements « telles quelles » vers `/dev`** : lignes 9, 11, 12, 13, 14, 16, 18 (hors 7, 8),
+   19 (+ traduction) ; lien « Debug » du menu admin → `/dev` ; `database` → « Intégrité des données ».
+3. **Fusions et parts dev** : lignes 7, 8, 15 (fusions) ; parts dev des lignes 1, 5, 6, 10.
+4. **Aide à l'écriture** : ligne 2 (`/geometry-demo/*`, 30 pages), ligne 3 (catalogue trigo).
+5. **Suppression ligne 17** (re-greper les orphelins avant).
+6. **Vitrine, une PR par page** : structure, cercle-trigo, cartes, lexique, corrigés, géométrie,
+   questions, éditeur, diaporama.
+7. **Accueil `/demo`** + robots/sitemap ouverts sur `/demo/…` + liens depuis `/professeurs`,
+   `/parents`, `/eleves` et le pied de page.
+8. **Ligne 4 (constructions)**, après les merges du chantier constructions : `/constructions/essais`,
+   `/demo/constructions` ; puis PR à part du retrait d'accès admin sur `construction-demo-scripts`.
 
 ## Hors chantier, à faire plus tard (noté le 2026-10-24)
 
