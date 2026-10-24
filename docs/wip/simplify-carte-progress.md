@@ -776,3 +776,41 @@ Laissés, à montrer à David : `x e^{−x²}` → `−2(x − √2/2)(x + √2/
 CI verte. Suite (branche `fix/simplify-carte-5b-racines`) : un facteur qui mêle racine et fraction n'est pas affiché, la forme de 5a reste — `x e^{−x²}` → `(1 − 2x²)e^{−x²}`, `(x² − 3x + 2)/(x² + 1)` → `(3x² − 2x − 3)/(x² + 1)²` ; `(x − √2)(x + √2)`, `x²(x − 2√3)(x + 2√3)` gardées. 2 tests rouges avant.
 
 **#1661 (2026-10-24)** : main était rouge depuis #1656 — le `beforeAll` de l'oracle des dérivées (`derivatives-oracle.test.ts`) dépassait en CI les 10 s par défaut ; délai explicite de 120 s. Signalé par la session `passe-lycee` (bloquait #1657), prévenue au merge.
+
+## 57. Lot 5c, phase 0 : sonde (2026-10-24, à valider par David)
+
+Sondé sur `main` (2 sondes jetables, retirées) : 24 valeurs exactes passées par les 5 écritures actuelles, plus `.résoudre` et `.limite` par l'Atelier. Colonnes : Atelier (`readable`, `atelier/render.ts:138`), `{{eval}}` (`evaluateAstWithModifiers` → `schoolExactWriting`/`tidyKeepingValue`, `eval/evaluate-with-modifiers.ts:269`), tableau (`tidyExactValue`, `variations/critical-points.ts:250`), grapheur (`simplifyExact`, `grapheur/analysis.ts:1495` — pas celui de `geometry-core`), limite (`writeLimitValue`, `limits/exact-evaluation.ts:429`).
+
+**D'accord partout (17/24)** : `1/3+1/6 → 1/2`, `√8 → 2√2`, `√(21/25) → √21/5`, `√2·√3 → √6`, `cos(π/6) → √3/2`, `cos(5π/6)`, `5π/6`, `π/3+π/6 → π/2`, `e^{ln 2} → 2`, `ln(e^{−1/2}) → −1/2`, `ln 8/ln 2 → 3`, `|−3| → 3`, `2^{10} → 1024` ; `ln 2 + ln 3` gardé (identité : S4).
+
+**Écarts** :
+
+| Valeur            | Atelier                         | `{{eval}}`         | tableau             | grapheur    | Cible proposée |
+| ----------------- | ------------------------------- | ------------------ | ------------------- | ----------- | -------------- |
+| `0,1+0,2`         | 3/10                            | 0,3                | 0,3                 | 0,3         | 0,3 (S1)       |
+| `2,50`            | 5/2                             | 2,5                | 2,5                 | 2,5         | 2,5 (S1)       |
+| `1/3+0,5`         | 5/6                             | **0,833333333333** | 5/6                 | 5/6         | 5/6 (S1)       |
+| `0,5√2`           | √2/2                            | 0,7071…            | 0,5√2               | √2/2        | ⚠️ Q22         |
+| `π/12 + cos(π/6)` | π/12 + √3/2                     | π/12 + √3/2        | **π/12 + cos(π/6)** | π/12 + √3/2 | π/12 + √3/2    |
+| `sin(π/5)`        | sin(π/5)                        | **sin(1/5 π)**     | sin(π/5)            | sin(π/5)    | sin(π/5)       |
+| `1/(1+√2)`        | √2 − 1                          | **−1 + √2**        | √2 − 1              | √2 − 1      | √2 − 1 (Q11)   |
+| `−1/2·e^{−1}`     | −1/(2e)                         | **(−1)/(2e)**      | −1/(2e)             | −1/(2e)     | −1/(2e)        |
+| `(1+√5)/2`        | 1/2 + √5/2                      | 1/2 + √5/2         | (1+√5)/2            | (1+√5)/2    | ⚠️ Q23         |
+| `3×10^{20}`       | 300000000000000000000 (partout) |                    |                     |             | ⚠️ Q24         |
+
+`.résoudre` (Atelier) : `x² = 0,5` → `S = {−1/2√2 ; 1/2√2}` (forme de calcul : `toLatex` sans mise au propre, `cli/commands/solve.command.ts:1329`, `solve-latex.ts:339`, `atelier/solve-steps.ts:309`) ; `x² = 3/4` → `−1/2√3` ; `x² − x − 1 = 0` → `1/2 − 1/2√5` ; `2x = 0,6` → `3/10` ; `0,5x + 1 = 0,2` → `−8/5` (S1). `.limite` : déjà juste (`0,5`, `(1+√5)/2`, `2√2`, `√3/2`) — `writeLikeInput` remet le décimal ; ma colonne « limite » de la première sonde le court-circuitait.
+
+**Comportements proposés** — une fonction `exactValueToShow(source, evaluated)` (nom à l'usage), `evaluate` inchangé :
+
+- _Nominal_ : registre de l'entrée gardé (S1) ; valeurs remarquables calculées partout, angle quelconque gardé en `sin(π/5)` ; produits écrits comme au tableau (`√2/2`, `5π/6`, `−1/(2e)`) ; pas de − en tête d'une somme (Q11) ; parmi les écritures candidates (évaluée, normale, source), la moins chère (règle actuelle du tableau).
+- _Limites_ : résultat trop long (`exactTooLong`) montré tel quel ; tidy ou normalize qui lèvent → l'écriture évaluée ; évaluation exacte en échec → la source mise au propre.
+- _Hors fonction, inchangés_ : grandeurs (`quantities.ts`), mode décimal (`5,0990`, notation scientifique approchée), expression à variable (5d), calculs internes.
+- _Appelants_ : `readable` (ses gardes nombre/notation scientifique/unité deviennent des cas de la fonction, la garde « variable » reste jusqu'à 5d), `{{eval}}` chemin exact, `tidyExactValue` et `tidyCriticalAbscissa`, `simplifyExact` du grapheur, `writeLimitValue`, ligne `S = …` de `.résoudre`.
+
+**Questions** :
+
+- **Q22** — `0,5√2` : garder `0,5√2` (registre de l'entrée, comme `0,5x`) ou écrire `√2/2` ? Reco : `√2/2`. S1 garde le décimal quand le résultat a une écriture décimale finie ; un irrationnel n'en a pas, comme `1/3+0,5 → 5/6`.
+- **Q23** — `(1+√5)/2` : une seule fraction quand les termes ont le même dénominateur (`(1−√5)/2`, solutions `(1 ± √5)/2`), ou `1/2 + √5/2` ? Reco : une seule fraction, l'écriture de la formule du discriminant en classe ; c'est déjà celle du tableau, du grapheur et des limites.
+- **Q24** — `3×10^{20}` tapé en mode exact : garder la notation scientifique (registre, S1) ou écrire l'entier ? Reco : la garder quand l'entrée est déjà écrite `a × 10ⁿ` ; `2^{10}`, `10^3·7` se calculent.
+- **Q25** — `{{eval}}` : `1/3+0,5` rend aujourd'hui `0.833333333333333` dans un énoncé. Le passer à `5/6` (S1) change des énoncés existants. Reco : oui, avec un relevé avant (modèles qui mêlent fraction et décimal dans un `{{eval}}` sans modificateur `decimal`), liste montrée avant merge.
+- **Q26** — `.résoudre` : la ligne `S = …` passe par la fonction (`±√2/2`, `x = 0,3`, `x = −1,6`) ; les étapes du solveur (« On divise les deux membres par 2 : x = 3/10 ») restent en 5f ? Reco : oui, S seule en 5c.
