@@ -3,14 +3,14 @@
 	==================================
 
 	Lightweight wrapper around ExerciseDisplay for previewing raw markdown.
-	Used by ExerciseMarkdownEditor to show live preview without requiring
+	Used by LaTeXImportDialog to show a preview without requiring
 	a full Exercise object.
 
 	This component creates a minimal Exercise object from markdown content
 	for preview purposes only.
 
 	@see ExerciseDisplay.svelte for the main display component
-	@see ExerciseMarkdownEditor.svelte for usage
+	@see LaTeXImportDialog.svelte for usage
 -->
 <script lang="ts">
 	import ExerciseDisplay from './ExerciseDisplay.svelte';

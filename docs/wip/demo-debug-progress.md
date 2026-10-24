@@ -181,3 +181,10 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - Retouches : accueil de la géométrie en français (titre, `<title>`, `BackLink` vers `/aide-ecriture`) ; retours des pages → « Retour à la géométrie » ; liens maison « ← Sliders » des 13 pages de sliders → `BackLink` ; liens des deux accueils par `resolve()` ; lien mort vers une doc d'étude (non servie) → chemin du journal archivé en texte.
 - Admin : question posée à David (ouvrir `/aide-ecriture/geometrie` à l'admin ?), sans réponse → règle du socle gardée, un vrai compte admin reçoit 403.
 - Vérifié sur 5178 (Playwright) : prof 33 pages en 200 sans erreur de page, clics accueil → sliders → Koch ; anciennes adresses → nouvelles ; élève et admin 403 (navigation client comprise pour l'élève) ; visiteur → connexion.
+
+## PR 5 — suppression de `/test-exercises` (2026-10-24)
+
+- Re-grep des orphelins (`src`, `e2e`, `tests`, docs) : `ExerciseMarkdownEditor.svelte` n'était importé que par `/test-exercises` ; `exercises/services/image-markdown-editor.ts` que par lui et son test. Supprimés tous les quatre.
+- Gardés : `ExerciseMarkdownPreview` (aperçu de `LaTeXImportDialog`, en-tête corrigé), `ImageAttributePanel` (`ImageNodeView`, `RichTextEditor`), `exercises/services/image-upload.ts` (`ExerciseRichTextEditor`), `MarkdownEditor` (5 usages).
+- Pas de redirection : page de mise au point sans lien, `Disallow: /test-` déjà dans `robots.txt` ; l'adresse rend 404.
+- Doc : `utilitaires-et-demos.md` (ligne du tableau, `couvre:`, constat « élève compris » retirés), `exercices.md`, `python/README.md`.

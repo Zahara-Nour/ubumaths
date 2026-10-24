@@ -278,7 +278,7 @@ Notebooks marqués `is_template = true` — réutilisables via clonage.
 
 ### V2 — MarkdownEditor upgrade (2026-06)
 
-Édition des cellules markdown via `$lib/components/markdown/MarkdownEditor` (le même composant que `ExerciseMarkdownEditor`).
+Édition des cellules markdown via `$lib/components/markdown/MarkdownEditor`.
 
 - **Toolbar markdown** (bold, italic, headings, lists, tables, math)
 - **Live preview** dans un split-view (raw à gauche, rendu à droite)

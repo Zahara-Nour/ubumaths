@@ -119,7 +119,7 @@ réponse et de relecture d'un signalement (`validation/worksheets.ts`) déclaren
 `translations`, que la page de relecture renvoie avec la variation entière (avant, la traduction y
 était retirée en silence puis effacée à l'enregistrement).
 
-Autour : `ExerciseMarkdownEditor` / `ExerciseRichTextEditor` / `ExerciseMarkdownPreview`,
+Autour : `ExerciseRichTextEditor` / `ExerciseMarkdownPreview` (aperçu de `LaTeXImportDialog`),
 `HintEditor` et `HintTranslationEditor` (indices et leur traduction), `ImageUploader` et les
 réglages d'image (`ImageAttributePanel`, `ImageSizeSelector`, `ImageAlignmentSelector`,
 `ImageCaptionInput`), `ExportDialog` / `ImportDialog`.

@@ -1,6 +1,5 @@
 ---
 couvre:
-  - 'src/routes/(protected)/test-exercises/+page.svelte'
   - 'src/routes/(protected)/dev/+page.svelte'
   - 'src/routes/(protected)/dev/+layout.server.ts'
   - 'src/routes/(protected)/aide-ecriture/+layout.server.ts'
@@ -112,6 +111,9 @@ Aide à l'écriture (PR 4) : `/aide-ecriture/geometrie/…` (ex-`/geometry-demo/
 [geometrie/README.md](geometrie/README.md)) et `/aide-ecriture/cercle-trigo` (ex-`/demo/trig-circle-demo`,
 carte retirée du carrefour `/demo`). Un vrai compte admin n'y entre pas (403).
 
+Supprimée (PR 5) : `/test-exercises`, avec ses orphelins `ExerciseMarkdownEditor.svelte` et
+`exercises/services/image-markdown-editor.ts` (et son test).
+
 Les anciennes adresses sont redirigées en 308 par `redirectHandle` (table `MOVED_PAGES`,
 [auth.md](auth.md#la-chaîne-de-handles)), sous-pages comprises ; une ancienne adresse publique mène
 donc le visiteur à la connexion. `/test-font` ne l'est qu'à l'adresse exacte, ses images restant
@@ -122,21 +124,20 @@ Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` ; 
 protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo`, `/test-`, `/dev`), sauf `/a-propos` et
 `/upsilon`, qui sont de vraies pages.
 
-| Page                          | Servie à                                   | Liens entrants                                         | Contenu                                                                                                                                                              | Statut                            |
-| ----------------------------- | ------------------------------------------ | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| `/a-propos`                   | tous                                       | `InfoPanel`, tour du Royaume, vue « parents », sitemap | « Chiphre, c'est quoi ? » : le manifeste pour les parents (`docs/Chiphres/lore-pataphysique.md`, section I)                                                          | **Vraie page**                    |
-| `/upsilon`                    | tous                                       | `Header`, `Sidebar`, tour du Royaume, sitemap          | Simulateur de la calculatrice Upsilon dans une `iframe`                                                                                                              | **Vraie page**                    |
-| `/demo`                       | tous (prérendue : `+page.ts`, `prerender`) | aucun, hors des `BackLink` de ses sous-pages           | Carrefour : liens vers les seules pages publiques (Mathémo, Trio)                                                                                                    | Démo, non liée                    |
-| `/dev/bancs-essai`            | admin (`/dev`)                             | `/dev`                                                 | Champ MathLive (`MathField`, `DynamicMathField`), cartes retournables, journal (`LoggerDemo`), toasts (`ToastDemo`)                                                  | Mise au point                     |
-| `/dev/carte-question`         | admin (`/dev`)                             | `/dev`                                                 | `FlashCard` sur 8 questions d'exemple : réglages (`MySelect`, `MyCheckbox`), journaux des événements, instance en JSON                                               | Mise au point                     |
-| `/dev/editeur-riche`          | admin (`/dev`)                             | `/dev`                                                 | `RichTextEditor` : modes chat et form, import et export Markdown, onglet « Messagerie » (`Messagerie.svelte`)                                                        | Mise au point                     |
-| `/dev/theme`                  | admin (`/dev`)                             | `/dev`                                                 | « Référence des composants Shadcn » dans les deux thèmes (1 094 lignes) ; ex-`/demo/theme-test`, carte retirée de `/demo`                                            | Démo                              |
-| `/aide-ecriture/cercle-trigo` | prof (`/aide-ecriture`)                    | `/aide-ecriture`                                       | Bloc markdown `trig` (cercle trigonométrique) avec ses réglages                                                                                                      | Aide à l'écriture                 |
-| `/dev/cadres`                 | admin (`/dev`)                             | `/dev`                                                 | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                     | Mise au point, gardée             |
-| `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée             |
-| `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**               |
-| `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable                 |
-| `/test-exercises`             | tout connecté, élève compris               | aucun                                                  | `ExerciseMarkdownEditor` sur un exercice d'exemple                                                                                                                   | Mise au point, probablement morte |
+| Page                          | Servie à                                   | Liens entrants                                         | Contenu                                                                                                                                                              | Statut                |
+| ----------------------------- | ------------------------------------------ | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| `/a-propos`                   | tous                                       | `InfoPanel`, tour du Royaume, vue « parents », sitemap | « Chiphre, c'est quoi ? » : le manifeste pour les parents (`docs/Chiphres/lore-pataphysique.md`, section I)                                                          | **Vraie page**        |
+| `/upsilon`                    | tous                                       | `Header`, `Sidebar`, tour du Royaume, sitemap          | Simulateur de la calculatrice Upsilon dans une `iframe`                                                                                                              | **Vraie page**        |
+| `/demo`                       | tous (prérendue : `+page.ts`, `prerender`) | aucun, hors des `BackLink` de ses sous-pages           | Carrefour : liens vers les seules pages publiques (Mathémo, Trio)                                                                                                    | Démo, non liée        |
+| `/dev/bancs-essai`            | admin (`/dev`)                             | `/dev`                                                 | Champ MathLive (`MathField`, `DynamicMathField`), cartes retournables, journal (`LoggerDemo`), toasts (`ToastDemo`)                                                  | Mise au point         |
+| `/dev/carte-question`         | admin (`/dev`)                             | `/dev`                                                 | `FlashCard` sur 8 questions d'exemple : réglages (`MySelect`, `MyCheckbox`), journaux des événements, instance en JSON                                               | Mise au point         |
+| `/dev/editeur-riche`          | admin (`/dev`)                             | `/dev`                                                 | `RichTextEditor` : modes chat et form, import et export Markdown, onglet « Messagerie » (`Messagerie.svelte`)                                                        | Mise au point         |
+| `/dev/theme`                  | admin (`/dev`)                             | `/dev`                                                 | « Référence des composants Shadcn » dans les deux thèmes (1 094 lignes) ; ex-`/demo/theme-test`, carte retirée de `/demo`                                            | Démo                  |
+| `/aide-ecriture/cercle-trigo` | prof (`/aide-ecriture`)                    | `/aide-ecriture`                                       | Bloc markdown `trig` (cercle trigonométrique) avec ses réglages                                                                                                      | Aide à l'écriture     |
+| `/dev/cadres`                 | admin (`/dev`)                             | `/dev`                                                 | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                     | Mise au point, gardée |
+| `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée |
+| `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**   |
+| `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable     |
 
 Précisions :
 
@@ -311,5 +312,3 @@ Doublons :
 - `slugify` : `utils/string.ts` et une copie privée dans `exercises/slug-generator.ts`.
 - Trois enveloppes CodeMirror chargées à la demande, presque identiques : `CodeViewer`,
   `LaTeXEditor`, `rich-text/MarkdownCodeEditor` (plus `constructions/components/JsonEditor`).
-- `/test-exercises` est sous `(protected)` : tout compte connecté, élève compris, peut l'ouvrir.
-  Aucun lien n'y mène.
