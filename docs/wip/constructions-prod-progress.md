@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR #1659 ouverte._
+_Mis à jour le 2026-10-24, après #1659._
 
-- **État** : 3 constructions réécrites (`scripts/constructions-prod/contenu.ts`), titres et descriptions accentués pour les 9, « Repérage de points » dépublié ; script `pnpm constructions:reecrire` (simulation par défaut). Aperçu inséré dans la base LOCALE, serveur 5188 (worktree `-constructions-prod`). Rien d'écrit en prod.
-- **Prochaine action** : David regarde l'aperçu sur 5188 ; PR, CI, merge ; puis David lance lui-même `pnpm constructions:reecrire --cible prod` (simulation + sauvegarde), commit de `scripts/constructions-prod/avant-2026-10-23.json` (hors de `data/`, que git ignore), puis `--publier`.
-- **En attente de David** : sa relecture du rendu ; le lancement en prod (la lecture de la prod par un script avec la clé de service est refusée à Claude par le garde-fou).
-- **Retours de David** : parallélogramme validé après deux corrections : le compas prend d'abord l'écartement OB (arc de 1° sous B) puis le reporte ; à sa première apparition, le compas part presque fermé et s'ouvre (`compassOpening`, `COMPASS_CLOSED_OPENING` = 0,5, vaut pour toutes les constructions). Partage et symétrie : à relire.
-- **Pièges en cours** : un identifiant ne peut pas contenir `'` (`M'` refusé dès la lecture : le script de prod de la symétrie ne se chargeait pas) → point `Ms`, nom masqué, texte « M′ » ; une droite affectée affiche le nom de sa variable, sans moyen de le masquer (« d1 », « d2 » du partage).
-- **Worktree / branche** : `../ubumaths-wt-constructions-prod` · `fix/constructions-prod` · serveur 5188.
+- **État** : #1659 mergée : 3 constructions réécrites, titres et descriptions accentués et sans nom d'auteur pour les 9, « Repérage de points » dépublié (dans `scripts/constructions-prod/contenu.ts`, rien d'écrit en prod) ; le compas s'ouvre à sa première utilisation ; ligne « Auteur » retirée des pages, nom d'auteur retiré de l'API. Worktree supprimé.
+- **Prochaine action** : David, depuis le dépôt principal à jour : `pnpm constructions:reecrire --cible prod` (simulation + sauvegarde `scripts/constructions-prod/avant-2026-10-23.json`), puis Claude commite la sauvegarde (petite PR, fichier hors `docs/`), puis David relance avec `--publier`.
+- **En attente de David** : la relecture du partage et de la symétrie (aperçu local : `pnpm constructions:reecrire --cible local` puis `/constructions` sur 5175) ; le lancement en prod (lecture de la prod par script refusée à Claude) ; suite possible : ne renvoyer `author_id` qu'à l'auteur.
+- **Pièges en cours** : `M'` refusé comme identifiant (point `Ms`, nom masqué, texte « M′ ») ; une droite affectée affiche son nom (« d1 », « d2 ») ; « avant la prod » = rien n'est livré aux élèves tant que `--publier` n'a pas tourné (pas besoin de `deploy:prod` pour le contenu, mais la ligne auteur et le compas, eux, attendent le `deploy:prod`).
+- **Worktree / branche** : aucun.
 
 ---
 
