@@ -6,7 +6,9 @@
 	chaton (grosse tête, petite panse), matou, grand matou (panse royale, couronne, fraise et bâton,
 	dans une gloire rayonnante). En sieste : yeux fermés, bonnet de nuit, lune et « Zzz » dessinés
 	(pas de texte ni de police). En silhouette (pas encore découvert) : une forme unie, sans aucun
-	détail de race. Le dessin porte son propre fond (la pastille jaune) : il tient en clair et en sombre.
+	détail de race. Une décoration de panse achetée dans la Chatterie (`mathou-decorations.ts`) se
+	pose sur la panse, sieste comprise. Le dessin porte son propre fond (la pastille jaune) : il
+	tient en clair et en sombre.
 -->
 <script lang="ts">
 	import {
@@ -38,6 +40,8 @@
 		zzz,
 		type FaceMode
 	} from './mathou-dessin';
+	import { DECORATION_SHAPES, decorationPlacement } from './mathou-decorations';
+	import type { MathouDecorationId } from '$lib/mathoux/decorations';
 
 	// Types
 	interface Props {
@@ -59,6 +63,8 @@
 		reactionKey?: number;
 		/** Avec `reaction="bond"` : le stade d'avant ; le dessin se transforme de l'un à l'autre */
 		growFrom?: MathouStage;
+		/** Décoration de panse portée (rien en silhouette) */
+		decoration?: MathouDecorationId | null;
 	}
 
 	// Constantes
@@ -79,7 +85,8 @@
 		animated = true,
 		reaction,
 		reactionKey = 0,
-		growFrom
+		growFrom,
+		decoration = null
 	}: Props = $props();
 
 	const uid = $props.id();
@@ -101,6 +108,7 @@
 			: pearGeometry(stage)
 	);
 	const dr = $derived(dressing(race, geo));
+	const decorationAt = $derived(decorationPlacement(geo, race.pattern));
 	const sleeping = $derived(asleep && !silhouette);
 	// Réveil : le dessin éveillé, avec ce qui reste de la sieste (lune, bonnet, « Zzz », yeux
 	// fermés) qui s'en va
@@ -375,6 +383,37 @@
 							<path d={geo.shade} fill={dr.shadeFill} opacity={dr.shadeOpacity} data-part="ombre" />
 						</g>
 						<path d={geo.body} fill="none" stroke={INK} stroke-width={STROKE} />
+
+						{#if decoration}
+							<!-- Décoration de panse, par-dessus le motif (dans le creux du croissant du Lunaire) -->
+							<g
+								data-part="decoration"
+								data-decoration={decoration}
+								transform={`translate(${decorationAt.x} ${decorationAt.y}) scale(${decorationAt.k})`}
+								stroke-linejoin="round"
+							>
+								{#each DECORATION_SHAPES[decoration] as shape, i (i)}
+									{#if shape.kind === 'circle'}
+										<circle
+											cx={shape.cx}
+											cy={shape.cy}
+											r={shape.r}
+											fill={shape.fill}
+											stroke={shape.stroke}
+											stroke-width={shape.width}
+										/>
+									{:else}
+										<path
+											d={shape.d}
+											fill={shape.fill}
+											stroke={shape.stroke}
+											stroke-width={shape.width}
+											stroke-linecap={shape.round ? 'round' : undefined}
+										/>
+									{/if}
+								{/each}
+							</g>
+						{/if}
 
 						<!-- Yeux -->
 						<g class:ouverture={waking}>

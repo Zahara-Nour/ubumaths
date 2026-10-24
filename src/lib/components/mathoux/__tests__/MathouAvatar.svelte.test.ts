@@ -12,6 +12,7 @@ import {
 	normalizeRaceIndex
 } from '../mathou-races';
 import { pearGeometry } from '../mathou-dessin';
+import { MATHOU_DECORATION_IDS } from '$lib/mathoux/decorations';
 
 function svgOf(container: HTMLElement): SVGSVGElement {
 	const svg = container.querySelector('svg');
@@ -218,6 +219,99 @@ describe('MathouAvatar', () => {
 			const svg = svgOf(container);
 			expect(svg.innerHTML, String(raceIndex)).toContain(MATHOU_RACES[index].primary);
 		}
+	});
+});
+
+describe('MathouAvatar — décoration de panse', () => {
+	const raceOf = (pattern: string): number => MATHOU_RACES.findIndex((r) => r.pattern === pattern);
+
+	function decorationOf(container: HTMLElement): SVGGElement | null {
+		return container.querySelector('[data-part="decoration"]');
+	}
+
+	it('aucune décoration par défaut', async () => {
+		const { container } = await render(MathouAvatar, { raceIndex: 0, stage: 'matou', label: 'M' });
+		expect(decorationOf(container)).toBeNull();
+	});
+
+	it('chacune des six se dessine sur la panse, à chaque stade', async () => {
+		for (const id of MATHOU_DECORATION_IDS) {
+			for (const stage of MATHOU_STAGES) {
+				const { container } = await render(MathouAvatar, {
+					raceIndex: 0,
+					stage,
+					label: 'M',
+					decoration: id
+				});
+				const deco = decorationOf(container);
+				expect(deco?.getAttribute('data-decoration')).toBe(id);
+				expect(deco?.children.length).toBeGreaterThan(0);
+				// Au milieu, entre les épaules et le bas de la panse
+				const geo = pearGeometry(stage);
+				const [, x, y] =
+					/translate\(([\d.]+) ([\d.]+)\)/.exec(deco?.getAttribute('transform') ?? '') ?? [];
+				expect(Number(x)).toBe(100);
+				expect(Number(y)).toBeGreaterThan(geo.shoulderY);
+				expect(Number(y)).toBeLessThan(geo.stage.bot);
+			}
+		}
+	});
+
+	it('posée sur le corps, après son contour et avant les yeux', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'matou',
+			label: 'M',
+			decoration: 'cockade'
+		});
+		const mathou = container.querySelector('[data-part="mathou"]');
+		const deco = decorationOf(container);
+		expect(deco?.closest('[data-part="mathou"]')).toBe(mathou);
+		const eyes = container.querySelector('[data-part="yeux"]');
+		expect(eyes && deco && deco.compareDocumentPosition(eyes)).toBe(
+			Node.DOCUMENT_POSITION_FOLLOWING
+		);
+	});
+
+	it('la sieste la garde, la silhouette n’en a pas', async () => {
+		const asleep = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'matou',
+			asleep: true,
+			label: 'M',
+			decoration: 'medal'
+		});
+		expect(decorationOf(asleep.container)?.getAttribute('data-decoration')).toBe('medal');
+
+		const shadow = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'chaton',
+			silhouette: true,
+			label: 'M',
+			decoration: 'medal'
+		});
+		expect(decorationOf(shadow.container)).toBeNull();
+	});
+
+	it('races à motif : par-dessus, au même endroit ; le Lunaire, plus petite (creux du croissant)', async () => {
+		const transformOf = async (pattern: string): Promise<string | null | undefined> => {
+			const { container } = await render(MathouAvatar, {
+				raceIndex: raceOf(pattern),
+				stage: 'matou',
+				label: 'M',
+				decoration: 'heart'
+			});
+			return decorationOf(container)?.getAttribute('transform');
+		};
+		const plain = await transformOf('uni');
+		for (const pattern of ['smoking', 'marbre', 'arlequin']) {
+			expect(await transformOf(pattern)).toBe(plain);
+		}
+		const parse = (t: string | null | undefined): number[] =>
+			(/translate\(([\d.]+) ([\d.]+)\) scale\(([\d.]+)\)/.exec(t ?? '') ?? []).slice(1).map(Number);
+		const [, , plainK] = parse(plain);
+		const [, , lunarK] = parse(await transformOf('plastron'));
+		expect(lunarK).toBeLessThan(plainK);
 	});
 });
 
