@@ -235,9 +235,9 @@ Typst permet de créer facilement des documents mathématiques professionnels av
 	<title>Typst PDF Preview - Chiphre Debug</title>
 </svelte:head>
 
-<div class="space-y-6">
+<div class="mx-auto max-w-6xl space-y-6 px-4 py-8">
 	<div>
-		<h2 class="mb-2 text-2xl font-bold">Typst.ts PDF Export</h2>
+		<h1 class="mb-2 text-2xl font-bold">Typst.ts PDF Export</h1>
 		<p class="text-muted-foreground">
 			Créez des documents PDF à partir de syntaxe Typst. Particulièrement utile pour les documents
 			mathématiques avec formules complexes.

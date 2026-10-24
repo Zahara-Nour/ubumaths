@@ -4,7 +4,9 @@
 	let { data } = $props();
 </script>
 
-<div class="space-y-6">
+<div class="mx-auto max-w-6xl space-y-6 px-4 py-8">
+	<h1 class="text-3xl font-bold text-foreground">Avatar</h1>
+
 	<div class="mb-8 rounded-lg border border-border bg-muted/50 p-6">
 		<h2 class="mb-3 text-lg font-semibold">Avatar Debug</h2>
 		<p class="text-sm text-muted-foreground">

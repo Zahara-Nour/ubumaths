@@ -15,7 +15,9 @@
 	}
 </script>
 
-<div class="space-y-6">
+<div class="mx-auto max-w-6xl space-y-6 px-4 py-8">
+	<h1 class="text-3xl font-bold text-foreground">Session</h1>
+
 	<!-- Session Expiry Info -->
 	<Card.Root>
 		<Card.Header>

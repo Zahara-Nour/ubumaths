@@ -205,9 +205,9 @@ Exemple de matrice :
 	<title>LaTeX PDF Preview - Chiphre Debug</title>
 </svelte:head>
 
-<div class="space-y-6">
+<div class="mx-auto max-w-6xl space-y-6 px-4 py-8">
 	<div>
-		<h2 class="mb-2 text-2xl font-bold">LaTeX PDF Compiler</h2>
+		<h1 class="mb-2 text-2xl font-bold">LaTeX PDF Compiler</h1>
 		<p class="text-muted-foreground">
 			Compilez des documents LaTeX en ligne et prévisualisez le PDF. Utilise le serveur TeXLive.net
 			pour la compilation.

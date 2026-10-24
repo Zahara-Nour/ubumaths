@@ -296,10 +296,10 @@
 	<title>MathField Debug - Chiphre</title>
 </svelte:head>
 
-<div class="space-y-6">
+<div class="mx-auto max-w-6xl space-y-6 px-4 py-8">
 	<!-- Header -->
 	<div>
-		<h2 class="mb-2 text-2xl font-bold">MathField Playground</h2>
+		<h1 class="mb-2 text-2xl font-bold">MathField Playground</h1>
 		<p class="text-muted-foreground">
 			Test MathLive's math-field component with full virtual keyboard and LaTeX output.
 		</p>
