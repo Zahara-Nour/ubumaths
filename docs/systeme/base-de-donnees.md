@@ -467,6 +467,19 @@ garde `auth.role()`) verrouille les lignes de l'élève, verse l'écart (naissan
 matou 10, étoile 5) sur `profiles.gidouilles` avec une ligne `gidouilles_activity` par étape
 (libellé « Chatterie : … »), 20 au plus sur 24 heures glissantes (migration `20261024230000`,
 verrou de la ligne `profiles` de l'élève), et ne fait jamais redescendre le payé. Test : `tests/integration/mathoux-gidouilles-etapes.test.ts`.
+Décorations de panse (migration `20261024235000`) : `student_mathou_decorations` garde les
+décorations achetées (une ligne par élève et par clé du catalogue : `heart`, `star`, `gidouille`,
+`cockade`, `medal`, `coat_of_arms` ; prix payé), lues comme `student_mathoux` (l'élève les
+siennes, prof et admin tout), `authenticated` en SELECT seul, cascade depuis `profiles`.
+`student_mathoux.decoration` dit celle que porte le Mathou (NULL : aucune) ; la base garantit
+qu'elle est achetée par CET élève (clé composée `(student_id, decoration)`, SET NULL à
+l'effacement) et portée par un seul de ses Mathoux (index unique partiel). Écriture par deux
+fonctions SECURITY DEFINER (EXECUTE à `service_role` seul, garde `auth.role()`, verrou de la
+ligne `profiles`) : `buy_mathou_decoration` (solde vérifié, débit, achat, pose sur le Mathou
+choisi, ligne `gidouilles_activity` négative « Chatterie : cocarde achetée », hors plafond des
+étapes ; rend `{ok, balance}` ou `{ok: false, reason, missing?}`) et `set_mathou_decoration`
+(pose en déplaçant, remplace, ou retire avec NULL ; gratuit). Les prix font foi dans
+`mathou_decoration_catalog`. Test : `tests/integration/mathoux-decorations.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
 jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible
