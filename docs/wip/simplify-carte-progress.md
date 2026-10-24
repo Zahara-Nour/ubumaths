@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1696 (5e D4 mergé, pas en prod)._
+_Mis à jour le 2026-10-24, 5f-1 mesuré sur la version finale (§ 73), PR ouverte._
 
 - **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; ~~5e D4~~ (#1696, § 70) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → **5** (… → ~~Q33~~ → ~~5e D4~~ → **5f restes**) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5f, phase 0 (primitive `simplify` → `tidy`, étapes de limite, bug `u′v − (uv′)` § 41, primitive `(x+1)eˣ − eˣ` non réduite, `0,6x + 1,2 → 3x²/10 + 1,2x`, `0.2x³ − 0.6x` factorisée, § 70).
+- **Prochaine action** : 5f-1 en PR (banc + comparaison relancés sur la version finale : 0 différence, § 73) → CI, merge ; prévenir la session `atelier-python` (retrait-calc) au merge pour qu'elle rebase ; republier la page de synthèse. Puis 5f-2 primitives (R1, R4, R5, R6 ; Q42 b, Q43, Q44 a + bis) → 5f-3 → 5f-4 → 5f-5 (§ 71-72).
 - **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) .
-- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : TABLEAU zsh et copie vérifiée (§ 64) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, détaché sur `origin/main` (aucune branche en cours).
+- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : script `zz-tirages.mts` copié à la racine, `pnpm exec tsx`, base = dépôt principal sur `origin/main`, TABLEAU zsh et copie vérifiée (§ 64, § 73) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f` (5f-1 codé).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -953,3 +953,46 @@ Sondé (deux tests jetables, retirés ; 14 dérivées et 12 primitives de lycée
 - **Garde E1 étendue** (David, 2026-10-24 : « je valide », reco) : vérifiée aussi SANS `finalForm` — la forme par défaut doit passer le juge (revient sur le § 20). Pas de réponse finale (repli mode A, intégrale sans valeur V28) : rien à juger. Test inversé (vérifié, non importable). Corpus relu rejoué : vert.
 - **Revue `code-reviewer` (opus) de #1696, corrigé** (46 sorties `areEquivalent`, aucun signe perdu) : (1) le − d'un terme n'était pas distribué sur sa forme développée (`−(xe^{−x} + e^{−x})`) ; (2) S1 — `0.5x³ − 1.5x` donnait `3x²/2 − 1,5` (le décor `0,5x² − 1,5x` gardait un coefficient 1 : décor ≠ cas) ; coefficient en fraction réécrit en décimal, sinon forme par défaut ; (3) E1 jugeait toutes les cases : seules celles dont la correction donne la VALEUR (`isBlankValueCorrect`) ; (4) E1 lisait `instance.requiredForm`, que le juge de l'élève ignore : retiré. 6 rouges avant correctif.
 - **Laissé pour 5f** : primitive par défaut de `(x+1)eˣ` = `(x + 1)eˣ − eˣ`, pas réduite ; `0.2x³ − 0.6x` factorisée ne donne pas `0,6(x − 1)(x + 1)` (refus « fraction là où un décimal était tapé » de D2 ; la garde E1 le signale si un produit est exigé).
+
+## 71. Lot 5f (restes), phase 0 : sonde (2026-10-24, à valider par David ; branche `feat/simplify-carte-5f`)
+
+**Sonde** (moteur de l'Atelier et `generateCorrection`, tests jetables retirés ; code sur `origin/main`). Les restes notés aux § 41, 59, 63, 64, 70 et Q26, regroupés :
+
+- **R1 — primitive `simplify` → `tidy`** (`atelier/calcul.ts:2715`) : 10 intégrales à bornes avec paramètre, sortie identique avec `tidy` à la place de `simplify`. Rien de visible : ménage, test garde d'abord.
+- **R2 — parenthèses sous-entendues (§ 41)** : `tidy` sur `x(2x+1) − (x²+x+1)` construit sans nœud de parenthèse : défaut `−x² − x − 1 + x(2x + 1)`, `kept` `x(2x + 1) − x² − x − 1` ; écrit avec ses parenthèses, il reste `x(2x + 1) − (x² + x + 1)`. `3 − (x+2)` : `1 − x` sans nœud, gardé écrit.
+- **R3 — § 64** : `∛x − ∛x` reste écrit (défini partout) ; défaut `3 − ln x + x + ln x → ln(x) + x + 3 − ln(x)` (les deux termes séparés par le tri) ; le récit d'étapes de `ln(x) + 3 − ln(x)` regroupe puis trie (aller-retour).
+- **R4 — primitive par parties non réduite** (correction automatique) : `∫(x+1)eˣ` finit sur `(x + 1)eˣ − eˣ`, sans « On simplifie » ; `∫(2x+1)eˣ` a l'étape (`(2x − 1)eˣ`) ; l'Atelier donne `xeˣ`.
+- **R5 — décimaux d'une primitive** : correction `∫(0,6x + 1,2) = 3x²/10 + 1,2x` (mélange), `∫0,3x² = x³/10`, `∫(0,6x² − 0,6) = x³/5 − 0,6x`, `∫(0,5x² − 1,5x) = x³/6 − 3x²/4` ; Atelier `.intégrer 0,6x+1,2 = 3x²/10 + 6x/5` (même le `1,2` part).
+- **R6 — forme factorisée avec décimaux (5e)** : `0,2x³ − 0,6x → x(x²/5 − 0,6)` (mélange, racines pas trouvées), `1,5x² − 3x → x(3x/2 − 3)`, `0,3x² − 0,3` : aucune étape « On factorise ».
+- **R7 — étapes de limite** : les décimaux deviennent fractions (`(0,5x²+1)/x²` : `x²(1/2 + 1/x²)`) et la dernière étape dit « La limite vaut 1/2 » quand la réponse dit `0,5` ; « Simplification du facteur commun » saute le développement : `((x+1)² − 1)/x = x + 2`, `(x² − 1)/(x − 1) = x + 1` en une ligne.
+- **R8 — étapes du solveur (Q26)** : `2x = 0,6` → étape `x = 3/10`, réponse `x = 0,3` ; `0,5x + 1 = 2` → `(1/2)x = 1`, « On divise par 1/2 » ; `2x² = 1` → étape `S = {−(1/2)√2 ; (1/2)√2}`, réponse `±√2/2`.
+- **R9 — exposants fractionnaires (§ 59)** : `2^{1/2} → √2`, mais `2^{0,5} → 2^{1/2}`, `4^{0,5} → 4^{1/2}`, `9^{0,5} → 9^{1/2}`, `8^{1/2}`, `2^{3/2}`, `2^{1,5} → 2^{3/2}` restent ; `2^{0,5}x → x × 2^{1/2}` ; `27^{2/3} → 9`.
+- **R10 — Q31, `.simplifier`** : `eˣ·e^{2x} → e^{3x}` et `eˣ·e^{−x} → 1` avec l'étape aᵐaⁿ ✓ ; `e^{2x}/eˣ` reste ; `eˣ·e` s'affiche `e·eˣ` (le texte dit `e^{x+1}`).
+
+**Découpage proposé (une PR chacun)** : 5f-1 `tidy` (R2, R3 ; tous les appelants, mesuré : suite, banc, oracle) → 5f-2 primitives (R1, R4, R5, R6) → 5f-3 limites (R7) → 5f-4 solveur (R8) → 5f-5 puissances et `.simplifier` (R9, R10).
+
+**Questions** :
+
+- **Q40 (R2)** — `tidy` traite `a − (b + c)` sans nœud comme écrit : `x(2x+1) − (x²+x+1)` reste ; `tidyTerms` garde « ouvrir si ça regroupe » (`x − 1 − (x + 1) → −2`) et perd `withImpliedParentheses`. Reco : oui.
+- **Q41 (R3)** — `∛x − ∛x → 0` (défini partout) ; en ordre rangé, des termes gardés pour le domaine restent côte à côte : `ln(x) − ln(x) + x + 3`, et leur récit d'étapes n'a plus d'aller-retour. Reco : oui.
+- **Q42 (R5)** — décimaux d'une primitive : (a) coefficient par coefficient (`x³/6 − 0,75x²`, mélange) ; (b) tous décimaux si chacun tombe juste (`0,3x² + 1,2x`, `0,1x³`, `0,2x³ − 0,6x`, `0,05x⁴ − 0,3x²`), sinon tous en fractions (`x³/6 − 3x²/4`) ; (c) fractions toujours. Reco : b, Atelier et corrections.
+- **Q43 (R4)** — `(x + 1)eˣ − eˣ → xeˣ`, dans une étape « On simplifie » comme pour `(2x + 1)eˣ`. Reco : oui.
+- **Q44 (R6)** — factorisée avec décimaux : (a) le coefficient décimal de tête sort : `1,5x(x − 2)`, `0,3(x − 1)(x + 1)`, `0,2x(x − √3)(x + √3)` ; (b) pas de factorisation, la garde E1 le signale ; (c) fractions (`(3/2)x(x − 2)`). Reco : a. **Q44-bis** : la même règle dans le tableau de variations (D2, qui refuse aujourd'hui les décimaux) ? Reco : oui.
+- **Q45 (R7)** — étapes de limite : (1) décimaux gardés (`x²(0,5 + 1/x²)`, « La limite vaut 0,5 ») ; (2) le développement montré : `((x+1)² − 1)/x = (x² + 2x)/x = x(x + 2)/x = x + 2`, `(x² − 1)/(x − 1) = (x − 1)(x + 1)/(x − 1) = x + 1`. Reco : les deux, en 5f-3.
+- **Q46 (R8)** — étapes du solveur : `x = 0,3`, `0,5x = 1`, « On divise par 0,5 », `S = {−√2/2 ; √2/2}` (même écriture que la réponse). Reco : oui.
+- **Q47 (R9)** — exposant de dénominateur 2 → racine carrée : `2^{0,5} → √2`, `4^{0,5} → 2`, `8^{1/2} → 2√2`, `2^{3/2} → 2√2`, `2^{1,5} → 2√2`, `2^{0,5}x → √2 x` ; les autres dénominateurs inchangés sauf valeur exacte entière (`27^{2/3} → 9`, `2^{1/3}` reste). Reco : oui.
+- **Q48 (R10)** — `.simplifier e^{2x}/eˣ → eˣ` (étape aᵐ/aⁿ = aᵐ⁻ⁿ) ; `eˣ·e → e^{x+1}` affiché. Reco : oui.
+
+## 72. Q40-Q48 tranchées (David, 2026-10-24 : « je suis tes recos »)
+
+Q40 oui · Q41 oui · Q42 b · Q43 oui · Q44 a, Q44-bis oui · Q45 les deux · Q46 oui · Q47 oui · Q48 oui. Découpage 5f-1 → 5f-5 validé avec. 5f-1 (`tidy`, R2-R3) sur cette branche.
+
+## 73. Lot 5f-1 (`tidy`, R2-R3) codé (branche `feat/simplify-carte-5f`, 2026-10-24)
+
+- **R2 (Q40)** : `withImpliedParentheses` passe de `tidy/terms.ts` dans `tidy()` (`tidy/index.ts`), appliqué à l'entrée ET au 3ᵉ argument (l'écriture de départ du récit) ; sans parenthèse sous-entendue, l'arbre n'est pas recopié (`findNodes` d'abord). `keptWithGroups` ouvre explicitement (`openImpliedParentheses` = `unflattenSum(flattenSumShallow(node))`) : `x − 1 − (x + 1) → −2` gardé. Inchangé (noté, pas tranché) : `2x − (x + 1)` reste écrit par `tidyTerms` (ouvrir ne réduit pas le nombre de termes).
+- **R3 (Q41)** : `∛x` (indice impair) défini partout (`hasOddIndex`, `tidy/sign.ts`) ; en ordre rangé, les termes gardés pour le domaine restent côte à côte (`sortKeepingCancelled`, `collect.ts` : après le regroupement, deux termes de même clé ne peuvent être que ceux-là) — le récit de `ln(x)+3−ln(x)` n'a plus d'aller-retour.
+- **Appelant corrigé** : `withOppositeInNumerator` (`pedagogical-differentiation/final-form.ts`) comptait sur `tidy` pour distribuer le − de `−(u′v − uv′)` ; il le distribue lui-même (seul rouge de la suite : `derivee-factorisee`, `−x²/(x+2)`).
+- Tests : `tidy-parentheses-sous-entendues.test.ts` (13 rouges sur 22 avant), `tidy-annulation-domaine.test.ts` (7 rouges avant ; `ln(x)+3−ln(x)` sort de « rien ne change »).
+- Mesures : suite serveur `src/lib` 57 843 verts, 1 rouge (corrigé ci-dessus, dossiers dérivées et variations verts : 1 422) ; oracle des dérivées inchangé (égalité exacte à `KNOWN_FORM_DIFF`) ; **banc 1 102 modèles de prod × 8 tirages (25 672) : 0 différence** (témoin non construit) ; `check:incremental` 0 ; cliquet tenu ; doc `tidy-spec.md` (§A, §G.1, historique).
+- **Revue `code-reviewer` (opus), corrigé, tests rouges d'abord** : (1, bloquant) la forme finale de f′ (`finalDerivative` : carte f′, bouton Dériver, tableau de variations) comptait sur `tidy` pour ouvrir `a − (u′v + uv′)` — 18 écarts sur 20 fonctions (`1 − xeˣ → −(eˣ + xeˣ)` au lieu de `−(x + 1)eˣ`) ; la suite, l'oracle et le banc ne passent pas par là. `withImpliedSumsOpened` à l'entrée de `finalForm` (`final-form-parentheses.test.ts`, 8 rouges avant). (2) `tidy` non idempotent sur `(x − (x+1))/2` (déjà vrai écrit, désormais atteint par le moteur) : `flipNumerator` ne retourne plus un numérateur dont un terme contient une somme (3 rouges avant). (3) `hasOddIndex` exige un indice positif (`sqrt[-3](x)`, 2 rouges avant). Script de comparaison de la revue (ancien/nouveau moteur, 114 entrées, simplify, étapes, dérivées, intégration, variations, réciproque) : **0 différence**.
+- **Mesures sur la version finale (après la revue)** : banc 1 102 modèles × 8 tirages (25 672) identique à `origin/main` (`cmp` octet à octet) ; script de comparaison (114 entrées, ancien moteur = `src/lib/mathAST` de la base `f628f1064`, vérifié par `diff -r`) : 0 différence ; `check:incremental` 0 ; cliquet : 1 erreur introduite par la revue (`divide` sans `displayStyle` dans `tidy-parentheses-sous-entendues.test.ts`), corrigée.

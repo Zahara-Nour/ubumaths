@@ -43,7 +43,11 @@ forme canonique du Compute Engine, qui est une expression).
   expression sans unité.
 - **Idempotent** : `tidy(tidy(x))` est structurellement égal à `tidy(x)`.
 - **Jamais de développement, jamais de factorisation** : `(x+1)²` reste
-  `(x+1)²`, `x(x+1)` reste `x(x+1)`, `x²+x` reste `x²+x`.
+  `(x+1)²`, `x(x+1)` reste `x(x+1)`, `x²+x` reste `x²+x`. Une parenthèse que
+  la priorité impose compte comme écrite, même sans nœud de parenthèse (arbre
+  construit par le moteur : règle du quotient, substitution) : `a − (b + c)`
+  et `−(b + c)` gardent leur signe devant la parenthèse, `x(2x+1) − (x²+x+1)`
+  reste (Q40, lot 5f-1 ; `withImpliedParentheses`, `tidy/index.ts`).
 - **Jamais de changement de domaine** (S3, David, 2026-10-23) : une base ne
   se simplifie entre numérateur et dénominateur que si elle **reste au
   dénominateur** (`x/x² → 1/x`, `(x+1)²/(x+1)³ → 1/(x+1)`) ou **ne peut pas
@@ -54,8 +58,11 @@ forme canonique du Compute Engine, qui est une expression).
   polynômes). De même, des termes semblables de somme nulle ne disparaissent
   que s'ils sont définis partout (David, 2026-10-24 ; `definedEverywhere`,
   `tidy/sign.ts`) : `x − x`, `eˣ − eˣ`, `ln(x²+1) − ln(x²+1)` → `0`, mais
-  `ln(x) − ln(x)`, `1/x − 1/x`, `√x − √x`, `tan(x) − tan(x)` restent écrits.
-  Un terme seul de coefficient nul n'est pas une annulation (`0/x`, `0·ln(x)`
+  `ln(x) − ln(x)`, `1/x − 1/x`, `√x − √x`, `tan(x) − tan(x)` restent écrits ;
+  une racine d'indice impair positif est définie partout (`∛x − ∛x → 0`, Q41 ;
+  `x^{1/3}`, puissance réelle, reste restreint à x ≥ 0). En ordre
+  rangé, les termes ainsi gardés restent côte à côte, à la place du premier :
+  `3 − ln x + x + ln x → ln(x) − ln(x) + x + 3`. Un terme seul de coefficient nul n'est pas une annulation (`0/x`, `0·ln(x)`
   → `0`). Les options `typeCtx` et `domain` (§G.1) lèvent la restriction.
 - **Ne lève jamais d'exception** : ce qu'il ne sait pas traiter ressort tel
   quel, enfants mis au propre. Seul un débordement de pile est rattrapé
@@ -495,10 +502,9 @@ km/h`), 2026-09-27.
   complète est plus courte, ou si elle seule retire un décimal sous la barre
   (Q3 : `2x/1,5 → 4x/3`, revue de #1655) ; un négatif en tête que l'ordre rangé évite, à
   nombre de termes égal, laisse l'ordre rangé l'emporter (`−6x + 2 → 2 − 6x`).
-  ⚠️ Un arbre construit par le moteur porte `u′v − (uv′)` sans nœud de
-  parenthèse, et `tidy` y distribue le − (écart au contrat, §A) :
-  `tidyTerms` écrit ces parenthèses avant (`withImpliedParentheses`) et ne les
-  ouvre que si cela regroupe des termes (`x − 1 − (x + 1) → −2`).
+  Un arbre construit par le moteur porte `u′v − (uv′)` sans nœud de
+  parenthèse : `tidy` la garde (§A), et `tidyTerms` ne l'ouvre que si cela
+  regroupe des termes (`x − 1 − (x + 1) → −2`).
 
 ### G.2 Qui appelle `tidy`
 
@@ -537,3 +543,6 @@ des termes notamment).
 - 2026-10-24 : S3 étendue aux sommes, des termes à domaine restreint ne
   s'annulent pas (`ln(x) − ln(x)` reste) ; la primitive de l'intégration
   pédagogique est mise au propre sur son propre domaine (`ln|x| − ln|x| → 0`).
+  Lot 5f-1 : une parenthèse sous-entendue compte comme écrite dans `tidy`
+  lui-même (Q40, avant : dans `tidyTerms` seul) ; `∛x − ∛x → 0` ; en ordre
+  rangé, les termes gardés pour le domaine restent côte à côte (Q41).

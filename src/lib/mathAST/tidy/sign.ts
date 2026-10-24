@@ -256,13 +256,21 @@ export function definedEverywhere(
 			if (!RESTRICTED_FUNCTIONS.has(node.name)) return true;
 			if (node.args.length !== 1) return false;
 			const [arg] = node.args;
-			if (node.name === 'sqrt') return isNonNegative(arg, typeCtx);
+			// Une racine d'indice impair est définie sur ℝ : `∛x − ∛x → 0` (Q41)
+			if (node.name === 'sqrt') return hasOddIndex(node.base) || isNonNegative(arg, typeCtx);
 			if (LOGARITHMS.has(node.name)) return knownPositive(arg, typeCtx, acquired);
 			return false;
 		}
 		default:
 			return true;
 	}
+}
+
+/** `∛x`, `⁵√x` : l'indice d'une racine est un entier impair positif (`√x` n'en a pas). */
+function hasOddIndex(index: MathNode | undefined): boolean {
+	if (index === undefined) return false;
+	const value = extractRational(index);
+	return value !== null && value.d === 1n && value.n > 0n && value.n % 2n !== 0n;
 }
 
 /**
