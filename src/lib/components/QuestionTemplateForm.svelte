@@ -351,6 +351,9 @@
 		initialTemplate?.shared?.correctChoiceIndex || ''
 	);
 	let sharedCorrectionString = $state(correctionToString(initialTemplate?.shared?.correction));
+	// La correction partagée telle que chargée : ce que le formulaire n'édite pas
+	// (`feedback`, `generatedSteps`) est rendu tel quel à l'enregistrement
+	let sharedCorrectionLoaded: QuestionCorrection | undefined = initialTemplate?.shared?.correction;
 	let sharedChoices = $state(initialTemplate?.shared?.choices ?? []);
 	// Choix partagés réels : des choix aux libellés tous vides ne comptent pas,
 	// sinon ils écraseraient à l'enregistrement les choix propres aux variations
@@ -482,31 +485,26 @@
 	let variablesOpen = $state(true); // Open by default for ease of use
 	let answerSectionOpen = $state(true); // Open by default as it's required
 
-	// Helper to convert QuestionCorrection object to simple string (for editing)
+	// Le texte des étapes de la correction, seul champ que le formulaire édite
 	function correctionToString(correction: QuestionCorrection | undefined): string {
-		if (!correction) return '';
-		// Prefer steps if available, otherwise use feedback
-		if (correction.steps && correction.steps.length > 0) {
-			return correction.steps.join('\n\n');
-		}
-		if (correction.feedback?.correct) {
-			return correction.feedback.correct;
-		}
-		return '';
+		return correction?.steps?.join('\n\n') ?? '';
 	}
 
-	// Helper to convert string to QuestionCorrection object
-	// Splits on double newlines to preserve multi-step structure (inverse of correctionToString)
-	function stringToCorrection(str: string): QuestionCorrection | undefined {
-		const trimmed = str.trim();
-		if (!trimmed) return undefined;
-		const steps = trimmed
+	// Le texte édité redevient les étapes (une par paragraphe, inverse de
+	// correctionToString) ; le reste de la correction chargée (`feedback`,
+	// `generatedSteps`) est gardé tel quel — l'enregistrement l'effaçait (Q33)
+	function stringToCorrection(
+		str: string,
+		loaded: QuestionCorrection | undefined
+	): QuestionCorrection | undefined {
+		const { steps: _loadedSteps, ...kept } = loaded ?? {};
+		const steps = str
+			.trim()
 			.split(/\n\n+/)
 			.map((s) => templateMarkdown(s.trim()))
 			.filter((s) => s);
-		return {
-			steps
-		};
+		const correction: QuestionCorrection = { ...kept, ...(steps.length > 0 ? { steps } : {}) };
+		return Object.keys(correction).length > 0 ? correction : undefined;
 	}
 
 	// Variations state (NEW)
@@ -651,8 +649,10 @@
 			statement: templateMarkdown(sourceVariation.statement ?? ''),
 			variables: $state.snapshot(sourceVariation.variables ?? []) as QuestionVariable[],
 			correctChoiceIndex: sourceVariation.correctChoiceIndex,
-			// correction is set from variationExtras when building template
-			correction: undefined,
+			// Les étapes viennent de variationExtras ; le reste de la correction est copié
+			correction: sourceVariation.correction
+				? ($state.snapshot(sourceVariation.correction) as QuestionCorrection)
+				: undefined,
 			blanks: sourceVariation.blanks
 				? ($state.snapshot(sourceVariation.blanks) as TemplateBlank[])
 				: [],
@@ -731,7 +731,12 @@
 					? { blanks: variation.blanks }
 					: {}),
 				...(cleanedBlankDefaults ? { blankDefaults: cleanedBlankDefaults } : {}),
-				correction: stringToCorrection(extra.correctionString)
+				correction: stringToCorrection(
+					extra.correctionString,
+					variation.correction
+						? ($state.snapshot(variation.correction) as QuestionCorrection)
+						: undefined
+				)
 			};
 
 			// Per-variation required form
@@ -785,7 +790,7 @@
 			const sharedDerived = deriveCorrectChoiceIndex(sharedChoices);
 			if (sharedDerived) shared.correctChoiceIndex = sharedDerived;
 		}
-		const sharedCorrectionObj = stringToCorrection(sharedCorrectionString);
+		const sharedCorrectionObj = stringToCorrection(sharedCorrectionString, sharedCorrectionLoaded);
 		if (sharedCorrectionObj) shared.correction = sharedCorrectionObj;
 		if (questionType === 'multiple_choice' && hasSharedChoices) shared.choices = sharedChoices;
 		if (sharedRequiredFormSelect) {
@@ -978,6 +983,7 @@
 		sharedStatement = templateMarkdown(t.shared?.statement || '');
 		sharedCorrectChoiceIndex = t.shared?.correctChoiceIndex || '';
 		sharedCorrectionString = correctionToString(t.shared?.correction);
+		sharedCorrectionLoaded = t.shared?.correction;
 		sharedChoices = t.shared?.choices ?? [];
 		sharedRequiredFormSelect = t.shared?.requiredForm
 			? typeof t.shared.requiredForm === 'string'
