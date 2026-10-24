@@ -5,10 +5,10 @@
 _Mis à jour le 2026-10-24, après #1698._
 
 - **État** : PR 1 à 5, 6a (#1693, `/demo/structure`), 6b (#1695, `/demo/cercle-trigo`) et 6c (#1698, `/demo/cartes`) mergées, pas en prod. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
-- **Prochaine action** : phase 6 suite, une PR par page : lexique, corrigés, géométrie, questions, éditeur, diaporama. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main` ; phase 0 de la page à faire valider.
+- **Prochaine action** : PR 6d `/demo/lexique` en cours (phase 0 validée) ; puis corrigés, géométrie, questions, éditeur, diaporama, une PR par page.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` (saute la garde en navigation client) ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; un test déplacé d'un niveau → recompter ses `../` ; `await render(…)` exigé par `lint:fast` ; limiteur de connexion local (5 connexions / 15 min par IP) : garder l'état de session Playwright ; pnpm 12 refuse `pnpm -s` (l'autofixer ne tourne pas, en silence) ; `VipCardHolo` exige les feuilles `/css/holo-cards/*.css` dans la page ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : aucun (PR 6c nettoyée). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/demo-lexique`. À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
@@ -229,3 +229,17 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - Vérifié sans compte sur 5179 (Playwright) : page 200, 4 cartes, reflet au survol, agrandissement
   au clic, aucune erreur de console, pas de défilement horizontal à 390 px.
 - Pas de revue (page qui assemble des composants existants, comme la 6a et la 6b).
+
+## PR 6d — vitrine `/demo/lexique` (phase 0 validée par David le 2026-10-24)
+
+- Sélecteur « Niveau de l'élève » (CM1, 6e, 5e, 3e, 2de, 1re spé, 1re générale), 6e à
+  l'ouverture ; le niveau vaut pour toute la page (`provideReaderGrade`).
+- Bloc 1 « Dans une question » : la question de l'aire du carré de la page de test, à remplir.
+- Bloc 2 « La définition suit l'élève » : une phrase par mot dont la fiche change avec le
+  niveau (carré, aire, périmètre, fonction, fonction exponentielle), chacune avec une ligne
+  d'aide ; on dit qu'un mot au-dessus du niveau n'est pas souligné.
+- Retirés : le bloc indice (test de focus sur tablette) et les phrases d'essai (seuil, urne…).
+- Dictionnaire indisponible : texte sans soulignés, rien d'ajouté.
+- `BackLink` vers `/demo`, `noindex`, non reliée avant la phase 7. Pas de revue.
+- Vérifié en base (prod, lecture seule) : niveaux des définitions de ces 5 mots identiques au
+  jeu de référence des tests.
