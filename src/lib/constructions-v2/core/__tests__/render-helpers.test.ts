@@ -7,8 +7,28 @@ import {
 	partialSegmentSVG,
 	partialArcSVGPath,
 	partialCircleSVGPath,
-	drawingTipPosition
+	drawingTipPosition,
+	compassOpening
 } from '../render-helpers';
+import { COMPASS_CLOSED_OPENING } from '../../constants';
+
+describe('compassOpening', () => {
+	it('première utilisation : le compas part presque fermé et s’ouvre pendant le déplacement', () => {
+		expect(compassOpening(0, 4, 0)).toBe(COMPASS_CLOSED_OPENING);
+		expect(compassOpening(0, 4, 0.5)).toBeCloseTo((COMPASS_CLOSED_OPENING + 4) / 2, 9);
+		expect(compassOpening(0, 4, 1)).toBe(4);
+	});
+
+	it('écartement déjà pris : il va du précédent au nouveau', () => {
+		expect(compassOpening(2, 4, 0)).toBe(2);
+		expect(compassOpening(2, 4, 0.5)).toBe(3);
+		expect(compassOpening(4, 4, 0.3)).toBe(4);
+	});
+
+	it('écartement voulu plus petit que le compas fermé : pas d’ouverture', () => {
+		expect(compassOpening(0, 0.2, 0)).toBe(0.2);
+	});
+});
 
 // Create a simple viewport matching the default GeometryCanvas (center=0,0 ppu=40)
 const W = 800;

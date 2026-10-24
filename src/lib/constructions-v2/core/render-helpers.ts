@@ -29,6 +29,7 @@ import {
 } from '$lib/geometry-core/rendering/svg-primitives';
 import { partialSegment, type Point2D } from './animator';
 import type { DrawAnimationState, InstrumentPose, InstrumentState, InstrumentType } from '../types';
+import { COMPASS_CLOSED_OPENING } from '../constants';
 
 /**
  * Resolve a `ScalarParam` (GeoValue or `{scalarRef: id}`) to a number.
@@ -435,4 +436,15 @@ export function fadeInProgress(
 	const isFade = phases.movePhaseEnd === 0 && phases.drawPhaseStart === 0;
 	if (!isFade || phases.drawPhaseEnd <= 0 || phases.drawPhaseEnd >= 1) return stepProgress;
 	return Math.min(1, stepProgress / phases.drawPhaseEnd);
+}
+
+/**
+ * Écartement du compas pendant son déplacement (unités math), de l'écartement
+ * précédent à l'écartement voulu. Première utilisation (`previous` = 0) : il part
+ * presque fermé (`COMPASS_CLOSED_OPENING`), pour qu'on le voie s'ouvrir.
+ */
+export function compassOpening(previous: number, current: number, moveProgress: number): number {
+	if (moveProgress >= 1) return current;
+	const from = previous > 0 ? previous : Math.min(COMPASS_CLOSED_OPENING, current);
+	return from + (current - from) * moveProgress;
 }

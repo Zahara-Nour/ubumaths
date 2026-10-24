@@ -22,10 +22,6 @@ export interface ConstructionDetail {
 	created_at: string;
 	updated_at: string;
 	author_id: string | null;
-	profiles: {
-		firstname: string | null;
-		lastname: string | null;
-	} | null;
 }
 
 export const load: PageServerLoad = async ({ params, parent, locals: { supabase } }) => {
@@ -46,11 +42,7 @@ export const load: PageServerLoad = async ({ params, parent, locals: { supabase 
 			is_public,
 			created_at,
 			updated_at,
-			author_id,
-			profiles!constructions_author_id_fkey (
-				firstname,
-				lastname
-			)
+			author_id
 		`
 		)
 		.eq('id', id)

@@ -22,7 +22,6 @@
 		Globe,
 		Lock,
 		Compass,
-		User,
 		FileUp
 	} from '@lucide/svelte';
 
@@ -62,22 +61,6 @@
 			console.error('Delete error:', err);
 			toaster.error('Erreur de connexion');
 		}
-	}
-
-	/**
-	 * Format author name
-	 */
-	function formatAuthor(construction: (typeof data.constructions)[0]): string {
-		if (!construction.profiles) return 'Auteur inconnu';
-		const profile = Array.isArray(construction.profiles)
-			? construction.profiles[0]
-			: construction.profiles;
-		if (!profile) return 'Auteur inconnu';
-		const { firstname, lastname } = profile;
-		if (firstname && lastname) return `${firstname} ${lastname}`;
-		if (firstname) return firstname;
-		if (lastname) return lastname;
-		return 'Auteur inconnu';
 	}
 
 	/**
@@ -274,10 +257,6 @@
 							<div class="flex items-start justify-between gap-2">
 								<div class="flex-1 space-y-1">
 									<Card.Title class="line-clamp-1 text-lg">{construction.title}</Card.Title>
-									<div class="flex items-center gap-2 text-xs text-muted-foreground">
-										<User class="h-3 w-3" />
-										<span>{formatAuthor(construction)}</span>
-									</div>
 								</div>
 								<Badge variant="secondary" class="shrink-0 gap-1">
 									<Globe class="h-3 w-3" />

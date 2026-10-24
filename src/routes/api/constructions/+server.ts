@@ -98,11 +98,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 			is_public,
 			created_at,
 			updated_at,
-			author_id,
-			profiles!constructions_author_id_fkey (
-				firstname,
-				lastname
-			)
+			author_id
 		`,
 		{ count: 'exact' }
 	);
