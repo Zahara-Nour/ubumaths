@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 4 en cours._
+_Mis à jour le 2026-10-24, après #1687._
 
-- **État** : PR 1 (#1675), PR 2 (#1677), PR 3 (#1680) mergées, pas en prod ; PR 4 (aide à l'écriture : géométrie et cercle trigo sous `/aide-ecriture`) codée et vérifiée, à ouvrir. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
-- **Prochaine action** : PR 4 → CI → merge ; puis PR 5, suppression de la ligne 17 (`/test-exercises`, re-greper les orphelins avant).
+- **État** : PR 1 (#1675), PR 2 (#1677), PR 3 (#1680) et PR 4 (#1687, géométrie et cercle trigo sous `/aide-ecriture`) mergées, pas en prod. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
+- **Prochaine action** : PR 5, suppression de la ligne 17 (`/test-exercises`, re-greper les orphelins avant). Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main`.
 - **En attente de David** : ouvrir `/aide-ecriture/geometrie` aussi à l'admin ? (sans réponse : admin en 403, règle du socle).
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` (saute la garde en navigation client) ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` (nommer par `triggerAriaLabel`) ; un test déplacé d'un niveau → recompter ses `../` ; limiteur de connexion local (5 connexions / 15 min par IP) : garder l'état de session Playwright ; pnpm 12 refuse `pnpm -s` (l'autofixer ne tourne pas, en silence) ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `refactor/demo-debug-aide-ecriture`.
+- **Worktree / branche** : aucun (PR 4 nettoyée).
 
 ## Décisions de David (2026-10-24)
 
