@@ -1000,3 +1000,12 @@ Q40 oui · Q41 oui · Q42 b · Q43 oui · Q44 a, Q44-bis oui · Q45 les deux · 
 ## 74. 5f-1 mergé (#1703, 2026-10-24)
 
 CI verte, mergée. Session `atelier-python` prévenue pour son rebase. Page de synthèse republiée (Q40-Q48, 5f-1).
+
+## 75. Lot 5f-2 (primitives, R1 R4 R5 R6) codé (branche `feat/simplify-carte-5f-2`, 2026-10-24)
+
+- **R1** : `simplify` → `tidy` pour la valeur d'une intégrale bornée à paramètre (`atelier/calcul.ts`) ; 14 cas sondés, sortie identique ; garde dans `integrer-decimaux.test.ts`.
+- **R4 (Q43)** : `developAndFactor` — des termes qui portaient la même `e^{u}` s'annulent au développement (`cancelsSharedExponential`) : la forme développée, étape « On simplifie » (`∫(x+1)eˣ = xeˣ`). Effet de bord voulu : `∫−2(x+1)eˣ = −2xeˣ` d'emblée (test de la forme développée passé sur `∫−2xeˣ`).
+- **R5 (Q42 b)** : `withUniformCoefficients` (`integration/coefficient-register.ts`), dans `pushSimplifyStep` (restructuré : `simplifiedPrimitive`) et `.intégrer` de l'Atelier (sans bornes). Seuls les coefficients DEVANT les termes sont lus. `.intégrer 1.5x` → `0,75x² + C` (test `seuils-ecriture` mis à jour).
+- **R6 (Q44 a, Q44-bis)** : `decimalLeadFactored` dans `factored` (`variations/display.ts`), essayé avant la politique seule ; `withDecimalCoefficients` déplacé de `requested-form.ts` vers `display.ts`, étendu (`x²/5 → 0,2x²`), appliqué aussi à la forme factorisée. Non prévu, gardé : `0,3x² + 0,1x → 0,1x(3x + 1)`.
+- **Laissé (à trancher par David)** : la VALEUR d'une intégrale bornée à décimaux reste en fraction (`∫₀¹ 0,5x = 1/4`) — Q42 ne visait que la primitive.
+- Mesures : suite serveur `src/lib` 57 922 verts, 2 rouges = changements voulus (ci-dessus), corrigés ; banc 1 102 modèles × 8 tirages : identique à `main.txt` (`cmp`) — **mais aucun modèle de prod n'a de correction automatique** (corrections toutes rédigées) : le banc ne mesure pas R4-R6 ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre ; doc `mathast/README.md`, `atelier.md`.
