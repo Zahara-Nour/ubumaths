@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, PR 1 (socle) en cours._
+_Mis à jour le 2026-10-24, après #1675._
 
-- **État** : plan validé par David ; PR 1 (socle) codée sur `feat/demo-debug` : garde `reservedAreasHandle` dans le hook, accueils `/dev` et `/aide-ecriture` vides, robots, élévation lue sous `/dev`, retour d'élévation admis vers `/dev`.
-- **Prochaine action** : revues (`code-reviewer` + `security-auditor`), PR, CI, merge. Puis PR 2 (déplacements « telles quelles » vers `/dev`).
+- **État** : PR 1 (socle) MERGÉE (#1675) : `/dev` (admin) et `/aide-ecriture` (prof) gardés par `reservedAreasHandle` (hook) + `+layout.server.ts` par espace ; accueils vides ; pas en prod.
+- **Prochaine action** : PR 2, déplacements « telles quelles » vers `/dev` (lignes 9, 11, 12, 13, 14, 16, 18 hors 7 et 8, 19 + traduction), redirections dans `redirectHandle.ts`, lien « Debug » du menu admin → `/dev`, `database` → « Intégrité des données ». Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main`.
 - **En attente de David** : rien.
-- **Pièges en cours** : sous `/dev`, jamais de donnée sensible par un load universel (`+page.ts`) ni par Supabase dans le navigateur (le hook ne les voit pas) ; un refus levé dans le hook s'affiche sur la page d'erreur minimale de SvelteKit, pas sur `+error.svelte` (choix assumé : garde dans le hook) ; `adminElevationHandle` ne lit le cookie que sous `/dashboard/admin`, `/api/admin`, `/dev` ; aucune suppression hors fusions (7, 8, 15) et ligne 17 ; `/test-font` intact ; ligne 4 après le chantier constructions.
-- **Worktree / branche** : `../ubumaths-wt-demo-debug` · `feat/demo-debug`.
+- **Pièges en cours** : sous `/dev`, jamais de donnée sensible par un load universel (`+page.ts`) ni par Supabase dans le navigateur (le hook ne les voit pas) ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES` ; refus du hook = page d'erreur minimale de SvelteKit ; aucune suppression hors fusions (7, 8, 15) et ligne 17 ; `/test-font` intact ; ligne 4 après le chantier constructions.
+- **Worktree / branche** : aucun (PR 1 nettoyée).
 
 ## Décisions de David (2026-10-24)
 
