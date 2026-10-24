@@ -120,7 +120,7 @@
 			}
 		},
 		{
-			"statement": "La droite $d$ d'équation ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$ et le point $A({{eval:x0}}\\,;\\,{{eval:y0}})$ sont représentés ci-dessous.\n\n```figure\nfenetre: -6 ; 6 ; -6 ; 6\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; la droite d et le point A.\n---\nB = point({{xB}}, {{yB}}, visible=faux)\nB2 = point({{eval:xB-b}}, {{eval:yB+a}}, visible=faux)\nd = droite(B, B2)\nA = point({{x0}}, {{y0}}, etiquette=\"haut-droite\")\n{{if:e1>=e2|texte({{eval:P1x}}, {{eval:P1y}}, \"d\")|texte({{eval:P2x}}, {{eval:P2y}}, \"d\")}}\n```\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$?$",
+			"statement": "La droite $d$ d'équation ${{if:a==1|x}}{{if:a==-1|-x}}{{if:a>1|{{eval:a}}x}}{{if:a< -1|{{eval:a}}x}}{{if:b==1|+y}}{{if:b==-1|-y}}{{if:b>1|+{{eval:b}}y}}{{if:b< -1|{{eval:b}}y}}{{if:c>0|+{{eval:c}}}}{{if:c< 0|{{eval:c}}}}=0$ et le point $A({{eval:x0}}\\,;\\,{{eval:y0}})$ sont représentés ci-dessous.\n\n```figure\nfenetre: -6 ; 6 ; -6 ; 6\ntaille: moyenne\naxes: oui\ngrille: oui\ndescription: Repère orthonormé quadrillé ; la droite d et le point A.\n---\nB = point({{xB}}, {{yB}}, visible=faux)\nB2 = point({{eval:xB-b}}, {{eval:yB+a}}, visible=faux)\nd = droite(B, B2)\nA = point({{x0}}, {{y0}}, etiquette=\"haut-droite\")\n{{if:e1>=e2|texte({{eval:P1x;d}}, {{eval:P1y;d}}, \"d\")|texte({{eval:P2x;d}}, {{eval:P2y;d}}, \"d\")}}\n```\n\nDonne une équation cartésienne de la droite $\\Delta$ perpendiculaire à $d$ passant par $A$.\n\n$?$",
 			"variables": [
 				{
 					"name": "a",
