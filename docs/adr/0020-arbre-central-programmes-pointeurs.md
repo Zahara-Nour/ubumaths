@@ -133,7 +133,7 @@ d'une même tâche à petite échelle.
      connu : en 3e, « Nombres rationnels > Objectifs d'apprentissage » donne à la suite
      « Mettre une fraction sous forme irréductible. » (3-001, gardé) et « Rendre irréductible une
      fraction. » (3-002, archivé) — vérifié dans le programme du cycle 4,
-     `docs/ref/programmes/Programme de mathématiques du cycle 4.pdf`. Tout nouveau cas se signale
+     `static/programmes/cycle-4.pdf`. Tout nouveau cas se signale
      et se tranche avec David ; aucun autre écart au BO n'est permis.
 
 8. **Le `level` des questions est une gradation à l'intérieur d'un point** (du facile au

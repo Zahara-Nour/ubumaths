@@ -4,11 +4,11 @@ Objectif : pour chaque point actif de terminale technologique (`points-lycee.csv
 
 ## Sources et façon de citer
 
-| Abréviation       | Document                                                                                                                                                     | Page citée  |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| **BO 1re techno** | Programme de mathématiques de la classe de première de la voie technologique (BO n° 14 du 2026-04-02, `docs/ref/programmes/`, extrait dans `bo/1techno.txt`) | page du PDF |
-| **BO Tle techno** | Programme de mathématiques de la classe terminale de la voie technologique (même BO, `bo/ttechno.txt`)                                                       | page du PDF |
-| **BO 2de**        | Programme de seconde générale et technologique (`bo/2de.txt`), pour ce qui est hérité                                                                        | page du PDF |
+| Abréviation       | Document                                                                                                                                                                        | Page citée  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| **BO 1re techno** | Programme de mathématiques de la classe de première de la voie technologique (BO n° 14 du 2026-04-02, `static/programmes/1re-technologique.pdf`, extrait dans `bo/1techno.txt`) | page du PDF |
+| **BO Tle techno** | Programme de mathématiques de la classe terminale de la voie technologique (même BO, `bo/ttechno.txt`)                                                                          | page du PDF |
+| **BO 2de**        | Programme de seconde générale et technologique (`bo/2de.txt`), pour ce qui est hérité                                                                                           | page du PDF |
 
 Aucun document d'accompagnement n'est disponible pour ces programmes : aucun n'est cité.
 

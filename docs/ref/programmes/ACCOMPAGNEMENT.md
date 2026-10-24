@@ -5,7 +5,7 @@
 > **Dossier source** : `docs/ref/programmes/Accompagnement/`. Tous les chemins ci-dessous sont relatifs à ce dossier.
 > **Rédigé le 2026-10-18** à partir d'une lecture des textes extraits (`pdftotext -layout`, `textutil`, zip extraits hors dépôt).
 > **Pages** : « p. N » désigne toujours la **page du PDF** (celle du lecteur), pas le folio imprimé. Écarts connus : guide CP, folio = page PDF − 1 ; « Exemples de réussite » CM1/CM2/6e, guides fondamentaux CM et collège, exemples cycle 4 2026 : folio = page PDF − 1.
-> **Programmes de référence présents dans `docs/ref/programmes/`** : cycle 2 (BO n° 41 du 31 octobre 2024), cycle 3 (BO n° 16 du 17 avril 2025 : CM1, CM2, 6e) et cycle 4 (« Annexe 2 », **nouveau programme rangé par année 5e / 4e / 3e**, avec automatismes, objectifs d'apprentissage et prolongements possibles).
+> **Programmes de référence présents dans `static/programmes/`** : cycle 2 (BO n° 41 du 31 octobre 2024), cycle 3 (BO n° 16 du 17 avril 2025 : CM1, CM2, 6e) et cycle 4 (« Annexe 2 », **nouveau programme rangé par année 5e / 4e / 3e**, avec automatismes, objectifs d'apprentissage et prolongements possibles).
 
 ## Vue d'ensemble : statut des documents
 
@@ -512,7 +512,7 @@ Archive de 2 fichiers Word (annexes du livret CE2 2025 ; « accompagenment » es
 ## Cycle 4 — documents d'accompagnement (dossier `cycle 4/`)
 
 > Pages « p. N » = page du PDF (le numéro imprimé en pied de page vaut souvent N − 1 dans le document 2026).
-> Programme de référence : `docs/ref/programmes/Programme de mathématiques du cycle 4.txt` (« Annexe 2 », **nouveau programme rangé par année 5e / 4e / 3e**, rubriques « Automatismes » + « Objectifs d'apprentissage » + « Prolongements possibles », domaines : Nombres et calculs · Espace et géométrie · Organisation et gestion de données et probabilités · Proportionnalité, fonctions · Pensée informatique). Il n'y a plus de thème « Grandeurs et mesures » séparé : volumes, aires, unités sont répartis dans « Espace et géométrie ».
+> Programme de référence : `static/programmes/cycle-4.pdf` (texte extrait par `pdftotext`) (« Annexe 2 », **nouveau programme rangé par année 5e / 4e / 3e**, rubriques « Automatismes » + « Objectifs d'apprentissage » + « Prolongements possibles », domaines : Nombres et calculs · Espace et géométrie · Organisation et gestion de données et probabilités · Proportionnalité, fonctions · Pensée informatique). Il n'y a plus de thème « Grandeurs et mesures » séparé : volumes, aires, unités sont répartis dans « Espace et géométrie ».
 
 ### cycle 4/exemple-mise-en-oeuvre-c4-mathematiques0pdf-126080.pdf
 
@@ -550,7 +550,7 @@ Archive de 2 fichiers Word (annexes du livret CE2 2025 ; « accompagenment » es
   - **4e** (p. 43-45) : a % de c pour a = 100, 50, 25, 10, 1 ; grandeurs quotients (€/L, €/kg) ; ratio `2 : 3 : 7` ; quatrième proportionnelle et produit en croix (non systématique) ; coefficients multiplicateurs 1,15 et 0,8 ; partage proportionnel (48 macarons, ratio 5 : 11) ; programmes de calcul à deux étapes.
   - **3e** (p. 45-46) : (1 ± t/100) ; Thalès ↔ proportionnalité ; **fonctions linéaires** `f(x) = ax`, inéquations `ax > b` ; **fonctions affines** `ax + b` ; **fonction carré** et `x² = a`.
   - **Pensée informatique** (p. 47-51) : 5e = séquences, entrées/sorties, formule en blocs `(réponse + 10) × 2`, boucle « répéter n fois » ; 4e = conditions `<, >, =`, une seule variable (accumulation : nombre de 6 en 1000 lancers) ; 3e = plusieurs variables, conditions composées, boucle conditionnelle, blocs personnalisés.
-- **Statut** : **en vigueur**. Correspond exactement au programme du cycle 4 présent dans `docs/ref/programmes/` (objectifs identiques, cf. programme l. 508, 517, 631, 934, 1068-1069).
+- **Statut** : **en vigueur**. Correspond exactement au programme du cycle 4 présent dans `static/programmes/` (objectifs identiques, cf. programme l. 508, 517, 631, 934, 1068-1069).
 
 ## Documents retirés (2026-10-18)
 

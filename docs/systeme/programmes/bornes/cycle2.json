@@ -1,7 +1,7 @@
 {
 	"_meta": {
 		"genere_le": "2026-10-18",
-		"pages": "Numéros de page = pages du PDF (le BO c2 est docs/ref/programmes/Programme de mathématiques du cycle 2.pdf).",
+		"pages": "Numéros de page = pages du PDF (le BO c2 est static/programmes/cycle-2.pdf).",
 		"heritage": "Chaque point hérite des bornes « general » de son niveau dont la « portee » le couvre ; bornes: [] = aucune borne propre.",
 		"sources_ecartees": {
 			"ra16c2mathsgrandeuretmesuresdocmaitre587695pdf-76011.pdf": "Éduscol mars 2016, anciens programmes (ra16) : non utilisé comme source de borne.",

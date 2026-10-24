@@ -6,8 +6,10 @@
  * l'ordre du BO. Seuls renommer et archiver un point restent possibles (via
  * PATCH /api/teacher/curriculum/points/[pointId]).
  *
- * Deux vues (?vue=) : la liste (par défaut) et la carte, qui montre l'arbre
- * complet avec les points du niveau en feuilles. Seule la vue demandée est lue.
+ * Quatre vues (?vue=) : la liste (par défaut) ; la carte, qui montre l'arbre
+ * complet avec les points du niveau en feuilles ; le programme officiel du
+ * niveau en PDF (pdf) et sa transcription ubumark (texte). Seule la vue
+ * demandée est lue.
  *
  * C'est la seule page qui demande les points archivés : ailleurs ils sont
  * invisibles, ici ils doivent se voir pour être restaurés.
@@ -18,9 +20,11 @@ import type { PageServerLoad } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
 import { gradeCodeSchema } from '$lib/server/validation/grades';
 import { getProgrammeMap, getProgrammeTree } from '$lib/server/programme-tree';
+import { getTranscription } from '$lib/server/programmes/transcriptions';
+import { OFFICIAL_PROGRAMMES } from '$lib/programmes/official-programmes';
 import { GRADE_CODES, GRADES } from '$lib/types/grades';
 
-const viewSchema = z.enum(['liste', 'carte']);
+const viewSchema = z.enum(['liste', 'carte', 'pdf', 'texte']);
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	await requireRoles(locals, ['teacher', 'admin']);
@@ -38,6 +42,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			view === 'liste'
 				? await getProgrammeTree(locals.supabase, grade, { includeArchived: true })
 				: [],
-		map: view === 'carte' ? await getProgrammeMap(locals.supabase, grade) : []
+		map: view === 'carte' ? await getProgrammeMap(locals.supabase, grade) : [],
+		official: OFFICIAL_PROGRAMMES[grade],
+		transcription: view === 'texte' ? getTranscription(grade) : null
 	};
 };

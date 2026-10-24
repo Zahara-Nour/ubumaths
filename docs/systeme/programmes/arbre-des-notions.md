@@ -46,7 +46,7 @@ un programme (un niveau scolaire) est un ensemble de **points** du BO, chacun po
 | Tags                                                     | `question_template_points`, `exercise_curriculum_points`                                   |
 | Automatismes (référence d'un point d'un autre programme) | `curriculum_point_automatismes`, parcours `grade_predecessors`                             |
 | Bornes des points (« seulement »)                        | [bornes/](bornes/) — voir plus bas                                                         |
-| PDF officiels                                            | `docs/ref/programmes/`                                                                     |
+| PDF officiels                                            | `static/programmes/` (servis par le site)                                                  |
 
 Points actifs en prod le 2026-10-24 (avec au moins un modèle tagué / total) : CP 12/84, CE1 17/107, CE2 13/97,
 CM1 21/171, CM2 12/158, 6e 26/111, 5e 18/143, 4e 16/82, 3e 8/66, 2de 36/292, 1re spé 91/237, 1re ens. sci.
