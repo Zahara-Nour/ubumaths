@@ -2,7 +2,7 @@
  * Les scripts DSL des pages de démo de géométrie s'exécutent sans erreur.
  *
  * Une démo dont le script n'est plus à jour avec le DSL plante la page entière,
- * sans qu'aucun test ne le voie : `/geometry-demo/circles` utilisait encore la
+ * sans qu'aucun test ne le voie : `/aide-ecriture/geometrie/circles` utilisait encore la
  * déstructuration `(P1, P2, s) = corde(c, d)`, refusée depuis.
  */
 import { globSync, readFileSync } from 'node:fs';
@@ -10,7 +10,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { runDsl } from '..';
 
-const DEMO_DIR = resolve(process.cwd(), 'src/routes/(public)/geometry-demo');
+const DEMO_DIR = resolve(process.cwd(), 'src/routes/(protected)/aide-ecriture/geometrie');
 
 /** Chaque `const nom = \`…\`` sans interpolation d'une page de démo */
 function demoScripts(): Array<{ page: string; name: string; script: string }> {

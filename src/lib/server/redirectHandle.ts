@@ -45,7 +45,10 @@ const MOVED_PAGES: Record<string, string> = {
 	'/test-structure': '/dev/structure',
 	'/demo/vip-cards-demo/examples': '/dev/cartes/exemples',
 	'/demo/vip-cards-demo': '/dev/cartes',
-	'/demo/mots-cliquables': '/dev/mots-cliquables'
+	'/demo/mots-cliquables': '/dev/mots-cliquables',
+	// Aide à l'écriture (PR 4)
+	'/geometry-demo': '/aide-ecriture/geometrie',
+	'/demo/trig-circle-demo': '/aide-ecriture/cercle-trigo'
 };
 
 /** Nouvelle adresse d'une page déplacée, ou `null` si `pathname` n'en est pas une. */

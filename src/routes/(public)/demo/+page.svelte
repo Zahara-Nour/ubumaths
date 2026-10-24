@@ -3,22 +3,16 @@
 	================================================
 
 	Ne relie que des pages ouvertes à tous. Les bancs d'essai et les pages de
-	test sont partis sous `/dev` (chantier demo-debug) ; l'accueil de la vitrine
+	test sont partis sous `/dev`, le catalogue du cercle trigonométrique sous
+	`/aide-ecriture` (chantier demo-debug) ; l'accueil de la vitrine
 	remplacera cette page (phase 7).
 -->
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
-	import { Gamepad2, Presentation, Circle } from '@lucide/svelte';
+	import { Gamepad2, Presentation } from '@lucide/svelte';
 
 	const demoPages = [
-		{
-			title: 'Cercle Trigonométrique',
-			description: 'Visualisation du cercle unité avec valeurs remarquables et équations',
-			href: '/demo/trig-circle-demo',
-			icon: Circle,
-			color: 'from-blue-500 to-indigo-500'
-		},
 		{
 			title: 'Mathémo',
 			description: 'Wordle mathématique avec termes français par niveau (6ème-Tale)',

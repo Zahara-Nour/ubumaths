@@ -99,7 +99,7 @@ describe('sitemap — toute page publique est listée ou exclue', () => {
 		expect(all).toContain('/');
 		expect(all).toContain('/chiffrement/cesar');
 		expect(all).toContain('/shtam/[slug]');
-		expect(all).toContain('/demo/trig-circle-demo');
+		expect(all).toContain('/demo');
 		expect(all.some((r) => r.startsWith('/dashboard'))).toBe(false);
 	});
 
@@ -151,7 +151,7 @@ describe('matchesExclusion', () => {
 
 	it('`/**` couvre la route et ses descendantes, pas ses voisines', () => {
 		expect(matchesExclusion('/demo', '/demo/**')).toBe(true);
-		expect(matchesExclusion('/demo/trig-circle-demo', '/demo/**')).toBe(true);
+		expect(matchesExclusion('/demo/cercle-trigo', '/demo/**')).toBe(true);
 		expect(matchesExclusion('/demonstration', '/demo/**')).toBe(false);
 	});
 

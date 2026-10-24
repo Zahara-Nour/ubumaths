@@ -155,7 +155,6 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	{ pattern: '/games/evoland', reason: 'jeu en sommeil, sans lien depuis /games' },
 	// Démos et mise au point
 	{ pattern: '/demo/**', reason: DEMO },
-	{ pattern: '/geometry-demo/**', reason: DEMO },
 	{ pattern: '/construction-demo', reason: DEMO },
 
 	// Parcours d'authentification et de consentement
