@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1702._
+_Mis à jour le 2026-10-24, phase 0 du lot A1._
 
-- **État** : corrections CP livrées (#1702 mergée, `db:migrate` fait, vérifié en prod : empreintes, tags, nœuds, niveaux) ; outil `horloge` lancé par David en parallèle dans sa propre session (journal `docs/wip/horloge-progress.md` sur `feat/horloge`).
-- **Prochaine action** : groupe A (32 points, texte seul, § 2) par lots — proposer le découpage des lots et les premiers modèles à David (phase 0), nouveau worktree.
-- **En attente de David** : vérification manuelle #1702 (`docs/wip/verifications-manuelles.md`).
-- **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017) ; le générateur (`scissions_outils`) ne sait ni retirer un tag ni changer les seuls niveaux → migration à la main ; dater après la dernière migration de la prod (`list_migrations`) ; `db:migrate` depuis le dépôt principal (le worktree n'est pas lié à Supabase) ; heredoc `python3 - <<EOF` bloque dans ce shell → script dans le scratchpad.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1702).
-- **But final** : en tirer un skill réutilisable pour les autres niveaux (noter la méthode au fil de l'eau, § 5).
+- **État** : groupe A découpé en 6 lots (§ 4 ter) ; lot A1 (calcul mental, 6 points) en phase 0 — détail proposé à David (§ 6).
+- **Prochaine action** : validation d'A1 par David, puis écriture des 6 modèles + specs, `checkTemplate`, migration, page à cocher.
+- **En attente de David** : vérification manuelle #1702 ; validation du détail d'A1.
+- **Pièges en cours** : un modèle CP peut prendre un point CE1 (pas l'inverse) ; inclusion stricte des bornes (`docs/systeme/programmes/bornes/cycle2.json`) ; le × est hors CP (borne CP-017) ; dater après la dernière migration de la prod (`list_migrations`) ; `db:migrate` depuis le dépôt principal ; heredoc `python3 - <<EOF` bloque dans ce shell → script dans le scratchpad.
+- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-cp-a1`.
+- **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
 
@@ -90,6 +90,15 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 4. CP-084 : « compléter un tableau préparé » suffit (`tableau-croise` à trous). CP-072 : attend les « réponses à placer » (hauteur des barres).
 5. `52c4d773` : retirer ×, × 100, centaines du corrigé ; tag CP-005 → CP-004. `0e5372a4` : garder le complément à 10, ajouter le complément à la dizaine supérieure (≤ 99, unités ≠ 0).
 6. Case « figure » : après l'horloge, avant collection et monnaie.
+
+## 4 ter. Groupe A : lots et décisions (David, 2026-10-24)
+
+- **Lots, une PR chacun, dans cet ordre** : A1 calcul mental (020, 081, 021, 082, 028, 027) → A2 suite et ordre (003, 004, 007, 075, 076) → A4 sens des opérations (014, 077, 015, 078, 079, 017) → A5 problèmes (029-031) → A3 ordinaux (009-013) → A6 grandeurs et lexique (036, 038, 037, 032, 039, 041, 048).
+- **CP-016** (addition posée) sort du groupe A → outil « opérations posées » (§ 3, 6), placé **juste après l'horloge, avant la case « figure »**.
+- **CP-076** (intercaler) : case à remplir en `rulesSuffice` + `range` (bornes exclues) + `isInteger` — pas de QCM.
+- **CP-075** (encadrer) : deux variations — « juste avant / juste après » (46 < 47 < 48) et encadrement libre jugé par règles.
+- **Réponses en mots** (ordinaux, lettres, lexique) : QCM ; un rang reste une case nombre.
+- **Rangement** : nœuds existants (tous présents en prod, y compris « ordinaux et rangs », « problèmes arithmétiques > parties-tout / en deux étapes / multiplicatifs ») ; aucun nœud à créer.
 
 ## 5. Méthode (pour le futur skill)
 
