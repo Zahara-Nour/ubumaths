@@ -184,9 +184,14 @@ describe('logarithme d’un nombre', () => {
 		expect(shown(input)).toBe(expected);
 	});
 
-	it('écrit ln(1/10)/ln(1/2) comme ln 10 / ln 2', () => {
+	// « b » (David, 2026-10-24) : un quotient de deux logarithmes — la borne d'un
+	// seuil — garde l'écriture de l'énoncé
+	it('garde un quotient de deux logarithmes tel qu’écrit', () => {
+		expect(shown('\\frac{\\ln 1000}{\\ln 2}')).toBe(
+			'\\dfrac{\\ln\\left( 1000 \\right)}{\\ln\\left( 2 \\right)}'
+		);
 		expect(shown('\\frac{\\ln\\left(\\frac{1}{10}\\right)}{\\ln\\left(\\frac{1}{2}\\right)}')).toBe(
-			'\\dfrac{\\ln\\left( 10 \\right)}{\\ln\\left( 2 \\right)}'
+			'\\dfrac{\\ln\\left( \\dfrac{1}{10} \\right)}{\\ln\\left( \\dfrac{1}{2} \\right)}'
 		);
 	});
 });

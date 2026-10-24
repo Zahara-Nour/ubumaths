@@ -296,6 +296,9 @@ function withCommonDenominator(node: MathNode): MathNode {
  * `ln 12`, `ln(3/2)` restent tels quels.
  */
 function withLogarithmsOfPowers(node: MathNode): MathNode {
+	// Un quotient de deux logarithmes garde l'écriture de l'énoncé : la borne d'un
+	// seuil (`2ⁿ > 1000` → `n > ln 1000 / ln 2`, décision de David, 2026-10-24, « b »)
+	if (isQuotientOfLogarithms(node)) return node;
 	return mapNode(node, (current) => {
 		if (!isFunction(current) || current.name !== 'ln' || current.args.length !== 1) return current;
 		const arg = isDelimiter(current.args[0]) ? current.args[0].content : current.args[0];
@@ -308,6 +311,17 @@ function withLogarithmsOfPowers(node: MathNode): MathNode {
 		const inverse = logarithmOfInteger(r.d);
 		return opposite(inverse ?? func('ln', [numericNode(r.d.toString())]));
 	});
+}
+
+/** `ln a / ln b`, au signe près : la forme de la borne d'un seuil de suite. */
+function isQuotientOfLogarithms(node: MathNode): boolean {
+	const written = isOpposite(node) ? node.operand : node;
+	return isDivision(written) && isLogarithm(written.numerator) && isLogarithm(written.denominator);
+}
+
+function isLogarithm(node: MathNode): boolean {
+	const written = isOpposite(node) ? node.operand : node;
+	return isFunction(written) && written.name === 'ln';
 }
 
 /** `k ln p` pour n = pᵏ, k ≥ 2 le plus grand ; `null` si n n'est pas une puissance. */

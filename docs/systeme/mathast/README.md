@@ -217,7 +217,12 @@ l'Atelier). `evaluate` reste inchangé pour les calculs internes.
   regroupée sur un dénominateur commun), la plus calculée — le moins d'appels de fonction sans variable
   hors radicaux (`cos(π/6)` calculé), puis le moins de puissances entières d'une somme (`(1+√2)^{100}`
   développée), puis le moins de radicaux au dénominateur (`1/(√3 − 1) → (1 + √3)/2`) —, puis la moins
-  chère (`computeCost`, la plus tardive gagne à 20 % près : `ln 8` reste `ln 8`).
+  chère (`computeCost`, la plus tardive gagne à 20 % près).
+- **Logarithmes** (décision de David, 2026-10-24, « B ») : le logarithme d'une puissance d'un seul
+  entier s'écrit `n ln p` (`ln 8 → 3 ln 2`, `ln 1000 → 3 ln 10`, `ln(1/8) → −3 ln 2`, `ln 4 + ln 2 → 3 ln 2`) ;
+  sinon il reste tel quel (`ln 6`, `ln 2 + ln 3`), aucune décomposition en facteurs premiers. Un
+  décimal écrit reste (`ln(0,1)`), et un quotient de deux logarithmes — la borne d'un seuil — garde
+  l'écriture de l'énoncé (« b » : `n > ln 1000 / ln 2`).
 - **Dénominateur commun** (Q23) : une somme dont tous les termes sont des fractions de même
   dénominateur s'écrit en une seule (`1/2 + √5/2 → (1 + √5)/2`).
 
