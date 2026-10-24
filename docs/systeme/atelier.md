@@ -2188,7 +2188,7 @@ et ce que la console a perdu (illisible, version plus récente, lignes écartée
 ### Ouvrir dans Python (2026-10-24)
 
 Pont à sens unique vers `/python` (voir Décisions ; phase 0
-[atelier-python-phase0.md](../wip/atelier-python-phase0.md), Q1-Q4 validées par David). Le
+[atelier-python-phase0.md](../archive/wip/atelier-python-phase0.md), Q1-Q4 validées par David). Le
 menu d'une fonction, d'une suite ou d'une liste propose « Ouvrir dans Python » (`actions.ts`,
 `pythonAction`) ; le clic ouvre un **nouvel onglet** `/python?code=…`, l'atelier ne bouge pas.
 
