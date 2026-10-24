@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1665 et #1666 (migration jouée en prod)._
+_Mis à jour le 2026-10-24, après #1669._
 
-- **État** : #1665 (code + migration) et #1666 (migration renommée `20261024120100` après collision avec `passe_lycee_retouches_2`) mergées ; `db:migrate` joué le 2026-10-24, vérifié en prod (5 policies attendues, `is_teacher()` présente, anon sans EXECUTE). Le code attend le prochain `deploy:prod` ; d'ici là, l'ancien code tourne sans régression (l'admin perd déjà l'écriture).
-- **Prochaine action** : après le `deploy:prod` demandé par David, PR 2 : `DROP COLUMN author_id` (+ index + FK), vue `resources` recréée avant, grep collé, arrêt avant `db:migrate` (destructif).
-- **En attente de David** : vérifications #1665/#1666 (et #1621 → #1659) dans `docs/wip/verifications-manuelles.md` — serveur de test `http://localhost:5177` (worktree, à retirer après sa vérification) ; suite possible : `etiquette="aucune"` pour les droites.
-- **Tranché (2026-10-24)** : écriture des constructions = **prof seul** (l'admin redevient lecteur, conversion XML comprise) ; scripts de démo inchangés (prof et admin) ; le prof lit tout, brouillons compris.
-- **Pièges en cours** : PR 2 — la vue `public.resources` lit `constructions.author_id` (`20260909020000`, `20260930140000`) : la recréer AVANT le `DROP` ; scripts `scripts/constructions-prod/appliquer.ts`, `scripts/convert-instrumenpoche.ts` et le test `lectures-ouvertes-fermees` écrivent `author_id`. `M'` refusé comme identifiant ; commits et PR sans mention Claude.
-- **Worktree / branche** : `../ubumaths-wt-constructions` (branche `fix/constructions-migration-horodatage`, mergée) gardé pour le serveur de test 5177 ; à retirer ensuite (`git worktree remove` + `branch -d` des deux branches).
+- **État** : PR 1 (#1665, #1666) en prod (v0.46.0, migration jouée). PR 2 #1669 mergée : migration `20261024183700` (vue `resources` recréée avec `null::uuid`, puis `DROP COLUMN constructions.author_id`), scripts et tests adaptés ; revues code + sécurité sans bloquant ; preuve rouge faite ; appliquée en LOCAL seulement.
+- **Prochaine action** : ⛔ `db:migrate` de `20261024183700` **sur accord explicite de David** (destructif ; perte nulle : 9/9 `author_id` NULL en prod, aucun défaut) ; puis PR `db:types` + régénérer `docs/systeme/base-de-donnees-tables.md`.
+- **En attente de David** : accord pour le `db:migrate` ; vérifications #1665/#1666 (et #1621 → #1659) dans `docs/wip/verifications-manuelles.md` — serveur de test `http://localhost:5177` ; suite possible : `etiquette="aucune"` pour les droites.
+- **Tranché (2026-10-24)** : écriture des constructions = **prof seul** ; scripts de démo inchangés (prof et admin) ; le prof lit tout, brouillons compris ; colonne `author_id` supprimée (question d'accès : personne ne gagne ni ne perd).
+- **Pièges en cours** : `scripts/constructions-prod/appliquer.ts` à lancer depuis `main` (la version de `production` lit encore `author_id`) ; mineur noté par l'audit : `anon` garde des droits de TABLE sur `constructions` (RLS sans policy anon, rien d'ouvert) — `REVOKE` possible à part. Commits et PR sans mention Claude.
+- **Worktree / branche** : `../ubumaths-wt-constructions` (branche `fix/constructions-migration-horodatage`, mergée) gardé pour le serveur 5177, à retirer après la vérification de David (`git worktree remove` + `branch -d` de `fix/constructions-migration-horodatage` et `feat/constructions-ecriture-prof`).
 
 ---
 
