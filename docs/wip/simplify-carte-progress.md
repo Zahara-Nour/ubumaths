@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, phase 0 de 5f écrite (§ 71), en attente de David._
+_Mis à jour le 2026-10-24, Q40-Q48 tranchées (§ 72), 5f-1 en cours._
 
 - **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; ~~5e D4~~ (#1696, § 70) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → **5** (… → ~~Q33~~ → ~~5e D4~~ → **5f restes**) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5f, phase 0 écrite (§ 71 : R1-R10, Q40-Q48, découpage 5f-1 → 5f-5) ; attendre les réponses, puis 5f-1 (`tidy`).
-- **En attente de David** : **Q40-Q48 (§ 71)** ; vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) .
+- **Prochaine action** : 5f-1 (`tidy` : R2 parenthèses sous-entendues, R3 `∛x − ∛x` et termes gardés côte à côte), tests rouges d'abord ; puis 5f-2 → 5f-5 (§ 71, Q40-Q48 tranchées § 72). Rien de codé. Piste R2 : `flattenSumShallow` (`flatten.ts`) ouvre `a − (b+c)` sans nœud `delimiter` ; déplacer `withImpliedParentheses` (`tidy/terms.ts`) dans `tidy()` (`tidy/index.ts`, avant `stripUnnecessaryBrackets`, 3ᵉ argument compris), puis donner à `keptWithGroups` une ouverture explicite (`x − 1 − (x + 1) → −2`), car `tidySafe(node)` n'ouvrira plus.
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) .
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : TABLEAU zsh et copie vérifiée (§ 64) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
 - **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f` (journal seul).
 
@@ -982,3 +982,7 @@ Sondé (deux tests jetables, retirés ; 14 dérivées et 12 primitives de lycée
 - **Q46 (R8)** — étapes du solveur : `x = 0,3`, `0,5x = 1`, « On divise par 0,5 », `S = {−√2/2 ; √2/2}` (même écriture que la réponse). Reco : oui.
 - **Q47 (R9)** — exposant de dénominateur 2 → racine carrée : `2^{0,5} → √2`, `4^{0,5} → 2`, `8^{1/2} → 2√2`, `2^{3/2} → 2√2`, `2^{1,5} → 2√2`, `2^{0,5}x → √2 x` ; les autres dénominateurs inchangés sauf valeur exacte entière (`27^{2/3} → 9`, `2^{1/3}` reste). Reco : oui.
 - **Q48 (R10)** — `.simplifier e^{2x}/eˣ → eˣ` (étape aᵐ/aⁿ = aᵐ⁻ⁿ) ; `eˣ·e → e^{x+1}` affiché. Reco : oui.
+
+## 72. Q40-Q48 tranchées (David, 2026-10-24 : « je suis tes recos »)
+
+Q40 oui · Q41 oui · Q42 b · Q43 oui · Q44 a, Q44-bis oui · Q45 les deux · Q46 oui · Q47 oui · Q48 oui. Découpage 5f-1 → 5f-5 validé avec. 5f-1 (`tidy`, R2-R3) sur cette branche.
