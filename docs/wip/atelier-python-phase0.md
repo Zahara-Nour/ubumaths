@@ -1,7 +1,7 @@
 ---
 title: Atelier → Python, « Ouvrir dans Python » — phase 0
 date: 2026-10-24
-status: à valider par David
+status: validée par David le 2026-10-24 (« je suis tes recos » : Q1-Q4 = recos ; plafond de la carte d’une liste à 13 actions)
 ---
 
 # « Ouvrir dans Python » — phase 0

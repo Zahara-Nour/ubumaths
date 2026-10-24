@@ -2,12 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, avant toute PR._
+_Mis à jour le 2026-10-24, PR du pont ouverte._
 
-- **État** : phase 0 écrite ([atelier-python-phase0.md](atelier-python-phase0.md)), aucun code.
-- **Prochaine action** : coder `to-python.ts` + tests rouges, une fois la phase 0 validée.
-- **En attente de David** : validation de la phase 0, questions Q1 à Q4.
-- **Pièges en cours** : `/python?code=` écrase le code de l'élève en silence (Q1).
+- **État** : phase 0 validée (Q1-Q4 = recos, plafond 13 actions) ; PR « Ouvrir dans Python »
+  ouverte : `to-python.ts`, bouton des cartes, confirmation sur `/python`.
+- **Prochaine action** : CI verte → merge, puis vérification manuelle (nouvel onglet, Q1).
+- **En attente de David** : rien.
+- **Pièges en cours** : `window.open(…, 'noopener')` rend toujours `null` — un onglet bloqué ne
+  se détecte pas. Les cartes `f′` sont refusées (non prévu en phase 0, à rediscuter si besoin).
 - **Worktree / branche** : `../ubumaths-wt-atelier-python` · `feat/atelier-python`.
 
 ## Origine

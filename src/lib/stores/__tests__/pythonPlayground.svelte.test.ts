@@ -905,6 +905,15 @@ describe('PythonPlaygroundStore', () => {
 			MockWorker.messages = [];
 		});
 
+		it('le code d’accueil et un éditeur vide ne sont pas le code de l’élève', () => {
+			pythonStore.resetCode();
+			expect(pythonStore.hasOwnCode()).toBe(false);
+			pythonStore.code = '   ';
+			expect(pythonStore.hasOwnCode()).toBe(false);
+			pythonStore.code = 'print(42)';
+			expect(pythonStore.hasOwnCode()).toBe(true);
+		});
+
 		it('should reset code to default', () => {
 			pythonStore.code = 'custom code';
 

@@ -31,6 +31,7 @@ import { compareProblem } from './compare';
 import { derivativeOf, displayName, reciprocalOf } from './names';
 import { commonRows, lawMismatchMessage, noCommonRowsMessage } from './pairs';
 import { tabulationNotYet } from './tabulate';
+import { pythonOf } from './to-python';
 
 /**
  * Ce que les cartes qui SUIVENT une fonction ne savent pas faire (`f′`, `f⁻¹`),
@@ -486,5 +487,28 @@ export function actionsFor(
 			? [{ id: 'convert', label: 'Convertir', disabledReason: NOT_YET_REASON }]
 			: [];
 
-	return [...specific, ...convert, ...ALWAYS];
+	return [...specific, ...convert, ...pythonAction(object, atelier), ...ALWAYS];
+}
+
+/** Les types qu'on ouvre dans Python (pont du 2026-10-24, `to-python.ts`). */
+const OPENS_IN_PYTHON: ReadonlySet<AtelierObject['kind']> = new Set([
+	'function',
+	'sequence',
+	'list'
+]);
+
+/**
+ * « Ouvrir dans Python », grisé avec la raison quand la traduction est refusée
+ * (morceaux, intervalle, mots…). Sans atelier, pas de traduction possible : rien.
+ */
+function pythonAction(object: AtelierObject, atelier: Atelier | undefined): ObjectAction[] {
+	if (atelier === undefined || !OPENS_IN_PYTHON.has(object.kind)) return [];
+	const translated = pythonOf(atelier, object.name);
+	return [
+		{
+			id: 'python',
+			label: 'Ouvrir dans Python',
+			...(!translated.ok && { disabledReason: translated.message })
+		}
+	];
 }

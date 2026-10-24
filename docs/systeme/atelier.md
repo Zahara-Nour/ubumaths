@@ -81,6 +81,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/cell-format.ts`            | La mise en forme des cases (reprise de V4) : zones, styles résolus, formats de nombre, rangement                                                                                                                  |
 | `src/lib/atelier/cell-colors.ts`            | Les couleurs de la mise en forme : CSS du texte et du fond, réglages de contraste mesurés                                                                                                                         |
 | `src/lib/atelier/tabulate.ts`               | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut                                                                                                           |
+| `src/lib/atelier/to-python.ts`              | « Ouvrir dans Python » : `pythonOf` traduit un objet (et ce qu'il cite) en code Python, `pythonPageOf` en fait l'adresse `/python?code=`                                                                          |
 | `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)                                                                                                                |
 | `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)                                                                                                             |
 | `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                                                                      |
@@ -2184,6 +2185,35 @@ n'enregistre rien), Charger reste ce qu'il était, sans copie. Un fichier refus�
 et ce que la console a perdu (illisible, version plus récente, lignes écartées : `consoleNotice`). Un **ancien historique JSON**
 (`chiphre-calcul`) est reconnu et rejoué comme avant (même confirmation).
 
+### Ouvrir dans Python (2026-10-24)
+
+Pont à sens unique vers `/python` (voir Décisions ; phase 0
+[atelier-python-phase0.md](../wip/atelier-python-phase0.md), Q1-Q4 validées par David). Le
+menu d'une fonction, d'une suite ou d'une liste propose « Ouvrir dans Python » (`actions.ts`,
+`pythonAction`) ; le clic ouvre un **nouvel onglet** `/python?code=…`, l'atelier ne bouge pas.
+
+`pythonOf` (`to-python.ts`) traduit depuis l'**arbre** (`definitionAst`), jamais le texte :
+
+- fonction → `def f(x): return …` (la lettre de l'élève gardée : `def f(t)`), `**`, produits
+  écrits, parenthèses selon la priorité Python (`(-x)**2`) ; `e^u` → `exp(u)`, `ln` → `log`,
+  `log` → `log10`, `arccos` → `acos`, `|x|` → `abs` ; `from math import …` des seuls noms
+  utilisés ;
+- suite explicite → `def u(n)` ; récurrence → la boucle des sujets (`u = u₀`,
+  `for k in range(n0, n)`, `u_n` → `u`, `n` → `k`) ;
+- liste → `L = [12, 15, 9]`, écritures exactes gardées (`1/4`), virgule → point, cases vides
+  retirées avec un commentaire ; une case à formule : les valeurs calculées ;
+- ce que l'objet cite part avec lui, une fois, avant lui : curseur (`a = 3  # curseur de
+l’atelier`), valeur calculée, fonction, suite, premier terme donné par un curseur.
+
+**Refus** (bouton grisé, raison au survol) : objet incomplet, en attente ou en erreur,
+fonction sur un intervalle, par morceaux, grandeur à unité, liste de mots, carte `f′` ou
+`f⁻¹`, racine n-ième, adresse compressée > 2 000 caractères (`pythonPageOf`).
+
+Côté `/python` (Q1) : si l'éditeur contient du code de l'élève (`pythonStore.hasOwnCode`),
+« Remplacer ton code ? » avant de charger ; « Garder mon code » le laisse intact.
+
+La carte d'une liste de nombres passe à **13 actions au plus** (David, 2026-10-24).
+
 ### Export et rejeu de l'historique
 
 Le JSON « pour rejouer » ne se télécharge plus que par `.exporter` tapé ; la barre « Exporter
@@ -2835,7 +2865,7 @@ de `mathAST` contre flottants, `e` = Euler, `^` / `**`) donneraient deux résult
 objet ; `a = 3` dans une cellule laisserait croire que le curseur bouge ; le playground valide et
 note, l'atelier ne valide pas (décision 2). À la place, des **ponts à sens unique, visibles** :
 
-1. **« Ouvrir dans Python »** (le tableur, fini et en prod, ne le retient plus) : une fonction, une suite ou une liste s'ouvre dans
+1. **« Ouvrir dans Python »** (livré, voir la section du même nom) : une fonction, une suite ou une liste s'ouvre dans
    `/python` comme du code lisible (`def f(x): return …`, `L = [12, 15, 9]`), par l'entrée
    `?code=` qui existe déjà (`routes/(public)/python/+page.svelte`). Seul travail : la traduction
    `mathAST` → Python, refusée avec un message pour ce qui ne se traduit pas sans perte.
@@ -2888,8 +2918,6 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
 - `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
-- le pont « Ouvrir dans Python » (remplace la v3 le 2026-10-24, voir Décisions) : une fonction,
-  une suite ou une liste ouverte dans `/python` en code lisible ; aucune phase 0 encore ;
 - dettes connues : action « Renommer » encore désactivée (« prochain lot »), saisie des unités
   sans palette. `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
   poste (< 0,1 ms ; voir « Ce qui se recalcule, et ce qui est gardé »).

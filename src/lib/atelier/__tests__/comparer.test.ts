@@ -177,14 +177,14 @@ describe('erreurs : un message, rien de dessiné', () => {
 // =============================================================================
 
 describe('l’action « Comparer avec M »', () => {
-	it('sur la carte d’une liste de nombres, pour la partenaire choisie ; au plus 12 actions (Q119, puis « Propriétés » le 2026-10-23)', () => {
+	it('sur la carte d’une liste de nombres, pour la partenaire choisie ; au plus 13 actions (Q119, « Propriétés » le 2026-10-23, « Ouvrir dans Python » le 2026-10-24)', () => {
 		const s = session(NOTES);
 		const actions = actionsFor(s.atelier.get('L')!, s.atelier, 'M');
 		const compare = actions.find((a) => a.id === 'compare:M');
 
 		expect(compare?.label).toBe('Comparer avec M');
 		expect(compare?.disabledReason).toBeUndefined();
-		expect(actions.length).toBeLessThanOrEqual(12);
+		expect(actions.length).toBeLessThanOrEqual(13);
 	});
 
 	it('partenaire qualitative : visible, désactivée, avec sa raison', () => {
