@@ -175,7 +175,7 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
 
 ## 3. Tableur V4 — retiré le 2026-10-24
 
-Le tableur 20 × 20 à moteur de formules dédié (`src/lib/spreadsheet/`, page `/spreadsheet`,
+Le tableur 20 × 20 à moteur de formules dédié (module `spreadsheet` de `src/lib`, page `/spreadsheet`,
 API `/api/spreadsheets`) est **retiré** sur décision de David : la grille de la vue Données de
 l'atelier le remplace (formules calculées par mathAST, CSV, mise en forme ; voir
 [atelier.md](atelier.md)). `/spreadsheet` et `/spreadsheet/<id>` mènent à `/atelier` en 308
