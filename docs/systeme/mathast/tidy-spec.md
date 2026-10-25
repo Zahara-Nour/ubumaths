@@ -505,8 +505,8 @@ km/h`), 2026-09-27.
   défaut (étape 8, Q13 : `(1+x)eˣ`). Aucune étape
   « On range » n'est racontée (S2, chantier simplify-carte, lot 4c,
   2026-10-23).
-- `tidyTerms` (`terms.ts`) : pour les dérivées — `tidy({ order: 'kept' })`,
-  l'ordre de la règle gardé (u′v + uv′) ; un quotient garde son numérateur à
+- `tidyTerms` (`terms.ts`) : dérivées, primitives, formules du tableur, valeurs
+  interdites — `tidy({ order: 'kept' })`, l'ordre écrit ou de la règle gardé (u′v + uv′) ; un quotient garde son numérateur à
   part (signe compris : `(−sin²x − cos²x)/sin²x`), sauf si la mise au propre
   complète est plus courte, ou si elle seule retire un décimal sous la barre
   (Q3 : `2x/1,5 → 4x/3`, revue de #1655) ; un négatif en tête que l'ordre rangé évite, à
