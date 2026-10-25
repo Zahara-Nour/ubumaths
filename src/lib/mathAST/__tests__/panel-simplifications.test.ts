@@ -88,7 +88,7 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 				'\\dfrac{\\sqrt{2}}{2}',
 				'\\dfrac{\\sqrt{2}}{2}'
 			],
-			['\\sqrt{x}\\sqrt{x}', 'x', 'x', 'x', '\\sqrt{x}^2', '\\sqrt{x} \\sqrt{x}'],
+			['\\sqrt{x}\\sqrt{x}', 'x', 'x', 'x', '\\sqrt{x} \\sqrt{x}', '\\sqrt{x} \\sqrt{x}'],
 			[
 				'\\sqrt{x^2}',
 				'\\sqrt{x^2}',

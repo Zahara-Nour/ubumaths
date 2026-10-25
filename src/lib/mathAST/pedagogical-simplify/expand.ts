@@ -481,6 +481,10 @@ function expandWithin(node: MathNode, domain: readonly MathNode[]): MathNode {
 	const isSum = top.type === 'addition' || top.type === 'subtraction';
 	if (isSum && terms.length === flattenSumShallow(top).length) return node;
 	const result = resolved(written(terms, domain), domain);
+	// Des racines regroupées en puissance (`√x√x → (√x)²`) : rien n'y est
+	// distribué, rien à développer (David, 2026-10-26)
+	const rootPowers = (n: MathNode) => findNodes(n, (m) => rootPower(m) !== null).length;
+	if (rootPowers(result) > rootPowers(node)) return node;
 	return nodesEqual(result, node) ? node : result;
 }
 
