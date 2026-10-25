@@ -454,7 +454,7 @@ Spécification validée par David le 2026-10-21 ([journal](../wip/mathoux-annonc
 retour : page de la navigation). Titre « La Chatterie de Faustroll », compteurs (« 7 Mathoux, 2 en
 sieste, 12 à découvrir »), une section par branche, titrée par son nom suivi de sa race en gris italique (« Nombres et
 calculs _le Noir de Nombrilie_ », une fois par section, pas sur chaque carte), une liste de
-Mathoux : dessin (80 px) avec le stade dessous, le nom (« Tangentin »), la notion dessous en
+Mathoux : dessin (80 px) avec le stade dessous ; à droite, centrés : le nom (« Tangentin »), la notion dessous en
 petites capitales grises,
 étoiles (« ★ 2nde ★ 1ère Spé », le symbole masqué aux lecteurs d'écran), « Fait la sieste » et
 « Réveiller » : vers la révision du programme (`/dashboard/revisions/decks/programme`, là où

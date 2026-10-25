@@ -109,12 +109,13 @@
 							/>
 							<p class="text-sm text-muted-foreground">{GROWTH_LABEL[mathou.growth]}</p>
 						</div>
-						<div class="min-w-0 flex-1">
+						<!-- Partie droite centrée -->
+						<div class="min-w-0 flex-1 text-center">
 							{#if toDiscover}
 								<p class="font-medium break-words">{mathou.notionName}</p>
 							{:else}
 								<!-- « Tangentin », puis la notion qu'il incarne, en petites capitales -->
-								<p class="font-medium break-words">{mathou.name}</p>
+								<p class="text-lg font-semibold break-words">{mathou.name}</p>
 								<p
 									class="text-xs font-semibold tracking-wide break-words text-muted-foreground uppercase"
 								>
@@ -123,7 +124,7 @@
 							{/if}
 							{#if mathou.stars.length > 0}
 								<!-- Une étoile par classe où la notion a été entièrement acquise (mémoire) -->
-								<ul class="flex flex-wrap gap-x-2 text-sm" aria-label="Étoiles">
+								<ul class="flex flex-wrap justify-center gap-x-2 text-sm" aria-label="Étoiles">
 									{#each mathou.stars as grade (grade)}
 										<li class="whitespace-nowrap">
 											<span aria-hidden="true" class="text-amber-500">★</span>
@@ -141,7 +142,7 @@
 								{@const grow =
 									mathou.asleep && !mathou.dueForRevision ? null : trainingLink(mathou)}
 								{#if wake || grow || ondecorate}
-									<div class="mt-1 flex flex-wrap gap-2">
+									<div class="mt-1 flex flex-wrap justify-center gap-2">
 										{#if wake}
 											<Button
 												href={wake}
