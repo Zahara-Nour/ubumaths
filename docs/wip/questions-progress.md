@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-25, après #1759 et son `db:migrate`._
 
 - **État** : groupe A COMPLET (#1712 → #1753) ; **lot H mergé (#1759)** : 3 brouillons en prod (`9780d3c1` CP-046, `f1759d81` CP-047, `0f7381e6` CP-016), migration `20261026130000` jouée et vérifiée en prod (sous-notion + 1 tag chacun, `updated_at` inchangé, trigger actif). Page à cocher H : https://claude.ai/artifact/PG6EhGTHaAkTiEkSSst4st — **3/3 OK** par David. Blocs horloge et opération pas en prod : brouillons mal rendus dans l'admin de prod jusqu'au `deploy:prod`.
 - **Prochaine action** : phase 0 du lot **B1** tableaux (068, 069, 084), puis B2 → B3 (§ 4 nonies).
-- **En attente de David** : relecture A3 (https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71) et `92c8e499` (A6) ; publication A1 à H en un lot ; vérification manuelle #1702.
+- **En attente de David** : relecture A3 (https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71, 0/6 verdict) ; publication A1 à H en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; le bon choix d'un QCM n'accepte qu'UN `{{if:…}}` ; **une variable `h` remplace la lettre « h » des valeurs (« 6 h » → « 6 12 ») : ne pas nommer une variable comme une lettre du texte** ; bloc ```operation : plus grand terme en premier ; sous zsh, `$LISTE` ne se découpe pas ; corps de commit ≤ 100 caractères par ligne ; jamais de variable `e` ; relire le rendu ; la base refuse un tag sur un modèle sans nœud.
 - **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1759).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -230,3 +230,4 @@ David suit mes recommandations (« je suis tes recos. go »).
 - 2026-10-25 : H, audit sécurité sans finding bloquant (⚠️ `20261026120000_demo_scripts_prof_seul` est sur `main` et pas jouée en prod : un `db:migrate` la jouerait aussi) ; page à cocher H publiée : https://claude.ai/artifact/PG6EhGTHaAkTiEkSSst4st (collection `verdicts`).
 - 2026-10-25 : #1759 mergée (CI verte) ; `db:migrate` en attente (migration demo_scripts en file, à lancer par David).
 - 2026-10-25 : `db:migrate` lancé par David (demo_scripts + lot H), vérifié en prod : 3 modèles H sur leur sous-notion, 1 tag chacun ; 5 scripts de démo au prof, 0 à l'admin. Page à cocher H relue : 3/3 OK.
+- 2026-10-25 : relevé des pages : `92c8e499` (A6) OK depuis 14 h 22 → A6 9/9 OK ; A3 toujours sans verdict.
