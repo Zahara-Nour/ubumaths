@@ -4,10 +4,10 @@
 
 _Mis à jour le 2026-10-25, phase 0._
 
-- **État** : phase 0 écrite (§ 1 à 7), questions posées à David (§ 7).
-- **Prochaine action** : recueillir les décisions (§ 7 bis), puis tests rouges du lot 1.
-- **En attente de David** : réponses aux questions du § 7.
-- **Pièges en cours** : aucun.
+- **État** : PR 1a (bloc ```operation d'affichage : parseur, scène, écran, PDF, éditeur riche, `check:ubumark`) ouverte.
+- **Prochaine action** : CI + revue de la PR 1a, merge ; puis phase de conception de la PR 1b (saisie + juge), à présenter à David avant de coder.
+- **En attente de David** : rien.
+- **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` (pas un objet) ; `pnpm format` avec une variable de liste ne découpe pas sous zsh → `xargs prettier`.
 - **Worktree / branche** : `../ubumaths-wt-operations-posees`, `feat/operations-posees`.
 
 ---
@@ -80,27 +80,49 @@ retenues: oui
 - PDF : grille vide à compléter (ou résolue avec `cases: aucune`) ; Typst valide toujours (cadre
   neutre en cas d'erreur).
 
-## 4. Comportements (à détailler après les décisions)
+## 4. Comportements du lot 1 (addition, soustraction)
+
+Syntaxe retenue pour le lot 1 : `calcul:` (obligatoire), `cases: résultat | aucune` (défaut
+`résultat`), `retenues: oui | non` (défaut `oui`), `méthode: compensation | cassage` (soustraction
+seulement, défaut `compensation`). `cases: tout` (lignes intermédiaires) arrive avec la
+multiplication (lot 2).
 
 ### Nominal
 
-1. `calcul: 45 + 37` → 2 lignes alignées, trait, 2 cases de résultat (+ case de retenue au-dessus
-   des dizaines si `retenues: oui`).
-2. L'élève tape les chiffres de **droite à gauche** ; après un chiffre, le curseur passe à la case de
-   gauche (comme sur papier) ; sur téléphone, clavier numérique.
-3. Réponse « 82 » → juste ; « 72 » → faux, la correction montre l'opération résolue.
-4. `calcul: 56,75 + 234 + 0,8` → virgules alignées, 0 implicites non affichés (ou grisés : Q à voir).
+1. `calcul: 45 + 37` → deux lignes alignées à droite, signe + à gauche de la dernière ligne, trait,
+   ligne de résultat. Cases de résultat : **une de plus** que le plus long terme (trois ici), pour que
+   la largeur ne trahisse pas la retenue finale. Cases de retenue au-dessus de chaque colonne sauf
+   celle des unités.
+2. `calcul: 28 + 8 + 56` → trois termes ; une retenue peut valoir 2 (`9 + 9 + 9`).
+3. `cases: aucune` → opération résolue : résultat écrit, retenues écrites (sauf `retenues: non`),
+   zéros de tête jamais écrits.
+4. `calcul: 56,75 + 234 + 0,8` → virgules alignées sous la colonne des unités ; carreaux vides à
+   droite des nombres plus courts (décision 10) ; le résultat a autant de décimales que le terme
+   qui en a le plus (`291,55`), zéro final compris (`2,5 + 1,5` → `4,0`).
+5. Soustraction `calcul: 52 − 37`, méthode **compensation** : colonne des unités, 2 < 7 → petit 1
+   devant le 2 du haut, petit 1 contre le 3 du bas (colonne suivante). Résultat 15. Cases de
+   résultat : autant que le nombre du haut.
+6. `méthode: cassage` : le chiffre emprunté est barré, sa nouvelle valeur écrite au-dessus ; à
+   travers les zéros (`302 − 7` : 3 → 2, 0 → 9, 2 → 12).
+7. `−`, `-` acceptés pour la soustraction ; `,` ou `.` pour la virgule ; `1 234` (espaces de
+   milliers) accepté.
+8. Variables résolues avant le bloc (`calcul: {{a}} + {{b}}`), comme l'horloge.
+9. Le bloc marche au premier niveau et en item de liste ; écran et PDF construits depuis la même scène.
 
 ### Limites
 
-5. Résultat avec un chiffre de plus que les termes (99 + 1) → une case de plus à gauche.
-6. Soustraction à résultat avec zéros de tête (1 000 − 998) → cases de tête : vides acceptées comme 0.
+10. `99 + 1` → résultat `100`, la retenue des centaines au-dessus de la colonne ajoutée.
+11. `1 000 − 998` → résultat `2` : en mode résolu, cases de tête vides.
+12. `0,5 + 0,5` → `1,0`.
 
-### Erreurs (messages situés, vus du prof)
+### Erreurs (messages situés, vus du prof ; l'élève voit « Opération indisponible »)
 
-7. `calcul:` absent, opérateur inconnu, soustraction négative, division par 0, division décimale qui
-   ne s'arrête pas au centième (si le modèle ne le borne pas) → erreur située, l'élève voit un cadre
-   neutre.
+13. Pas de ligne `calcul:` ; terme illisible (`4a + 2`) ; opérateur inconnu ou mélangé (`4 + 2 − 1`).
+14. Soustraction à résultat négatif ; soustraction à plus de deux termes ; addition à plus de
+    trois termes.
+15. Plus de 10 chiffres avant la virgule ou plus de 3 après ; nombre négatif.
+16. `×` ou `÷` : « pas encore disponible (lot 2 / lot 3) ».
+17. `méthode:` sur une addition ; clé inconnue ; valeur hors liste ; clé répétée.
 
 ## 5. Ce qu'il faut construire
 
@@ -119,10 +141,32 @@ Patron « Comment étendre » de `ubumark.md` (type, parseur, branchements, scè
 
 Voir le message de la session du 2026-10-25 (Q1 à Q8).
 
-## 7 bis. Décisions
+## 7 bis. Décisions (David, 2026-10-25)
 
-_À recueillir._
+Toutes les recommandations retenues :
+
+1. L'élève remplit le résultat chiffre par chiffre et, s'il le veut, des cases de retenue.
+2. Les retenues sont une aide, jamais jugées ; la correction les montre.
+3. L'opération est posée par le modèle en v1 ; « poser soi-même » plus tard (QCM en attendant).
+4. Syntaxe et scène pour les quatre opérations, livrées en trois lots : (1) addition et
+   soustraction, entiers, décimaux, euros ; (2) multiplication ; (3) division.
+5. Architecture A : les cases du résultat forment UNE réponse, lue comme un nombre, jugée par le
+   juge existant ; à la correction, les chiffres faux surlignés.
+6. Lignes intermédiaires (produits partiels, soustractions de la division) : aide, non jugées.
+7. Saisie de droite à gauche, curseur qui passe à gauche ; cases de tête vides = 0.
+8. `cases: aucune` : opération résolue (correction, cours, PDF).
+9. Soustraction : réglage `méthode: compensation | cassage`, compensation par défaut.
+10. Décimaux de longueurs différentes : carreaux vides (pas de zéros ajoutés).
+
+Découpage du lot 1 : **PR 1a** bloc d'affichage (parseur, scène, écran, PDF, éditeur riche,
+`check:ubumark`) ; **PR 1b** saisie et juge (nouvelle nature de case).
 
 ## Journal
 
 - 2026-10-25 : worktree créé, phase 0 rédigée.
+- 2026-10-25 : décisions de David (§ 7 bis). PR 1a : `types/operation.ts`, `parser/operation-parser.ts`,
+  `utils/operation-scene.ts` (calcul chiffre par chiffre en `BigInt`, retenues d'addition,
+  compensation, cassage), `Operation.svelte` (grille HTML), `operation-typst.ts` (`table` native),
+  branchements (premier niveau, listes, éditeur riche, `check:ubumark`, cadres de réponse).
+  Tests : parseur 27, scène 28, Typst 6 + compilation réelle, composant 7 (navigateur), éditeur 4.
+  Captures écran clair / sombre (360 px) et PDF regardées.

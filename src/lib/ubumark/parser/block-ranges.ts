@@ -16,6 +16,7 @@ import { findTrigCircleBlocks } from './trig-circle-parser';
 import { findNumberLineBlocks } from './number-line-parser';
 import { findQrBlocks } from './qr-parser';
 import { findHorlogeBlocks } from './horloge-parser';
+import { findOperationBlocks } from './operation-parser';
 import { findCourbeBlocks } from './courbe-parser';
 import { findFigureBlocks } from './figure-parser';
 import { findStatChartBlocks } from './stat-chart-parser';
@@ -40,6 +41,7 @@ export function blockLineRanges(lines: string[]): [number, number][] {
 		...findNumberLineBlocks(lines),
 		...findQrBlocks(lines),
 		...findHorlogeBlocks(lines),
+		...findOperationBlocks(lines),
 		...findCourbeBlocks(lines),
 		...findFigureBlocks(lines),
 		...findStatChartBlocks(lines)

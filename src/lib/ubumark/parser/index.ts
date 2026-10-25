@@ -138,6 +138,14 @@ export {
 	isHorlogeBlockStart
 } from './horloge-parser';
 
+// Bloc ```operation
+export {
+	parseOperation,
+	parseOperationContent,
+	findOperationBlocks,
+	isOperationBlockStart
+} from './operation-parser';
+
 // Bloc ```courbe
 export {
 	parseCourbe,

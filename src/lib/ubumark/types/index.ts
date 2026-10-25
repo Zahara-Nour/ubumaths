@@ -212,6 +212,12 @@ export type { QrNode, QrIssue } from './qr';
 export type { HorlogeNode, HorlogeIssue, HorlogeSpec, HorlogeTime } from './horloge';
 
 // ============================================================================
+// OPÉRATION POSÉE (bloc ```operation)
+// ============================================================================
+
+export type { OperationNode, OperationIssue, OperationSpec, OperationTerm } from './operation';
+
+// ============================================================================
 // PARSER TYPES
 // ============================================================================
 

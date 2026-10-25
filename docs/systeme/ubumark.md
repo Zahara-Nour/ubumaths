@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -180,6 +180,7 @@ en retrait sous un item de liste.
 | `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`              | `StatChart.svelte`       | `stat-chart-typst.ts`            |
 | `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`         | `qr-typst.ts`                    |
 | `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`         | `horloge-typst.ts`               |
+| `operation`                                                                                                               | `operation`                 | `operation-parser.ts`               | `Operation.svelte`       | `operation-typst.ts`             |
 
 La liste des genres statistiques est `STAT_CHART_KINDS` (`src/lib/ubumark/types/stat-chart.ts`).
 
@@ -303,6 +304,30 @@ minutes ; 13 h se dessine comme 1 h. Scène partagée `utils/horloge-scene.ts` ;
 natif (ni paquet ni image). Nom accessible « Horloge à aiguilles », **jamais l'heure** (la réponse).
 Dans un choix de QCM : 3 cm (`--horloge-taille` posé par `MultipleChoiceInput` et les aperçus ;
 série figée : `withChoiceClockSize` ajoute `taille: 3cm`, lettre seule sur sa ligne).
+
+**Opération posée en colonnes** (chantier [operations-posees](../wip/operations-posees-progress.md),
+addition et soustraction ; multiplication et division à venir) — `src/lib/ubumark/__tests__/operation/` :
+
+````text
+```operation
+calcul: 56,75 + 234 + 0,8
+cases: aucune
+```
+````
+
+`calcul:` (obligatoire) : 2 ou 3 termes pour `+`, 2 pour `−` (`-` et `–` acceptés), le premier le
+plus grand ; virgule ou point, espaces de milliers acceptés ; 10 chiffres au plus avant la virgule,
+3 après ; `×` et `÷` refusés pour l'instant. Facultatives : `cases: résultat | aucune` (défaut
+`résultat` : cases du résultat à remplir ; `aucune` : opération résolue), `retenues: oui | non`
+(cases de retenue, ou retenues écrites), `méthode: compensation | cassage` (soustraction seulement ;
+compensation : petit 1 devant le chiffre du haut et contre celui du bas de la colonne suivante ;
+cassage : chiffre barré, nouvelle valeur au-dessus). Le bloc calcule lui-même résultat et retenues
+(`operationResult`, chiffre par chiffre, jamais en flottant) : l'auteur ne les écrit pas. À
+remplir, une addition a une colonne de plus que son plus long terme (la largeur ne trahit pas la
+retenue finale). Virgules alignées ; carreaux vides à droite des décimaux plus courts, jamais de
+zéro ajouté. Scène partagée `utils/operation-scene.ts` ; écran en grille HTML (carreaux de cahier),
+PDF en `table` Typst native (sans les cases de retenue : l'élève écrit sur papier libre). Aucune
+valeur attendue dans le DOM d'une case à remplir. Saisie de l'élève : pas encore (lot 1b).
 
 ### Cases à compléter
 

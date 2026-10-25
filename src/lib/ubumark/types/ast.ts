@@ -561,6 +561,7 @@ export type { FigureNode } from './figure';
 export type { StatChartNode } from './stat-chart';
 export type { QrNode } from './qr';
 export type { HorlogeNode } from './horloge';
+export type { OperationNode } from './operation';
 
 // Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
@@ -572,6 +573,7 @@ import type { FigureNode } from './figure';
 import type { StatChartNode } from './stat-chart';
 import type { QrNode } from './qr';
 import type { HorlogeNode } from './horloge';
+import type { OperationNode } from './operation';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -595,7 +597,8 @@ export type BlockNode =
 	| FigureNode
 	| StatChartNode
 	| QrNode
-	| HorlogeNode;
+	| HorlogeNode
+	| OperationNode;
 
 // ============================================================================
 // COMPOSITE NODES
