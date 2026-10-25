@@ -1,6 +1,6 @@
 /**
  * « Comment ? » sur une ligne de Calcul sans lettre (phase 0 de
- * `docs/wip/retrait-calc-progress.md`, validée par David le 2026-10-24) : ce
+ * `docs/archive/wip/retrait-calc-progress.md`, validée par David le 2026-10-24) : ce
  * que `/calc` montrait, avant son retrait.
  *
  * - **C1** : un calcul sans lettre ni nom de l'atelier, avec au moins une

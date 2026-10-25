@@ -169,7 +169,7 @@ export function evaluateSteps(
  * Les étapes d'un calcul sans lettre (`2+3*4`), ligne de Calcul — ou `null`.
  *
  * Ce que montrait `/calc` avant son retrait (phase 0 de
- * `docs/wip/retrait-calc-progress.md`, validée par David le 2026-10-24) : les
+ * `docs/archive/wip/retrait-calc-progress.md`, validée par David le 2026-10-24) : les
  * opérations de `.évaluer`, sans « On remplace » (C2) ni résumé (Q2), qui
  * redirait la ligne. Une lettre (une valeur de l'atelier, `x`) → `null` (Q1).
  *

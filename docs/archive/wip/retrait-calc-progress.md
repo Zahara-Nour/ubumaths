@@ -1,20 +1,19 @@
 ---
 title: Retrait de /calc — journal
 date: 2026-10-24
-status: #1709 et #1715 mergées — PR 4 (outputHtml) en cours
+status: CLOS le 2026-10-25 — #1705, #1709, #1715, #1718 mergées ; durable versé dans docs/systeme/ (atelier.md, grapheur.md, mathast/README.md)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 4 en cours._
+_Mis à jour le 2026-10-25, après #1718 : chantier CLOS._
 
-- **État** : #1709 (`/calc` retirée) et #1715 (code mort du grapheur) mergées, sur `main`, pas en
-  prod. Revue de #1715 : harnais `WithAtelier` sans grapheur, corrigé dans la PR.
-- **Prochaine action** : PR 4 (#1718, `outputHtml` retiré) ouverte → revue, CI, merge.
-  Puis fin de chantier : archiver ce journal dans `docs/archive/wip/`.
-- **En attente de David** : rien (« supprime les », 2026-10-25).
-- **Pièges** : `docs:check-a-jour` réclame `statistiques.md` dès que `desk.svelte.ts` change.
-- **Worktree / branche** : PR 4 → `../ubumaths-wt-retrait-calc`, `chore/retrait-calc-4`.
+- **État** : `/calc` retirée (308 → `/atelier`, #1709), « Comment ? » d'un calcul dans l'atelier
+  (#1705), code mort du grapheur (#1715) et `outputHtml` du moteur (#1718) supprimés. Sur `main`,
+  pas en prod.
+- **Prochaine action** : aucune. Vérification manuelle de #1709 dans `verifications-manuelles.md`.
+- **Versé** : `atelier.md` (« Comment ? », règles de frappe, anciennes pages), `grapheur.md`,
+  `mathast/README.md`, `cli/web/README.md`.
 
 ---
 
