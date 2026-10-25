@@ -1,6 +1,6 @@
 /**
  * Vitrine — les blocs ubumark (`/demo/blocs`)
- * Comportements validés par David le 2026-10-25 (docs/wip/catalogue-blocs-progress.md, phase 0).
+ * Comportements validés par David le 2026-10-25 (docs/archive/wip/catalogue-blocs-progress.md, phase 0).
  *
  * - un visiteur voit le titre, le retour vers `/demo`, trois niveaux et neuf blocs dessinés ;
  * - le texte de chaque bloc est replié sous « Voir ce qu'écrit le prof » ;

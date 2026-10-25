@@ -8,7 +8,7 @@
  * Chaque exemple passe par `parseMarkdown` dans un test : un exemple refusé
  * fait échouer la CI (`__tests__/catalogue.test.ts`).
  *
- * Chantier : `docs/wip/catalogue-blocs-progress.md`.
+ * Chantier : `docs/archive/wip/catalogue-blocs-progress.md`.
  *
  * @module block-catalog/types
  */
