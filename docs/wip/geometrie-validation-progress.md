@@ -2,16 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phases 0 de CP-060 et CP-058 validées._
+_Mis à jour le 2026-10-26, après #1793._
 
-- **État** : PR 1 (#1768), renommage (#1774), PR 2 (#1775), PR 3 (#1782) mergés, code pas encore en prod (attend un
-  `deploy:prod`). Brouillon CP-059 en prod (`010d81a5`), rangé et tagué (#1787) ; à publier par David après le `deploy:prod`.
-- **Prochaine action** : PR 4 (CP-060, § 9) codée et revue, à ouvrir et merger ; puis PR 5 (CP-058).
-- **En attente de David** : rien.
-- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; case « figure » mêlée à une autre case :
-  prise en charge à l'affichage, jamais encore dans un modèle ; le brouillon CP-059 ne s'affiche qu'avec le code de
-  #1775/#1782 (à publier seulement après le `deploy:prod`).
-- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `feat/geometrie-validation-carre`.
+- **État** : CP-059 (#1768 → #1787) et CP-060 (#1793 : outil segment, `carre` / `rectangle`, modèle
+  `cp-figure/02-terminer-carre-rectangle.json`, 22 specs) mergés ; rien de tout cela en prod (attend un `deploy:prod`).
+  Brouillon CP-059 en prod (`010d81a5`), à publier après le `deploy:prod` ; CP-060 pas encore créé en base.
+- **Prochaine action** : PR 5 — CP-058 (§ 8, décisions § 9) : modèle mixte figure + case texte oui / non, Valider
+  grisé tant que la droite manque, casse de « oui » à vérifier dans le validateur.
+- **En attente de David** : essai de CP-060 (`docs/wip/verifications-manuelles.md`) ; go pour `create-questions
+--publier` de CP-060 (brouillon), puis nœud + tag (migration, comme #1787).
+- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; case « figure » mêlée à une autre case
+  jamais encore dans un modèle (CP-058 sera le premier) ; limites connues de CP-060 au § 9.
+- **Worktree / branche** : aucun (retiré après #1793).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -396,3 +398,4 @@ rend toute réponse fausse sans prévenir l'auteur (le modèle tire des entiers)
 - 2026-10-26 : phases 0 de CP-060 (§ 7) et CP-058 (§ 8) écrites ; constaté : QCM et cases ne se mêlent pas (oui / non = case texte).
 - 2026-10-26 : David suit les recos des § 7 et § 8 ; plan des PR 4 et 5 (§ 9) ; worktree recréé.
 - 2026-10-26 : PR 4 codée (moteur, écran, modèle CP-060) ; revue Opus : 1 faux verdict corrigé (trait aligné détaché), 5 mineurs traités, 2 limites notées.
+- 2026-10-26 : #1793 mergée (CI verte après fusion de `main`, conflit d’une ligne dans `ubumark.md`).
