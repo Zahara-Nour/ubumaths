@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot B1 en cours (PR #1763 ouverte)._
+_Mis à jour le 2026-10-25, après #1763 et son `db:migrate`._
 
-- **État** : groupe A et lot H en prod (brouillons validés). **Lot B1** (tableaux, § 4 undecies) : 3 brouillons créés en prod (go de David : `7752c23e` CP-068, `76d14aa6` CP-069, `55662eef` CP-084), vérifiés sans nœud ni tag ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
-- **Prochaine action** : PR #1763 (audit sécurité sans finding bloquant) : CI verte → merge → `db:migrate` (question d'accès tranchée : personne) → page à cocher B1 ; puis phase 0 de B2 (reconnaître sur une figure ; CP-034 y viendra si David le range en QCM sur figure).
+- **État** : groupe A, lot H et **lot B1 (#1763)** en prod en brouillon. B1 : `7752c23e` CP-068, `76d14aa6` CP-069, `55662eef` CP-084 ; migration `20261026140000` jouée et vérifiée (sous-notion + 1 tag chacun, `updated_at` inchangé, trigger actif). Page à cocher B1 : https://claude.ai/artifact/CNdqUtbVKsRZneNx13ksWo (collection `verdicts`, 0 verdict).
+- **Prochaine action** : relevé des verdicts B1 ; puis phase 0 du lot **B2** (reconnaître sur une figure, affichage seul : 054-056, 057, 061, 062, 067 ; CP-034 y viendra si David le range en QCM sur figure), puis B3 (§ 4 nonies).
 - **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 034 et 058 à réexaminer.
-- **En attente de David** : publication A1 à H (et B1) en un lot ; vérification manuelle #1702.
+- **En attente de David** : relecture de la page B1 ; publication A1 à H et B1 en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; **case dans un tableau = `$?$` (un `[_]` déborde au téléphone)** ; **un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte** ; le moteur ne mélange pas : indicatrices de Lagrange ; ne pas nommer une variable comme une lettre du texte ; jamais de variable `e` ; corps de commit ≤ 100 caractères par ligne ; la base refuse un tag sur un modèle sans nœud.
-- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-b1`.
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1763).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -206,3 +206,4 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 2026-10-25 : § 2 bis / 2 ter (case « figure ») déplacés dans [geometrie-validation](geometrie-validation-progress.md).
 - 2026-10-25 : lot B1, phase 0 validée (§ 4 undecies), worktree `../ubumaths-wt-questions` (`feat/questions-b1`) ; 3 modèles écrits, 16 specs vertes, rendu relu à 390 px (cases `[_]` → `$?$` : le champ texte débordait ; « la ligne de Inès » → Lina).
 - 2026-10-25 : B1, 3 brouillons créés en prod (`create-questions --publier`, go de David : `7752c23e`, `76d14aa6`, `55662eef`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
+- 2026-10-25 : #1763 mergée (CI verte, audit sécurité sans finding bloquant) ; `db:migrate` joué, vérifié en prod (3 modèles B1 sur leur sous-notion, 1 tag chacun) ; page à cocher B1 publiée.
