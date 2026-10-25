@@ -62,7 +62,39 @@
 			precision?: { type: string; digits?: number };
 		};
 
+	// Case « figure » (bloc ```figure-a-completer), telle que le générateur la pose :
+	// `case: 0` en tête du bloc, le texte du bloc et ses vérifications dans la case
+	const FIGURE_BODY = [
+		'fenetre: 0 ; 10 ; 0 ; 6',
+		'outils: droite',
+		'verifier: droite_par A ; B',
+		'---',
+		'A = point(1, 2)',
+		'B = point(7, 2)',
+		'C = point(4, 5)'
+	].join('\n');
+
 	const sampleQuestions: Record<string, DebugInstance> = {
+		figure_a_completer: {
+			templateId: 'demo-figure-a-completer',
+			statement: resolvedMarkdown(
+				`Trace la droite qui passe par les points A et B.\n\n\`\`\`figure-a-completer\ncase: 0\n${FIGURE_BODY}\n\`\`\``
+			),
+			blanks: [
+				{
+					expectedAnswer: 'droite(A;B)',
+					type: 'graphical',
+					construction: {
+						source: FIGURE_BODY,
+						checks: [{ kind: 'droite_par', points: ['A', 'B'], line: 3 }]
+					}
+				}
+			],
+			grades: ['CP'],
+			theme: 'Géométrie',
+			domain: 'Tracer une droite',
+			level: 1
+		},
 		numerical_exact: {
 			templateId: 'debug-numerical-1',
 			statement: 'Calculez: $$\\frac{15}{3}$$' as QuestionInstance['statement'],
@@ -209,7 +241,8 @@
 		{ value: 'multiple_choice', label: 'QCM' },
 		{ value: 'fraction_sum', label: 'Somme de fractions, à trou' },
 		{ value: 'qcm_pi', label: 'QCM : valeur de π' },
-		{ value: 'pythagore_blanks', label: 'Pythagore, deux trous' }
+		{ value: 'pythagore_blanks', label: 'Pythagore, deux trous' },
+		{ value: 'figure_a_completer', label: 'Figure à compléter (CP-059)' }
 	];
 	const SIZE_ITEMS = [
 		{ value: 'sm', label: 'Petite' },
