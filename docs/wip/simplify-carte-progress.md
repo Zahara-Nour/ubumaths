@@ -7,7 +7,7 @@ _Mis à jour le 2026-10-25, après #1762 (lot 6b)._
 - **État** : lot 6b mergé (#1762) : `computeNumericValue` dans `eval/numeric-value.ts` (+ `computeNumericValueOrInfinity`), 17 fonctions locales et 11 blocs inline remplacés, aucun résultat changé (suite serveur ; banc aveugle). Pas de vérification manuelle. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → 6a ✓ → 6b ✓ → **7 renommages** (dernier lot).
-- **Prochaine action** : lot 7, phase 0 : inventaire des renommages (dont `computeNumericValue`, relais `solve/numeric-value.ts` à supprimer, `tidyWithoutReordering` Q10 § 6), proposition à David, **attendre sa validation**. Branche neuve depuis `origin/main`.
+- **Prochaine action** : lot 7, phase 0 rédigée (§ 101 : R1-R5, 3 questions) — **attendre la validation de David**, puis branche neuve depuis `origin/main`.
 - **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93).
 - **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; banc des modèles : script non gardé, réécrit au § 99 (`generateInstance`, graines 1..8, `generatedAt` à retirer), aveugle hors questions ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
 - **Worktree / branche** : `ubumaths-wt-simplify-carte`, détaché sur `origin/main` ; branches 6/6b supprimées.
@@ -1194,3 +1194,41 @@ CI verte (16 checks). Suite serveur complète verte après rebase (deux rouges d
 ## 100. Lot 6b mergé (#1762, 2026-10-25)
 
 CI verte (16 checks). Revue `code-reviewer` Sonnet : aucun bloquant ; mineur corrigé (`dedupe` garde ±∞ via `computeNumericValueOrInfinity`). Relais `solve/numeric-value.ts` à supprimer au lot 7.
+
+## 101. Lot 7 (renommages), phase 0 : inventaire (2026-10-25, à valider)
+
+Relevé sur `origin/main` (grep hors tests, définitions relues). **Aucun résultat ne change** : renommages, relais supprimé, alias inlinés. Preuve : `check:incremental` 0 + suite serveur complète. Revue `code-reviewer` Sonnet.
+
+**R1 — relais `solve/numeric-value.ts`** : supprimé, 7 imports repointés vers `eval/numeric-value`. `computeNumericValue` et `computeNumericValueOrInfinity` **gardent leur nom** (justes ; 37 fichiers à toucher pour rien).
+
+**R2 — noms en `tidy` qui n'appellent pas `tidy`** :
+
+| Aujourd'hui                                                                              | Ce qu'il fait                              | Proposé                   |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------- |
+| `tidy` local (`solve/literal-parameter.ts:211`)                                          | `denormalize(normalize())`                 | `normalForm`              |
+| `tidySumFactors` (`solve/solve.ts:519`, + `tidy` interne)                                | `normalize` sur les facteurs-sommes        | `normalizeSumFactors`     |
+| `tidyExactValue` (`variations/critical-points.ts:235`)                                   | `exactValueToShow` (source = substitution) | `exactImageToShow`        |
+| `tidyCriticalAbscissa` (idem `:247`)                                                     | `exactValueToShow` si `exp` dedans         | `abscissaToShow`          |
+| `withTidyEndpoints` (`variations/monotonicity.ts:90`)                                    | bornes via la précédente                   | `withEndpointsToShow`     |
+| `tidyValue` (`cli/commands/solve-latex.ts:47`)                                           | `exactValueToShow` seul (alias)            | inliné                    |
+| `readableExact` (`cli/web/web-repl-engine.ts:140`), `readable` (`atelier/render.ts:144`) | valeur à afficher + gardes                 | `resultToShow` (les deux) |
+
+**R3 — homonymes qui ne font pas la même chose** :
+
+- `approx` : constructeur de relation `≈` (`factory.ts`, gardé) **et** évaluation (`reciprocal/image.ts:52`, alias de `computeNumericValueOrInfinity`, 10 appels dont `atelier/reciprocal.ts`) → l'alias disparaît, appel direct.
+- `getNumericValue` ×3 : `common/numeric.ts` (lit un littéral `3` / `−5`, ne calcule rien, 23 fichiers) ; copie locale identique `numtype/infer.ts:279` ; `integration/integrators/partial-fractions.ts:898` qui **évalue** (`−(1/4)`, `3/2`). → `common` : `literalNumberValue` ; `infer.ts` : la copie disparaît (import) ; `partial-fractions` : `coefficientValue`.
+- `evaluateAtPoint` ×4 : limites pédagogiques (exporté, 32 appels, évaluateur maison) gardé ; `variations/extrema.ts:608` et `sign/helpers/sampling.ts:357` (`evaluate` décimal) → `decimalValueAt` ; `limits/algebraic.ts:663` (`computeNumericValue`) → `approximateValueAt`.
+- `readable` texte (`atelier/listing.ts:106`) → `typedText` ; prédicat (`reciprocal/index.ts:192`) → `hasShortBounds`.
+- `numericValue` ×7 : laissés (moteurs et conventions différents, sortis du lot 6 : NaN, `undefined`, exception, `compile`) ; seul `forbidden-value.numericValue` (exporté, rend NaN) → `numericValueOrNaN`.
+
+**R4 — `tidyWithoutReordering` (Q10)** : depuis 4c-bis, `tidy` range déjà `(x+1)eˣ` et garde l'ordre écrit entre deux parenthèses. Sonde : le remplacer par `tidy` et lancer la suite serveur. 0 rouge → supprimé ; sinon gardé, renommé `tidyKeepingFactorOrder`, différences montrées.
+
+**R5 — `tidyTerms`** (30 références, 9 fichiers) : titre « une dérivée mise au propre », appelé aussi sur primitives, formules, valeurs interdites. Fait `tidy({ order: 'kept' })` + règle « négatif en tête » + parenthèses sous-entendues. → nom gardé, en-tête réécrit (ce qu'il fait, sans « dérivée »).
+
+**Laissés** : `normalize` (Q5) ; `tidySafe` ×4 (§ 31 : aucun plantage connu) ; `tidyPeriodicMember`, `tidyInterval`, `withTidyStep` (appellent bien `tidy`) ; `evaluateConstant` ×2 (modules et entrées différents) ; les `const` locales ; `evaluateNodeToApproximatedNumber` (33 fichiers, nom long mais juste).
+
+### Questions pour David
+
+1. Périmètre R1-R5 ci-dessus, en une PR ?
+2. Les noms proposés (tableau R2, R3) : d'accord, ou d'autres ?
+3. `getNumericValue` → `literalNumberValue` (23 fichiers + 27 tests) : le renommer, ou garder le nom et seulement retirer les deux homonymes ?

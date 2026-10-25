@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-25, lot B1 en cours (PR #1763 ouverte)._
 
 - **État** : groupe A et lot H en prod (brouillons validés). **Lot B1** (tableaux, § 4 undecies) : 3 brouillons créés en prod (go de David : `7752c23e` CP-068, `76d14aa6` CP-069, `55662eef` CP-084), vérifiés sans nœud ni tag ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
 - **Prochaine action** : PR #1763 (audit sécurité sans finding bloquant) : CI verte → merge → `db:migrate` (question d'accès tranchée : personne) → page à cocher B1 ; puis phase 0 de B2 (reconnaître sur une figure ; CP-034 y viendra si David le range en QCM sur figure).
-- **Case « figure »** : phase 0 de CP-059 **validée** (§ 2 ter) ; code après B3, chantier à part. 034 et 058 à réexaminer.
+- **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 034 et 058 à réexaminer.
 - **En attente de David** : publication A1 à H (et B1) en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; **case dans un tableau = `$?$` (un `[_]` déborde au téléphone)** ; **un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte** ; le moteur ne mélange pas : indicatrices de Lagrange ; ne pas nommer une variable comme une lettre du texte ; jamais de variable `e` ; corps de commit ≤ 100 caractères par ligne ; la base refuse un tag sur un modèle sans nœud.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-b1`.
@@ -41,136 +41,17 @@ Non tagués CP (12) :
 - **D. Non évaluables sans interaction** : 002, 053, 059, 060, 063-066, 074 — **à revoir avec la validation de figure élève (géométrie)**.
 - À trancher : 072, 084 (« présenter », « construire » : « compléter » compte-t-il ?).
 
-## 2 bis. Validation d'une figure faite par l'élève (relevé du 2026-10-24)
+## 2 bis. Case « figure » → chantier à part
 
-C'était prévu : phase 3 « mode exercice, l'élève construit lui-même + validation »
-(`docs/archive/systeme-2026-06/geometrie/decisions.md` § 1 et § 11, inspiré du `check/` d'apigeom). Ce qui existe :
-
-- **Les prédicats** : `src/lib/geometry-core/validation/checks.ts` (321 lignes, testés) — `checkPointAt`, `checkCollinear`,
-  `checkDistance`, `checkSameDistance`, `checkParallel`, `checkPerpendicular`, `checkAngle`, `checkPointOnCircle`, chacun
-  `{ valid, message }` en français, en exact quand c'est possible. **Aucun appelant** (`docs/systeme/geometrie/README.md` § 9-10 :
-  « `validation/` branché sur des exercices » = jamais fait).
-- **La construction à la souris** : livrée dans l'atelier (lot 3, #1533→#1540) — barre d'outils (point, segment, droite,
-  demi-droite, cercle, milieu, intersection, point sur un objet, parallèle, perpendiculaire), glisser des points,
-  `snapToGrid` (`geometry-core/interaction/`). Vit dans `FigureView.svelte` de l'atelier, pas dans une question.
-- **Figures interactives** : `deplacable:` / `rendu:` réservés aux figures stockées, refusés dans un bloc d'exercice.
-
-Ce qui manque pour une question : une **case « figure »** (`answerKind` neuf) — figure de départ (quadrillage, points donnés),
-barre d'outils restreinte par le modèle, réponse = la figure de l'élève, jugée par des vérifications déclarées dans le modèle
-(liste de `check*`). Prédicats à ajouter pour le primaire : « il existe un segment / une droite passant par A et B »,
-« ce polygone est un carré / rectangle / triangle », « sommets sur des nœuds du quadrillage ».
-
-Points CP que cela rendrait évaluables : 059 (tracer une droite par deux points), 060 (compléter un carré / rectangle sur
-quadrillage), 058 (vérifier un alignement à la règle), 034 (reporter une longueur), et hors géométrie 008 (placer un point sur
-la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipulation, espace de la classe), 074 (oral) ;
-002 (construire une collection) relève du bloc `collection` s'il devient interactif.
-
-### Verdict du conseil (2026-10-25) — remplace le « cœur » proposé ci-dessus
-
-Proposition passée au conseil (5 conseillers + relecture croisée anonyme). Ce qui change :
-
-- **Pas de vérifications « il existe » au CP** : avec l'aimantation obligatoire, chaque point de l'élève est sur un nœud ;
-  on retrouve ses objets **par leurs coordonnées**, plus de problème d'identifiants. « Il existe » → collège.
-- **Vérifier des propriétés, pas comparer à UNE figure attendue** : plusieurs bonnes réponses sont possibles (carré
-  construit d'un côté ou de l'autre de [AB]). Ex. : 4 sommets sur des nœuds, côtés égaux, angles droits. Les `check*`
-  de `checks.ts` resservent si on les fait porter sur des positions plutôt que sur des identifiants.
-- **Questions ouvertes tranchées par le conseil** : juger le **résultat** (pas la manière) ; **tout-ou-rien** avec message
-  précis sur la première vérification échouée ; **liste nommée** de vérifications (DSL quand deux vrais modèles l'exigeront).
-- **Découpage** : CP-059 seul de bout en bout sur tablette → CP-060 → CP-034. **CP-008** sort vers les « réponses à
-  placer » (§ 3.4) ; **CP-058** à réexaminer (pas forcément une figure). Tolérance et test « en bougeant les points » :
-  collège (sans objet au CP avec aimantation).
-- **Ordre des chantiers inchangé** (§ 4 bis). Journal des gestes, note partielle, DSL dès le lot 1 : écartés pour
-  l'instant (périmètre ; enregistrer des gestes contredirait « aucune réponse d'élève conservée »).
-- **Angles morts à traiter en phase 0** : le prof qui écrit le modèle (exemple, temps d'écriture) ; l'enfant de 6 ans
-  (précision au doigt, consigne mal lue, message d'échec, indice, reprise d'une figure à moitié faite) ; exercice rendu
-  trivial par quadrillage + aimantation + peu d'outils ; alternative d'une grille cliquable (CP-060).
-- Écartés après vérification : « la figure attendue est visible côté client » (vrai de toutes les questions, décision
-  figée) ; « geometry-core tourne-t-il dans le navigateur ? » (oui, l'atelier l'utilise).
-- **Première action du chantier** : en phase 0, écrire le modèle CP-059 tel que le prof l'écrirait et ce que voit
-  l'enfant (consigne, outils, réussite, erreur, blocage), avant toute ligne de code.
-
-## 2 ter. Case « figure » : phase 0 de CP-059 (VALIDÉE par David le 2026-10-25)
-
-Écrite avant le chantier (qui reste après B1 → B3) pour que sa phase 0 soit prête. Rien n'est codé.
-
-**Le programme** (`docs/systeme/programmes/bornes/cycle2.md`) : CP-059 « Utiliser la règle comme instrument de tracé » —
-« tracer une droite passant par deux points ; horizontale, verticale ou oblique ». Limite assumée : à l'écran on n'évalue
-pas le maniement de la règle, seulement « la droite passe par les deux bons points ».
-
-**Ce que le prof écrit** (proposition ; même format JSON que `scripts/questions/cp-h/`) — un bloc neuf ` ```construction `
-qui est à la fois la figure de départ et la case réponse :
-
-````text
-Trace la droite qui passe par les points {{p}} et {{q}}.
-
-```construction
-fenetre: 0 ; 10 ; 0 ; 6
-outils: droite
-verifier: droite_par {{p}} ; {{q}}
----
-A = point({{xa}}, {{ya}})
-B = point({{xb}}, {{yb}})
-C = point({{xc}}, {{yc}})
-```
-````
-
-- Trois variations, comme le dit le programme : horizontale, verticale, oblique (tirage de points entiers, conditions :
-  points distincts, assez éloignés, dans la fenêtre).
-- Un **point en plus** (C) que l'élève ne doit pas prendre : sans lui, avec un seul outil et l'aimantation, il ne peut
-  pas se tromper (angle mort « exercice trivial » du conseil).
-- `verifier:` = liste nommée ; `droite_par P ; Q` cherche, parmi les droites tracées par l'élève, une droite alignée avec
-  P et Q, en comparant des **positions**. Les `testSpecs` donnent la figure de l'élève (objets tracés) et le verdict attendu.
-
-**Ce que voit l'enfant** (tablette d'abord) :
-
-- la consigne en une ligne ; la figure en grand, points en croix nommées ;
-- pas de barre d'outils : un seul outil, déjà choisi ; un bouton « Effacer » (annule le dernier trait) et « Valider » ;
-- il touche un point puis un autre ; près d'un point donné, le doigt est **aimanté** sur lui (`snapToPoint` existe) ;
-  ailleurs, le trait part de l'endroit touché (il peut donc se tromper) ; la droite tracée dépasse des deux côtés ;
-- réussite : la droite passe en vert, « Bravo » ;
-- erreur : message de la vérification ratée + la bonne droite en pointillés par-dessus ;
-- rien tracé + Valider : « Tu n'as rien tracé. » (refus ou faute : à trancher, Q6).
-
-**Comportements (nominal / limite / erreur)** :
-
-| Ce que trace l'élève                 | Verdict | Message                                    |
-| ------------------------------------ | ------- | ------------------------------------------ |
-| droite par A et B (ou B et A)        | juste   | Bravo                                      |
-| droite par A et B + un autre trait   | Q5      | —                                          |
-| droite par A et C (le point en plus) | faux    | « Ta droite passe par A et C, pas par B. » |
-| droite par A et un point proche de B | faux    | « Ta droite ne passe pas par le point B. » |
-| rien                                 | Q6      | « Tu n'as rien tracé. »                    |
-
-**Constaté en écrivant** : CP-034 est « Comparer des segments selon leur longueur » (par superposition, report,
-règle graduée), pas « reporter une longueur » comme noté au § 2 bis : comme 058, il est peut-être un QCM sur une figure
-(lot B2) plutôt qu'une construction. À réexaminer.
-
-**Questions à David** :
-
-1. **Droite ou segment au CP ?** Le programme dit « droite » (le trait dépasse les points). Outil « droite » seul ?
-2. **Geste** : toucher A puis B, ou glisser le doigt de A à B (plus proche du geste de la règle) ?
-3. **Quadrillage** pour 059, ou feuille blanche (le quadrillage donne l'horizontale et la verticale gratuitement) ?
-4. **Point en plus** (C) : d'accord ? Un ou deux ?
-5. **Trait en trop** (la bonne droite + une autre) : ignoré ou faute ?
-6. **Valider sans rien tracer** : bouton grisé, ou réponse fausse ?
-7. **Temps** : les modèles CP ont un `delay` (30 s pour l'horloge). Quel temps pour tracer ? Pas de lecture à voix haute
-   dans l'appli (aucun `speechSynthesis`) : la consigne se lit seule ou avec l'adulte.
-8. **Format** : un bloc ` ```construction ` (figure et réponse ensemble), ou une case `[_]` qui renvoie à un bloc
-   ` ```figure ` ?
-
-**Décisions de David (2026-10-25, « je suis tes recos »)** : (1) outil **droite** seul ; (2) **toucher** A puis B ;
-(3) **feuille blanche**, sans quadrillage ; (4) **un** point piège ; (5) trait en trop = **faux** ; (6) Valider **grisé** tant
-que rien n'est tracé ; (7) `delay` **60 s** ; (8) bloc ` ```construction ` (figure de départ et réponse ensemble). Les
-modèles CP-059 / 060 s'écrivent **dans le chantier figure** (ils dépendent du bloc neuf), pas dans le chantier questions.
-Le code attend toujours la fin de B1 → B3 (§ 4 nonies).
+Relevé, verdict du conseil et phase 0 de CP-059 : déplacés le 2026-10-25 dans [geometrie-validation](geometrie-validation-progress.md).
 
 ## 3. Outils proposés
 
 1. Bloc `horloge` (cadran paramétrable ; CP heures entières, puis minutes CE1/CE2) — recommandé en premier.
 2. Bloc `collection` (vrac, barres de dix + cubes, groupements partiels).
 3. Bloc `monnaie` (pièces et billets d'euros).
-4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles) — reçoit **CP-008** (verdict du conseil, § 2 bis, suivi par David le 2026-10-25).
-5. **Case « figure »** (§ 2 bis, verdict du conseil) : objets de l'élève retrouvés par leur position sur les nœuds, vérification de propriétés en tout-ou-rien ; CP-059 d'abord, puis 060, puis 034.
+4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles) — reçoit **CP-008** (verdict du conseil, [geometrie-validation](geometrie-validation-progress.md), suivi par David le 2026-10-25).
+5. **Case « figure »** ([geometrie-validation](geometrie-validation-progress.md), verdict du conseil) : objets de l'élève retrouvés par leur position sur les nœuds, vérification de propriétés en tout-ou-rien ; CP-059 d'abord, puis 060, puis 034.
 6. **Opérations posées** (demandé par David le 2026-10-24) : bloc « en colonnes » (addition au CP, CP-016 ; puis soustraction, multiplication, division aux niveaux suivants) — aucun rendu « posé » n'existe dans `ubumark`. Place dans l'ordre : à trancher.
 
 ## 4. Questions à David
@@ -252,7 +133,7 @@ David suit mes recommandations (« je te suis »).
 
 1. D'abord, ses relectures en attente (A3, `92c8e499`) puis la publication A1-A6 en un lot : elles orientent les lots suivants.
 2. **Lot H** (une PR) : modèles d'horloge CP-046 (lire) et CP-047 (positionner, en QCM d'horloges) + **CP-016** (addition posée, le lot 1 d'`operations-posees` est sur `main`). Les deux blocs ne sont pas en prod : brouillons jusqu'au `deploy:prod`.
-3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 034 (avec 059, 060) reste pour la case « figure » ; **008** passe aux « réponses à placer » (§ 3.4) et **058** est à réexaminer (pas forcément une figure) — David suit le verdict du conseil (§ 2 bis), 2026-10-25.
+3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 034 (avec 059, 060) reste pour la case « figure » ; **008** passe aux « réponses à placer » (§ 3.4) et **058** est à réexaminer (pas forcément une figure) — David suit le verdict du conseil ([geometrie-validation](geometrie-validation-progress.md)), 2026-10-25.
 4. Puis case « figure » (chantier à part), collection, monnaie — inchangé (§ 4 bis).
 
 ## 4 decies. Lot H : décisions (David, 2026-10-25)
@@ -319,8 +200,9 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 2026-10-25 : `db:migrate` lancé par David (demo_scripts + lot H), vérifié en prod : 3 modèles H sur leur sous-notion, 1 tag chacun ; 5 scripts de démo au prof, 0 à l'admin. Page à cocher H relue : 3/3 OK.
 - 2026-10-25 : relevé des pages : `92c8e499` (A6) OK depuis 14 h 22 → A6 9/9 OK ; A3 toujours sans verdict.
 - 2026-10-25 : page A3 relue par David, 6/6 OK. Tous les brouillons du chantier (A1 à H) sont validés.
-- 2026-10-25 : validation des figures faites par l'élève passée au conseil ; verdict consigné (§ 2 bis) et suivi par David : 008 → réponses à placer, 058 à réexaminer (§ 3, § 4 nonies).
-- 2026-10-25 : case « figure », phase 0 de CP-059 écrite en brouillon (§ 2 ter), 8 questions à David ; CP-034 à réexaminer (« comparer », pas « reporter »).
-- 2026-10-25 : phase 0 de CP-059 validée par David (§ 2 ter, 8 décisions) ; modèles 059/060 dans le chantier figure.
+- 2026-10-25 : validation des figures faites par l'élève passée au conseil ; verdict consigné ([geometrie-validation](geometrie-validation-progress.md)) et suivi par David : 008 → réponses à placer, 058 à réexaminer (§ 3, § 4 nonies).
+- 2026-10-25 : case « figure », phase 0 de CP-059 écrite en brouillon ([geometrie-validation](geometrie-validation-progress.md)), 8 questions à David ; CP-034 à réexaminer (« comparer », pas « reporter »).
+- 2026-10-25 : phase 0 de CP-059 validée par David ([geometrie-validation](geometrie-validation-progress.md), 8 décisions) ; modèles 059/060 dans le chantier figure.
+- 2026-10-25 : § 2 bis / 2 ter (case « figure ») déplacés dans [geometrie-validation](geometrie-validation-progress.md).
 - 2026-10-25 : lot B1, phase 0 validée (§ 4 undecies), worktree `../ubumaths-wt-questions` (`feat/questions-b1`) ; 3 modèles écrits, 16 specs vertes, rendu relu à 390 px (cases `[_]` → `$?$` : le champ texte débordait ; « la ligne de Inès » → Lina).
 - 2026-10-25 : B1, 3 brouillons créés en prod (`create-questions --publier`, go de David : `7752c23e`, `76d14aa6`, `55662eef`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
