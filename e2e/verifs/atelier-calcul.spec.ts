@@ -30,7 +30,12 @@ function expectStepsContaining(text: string, expected: string): void {
 	expect(normalizeLatex(text)).toContain(normalizeLatex(expected));
 }
 
+/**
+ * Les étapes ne contiennent pas ce texte — sur un détail NON VIDE : sans cette
+ * garde, un détail vide ou mal lu passerait toujours.
+ */
 function expectStepsNotContaining(text: string, unexpected: string): void {
+	expect(text).toContain('Étape 1 ');
 	expect(normalizeLatex(text)).not.toContain(normalizeLatex(unexpected));
 }
 
@@ -46,6 +51,7 @@ test('#1717 — intégrale à coefficient décimal : réponse décimale', async 
 	// « Comment ? » finit sur « = 0,25 » : la dernière formule du détail
 	const detail = normalizeLatex(await steps(half));
 	const last = detail.lastIndexOf('\\end{aligned}');
+	expect(last).toBeGreaterThan(-1);
 	expect(detail.slice(0, last)).toMatch(/=0\{,\}25$/);
 
 	expectLatex(await calc(page, '.intégrer 0,2x+1 de 0 à 2'), '2{,}4');
@@ -90,7 +96,9 @@ test('#1674 — exponentielles regroupées (Q29)', async ({ page }) => {
 	expectLatex(await calc(page, '.simplifier 3e^x*2e^x'), '6e^{2x}');
 	// La correction n'écrit pas (eˣ)²·… quand un regroupement a lieu
 	const derivative = await calc(page, '.dériver (e^x)^2');
-	expectStepsNotContaining(await steps(derivative), '(e^x)^2\\times');
+	const derivativeSteps = await steps(derivative);
+	expectStepsNotContaining(derivativeSteps, '(e^x)^2\\times');
+	expectStepsNotContaining(derivativeSteps, '(e^x)^2\\cdot');
 	// Tapé seul, il reste écrit
 	expectLatex(await calc(page, '(e^x)^2'), '\\left(e^x\\right)^2');
 });

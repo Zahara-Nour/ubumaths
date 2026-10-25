@@ -34,6 +34,8 @@ export async function calc(page: Page, input: string): Promise<Answer> {
 	await field.press('Enter');
 	await expect(lines).toHaveCount(before + 1);
 	const line = lines.nth(before);
+	// La réponse affichée, formule ou texte, avant de la lire
+	await expect(line.locator('.reponse .math, .reponse .texte').first()).toBeVisible();
 	const math = line.locator('.reponse .math');
 	const latex = (await math.count()) > 0 ? await math.getAttribute('data-latex') : null;
 	const text = ((await line.locator('.reponse').innerText()) ?? '').replace(/\s+/g, ' ').trim();
