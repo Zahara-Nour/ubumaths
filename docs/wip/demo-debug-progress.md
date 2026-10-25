@@ -346,6 +346,11 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
   que réparer `transformMathHtml`. La vitrine part sans le test des formules du cahier (commentaire
   dans le test) ; écart noté dans `docs/systeme/editeur-riche.md`, avec les énigmes (`RiddleForm`
   enregistre du HTML, `RiddleCard` le lit comme du markdown ; pas mesuré).
+- Trouvé par le test « éditeur vidé » : Ctrl+A puis Retour arrière levait `RangeError: There is
+no position before the top-level node` dans les raccourcis Backspace de la droite graduée et du
+  tableau de variations (`$from.before()` au niveau du document). Garde `$from.depth === 0` dans
+  les deux ; `src/lib/extensions/__tests__/retour-arriere-tout-selectionne.svelte.test.ts`, vu
+  rouge sans. L'effacement se faisait quand même (repli natif), mais l'erreur partait en console.
 - Vu sur 5177 (Playwright, 1280 et 390 px) : 200, aucune erreur de console, aucune requête autre
   que GET, rien qui déborde ; le texte de la carte « cahier » manquait (`{@html}` gardé du serveur) →
   HTML calculé après `onMount`.

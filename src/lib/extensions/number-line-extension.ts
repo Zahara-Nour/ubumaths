@@ -211,6 +211,8 @@ export const NumberLineExtension = Node.create({
 				const { $from } = selection;
 
 				if ($from.parentOffset !== 0) return false;
+				// Tout le document sélectionné (Ctrl+A) : pas de bloc parent, `before()` lèverait
+				if ($from.depth === 0) return false;
 
 				const posBefore = $from.before();
 				if (posBefore <= 0) return false;
