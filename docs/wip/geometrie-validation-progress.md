@@ -2,16 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1774._
+_Mis à jour le 2026-10-25, PR 2 (écran élève) codée, avant la PR._
 
-- **État** : PR 1 (moteur) mergée (#1768) ; bloc renommé ` ```figure-a-completer ` (#1774). Aucun écran, aucun modèle.
-- **Prochaine action** : PR 2 (écran élève : tracé dans `FillBlanksInput` sur `GeometryCanvas`, import de `positions-setup`,
-  Valider grisé, rendu après Valider), nouveau worktree `../ubumaths-wt-geometrie-validation`.
-- **En attente de David** : statut de **CP-034** et de **CP-058** ; phase 0 de CP-060.
-- **Pièges en cours** : sans `positions-setup`, `validateAnswer` rend « positions non inscrites » dans `message` ; `snapToPoint`
-  existe (`geometry-core/interaction/snap.ts`) ; fiche du catalogue (`block-catalog/types.ts`) après le merge de `catalogue-blocs` ;
-  noms internes `construction` (code anglais), le bloc et les messages disent `figure-a-completer`.
-- **Worktree / branche** : aucun (retirés après #1774).
+- **État** : PR 1 (moteur, #1768) et renommage (#1774) mergés ; PR 2 (écran élève, § 5) codée et testée, PR à ouvrir.
+- **Prochaine action** : PR 2 → revue `code-reviewer` (Opus) → merge ; puis PR 3 (modèle CP-059, fiche du catalogue,
+  doc système, verso de `FlashCard` et copie corrigée en figure, corrigé PDF).
+- **En attente de David** : statut de **CP-034** et de **CP-058** ; phase 0 de CP-060 ; Q3/Q4 du § 5 prises « sans
+  changement » (à corriger s'il le veut).
+- **Pièges en cours** : verdict de `CorrectionCard` sans positions inscrites (§ 5, revue) ; la correction s'affiche dans `FlashCard` (`QuestionCard` ne montre jamais de verdict) ; le verso
+  de `FlashCard` montre la réponse en texte (`droite(1;2;7;2)`) jusqu'à la PR 3 ; corrigé PDF : les séries refusent
+  déjà les cases portées par un bloc (```operation aussi).
+- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `feat/geometrie-validation-ecran`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -167,6 +168,39 @@ touché : regex d'ouverture + aiguillage de `parseFigure`), pour ne pas duplique
 ` ```figure ` inchangé (tests). Message ajouté hors tableau : « Ta droite ne passe ni par le point A, ni par le point B. » ;
 plusieurs vérifications : « Il manque la droite qui passe par A et C. »
 
+## 5. PR 2 — écran élève (phase 0 VALIDÉE par David le 2026-10-25, « tes recos »)
+
+**Technique** : pas `GeometryCanvas` (mathlive, roughjs, store, outils) : le SVG de `FigureBlockView` (même dessin
+qu'en statique et qu'au PDF) reçoit une couche `overlay` ; la vue de saisie `FigureACompleterView` est chargée à la
+demande par `FigureBlock` (`answer` ou `showSolution`) et inscrit `positions-setup`. Logique pure :
+`questions/construction/drawing.ts`.
+
+| Situation                                      | Ce que voit l'enfant                                                  |
+| ---------------------------------------------- | --------------------------------------------------------------------- |
+| 1er toucher près d'un point (24 px à l'écran)  | aimanté sur le point, rond de départ                                  |
+| 1er toucher ailleurs                           | départ à l'endroit touché (arrondi au centième d'unité)               |
+| 2e toucher                                     | la droite par les deux, jusqu'aux bords de la fenêtre                 |
+| 2e toucher sur le départ                       | rien                                                                  |
+| Effacer                                        | le départ en attente, sinon la dernière droite ; grisé si rien        |
+| au-delà des plafonds du juge (20, 1 000 car.)  | la droite n'est pas ajoutée                                           |
+| clavier                                        | points nommés = boutons (Tab, Entrée / Espace)                        |
+| Valider, juste                                 | ses droites en vert                                                   |
+| Valider, faux                                  | message du juge + bonne droite en pointillés ; ses droites restent    |
+| mode correction / carte flash / statique / PDF | bonne droite / figure de départ / figure de départ / figure de départ |
+
+**Décisions** : (1) SVG + couche ; (2) clavier oui ; (3) copie corrigée et résultats du prof en figure → PR 3 ;
+(4) faux : ses droites gardent leur couleur, la bonne en pointillés (§ 3). Q3/Q4 sans reco de ma part : choix « sans
+changement », signalé à David.
+
+**Constaté** : le corrigé PDF d'une question n'existe que dans les séries (`serie-automatismes.ts`), qui refusent
+déjà les cases portées par un bloc (```operation compris) → PR 3, à trancher.
+
+**Revue (#1775, Opus)** : 3 à corriger + 4 mineurs, corrigés dans la PR (rôle `group` en saisie, départ lié au bloc,
+tests du repère en cadre étroit et des bords, zone live permanente, type partagé) sauf un, **pour la PR 3** :
+`CorrectionCard` recalcule le verdict côté client (`validateAnswerDetailed`) ; si la vue de saisie n'a pas été chargée
+(rechargement de la page de résultats), « positions non inscrites » devient « faux » en silence. À garder par
+`hasConstructionPositions()` (aucun appelant aujourd'hui) ou en important `positions-setup` sur cette page.
+
 ## Journal
 
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 1), au journal questions.
@@ -178,3 +212,5 @@ plusieurs vérifications : « Il manque la droite qui passe par A et C. »
 - 2026-10-25 : registre des positions décidé (David) ; PR 1 (moteur) codée, 46 tests neufs, suites voisines vertes.
 - 2026-10-25 : revues (code Opus, sécurité) : 5 correctifs (point inconnu refusé à la génération, bloc non fermé = parseur, tolérance par la figure, messages à deux vérifications, `orderIndependent` refusé) ; #1768 mergée.
 - 2026-10-25 : bloc renommé ` ```figure-a-completer ` (David) ; ` ```construction ` n'ouvre plus rien.
+- 2026-10-25 : PR 2 (écran élève) : phase 0 validée (§ 5), codée ; 16 tests du tracé, 9 d'écran (rouges sans le branchement), 1 PDF.
+- 2026-10-25 : revue Opus de #1775 : 6 points corrigés, 4 tests d'écran ajoutés (13), 1 point reporté à la PR 3.

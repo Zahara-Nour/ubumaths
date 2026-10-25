@@ -8,9 +8,19 @@
 
 import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
-import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
+import { buildFigureScene, type FigureScene } from '$lib/ubumark/utils/figure-scene';
 import { ConstructionAuthorError, type Position } from './judge';
 import { registerConstructionPositions } from './positions';
+
+/** Position de chaque point NOMMÉ d'une scène (le nom affiché : A, B…) */
+export function namedPointPositions(scene: FigureScene): Map<string, Position> {
+	const points = new Map<string, Position>();
+	for (const element of scene.elements) {
+		const position = scene.positions.get(element.id);
+		if (position && element.label) points.set(element.label, position);
+	}
+	return points;
+}
 
 function resolvePositions(source: string): Map<string, Position> {
 	const node = parseFigureContent(readConstructionHeader(source).figureSource);
@@ -20,12 +30,7 @@ function resolvePositions(source: string): Map<string, Position> {
 			`Case « figure » : la figure ne se construit pas (${errors.map((e) => e.message).join(' ; ')})`
 		);
 	}
-	const points = new Map<string, Position>();
-	for (const element of scene.elements) {
-		const position = scene.positions.get(element.id);
-		if (position && element.label) points.set(element.label, position);
-	}
-	return points;
+	return namedPointPositions(scene);
 }
 
 registerConstructionPositions(resolvePositions);
