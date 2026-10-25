@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1712._
+_Mis à jour le 2026-10-25, après #1712 (A2 en cours)._
 
-- **État** : lot A1 livré — 6 brouillons en prod (`7eb376bf` CP-020, `85f93a6e` CP-081, `882c436f` CP-021, `87a869c2` CP-082, `ee822bbc` CP-028, `eccf910b` CP-027), rangés et tagués (#1712 mergée, `db:migrate` fait, vérifié en prod : nœuds, tags, `updated_at`, trigger `tgenabled = O`). Page à cocher : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb (collection `verdicts`). Outil « opérations posées » lancé dans une autre session.
-- **Prochaine action** : lot A2 (suite et ordre : 003, 004, 007, 075, 076 — § 4 ter), phase 0, nouveau worktree.
-- **En attente de David** : publication des 6 brouillons A1 (relus : 6/6 OK sur la page le 2026-10-25, aucun commentaire) ; vérification manuelle #1702.
-- **Pièges en cours** : nouveaux modèles = `scripts/create-questions.ts` (brouillons, ni nœud ni tag) puis migration nœud + tag ; la case naît d'une variable `expression1` ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point (trigger) ; un modèle CP peut prendre un point CE1 (pas l'inverse) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1712).
+- **État** : lot A1 livré (#1712, 6 brouillons en prod, relus 6/6 OK). Lot A2, branche `feat/questions-cp-a2` : 7 brouillons créés en prod le 2026-10-25 (`b831b7b8` CP-003, `73bb66e4` CP-003, `b19dfc8e` CP-004, `78a6ba79` CP-007, `dc95f4f6` CP-075, `23acfcd1` CP-075, `1bd1f044` CP-076) ; migration `20261025190000_questions_cp_a2_rangement_tags` (nœud + tag) écrite, test 8/8 vert, 5/8 rouges sans le SQL. Page à cocher A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb.
+- **Prochaine action** : `security-auditor`, PR, CI verte → merge, `db:migrate` depuis le dépôt principal, vérification prod, page à cocher A2.
+- **En attente de David** : publication des 6 brouillons A1 ; vérification manuelle #1702.
+- **Pièges en cours** : nouveaux modèles = `scripts/create-questions.ts` (brouillons, ni nœud ni tag) puis migration nœud + tag ; la case naît d'une variable `expression1` ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point (trigger) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e` (= Euler)** ; une spec ne calcule pas les variables dérivées (`b = eval:a+k`) : une règle qui en dépend se vérifie aussi au rendu (`question-specs --apercu`).
+- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-cp-a2`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -100,6 +100,13 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - **Réponses en mots** (ordinaux, lettres, lexique) : QCM ; un rang reste une case nombre.
 - **Rangement** : nœuds existants (tous présents en prod, y compris « ordinaux et rangs », « problèmes arithmétiques > parties-tout / en deux étapes / multiplicatifs ») ; aucun nœud à créer.
 
+## 4 quater. Lot A2 : décisions (David, 2026-10-25)
+
+- 7 modèles CP, domaine Apprivoiser : CP-003 « suit / précède » (Ecriture/11) et « compléter la suite » (Ecriture/12) ; CP-004 « dizaines et unités → nombre », ordre normal et inversé (Décomposition/12) ; CP-007 « ranger » 4 nombres, croissant / décroissant (Comparer/5) ; CP-075 « juste avant / juste après » (Encadrer/4) et « encadrer » libre (Encadrer/5) ; CP-076 « intercaler » (Encadrer/6, pas de sous-domaine neuf).
+- Nombres en lettres (CP-004) : **pas en A2**, renvoyés à A6 (lexique) — aucun outil « nombre → lettres » dans le moteur.
+- Encadrement libre : `rulesSuffice`, en bas tout entier de 0 à n − 1, en haut tout entier > n (plafond technique 1 000 000) : une réponse vraie (150) n'est jamais refusée.
+- Ranger : le moteur ne trie pas → 4 nombres tirés rangés, affichés selon une permutation fixe parmi 4 (ni croissante ni décroissante).
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -117,3 +124,5 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-24 : corrections CP — M1 (contenu, 4 modèles) + M2 (rangement, niveaux, tags), branche `fix/questions`.
 - 2026-10-24 : #1702 mergée, `db:migrate` (M1 + M2), vérifié en prod ; horloge lancée en parallèle (session « horloge »).
 - 2026-10-25 : groupe A découpé (§ 4 ter) ; lot A1 : 6 modèles créés en brouillon (`create-questions`), #1712 (nœud + tag) mergée, `db:migrate`, vérifié en prod ; page à cocher publiée.
+- 2026-10-25 : lot A2, phase 0 validée (§ 4 quater), 7 modèles écrits et verts (`checkTemplate`) ; bug `e` = Euler trouvé au rendu et corrigé.
+- 2026-10-25 : A2, 7 brouillons créés en prod (`create-questions --publier`, go de David) ; question d'accès tranchée (personne ne gagne ni ne perd d'accès) ; migration nœud + tag et son test.

@@ -1,0 +1,161 @@
+{
+	"title": "Dizaines et unités : écrire le nombre",
+	"description": "De « 7 dizaines et 4 unités » à 74",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Décomposition",
+	"level": 12,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris le nombre en chiffres.\n\n${{d}}$ {{if:d==1|dizaine|dizaines}} et ${{u}}$ {{if:u<=1|unité|unités}}, c'est $?$.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On range dans le tableau de numération : ${{d}}$ au rang des dizaines, ${{u}}$ au rang des unités. $$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{d}}} & \\textcolor{{{color:primary.1}}}{{{u}}} \\end{array}$$",
+					"Le nombre est ${{solution}}$."
+				]
+			}
+		},
+		{
+			"statement": "Écris le nombre en chiffres.\n\n${{u}}$ {{if:u<=1|unité|unités}} et ${{d}}$ {{if:d==1|dizaine|dizaines}}, c'est $?$.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..9"
+				},
+				{
+					"name": "u",
+					"expression": "0..9"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On range dans le tableau de numération : ${{d}}$ au rang des dizaines, ${{u}}$ au rang des unités. $$\\begin{array}{|c|c|} \\text{dizaines} & \\text{unités} \\\\ \\textcolor{{{color:primary.0}}}{{{d}}} & \\textcolor{{{color:primary.1}}}{{{u}}} \\end{array}$$",
+					"Le nombre est ${{solution}}$."
+				]
+			},
+			"conditions": ["u != 0", "u != d"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 dizaines et 4 unités : 74",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"u": "4"
+			},
+			"answers": ["74"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 9 dizaines et 0 unité : 90",
+			"variationIndex": 0,
+			"variables": {
+				"d": "9",
+				"u": "0"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "1 dizaine et 1 unité : 11",
+			"variationIndex": 0,
+			"variables": {
+				"d": "1",
+				"u": "1"
+			},
+			"answers": ["11"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : chiffres inversés (47)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"u": "4"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : 70 et 4 juxtaposés (704)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"u": "4"
+			},
+			"answers": ["704"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zéro inutile 074",
+			"variationIndex": 0,
+			"variables": {
+				"d": "7",
+				"u": "4"
+			},
+			"answers": ["074"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		},
+		{
+			"description": "ordre inversé : 4 unités et 7 dizaines : 74",
+			"variationIndex": 1,
+			"variables": {
+				"d": "7",
+				"u": "4"
+			},
+			"answers": ["74"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre de l'énoncé recopié (47)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "7",
+				"u": "4"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

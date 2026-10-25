@@ -1,0 +1,168 @@
+{
+	"title": "Intercaler un nombre",
+	"description": "Un nombre entre deux nombres donnés : 47 < … < 52",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 6,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris un nombre compris entre ${{a}}$ et ${{b}}$.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..90"
+				},
+				{
+					"name": "k",
+					"expression": "2..10"
+				},
+				{
+					"name": "b",
+					"expression": "eval:a+k"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{a}}<?<{{b}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{a}}",
+							"max": "{{b}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un nombre compris entre ${{a}}$ et ${{b}}$ vient après ${{a}}$ et avant ${{b}}$ dans la suite des nombres.",
+					"{{if:k==2|Il n'y en a qu'un : ${{eval:a+1}}$.|{{if:k==3|Il y en a deux : ${{eval:a+1}}$ ou ${{eval:a+2}}$.|Ce sont les nombres de ${{eval:a+1}}$ à ${{eval:b-1}}$ : n'importe lequel convient.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "47 < 50 < 52",
+			"variationIndex": 0,
+			"variables": {
+				"a": "47",
+				"k": "5"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "bornes : 47 < 48 < 52",
+			"variationIndex": 0,
+			"variables": {
+				"a": "47",
+				"k": "5"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "bornes : 47 < 51 < 52",
+			"variationIndex": 0,
+			"variables": {
+				"a": "47",
+				"k": "5"
+			},
+			"answers": ["51"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "réponse unique : 47 < 48 < 49",
+			"variationIndex": 0,
+			"variables": {
+				"a": "47",
+				"k": "2"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "passage de la dizaine : 38 < 40 < 42",
+			"variationIndex": 0,
+			"variables": {
+				"a": "38",
+				"k": "4"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne haute : 90 < 95 < 100",
+			"variationIndex": 0,
+			"variables": {
+				"a": "90",
+				"k": "10"
+			},
+			"answers": ["95"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : borne de gauche (47)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "47",
+				"k": "5"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : borne de droite (52)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "47",
+				"k": "5"
+			},
+			"answers": ["52"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : hors de l'intervalle (53)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "47",
+				"k": "5"
+			},
+			"answers": ["53"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

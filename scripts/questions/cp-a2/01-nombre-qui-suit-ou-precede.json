@@ -1,0 +1,201 @@
+{
+	"title": "Le nombre qui suit, le nombre qui précède",
+	"description": "Suite écrite des nombres jusqu'à 100",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 11,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris le nombre qui suit ${{n}}$.\n\nLe nombre qui suit ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "0..99"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui suit, c'est celui qu'on dit juste après en comptant : on avance de $1$.",
+					"{{if:mod(n,10)==9|${{n}}$ se termine par $9$ : on passe à la dizaine suivante, le chiffre des unités revient à $0$.|Le chiffre des unités augmente de $1$.}}",
+					"$${{n}} \\rightarrow {{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Écris le nombre qui précède ${{n}}$.\n\nLe nombre qui précède ${{n}}$ est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..100"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre qui précède, c'est celui qu'on dit juste avant en comptant : on recule de $1$.",
+					"{{if:mod(n,10)==0|${{n}}$ se termine par $0$ : on revient à la dizaine précédente, le chiffre des unités devient $9$.|Le chiffre des unités diminue de $1$.}}",
+					"$${{solution}} \\rightarrow {{n}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "suit 46 : 47",
+			"variationIndex": 0,
+			"variables": {
+				"n": "46"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : suit 99 : 100",
+			"variationIndex": 0,
+			"variables": {
+				"n": "99"
+			},
+			"answers": ["100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "passage de la dizaine : suit 39 : 40",
+			"variationIndex": 0,
+			"variables": {
+				"n": "39"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : suit 0 : 1",
+			"variationIndex": 0,
+			"variables": {
+				"n": "0"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dizaine non passée (310)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "39"
+			},
+			"answers": ["310"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le nombre qui précède (45)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "46"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zéro inutile 047",
+			"variationIndex": 0,
+			"variables": {
+				"n": "46"
+			},
+			"answers": ["047"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		},
+		{
+			"description": "précède 46 : 45",
+			"variationIndex": 1,
+			"variables": {
+				"n": "46"
+			},
+			"answers": ["45"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : précède 100 : 99",
+			"variationIndex": 1,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["99"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "passage de la dizaine : précède 40 : 39",
+			"variationIndex": 1,
+			"variables": {
+				"n": "40"
+			},
+			"answers": ["39"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : précède 1 : 0",
+			"variationIndex": 1,
+			"variables": {
+				"n": "1"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dizaine non reculée (49)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "40"
+			},
+			"answers": ["49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le nombre qui suit (47)",
+			"variationIndex": 1,
+			"variables": {
+				"n": "46"
+			},
+			"answers": ["47"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

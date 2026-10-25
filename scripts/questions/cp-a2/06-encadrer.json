@@ -1,0 +1,156 @@
+{
+	"title": "Encadrer un nombre",
+	"description": "Un nombre plus petit, un nombre plus grand : … < 47 < …",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 5,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris un nombre plus petit que ${{n}}$ et un nombre plus grand que ${{n}}$.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..99"
+				},
+				{
+					"name": "expression1",
+					"expression": "?<{{n}}<?"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "-1",
+							"max": "{{n}}",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				},
+				{
+					"expectedAnswer": "{{eval:n+1}}",
+					"rulesSuffice": true,
+					"validationRules": [
+						{
+							"type": "range",
+							"min": "{{n}}",
+							"max": "1000000",
+							"inclusive": false
+						},
+						{
+							"type": "predicate",
+							"predicate": "isInteger"
+						}
+					]
+				}
+			],
+			"correction": {
+				"steps": [
+					"Un nombre plus petit que ${{n}}$ vient avant lui dans la suite des nombres ; un nombre plus grand vient après.",
+					"Plusieurs réponses sont possibles. Par exemple : $${{eval:n-1}} < {{n}} < {{eval:n+1}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "30 < 47 < 80",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47"
+			},
+			"answers": ["30", "80"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "les voisins : 46 < 47 < 48",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47"
+			},
+			"answers": ["46", "48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "bornes : 0 < 47 < 100",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47"
+			},
+			"answers": ["0", "100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "au-delà de 100 : 3 < 47 < 150",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47"
+			},
+			"answers": ["3", "150"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 0 < 1 < 2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1"
+			},
+			"answers": ["0", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : le nombre lui-même (47 < 47)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47"
+			},
+			"answers": ["47", "80"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : plus grand à gauche (50 < 47)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47"
+			},
+			"answers": ["50", "80"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : bornes inversées",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47"
+			},
+			"answers": ["80", "30"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}
