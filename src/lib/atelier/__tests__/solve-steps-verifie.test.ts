@@ -41,12 +41,15 @@ describe('solveSteps — cas frères de (2x-4)=0 : bonne réponse, ou repli', ()
 		expect(solveSteps(input)?.answer).toBe(expected);
 	});
 
-	it.each(['2(x-1)=4', '-(x-3)=0', '(2x-4)/2=0'])(
-		'%s : pas d’étapes (repli sur le moteur), jamais x = 0',
-		(input) => {
-			expect(solveSteps(input)).toBeNull();
-		}
-	);
+	// Repli sur le moteur jusqu'au 2026-10-25 ; défaits avant les étapes depuis
+	// Q52 (`linear-unwrap.ts`) : la bonne réponse, jamais x = 0
+	it.each([
+		['2(x-1)=4', 'x = 3'],
+		['-(x-3)=0', 'x = 3'],
+		['(2x-4)/2=0', 'x = 2']
+	])('%s répond %s, jamais x = 0', (input, expected) => {
+		expect(solveSteps(input)?.answer).toBe(expected);
+	});
 });
 
 describe('conclusionAgrees — le garde-fou', () => {

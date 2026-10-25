@@ -251,12 +251,13 @@ describe('palier 3 — dispatcher integration', () => {
 		// Le dispatcher l'envoie au pipeline du premier degré (degré de la forme
 		// canonique : 1). Mesuré avant le 2026-10-08 : ce pipeline divisait par
 		// le « coefficient » `(x+1)/x` et concluait `x < 0` — faux (S = ]-∞ ; -1[).
-		// Le terme n'est pas de la forme a·x : il lève désormais, et l'appelant
-		// se replie sur le moteur.
-		const { generateInequalitySteps, UndevelopedLinearForm } = await import('../index');
+		// Il refuse désormais, et l'appelant se replie sur le moteur : la valeur
+		// interdite 1 serait perdue (V47 ; avant Q52, le refus venait du terme
+		// non développé, qui est maintenant défait quand il peut l'être).
+		const { generateInequalitySteps } = await import('../index');
 		expect(() =>
 			generateInequalitySteps(ineq('(x^2 - 1)/(x - 1) < 0'), { level: 'lycee' })
-		).toThrow(UndevelopedLinearForm);
+		).toThrow(InequalityNotSolvable);
 	});
 
 	it('dispatcher : (x³-1)/(x-1) < 0 refusé, la valeur interdite 1 serait perdue (V48)', async () => {

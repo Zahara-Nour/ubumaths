@@ -66,6 +66,10 @@ export type EquationOperation =
 	| { readonly kind: 'add-both-sides'; readonly operand: MathNode }
 	/** Subtract the same expression from both sides. */
 	| { readonly kind: 'subtract-both-sides'; readonly operand: MathNode }
+	/** Développer les termes en x non développés (`3(x−1) = 2x + 1`, Q52). */
+	| { readonly kind: 'expand' }
+	/** Ôter des parenthèses précédées d'un + (`3 + (x−1) = 5`, Q52). */
+	| { readonly kind: 'remove-parentheses' }
 	/**
 	 * Multiply both sides by the same expression. For inequalities, set
 	 * `flipOperator: true` when the operand is a numerically negative scalar

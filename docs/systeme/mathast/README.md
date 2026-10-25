@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; inconnue divisée multipliée, membre factorisé défait, Q51-Q52, 2026-10-25).
 
 ## À quoi ça sert
 
@@ -1134,6 +1134,27 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   `]1/2 ; +∞[` en vraie fraction (avant : `1 / 2` en texte), `[−0,5 ; 0,5]`. Tests :
   `atelier/__tests__/resoudre-etapes-5f4.test.ts`, `resoudre-inequations-q50.test.ts`,
   `questions/generator/__tests__/correction-solveur-5f4.test.ts`.
+  **L'inconnue divisée se défait en multipliant** (Q51, 2026-10-25) : un coefficient écrit en
+  fraction d'entiers se défait par son inverse (`x/4 = 0,5` → « On multiplie les deux membres
+  par 4 », `\frac{2}{3}x = 1` → par 3/2, `-\frac{x}{4} < 1` → par −4, sens retourné) ;
+  un coefficient décimal ou entier, en divisant (`0,5x = 1` → « On divise par 0,5 »). `canon`
+  récrit `0,25x` en `\frac{1}{4}x` : l'écriture se lit sur les termes en x tapés
+  (`inverseFactor`, `_helpers.ts`), aucun ne portant de décimal. Au lycée, l'étape compacte
+  (« On termine en simplifiant le coefficient ») ne change pas. Le rendu de « On multiplie »
+  ne met entre parenthèses qu'un membre somme ou négatif (`2 × 3`, `-2 × (−\frac{x}{2})`).
+  **Un membre non développé se défait avant les étapes** (Q52, 2026-10-25 ;
+  `pedagogical-solve/linear-unwrap.ts`, appelé par `linear.ts` et `linear-inequality.ts`) :
+  x des deux côtés ou plusieurs termes en x → « On développe » (`3(x−1) = 2x + 1`) ;
+  parenthèses après un + → « On supprime les parenthèses » (`3 + (x−1) = 5`) ; terme constant
+  ôté d'abord (`2(x+1) + 3 = 7` → `2(x+1) = 4`) ; puis `k(…)` divisé par k (ou multiplié par
+  l'inverse d'une fraction : `\frac{1}{2}(x+1)` → × 2), `−(…)` multiplié par −1, `(…)/d`
+  multiplié par d, sens retourné pour un facteur négatif (`-2(x+1) ≤ 4` → `x + 1 ≥ −2`) ; on
+  recommence jusqu'à ce que les termes en x soient `a·x` (`2(3(x−1)+1) = 8`). Le membre obtenu
+  reprend les nœuds tapés, sans `canon` (qui le développerait). Avant : aucune étape
+  (`UndevelopedLinearForm`, posé le 2026-10-08 pour ne plus montrer d'étapes fausses), qui
+  reste levée pour une forme qu'on ne sait pas défaire. Opérations `expand` et
+  `remove-parentheses` (`types.ts`). Tests : `atelier/__tests__/resoudre-q51-q52.test.ts`,
+  `pedagogical-solve/__tests__/membres-non-developpes.test.ts`.
   **Une inéquation du 2nd degré garde son opérateur à chaque ligne** (2026-10-13) : la forme
   standard s'écrit `2x^2 - 2 < 0`, pas `= 0` (`buildStandardizeStep` reprend l'opérateur de
   départ), et les blocs alignés du rendu passent par `RELATION_MAP` (`\leqslant`, `\geqslant`,

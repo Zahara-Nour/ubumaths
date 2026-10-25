@@ -36,7 +36,7 @@ import { flattenSumShallow, unflattenSum } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { constantSign } from '../common/constant-sign';
-import { detectVariable, getPolynomialDegree } from '../solve/classify';
+import { detectVariable, getPolynomialDegree, unwrapGroupingMembers } from '../solve/classify';
 import { getVariables } from '../eval/substitute';
 import {
 	canon,
@@ -44,6 +44,7 @@ import {
 	chooseAddOrSubtract,
 	movedTerm,
 	divideBothSidesWithFlip,
+	inverseFactor,
 	isOne,
 	isZero,
 	makeStep,
@@ -51,6 +52,7 @@ import {
 	renumberSteps,
 	rejectForbiddenValues
 } from './_helpers';
+import { unwrapLinearRelation } from './linear-unwrap';
 import { toLatex } from '../latex-generator';
 import { InequalityNotSolvable } from '../solve/inequality/types';
 
@@ -175,8 +177,8 @@ export function generateLinearInequalitySteps(
 		if (degree !== null && degree >= 2) {
 			throw new UnsupportedInequalityDegree(degree);
 		}
-		// Membre parenthésé déballé ; terme en x non développé → UndevelopedLinearForm
-		inequality = prepareLinearRelation(input, variable);
+		// Membre parenthésé déballé : `(x-1)>0` se raconte comme `x-1>0` (#860)
+		inequality = unwrapGroupingMembers(input);
 		// \frac{3x^2}{2x} lu \frac{3}{2}x : la conclusion x ≥ 0 garderait la
 		// valeur interdite 0 (V47)
 		rejectForbiddenValues(input, variable);
@@ -221,9 +223,14 @@ export function generateLinearInequalitySteps(
 		return renumberSteps(result);
 	}
 
-	// 7. Regroupement (mirrors linear.ts).
-	let current: RelationNode = inequality;
-	const regroupementSteps: EquationStep[] = [];
+	// 7. Membre non développé défait d'abord (`-2(x+1) ≤ 4` → `x + 1 ≥ -2`,
+	//    Q52) ; une forme qu'on ne sait pas défaire → UndevelopedLinearForm
+	const unwrapped = unwrapLinearRelation(inequality, variable, id);
+	const written = prepareLinearRelation(unwrapped.relation, variable);
+
+	// 8. Regroupement (mirrors linear.ts).
+	let current: RelationNode = written;
+	const regroupementSteps: EquationStep[] = [...unwrapped.steps];
 	const rightSplit = splitSide(current.right, variable);
 	const leftSplit = splitSide(current.left, variable);
 	const xMoveRaw = movedTerm(rightSplit.xPart, variable);
@@ -289,7 +296,7 @@ export function generateLinearInequalitySteps(
 		}
 	}
 
-	// 8. Division by the coefficient of x (with flip when negative).
+	// 9. Division by the coefficient of x (with flip when negative).
 	let divisionStep: EquationStep | null = null;
 	let degenerateConcludeStep: EquationStep | null = null;
 	const coefficient = extractCoefficientOfX(current.left, variable);
@@ -299,6 +306,8 @@ export function generateLinearInequalitySteps(
 		degenerateConcludeStep = buildConcludeStep(current, id());
 	} else if (!isOne(coefficient)) {
 		const { result: after, flipped } = divideBothSidesWithFlip(current, coefficient);
+		// `x/3 < 0,1` : on multiplie par 3 plutôt que diviser par 1/3 (Q51)
+		const inverse = inverseFactor(coefficient, written, variable);
 		if (strategy.divisionMode === 'compact') {
 			divisionStep = makeStep({
 				id: id(),
@@ -311,6 +320,21 @@ export function generateLinearInequalitySteps(
 				operation: {
 					kind: 'simplify-coefficient',
 					coefficient,
+					...(flipped && { flipOperator: true })
+				}
+			});
+		} else if (inverse !== null) {
+			divisionStep = makeStep({
+				id: id(),
+				rule: 'multiply-both-sides',
+				description: flipped
+					? `On multiplie les deux membres par ${operandPretty(inverse)} (changement de sens car ${operandPretty(inverse)} est négatif)`
+					: `On multiplie les deux membres par ${operandPretty(inverse)}`,
+				before: current,
+				after,
+				operation: {
+					kind: 'multiply-both-sides',
+					operand: inverse,
 					...(flipped && { flipOperator: true })
 				}
 			});
@@ -334,7 +358,7 @@ export function generateLinearInequalitySteps(
 	}
 	// else (coefficient === 1) — nothing to divide, no step emitted
 
-	// 9. Assemble.
+	// 10. Assemble.
 	const result: EquationStep[] = [];
 	if (identifyStep) result.push(identifyStep);
 
