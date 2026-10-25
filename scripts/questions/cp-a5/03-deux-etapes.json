@@ -1,0 +1,313 @@
+{
+	"title": "Problèmes en deux étapes (jusqu'à 30)",
+	"description": "Ajouts et retraits enchaînés : 29 − 12 + 7, 24 − 7 − 6",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Deux étapes",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Dans un bus, il y a ${{a}}$ passagers. À l'arrêt, ${{b}}$ passagers descendent, puis ${{c}}$ passagers montent.\n\nCombien y a-t-il de passagers dans le bus maintenant ?\n\nIl y a $?$ passagers.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..29"
+				},
+				{
+					"name": "b",
+					"expression": "2..27"
+				},
+				{
+					"name": "c",
+					"expression": "2..27"
+				}
+			],
+			"conditions": ["a-b >= 2", "a-b <= 30", "a-b+c >= 2", "a-b+c <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-b+c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord, des passagers descendent : on enlève.",
+					"$${{a}}-{{b}}={{eval:a-b}}$$",
+					"Puis des passagers montent : on ajoute.",
+					"$${{eval:a-b}}+{{c}}={{eval:a-b+c}}$$",
+					"Il y a maintenant ${{eval:a-b+c}}$ passagers dans le bus."
+				]
+			}
+		},
+		{
+			"statement": "Sami a ${{a}}$ bonbons. Il en mange ${{b}}$ le matin et ${{c}}$ l'après-midi.\n\nCombien de bonbons lui reste-t-il le soir ?\n\nIl lui reste $?$ bonbons.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "5..29"
+				},
+				{
+					"name": "b",
+					"expression": "2..27"
+				},
+				{
+					"name": "c",
+					"expression": "2..27"
+				}
+			],
+			"conditions": ["a-b >= 2", "a-b <= 30", "a-b-c >= 2", "a-b-c <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a-b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. Le matin, Sami mange des bonbons : on enlève.",
+					"$${{a}}-{{b}}={{eval:a-b}}$$",
+					"L'après-midi, il en mange encore : on enlève encore.",
+					"$${{eval:a-b}}-{{c}}={{eval:a-b-c}}$$",
+					"Il reste ${{eval:a-b-c}}$ bonbons à Sami le soir."
+				]
+			}
+		},
+		{
+			"statement": "Lina a ${{a}}$ perles. Sa mamie lui en donne ${{b}}$, puis son frère lui en donne ${{c}}$.\n\nCombien de perles Lina a-t-elle maintenant ?\n\nElle a $?$ perles.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..26"
+				},
+				{
+					"name": "b",
+					"expression": "2..26"
+				},
+				{
+					"name": "c",
+					"expression": "2..26"
+				}
+			],
+			"conditions": ["a+b >= 2", "a+b <= 30", "a+b+c >= 2", "a+b+c <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b+c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. Sa mamie lui donne des perles : on ajoute.",
+					"$${{a}}+{{b}}={{eval:a+b}}$$",
+					"Son frère lui en donne aussi : on ajoute encore.",
+					"$${{eval:a+b}}+{{c}}={{eval:a+b+c}}$$",
+					"Lina a maintenant ${{eval:a+b+c}}$ perles."
+				]
+			}
+		},
+		{
+			"statement": "Zoé a ${{a}}$ billes rouges et ${{b}}$ billes bleues. Elle donne ${{c}}$ billes à son amie.\n\nCombien de billes reste-t-il à Zoé ?\n\nIl lui reste $?$ billes.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..26"
+				},
+				{
+					"name": "b",
+					"expression": "2..26"
+				},
+				{
+					"name": "c",
+					"expression": "2..27"
+				}
+			],
+			"conditions": ["a+b >= 2", "a+b <= 30", "a+b-c >= 2", "a+b-c <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+b-c}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On calcule en deux étapes. D'abord, on cherche combien Zoé a de billes en tout : on ajoute les rouges et les bleues.",
+					"$${{a}}+{{b}}={{eval:a+b}}$$",
+					"Puis elle en donne : on enlève.",
+					"$${{eval:a+b}}-{{c}}={{eval:a+b-c}}$$",
+					"Il reste ${{eval:a+b-c}}$ billes à Zoé."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "bus : 29 − 12 + 7 = 24",
+			"variationIndex": 0,
+			"variables": {
+				"a": "29",
+				"b": "12",
+				"c": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["24"]
+		},
+		{
+			"description": "Erreur : bus, arrêt après la 1re étape (17)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "29",
+				"b": "12",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["17"]
+		},
+		{
+			"description": "Erreur : bus, tout ajouté (48)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "29",
+				"b": "12",
+				"c": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["48"]
+		},
+		{
+			"description": "deux retraits : 24 − 7 − 6 = 11",
+			"variationIndex": 1,
+			"variables": {
+				"a": "24",
+				"b": "7",
+				"c": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["11"]
+		},
+		{
+			"description": "Erreur : deux retraits, arrêt après la 1re étape (17)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "24",
+				"b": "7",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["17"]
+		},
+		{
+			"description": "Erreur : deux retraits, le second ajouté (23)",
+			"variationIndex": 1,
+			"variables": {
+				"a": "24",
+				"b": "7",
+				"c": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["23"]
+		},
+		{
+			"description": "deux ajouts : 9 + 6 + 8 = 23",
+			"variationIndex": 2,
+			"variables": {
+				"a": "9",
+				"b": "6",
+				"c": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["23"]
+		},
+		{
+			"description": "Erreur : deux ajouts, arrêt après la 1re étape (15)",
+			"variationIndex": 2,
+			"variables": {
+				"a": "9",
+				"b": "6",
+				"c": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "réunion puis retrait : 12 + 9 − 5 = 16",
+			"variationIndex": 3,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["16"]
+		},
+		{
+			"description": "Erreur : réunion puis retrait, tout ajouté (26)",
+			"variationIndex": 3,
+			"variables": {
+				"a": "12",
+				"b": "9",
+				"c": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["26"]
+		},
+		{
+			"description": "borne : 15 + 10 + 5 = 30",
+			"variationIndex": 2,
+			"variables": {
+				"a": "15",
+				"b": "10",
+				"c": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30"]
+		},
+		{
+			"description": "borne : 30 − 26 − 2 = 2",
+			"variationIndex": 1,
+			"variables": {
+				"a": "30",
+				"b": "26",
+				"c": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Zéro inutile",
+			"variationIndex": 0,
+			"variables": {
+				"a": "29",
+				"b": "12",
+				"c": "7"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			},
+			"answers": ["024"]
+		}
+	]
+}

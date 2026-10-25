@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1726._
+_Mis à jour le 2026-10-25, après #1738._
 
-- **État** : lot 1 COMPLET sur `main`, pas en prod — PR 1a #1716 (affichage) et PR 1b #1726 (saisie + juge : `case: N`, réponse calculée par le bloc, grille saisissable, correction chiffre par chiffre).
-- **Prochaine action** : lot 2 (multiplication) — phase 0 à écrire et faire valider.
-- **En attente de David** : vérifications #1716 et #1726 (`verifications-manuelles.md`) ; avis sur le comportement 5 précisé (§ 9 : zéros retirés, espaces posés) ; décimales de fin laissées vides (`0,5 + 0,5`, élève « 1 » sans le 0) → aujourd'hui incomplète, jugée fausse.
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — republiée le 2026-10-25 avec la saisie jouable (7 cas, dont `0,5 + 0,5`).
+- **État** : lot 1 COMPLET sur `main`, pas en prod — PR 1a #1716 (affichage), PR 1b #1726 (saisie + juge), #1738 (décimales de fin laissées vides comptées 0, jamais surlignées).
+- **Prochaine action** : lot 2 (multiplication) — phase 0 à écrire et faire valider (go de David le 2026-10-25).
+- **En attente de David** : vérifications #1716, #1726 et #1738 (`verifications-manuelles.md`), avant le prochain `deploy:prod`. Comportement 5 précisé et décimales de fin (comptées 0) : tranchés le 2026-10-25 (recommandations suivies).
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — republiée le 2026-10-25 avec la saisie jouable (7 cas) et la règle des décimales de fin (#1738).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
-- **Worktree / branche** : supprimés après #1726.
+- **Worktree / branche** : supprimés après #1738.
 
 ---
 
@@ -226,6 +226,9 @@ David a répondu « je te suis » aux quatre recommandations, une par question :
     → elle compte (`100`).
 11. Une case au milieu laissée vide (`8 _ 2`) : réponse incomplète, jugée fausse (pas de 0 implicite
     au milieu).
+    **Décimales de fin (David, 2026-10-25)** : laissées vides, elles comptent 0, comme les cases de
+    tête (`0,5 + 0,5`, élève « 1 » sans le 0 des dixièmes → `1`, juste) ; une réponse fausse le reste
+    (`2,5 + 1,25`, élève `3,7_` → `3,7`, faux).
 12. Chiffre faux à gauche d'une réponse plus courte (`1 000 − 998`, élève `0 0 2`) : zéros de tête
     acceptés (`2`).
 13. Téléphone : la grille ne déborde jamais ; si elle ne tient pas en 40 px, elle défile dans son
@@ -240,6 +243,10 @@ David a répondu « je te suis » aux quatre recommandations, une par question :
     case : « chiffre des unités », « chiffre des dizaines »…
 
 ## Journal
+
+### 2026-10-25 — #1738 décimales de fin
+
+- Décision de David (recommandation suivie) : décimales de fin laissées vides = 0 à la lecture ; revue Opus : même règle au surlignage (`wrongResultDigits`), corrigé ; retour sur la question : `1` remis en `1,0` (accepté, figé par un test).
 
 ### 2026-10-25 — PR 1b codée
 

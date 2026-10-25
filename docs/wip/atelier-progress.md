@@ -8,7 +8,7 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1733 (phases 0 livrées archivées)._
+_Mis à jour le 2026-10-25, après #1733 (phases 0 livrées archivées ; Q93 et M1 confirmées)._
 
 - **État** : `/spreadsheet` retiré et pont « Ouvrir dans Python » livrés et en prod (v0.47.0).
   Aucun worktree ni PR ouverts pour l'atelier.
@@ -25,11 +25,11 @@ _Mis à jour le 2026-10-25, après #1733 (phases 0 livrées archivées)._
   Table `spreadsheets` supprimée le 2026-10-25 ([journal](../archive/wip/drop-spreadsheets-progress.md)).
 - **Plus tard, si l'usage le demande** : sens inverse Python → atelier ; « Ouvrir dans Python » pour
   une carte `f′`.
-- **Restes des phases 0 archivées le 2026-10-25** (`docs/archive/wip/`) : deux questions jamais
-  tranchées — Q93 (`.croiser` : plafond de largeur, 8 noms par côté dans un bloc de la v1, 20 modalités
-  dans l'atelier) et M1 (`1e3`, `π`, `2x`, `3 m` rendent une liste qualitative ; en v1, `1e3` → 1000) ;
-  `breadcrumb-ellipsis` dit encore « More » (composant inutilisé) ; `f(2x)` sur un intervalle =
-  futur chantier des composées.
+- **Restes des phases 0 archivées le 2026-10-25** (`docs/archive/wip/`) : Q93 et M1, crues ouvertes,
+  étaient tranchées depuis le 2026-10-02 (décisions 92 et 93 d'`outils-statistiques-v2-progress.md`) et
+  confirmées par David le 2026-10-25 — 20 modalités par côté dans l'atelier, 8 dans un bloc imprimé ;
+  `1e3` → 1000, `2x`/`π`/`3 m` = mots, cause nommée. Restent : `breadcrumb-ellipsis` dit encore
+  « More » (composant inutilisé) ; `f(2x)` sur un intervalle = futur chantier des composées.
 
 - **Ce qui est livré, et comment ça marche** : [docs/systeme/atelier.md](../systeme/atelier.md)
   (vérifié contre le code le 2026-10-10) ; syntaxe des commandes : [atelier-syntaxe.md](../systeme/atelier-syntaxe.md).
