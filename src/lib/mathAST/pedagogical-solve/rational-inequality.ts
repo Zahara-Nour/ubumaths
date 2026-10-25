@@ -54,6 +54,7 @@ import {
 	PedagogicalInequalityError
 } from './linear-inequality';
 import { InequalityNotSolvable } from '../solve/inequality/types';
+import { hasDecimalLiteral } from '../tidy/decimal';
 
 // Re-export for convenience.
 export { UnsupportedInequalityDegree, PedagogicalInequalityError };
@@ -496,7 +497,9 @@ function buildConcludeRationalStep(
 	idGen: () => number
 ): EquationStep {
 	const result = solveInequality(originalIneq);
-	const solutionDescription = describeDomain(result.solution);
+	const solutionDescription = describeDomain(result.solution, {
+		decimal: hasDecimalLiteral(originalIneq)
+	});
 	return makeStep({
 		id: idGen(),
 		rule: 'inequality-conclude-rational',

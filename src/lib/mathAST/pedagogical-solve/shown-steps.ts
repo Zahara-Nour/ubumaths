@@ -13,8 +13,10 @@
  *   solutions ») passent par `exactValueToShow`, comme la réponse de la ligne :
  *   `S = {−√2/2 ; √2/2}`, `(1 − √5)/2` (Q22, Q23).
  *
- * Équations seulement : la réponse d'une inéquation est une chaîne déjà
- * écrite par le pipeline (`solutionDescription`), hors de Q46.
+ * Inéquations comprises (Q50, David, 2026-10-25) : mêmes règles pour les
+ * étapes, et les racines des tableaux de signes s'écrivent comme des
+ * solutions. L'ensemble solution, lui, est une chaîne déjà écrite par le
+ * pipeline (`solutionDescription`, `describeDomain`), avec la même écriture.
  *
  * @module mathAST/pedagogical-solve/shown-steps
  */
@@ -26,20 +28,17 @@ import { hasDecimalLiteral } from '../tidy/decimal';
 import { inDecimalRegister } from '../pedagogical-limits/decimal-register';
 import type { DecimalRegisterOptions } from '../pedagogical-limits/decimal-register';
 import { findNodes } from '../transforms';
+import { getVariables } from '../eval/substitute';
 
 // =============================================================================
 // Fonctions
 // =============================================================================
 
-/**
- * Les étapes d'une équation écrites comme sa réponse ; celles d'une
- * inéquation, telles quelles.
- */
+/** Les étapes d'une équation ou d'une inéquation écrites comme sa réponse. */
 export function stepsAsShown(
 	steps: readonly EquationStep[],
 	equation: RelationNode
 ): readonly EquationStep[] {
-	if (equation.relation !== '=') return steps;
 	const decimal = hasDecimalLiteral(equation);
 	// L'écriture tapée reste, jusque dans les branches d'une valeur absolue
 	// (`\dfrac{x}{2} - 0,5 = 1`) : les pipelines y reprennent les nœuds tapés
@@ -55,7 +54,25 @@ export function stepsAsShown(
 		...(step.operation && { operation: operationWith(step.operation, write, value) }),
 		...(step.subSteps && { subSteps: step.subSteps.map(rewrite) })
 	});
-	return steps.map(rewrite);
+	const shown = steps.map(rewrite);
+	if (equation.relation === '=' || shown.length === 0) return shown;
+	// Une inéquation du premier degré ne conclut pas : sa dernière étape finit
+	// sur la forme résolue `x < c`, dont c se lit comme une solution
+	// (`2x < √2` → `x < √2/2`, comme `2x = √2`)
+	const last = steps[steps.length - 1];
+	const solved = solvedBoundWritten(last.after, value);
+	if (solved === null) return shown;
+	return [...shown.slice(0, -1), { ...shown[shown.length - 1], after: solved }];
+}
+
+/** `x ⋚ c` (c sans inconnue), c écrit par `value` ; sinon `null`. */
+function solvedBoundWritten(
+	after: RelationNode,
+	value: (n: MathNode) => MathNode
+): RelationNode | null {
+	if (after.relation === '=' || after.left.type !== 'variable') return null;
+	if (getVariables(after.right).size > 0) return null;
+	return { ...after, right: value(after.right) };
 }
 
 /** `inDecimalRegister`, membre à membre pour une relation. */
@@ -102,6 +119,18 @@ function operationWith(
 					factor: write(factor),
 					value: value(v)
 				}))
+			};
+		// Les racines d'un tableau de signes sont des solutions : `(1 − √5)/2`
+		case 'quadratic-sign-table':
+			return { ...writtenNodes(operation, write), roots: operation.roots.map(value) };
+		case 'rational-domain-restriction':
+			return { ...operation, excluded: operation.excluded.map(value) };
+		case 'rational-locate-roots':
+		case 'rational-sign-table':
+			return {
+				...(writtenNodes(operation, write) as typeof operation),
+				numeratorRoots: operation.numeratorRoots.map(value),
+				denominatorZeros: operation.denominatorZeros.map(value)
 			};
 		default:
 			return writtenNodes(operation, write);

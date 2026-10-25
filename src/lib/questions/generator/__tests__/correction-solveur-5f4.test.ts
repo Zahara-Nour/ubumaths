@@ -73,3 +73,23 @@ describe('generateCorrection — équations : étapes écrites comme la réponse
 		expect(text).toContain('Solution:$x=\\dfrac{2}{3}$');
 	});
 });
+
+describe('generateCorrection — inéquations : étapes écrites comme la réponse (Q50)', () => {
+	it('quadratic-inequality x² − 0,3x − 0,1 < 0 : b = −0,3, racines −0,2 et 0,5, S en décimal', () => {
+		const text = shown(
+			instanceWith({ kind: 'quadratic-inequality', inequality: 'x^2-0.3*x-0.1<0' }, ['1_SPE'])
+		);
+		expect(text).toContain('b=-0.3');
+		expect(text).toContain('S=]-0.2;0.5[');
+		expect(text).not.toContain('\\dfrac{3}{10}');
+		expect(text).not.toContain('\\dfrac{1}{5}');
+	});
+
+	it('rational-inequality (x − 0,5)/(x + 1) > 0 : la racine 0,5 jusqu’au tableau', () => {
+		const text = shown(
+			instanceWith({ kind: 'rational-inequality', inequality: '(x-0.5)/(x+1)>0' }, ['1_SPE'])
+		);
+		expect(text).toContain(']0.5;+\\infty[');
+		expect(text).not.toContain('\\dfrac{1}{2}');
+	});
+});

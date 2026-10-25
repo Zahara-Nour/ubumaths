@@ -255,7 +255,8 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 
 		// Sans réponse affichable, la ligne n'aurait RIEN à montrer : une zone
 		// mathématique vide, et le texte du moteur jamais affiché.
-		const answer = answerFor(steps[steps.length - 1], rendered[rendered.length - 1]);
+		// Lue sur les étapes montrées : `2x < 0,6` répond `x < 0,3` (Q50)
+		const answer = answerFor(shown[shown.length - 1], rendered[rendered.length - 1]);
 		if (answer === null) return null;
 
 		// ⚠️ **Garde-fou : la conclusion est vérifiée contre le moteur.** Mesuré

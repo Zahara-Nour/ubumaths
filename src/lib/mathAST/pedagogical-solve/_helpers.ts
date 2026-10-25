@@ -36,6 +36,7 @@ import { tidy } from '../tidy';
 import { InequalityNotSolvable } from '../solve/inequality/types';
 import { getVariables } from '../eval/substitute';
 import { toLatex } from '../latex-generator';
+import { exactValueToShow } from '../eval/exact-value';
 import type { EquationOperation, EquationStep } from './types';
 
 // =============================================================================
@@ -371,8 +372,13 @@ function renumberStep(step: EquationStep, id: number): EquationStep {
  * `inequality-conclude-from-isolated-square` (palier 2c), and
  * `inequality-conclude-rational` (palier 3) for the step description and the
  * renderer's title.
+ *
+ * Les bornes s'écrivent comme les solutions d'une équation (Q50,
+ * `exactValueToShow`) : `]−√2/2 ; √2/2[`, une vraie fraction au lieu de
+ * `1 / 2`, et en décimal quand l'inéquation tape un décimal (`decimal`).
  */
-export function describeDomain(domain: Domain): string {
+export function describeDomain(domain: Domain, options: { decimal?: boolean } = {}): string {
+	const latexBound = (node: MathNode): string => boundLatex(node, options.decimal ?? false);
 	if (domain.kind === 'empty') return '∅';
 	if (domain.kind === 'universal') return 'ℝ';
 	if (domain.kind !== 'interval_set') return 'ℝ';
@@ -445,7 +451,7 @@ export function describeDomain(domain: Domain): string {
 	}
 
 	// === Generic union of intervals ===
-	const parts = intervals.map((int) => formatInterval(int));
+	const parts = intervals.map((int) => formatInterval(int, latexBound));
 	return parts.join(' ∪ ');
 }
 
@@ -456,18 +462,21 @@ function isInfinite(value: MathNode, side: 'lower' | 'upper'): boolean {
 	return sign === 'positive' || sign === undefined;
 }
 
-function latexBound(node: MathNode): string {
+function boundLatex(node: MathNode, decimal: boolean): string {
 	if (node.type === 'infinity') {
 		const sign = (node as { sign?: string }).sign;
 		return sign === 'negative' ? '-∞' : '+∞';
 	}
-	return toLatex(node).replace(/\\infty/g, '∞');
+	return toLatex(exactValueToShow(node, { decimal })).replace(/\\infty/g, '∞');
 }
 
-function formatInterval(int: {
-	lower: { value: MathNode; type: 'open' | 'closed' };
-	upper: { value: MathNode; type: 'open' | 'closed' };
-}): string {
+function formatInterval(
+	int: {
+		lower: { value: MathNode; type: 'open' | 'closed' };
+		upper: { value: MathNode; type: 'open' | 'closed' };
+	},
+	latexBound: (node: MathNode) => string
+): string {
 	const lo = isInfinite(int.lower.value, 'lower') ? '-∞' : latexBound(int.lower.value);
 	const hi = isInfinite(int.upper.value, 'upper') ? '+∞' : latexBound(int.upper.value);
 	const lb = int.lower.type === 'closed' ? '[' : ']';
