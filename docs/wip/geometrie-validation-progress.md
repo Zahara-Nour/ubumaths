@@ -2,17 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 2 (écran élève) codée, avant la PR._
+_Mis à jour le 2026-10-25, après #1775._
 
-- **État** : PR 1 (moteur, #1768) et renommage (#1774) mergés ; PR 2 (écran élève, § 5) codée et testée, PR à ouvrir.
-- **Prochaine action** : PR 2 → revue `code-reviewer` (Opus) → merge ; puis PR 3 (modèle CP-059, fiche du catalogue,
-  doc système, verso de `FlashCard` et copie corrigée en figure, corrigé PDF).
+- **État** : PR 1 (moteur, #1768), renommage (#1774) et PR 2 (écran élève, § 5, #1775) mergés ; rien en prod.
+- **Prochaine action** : PR 3 — modèle CP-059 (3 variations, `delay` 60 s), fiche du catalogue, doc système, verso de
+  `FlashCard` et copie corrigée en figure, garde du verdict de `CorrectionCard`, corrigé PDF (à trancher) ; nouveau
+  worktree `../ubumaths-wt-geometrie-validation`.
 - **En attente de David** : statut de **CP-034** et de **CP-058** ; phase 0 de CP-060 ; Q3/Q4 du § 5 prises « sans
-  changement » (à corriger s'il le veut).
-- **Pièges en cours** : verdict de `CorrectionCard` sans positions inscrites (§ 5, revue) ; la correction s'affiche dans `FlashCard` (`QuestionCard` ne montre jamais de verdict) ; le verso
-  de `FlashCard` montre la réponse en texte (`droite(1;2;7;2)`) jusqu'à la PR 3 ; corrigé PDF : les séries refusent
-  déjà les cases portées par un bloc (```operation aussi).
-- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `feat/geometrie-validation-ecran`.
+  changement » (à corriger s'il le veut) ; corrigé PDF des cases portées par un bloc (séries).
+- **Pièges en cours** : `CorrectionCard` juge sans positions inscrites → « faux » en silence (§ 5, revue) ; la correction
+  s'affiche dans `FlashCard` (`QuestionCard` jamais) ; essai : `/dev/carte-question`, « Figure à compléter (CP-059) ».
+- **Worktree / branche** : aucun (retirés après #1775).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
