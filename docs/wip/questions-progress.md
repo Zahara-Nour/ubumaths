@@ -4,10 +4,10 @@
 
 _Mis à jour le 2026-10-25, B3 en cours (branche `feat/questions-b3`)._
 
-- **État** : A1 à H, B1, B2 relus et OK (B2 : 10/10). **Lot B3** (§ 4 terdecies) : 7 modèles écrits (`scripts/questions/cp-b3/`, générateur `docs/wip/questions/lot-b3.py`), 66 specs vertes en simulation, figures relues à 390 px (banc `figureToSvg`).
-- **Prochaine action** : go de David → `create-questions --dir scripts/questions/cp-b3 --publier` ; puis migration nœud + tag (sur le modèle de `20261026150000`), test rouge puis vert, PR.
+- **État** : A1 à H, B1, B2 relus et OK. **Lot B3** (§ 4 terdecies) : 7 brouillons créés en prod (go de David) : `12482155` CP-049, `b556f617` 049, `7e7e2968` 050, `3e9a610e` 051, `8e207417` 052, `74d6b4f3` 052, `5592a129` 040 ; vérifiés sans nœud ni tag. Migration `20261026160000` nœud + tag et son test : rouge (5/9) puis vert.
+- **Prochaine action** : PR B3 (CI, audit sécurité de la migration), merge ; question d'accès → `db:migrate` ; page à cocher B3.
 - **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 058 à réexaminer.
-- **En attente de David** : go pour créer les 7 brouillons B3 en prod ; publication A1 à H, B1, B2 en un lot ; vérification manuelle #1702.
+- **En attente de David** : question d'accès B3 ; publication A1 à H, B1, B2 en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (la bonne réponse = une variable) ; **virgule décimale = figure cassée** (coordonnées tirées : chaînes de `{{if:…}}` sur des valeurs écrites) ; **points et segments numérotés, pas lettrés** (les choix du QCM portent A, B, C) ; texte sur fond coloré illisible ; jamais de variable `e`.
 - **Worktree / branche** : `../ubumaths-wt-questions` (`feat/questions-b3`) ; ⚠️ la branche suit `origin/main` : pousser avec `git push -u origin feat/questions-b3`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -232,3 +232,4 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 2026-10-25 : #1772 mergée (CI verte) ; `db:migrate` joué depuis le dépôt principal (le worktree n'est pas lié à Supabase), vérifié en prod : 10 modèles B2 sur leur sous-notion, 1 tag chacun ; page à cocher B2 publiée (figures dessinées par `figureToSvg`, script `_page-b2.mts` du scratchpad).
 - 2026-10-25 : page à cocher B2 relue par David, 10/10 OK.
 - 2026-10-25 : lot B3, phase 0 validée (§ 4 terdecies), worktree `../ubumaths-wt-questions` (`feat/questions-b3`) ; 7 modèles écrits, 66 specs vertes (simulation) ; rendu relu à 390 px : tirets des ellipses cachées faits main, équateur de la boule en 16 segments, face en bleu translucide, fenêtres resserrées.
+- 2026-10-25 : B3, 7 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; migration `20261026160000` nœud + tag et test, rouge (5/9) puis vert ; question d'accès posée APRÈS l'écriture du SQL (écart à `CLAUDE.md`, signalé à David).
