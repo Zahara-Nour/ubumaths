@@ -182,7 +182,7 @@ function combineFractions(terms: readonly ClassifiedTerm[]): {
 				return null;
 			}
 		}
-		// Guard : `numerator × 1` should display as just `numerator` ; canon may
+		// Guard : `numerator × 1` should display as just `numerator` ; canonicalForm may
 		// or may not strip the `× 1` depending on AST shape, so we short-circuit.
 		const adjustedNum =
 			missingFactor.type === 'number' && missingFactor.value === '1'
@@ -600,7 +600,7 @@ export function generateRationalInequalitySteps(
 		// After canonicalisation, the form is no longer a fraction — could be a
 		// polynomial after cancellation (e.g. `(x²-1)/(x-1) < 0` simplifies to
 		// `x+1 < 0`). The top-level `generateInequalitySteps` dispatcher handles
-		// these naturally because `getPolynomialDegree(canon)` returns a number,
+		// these naturally because `getPolynomialDegree(canonicalForm(…))` returns a number,
 		// routing to the polynomial pipeline. Direct callers of this function
 		// receive a typed error so they can re-route via the dispatcher.
 		throw new InequalityNotSolvable(

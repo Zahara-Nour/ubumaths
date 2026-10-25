@@ -151,7 +151,7 @@ function isFractionWrittenXTerm(term: MathNode, variable: string): boolean {
  * 4 ») : on multiplie par l'inverse quand `a` est une fraction non entière et
  * que les termes en x de la relation tapée sont écrits en fraction (`x/4`,
  * `\frac{2}{3}x`) — aucun avec un décimal : `0,5x = 1` se divise par 0,5.
- * `canon` récrit `0,25x` en `\frac{1}{4}x` : l'écriture se lit sur `written`.
+ * `canonicalForm` récrit `0,25x` en `\frac{1}{4}x` : l'écriture se lit sur `written`.
  */
 export function inverseFactor(
 	coefficient: MathNode,
@@ -332,7 +332,7 @@ export function isConstantCoefficient(coeff: MathNode): boolean {
  * `-2x` pour positif : « On ajoute -2x », `\textcolor{blue}{+ -2x}` (V50).
  * Un facteur de tête qui est une SOMME (coefficient irrationnel) se lit sur sa
  * valeur (`constantSign`), pas sur sa forme. Le produit se reconstruit
- * facteur par facteur : `canon` du terme entier redévelopperait
+ * facteur par facteur : `canonicalForm` du terme entier redévelopperait
  * `(\pi - 4)x` en `\pi x - 4x`. Une somme seule (`1 - \sqrt{2}`) n'est pas
  * lue : sa valeur absolue s'écrirait sans parenthèses après le « − ».
  */
@@ -365,7 +365,7 @@ export function negativeTermMagnitude(term: MathNode): MathNode | null {
  * Le terme à ajouter aux deux membres pour faire passer `part` de l'autre
  * côté : son opposé, ou `null` s'il est nul (« On ajoute 0 » n'est pas une
  * étape : `5x - 0 = x + 1`). Une somme de termes en x (`-\pi x + 4x`, ce que
- * `canon` fait de `-(\pi - 4)x`) s'écrit factorisée, `\left(4 - \pi\right)x`, et un
+ * `canonicalForm` fait de `-(\pi - 4)x`) s'écrit factorisée, `\left(4 - \pi\right)x`, et un
  * coefficient somme rangé par `tidy` (`\left(\sqrt{2} - 1\right)x`).
  */
 export function movedTerm(part: MathNode | null, variable: string): MathNode | null {
@@ -377,7 +377,7 @@ export function movedTerm(part: MathNode | null, variable: string): MathNode | n
 	if (sumCoefficient && containsVariable(moved, variable)) {
 		const coefficient = canonicalForm(divide(moved, varNode(variable), 'fraction'));
 		if (!containsVariable(coefficient, variable)) {
-			// `tidy` range la somme : `\sqrt{2} - 1`, pas `-1 + \sqrt{2}` (ordre de `canon`).
+			// `tidy` range la somme : `\sqrt{2} - 1`, pas `-1 + \sqrt{2}` (ordre de `canonicalForm`).
 			return multiply(tidy(coefficient), varNode(variable), 'implicit');
 		}
 	}

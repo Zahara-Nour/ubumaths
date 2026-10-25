@@ -52,7 +52,8 @@ export function polynomialCoefficients(
  * un terme non développé (`2(x − 1)`, `(x − 1)²`) laisse x dans un coefficient,
  * et la lecture est refusée (`null`). Chaque coefficient est mis en forme
  * canonique. Les coefficients qui contiennent d'autres lettres (paramètres)
- * restent valables.
+ * restent valables. `null` aussi quand `normalize` lève (`x² + 1/0`) : la
+ * lecture ne lève jamais.
  */
 export function coefficientsByDegree(
 	expr: MathNode,
@@ -66,7 +67,12 @@ export function coefficientsByDegree(
 		if (k > degree) return null;
 		termsByDegree[k].push(signedTerm);
 	}
-	const coefficients = termsByDegree.map((terms, k) => coefficientOfDegree(terms, variable, k));
+	let coefficients: MathNode[];
+	try {
+		coefficients = termsByDegree.map((terms, k) => coefficientOfDegree(terms, variable, k));
+	} catch {
+		return null;
+	}
 	if (coefficients.some((c) => getVariables(c).has(variable))) return null;
 	return coefficients;
 }

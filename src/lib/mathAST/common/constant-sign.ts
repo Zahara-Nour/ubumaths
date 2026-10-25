@@ -3,7 +3,7 @@
  *
  * Une même valeur a plusieurs écritures : `-\frac23` est `opposite(division)`,
  * `\frac{-3}{4}` une division de numérateur opposé, `-0.5` devient `-\dfrac12`
- * après `canon`, `-\sqrt2` un opposé de racine. Lire le signe sur
+ * après `canonicalForm`, `-\sqrt2` un opposé de racine. Lire le signe sur
  * `number` / `opposite(number)` seulement (`literalNumberValue`) les rate tous :
  * c'est ce qui faisait garder le sens de `-\frac23 x + 1 < 5` (écart V36).
  *
@@ -37,7 +37,7 @@ const SIGN_MARGIN = 1e-9;
  * ⚠️ Un zéro exact écrit comme une SOMME (`\sqrt2 - \sqrt2`, `1 - \frac22`)
  * n'est pas un rationnel lisible par l'étape 1 : sa valeur approchée tombe
  * dans la marge et le résultat est `null`, pas 0. Les appelants passent donc
- * d'abord l'expression par `canon` (`normalize ∘ denormalize`), qui réduit ces
+ * d'abord l'expression par `canonicalForm` (`denormalize ∘ normalize`), qui réduit ces
  * sommes à `0`.
  */
 export function constantSign(node: MathNode): ConstantSign | null {

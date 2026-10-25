@@ -14,7 +14,12 @@ import { parseCustom } from '../../parser/custom';
 import { normalize } from '../normalize';
 import { denormalize } from '../denormalize';
 import { toLatex } from '../../latex-generator';
-import { canonicalForm, exactRational, polynomialCoefficients } from '../canonical-form';
+import {
+	canonicalForm,
+	coefficientsByDegree,
+	exactRational,
+	polynomialCoefficients
+} from '../canonical-form';
 import { extractLinearCoefficients } from '../../solve/solvers/linear';
 import { extractQuadraticCoefficients } from '../../solve/solvers/quadratic';
 import { extractCubicCoefficients } from '../../solve/solvers/polynomial';
@@ -71,6 +76,13 @@ describe('polynomialCoefficients', () => {
 		expect(coefficients('x^3+1', 2)).toBeNull();
 		expect(coefficients('sin(x)+1', 1)).toBeNull();
 		expect(coefficients('1/x+1', 1)).toBeNull();
+	});
+});
+
+describe('coefficientsByDegree : null plutôt qu’une exception', () => {
+	it('constante qui fait lever normalize (division par zéro)', () => {
+		expect(coefficientsByDegree(parseCustom('x^2+1/0'), 'x', 2)).toBeNull();
+		expect(extractQuadraticCoefficients(parseCustom('x^2+1/0'), 'x')).toBeNull();
 	});
 });
 

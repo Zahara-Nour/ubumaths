@@ -115,3 +115,9 @@ Comportements : **nominal** — mêmes réponses et mêmes étapes partout (suit
 - Code mort retiré : `distributeBinomialProduct` (+ test, + barrel `pedagogical-rules/index.ts`), `algebraicExpandingRules` (+ 3 règles). Doc `pattern-matching.md` remise à jour (elle décrivait encore `developper` d'avant #1784).
 - `denormalize(normalize(` en ligne : 95 → 75 (internes, voulus).
 - Mesures : suite serveur `src/lib` 59 067 verts ; `check:incremental` 0 ; `lint:fast` propre ; garde doc OK.
+
+## 8. Revue du lot (b) (code-reviewer opus, 2026-10-25)
+
+- Aucun finding bloquant ; aucun coefficient faux (la garde « coefficient sans x » attrape tout degré mal lu).
+- **Corrigé** (test rouge d'abord) : `coefficientsByDegree` levait quand `normalize` lève sur une constante (`x² + 1/0`, c n'était pas réduit avant) → `null`, la lecture ne lève jamais. Commentaires citant `canon` remis à `canonicalForm` (10).
+- **Écarts de plus que celui annoncé, tous plus justes, invisibles dans les solveurs** (relecture par la forme canonique en repli) : linéaire lu tel quel refusé là où une division par x réunissait tout (`x²−x²+2x+1`, `x²/x + 1`) ; termes constants déguisés acceptés car c est réduit (`x⁰+2x`, `2x/x+3x`, `x/x+x²`, `√x−√x+x²`) ; `0.5x+1.2` : c = 6/5 au lieu de `1.2` en lecture brute (les appelants pédagogiques lisent déjà la forme canonique). `positiveSquareRoot` : `x² − a_n` (nœud que `getPolynomialDegree` ignore) désormais lu, cas de longueurs seulement.

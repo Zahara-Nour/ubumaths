@@ -19,7 +19,7 @@
  *
  * Le sens d'une inéquation se retourne pour un facteur négatif. Le membre
  * obtenu reprend les nœuds tapés (`x + 1` de `0,5(x+1)`) : il n'est pas
- * récrit par `canon`, qui le développerait. On recommence jusqu'à ce que tous
+ * récrit par `canonicalForm`, qui le développerait. On recommence jusqu'à ce que tous
  * les termes en x soient `a·x` ; une forme qu'on ne sait pas défaire lève
  * `UndevelopedLinearForm` (repli sur la réponse du moteur).
  *
