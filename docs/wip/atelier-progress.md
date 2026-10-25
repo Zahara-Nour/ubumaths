@@ -8,7 +8,7 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après le deploy:prod v0.47.0._
+_Mis à jour le 2026-10-25, après #1733 (phases 0 livrées archivées)._
 
 - **État** : `/spreadsheet` retiré et pont « Ouvrir dans Python » livrés et en prod (v0.47.0).
   Aucun worktree ni PR ouverts pour l'atelier.
@@ -18,6 +18,8 @@ _Mis à jour le 2026-10-25, après le deploy:prod v0.47.0._
   `atelier-saisie-naturelle.md` versé dans `atelier.md` et archivé. **Chantier du tableur clos**
   (2026-10-25) : [journal](../archive/wip/atelier-tableur-progress.md) et 8 phases 0 versés dans
   `docs/archive/wip/` ; restent ses vérifications manuelles (David).
+- **Ménage** : #1733 verse dans `docs/archive/wip/` les neuf journaux livrés (cas, copier, croiser,
+  développer, intervalle, listes qualitatives, réciproque, réglages, remplacer) ; leurs restes ci-dessous.
 - **Ensuite** : rien de lancé ; prochain sujet à choisir par David.
 - **Déployé** : v0.47.0 (2026-10-25) livre le retrait de `/spreadsheet`, de `/calc` et le pont Python.
   Table `spreadsheets` supprimée le 2026-10-25 ([journal](../archive/wip/drop-spreadsheets-progress.md)).
