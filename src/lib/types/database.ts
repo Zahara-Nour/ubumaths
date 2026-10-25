@@ -11591,6 +11591,7 @@ export type Database = {
         Row: {
           asleep: boolean
           best_stage: string
+          collar: string | null
           decoration: string | null
           first_seen_at: string
           notion_id: string
@@ -11603,6 +11604,7 @@ export type Database = {
         Insert: {
           asleep?: boolean
           best_stage: string
+          collar?: string | null
           decoration?: string | null
           first_seen_at?: string
           notion_id: string
@@ -11615,6 +11617,7 @@ export type Database = {
         Update: {
           asleep?: boolean
           best_stage?: string
+          collar?: string | null
           decoration?: string | null
           first_seen_at?: string
           notion_id?: string
@@ -11625,6 +11628,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "student_mathoux_collar_fkey"
+            columns: ["student_id", "collar"]
+            isOneToOne: false
+            referencedRelation: "student_mathou_decorations"
+            referencedColumns: ["student_id", "decoration"]
+          },
           {
             foreignKeyName: "student_mathoux_decoration_fkey"
             columns: ["student_id", "decoration"]
@@ -16083,6 +16093,10 @@ export type Database = {
           price: number
         }[]
       }
+      mathou_decoration_slot: {
+        Args: { p_decoration: string }
+        Returns: string
+      }
       minesweeper_scoped_leaderboard: {
         Args: { p_limit?: number; p_scope: string }
         Returns: {
@@ -16427,6 +16441,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      set_mathou_collar: {
+        Args: { p_collar: string; p_notion_id: string; p_student_id: string }
+        Returns: Json
       }
       set_mathou_decoration: {
         Args: {

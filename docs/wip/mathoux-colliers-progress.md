@@ -5,20 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1714 et son `db:migrate`._
+_Mis à jour le 2026-10-25, PR 2 en cours._
 
-- **État** : PR 1 (migration des colliers) mergée et jouée en prod ; droits relus (5 fonctions
-  `service_role` seul, `search_path` en `pg_temp`, colonne `collar` présente).
-- **Prochaine action** : PR 2 sur une branche neuve (`feat/mathoux-colliers-code`) : `db:types`,
-  catalogue TS + test d'égalité, dessins dans `MathouAvatar` (règle de la fraise, versions
-  choisies : grelot A, nœud A, cuir A, Ordre B), mémoire, routes de pose, rangée « Cou » de
+- **État** : PR 1 (#1714) mergée et jouée en prod. PR 2 (code) en cours sur
+  `feat/mathoux-colliers-code` : `db:types` fait.
+- **Prochaine action** : catalogue TS + test d'égalité, dessins dans `MathouAvatar` (règle de la
+  fraise ; grelot A, nœud A, cuir A, Ordre B), mémoire, routes de pose, rangée « Cou » de
   « Décorer », vitrine, vue prof, export RGPD (`collar`), en-tête de `src/lib/mathoux/decorations.ts`.
   Revue : `code-reviewer` + `security-auditor` (routes).
 - **En attente de David** : rien.
 - **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; base
   locale sans élève de démo ; un seul compte prof autorisé dans les tests.
-- **Worktree / branche** : aucun (supprimé après #1714) ; PR 2 : recréer
-  `../ubumaths-wt-mathoux-colliers` sur une branche neuve depuis `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-mathoux-colliers`, `feat/mathoux-colliers-code`.
 
 ## Phase 0 — décisions (2026-10-25)
 
