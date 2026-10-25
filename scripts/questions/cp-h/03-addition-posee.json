@@ -1,0 +1,326 @@
+{
+	"title": "Pose et calcule une addition",
+	"description": "Addition posée en colonnes, sans ou avec retenue, deux ou trois termes, somme ≤ 99",
+	"grades": ["CP"],
+	"theme": "Nombres",
+	"domain": "Addition",
+	"subdomain": "Calcul posé",
+	"level": 1,
+	"delay": 120,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} + {{b}}\nretenues: oui\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..8"
+				},
+				{
+					"name": "a2",
+					"expression": "0..9"
+				},
+				{
+					"name": "b1",
+					"expression": "1..8"
+				},
+				{
+					"name": "b2",
+					"expression": "0..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*a1+a2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*b1+b2"
+				}
+			],
+			"conditions": ["a2 + b2 <= 9", "a1 + b1 <= 9", "a >= b"],
+			"correction": {
+				"steps": [
+					"Les unités : ${{a2}}+{{b2}}={{eval:a2+b2}}$. On écrit ${{eval:a2+b2}}$ dans la colonne des unités.",
+					"Les dizaines : ${{a1}}+{{b1}}={{eval:a1+b1}}$. On écrit ${{eval:a1+b1}}$ dans la colonne des dizaines.",
+					"${{a}}+{{b}}={{eval:a+b}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} + {{b}}\nretenues: oui\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..8"
+				},
+				{
+					"name": "a2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b1",
+					"expression": "1..8"
+				},
+				{
+					"name": "b2",
+					"expression": "1..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*a1+a2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*b1+b2"
+				},
+				{
+					"name": "su",
+					"expression": "eval:a2+b2"
+				}
+			],
+			"conditions": ["a2 + b2 >= 10", "a1 + b1 <= 8", "a >= b"],
+			"correction": {
+				"steps": [
+					"Les unités : ${{a2}}+{{b2}}={{su}}$. On écrit ${{eval:su-10}}$ dans la colonne des unités et on retient $1$ dizaine, écrite en haut de la colonne des dizaines.",
+					"Les dizaines : $1+{{a1}}+{{b1}}={{eval:1+a1+b1}}$. On écrit ${{eval:1+a1+b1}}$ dans la colonne des dizaines.",
+					"${{a}}+{{b}}={{eval:a+b}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} + {{b}}\nretenues: oui\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..8"
+				},
+				{
+					"name": "a2",
+					"expression": "1..9"
+				},
+				{
+					"name": "b",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*a1+a2"
+				},
+				{
+					"name": "su",
+					"expression": "eval:a2+b"
+				}
+			],
+			"conditions": ["a2 + b >= 10"],
+			"correction": {
+				"steps": [
+					"Les unités : ${{a2}}+{{b}}={{su}}$. On écrit ${{eval:su-10}}$ dans la colonne des unités et on retient $1$ dizaine, écrite en haut de la colonne des dizaines.",
+					"Les dizaines : $1+{{a1}}={{eval:1+a1}}$. On écrit ${{eval:1+a1}}$ dans la colonne des dizaines.",
+					"${{a}}+{{b}}={{eval:a+b}}$."
+				]
+			}
+		},
+		{
+			"statement": "Pose et calcule.\n\n```operation\ncalcul: {{a}} + {{b}} + {{c}}\nretenues: oui\n```",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..7"
+				},
+				{
+					"name": "a2",
+					"expression": "0..9"
+				},
+				{
+					"name": "b1",
+					"expression": "1..7"
+				},
+				{
+					"name": "b2",
+					"expression": "0..9"
+				},
+				{
+					"name": "c",
+					"expression": "2..9"
+				},
+				{
+					"name": "a",
+					"expression": "eval:10*a1+a2"
+				},
+				{
+					"name": "b",
+					"expression": "eval:10*b1+b2"
+				},
+				{
+					"name": "su",
+					"expression": "eval:a2+b2+c"
+				},
+				{
+					"name": "r",
+					"expression": "eval:floor(su/10)"
+				}
+			],
+			"conditions": ["a >= b", "a + b + c <= 99", "a2 + b2 + c >= 10"],
+			"correction": {
+				"steps": [
+					"Les unités : ${{a2}}+{{b2}}+{{c}}={{su}}$.{{if:r==0| On écrit ${{su}}$ dans la colonne des unités.| On écrit ${{eval:su-10*r}}$ dans la colonne des unités et on retient ${{r}}$ {{if:r==1|dizaine|dizaines}}, écrite en haut de la colonne des dizaines.}}",
+					"Les dizaines : ${{if:r==0||{{r}}+}}{{a1}}+{{b1}}={{eval:r+a1+b1}}$. On écrit ${{eval:r+a1+b1}}$ dans la colonne des dizaines.",
+					"${{a}}+{{b}}+{{c}}={{eval:a+b+c}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "34 + 25 = 59",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "3",
+				"a2": "4",
+				"b1": "2",
+				"b2": "5",
+				"a": "34",
+				"b": "25"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["59"]
+		},
+		{
+			"description": "Erreur : 34 + 25, 69",
+			"variationIndex": 0,
+			"variables": {
+				"a1": "3",
+				"a2": "4",
+				"b1": "2",
+				"b2": "5",
+				"a": "34",
+				"b": "25"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["69"]
+		},
+		{
+			"description": "45 + 37 = 82",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "4",
+				"a2": "5",
+				"b1": "3",
+				"b2": "7",
+				"a": "45",
+				"b": "37",
+				"su": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["82"]
+		},
+		{
+			"description": "Erreur : retenue oubliée, 45 + 37 = 72",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "4",
+				"a2": "5",
+				"b1": "3",
+				"b2": "7",
+				"a": "45",
+				"b": "37",
+				"su": "12"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["72"]
+		},
+		{
+			"description": "Erreur : 12 écrit en entier, 45 + 37 = 712",
+			"variationIndex": 1,
+			"variables": {
+				"a1": "4",
+				"a2": "5",
+				"b1": "3",
+				"b2": "7",
+				"a": "45",
+				"b": "37",
+				"su": "12"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["712"]
+		},
+		{
+			"description": "28 + 8 = 36",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "2",
+				"a2": "8",
+				"b": "8",
+				"a": "28",
+				"su": "16"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["36"]
+		},
+		{
+			"description": "Erreur : retenue oubliée, 28 + 8 = 26",
+			"variationIndex": 2,
+			"variables": {
+				"a1": "2",
+				"a2": "8",
+				"b": "8",
+				"a": "28",
+				"su": "16"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["26"]
+		},
+		{
+			"description": "56 + 28 + 8 = 92",
+			"variationIndex": 3,
+			"variables": {
+				"a1": "5",
+				"a2": "6",
+				"b1": "2",
+				"b2": "8",
+				"c": "8",
+				"a": "56",
+				"b": "28",
+				"su": "22",
+				"r": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["92"]
+		},
+		{
+			"description": "Erreur : retenue de 1 au lieu de 2, 56 + 28 + 8 = 82",
+			"variationIndex": 3,
+			"variables": {
+				"a1": "5",
+				"a2": "6",
+				"b1": "2",
+				"b2": "8",
+				"c": "8",
+				"a": "56",
+				"b": "28",
+				"su": "22",
+				"r": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["82"]
+		}
+	]
+}
