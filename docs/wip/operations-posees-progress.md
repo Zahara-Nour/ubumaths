@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 du lot 3 validée._
+_Mis à jour le 2026-10-25, PR 3a codée._
 
-- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740, #1745, #1748 : 0 des dixièmes non écrit → incomplète), sur `main`, pas en prod. Lot 3 : phase 0 validée (§ 12), PR 3a commencée.
-- **Prochaine action** : PR 3a (affichage de la division) dans `ubumaths-wt-operations-posees-division` : tests rouges (parseur, scène) puis code.
+- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740, #1745, #1748 : 0 des dixièmes non écrit → incomplète), sur `main`, pas en prod. Lot 3 : phase 0 validée (§ 12), PR 3a (affichage) codée, en revue.
+- **Prochaine action** : merger la PR 3a, puis PR 3b (saisie : quotient de gauche à droite, reste, zone des étapes, virgule).
 - **En attente de David** : vérifications #1716, #1726, #1738, #1740, #1745, #1748 avant `deploy:prod`. Précision Q1 (§ 10).
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie de la multiplication).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
@@ -415,7 +415,27 @@ Découpage pressenti : **PR 3a** affichage (parseur, scène, potence écran et P
 18. `méthode:` ou `retenues:` sur une division ; `étapes:` / `quotient:` sur une autre opération ;
     valeur hors liste ; clé répétée.
 
+**Précisé en codant (PR 3a)** — à signaler à David :
+
+- Quotient décimal à remplir : carreaux libres à droite du dividende **jusqu'au millième** (Q4), soit
+  `3 − décimales du dividende` (`785` : 3 ; `148,2` : 2, le « + 2 » du nominal 7) ; les cases du
+  quotient sont autant que ces colonnes.
+- Zone des étapes : `chiffres − chiffres du diviseur + 1` étapes au plus, deux rangées chacune en
+  `soustractions` (`9 456 ÷ 7` : 8 rangées), une en `restes`.
+- Une ligne de reste n'écrit pas ses zéros de tête (`35 − 35 = 0`, on abaisse 6 → `6`, pas `06`) ;
+  un reste nul final est écrit (`0`). Avec un 0 au quotient, la ligne s'allonge du chiffre abaissé
+  (`7 035 ÷ 7` : `35` sous `7`).
+- `/` accepté comme signe de division, comme `:`.
+- `5 ÷ 7` résolu : aucune ligne, le reste est le dividende lui-même.
+
 ## Journal
+
+### 2026-10-25 — PR 3a (division, affichage)
+
+Parseur (`÷ : /`, `étapes:`, `quotient:`, bornes), scène `operation-division-scene.ts`
+(`buildDivisionScene`, `divisionResult`), potence à l'écran (`Operation.svelte`, snippet `potence`)
+et au PDF (`table.vline`, `hline` sous chaque produit) ; division à remplir refusée par le générateur
+jusqu'à la PR 3b. PDF vérifié à l'œil (9 456 ÷ 7, 785 ÷ 4, 9 876 ÷ 47 en restes, zone à remplir).
 
 ### 2026-10-25 — PR de suite (0 des dixièmes non écrit)
 
