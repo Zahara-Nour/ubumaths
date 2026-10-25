@@ -5,9 +5,9 @@
 _Mis à jour le 2026-10-25, après #1758._
 
 - **État** : chantier COMPLET sur `main` (rien en prod) : lot 1 (#1716, #1726, #1738), lot 2 multiplication (#1740, #1745, #1748), lot 3 division (#1754 affichage, #1758 saisie). Tous les points du § 1 couverts.
-- **Prochaine action** : republier la page de démonstration (saisie de la division) ; puis clôture du chantier (versement : le durable est déjà dans `docs/systeme/ubumark.md` et `questions.md`, journal à archiver) sur le go de David.
+- **Prochaine action** : clôture du chantier (versement : le durable est déjà dans `docs/systeme/ubumark.md` et `questions.md`, journal à archiver) sur le go de David.
 - **En attente de David** : vérifications #1716 → #1758 (`verifications-manuelles.md`) avant `deploy:prod` ; précision Q1 (§ 10) ; choix du § 13 ; M2 laissée (§ 13) — à corriger ou non.
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — à compléter avec la saisie de la division.
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — à jour au 2026-10-25 (version 7 : saisie de la division, testée dans Chromium).
 - **Pièges en cours** : deux prettier en même temps → le hook de pre-commit est tué (relancer le commit) ; les journaux des worktrees figés sont en retard (ne pas les lire pour reprendre).
 - **Worktree / branche** : branches mergées. Serveurs de test de David : `ubumaths-wt-operations-posees-saisie-division` (5181, saisie de la division), `…-division` (5180), `ubumaths-wt-operations-posees` (5179) — à retirer quand David n'en a plus besoin.
 
