@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1728._
+_Mis à jour le 2026-10-25, lot A5 en cours (après #1728)._
 
-- **État** : lots A1 (#1712), A2 (#1720) et A4 (#1728) livrés. A4 = 7 brouillons en prod (`a59fba89` CP-014, `3bde8d25` CP-077, `c342f32e` CP-015, `c4644788` CP-078, `f7463b7d` CP-079, `6e712e78` et `b873739e` CP-017), rangés sur leur notion et tagués (`db:migrate` fait, vérifié en prod : nœud, 1 tag chacun, `updated_at` inchangé, trigger `tgenabled = O`). Page à cocher A4 : https://claude.ai/artifact/LZBCHvdLMKCJhjRQH1VGBx (collection `verdicts`) : **relus par David, 7/7 OK**. Pages A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb · A2 : https://claude.ai/artifact/BKgtf3Wv2EYsJJBHc4wwp4.
-- **Prochaine action** : lot A5 problèmes (029-031, § 4 ter), phase 0, nouveau worktree `../ubumaths-wt-questions`.
+- **État** : A1 (#1712), A2 (#1720), A4 (#1728) livrés et relus. **A5 problèmes** : phase 0 validée (§ 4 sexies), 4 modèles en cours d'écriture (`docs/wip/questions/lot-a5.py` → `scripts/questions/cp-a5/`).
+- **Prochaine action** : specs vertes + rendu relu (`question:specs --apercu`), puis go de David pour `create-questions --publier`, puis migration nœud + tag et son test.
 - **En attente de David** : publication des 20 brouillons A1 + A2 + A4 (tous relus OK) ; vérification manuelle #1702.
-- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020, règle en base) — lire les ADR avant de proposer un tag ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » (`domain`/`subdomain` = anciennes colonnes) ; `--mettre-a-jour` retrouve un brouillon par titre + niveau (et réécrit la description depuis #1728) ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu (`question:specs --apercu`) ; script d'un tirage hors du dépôt → extension `.mts`.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1728).
+- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; script d'un tirage hors du dépôt → `.mts`.
+- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-a5`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -115,6 +115,14 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - « Le signe = » (CP-079) : signe manquant (+, −, =) et égalités vraies ou fausses (8 = 5 + 3, 5 + 3 = 3 + 5, 5 + 3 = 5 + 5).
 - CP-017 : « fois » et addition répétée, **sans le signe ×** (livret CP : × en fin de CP ou au CE1) ; groupes et taille de 2 à 5. Deux modèles (QCM « quel calcul ? » et case « combien ? »), un modèle ne pouvant mêler QCM et cases.
 
+## 4 sexies. Lot A5 : décisions (David, 2026-10-25)
+
+- Rangement : sur la **sous-notion** du point (« Problèmes arithmétiques > parties-tout / en deux étapes ou plus / multiplicatifs ») ; aucun modèle n'y est en prod. Réponses en case nombre.
+- **CP-029, deux modèles** (livret : 20 en début d'année, puis 100) : « jusqu'à 20 » et « jusqu'à 100 ». Variations : tout (2 parties), tout (3 parties), ajout, retrait, une partie, ajout inconnu. Dans « jusqu'à 100 », le tout et l'ajout vont à 100 ; **retrait, partie et ajout inconnu restent ≤ 30** (soustraire au-delà n'est pas CP).
+- **Pas de comparaison** (« combien de plus que ») : CE1-037.
+- **CP-030** (≤ 30, intermédiaire et final compris) : retrait puis ajout (bus), deux retraits, deux ajouts, réunion puis retrait.
+- **CP-031** (≤ 30, sans reste, sans le signe ×) : valeur du tout, nombre de parts, valeur d'une part ; 2 à 6 groupes de 2 à 10 ; corrigé par addition répétée.
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -140,3 +148,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : A4, tag double refusé par la base (ADR 0020) ; option A : 2 brouillons mis à jour, 2 créés (7 modèles) ; migration nœud + tag et test, rouge puis vert.
 - 2026-10-25 : #1728 mergée, `db:migrate`, vérifié en prod ; descriptions de `a59fba89` et `c342f32e` corrigées (`--mettre-a-jour` réécrit désormais la description) ; page à cocher A4 publiée.
 - 2026-10-25 : page à cocher A4 relue par David, 7/7 OK.
+- 2026-10-25 : lot A5, phase 0 validée (§ 4 sexies), worktree `../ubumaths-wt-questions` (`feat/questions-a5`).
