@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot B1 en cours (avant création des brouillons)._
+_Mis à jour le 2026-10-25, lot B1 en cours (brouillons créés, PR à ouvrir)._
 
-- **État** : groupe A et lot H en prod (brouillons validés). **Lot B1** (tableaux, § 4 undecies) : 3 modèles écrits dans `scripts/questions/cp-b1/` (générateur `docs/wip/questions/lot-b1.py`), 16 specs vertes, 100/100 tirages, rendu relu à 390 px, simulation `create-questions` verte.
-- **Prochaine action** : go de David pour `create-questions --publier` → migration nœud + tag (sous-notions « tableaux » et « tableau à double entrée ») et son test → PR → page à cocher.
-- **En attente de David** : **go explicite** de création des brouillons B1 (`create-questions --publier`, simulation verte : 3 à créer) ; publication A1 à H en un lot ; vérification manuelle #1702.
+- **État** : groupe A et lot H en prod (brouillons validés). **Lot B1** (tableaux, § 4 undecies) : 3 brouillons créés en prod (go de David : `7752c23e` CP-068, `76d14aa6` CP-069, `55662eef` CP-084), vérifiés sans nœud ni tag ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
+- **Prochaine action** : PR B1, CI, audit sécurité, merge → `db:migrate` (question d'accès tranchée : personne) → page à cocher B1 ; puis phase 0 de B2 (reconnaître sur une figure ; CP-034 y viendra si David le range en QCM sur figure).
+- **En attente de David** : publication A1 à H (et B1) en un lot ; vérification manuelle #1702 ; les 8 questions de phase 0 de la case « figure » (session `geometrie-validation`, § 2 ter).
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; **case dans un tableau = `$?$` (un `[_]` déborde au téléphone)** ; **un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte** ; le moteur ne mélange pas : indicatrices de Lagrange ; ne pas nommer une variable comme une lettre du texte ; jamais de variable `e` ; corps de commit ≤ 100 caractères par ligne ; la base refuse un tag sur un modèle sans nœud.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-b1`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -244,3 +244,4 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 2026-10-25 : relevé des pages : `92c8e499` (A6) OK depuis 14 h 22 → A6 9/9 OK ; A3 toujours sans verdict.
 - 2026-10-25 : page A3 relue par David, 6/6 OK. Tous les brouillons du chantier (A1 à H) sont validés.
 - 2026-10-25 : lot B1, phase 0 validée (§ 4 undecies), worktree `../ubumaths-wt-questions` (`feat/questions-b1`) ; 3 modèles écrits, 16 specs vertes, rendu relu à 390 px (cases `[_]` → `$?$` : le champ texte débordait ; « la ligne de Inès » → Lina).
+- 2026-10-25 : B1, 3 brouillons créés en prod (`create-questions --publier`, go de David : `7752c23e`, `76d14aa6`, `55662eef`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
