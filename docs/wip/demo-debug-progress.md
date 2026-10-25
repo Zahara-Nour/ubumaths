@@ -2,14 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1713._
+_Mis à jour le 2026-10-25, PR 6h en cours (`/demo/editeur`)._
 
-- **État** : PR 1 à 5 et 6a à 6g mergées, pas en prod ; 6g = #1711, `/demo/questions`. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
-- **Prochaine action** : phase 6 suite, une PR par page : éditeur, puis diaporama. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main` ; phase 0 de la page à faire valider. (#1713 : sin/cos de l'aide géométrie en radians, mergée.)
-- **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** (`calculateNewStability` ignore la note ; stabilité initiale `w[0] + w[1]·(note − 1)` au lieu d'un paramètre par note, à vérifier) ; `z` ≈ `2` → regarder en dernier, image `z`, `2`, `4z`, `z²`, `2z` à montrer d'abord, PR à part dans `tools/chiphre-math/`.
-- **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians (cos(3θ) faux si on combine) et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
-- **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : degrés par défaut, **courbe() comprise**, le nom d'une variable s'affiche en étiquette (style en ligne ou `etiquette="aucune"`), `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : importer par chemin relatif, pas `$lib` ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; test de page qui lit le lexique : simuler `fetchDictionary` ; commitlint : lignes du corps ≤ 100 caractères.
-- **Worktree / branche** : aucun (#1713 nettoyée). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **État** : PR 1 à 5 et 6a à 6g mergées, pas en prod. PR 6h `/demo/editeur` écrite (page + 5 tests), pas poussée ; 1 test rouge à cause d'un bug du cahier de texte (ci-dessous).
+- **Prochaine action** : selon la réponse de David, corriger `transformMathHtml` (formules vides au cahier de texte), puis finir 6h (doc `utilitaires-et-demos.md`, check, PR) ; ensuite diaporama.
+- **En attente de David** : correctif du bug du cahier dans une PR à part avant 6h, ou dans 6h ?
+- **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** ; `z` ≈ `2` → regarder en dernier, PR à part dans `tools/chiphre-math/`.
+- **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
+- **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : degrés par défaut, **courbe() comprise**, `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : chemin relatif ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; test de page qui lit le lexique : simuler `fetchDictionary` ; commitlint : lignes du corps ≤ 100 caractères ; **`{@html}` n'est pas corrigé à l'hydratation** (calculer après `onMount`) ; dans un test, cliquer au milieu de l'éditeur tombe sur un champ MathLive.
+- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/demo-editeur` ; serveur de test sur 5177. À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
@@ -324,3 +325,21 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
   cycle sin → cos → −sin → −cos, ovales périodiques de l'implicite.
 - Trouvé en route, signalé à David, pas corrigé : `angle_polaire` rend **60 aussi en mode radians**
   (cos(3θ) faux dès qu'on combine les deux) ; `dsl-builtins.md` dit « en radians », faux en degrés.
+
+## PR 6h — vitrine `/demo/editeur` (phase 0 : David suit les recommandations, le 2026-10-25)
+
+- Un seul éditeur (`preset="standard"`, comme au cahier de texte), une phrase de départ
+  « La solution de 2x + 3 = 11 est x = 4. » ; trois cartes, chacune par le vrai moteur de son usage :
+  message privé au prof (JSON → `RestrictedRichText`, comme `/messages/[id]`), cahier de texte
+  (HTML de `generateHTML` = `editor.getHTML()` → `transformMathHtml` + `linkifyResourceReferences`),
+  énoncé d'exercice (`tipTapToMarkdown` → `MarkdownRenderer`). Pas de volet « ce qui est gardé ».
+- Éditeur vidé → « Écrivez une phrase ci-dessus. » (vouvoiement, comme les autres vitrines).
+- **Bug trouvé, pas encore corrigé** : `transformMathHtml` (`src/lib/utils/sanitize.ts`) ne lit
+  `latex="…"` que s'il suit directement `data-math-inline` / `data-math-block` ; or l'éditeur écrit
+  `data-math-syntax` et `data-math-original` avant (depuis `6939fefb5`, 2025-12-14). Toute formule
+  du cahier de texte arrive **vide** chez l'élève (`/dashboard/student/cahier-texte/[entryId]` et
+  `/cahier/[token]`). Prod mesurée (MCP) : 2 séances, 2 travaux, aucune formule → personne touché.
+  Le test « formule au cahier » de la vitrine est rouge à cause de lui.
+- Vu sur 5177 (Playwright, 1280 et 390 px) : 200, aucune erreur de console, aucune requête autre
+  que GET, rien qui déborde ; le texte de la carte « cahier » manquait (`{@html}` gardé du serveur) →
+  HTML calculé après `onMount`.
