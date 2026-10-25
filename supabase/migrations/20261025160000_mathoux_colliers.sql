@@ -314,6 +314,9 @@ begin
 end;
 $function$;
 
+comment on function public.set_mathou_decoration(uuid, uuid, text) is
+	'Pose (en la déplaçant), remplace ou retire (NULL) la décoration de panse d''un Mathou, gratuitement ; refuse un collier (unknown_decoration). Rend {ok} ou {ok: false, reason}. Serveur seul (service_role).';
+
 -- ---------------------------------------------------------------------------
 -- 6. Pose, déplacement, retrait d'un collier (gratuits)
 -- ---------------------------------------------------------------------------

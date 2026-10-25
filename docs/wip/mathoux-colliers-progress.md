@@ -49,3 +49,7 @@ acceptées :
   `buy_mathou_decoration` pose à l'emplacement ; `set_mathou_decoration` refuse un collier ;
   `set_mathou_collar` neuve. Preuve rouge : 21/21 échouent sans la migration (le test RGPD
   passait à vide : resserré pour exiger l'achat d'abord).
+- 2026-10-25 — revue (Sonnet) et audit (Opus) de #1714 : aucun bloquant. Corrigés : test « achat
+  supprimé seul → cou nu », refus explicite du visiteur (`42501`), commentaire de
+  `set_mathou_decoration`. Pour la PR 2 : `collar` dans l'export RGPD et la mémoire (`memory.ts`),
+  en-tête de `src/lib/mathoux/decorations.ts`, audit des routes de collier.

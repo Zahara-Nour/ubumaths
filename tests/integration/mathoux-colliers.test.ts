@@ -509,6 +509,19 @@ describe('Colliers des Mathoux', () => {
 			}
 		});
 
+		it('un achat supprimé seul laisse le cou nu, la panse intacte', async () => {
+			const student = await newStudent(30);
+			const mathou = await newMathou(student.id);
+			await buy(student.id, 'heart', mathou);
+			await buy(student.id, 'bell', mathou);
+
+			const pg = await getPostgresClient();
+			await pg.query(`delete from public.${TABLE} where student_id = $1 and decoration = 'bell'`, [
+				student.id
+			]);
+			expect(await wornBy(student.id)).toEqual({ [mathou]: { decoration: 'heart', collar: null } });
+		});
+
 		it('supprimer le compte supprime ses colliers (effacement RGPD)', async () => {
 			const student = await newStudent(10);
 			expect((await buy(student.id, 'bell', await newMathou(student.id))).ok).toBe(true);
@@ -570,6 +583,7 @@ describe('Colliers des Mathoux', () => {
 			expect(teacher.data?.map((r) => r.collar)).toEqual(['bell', 'bow_tie']);
 
 			const visitor = await anon.from('student_mathoux').select('collar').in('student_id', ids);
+			expect(visitor.error?.code).toBe(PERMISSION_DENIED);
 			expect(visitor.data ?? []).toEqual([]);
 		});
 
