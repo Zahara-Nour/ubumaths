@@ -1,0 +1,124 @@
+{
+	"title": "Lire un nombre écrit en lettres (jusqu'à cinquante)",
+	"description": "Écrire en chiffres un nombre donné en lettres : trente-sept → 37",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 14,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris en chiffres le nombre « **{{if:n==1|un|{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|{{if:n==10|dix|{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt-et-un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|{{if:n==30|trente|{{if:n==31|trente-et-un|{{if:n==32|trente-deux|{{if:n==33|trente-trois|{{if:n==34|trente-quatre|{{if:n==35|trente-cinq|{{if:n==36|trente-six|{{if:n==37|trente-sept|{{if:n==38|trente-huit|{{if:n==39|trente-neuf|{{if:n==40|quarante|{{if:n==41|quarante-et-un|{{if:n==42|quarante-deux|{{if:n==43|quarante-trois|{{if:n==44|quarante-quatre|{{if:n==45|quarante-cinq|{{if:n==46|quarante-six|{{if:n==47|quarante-sept|{{if:n==48|quarante-huit|{{if:n==49|quarante-neuf|cinquante}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}** ».\n\nC'est $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..50"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:n==1|« un », c'est $1$.|{{if:n==2|« deux », c'est $2$.|{{if:n==3|« trois », c'est $3$.|{{if:n==4|« quatre », c'est $4$.|{{if:n==5|« cinq », c'est $5$.|{{if:n==6|« six », c'est $6$.|{{if:n==7|« sept », c'est $7$.|{{if:n==8|« huit », c'est $8$.|{{if:n==9|« neuf », c'est $9$.|{{if:n==10|« dix », c'est $10$.|{{if:n==11|$11$ a un nom à lui : **onze**. En chiffres : $11$.|{{if:n==12|$12$ a un nom à lui : **douze**. En chiffres : $12$.|{{if:n==13|$13$ a un nom à lui : **treize**. En chiffres : $13$.|{{if:n==14|$14$ a un nom à lui : **quatorze**. En chiffres : $14$.|{{if:n==15|$15$ a un nom à lui : **quinze**. En chiffres : $15$.|{{if:n==16|$16$ a un nom à lui : **seize**. En chiffres : $16$.|{{if:n==17|$17=10+7$ : on écrit « dix », puis « sept », reliés par un trait d'union : **dix-sept**. En chiffres : $17$.|{{if:n==18|$18=10+8$ : on écrit « dix », puis « huit », reliés par un trait d'union : **dix-huit**. En chiffres : $18$.|{{if:n==19|$19=10+9$ : on écrit « dix », puis « neuf », reliés par un trait d'union : **dix-neuf**. En chiffres : $19$.|{{if:n==20|$20$, ce sont $2$ dizaines : **vingt**. En chiffres : $20$.|{{if:n==21|$21=20+1$ : on écrit « vingt », puis « et » puis « un », reliés par des traits d'union : **vingt-et-un**. En chiffres : $21$.|{{if:n==22|$22=20+2$ : on écrit « vingt », puis « deux », reliés par un trait d'union : **vingt-deux**. En chiffres : $22$.|{{if:n==23|$23=20+3$ : on écrit « vingt », puis « trois », reliés par un trait d'union : **vingt-trois**. En chiffres : $23$.|{{if:n==24|$24=20+4$ : on écrit « vingt », puis « quatre », reliés par un trait d'union : **vingt-quatre**. En chiffres : $24$.|{{if:n==25|$25=20+5$ : on écrit « vingt », puis « cinq », reliés par un trait d'union : **vingt-cinq**. En chiffres : $25$.|{{if:n==26|$26=20+6$ : on écrit « vingt », puis « six », reliés par un trait d'union : **vingt-six**. En chiffres : $26$.|{{if:n==27|$27=20+7$ : on écrit « vingt », puis « sept », reliés par un trait d'union : **vingt-sept**. En chiffres : $27$.|{{if:n==28|$28=20+8$ : on écrit « vingt », puis « huit », reliés par un trait d'union : **vingt-huit**. En chiffres : $28$.|{{if:n==29|$29=20+9$ : on écrit « vingt », puis « neuf », reliés par un trait d'union : **vingt-neuf**. En chiffres : $29$.|{{if:n==30|$30$, ce sont $3$ dizaines : **trente**. En chiffres : $30$.|{{if:n==31|$31=30+1$ : on écrit « trente », puis « et » puis « un », reliés par des traits d'union : **trente-et-un**. En chiffres : $31$.|{{if:n==32|$32=30+2$ : on écrit « trente », puis « deux », reliés par un trait d'union : **trente-deux**. En chiffres : $32$.|{{if:n==33|$33=30+3$ : on écrit « trente », puis « trois », reliés par un trait d'union : **trente-trois**. En chiffres : $33$.|{{if:n==34|$34=30+4$ : on écrit « trente », puis « quatre », reliés par un trait d'union : **trente-quatre**. En chiffres : $34$.|{{if:n==35|$35=30+5$ : on écrit « trente », puis « cinq », reliés par un trait d'union : **trente-cinq**. En chiffres : $35$.|{{if:n==36|$36=30+6$ : on écrit « trente », puis « six », reliés par un trait d'union : **trente-six**. En chiffres : $36$.|{{if:n==37|$37=30+7$ : on écrit « trente », puis « sept », reliés par un trait d'union : **trente-sept**. En chiffres : $37$.|{{if:n==38|$38=30+8$ : on écrit « trente », puis « huit », reliés par un trait d'union : **trente-huit**. En chiffres : $38$.|{{if:n==39|$39=30+9$ : on écrit « trente », puis « neuf », reliés par un trait d'union : **trente-neuf**. En chiffres : $39$.|{{if:n==40|$40$, ce sont $4$ dizaines : **quarante**. En chiffres : $40$.|{{if:n==41|$41=40+1$ : on écrit « quarante », puis « et » puis « un », reliés par des traits d'union : **quarante-et-un**. En chiffres : $41$.|{{if:n==42|$42=40+2$ : on écrit « quarante », puis « deux », reliés par un trait d'union : **quarante-deux**. En chiffres : $42$.|{{if:n==43|$43=40+3$ : on écrit « quarante », puis « trois », reliés par un trait d'union : **quarante-trois**. En chiffres : $43$.|{{if:n==44|$44=40+4$ : on écrit « quarante », puis « quatre », reliés par un trait d'union : **quarante-quatre**. En chiffres : $44$.|{{if:n==45|$45=40+5$ : on écrit « quarante », puis « cinq », reliés par un trait d'union : **quarante-cinq**. En chiffres : $45$.|{{if:n==46|$46=40+6$ : on écrit « quarante », puis « six », reliés par un trait d'union : **quarante-six**. En chiffres : $46$.|{{if:n==47|$47=40+7$ : on écrit « quarante », puis « sept », reliés par un trait d'union : **quarante-sept**. En chiffres : $47$.|{{if:n==48|$48=40+8$ : on écrit « quarante », puis « huit », reliés par un trait d'union : **quarante-huit**. En chiffres : $48$.|{{if:n==49|$49=40+9$ : on écrit « quarante », puis « neuf », reliés par un trait d'union : **quarante-neuf**. En chiffres : $49$.|$50$, ce sont $5$ dizaines : **cinquante**. En chiffres : $50$.}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "trente-sept : 37",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["37"]
+		},
+		{
+			"description": "Erreur : trente-sept, 73",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["73"]
+		},
+		{
+			"description": "Erreur : trente-sept, 307",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["307"]
+		},
+		{
+			"description": "vingt-et-un : 21",
+			"variationIndex": 0,
+			"variables": {
+				"n": "21"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["21"]
+		},
+		{
+			"description": "borne : un, 1",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "borne : cinquante, 50",
+			"variationIndex": 0,
+			"variables": {
+				"n": "50"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["50"]
+		},
+		{
+			"description": "Erreur : cinquante, 5",
+			"variationIndex": 0,
+			"variables": {
+				"n": "50"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Zéro inutile",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			},
+			"answers": ["037"]
+		}
+	]
+}

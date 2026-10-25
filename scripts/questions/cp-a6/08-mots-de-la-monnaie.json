@@ -1,0 +1,261 @@
+{
+	"title": "Les mots de la monnaie",
+	"description": "Plus cher, moins cher, pièce ou billet, rendre la monnaie (euros entiers)",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Lexique",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Un livre coûte ${{a}}~\\unit{€}$. Un ballon coûte ${{b}}~\\unit{€}$.\n\nLequel est le plus **cher** ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..100"
+				},
+				{
+					"name": "b",
+					"expression": "2..100"
+				}
+			],
+			"conditions": ["abs(a - b) >= 3"],
+			"choices": [
+				{
+					"content": "le livre"
+				},
+				{
+					"content": "le ballon"
+				}
+			],
+			"correctChoiceIndex": ["{{if:a>b|0|1}}"],
+			"correction": {
+				"steps": [
+					"{{if:a>b|${{a}}>{{b}}$|${{a}}<{{b}}$}} : le plus cher est celui qui coûte le plus d'euros, {{if:a>b|le livre|le ballon}}."
+				]
+			}
+		},
+		{
+			"statement": "Un livre coûte ${{a}}~\\unit{€}$. Un ballon coûte ${{b}}~\\unit{€}$.\n\nLequel est le **moins cher** ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..100"
+				},
+				{
+					"name": "b",
+					"expression": "2..100"
+				}
+			],
+			"conditions": ["abs(a - b) >= 3"],
+			"choices": [
+				{
+					"content": "le livre"
+				},
+				{
+					"content": "le ballon"
+				}
+			],
+			"correctChoiceIndex": ["{{if:a<b|0|1}}"],
+			"correction": {
+				"steps": [
+					"{{if:a>b|${{a}}>{{b}}$|${{a}}<{{b}}$}} : le moins cher est celui qui coûte le moins d'euros, {{if:a<b|le livre|le ballon}}."
+				]
+			}
+		},
+		{
+			"statement": "Est-ce que {{if:k==1|$1~\\unit{€}$|{{if:k==2|$2~\\unit{€}$|{{if:k==3|$5~\\unit{€}$|{{if:k==4|$10~\\unit{€}$|{{if:k==5|$20~\\unit{€}$|$50~\\unit{€}$}}}}}}}}}} est une pièce ou un billet ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "une pièce"
+				},
+				{
+					"content": "un billet"
+				}
+			],
+			"correctChoiceIndex": ["{{if:k<=2|0|1}}"],
+			"correction": {
+				"steps": [
+					"Les **pièces** valent $1~\\unit{€}$ ou $2~\\unit{€}$ ; les **billets** valent $5~\\unit{€}$, $10~\\unit{€}$, $20~\\unit{€}$, $50~\\unit{€}$ ou plus.",
+					"{{if:k==1|$1~\\unit{€}$, c'est une pièce.|{{if:k==2|$2~\\unit{€}$, c'est une pièce.|{{if:k==3|$5~\\unit{€}$, c'est un billet.|{{if:k==4|$10~\\unit{€}$, c'est un billet.|{{if:k==5|$20~\\unit{€}$, c'est un billet.|$50~\\unit{€}$, c'est un billet.}}}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Tom achète une glace à ${{p}}~\\unit{€}$. Il donne un billet de $10~\\unit{€}$. Le marchand lui **rend la monnaie**.\n\nQue veut dire « rendre la monnaie » ?",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..8"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Le marchand donne de l'argent à Tom."
+				},
+				{
+					"content": "Tom donne encore de l'argent au marchand."
+				},
+				{
+					"content": "Le marchand donne une autre glace à Tom."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Tom a donné plus d'argent que le prix de la glace : le marchand lui rend ce qui est en trop. **Rendre la monnaie**, c'est donner de l'argent à celui qui a payé."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "livre 12 €, ballon 8 € : le livre est le plus cher",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : le ballon",
+			"variationIndex": 0,
+			"variables": {
+				"a": "12",
+				"b": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "livre 5 €, ballon 40 € : le ballon est le plus cher",
+			"variationIndex": 0,
+			"variables": {
+				"a": "5",
+				"b": "40"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "livre 12 €, ballon 8 € : le ballon est le moins cher",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "8"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : moins cher, le livre",
+			"variationIndex": 1,
+			"variables": {
+				"a": "12",
+				"b": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "borne : livre 100 €, ballon 2 €",
+			"variationIndex": 1,
+			"variables": {
+				"a": "100",
+				"b": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "2 € : une pièce",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : 2 €, un billet",
+			"variationIndex": 2,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "5 € : un billet",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "borne : 50 €, un billet",
+			"variationIndex": 2,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "rendre la monnaie : le marchand donne",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : Tom donne encore",
+			"variationIndex": 3,
+			"variables": {
+				"p": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}

@@ -1,0 +1,180 @@
+{
+	"title": "Un mètre, c'est 100 centimètres",
+	"description": "1 m = 100 cm dans les deux sens ; comparer 1 m et une longueur en cm (30 à 100 cm)",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète : $1~\\unit{m}=\\ldots~\\unit{cm}$",
+			"variables": [],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "$100$"
+				},
+				{
+					"content": "$10$"
+				},
+				{
+					"content": "$1$"
+				},
+				{
+					"content": "$50$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": ["Dans un mètre, il y a cent centimètres : $1~\\unit{m}=100~\\unit{cm}$."]
+			}
+		},
+		{
+			"statement": "Complète : $100~\\unit{cm}=\\ldots~\\unit{m}$",
+			"variables": [],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "$1$"
+				},
+				{
+					"content": "$10$"
+				},
+				{
+					"content": "$100$"
+				},
+				{
+					"content": "$0$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": ["Cent centimètres font un mètre : $100~\\unit{cm}=1~\\unit{m}$."]
+			}
+		},
+		{
+			"statement": "Le ruban mesure $1~\\unit{m}$. La ficelle mesure ${{eval:10*t}}~\\unit{cm}$.\n\nLequel est le plus long ?",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "3..10"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "le ruban"
+				},
+				{
+					"content": "la ficelle"
+				},
+				{
+					"content": "ils ont la même longueur"
+				}
+			],
+			"correctChoiceIndex": ["{{if:t==10|2|0}}"],
+			"correction": {
+				"steps": [
+					"$1~\\unit{m}=100~\\unit{cm}$ : le ruban mesure $100~\\unit{cm}$.",
+					"{{if:t==10|Le ruban et la ficelle mesurent tous les deux $100~\\unit{cm}$ : ils ont la même longueur.|${{eval:10*t}}<100$ : le ruban est le plus long.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "1 m = 100 cm",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : 1 m = 10 cm",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "100 cm = 1 m",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : 100 cm = 100 m",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "ruban 1 m, ficelle 60 cm : le ruban",
+			"variationIndex": 2,
+			"variables": {
+				"t": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : ficelle 60 cm plus longue (60 > 1)",
+			"variationIndex": 2,
+			"variables": {
+				"t": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "borne : ficelle 90 cm, le ruban",
+			"variationIndex": 2,
+			"variables": {
+				"t": "9"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "borne : ficelle 100 cm, même longueur",
+			"variationIndex": 2,
+			"variables": {
+				"t": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Erreur : ficelle 100 cm, la ficelle",
+			"variationIndex": 2,
+			"variables": {
+				"t": "10"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}

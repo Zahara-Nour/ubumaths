@@ -1,0 +1,133 @@
+{
+	"title": "Écrire un nombre en lettres (jusqu'à cinquante)",
+	"description": "Choisir l'écriture en lettres d'un nombre de 11 à 50 (leurres : chiffres inversés, voisins) ; orthographe rectifiée",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 13,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Comment écrit-on le nombre ${{n}}$ en lettres ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "11..50"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt-et-un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|{{if:n==30|trente|{{if:n==31|trente-et-un|{{if:n==32|trente-deux|{{if:n==33|trente-trois|{{if:n==34|trente-quatre|{{if:n==35|trente-cinq|{{if:n==36|trente-six|{{if:n==37|trente-sept|{{if:n==38|trente-huit|{{if:n==39|trente-neuf|{{if:n==40|quarante|{{if:n==41|quarante-et-un|{{if:n==42|quarante-deux|{{if:n==43|quarante-trois|{{if:n==44|quarante-quatre|{{if:n==45|quarante-cinq|{{if:n==46|quarante-six|{{if:n==47|quarante-sept|{{if:n==48|quarante-huit|{{if:n==49|quarante-neuf|cinquante}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"content": "{{if:n==11|vingt-et-un|{{if:n==12|vingt-et-un|{{if:n==13|trente-et-un|{{if:n==14|quarante-et-un|{{if:n==15|cinquante-et-un|{{if:n==16|soixante-et-un|{{if:n==17|soixante-et-onze|{{if:n==18|quatre-vingt-un|{{if:n==19|quatre-vingt-onze|{{if:n==20|deux|{{if:n==21|douze|{{if:n==22|trente-deux|{{if:n==23|trente-deux|{{if:n==24|quarante-deux|{{if:n==25|cinquante-deux|{{if:n==26|soixante-deux|{{if:n==27|soixante-douze|{{if:n==28|quatre-vingt-deux|{{if:n==29|quatre-vingt-douze|{{if:n==30|trois|{{if:n==31|treize|{{if:n==32|vingt-trois|{{if:n==33|quarante-trois|{{if:n==34|quarante-trois|{{if:n==35|cinquante-trois|{{if:n==36|soixante-trois|{{if:n==37|soixante-treize|{{if:n==38|quatre-vingt-trois|{{if:n==39|quatre-vingt-treize|{{if:n==40|quatre|{{if:n==41|quatorze|{{if:n==42|vingt-quatre|{{if:n==43|trente-quatre|{{if:n==44|cinquante-quatre|{{if:n==45|cinquante-quatre|{{if:n==46|soixante-quatre|{{if:n==47|soixante-quatorze|{{if:n==48|quatre-vingt-quatre|{{if:n==49|quatre-vingt-quatorze|cinq}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"content": "{{if:n==11|dix|{{if:n==12|onze|{{if:n==13|douze|{{if:n==14|treize|{{if:n==15|quatorze|{{if:n==16|quinze|{{if:n==17|seize|{{if:n==18|dix-sept|{{if:n==19|dix-huit|{{if:n==20|dix-neuf|{{if:n==21|vingt|{{if:n==22|vingt-et-un|{{if:n==23|vingt-deux|{{if:n==24|vingt-trois|{{if:n==25|vingt-quatre|{{if:n==26|vingt-cinq|{{if:n==27|vingt-six|{{if:n==28|vingt-sept|{{if:n==29|vingt-huit|{{if:n==30|vingt-neuf|{{if:n==31|trente|{{if:n==32|trente-et-un|{{if:n==33|trente-deux|{{if:n==34|trente-trois|{{if:n==35|trente-quatre|{{if:n==36|trente-cinq|{{if:n==37|trente-six|{{if:n==38|trente-sept|{{if:n==39|trente-huit|{{if:n==40|trente-neuf|{{if:n==41|quarante|{{if:n==42|quarante-et-un|{{if:n==43|quarante-deux|{{if:n==44|quarante-trois|{{if:n==45|quarante-quatre|{{if:n==46|quarante-cinq|{{if:n==47|quarante-six|{{if:n==48|quarante-sept|{{if:n==49|quarante-huit|quarante-neuf}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				},
+				{
+					"content": "{{if:n==11|douze|{{if:n==12|treize|{{if:n==13|quatorze|{{if:n==14|quinze|{{if:n==15|seize|{{if:n==16|dix-sept|{{if:n==17|dix-huit|{{if:n==18|dix-neuf|{{if:n==19|vingt|{{if:n==20|vingt-et-un|{{if:n==21|vingt-deux|{{if:n==22|vingt-trois|{{if:n==23|vingt-quatre|{{if:n==24|vingt-cinq|{{if:n==25|vingt-six|{{if:n==26|vingt-sept|{{if:n==27|vingt-huit|{{if:n==28|vingt-neuf|{{if:n==29|trente|{{if:n==30|trente-et-un|{{if:n==31|trente-deux|{{if:n==32|trente-trois|{{if:n==33|trente-quatre|{{if:n==34|trente-cinq|{{if:n==35|trente-six|{{if:n==36|trente-sept|{{if:n==37|trente-huit|{{if:n==38|trente-neuf|{{if:n==39|quarante|{{if:n==40|quarante-et-un|{{if:n==41|quarante-deux|{{if:n==42|quarante-trois|{{if:n==43|quarante-quatre|{{if:n==44|quarante-cinq|{{if:n==45|quarante-six|{{if:n==46|quarante-sept|{{if:n==47|quarante-huit|{{if:n==48|quarante-neuf|{{if:n==49|cinquante|cinquante-et-un}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:n==11|$11$ a un nom à lui : **onze**.|{{if:n==12|$12$ a un nom à lui : **douze**.|{{if:n==13|$13$ a un nom à lui : **treize**.|{{if:n==14|$14$ a un nom à lui : **quatorze**.|{{if:n==15|$15$ a un nom à lui : **quinze**.|{{if:n==16|$16$ a un nom à lui : **seize**.|{{if:n==17|$17=10+7$ : on écrit « dix », puis « sept », reliés par un trait d'union : **dix-sept**.|{{if:n==18|$18=10+8$ : on écrit « dix », puis « huit », reliés par un trait d'union : **dix-huit**.|{{if:n==19|$19=10+9$ : on écrit « dix », puis « neuf », reliés par un trait d'union : **dix-neuf**.|{{if:n==20|$20$, ce sont $2$ dizaines : **vingt**.|{{if:n==21|$21=20+1$ : on écrit « vingt », puis « et » puis « un », reliés par des traits d'union : **vingt-et-un**.|{{if:n==22|$22=20+2$ : on écrit « vingt », puis « deux », reliés par un trait d'union : **vingt-deux**.|{{if:n==23|$23=20+3$ : on écrit « vingt », puis « trois », reliés par un trait d'union : **vingt-trois**.|{{if:n==24|$24=20+4$ : on écrit « vingt », puis « quatre », reliés par un trait d'union : **vingt-quatre**.|{{if:n==25|$25=20+5$ : on écrit « vingt », puis « cinq », reliés par un trait d'union : **vingt-cinq**.|{{if:n==26|$26=20+6$ : on écrit « vingt », puis « six », reliés par un trait d'union : **vingt-six**.|{{if:n==27|$27=20+7$ : on écrit « vingt », puis « sept », reliés par un trait d'union : **vingt-sept**.|{{if:n==28|$28=20+8$ : on écrit « vingt », puis « huit », reliés par un trait d'union : **vingt-huit**.|{{if:n==29|$29=20+9$ : on écrit « vingt », puis « neuf », reliés par un trait d'union : **vingt-neuf**.|{{if:n==30|$30$, ce sont $3$ dizaines : **trente**.|{{if:n==31|$31=30+1$ : on écrit « trente », puis « et » puis « un », reliés par des traits d'union : **trente-et-un**.|{{if:n==32|$32=30+2$ : on écrit « trente », puis « deux », reliés par un trait d'union : **trente-deux**.|{{if:n==33|$33=30+3$ : on écrit « trente », puis « trois », reliés par un trait d'union : **trente-trois**.|{{if:n==34|$34=30+4$ : on écrit « trente », puis « quatre », reliés par un trait d'union : **trente-quatre**.|{{if:n==35|$35=30+5$ : on écrit « trente », puis « cinq », reliés par un trait d'union : **trente-cinq**.|{{if:n==36|$36=30+6$ : on écrit « trente », puis « six », reliés par un trait d'union : **trente-six**.|{{if:n==37|$37=30+7$ : on écrit « trente », puis « sept », reliés par un trait d'union : **trente-sept**.|{{if:n==38|$38=30+8$ : on écrit « trente », puis « huit », reliés par un trait d'union : **trente-huit**.|{{if:n==39|$39=30+9$ : on écrit « trente », puis « neuf », reliés par un trait d'union : **trente-neuf**.|{{if:n==40|$40$, ce sont $4$ dizaines : **quarante**.|{{if:n==41|$41=40+1$ : on écrit « quarante », puis « et » puis « un », reliés par des traits d'union : **quarante-et-un**.|{{if:n==42|$42=40+2$ : on écrit « quarante », puis « deux », reliés par un trait d'union : **quarante-deux**.|{{if:n==43|$43=40+3$ : on écrit « quarante », puis « trois », reliés par un trait d'union : **quarante-trois**.|{{if:n==44|$44=40+4$ : on écrit « quarante », puis « quatre », reliés par un trait d'union : **quarante-quatre**.|{{if:n==45|$45=40+5$ : on écrit « quarante », puis « cinq », reliés par un trait d'union : **quarante-cinq**.|{{if:n==46|$46=40+6$ : on écrit « quarante », puis « six », reliés par un trait d'union : **quarante-six**.|{{if:n==47|$47=40+7$ : on écrit « quarante », puis « sept », reliés par un trait d'union : **quarante-sept**.|{{if:n==48|$48=40+8$ : on écrit « quarante », puis « huit », reliés par un trait d'union : **quarante-huit**.|{{if:n==49|$49=40+9$ : on écrit « quarante », puis « neuf », reliés par un trait d'union : **quarante-neuf**.|$50$, ce sont $5$ dizaines : **cinquante**.}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "37 : trente-sept",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : 37, chiffres inversés (soixante-treize)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : 37, trente-six",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Erreur : 37, trente-huit",
+			"variationIndex": 0,
+			"variables": {
+				"n": "37"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [3]
+		},
+		{
+			"description": "21 : vingt-et-un",
+			"variationIndex": 0,
+			"variables": {
+				"n": "21"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "borne : 11, onze",
+			"variationIndex": 0,
+			"variables": {
+				"n": "11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "borne : 50, cinquante",
+			"variationIndex": 0,
+			"variables": {
+				"n": "50"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : 50, cinq (chiffres inversés)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "50"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}

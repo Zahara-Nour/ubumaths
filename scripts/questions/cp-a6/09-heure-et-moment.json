@@ -1,0 +1,157 @@
+{
+	"title": "Quelle heure pour… ? (moments de la journée)",
+	"description": "Associer une heure entière à un moment de la journée : se lever, cantine, goûter, dîner, dormir",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Moments de la journée",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|Tu te lèves pour aller à l'école vers…|{{if:k==2|Tu arrives à l'école vers…|{{if:k==3|Tu déjeunes à la cantine vers…|{{if:k==4|Tu prends ton goûter vers…|{{if:k==5|Tu dînes avec ta famille vers…|Tu dors dans ton lit à…}}}}}}}}}}",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..6"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "{{if:k==1|$7$ heures du matin|{{if:k==2|$8$ heures du matin|{{if:k==3|midi|{{if:k==4|$4$ heures de l'après-midi|{{if:k==5|$7$ heures du soir|$11$ heures du soir}}}}}}}}}}"
+				},
+				{
+					"content": "{{if:k==1|$2$ heures de l'après-midi|{{if:k==2|$8$ heures du soir|{{if:k==3|$8$ heures du matin|{{if:k==4|$4$ heures du matin|{{if:k==5|$7$ heures du matin|$11$ heures du matin}}}}}}}}}}"
+				},
+				{
+					"content": "{{if:k==1|$10$ heures du soir|{{if:k==2|midi|{{if:k==3|$8$ heures du soir|{{if:k==4|midi|{{if:k==5|midi|$4$ heures de l'après-midi}}}}}}}}}}"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Tu te lèves pour aller à l'école vers $7$ heures du matin. $2$ heures de l'après-midi et $10$ heures du soir ne conviennent pas.|{{if:k==2|Tu arrives à l'école vers $8$ heures du matin. $8$ heures du soir et midi ne conviennent pas.|{{if:k==3|Tu déjeunes à la cantine vers midi. $8$ heures du matin et $8$ heures du soir ne conviennent pas.|{{if:k==4|Tu prends ton goûter vers $4$ heures de l'après-midi. $4$ heures du matin et midi ne conviennent pas.|{{if:k==5|Tu dînes avec ta famille vers $7$ heures du soir. $7$ heures du matin et midi ne conviennent pas.|Tu dors dans ton lit à $11$ heures du soir. $11$ heures du matin et $4$ heures de l'après-midi ne conviennent pas.}}}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Un jour d'école, que fais-tu le plus souvent à {{if:k==1|$7$ heures du matin|{{if:k==2|midi|{{if:k==3|$4$ heures de l'après-midi|$11$ heures du soir}}}}}} ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "{{if:k==1|Te lever pour aller à l'école|{{if:k==2|Déjeuner à la cantine|{{if:k==3|Prendre ton goûter|Dormir dans ton lit}}}}}}"
+				},
+				{
+					"content": "{{if:k==1|Déjeuner à la cantine|{{if:k==2|Prendre ton goûter|{{if:k==3|Dormir dans ton lit|Te lever pour aller à l'école}}}}}}"
+				},
+				{
+					"content": "{{if:k==1|Prendre ton goûter|{{if:k==2|Dormir dans ton lit|{{if:k==3|Te lever pour aller à l'école|Déjeuner à la cantine}}}}}}"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Un jour d'école, à $7$ heures du matin, tu te lèves pour aller à l'école.|{{if:k==2|Un jour d'école, à midi, tu déjeunes à la cantine.|{{if:k==3|Un jour d'école, à $4$ heures de l'après-midi, tu prends ton goûter.|Un jour d'école, à $11$ heures du soir, tu dors dans ton lit.}}}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "se lever : 7 heures du matin",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : se lever, 10 heures du soir",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "cantine : midi",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : goûter, 4 heures du matin",
+			"variationIndex": 0,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "borne : dormir, 11 heures du soir",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "midi : déjeuner",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : midi, goûter",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "11 heures du soir : dormir",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		}
+	]
+}
