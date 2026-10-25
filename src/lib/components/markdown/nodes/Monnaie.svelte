@@ -215,6 +215,9 @@
 		width: calc(var(--monnaie-taille, 8cm) * var(--monnaie-ratio));
 		max-width: 100%;
 		height: auto;
+		/* Chrome rogne la boîte au pixel : sans ça, le bord droit du cadre (à un demi-trait du
+		   bord) disparaît sur un dessin de largeur fractionnaire. Rien d'autre n'en sort. */
+		overflow: visible;
 		/* Pas de zoom au double toucher : on marque vite plusieurs coupures */
 		touch-action: manipulation;
 		cursor: pointer;
