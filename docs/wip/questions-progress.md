@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1763 et son `db:migrate`._
+_Mis à jour le 2026-10-25, lot B2 en cours (avant création en prod)._
 
-- **État** : groupe A, lot H et **lot B1 (#1763)** en prod en brouillon. B1 : `7752c23e` CP-068, `76d14aa6` CP-069, `55662eef` CP-084 ; migration `20261026140000` jouée et vérifiée (sous-notion + 1 tag chacun, `updated_at` inchangé, trigger actif). Page à cocher B1 : https://claude.ai/artifact/CNdqUtbVKsRZneNx13ksWo (collection `verdicts`, 0 verdict).
-- **Prochaine action** : relevé des verdicts B1 ; puis phase 0 du lot **B2** (reconnaître sur une figure, affichage seul : 054-056, 057, 061, 062, 067 ; CP-034 y viendra si David le range en QCM sur figure), puis B3 (§ 4 nonies).
-- **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 034 et 058 à réexaminer.
-- **En attente de David** : relecture de la page B1 ; publication A1 à H et B1 en un lot ; vérification manuelle #1702.
-- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; **case dans un tableau = `$?$` (un `[_]` déborde au téléphone)** ; **un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte** ; le moteur ne mélange pas : indicatrices de Lagrange ; ne pas nommer une variable comme une lettre du texte ; jamais de variable `e` ; corps de commit ≤ 100 caractères par ligne ; la base refuse un tag sur un modèle sans nœud.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1763).
+- **État** : B1 relu 3/3 OK. **Lot B2** (§ 4 duodecies) : 10 brouillons créés en prod (go de David) : `9d6bc8b3` CP-054, `e7453c9b` 055, `c85626fa` 056, `91012bab` 056, `b5389494` 057, `d5a36be9` 061, `2fc01600` 062, `f7167af7` 067, `d50c6e21` 035, `7093b797` 034. Migration `20261026150000` nœud + tag et test (rouge 3/9 sans, vert 9/9) ; question d'accès tranchée (personne).
+- **Prochaine action** : (audit sécurité fait : aucun finding bloquant) PR → CI verte → merge → `db:migrate` → vérification en prod → page à cocher B2. Puis phase 0 de B3 (images fixes : 049-052, 040).
+- **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 058 à réexaminer.
+- **En attente de David** : publication A1 à H et B1 en un lot ; vérification manuelle #1702.
+- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (la bonne réponse = une variable) ; **virgule décimale = figure cassée** (coordonnées tirées : chaînes de `{{if:…}}` sur des valeurs écrites) ; **points et segments numérotés, pas lettrés** (les choix du QCM portent A, B, C) ; texte sur fond coloré illisible ; jamais de variable `e`.
+- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-b2`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -154,6 +154,15 @@ David suit mes recommandations (« je suis tes recos, go »).
 - Formes en symboles (pas d'emojis : rendu PDF incertain).
 - Table d'addition 4 colonnes : léger défilement horizontal au téléphone, accepté par David (tient sur tablette).
 
+## 4 duodecies. Lot B2 : décisions (David, 2026-10-25)
+
+David suit mes cinq recommandations (« je te suis »).
+
+- 10 modèles, figures affichées seulement (case nombre ou QCM), chacun sur le nœud de son point, un tag : CP-054 « Combien de formes dans le dessin ? » (maison, bateau, robot ; « un carré ne compte pas comme un rectangle ») ; CP-055 « Quelle est cette forme ? » (QCM des 4 noms, **carré sur une pointe** compris) ; CP-056 « Combien de côtés ? Combien de sommets ? » (case) et « Qui suis-je ? » (QCM, devinette) ; CP-057 « Quels points sont alignés ? » ; CP-061 « Où est-il ? » (gauche/droite/au-dessus/en dessous, entre, sur/sous/à côté, devant/derrière) ; CP-062 « Qui est assis à côté ? » (plan de classe vu du dessus, tableau en haut, élèves face au tableau) ; CP-067 « Le robot sur le quadrillage » (**flèches absolues** en LaTeX ; « tourne à gauche » laissé au CE1).
+- **CP-035 ajouté à B2** (oublié du plan) : « Mesure avec la règle », segment de 2 à 12 cm, **le 0 au début du segment**.
+- **CP-034 en QCM sur figure** : « Quel segment est le plus long / court ? », trois directions, 1 cm d'écart au moins ; le report (bande de papier) attend la case « figure ».
+- **CP-058** reste hors de B2, à réexaminer.
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -207,3 +216,8 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 2026-10-25 : lot B1, phase 0 validée (§ 4 undecies), worktree `../ubumaths-wt-questions` (`feat/questions-b1`) ; 3 modèles écrits, 16 specs vertes, rendu relu à 390 px (cases `[_]` → `$?$` : le champ texte débordait ; « la ligne de Inès » → Lina).
 - 2026-10-25 : B1, 3 brouillons créés en prod (`create-questions --publier`, go de David : `7752c23e`, `76d14aa6`, `55662eef`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
 - 2026-10-25 : #1763 mergée (CI verte, audit sécurité sans finding bloquant) ; `db:migrate` joué, vérifié en prod (3 modèles B1 sur leur sous-notion, 1 tag chacun) ; page à cocher B1 publiée.
+- 2026-10-25 : page à cocher B1 relue par David, 3/3 OK.
+- 2026-10-25 : lot B2, phase 0 validée (§ 4 duodecies ; CP-035 rattrapé, oublié du plan), worktree `../ubumaths-wt-questions` (`feat/questions-b2`).
+- 2026-10-25 : B2, 10 modèles écrits, 76 specs vertes ; rendu relu à 390 px en base locale : étiquettes S0-S2 qui donnaient la réponse masquées, texte sur fond olive illisible (contours seuls), lettres des points mêlées aux lettres du QCM (numéros), `str.format` qui mangeait les `{{if:…}}` des prénoms, « une maison faite », « 1 triangles » évité.
+- 2026-10-25 : B2, 10 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026150000` nœud + tag et test, rouge (3/9) puis vert.
+- 2026-10-25 : B2, audit sécurité de la migration sans finding bloquant (même structure que B1, 10 lignes exactement, rollback juste).

@@ -1,0 +1,109 @@
+{
+	"title": "Combien de côtés ? Combien de sommets ?",
+	"description": "Compter les côtés ou les sommets d'un triangle, d'un carré ou d'un rectangle",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Propriétés",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien de {{if:q==1|côtés|sommets}} a cette forme ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Une forme dont les sommets sont marqués.\n---\nS0 = point({{if:f==1|2.5|{{if:f==2|3|1.5}}}}, {{if:f==1|1|{{if:f==2|1|1.5}}}}, couleur=\"noir\", etiquette=\"aucune\", visible=vrai)\nS1 = point({{if:f==1|7.5|{{if:f==2|7|8.5}}}}, {{if:f==1|1.5|{{if:f==2|1|1.5}}}}, couleur=\"noir\", etiquette=\"aucune\", visible=vrai)\nS2 = point({{if:f==1|4|{{if:f==2|7|8.5}}}}, {{if:f==1|6|{{if:f==2|5|4.5}}}}, couleur=\"noir\", etiquette=\"aucune\", visible=vrai)\nS3 = point({{if:f==1|4|{{if:f==2|3|1.5}}}}, {{if:f==1|6|{{if:f==2|5|4.5}}}}, couleur=\"noir\", etiquette=\"aucune\", visible={{if:f==1|faux|vrai}})\np = polygone(S0, S1, S2, couleur=\"noir\", remplissage=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", opacite_fond=0.5, visible={{if:f==1|vrai|faux}})\nq = polygone(S0, S1, S2, S3, couleur=\"noir\", remplissage=\"{{if:c==1|bleu|{{if:c==2|rouge|{{if:c==3|vert|orange}}}}}}\", opacite_fond=0.5, visible={{if:f==1|faux|vrai}})\n```\n\nCette forme a [_] {{if:q==1|côtés|sommets}}.",
+			"variables": [
+				{
+					"name": "f",
+					"expression": "1..3"
+				},
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "c",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:f==1|3|4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:q==1|Un côté est un trait droit entre deux sommets.|Un sommet est un « coin » de la forme, là où deux côtés se rencontrent.}}",
+					"C'est {{if:f==1|un triangle|{{if:f==2|un carré|un rectangle}}}} : il a {{if:f==1|$3$|$4$}} {{if:q==1|côtés|sommets}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Triangle, côtés : 3",
+			"variationIndex": 0,
+			"variables": {
+				"f": "1",
+				"q": "1",
+				"c": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Carré, sommets : 4",
+			"variationIndex": 0,
+			"variables": {
+				"f": "2",
+				"q": "2",
+				"c": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Rectangle, côtés : 4",
+			"variationIndex": 0,
+			"variables": {
+				"f": "3",
+				"q": "1",
+				"c": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Erreur : rectangle, 2 côtés (les longs seulement)",
+			"variationIndex": 0,
+			"variables": {
+				"f": "3",
+				"q": "1",
+				"c": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Erreur : triangle, 4 sommets",
+			"variationIndex": 0,
+			"variables": {
+				"f": "1",
+				"q": "2",
+				"c": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4"]
+		}
+	]
+}
