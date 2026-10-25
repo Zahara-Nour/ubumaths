@@ -199,25 +199,25 @@ describe('correction : chiffres faux du quotient et du reste (n° 8)', () => {
 	const euclid = spec('calcul: 9456 ÷ 7');
 
 	it('quotient : chiffre faux surligné, case par case depuis la gauche', () => {
-		const { digits, comma } = quotient('1340');
-		expect(wrongQuotientDigits(euclid, digits, comma)).toEqual([false, false, true, false]);
+		const { digits } = quotient('1340');
+		expect(wrongQuotientDigits(euclid, digits)).toEqual([false, false, true, false]);
 	});
 
 	it('quotient : un chiffre oublié à droite est faux', () => {
-		const { digits, comma } = quotient('135_');
-		expect(wrongQuotientDigits(euclid, digits, comma)).toEqual([false, false, false, true]);
+		const { digits } = quotient('135_');
+		expect(wrongQuotientDigits(euclid, digits)).toEqual([false, false, false, true]);
 	});
 
 	it('quotient : un zéro de tête écrit n’est jamais faux, la suite est décalée', () => {
 		const s = spec('calcul: 456 ÷ 7');
-		const { digits, comma } = quotient('064');
-		expect(wrongQuotientDigits(s, digits, comma)).toEqual([false, false, true]);
+		const { digits } = quotient('064');
+		expect(wrongQuotientDigits(s, digits)).toEqual([false, false, true]);
 	});
 
 	it('quotient décimal : zéro de fin vide jamais faux (`2,1` pour 2,10)', () => {
 		const s = spec('calcul: 4,20 ÷ 2');
-		const { digits, comma } = quotient('2,1__');
-		expect(wrongQuotientDigits(s, digits, comma)).toEqual([false, false, false, false]);
+		const { digits } = quotient('2,1__');
+		expect(wrongQuotientDigits(s, digits)).toEqual([false, false, false, false]);
 	});
 
 	it('reste faux surligné', () => {
@@ -267,5 +267,29 @@ describe('correction : la virgule du quotient (Q6, comme au lot 2)', () => {
 	it('zéro de tête écrit : la place attendue suit le décalage', () => {
 		const { digits, comma } = quotient('019625');
 		expect(wrongQuotientComma(decimal, digits, comma)).toEqual({ mistake: 'absente', at: 3 });
+	});
+
+	it('zéro de tête écrit, virgule mal placée : signalée (`0 1 9 , 6 2 5`)', () => {
+		const { digits, comma } = quotient('019,625');
+		expect(wrongQuotientComma(decimal, digits, comma)).toEqual({ mistake: 'mal placée', at: 2 });
+	});
+});
+
+describe('correction : quotient commencé dans la 2e case (revue #1758)', () => {
+	it('3 ÷ 4, `_ 0 , 8 5` : virgule juste, seul le 8 surligné', () => {
+		const s = spec('calcul: 3 ÷ 4', 'quotient: décimal');
+		const { digits, comma } = quotient('_0,85');
+		expect(wrongQuotientComma(s, digits, comma)).toBeNull();
+		expect(wrongQuotientDigits(s, digits)).toEqual([false, false, true, false]);
+	});
+
+	it('9456 ÷ 7, `_ 1 3 4` : le 4 surligné', () => {
+		const { digits } = quotient('_134');
+		expect(wrongQuotientDigits(spec('calcul: 9456 ÷ 7'), digits)).toEqual([
+			false,
+			false,
+			false,
+			true
+		]);
 	});
 });

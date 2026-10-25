@@ -682,6 +682,38 @@ describe('Operation — saisie d’une division (PR 3b, § 12)', () => {
 		expect(commas()).toEqual([]);
 	});
 
+	it('virgule tapée dans la foulée : à droite du chiffre qu’on vient d’écrire (revue #1758)', async () => {
+		const { inputs, changes, commas } = await renderDivision(
+			['calcul: 785 ÷ 4', 'quotient: décimal'],
+			{},
+			null
+		);
+		const cells = () => inputs('quotient');
+		await userEvent.click(cells()[0]);
+		await userEvent.keyboard('196,');
+		expect(commas()).toEqual([cells()[2]]);
+		expect(document.activeElement).toBe(cells()[3]);
+		await userEvent.keyboard('25');
+		expect(changes.at(-1)).toBe('196{,}25');
+	});
+
+	it('virgule dans la foulée après un 0 : `0,7` (revue #1758)', async () => {
+		const { inputs, changes } = await renderDivision(['calcul: 4,2 ÷ 6'], {}, null);
+		await userEvent.click(inputs('quotient')[0]);
+		await userEvent.keyboard('0,7');
+		expect(changes.at(-1)).toBe('0{,}7');
+	});
+
+	it('virgule tapée en premier, case vide : 0 implicite (`, 7` → 0,7)', async () => {
+		const { inputs, changes } = await renderDivision(['calcul: 4,2 ÷ 6'], {}, null);
+		await userEvent.click(inputs('quotient')[0]);
+		await userEvent.keyboard(',');
+		expect(document.activeElement).toBe(inputs('quotient')[0]);
+		await userEvent.click(inputs('quotient')[1]);
+		await userEvent.keyboard('7');
+		expect(changes.at(-1)).toBe('0{,}7');
+	});
+
 	it('quotient décimal : carreaux libres à droite du dividende saisissables (Q5)', async () => {
 		const { inputs } = await renderDivision(['calcul: 785 ÷ 4', 'quotient: décimal'], {}, null);
 		// 3 carreaux libres + zone : 2 × 6 étapes de 7 carreaux

@@ -102,7 +102,7 @@
 	let quotientWrong = $derived(interactive && answer?.isCorrect === false);
 	let remainderWrong = $derived(interactive && remainder?.isCorrect === false);
 	let wrongDigits = $derived(
-		quotientWrong && node.spec ? wrongQuotientDigits(node.spec, quotient, comma) : []
+		quotientWrong && node.spec ? wrongQuotientDigits(node.spec, quotient) : []
 	);
 	let commaMistake = $derived(
 		quotientWrong && node.spec ? wrongQuotientComma(node.spec, quotient, comma) : null
@@ -182,11 +182,21 @@
 
 	// ------------------------------------------------------------------ quotient
 
+	/**
+	 * Case qui reçoit la virgule tapée dans la case `c` : celle-ci si elle porte un
+	 * chiffre ; vide, celle de gauche si elle en porte un (la virgule tapée dans la
+	 * foulée, `1 9 6 ,`, arrive dans la case vide où le curseur est passé)
+	 */
+	function commaTarget(c: number): number {
+		return (quotient[c] ?? '') === '' && c > 0 && (quotient[c - 1] ?? '') !== '' ? c - 1 : c;
+	}
+
 	/** Un chiffre : il remplace celui de la case, le curseur passe à droite ; « , » ou « . » : la virgule */
 	function onQuotientInput(event: Event & { currentTarget: HTMLInputElement }, c: number) {
 		const char = typedChar(event);
 		if (/^[,.]$/.test(char)) {
-			comma = comma === c ? null : c;
+			const target = commaTarget(c);
+			comma = comma === target ? null : target;
 		} else if (/^\d$/.test(char)) {
 			quotient[c] = char;
 			focusInput(quotientAt(c + 1));

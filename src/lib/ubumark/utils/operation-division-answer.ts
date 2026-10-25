@@ -153,15 +153,15 @@ function expectedQuotient(spec: OperationSpec): { digits: string; integer: strin
 }
 
 /**
- * Décalage du quotient de l'élève : cases de tête vides ou à 0 avant son
- * chiffre des unités (jamais fausses), moins le 0 des unités attendu
- * (`0,3`) qu'elles écrivent peut-être
+ * Décalage du quotient de l'élève : son premier chiffre non nul face au premier
+ * chiffre non nul attendu. Les cases de tête vides ou à 0 (jamais fausses) ne
+ * décalent donc rien de plus que ce qu'elles occupent (`0 1 3 5 0`,
+ * `_ 0 , 8 5` pour 0,85). Rien de non nul : aucun décalage.
  */
-function quotientShift(digits: readonly string[], comma: number | null, integer: string): number {
-	const units = placedComma(digits, comma) ?? lastWritten(digits);
-	let lead = 0;
-	while (lead < units && (digits[lead] === '' || digits[lead] === '0')) lead++;
-	return Math.max(0, lead - (integer === '0' ? 1 : 0));
+function quotientShift(digits: readonly string[], expected: string): number {
+	const typed = digits.findIndex((d) => d !== '' && d !== '0');
+	const wanted = expected.search(/[1-9]/);
+	return typed === -1 || wanted === -1 ? 0 : typed - wanted;
 }
 
 /**
@@ -170,13 +170,9 @@ function quotientShift(digits: readonly string[], comma: number | null, integer:
  * comparaison) ; un chiffre de la partie entière oublié est faux ; une
  * décimale de fin laissée vide vaut 0.
  */
-export function wrongQuotientDigits(
-	spec: OperationSpec,
-	digits: readonly string[],
-	comma: number | null
-): boolean[] {
+export function wrongQuotientDigits(spec: OperationSpec, digits: readonly string[]): boolean[] {
 	const expected = expectedQuotient(spec);
-	const shift = quotientShift(digits, comma, expected.integer);
+	const shift = quotientShift(digits, expected.digits);
 	const last = lastWritten(digits);
 	return digits.map((typed, c) => {
 		if (c < shift) return false;
@@ -205,7 +201,7 @@ export function wrongQuotientComma(
 	const placed = placedComma(digits, comma);
 	const hasDecimals = expected.digits.length > expected.integer.length;
 	const at = hasDecimals
-		? quotientShift(digits, comma, expected.integer) + expected.integer.length - 1
+		? quotientShift(digits, expected.digits) + expected.integer.length - 1
 		: null;
 	if (placed === at) return null;
 	if (placed === null) return { mistake: 'absente', at: at! };
