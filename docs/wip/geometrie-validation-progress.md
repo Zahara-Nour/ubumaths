@@ -7,12 +7,13 @@ _Mis à jour le 2026-10-25, après #1782._
 - **État** : PR 1 (#1768), renommage (#1774), PR 2 (#1775), PR 3 (#1782 : modèle CP-059, copie corrigée et verso en
   figure, garde de `CorrectionCard`, fiche du catalogue) mergés ; rien en prod. Brouillon CP-059 en prod
   (`010d81a5-61dd-441d-a4d6-fdd0bd6c7af4`), sans nœud ni tag.
-- **Prochaine action** : migration nœud « Géométrie > Figures planes > constructions » + tag CP-059 (gabarit
-  `20261026130000_questions_cp_h_rangement_tags.sql` et son test d'intégration) ; puis phase 0 de CP-060 et CP-058.
+- **Prochaine action** : PR de la migration `20261026183000_questions_cp_059_rangement_tag` (nœud « Géométrie > Figures
+  planes > constructions » + tag CP-059) : revues, CI, merge, `db:migrate`, vérification en prod ; puis phase 0 de
+  CP-060 et CP-058.
 - **En attente de David** : rien (décisions du § 6 prises le 2026-10-25).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; case « figure » mêlée à une autre case :
   prise en charge à l'affichage, jamais encore dans un modèle.
-- **Worktree / branche** : aucun (retirés après #1782).
+- **Worktree / branche** : `../ubumaths-wt-geometrie-validation` · `feat/geometrie-validation-tag`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -248,3 +249,4 @@ PDF des séries laissé tel quel ; Q3/Q4 du § 5 closes.
 - 2026-10-25 : revue Opus de #1782 : 2 à corriger + 3 mineurs, tous traités (garde en échec → bonne droite seule ; case « figure » mêlée à une autre case : bloc retiré de l'énoncé rempli ; consigne pendant le chargement ; libellé de la bonne droite seule ; écart vertical précisé dans le § 6) ; 3 tests neufs, rouges sans les correctifs.
 - 2026-10-25 : #1782 mergée (CI verte, revue Opus traitée).
 - 2026-10-25 : David suit les recos (accès, CP-034, CP-058, PDF, Q3/Q4) ; migration CP-059 lancée.
+- 2026-10-25 : migration nœud + tag de CP-059 écrite (gabarit du lot H) ; test d'intégration 8/8 vert, 4 rouges sans la migration.
