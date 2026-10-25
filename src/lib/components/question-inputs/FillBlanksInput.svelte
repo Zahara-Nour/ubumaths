@@ -46,6 +46,7 @@
 		replacePromptsWithPrefilled
 	} from '$lib/components/markdown/utils/math-utils';
 	import { toFrenchDecimal } from '$lib/utils/french-math';
+	import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 	import { buildUnitsKeyboardLayout, unitKeysFor } from '$lib/questions/units/keyboard-units';
 	import { buildIntervalsKeyboardLayout } from '$lib/questions/intervals/keyboard-intervals';
 	import { buildVectorsKeyboardLayout } from '$lib/questions/vectors/keyboard-vectors';
@@ -411,7 +412,8 @@
 
 	/**
 	 * Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive, champ texte,
-	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse)
+	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse ; division
+	 * euclidienne : deux, le quotient puis le reste)
 	 */
 	type Slot =
 		| { field: MathfieldElement; promptId: string }
@@ -448,10 +450,20 @@
 	/** Curseur dans la case */
 	function focusSlot(slot: Slot) {
 		if ('operation' in slot) {
-			// Saisie de droite à gauche : la case vide la plus à droite
+			// Quotient d'une division, écrit de gauche à droite : la case vide la plus à gauche
+			const quotient = [
+				...slot.operation.querySelectorAll<HTMLInputElement>(
+					'input[data-operation-cell="quotient"]'
+				)
+			];
+			if (quotient.length > 0) {
+				(quotient.find((cell) => cell.value === '') ?? quotient[0]).focus();
+				return;
+			}
+			// Saisie de droite à gauche (résultat, reste) : la case vide la plus à droite
 			const cells = [
 				...slot.operation.querySelectorAll<HTMLInputElement>(
-					'input[data-operation-cell="résultat"]'
+					'input[data-operation-cell="résultat"], input[data-operation-cell="reste"]'
 				)
 			];
 			(cells.findLast((cell) => cell.value === '') ?? cells.at(-1))?.focus();
@@ -730,12 +742,14 @@
 			{:else if node.type === 'operation' && node.caseIndex !== undefined}
 				{@const caseIndex = node.caseIndex}
 				{@const state = inputStates[caseIndex]}
+				{@const euclidean = node.spec !== null && operationCaseCount(node.spec) === 2}
 				{#if flashMode}
 					<Operation {node} />
 				{:else if showCorrectAnswers}
 					<!-- Bonne réponse : l'opération résolue, retenues comprises -->
 					<Operation node={{ ...node, spec: node.spec && { ...node.spec, cells: 'aucune' } }} />
 				{:else}
+					<!-- Division euclidienne : le reste est la case suivante de la question -->
 					<Operation
 						{node}
 						answer={{
@@ -746,6 +760,16 @@
 							onSubmit: submitOrFocusFirstEmpty,
 							minDigits: digitGrouping()
 						}}
+						remainder={euclidean
+							? {
+									value: inputStates[caseIndex + 1]?.value ?? '',
+									isCorrect: inputStates[caseIndex + 1]?.isCorrect ?? null,
+									disabled: effectiveDisabled,
+									onChange: (value) => handleInputChange(caseIndex + 1, value),
+									onSubmit: submitOrFocusFirstEmpty,
+									minDigits: digitGrouping()
+								}
+							: undefined}
 					/>
 				{/if}
 			{:else if node.type === 'image'}
