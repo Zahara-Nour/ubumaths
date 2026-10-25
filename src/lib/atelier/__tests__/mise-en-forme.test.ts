@@ -1,7 +1,7 @@
 /**
  * La mise en forme des cases (tableur intégré, reprise de V4, PR 1 : le modèle).
  *
- * Phase 0 `docs/wip/atelier-tableur-mise-en-forme-phase0.md` (Q-MF-1 à Q-MF-5) :
+ * Phase 0 `docs/archive/wip/atelier-tableur-mise-en-forme-phase0.md` (Q-MF-1 à Q-MF-5) :
  * sur une zone, ne change que l'AFFICHAGE ; s'annule (T6) ; suit la recopie et
  * le copier-coller interne ; rangée par zone, voyage dans le lien ; suit ses
  * colonnes dans un atelier reçu.

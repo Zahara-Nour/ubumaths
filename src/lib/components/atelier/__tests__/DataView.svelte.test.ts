@@ -1,7 +1,7 @@
 /**
  * La vue Données, vue depuis l'écran : la grille (tableur intégré, lot 1).
  *
- * Phase 0 : `docs/wip/atelier-tableur-phase0.md` §1 à §3. Une liste est une
+ * Phase 0 : `docs/archive/wip/atelier-tableur-phase0.md` §1 à §3. Une liste est une
  * colonne NOMMÉE ; une cellule se lit comme une entrée de liste (`1,5`, `1/6`,
  * sinon un mot). La virgule reste décimale (§4 E2 de la v1).
  */

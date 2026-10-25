@@ -106,7 +106,7 @@ série). NBVAL(L) compte de même ses entrées non vides.
 ## Découpage
 
 Une seule PR : `grid-functions.ts` et `formula.ts`, aide sous la barre, tests en node.
-Doc : [atelier.md](../systeme/atelier.md) (section « La grille »).
+Doc : [atelier.md](../../systeme/atelier.md) (section « La grille »).
 
 Hors périmètre, à signaler : `NB.SI(A1:A30;"")` vaut 0 aujourd'hui (NB.SI ignore les cases vides,
 lot 4), alors que LibreOffice compte les cases vides. NB.VIDE couvre ce besoin.

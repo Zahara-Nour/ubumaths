@@ -1,7 +1,7 @@
 /**
  * Les fonctions du tableur (tableur intégré, lot 4, PR 1) : plages et statistiques.
  *
- * Phase 0 `docs/wip/atelier-tableur-lot4-phase0.md` §1-§3 et §5 : `A2:A21`,
+ * Phase 0 `docs/archive/wip/atelier-tableur-lot4-phase0.md` §1-§3 et §5 : `A2:A21`,
  * `A:A`, le nom d'une liste en argument (Q-L4-3) ; vides et mots ignorés dans
  * une plage (Q-L4-2) ; SOMME, MOYENNE, MEDIANE, MIN, MAX, NB, ECARTYPE (n − 1),
  * ECARTYPEP (n) ; noms réécrits en majuscules (Q-L4-7).

@@ -1,7 +1,7 @@
 /**
  * Tabuler (tableur intégré, lot 3, PR 1).
  *
- * Phase 0 `docs/wip/atelier-tableur-lot3-phase0.md` : le tableau de valeurs
+ * Phase 0 `docs/archive/wip/atelier-tableur-lot3-phase0.md` : le tableau de valeurs
  * d'une fonction est écrit DANS la grille, en formules (`-2`, `=A1+0,5`,
  * `=f(A1)`), donc vivant ; un nombre décimal fini s'écrit en décimal dans
  * toute la grille (Q-L3-2) ; valeurs par défaut (Q-L3-3) ; deux nouvelles

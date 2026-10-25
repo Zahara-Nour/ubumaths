@@ -1,7 +1,7 @@
 /**
  * Atelier — les fonctions du tableur (tableur intégré, lot 4).
  *
- * Phase 0 `docs/wip/atelier-tableur-lot4-phase0.md`, Q-L4-1 : une couche de la
+ * Phase 0 `docs/archive/wip/atelier-tableur-lot4-phase0.md`, Q-L4-1 : une couche de la
  * grille, AVANT mathAST. Elle repère les appels `SOMME(…)`, `MOYENNE(…)` et les
  * plages (`A2:A21`, `A:A`) ; chaque argument passe par la lecture des formules
  * d'aujourd'hui ; le résultat entre dans l'arbre comme une valeur de case.

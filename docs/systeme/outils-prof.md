@@ -180,7 +180,7 @@ API `/api/spreadsheets`) est **retiré** sur décision de David : la grille de l
 l'atelier le remplace (formules calculées par mathAST, CSV, mise en forme ; voir
 [atelier.md](atelier.md)). `/spreadsheet` et `/spreadsheet/<id>` mènent à `/atelier` en 308
 (`src/lib/server/redirectHandle.ts`). Ce que l'atelier ne reprend pas (NON, SIERREUR, fonctions
-de texte, VAR, MODE…) : [atelier-tableur-progress.md](../wip/atelier-tableur-progress.md).
+de texte, VAR, MODE…) : [atelier-tableur-progress.md](../archive/wip/atelier-tableur-progress.md).
 
 **Reste en base** : la table `spreadsheets` (1 ligne en prod, d'un seul compte, modifiée le
 2025-12-05), plus lue par aucun code. La supprimer est une migration destructive, à décider par

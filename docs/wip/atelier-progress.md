@@ -8,17 +8,17 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1692 (retrait de `/spreadsheet`) et #1697 (« Ouvrir dans Python »)._
+_Mis à jour le 2026-10-25, après la clôture du chantier du tableur._
 
 - **État** : `/spreadsheet` retiré et pont « Ouvrir dans Python » livrés sur `main`, pas en prod.
   Aucun worktree ni PR ouverts pour l'atelier.
 - **Fait** : **`/calc` retirée** (2026-10-25, chantier `retrait-calc`, PR 1 #1705 + PR 2) :
   redirection 308 vers `/atelier`, hors du sitemap, `components/calculator`,
   `stores/calculator.svelte.ts` et `mathAST/step-generator` supprimés ;
-  `atelier-saisie-naturelle.md` versé dans `atelier.md` et archivé.
-- **Ensuite (proposé, non lancé)** : clore le chantier du tableur — verser
-  `atelier-tableur-progress.md` et ses 8 phases 0 dans `docs/archive/wip/` (prod faite, `/spreadsheet`
-  retiré ; restent les vérifications manuelles de David).
+  `atelier-saisie-naturelle.md` versé dans `atelier.md` et archivé. **Chantier du tableur clos**
+  (2026-10-25) : [journal](../archive/wip/atelier-tableur-progress.md) et 8 phases 0 versés dans
+  `docs/archive/wip/` ; restent ses vérifications manuelles (David).
+- **Ensuite** : rien de lancé ; prochain sujet à choisir par David.
 - **En attente de David** : `pnpm deploy:prod` ; après lui, proposer la suppression de la table
   `spreadsheets` (1 ligne, migration destructive : s'arrêter et expliquer).
 - **Plus tard, si l'usage le demande** : sens inverse Python → atelier ; « Ouvrir dans Python » pour
@@ -211,7 +211,7 @@ Relevé des points « plus tard » de ce journal et des phases 0, à la demande 
   - `cos(2(x+1))` développé, `e^(2(x+1))` « rien à développer » ;
   - `0,5*0,5` → 1/4 en mode exact (décision de David en attente) ;
   - saisie, lot 2 (tournures nominales, `2,5 h en min`) ;
-  - tableur : option C choisie le 2026-10-15, lot 1 livré (#1410→#1413) ; phase 0 du lot 2 validée ([atelier-tableur-lot2-phase0.md](atelier-tableur-lot2-phase0.md)) ; v2, v3 non commencés ; « Renommer » désactivé ; pas de palette d'unités ;
+  - tableur : option C choisie le 2026-10-15, lot 1 livré (#1410→#1413) ; phase 0 du lot 2 validée ([atelier-tableur-lot2-phase0.md](../archive/wip/atelier-tableur-lot2-phase0.md)) ; v2, v3 non commencés ; « Renommer » désactivé ; pas de palette d'unités ;
   - composées `f(2x)` sur un ensemble (atelier-intervalle, décision c).
 - **Corrigés par #1404 (2026-10-15)** : image depuis la carte f′, « (x ≈ 0) » pour t, « [-1 ; 1:/2] »
   (et `\pi`), les trois défauts nouveaux ci-dessous ; revue : `3 en m` refusé n'efface plus la

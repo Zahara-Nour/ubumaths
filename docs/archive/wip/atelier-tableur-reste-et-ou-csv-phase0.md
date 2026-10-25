@@ -152,4 +152,4 @@ forment pas la division euclidienne pour les négatifs, piège pour un élève. 
 2. **Ouvrir un CSV** : bouton dans `DataView.svelte`, lecture (taille, encodage, séparateur) dans
    `grid.ts`, pose par `pasteTable` ; tests en node et dans un vrai navigateur.
 
-Doc : [atelier.md](../systeme/atelier.md) à chaque PR (section « La grille »).
+Doc : [atelier.md](../../systeme/atelier.md) à chaque PR (section « La grille »).

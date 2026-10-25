@@ -2,7 +2,7 @@
  * « Ouvrir un CSV… », vu depuis l'écran : le fichier se pose comme un collage,
  * à partir de la case choisie, et Ctrl+Z le défait.
  *
- * Phase 0 `docs/wip/atelier-tableur-reste-et-ou-csv-phase0.md` §3, Q-RE-4.
+ * Phase 0 `docs/archive/wip/atelier-tableur-reste-et-ou-csv-phase0.md` §3, Q-RE-4.
  * La lecture du fichier (encodage, séparateurs) : `src/lib/atelier/__tests__/ouvrir-csv.test.ts`.
  */
 

@@ -6,9 +6,9 @@ status: phase 0 du lot 1 VALIDÉE (2026-10-15) ; option C, Q1-Q5, T1-T9, P1-P2 d
 
 # Atelier — le tableur intégré
 
-Chapeau : [atelier-progress.md](atelier-progress.md). Question d'origine (options A/B, 2026-10-04) :
-[atelier-progress-historique.md](../archive/wip/atelier-progress-historique.md) §3. Doc système :
-[atelier.md](../systeme/atelier.md).
+Chapeau : [atelier-progress.md](../../wip/atelier-progress.md). Question d'origine (options A/B, 2026-10-04) :
+[atelier-progress-historique.md](atelier-progress-historique.md) §3. Doc système :
+[atelier.md](../../systeme/atelier.md).
 
 ## Décisions de David (2026-10-15)
 
@@ -207,7 +207,7 @@ n° 9).
 
 Tests : modèle en node (`src/lib/atelier/__tests__/`), grille et collage dans un vrai navigateur
 (`*.svelte.test.ts`, comme `paste.svelte.test.ts`), conversion v1 → v2 sur des états réels
-rangés. Doc : [atelier.md](../systeme/atelier.md) à chaque PR.
+rangés. Doc : [atelier.md](../../systeme/atelier.md) à chaque PR.
 
 ## Lots suivants (rappel, chacun sa phase 0)
 

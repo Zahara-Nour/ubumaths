@@ -244,4 +244,4 @@ tapé reste en minuscules, avec son refus.
 
 Tests : en node (`formules-tableur.test.ts`). Pour chaque fonction, des séries d'exercices
 réels avec leurs valeurs calculées à la main, écrites dans le test ; MOYENNE, MEDIANE et
-ECARTYPEP comparées aussi à `.stats` sur les mêmes séries. Doc : [atelier.md](../systeme/atelier.md) à chaque PR (section « La grille »).
+ECARTYPEP comparées aussi à `.stats` sur les mêmes séries. Doc : [atelier.md](../../systeme/atelier.md) à chaque PR (section « La grille »).

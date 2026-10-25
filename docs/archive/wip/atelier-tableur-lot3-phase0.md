@@ -172,4 +172,4 @@ plafond de temps. Noté pour un lot suivant.
 2. **La carte** : le formulaire « de / à / pas », la bascule vers Données, la sélection des
    colonnes, « Tabuler » retiré de `NOT_YET`. Tests dans un vrai navigateur, capture.
 
-Doc : [atelier.md](../systeme/atelier.md) à chaque PR (section « La grille »).
+Doc : [atelier.md](../../systeme/atelier.md) à chaque PR (section « La grille »).

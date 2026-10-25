@@ -1,7 +1,7 @@
 /**
  * Les formules de la grille (tableur intégré, lot 2, PR 1 : le moteur).
  *
- * Phase 0 : `docs/wip/atelier-tableur-lot2-phase0.md`, validée le 2026-10-15.
+ * Phase 0 : `docs/archive/wip/atelier-tableur-lot2-phase0.md`, validée le 2026-10-15.
  * Une cellule qui commence par `=` est calculée par le MOTEUR DE L'ATELIER :
  * valeur exacte, objets de l'atelier (`f`, curseurs), mêmes refus que Calcul.
  */

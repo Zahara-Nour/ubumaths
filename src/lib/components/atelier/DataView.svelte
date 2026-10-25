@@ -7,7 +7,7 @@
 	 * (`1,5`, `1/6`, sinon un mot) ; `12 ; 15 ; 9` tapé dans une cellule se
 	 * répartit vers le bas (P2). Un tableau collé se pose à partir de la cellule
 	 * choisie ; copier écrit des décimaux à virgule (§4). Phase 0 :
-	 * `docs/wip/atelier-tableur-phase0.md`.
+	 * `docs/archive/wip/atelier-tableur-phase0.md`.
 	 *
 	 * La vue n'a aucun état de modèle : cellules et noms vivent dans l'`Atelier`.
 	 * Elle ne garde que la sélection (une cellule, ou une zone) et la frappe en cours.

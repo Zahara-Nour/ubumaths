@@ -1,7 +1,7 @@
 /**
  * La grille — coller, copier, télécharger, titres (tableur intégré, lot 1, PR 2).
  *
- * Phase 0 : `docs/wip/atelier-tableur-phase0.md` §4 et T4. Un tableau copié de
+ * Phase 0 : `docs/archive/wip/atelier-tableur-phase0.md` §4 et T4. Un tableau copié de
  * LibreOffice, Excel ou d'une page web arrive en lignes et tabulations ; une
  * première ligne de mots au-dessus de nombres devient les titres des colonnes.
  */

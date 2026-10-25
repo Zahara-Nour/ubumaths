@@ -135,4 +135,4 @@ veut que l'élève le voie pareil.
 2. **La barre d'outils** : boutons, `MySelect`, raccourcis, `aria-pressed`, couleurs du thème,
    affichage dans les cases. Tests dans un vrai navigateur, captures en clair et en sombre.
 
-Doc : [atelier.md](../systeme/atelier.md) à chaque PR (section « La grille »).
+Doc : [atelier.md](../../systeme/atelier.md) à chaque PR (section « La grille »).

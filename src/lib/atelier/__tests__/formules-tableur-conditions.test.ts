@@ -2,7 +2,7 @@
  * Conditions et texte du tableur (lot 4, PR 3) : SI, NB.SI, texte entre
  * guillemets, comparaisons ; le renvoi de Calcul vers la grille.
  *
- * Phase 0 `docs/wip/atelier-tableur-lot4-phase0.md` §4 et §6, Q-L4-5, Q-L4-6.
+ * Phase 0 `docs/archive/wip/atelier-tableur-lot4-phase0.md` §4 et §6, Q-L4-5, Q-L4-6.
  */
 
 import { describe, it, expect } from 'vitest';

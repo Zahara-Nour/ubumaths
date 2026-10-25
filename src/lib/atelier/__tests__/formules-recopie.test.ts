@@ -1,7 +1,7 @@
 /**
  * Recopier des formules (tableur intégré, lot 2, PR 3).
  *
- * Phase 0 `docs/wip/atelier-tableur-lot2-phase0.md` §5 et §7 : les références
+ * Phase 0 `docs/archive/wip/atelier-tableur-lot2-phase0.md` §5 et §7 : les références
  * relatives se décalent, `$` les fige, une valeur se recopie telle quelle ;
  * copier-coller dans la grille décale aussi (Q-L2-4) ; le lien range les
  * formules en relatif ; un atelier reçu garde des références qui suivent
