@@ -111,6 +111,12 @@ const LOT: Modele[] = [
 	])
 ];
 const ids = LOT.map((m) => m.id);
+/** Les modèles de « propriétés » qui y restent, rangés et tagués comme en prod. */
+const RESTENT = [
+	{ id: 'c85626fa-c875-4314-bbb9-96c4b7c6dd48', code: 'CP-056' },
+	{ id: '91012bab-0bab-4cd0-a86c-97574c44c9d9', code: 'CP-056' },
+	{ id: 'b5389494-3b1c-4f32-85c2-473192c9bacc', code: 'CP-057' }
+];
 /** Date de modification fabriquée : elle ne doit pas bouger. */
 const AVANT = '2026-01-02T03:04:05.000Z';
 
@@ -139,16 +145,19 @@ async function poserEtatProd(pg: Client, auteur: string): Promise<void> {
 	}
 	await pg.query(
 		'update public.question_templates set classification_node_id = $2 where id = any($1::uuid[])',
-		[[FORME, DESSIN], proprietes]
+		[[FORME, DESSIN, ...RESTENT.map((r) => r.id)], proprietes]
 	);
 	await pg.query(
 		'alter table public.question_templates enable trigger update_question_templates_updated_at'
 	);
 	await pg.query(
 		`insert into public.question_template_points (template_id, point_id)
-		 select r.id, p.id from (values ($1::uuid, 'CP-055'), ($2::uuid, 'CP-054')) as r(id, code)
+		 select r.id, p.id from unnest($1::uuid[], $2::text[]) as r(id, code)
 		   join public.curriculum_points p on p.grade = 'CP' and p.code = r.code and p.archived_at is null`,
-		[FORME, DESSIN]
+		[
+			[FORME, DESSIN, ...RESTENT.map((r) => r.id)],
+			['CP-055', 'CP-054', ...RESTENT.map((r) => r.code)]
+		]
 	);
 }
 
@@ -236,11 +245,17 @@ describe('Questions CP : sous-notion des formes et niveaux des 19 brouillons (mi
 		});
 	});
 
-	it('les deux modèles suivent leur point, tags intacts ; les 17 autres ne bougent pas', () => {
+	it('les deux modèles suivent leur point, tags intacts ; les autres ne bougent pas', () => {
 		expect(apres.modeles.get(FORME)?.noeud).toBe(FORMES);
 		expect(apres.modeles.get(DESSIN)?.noeud).toBe(FORMES);
-		expect(apres.tags).toEqual([`${DESSIN}§CP-054`, `${FORME}§CP-055`].sort());
-		const autres = LOT.filter((m) => m.id !== FORME && m.id !== DESSIN);
+		expect(apres.tags).toEqual(
+			[`${DESSIN}§CP-054`, `${FORME}§CP-055`, ...RESTENT.map((r) => `${r.id}§${r.code}`)].sort()
+		);
+		expect(RESTENT.map((r) => apres.modeles.get(r.id)?.noeud)).toEqual(
+			RESTENT.map(() => PROPRIETES)
+		);
+		const restes = new Set([FORME, DESSIN, ...RESTENT.map((r) => r.id)]);
+		const autres = LOT.filter((m) => !restes.has(m.id));
 		expect(autres.map((m) => apres.modeles.get(m.id)?.noeud)).toEqual(autres.map(() => '∅'));
 	});
 
@@ -284,14 +299,17 @@ describe('Questions CP : les branches d’échec de la migration des formes', ()
 		}
 	}
 
-	it('base sans les modèles (locale) : seuls la sous-notion et les deux points changent', async () => {
+	it('base sans les modèles (locale) : seuls la sous-notion et les deux points changent, et le rollback les rend', async () => {
 		await enTransaction(async () => {
+			const avantLocal = await lireEtat(pg);
 			await pg.query(readFileSync(MIGRATION, 'utf-8'));
 			const etat = await lireEtat(pg);
 			expect(etat.noeudNouveau).toBe(true);
 			expect(etat.points.get('CP-054')).toBe(FORMES);
 			expect(etat.points.get('CP-055')).toBe(FORMES);
 			expect(etat.modeles.size).toBe(0);
+			await pg.query(extractRollback(MIGRATION));
+			expect(await lireEtat(pg)).toEqual(avantLocal);
 		});
 	});
 

@@ -37,7 +37,8 @@
 -- L'arbre et les points sont déjà lisibles par tous (anon compris) ; aucune règle ne change.
 -- Effet visible : la nouvelle sous-notion apparaît dans l'arbre, avec CP-054 et CP-055.
 --
--- Rollback (aucune donnée d'élève). Il rend les niveaux 1, l'ancien texte, ramène modèles et
+-- Rollback (aucune donnée d'élève), valable tant que les 19 modèles sont en brouillon (un modèle
+-- publié entre-temps garde niveau et texte). Il rend les niveaux 1, l'ancien texte, ramène modèles et
 -- points sur « propriétés » et supprime la sous-notion. Bloc éprouvé par le test d'intégration,
 -- à jouer dans UNE transaction (`psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL en un envoi) :
 -- ROLLBACK:BEGIN
@@ -55,7 +56,8 @@
 --               '74d6b4f3-f180-4315-a2c4-ccfb1b3f3024')
 --    and status = 'draft';
 -- update public.question_templates set subdomain = 'Propriétés'
---  where id in ('e7453c9b-8cbd-44ef-86ca-2aaf0340b5fa', '9d6bc8b3-ee8f-4f70-a735-61b1075a9746');
+--  where id in ('e7453c9b-8cbd-44ef-86ca-2aaf0340b5fa', '9d6bc8b3-ee8f-4f70-a735-61b1075a9746')
+--    and status = 'draft';
 -- alter table public.question_templates enable trigger update_question_templates_updated_at;
 -- update public.curriculum_points p set node_id = f.id
 --   from public.classification_nodes f
