@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 du lot 2 validée._
+_Mis à jour le 2026-10-25, après #1740._
 
-- **État** : lot 1 COMPLET sur `main`, pas en prod (#1716, #1726, #1738). Lot 2 (multiplication) : phase 0 validée le 2026-10-25 (§ 10), PR 2a (affichage) en cours.
-- **Prochaine action** : PR 2a — tests rouges puis parseur, scène, écran, PDF, éditeur riche.
-- **En attente de David** : vérifications #1716, #1726 et #1738 (`verifications-manuelles.md`), avant le prochain `deploy:prod`. Comportement 5 précisé et décimales de fin (comptées 0) : tranchés le 2026-10-25 (recommandations suivies).
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — republiée le 2026-10-25 avec la saisie jouable (7 cas) et la règle des décimales de fin (#1738).
-- **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
-- **Worktree / branche** : `../ubumaths-wt-operations-posees`, `feat/operations-posees-multiplication`.
+- **État** : lot 1 COMPLET sur `main`, pas en prod (#1716, #1726, #1738). Lot 2 (multiplication) : phase 0 validée (§ 10) ; **PR 2a #1740 mergée** (affichage écran + PDF ; une multiplication à remplir est refusée dans une question).
+- **Prochaine action** : PR 2b — saisie de la multiplication (virgule posée par l'élève, Q3 ; cases des produits partiels ; surlignage de la virgule) ; lever le refus de `instance-generator.ts`. Écrire les comportements de la PR 2b et les faire valider.
+- **En attente de David** : vérifications #1716, #1726, #1738, #1740 (`verifications-manuelles.md`), avant le prochain `deploy:prod`. Précision Q1 (zéros de tête non comptés, § 10) à confirmer.
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — lot 1 seulement (pas encore la multiplication).
+- **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas ; `operation-answer.ts` suppose une virgule de grille fixe (à revoir en PR 2b).
+- **Worktree / branche** : supprimés après #1740.
 
 ---
 
@@ -292,6 +292,11 @@ Découpage : **PR 2a** affichage (parseur, scène, écran, PDF, éditeur riche, 
 15. `méthode:` sur une multiplication ; `÷` « pas encore disponible (lot 3) ».
 
 ## Journal
+
+### 2026-10-25 — #1740 PR 2a (multiplication, affichage)
+
+Parseur (`×`, ordre de pose, bornes 6/3), scène (`partials`, `partialCarries`), écran, PDF, refus au
+générateur. Revue Opus : rien de bloquant ; zéros de tête non comptés pour l'ordre (précision Q1).
 
 ### 2026-10-25 — #1738 décimales de fin
 
