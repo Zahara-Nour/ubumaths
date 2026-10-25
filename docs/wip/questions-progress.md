@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-10-25, lot A5 en cours (après #1728)._
 
-- **État** : A1 (#1712), A2 (#1720), A4 (#1728) livrés et relus. **A5 problèmes** : phase 0 validée (§ 4 sexies), 4 modèles en cours d'écriture (`docs/wip/questions/lot-a5.py` → `scripts/questions/cp-a5/`).
-- **Prochaine action** : specs vertes + rendu relu (`question:specs --apercu`), puis go de David pour `create-questions --publier`, puis migration nœud + tag et son test.
+- **État** : A1 (#1712), A2 (#1720), A4 (#1728) livrés et relus. **A5 problèmes** : 4 brouillons créés en prod (`da6e20cd`, `a1c5da8b` CP-029 ; `5c6999c6` CP-030 ; `87460358` CP-031) ; migration nœud + tag `20261026000000_…_a5_…` et son test (rouge sans, vert 8/8), PR ouverte.
+- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal (audit sécurité et question d'accès d'abord) → vérification prod → page à cocher A5.
 - **En attente de David** : publication des 20 brouillons A1 + A2 + A4 (tous relus OK) ; vérification manuelle #1702.
 - **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; script d'un tirage hors du dépôt → `.mts`.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-a5`.
@@ -149,3 +149,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : #1728 mergée, `db:migrate`, vérifié en prod ; descriptions de `a59fba89` et `c342f32e` corrigées (`--mettre-a-jour` réécrit désormais la description) ; page à cocher A4 publiée.
 - 2026-10-25 : page à cocher A4 relue par David, 7/7 OK.
 - 2026-10-25 : lot A5, phase 0 validée (§ 4 sexies), worktree `../ubumaths-wt-questions` (`feat/questions-a5`).
+- 2026-10-25 : A5, 4 modèles écrits (specs vertes, rendu relu), 4 brouillons créés en prod (go de David) ; migration nœud + tag et test, rouge puis vert.
