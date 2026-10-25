@@ -337,8 +337,8 @@ Dans une question, un bloc à remplir porte **une** case (clé `case: N`, posée
 reçoit alors `answer` : cases du résultat saisies de droite à gauche (le curseur passe à gauche,
 Retour arrière sur une case vide efface celle de droite, tout autre caractère ignoré), carreaux de
 40 px, grille qui défile dans son cadre sur téléphone. Les cases se lisent comme un nombre
-(`utils/operation-answer.ts`, `readOperationAnswer`) : cases de tête vides ignorées, case vide au
-milieu → réponse vide ; zéros de tête et zéros décimaux de fin retirés (`1,0` → `1`), espaces de
+(`utils/operation-answer.ts`, `readOperationAnswer`) : cases de tête vides ignorées, décimales de fin
+vides comptées 0 (`0,5 + 0,5`, élève « 1 » : juste), case vide au milieu → réponse vide ; zéros de tête et zéros décimaux de fin retirés (`1,0` → `1`), espaces de
 milliers posés — jamais de remarque de forme que la grille impose. Petites cases de retenue (≈ 28 px) :
 aide, jamais jugée ni gardée. Réponse fausse : chiffres faux surlignés (`wrongResultDigits`),
 opération résolue à côté ; bonne réponse affichée (`showCorrectAnswers`) : opération résolue.
