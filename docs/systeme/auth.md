@@ -48,7 +48,7 @@ couvre:
 > Remplace les 11 fichiers de [`auth/`](../archive/systeme-2026-06/auth/README.md) (juin 2026, archivés, antérieurs au modèle
 > mono-professeur). En cas de désaccord, **cette page et le code font foi**.
 >
-> Vérifié contre le code le 2026-10-22.
+> Vérifié contre le code le 2026-10-22 ; `MOVED_PAGES` le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -186,8 +186,9 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
 `/cas` et `/cas/` mènent à `/atelier` en 308, query string comprise. Même filet pour les pages de
 démo et de debug rangées sous `/dev` (table `MOVED_PAGES` : `/test-saisie`, `/test-cadres`,
 `/test-erreur`, `/test-structure`, `/slides/*`, `/demo/theme-test`, `/demo/vip-cards-demo`,
-`/dashboard/admin/debug/*`…), sous-pages et query string comprises ; `/test-font` seulement à l'adresse
-exacte, ses images restant sous `static/test-font/`.
+`/dashboard/admin/debug/*`…), sous `/aide-ecriture` (`/geometry-demo/*`, `/demo/trig-circle-demo`)
+ou sous `/constructions/essais` (`/construction-demo`), sous-pages et query string comprises ;
+`/test-font` seulement à l'adresse exacte, ses images restant sous `static/test-font/`.
 
 ## Processus 1 — la connexion (Supabase Auth)
 

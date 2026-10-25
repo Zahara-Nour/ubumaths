@@ -150,20 +150,17 @@ export const SITEMAP_DYNAMIC_ROUTES: SitemapDynamicRoute[] = [
 	}
 ];
 
-const DEMO = 'démonstration ou mise au point, sans intérêt pour un visiteur';
 const LOGIN_REQUIRED = 'renvoie un visiteur anonyme vers la connexion';
 
 /**
  * Pages publiques volontairement absentes du plan. Par familles :
- * démos, parcours d'authentification, pages à compte ou à jeton, routes
+ * parcours d'authentification, pages à compte ou à jeton, routes
  * dynamiques sans source. Chaque motif doit couvrir au moins une page
  * existante : une exclusion périmée échoue au test.
  */
 export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	// « Ne pas mettre en avant » (docs/systeme/carte-des-fonctionnalites.md)
 	{ pattern: '/games/evoland', reason: 'jeu en sommeil, sans lien depuis /games' },
-	// Démos et mise au point
-	{ pattern: '/construction-demo', reason: DEMO },
 
 	// Parcours d'authentification et de consentement
 	{ pattern: '/auth/**', reason: 'étape du parcours de connexion, pas une destination' },

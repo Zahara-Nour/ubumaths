@@ -22,7 +22,8 @@
 		Globe,
 		Lock,
 		Compass,
-		FileUp
+		FileUp,
+		FlaskConical
 	} from '@lucide/svelte';
 
 	type Construction = PageData['constructions'][number];
@@ -183,6 +184,10 @@
 		</div>
 		{#if data.canAuthor}
 			<div class="flex flex-col gap-2 sm:flex-row">
+				<Button variant="outline" href="/constructions/essais">
+					<FlaskConical class="mr-2 h-4 w-4" />
+					Essais
+				</Button>
 				<Button variant="outline" href="/constructions/conversion">
 					<FileUp class="mr-2 h-4 w-4" />
 					Importer XML

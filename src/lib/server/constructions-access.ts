@@ -18,12 +18,9 @@ export function canAuthorConstructions(role: string | null | undefined): boolean
 }
 
 /**
- * Scripts de démo (`/construction-demo`, table `construction_demo_scripts`) : prof et
- * admin (décision de David du 2026-10-23), inchangé le 2026-10-24. La RLS tient la
- * même règle (migration 20261023150000).
+ * Scripts de démo (table `construction_demo_scripts`, enregistrés depuis
+ * `/constructions/essais`, page du prof seul) : l'API admet encore prof et admin
+ * (décision de David du 2026-10-23) ; l'accès admin sera retiré à part (chantier
+ * demo-debug). La RLS tient la même règle (migration 20261023150000).
  */
 export const DEMO_SCRIPT_AUTHOR_ROLES: UserRole[] = ['teacher', 'admin'];
-
-export function canAuthorDemoScripts(role: string | null | undefined): boolean {
-	return DEMO_SCRIPT_AUTHOR_ROLES.some((allowed) => allowed === role);
-}

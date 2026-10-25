@@ -7,7 +7,7 @@ couvre:
   - 'src/lib/ubumark/utils/figure-*.ts'
   - 'src/lib/ubumark/generators/figure-typst*.ts'
   - 'src/routes/(protected)/constructions/**'
-  - 'src/routes/(public)/construction-demo/**'
+  - 'src/routes/(public)/demo/constructions/**'
   - 'src/routes/(protected)/aide-ecriture/geometrie/**'
   - 'src/routes/api/constructions/**'
   - 'src/routes/api/construction-demo-scripts/**'
@@ -46,12 +46,12 @@ I = integrale(f, 0, \pi)
 
 Le même script sert à quatre usages :
 
-| Usage                                         | Où                                                                  | Interactif ? |
-| --------------------------------------------- | ------------------------------------------------------------------- | ------------ |
-| Figure dans un contenu (énoncé, cours, chat)  | bloc ubumark ` ```figure ` → écran (SVG) + PDF (Typst)              | non          |
-| Figure dynamique (démos, éditeur)             | `GeometryCanvas.svelte` : glisser les points, curseurs              | oui          |
-| Construction animée (règle, compas, équerre…) | `constructions-v2` : lecteur pas à pas, routes `/constructions/*`   | lecture      |
-| Pages de démonstration                        | `/aide-ecriture/geometrie/*` (30 pages, prof), `/construction-demo` | oui          |
+| Usage                                         | Où                                                                                                                               | Interactif ? |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Figure dans un contenu (énoncé, cours, chat)  | bloc ubumark ` ```figure ` → écran (SVG) + PDF (Typst)                                                                           | non          |
+| Figure dynamique (démos, éditeur)             | `GeometryCanvas.svelte` : glisser les points, curseurs                                                                           | oui          |
+| Construction animée (règle, compas, équerre…) | `constructions-v2` : lecteur pas à pas, routes `/constructions/*`                                                                | lecture      |
+| Pages de démonstration                        | `/aide-ecriture/geometrie/*` (30 pages, prof), `/constructions/essais` (prof), vitrines `/demo/geometrie`, `/demo/constructions` | oui          |
 
 Le moteur calcule en **exact** quand il peut (coordonnées `MathNode` de mathAST) et en flottant
 sinon (déplacement à la souris, transcendantes, échantillonnage), avec des solveurs numériques
@@ -92,8 +92,8 @@ Doc détaillée : [constructions.md](constructions.md) (parcours, directives, ch
 | `constants.ts`                               | Durées (`MS_PER_PIXEL`, `MS_PER_DEGREE`, `DEFAULT_PAUSE_DURATION`…)                                                              |
 
 Les scripts sont stockés en base dans `constructions.dsl_script`. Routes :
-`src/routes/(protected)/constructions/` (liste, `[id]`, `[id]/edit`, `new`, `conversion`) et
-`src/routes/(public)/construction-demo/`.
+`src/routes/(protected)/constructions/` (liste, `[id]`, `[id]/edit`, `new`, `conversion`, `essais`) et
+la vitrine `src/routes/(public)/demo/constructions/`.
 
 ⚠️ L'ancien module `src/lib/constructions/` (XML, avant le DSL) vit encore : utilisé par
 `whiteboard/components/InstrumentLayer.svelte`, `QuestionTemplateForm.svelte` et

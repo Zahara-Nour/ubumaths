@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1742 (phase 7)._
+_Mis à jour le 2026-10-25, phase 8 en PR._
 
-- **État** : phases 1 à 7 terminées ; dernière : #1742, accueil `/demo` (9 cartes, liste `DEMO_PAGES`), vitrine ouverte aux robots (sitemap, `SeoHead`, plus de `noindex` ni `Disallow: /demo`), liens depuis `/professeurs`, `/parents`, `/eleves` et l'`InfoPanel`. Rien en prod : l'ouverture aux robots prend effet au prochain `deploy:prod`. Vérification manuelle notée.
-- **Prochaine action** : **phase 8**, constructions (`/constructions/essais`, `/demo/constructions`), **seulement après les merges du chantier constructions** — vérifier son état avant de lancer. Puis PR à part : retrait de l'accès admin sur `construction-demo-scripts`. Ensuite, fin de chantier = versement.
+- **État** : phases 1 à 7 mergées (dernière #1742) ; **phase 8** (`/constructions/essais` prof seul, vitrine `/demo/constructions`) sur `feat/demo-constructions`, **PR #1750** ouverte (revues : 0 bloquant). Rien en prod : l'ouverture de `/demo` aux robots prend effet au prochain `deploy:prod`.
+- **Prochaine action** : merger la phase 8, puis **PR à part** : retrait de l'accès admin sur `construction-demo-scripts` (API `DEMO_SCRIPT_AUTHOR_ROLES` + RLS `20261023150000` → migration, question d'accès à poser à David). Ensuite fin de chantier = versement.
 - **Hors chantier, décidé par David le 2026-10-25** : cahier de texte → ubumark, **futur chantier `cahier-ubumark`** ; énigmes (HTML lu comme markdown) à mesurer ; bug FSRS → **chantier `fsrs`** ; `z` ≈ `2` → PR à part dans `tools/chiphre-math/`, en dernier.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
 - **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians (`dsl-builtins.md` dit « radians ») → `geometry-expert`, plus tard. Images des 4 cartes Mathémo à vérifier.
 - **Pièges en cours** : nouvelle vitrine → une entrée dans `DEMO_PAGES` + `<SeoHead {...demoSeo(…)} />` (le test l'exige) ; sous `/dev`, ni `+layout@` ni donnée sensible par un load universel ; dans `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale` ; `wrapDynamicImport` dans la sortie des tests client = bruit, déjà sur `main` ; 1er test de `page-demo-lexique` lent à froid en CI (1 échec, vert à la relance).
-- **Worktree / branche** : aucun (celui de la phase 7 est supprimé) ; la phase 8 partira d'un nouveau worktree depuis `origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-demo-debug` · `feat/demo-constructions` ; serveur de test sur 5177 (5176 = simplify-carte). Un vieux serveur de la phase 7 tournait encore sur 5177 dans le dossier supprimé : l'arrêter au `worktree remove`.
 
 ## Décisions de David (2026-10-24)
 
@@ -445,3 +445,27 @@ no position before the top-level node` dans les raccourcis Backspace de la droit
   (1280 et 390 px) : aucune erreur de console, rien ne déborde. CI : 1er test de `/demo/lexique`
   trop lent à froid (769 ms sur `main`, délai de 1 s dépassé), vert à la relance ; 25 runs
   précédents sans cet échec.
+
+## PR 8 — constructions : `/constructions/essais` et `/demo/constructions` (phase 0 validée par David le 2026-10-25)
+
+- Chantier constructions vérifié avant de lancer : CLOS le 2026-10-24 (journal archivé, versé dans
+  `docs/systeme/geometrie/constructions.md`), aucune PR ouverte.
+- **`/constructions/essais`** : ex-`/construction-demo` (`git mv`), garde `requireRoles` prof
+  (`CONSTRUCTION_AUTHOR_ROLES`) dans le `load` ; élève et admin 403, visiteur → connexion.
+  Textes accentués, « Sauvegarder » → « Enregistrer », `BackLink` « Retour aux constructions » ;
+  bouton « Essais » sur `/constructions` (prof seul). Exemples XML de `extern/` gardés tels quels
+  (toujours vides en prod). `/construction-demo` → 308 (`MOVED_PAGES`) ; `Disallow` gardé ;
+  exclusion sitemap retirée. `canAuthorDemoScripts` supprimée (plus d'appelant) ; l'API
+  `construction-demo-scripts` garde prof + admin jusqu'à la PR suivante.
+- **`/demo/constructions`** : 3 constructions recopiées de `scripts/constructions-prod/contenu.ts`
+  (parallélogramme, partage en trois, symétrie axiale au compas), lecteur seul, script replié ;
+  entrée `DEMO_PAGES` après la géométrie.
+- Trouvé en route (vu dans le navigateur, 1280 et 390 px) : toile blanche avant « Jouer » →
+  `seekToEnd` (la figure finie s'affiche, « Jouer » repart du début) ; `zoom` du lecteur entier
+  rendait les boutons minuscules sur téléphone → seule la toile se réduit ; commandes du lecteur
+  sur une ligne sans retour (frise écrasée à 390 px) → `flex-wrap` dans `ConstructionPlayer`
+  (profite aussi à `/constructions/[id]`) ; titres de carte en `h2` grossis par `main h2`
+  `!important` → classe `!` avec `--font-scale`. Hauteur de toile 460 (D coupé à 420).
+- Vérifié sur 5177 (Playwright) : vitrine 200 sans erreur de console, rien ne déborde ; prof :
+  `/construction-demo` → `/constructions/essais` 200, clic « Essais » ; élève et admin 403, pas
+  de bouton « Essais ».

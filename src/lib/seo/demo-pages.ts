@@ -15,6 +15,7 @@ export type DemoPath =
 	| '/demo/corriges'
 	| '/demo/diaporama'
 	| '/demo/geometrie'
+	| '/demo/constructions'
 	| '/demo/cercle-trigo'
 	| '/demo/editeur'
 	| '/demo/lexique'
@@ -38,7 +39,7 @@ export const DEMO_HUB = {
 		'Chiphre en action, sans compte : les questions, les corrigés, le diaporama, les figures de géométrie et les autres outils de la plateforme.'
 } as const;
 
-/** Du plus parlant au plus technique (ordre validé par David le 2026-10-25) */
+/** Du plus parlant au plus technique (ordre validé par David le 2026-10-25 ; constructions après la géométrie, phase 8) */
 export const DEMO_PAGES: DemoPage[] = [
 	{
 		path: '/demo/questions',
@@ -63,6 +64,12 @@ export const DEMO_PAGES: DemoPage[] = [
 		title: 'Figures de géométrie',
 		description:
 			'Des figures écrites en quelques lignes, à manipuler : on déplace les points, on fait glisser les curseurs.'
+	},
+	{
+		path: '/demo/constructions',
+		title: 'Constructions à la règle et au compas',
+		description:
+			'Des constructions jouées pas à pas : la règle et le compas bougent à l’écran, chaque étape a sa consigne.'
 	},
 	{
 		path: '/demo/cercle-trigo',

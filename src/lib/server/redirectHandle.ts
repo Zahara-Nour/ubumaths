@@ -48,7 +48,9 @@ const MOVED_PAGES: Record<string, string> = {
 	'/demo/mots-cliquables': '/dev/mots-cliquables',
 	// Aide à l'écriture (PR 4)
 	'/geometry-demo': '/aide-ecriture/geometrie',
-	'/demo/trig-circle-demo': '/aide-ecriture/cercle-trigo'
+	'/demo/trig-circle-demo': '/aide-ecriture/cercle-trigo',
+	// Essais de constructions, page du prof (phase 8)
+	'/construction-demo': '/constructions/essais'
 };
 
 /** Nouvelle adresse d'une page déplacée, ou `null` si `pathname` n'en est pas une. */

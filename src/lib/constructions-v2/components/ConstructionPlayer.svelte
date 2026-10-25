@@ -413,7 +413,8 @@
 		{/if}
 
 		{#if showControls}
-			<div class="mt-2 flex items-center gap-2">
+			<!-- Sur un écran étroit, la frise passe à la ligne plutôt que de s'écraser -->
+			<div class="mt-2 flex flex-wrap items-center gap-2">
 				<PlayerControls
 					{tl}
 					onToggle={handleToggle}
@@ -422,7 +423,7 @@
 					onStepBackward={handleStepBackward}
 					onReset={handleReset}
 				/>
-				<TimelineSlider {tl} onScrub={handleScrub} class="flex-1" />
+				<TimelineSlider {tl} onScrub={handleScrub} class="min-w-48 flex-1" />
 				<SpeedControl
 					{tl}
 					onSetRate={handleSetPlaybackRate}

@@ -2,7 +2,7 @@
 couvre:
   - 'src/lib/constructions-v2/**'
   - 'src/routes/(protected)/constructions/**'
-  - 'src/routes/(public)/construction-demo/**'
+  - 'src/routes/(public)/demo/constructions/**'
   - 'src/routes/api/constructions/**'
   - 'src/routes/api/construction-demo-scripts/**'
   - src/lib/server/constructions-access.ts
@@ -16,7 +16,7 @@ lecteur montre _comment_ on construit une figure, pas seulement la figure.
 
 Vue d'ensemble du moteur : [README.md](README.md). Langage : [dsl-builtins.md](dsl-builtins.md).
 
-> Vérifié contre le code le 2026-10-23. Les numéros de ligne sont ceux de ce jour : relire le code
+> Vérifié contre le code le 2026-10-23 ; pages et lecteur (commandes) le 2026-10-25. Les numéros de ligne sont ceux de ce jour : relire le code
 > avant de s'y fier. Les journaux `docs/archive/wip/constructions-v2/` et
 > `docs/archive/wip/v1-choreographies*-progress.md` sont **périmés** sur plusieurs points (§ 9).
 
@@ -48,7 +48,7 @@ Timeline (requestAnimationFrame) ─onStepChange(i)─▶ ConstructionPlayer
 | Sous-étape            | `core/executor.ts:340` `applySubStepToAnimationState()`                                                                                                                                          | Révèle les éléments à animer, place l'instrument principal (`instrumentTarget`) et le secondaire.                                                                                                                                                                                                                                             |
 | Visibilité finale     | `core/executor.ts:309-318`, `:323` ; `core/choreographies/visibility.ts:51`                                                                                                                      | La dernière sous-étape programme `applyFinalVisibility`, appliquée **au début du pas suivant** (ou par un `step()` de plus en fin de lecture).                                                                                                                                                                                                |
 | Horloge               | `core/timeline.svelte.ts:50` `Timeline`                                                                                                                                                          | JS simple, **sans `$state`** (`:4`) : `load(durées)`, `play`, `pause`, `stepForward`, `playOneStep`, `stepBackward`, `seekToStep`, `scrubByProgress`, vitesse 0,25 à 4 (× ou ÷ 1,5).                                                                                                                                                          |
-| Lecteur               | `components/ConstructionPlayer.svelte` : exécuteur `:112`, `handleStepChange` `:160`, `handleTimelineUpdate` `:202`, `handleScrub` `:242`, `loadScript` `:267`, `$effect` de rechargement `:306` | À chaque changement de pas : `executor.reset()` puis `step()` × (i + 1), copie de l'état d'animation dans des `$state`. Arrivée en fin de lecture → un `step()` de plus pour vider la visibilité en attente. Props `seekToEnd`, `autoPlay`, `interactive`.                                                                                    |
+| Lecteur               | `components/ConstructionPlayer.svelte` : exécuteur `:112`, `handleStepChange` `:160`, `handleTimelineUpdate` `:202`, `handleScrub` `:242`, `loadScript` `:267`, `$effect` de rechargement `:306` | À chaque changement de pas : `executor.reset()` puis `step()` × (i + 1), copie de l'état d'animation dans des `$state`. Arrivée en fin de lecture → un `step()` de plus pour vider la visibilité en attente. Props `seekToEnd`, `autoPlay`, `interactive`. Commandes en `flex-wrap` : sur un écran étroit, la frise passe à la ligne.         |
 | Toile                 | `components/ConstructionCanvas.svelte` : `hiddenElementIds` `:79`, `GeometryCanvas` `:313`, tracés partiels `:324`, points `:379`, droites `:505`, instruments `:569`                            | Les éléments en cours d'animation sont masqués dans `GeometryCanvas` et redessinés partiellement au-dessus (`core/render-helpers.ts`).                                                                                                                                                                                                        |
 | Éditeur               | `components/ScriptEditor.svelte`                                                                                                                                                                 | CodeMirror 6 chargé à la demande (repli `textarea`), validation `parseDsl` après 300 ms (`:97`), aperçu `ConstructionPlayer` placé à la fin.                                                                                                                                                                                                  |
 
@@ -303,14 +303,15 @@ copie distincte, utilisée par le tableau blanc (§ 9).
 
 ### Pages
 
-| Route                       | Accès (garde)                               | Contenu                                                                                                                                                                   |
-| --------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/constructions`            | tout compte connecté (layout `(protected)`) | « Publiées » pour tous ; « Brouillons », liens « nouvelle », « conversion », « modifier », « supprimer » : prof seul                                                      |
-| `/constructions/new`        | prof (`requireRoles`)                       | `ScriptEditor` ; `POST /api/constructions` en `format: 'dsl'`                                                                                                             |
-| `/constructions/[id]`       | publiée, ou prof (brouillon) ; sinon 404    | `ConstructionPlayer` si `dsl_script` ; sinon message « ancien format JSON qui n'est plus supporté »                                                                       |
-| `/constructions/[id]/edit`  | prof                                        | édition DSL ; pas d'édition pour le format JSON                                                                                                                           |
-| `/constructions/conversion` | prof (`requireRoles`)                       | XML InstrumenPoche → JSON (ancien module) **et** → DSL (`convertXmlToDsl`) ; enregistre le DSL s'il existe, sinon le JSON                                                 |
-| `/construction-demo`        | publique                                    | `ScriptEditor` interactif ; exemples XML lus dans `extern/instrumenpoche-main/devServer/fixtures` (absent → aucun) ; scripts sauvegardés via l'API (anonyme : 401 ignoré) |
+| Route                       | Accès (garde)                               | Contenu                                                                                                                                                                                                                                             |
+| --------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/constructions`            | tout compte connecté (layout `(protected)`) | « Publiées » pour tous ; « Brouillons », liens « essais », « nouvelle », « conversion », « modifier », « supprimer » : prof seul                                                                                                                    |
+| `/constructions/new`        | prof (`requireRoles`)                       | `ScriptEditor` ; `POST /api/constructions` en `format: 'dsl'`                                                                                                                                                                                       |
+| `/constructions/[id]`       | publiée, ou prof (brouillon) ; sinon 404    | `ConstructionPlayer` si `dsl_script` ; sinon message « ancien format JSON qui n'est plus supporté »                                                                                                                                                 |
+| `/constructions/[id]/edit`  | prof                                        | édition DSL ; pas d'édition pour le format JSON                                                                                                                                                                                                     |
+| `/constructions/conversion` | prof (`requireRoles`)                       | XML InstrumenPoche → JSON (ancien module) **et** → DSL (`convertXmlToDsl`) ; enregistre le DSL s'il existe, sinon le JSON                                                                                                                           |
+| `/constructions/essais`     | prof (`requireRoles`)                       | `ScriptEditor` interactif ; exemples XML lus dans `extern/instrumenpoche-main/devServer/fixtures` (absent → aucun) ; scripts d'essai enregistrés via l'API. Ex-`/construction-demo`, publique jusqu'au 2026-10-25, redirigée en 308 (`MOVED_PAGES`) |
+| `/demo/constructions`       | tous (vitrine)                              | 3 constructions écrites dans le code, `ConstructionPlayer` seul, sans base ni édition ([utilitaires-et-demos.md](../utilitaires-et-demos.md))                                                                                                       |
 
 Aucun lien `href="/constructions"` dans `src/` hors de ces routes : on y arrive par l'adresse.
 
@@ -330,8 +331,9 @@ Aucun lien `href="/constructions"` dans `src/` hors de ces routes : on y arrive 
 Une construction n'a pas d'auteur ; les colonnes rendues au navigateur sont `CONSTRUCTION_COLUMNS`.
 
 Qui écrit les constructions : `CONSTRUCTION_AUTHOR_ROLES` et `canAuthorConstructions`
-(`src/lib/server/constructions-access.ts`), **prof seul** ; l'admin les lit comme un élève. Les scripts de démo
-gardent prof et admin (`DEMO_SCRIPT_AUTHOR_ROLES`, `canAuthorDemoScripts`, décision du 2026-10-23). La base tient
+(`src/lib/server/constructions-access.ts`), **prof seul** ; l'admin les lit comme un élève. Les scripts d'essai
+(`construction_demo_scripts`) : la page `/constructions/essais` est au prof seul, l'API garde encore prof et admin
+(`DEMO_SCRIPT_AUTHOR_ROLES`, décision du 2026-10-23 ; retrait de l'admin prévu à part, chantier demo-debug). La base tient
 les mêmes règles (migrations `20261024120100`, `20261023150000`) : les gardes de l'API et des pages ne font que
 répondre 403 / 404 et masquer les boutons.
 
@@ -377,8 +379,8 @@ Avertissements pour : tracé à main levée (`:324`), compas `lever/coucher/reto
 
 Ailleurs : `geometry-core/dsl/__tests__/directives.test.ts` (21), `parser-decorators.test.ts` (22),
 `stepper.test.ts` (19) ; `components/geometry/__tests__/GeometryCanvas.theme.svelte.test.ts`
-(instruments en traits noirs, 2) ; `routes/(public)/construction-demo/__tests__/page.server.test.ts`
-(1) ; `tests/integration/lectures-ouvertes-fermees.test.ts` (lecture des constructions publiques).
+(instruments en traits noirs, 2) ; `routes/(protected)/constructions/essais/__tests__/page.server.test.ts`
+(prof seul, sans exemples XML, 4) ; `routes/(public)/demo/constructions/__tests__/` (les 3 constructions de la vitrine jouées jusqu'au bout, page) ; `tests/integration/lectures-ouvertes-fermees.test.ts` (lecture des constructions publiques).
 Composant : `components/__tests__/ConstructionPlayer-consignes.svelte.test.ts` (consignes de
 l'auteur et des sous-étapes, 5, `pnpm test:client`) et
 `ConstructionPlayer-double-perpendiculaire.svelte.test.ts` (les deux voies jouées jusqu'au bout,
