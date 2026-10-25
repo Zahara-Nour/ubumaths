@@ -481,18 +481,25 @@
 	}
 
 	/**
+	 * Le LaTeX de la réponse montrée : aussi posé en `data-latex`, que lisent
+	 * les tests de navigateur (`e2e/verifs/`).
+	 */
+	function shownLatex(entry: Entry): string | undefined {
+		if (entry.failed) return undefined;
+		// Le bouton de la ligne a basculé : on montre l'autre écriture
+		return entry.alternative !== undefined && toggled.includes(entry.id)
+			? entry.alternative.latex
+			: entry.latex;
+	}
+
+	/**
 	 * Le rendu mathématique d'une ligne, ou `null` s'il n'y en a pas de sûr.
 	 *
 	 * Le repli est le TEXTE, échappé par Svelte : si la conversion échoue, on
 	 * n'affiche pas du markup à moitié construit.
 	 */
 	function markupOf(entry: Entry): string | null {
-		if (entry.failed) return null;
-		// Le bouton de la ligne a basculé : on montre l'autre écriture
-		const latex =
-			entry.alternative !== undefined && toggled.includes(entry.id)
-				? entry.alternative.latex
-				: entry.latex;
+		const latex = shownLatex(entry);
 		if (latex === undefined) return null;
 		try {
 			return convertLatexToMarkup(latex, { defaultMode: 'inline-math' });
@@ -599,7 +606,7 @@
 					<span class="fleche" aria-hidden="true">--&gt;</span>
 					{#if markup !== null}
 						<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-						<span class="math">{@html markup}</span>
+						<span class="math" data-latex={shownLatex(entry)}>{@html markup}</span>
 					{:else if entry.formulas}
 						<!-- Refus de `.réciproque` : ses formules `$…$` composées -->
 						<span class="texte"><FormulaText text={entry.text} /></span>
