@@ -119,6 +119,17 @@
 		});
 	});
 
+	/**
+	 * « -> » seul dans son nœud de texte (ligne qui finit par une formule : l'espace
+	 * est dans un autre nœud) : marqueur s'il termine sa ligne, flèche sinon
+	 */
+	function isTrailingMarker(node: Text, parent: HTMLElement): boolean {
+		if (node.textContent?.trim() !== '->') return false;
+		const line = parent.closest('li, p, h1, h2, h3, h4, h5, h6') ?? parent;
+		// Un élément de liste rend son texte dans un <p> : sa sous-liste n'est pas lue
+		return line.textContent?.trimEnd().endsWith('->') ?? false;
+	}
+
 	function processFragmentMarkers() {
 		if (!slideElement) return;
 
@@ -129,11 +140,10 @@
 
 		let node: Text | null;
 		while ((node = walker.nextNode() as Text | null)) {
-			if (node.textContent?.includes(' ->')) {
-				const parent = node.parentElement;
-				if (parent) {
-					nodesToProcess.push({ textNode: node, parent });
-				}
+			const parent = node.parentElement;
+			if (!parent) continue;
+			if (node.textContent?.includes(' ->') || isTrailingMarker(node, parent)) {
+				nodesToProcess.push({ textNode: node, parent });
 			}
 		}
 

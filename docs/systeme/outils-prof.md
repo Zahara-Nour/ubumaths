@@ -137,6 +137,9 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
   (`fullscreen: false`, `minScale: 0.5`) ; `TransitionsDeck.svelte`, une diapositive par
   transition. Pas de `+layout@` : il sauterait le `+layout.server.ts` de `/dev`, donc la garde en
   navigation côté client.
+- `/demo/diaporama` (`src/routes/(public)/demo/diaporama/`, vitrine publique, PR 6i-c du chantier
+  demo-debug) — 13 diapositives dans un cadre : voir
+  [utilitaires-et-demos.md](utilitaires-et-demos.md).
 
 **Annotation des diapositives.** `AnnotatableSlide` (couche de dessin sur n'importe quelle
 diapositive) et `WhiteboardSlide` (une page du tableau blanc en diapositive, annotable) sont les
@@ -176,6 +179,11 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
   deck si le dernier focus était dans la barre et qu'il n'est allé nulle part ailleurs (`<body>`) :
   le clavier pilote toujours le diaporama, et un champ focalisé hors de la barre garde son focus
   (`returnFocusOnRemove`, testé par `Deck.annotation.svelte.test.ts`).
+- **Marqueur de fragment d'une `UbuMarkSlide`** : une ligne (paragraphe, élément de liste, titre)
+  terminée par ` ->` devient un fragment, le marqueur disparaît. Une ligne qui finit par une
+  formule rend `->` dans un nœud de texte à part, sans espace devant : reconnu aussi, à condition
+  qu'il termine la ligne (une flèche au milieu reste une flèche). Testé par
+  `UbuMarkSlide.fragments.svelte.test.ts`.
 - Pas de persistance : la position vit dans le store et l'URL.
 
 ### Tests
@@ -185,6 +193,7 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
 `src/lib/slides/core/__tests__/Deck.annotation.svelte.test.ts`,
 `src/lib/slides/core/__tests__/UbuMarkSlide.couleur.svelte.test.ts`,
 `src/lib/slides/core/__tests__/UbuMarkSlide.theme.svelte.test.ts`,
+`src/lib/slides/core/__tests__/UbuMarkSlide.fragments.svelte.test.ts`,
 `src/lib/slides/core/__tests__/slide-theme.test.ts`,
 `src/lib/slides/core/__tests__/Deck.fleches.svelte.test.ts`,
 `src/lib/slides/actions/__tests__/inputFilter.svelte.test.ts`.

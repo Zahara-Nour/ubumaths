@@ -30,6 +30,9 @@ couvre:
   - 'src/routes/(public)/demo/questions/SpacedReviewDemo.svelte'
   - 'src/routes/(public)/demo/questions/questions.ts'
   - 'src/routes/(public)/demo/editeur/+page.svelte'
+  - 'src/routes/(public)/demo/diaporama/+page.svelte'
+  - 'src/routes/(public)/demo/diaporama/ChronoBar.svelte'
+  - 'src/routes/(public)/demo/diaporama/diaporama.ts'
   - src/lib/components/structure/structure-lexicon.svelte.ts
   - 'src/routes/(protected)/dev/saisie-naturelle/*.svelte'
   - 'src/routes/(protected)/dev/polices/+page.svelte'
@@ -133,7 +136,7 @@ Les anciennes adresses sont redirigées en 308 par `redirectHandle` (table `MOVE
 [auth.md](auth.md#la-chaîne-de-handles)), sous-pages comprises ; une ancienne adresse publique mène
 donc le visiteur à la connexion. `/test-font` ne l'est qu'à l'adresse exacte, ses images restant
 sous `static/test-font/`. Les pages vitrine (`/demo/…`) arrivent une par une (phase 6 du
-chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d), `/demo/corriges` (PR 6e), `/demo/geometrie` (PR 6f), `/demo/questions` (PR 6g), `/demo/editeur` (PR 6h). Elles ne sont reliées de nulle part avant l'accueil de la
+chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d), `/demo/corriges` (PR 6e), `/demo/geometrie` (PR 6f), `/demo/questions` (PR 6g), `/demo/editeur` (PR 6h), `/demo/diaporama` (PR 6i-c). Elles ne sont reliées de nulle part avant l'accueil de la
 vitrine (phase 7).
 
 Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` ; `/dev` est
@@ -161,6 +164,7 @@ protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo
 | `/demo/geometrie`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 10 figures manipulables (collège, lycée, pour le plaisir), script replié, réduites à la largeur de l'écran                                                 | Vitrine, non liée     |
 | `/demo/questions`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : une série de 4 questions sous ses 5 formes en onglets, révisions espacées simulées, rien d'enregistré                                                      | Vitrine, non liée     |
 | `/demo/editeur`               | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : une phrase écrite dans l'éditeur, vue dans 3 usages (message, cahier de texte, énoncé), rien d'enregistré                                                  | Vitrine, non liée     |
+| `/demo/diaporama`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 13 diapositives (navigation, fragments, formules, Python, cercle trigo, figure, minuteur, annotation, tableau blanc)                                       | Vitrine, non liée     |
 | `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable     |
 
 Précisions :
@@ -238,6 +242,17 @@ Précisions :
   du cahier est calculé après `onMount` : l'hydratation garde le `{@html}` du serveur sans le
   corriger. Les formules de la carte « cahier » sortent vides (écart de
   [editeur-riche.md](editeur-riche.md)). Rien n'est envoyé ; `noindex` jusqu'à la phase 7.
+- **`/demo/diaporama`** (vitrine, PR 6i-c) : un `Deck` de 13 diapositives dans un cadre (bouton
+  ou F pour le plein écran, `hash: false`) : comment avancer, pile verticale, fragments,
+  transitions, $(x+1)^2$ développé tout seul (`autoSlide` de 2 s et fragments `->`), formules
+  ubumark, bloc Python coloré avec « Ouvrir dans Python » (`pythonPageOf`), cercle trigo, droite
+  d'Euler de `/demo/geometrie` en `GeometryCanvas` manipulable, minuteur (deux questions de
+  `/demo/questions`, 10 s chacune, barre `ChronoBar` lue dans le contexte du Deck, puis la
+  correction), `AnnotatableSlide`, `WhiteboardSlide`, liens vers `/demo` et `/atelier`. Contenu
+  dans `diaporama.ts`. Dans `<main>`, titres, paragraphes et listes suivent `--font-scale`
+  (`app.css`) : la page le règle selon la largeur du cadre (requêtes de conteneur), cellules de
+  tableau et code compris. Le banc d'essai complet reste `/dev/diaporama` ;
+  `noindex` jusqu'à la phase 7.
 - **`/dev/polices`** (ex-`/test-font`) : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles
