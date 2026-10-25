@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot (b) en phase 0._
+_Mis à jour le 2026-10-25, lot (b) codé, en revue._
 
-- **État** : lot (a) MERGÉ (#1784), pas encore en prod. Lot (b) : phase 0 écrite (§ 6), **à valider par David**.
-- **Prochaine action** : après validation, tests de non-régression d'abord, puis `canonicalForm` + `polynomialCoefficients` dans `normal/`, code mort retiré.
-- **En attente de David** : Q6 (nom), Q7 (coefficients), Q8 (code mort) du § 6 ; à lui montrer aussi : `√x√x → (√x)²`, ordre d'une primitive (`… − 2 sin x + x²/2`), mineurs du § 4.
-- **Pièges connus** : banc des modèles AVEUGLE pour `developper` ; `nodesEqual` ignore le style du × ; `check:incremental` exit 2 = verrou d'une autre session, attendre.
+- **État** : lot (a) MERGÉ (#1784), pas encore en prod. Lot (b) codé (§ 7) : suite serveur verte, revue `code-reviewer` (opus) en cours, PR pas encore ouverte.
+- **Prochaine action** : traiter la revue, `types:cliquet`, PR, CI, merge.
+- **En attente de David** : écart voulu à valider après coup : c du quadratique réduit (§ 7) ; à lui montrer : `√x√x → (√x)²`, ordre d'une primitive, mineurs du § 4.
+- **Pièges connus** : `check:incremental` / `types:cliquet` exit 2 = verrou d'une autre session, attendre ; `extractQuarticCoefficients` sans garde « coefficient sans x » (laissé, points ouverts du README mathAST).
 - **Worktree / branche** : `ubumaths-wt-normalize-usages`, `refactor/normalize-usages-noms`.
 
 ## Contexte
@@ -105,3 +105,13 @@ Comportements : **nominal** — mêmes réponses et mêmes étapes partout (suit
 - **Q6 — nom.** Reco : `canonicalForm(node)` dans `normal/` (ce que c'est : la forme canonique de `normalize`, réécrite en arbre ; vaut pour les expressions avec lettres, pas seulement les valeurs, d'où pas `exactForm`), plus `exactRational(node): Rational | null` pour les deux copies rationnelles. `canon` de `_helpers` disparaît (ses ~40 appels passent à `canonicalForm`). `normalizeSafe` reste local (un seul appelant), appuyé sur `canonicalForm`.
 - **Q7 — coefficients.** Reco : `polynomialCoefficients(expr, x, degree)` dans `normal/` (tableau indexé par le degré, `null` si un terme dépasse), qui fait la forme canonique puis le tri par degré ; les trois `extract*Coefficients` deviennent des enveloppes d'une ligne (leurs 28 appels ne bougent pas), les 4 lectures l'appellent directement.
 - **Q8 — code mort.** Reco : supprimer `distributeBinomialProduct` et `algebraicExpandingRules` dans cette PR.
+
+## 7. Lot (b) codé (2026-10-25, David : « ok pour tout » sur Q6-Q8)
+
+- `normal/canonical-form.ts` : `canonicalForm`, `exactRational`, `polynomialCoefficients`, `coefficientsByDegree` (lecture sur l'écriture reçue), `termDegree`, `coefficientOfDegree`.
+- Copies remplacées : `simplified` ×3, `canon` ×2 (celui de `_helpers` supprimé, appels renommés), `normalForm`, `simplify` (matrices), `exactValue` / `exactRationalOf` → `exactRational`, `normalizeSafe` appuyé sur `canonicalForm`. Le lambda `canonicalExponent` de `normalize.ts` reste (dans `normalize` lui-même).
+- Extracteurs linéaire, quadratique, cubique = enveloppes de `coefficientsByDegree` ; quartique : mêmes `termDegree` / `coefficientOfDegree` (sa garde manquante laissée). Les 3 relectures après développement passent par `canonicalForm` ; `positiveSquareRoot` par `polynomialCoefficients`.
+- **Écart voulu** (capture d'avant, 66 entrées × 3 extracteurs : un seul) : la constante c du quadratique est réduite comme a et b sur une écriture non réduite (`3x+2-5x+7` : c = 9, avant `2 + 7`). Les appelants pédagogiques passent la forme canonique : invisible pour eux.
+- Code mort retiré : `distributeBinomialProduct` (+ test, + barrel `pedagogical-rules/index.ts`), `algebraicExpandingRules` (+ 3 règles). Doc `pattern-matching.md` remise à jour (elle décrivait encore `developper` d'avant #1784).
+- `denormalize(normalize(` en ligne : 95 → 75 (internes, voulus).
+- Mesures : suite serveur `src/lib` 59 067 verts ; `check:incremental` 0 ; `lint:fast` propre ; garde doc OK.
