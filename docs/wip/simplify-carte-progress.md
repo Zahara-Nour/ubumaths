@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1760 (lot 6a)._
+_Mis à jour le 2026-10-25, après #1762 (lot 6b)._
 
-- **État** : lot 6a mergé (#1760) : évaluateur flottant unique des limites, `sin²`/`cos⁻¹`/`∛` justes, aucun autre résultat changé (banc) ; écart π/e noté (doc mathAST, Points ouverts). Pas de vérification manuelle : aucun résultat visible ne change. Code pas en prod.
+- **État** : lot 6b mergé (#1762) : `computeNumericValue` dans `eval/numeric-value.ts` (+ `computeNumericValueOrInfinity`), 17 fonctions locales et 11 blocs inline remplacés, aucun résultat changé (suite serveur ; banc aveugle). Pas de vérification manuelle. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → 6a ✓ → **6b enveloppes** → 7 renommages.
-- **Prochaine action** : 6b (§ 95) : `computeNumericValue` → `eval/numeric-value.ts` (réexport), remplace les ~16 fonctions A et les blocs A≈ ; variante ±∞ pour `inequality/index.ts:251` et `reciprocal/image.ts:55` ; B/L/X inchangés. Preuve : suite serveur + banc 1 008 modèles × 8. Revue Sonnet. Branche neuve depuis `origin/main`.
+- **Ordre des lots** : … → 6a ✓ → 6b ✓ → **7 renommages** (dernier lot).
+- **Prochaine action** : lot 7, phase 0 : inventaire des renommages (dont `computeNumericValue`, relais `solve/numeric-value.ts` à supprimer, `tidyWithoutReordering` Q10 § 6), proposition à David, **attendre sa validation**. Branche neuve depuis `origin/main`.
 - **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93).
-- **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; `algebraic.ts:663` (`evaluateAtPoint`, `number(String(value))`) rend `null` pour tout x < 0 (bug latent, à traiter en 6b avec test rouge) ; banc d'écart = ancien et nouveau calculés à chaque appel, écarts en JSONL ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte` ; `feat/simplify-carte-6` mergée, à supprimer ; 6b sur une branche neuve.
+- **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; banc des modèles : script non gardé, réécrit au § 99 (`generateInstance`, graines 1..8, `generatedAt` à retirer), aveugle hors questions ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, détaché sur `origin/main` ; branches 6/6b supprimées.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1190,3 +1190,7 @@ CI verte (16 checks). Suite serveur complète verte après rebase (deux rouges d
 - **Bug latent `algebraic.ts:663` (x < 0 → `null`) : non reproduit.** Le code construit `{ type: 'number', value: '-2' }` sans passer par `number()`, et `evaluateNodeToApproximatedNumber` le lit (−2, −0,01 sondés sur `x²+1`, `1/x`, `3x+2`, `√(x+5)`). Rien à corriger.
 - Mesures : suite serveur complète verte (61 402) ; `check:incremental` 0 ; cliquet tenu ; test `eval/__tests__/numeric-value.test.ts` (4). **Banc 1 102 modèles × 8 tirages (8 816) : 0 différence, mais aveugle** — témoin (`computeNumericValue` × 1,001) : 0 différence aussi, les modèles de la prod n'empruntent pas ces chemins. Script du banc réécrit (le précédent n'était pas gardé) : `generateInstance(modèle, graine 1..8)`, JSON entier, `generatedAt` retiré.
 - Doc : invariant 11 de `docs/systeme/mathast/README.md`.
+
+## 100. Lot 6b mergé (#1762, 2026-10-25)
+
+CI verte (16 checks). Revue `code-reviewer` Sonnet : aucun bloquant ; mineur corrigé (`dedupe` garde ±∞ via `computeNumericValueOrInfinity`). Relais `solve/numeric-value.ts` à supprimer au lot 7.
