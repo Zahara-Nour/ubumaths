@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 2b commencée._
+_Mis à jour le 2026-10-25, après #1745._
 
-- **État** : lot 1 COMPLET sur `main`, pas en prod (#1716, #1726, #1738). Lot 2 : PR 2a #1740 mergée (affichage) ; **PR 2b en cours** (saisie), comportements validés (§ 11).
-- **Prochaine action** : tests rouges (`operation-answer`, `Operation.svelte`, générateur) puis code.
-- **En attente de David** : vérifications #1716, #1726, #1738, #1740 (`verifications-manuelles.md`), avant le prochain `deploy:prod`. Précision Q1 (zéros de tête non comptés, § 10) à confirmer.
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — republiée le 2026-10-25 avec la multiplication (affichage, 8 cas, erreurs).
-- **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas ; `operation-answer.ts` suppose une virgule de grille fixe (à revoir en PR 2b).
-- **Worktree / branche** : `ubumaths-wt-operations-posees` · `feat/operations-posees-saisie-multiplication`.
+- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740 affichage, #1745 saisie), sur `main`, pas en prod.
+- **Prochaine action** : selon les réponses de David aux deux questions ci-dessous, petite PR de suite ; puis lot 3 (division posée), phase 0 à écrire.
+- **En attente de David** : (1) retour sur une question fausse : le diagnostic est recalculé depuis la valeur simplifiée (`1,00` mal placée → `_ _ 1`, « virgule oubliée ») — reco : accepter (n° 14) ; (2) `0,05 × 0,3` saisi `_ _ , _ 1 5` (0 des dixièmes non écrit) lu `0,015` juste — reco : incomplète. Vérifications #1716, #1726, #1738, #1740, #1745 avant `deploy:prod`. Précision Q1 (§ 10).
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie de la multiplication).
+- **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
+- **Worktree / branche** : `ubumaths-wt-operations-posees` gardé tant que le serveur de test (5179) sert à David ; branche mergée.
 
 ---
 
@@ -336,6 +336,14 @@ multiplication seulement.
 19. PDF inchangé.
 
 ## Journal
+
+### 2026-10-25 — #1745 PR 2b (multiplication, saisie)
+
+`operation-answer.ts` : `comma` en paramètre (défaut `gridComma`, lot 1 inchangé), `wrongComma`,
+`commaFromAnswer` ; `Operation.svelte` : virgule de l'élève, produits partiels et retenues de
+l'addition saisissables, flèches ↑/↓, noms neutres ; refus du générateur retiré. Revue Opus : rien
+de bloquant ; corrigé : 0 implicite des unités surligné à tort (lot 1 aussi), ordre des constantes ;
+deux questions posées à David (bloc « Reprendre ici »).
 
 ### 2026-10-25 — #1740 PR 2a (multiplication, affichage)
 
