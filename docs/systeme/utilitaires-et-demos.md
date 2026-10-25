@@ -27,6 +27,9 @@ couvre:
   - 'src/routes/(public)/demo/geometrie/+page.svelte'
   - 'src/routes/(public)/demo/geometrie/DemoFigureCard.svelte'
   - 'src/routes/(public)/demo/geometrie/figures.ts'
+  - 'src/routes/(public)/demo/constructions/+page.svelte'
+  - 'src/routes/(public)/demo/constructions/DemoConstructionCard.svelte'
+  - 'src/routes/(public)/demo/constructions/constructions.ts'
   - 'src/routes/(public)/demo/questions/+page.svelte'
   - 'src/routes/(public)/demo/questions/SpacedReviewDemo.svelte'
   - 'src/routes/(public)/demo/questions/questions.ts'
@@ -137,7 +140,7 @@ Les anciennes adresses sont redirigées en 308 par `redirectHandle` (table `MOVE
 [auth.md](auth.md#la-chaîne-de-handles)), sous-pages comprises ; une ancienne adresse publique mène
 donc le visiteur à la connexion. `/test-font` ne l'est qu'à l'adresse exacte, ses images restant
 sous `static/test-font/`. Les pages vitrine (`/demo/…`) arrivent une par une (phase 6 du
-chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d), `/demo/corriges` (PR 6e), `/demo/geometrie` (PR 6f), `/demo/questions` (PR 6g), `/demo/editeur` (PR 6h), `/demo/diaporama` (PR 6i-c).
+chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d), `/demo/corriges` (PR 6e), `/demo/geometrie` (PR 6f), `/demo/questions` (PR 6g), `/demo/editeur` (PR 6h), `/demo/diaporama` (PR 6i-c) ; `/demo/constructions` après coup (phase 8).
 
 **La vitrine est ouverte** (phase 7) : une seule liste, `DEMO_PAGES` de `src/lib/seo/demo-pages.ts`,
 nourrit les cartes de l'accueil `/demo`, le sitemap (`/demo` en 0,6, les vitrines en 0,5) et la
@@ -168,6 +171,7 @@ sont de vraies pages.
 | `/demo/lexique`               | tous                                       | `/demo`, sitemap                                       | Vitrine : mots du dictionnaire soulignés dans une question et 5 phrases, sélecteur de niveau                                                                         | Vitrine               |
 | `/demo/corriges`              | tous                                       | `/demo`, sitemap                                       | Vitrine : une page de Corrigé de fiche (écriture manuscrite) en image fixe, `static/demo/corriges/`                                                                  | Vitrine               |
 | `/demo/geometrie`             | tous                                       | `/demo`, sitemap                                       | Vitrine : 10 figures manipulables (collège, lycée, pour le plaisir), script replié, réduites à la largeur de l'écran                                                 | Vitrine               |
+| `/demo/constructions`         | tous                                       | `/demo`, sitemap                                       | Vitrine : 3 constructions à la règle et au compas, lecteur seul ouvert sur la figure finie, script replié                                                            | Vitrine               |
 | `/demo/questions`             | tous                                       | `/demo`, sitemap                                       | Vitrine : une série de 4 questions sous ses 5 formes en onglets, révisions espacées simulées, rien d'enregistré                                                      | Vitrine               |
 | `/demo/editeur`               | tous                                       | `/demo`, sitemap                                       | Vitrine : une phrase écrite dans l'éditeur, vue dans 3 usages (message, cahier de texte, énoncé), rien d'enregistré                                                  | Vitrine               |
 | `/demo/diaporama`             | tous                                       | `/demo`, sitemap                                       | Vitrine : 13 diapositives (navigation, fragments, formules, Python, cercle trigo, figure, minuteur, annotation, tableau blanc)                                       | Vitrine               |
@@ -232,6 +236,15 @@ Précisions :
   chaque figure. Textes rendus par le serveur, figures montées dans le navigateur
   (`DemoFigureCard.svelte`) et réduites à la largeur disponible, l'échelle suivant (la toile de
   `GeometryCanvas` a une largeur fixe). `noindex` jusqu'à la phase 7.
+- **`/demo/constructions`** (vitrine, phase 8) : 3 constructions (parallélogramme par ses
+  diagonales, partage d'un segment en trois, symétrique d'un point au compas), titre, texte et
+  script replié sous « Voir le script ». Scripts dans `constructions.ts`, recopiés des réécritures
+  de `scripts/constructions-prod/contenu.ts` : la page ne lit pas la base. Un test joue chaque
+  construction jusqu'au bout. `ConstructionPlayer` sans grille, monté dans le navigateur
+  (`DemoConstructionCard.svelte`), ouvert sur la figure finie (`seekToEnd` ; « Jouer » repart du
+  début) ; seule la toile se réduit à la largeur disponible (`zoom`), les boutons gardent leur
+  taille. L'éditeur reste au prof, sur `/constructions/essais`
+  ([constructions.md](geometrie/constructions.md)).
 - **`/demo/questions`** (vitrine, PR 6g) : la même série de 4 questions (écrites dans
   `questions.ts`, sans base) sous ses cinq formes, en onglets, avec une phrase « qui, quand » par
   forme : En classe, Entraînement, Flash-cards et Course aux nombres sont les vrais composants
