@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1779, la relecture B3 et la publication._
+_Mis à jour le 2026-10-25, après la publication (43/62) ; PR des formes et niveaux en cours._
 
 - **État** : A1 à H, B1, B2, **B3** relus et OK (B3 : 7/7 « ok » sur la page à cocher, 2026-10-25). **Lot B3** (§ 4 terdecies) : 7 brouillons en prod : `12482155` CP-049, `b556f617` 049, `7e7e2968` 050, `3e9a610e` 051, `8e207417` 052, `74d6b4f3` 052, `5592a129` 040. #1777 mergée ; accès tranché par David (personne, #1779) ; migration `20261026160000` jouée et vérifiée en prod (7 modèles sur leur sous-notion, 1 tag chacun, toujours en brouillon). Page à cocher B3 : https://claude.ai/artifact/45anoM4BzonDJuUC2Tw13D (collection `verdicts`), générée par `page-b3.mts` (scratchpad, gabarit = page B2).
 - **Publication** (go de David) : **43/62 publiés** ; 19 refusés, tous pour « même catégorie » (même place dans le classement, même niveau 1) : H (2), B1 tableau à double entrée (2), B2 Propriétés (5), Positions (2), Comparaison et mesure (2), B3 Solides (6).
-- **Prochaine action** : donner aux 19 des niveaux 1, 2, 3… dans leur sous-notion (ordre à valider par David), puis les publier ; ensuite : case « figure » (CP-059, chantier geometrie-validation) ou 058 à réexaminer.
+- **Prochaine action** : PR `feat/questions-formes` (migration `20261026170000` : sous-notion « reconnaître et nommer des formes » sous Figures planes, CP-054/055 et leurs 2 modèles déplacés, niveaux des 19 refusés) → CI, revue, merge, `db:migrate`, puis publier les 19 ; ensuite : case « figure » (CP-059, chantier geometrie-validation) ou 058 à réexaminer.
 - **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 058 à réexaminer.
-- **En attente de David** : ordre des niveaux des 19 refusés ; vérification manuelle #1702.
+- **En attente de David** : rien sur la PR (accès tranché : personne ; option A, CP-057 reste sur « propriétés », niveaux validés) ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (la bonne réponse = une variable) ; **virgule décimale = figure cassée** (coordonnées tirées : chaînes de `{{if:…}}` sur des valeurs écrites) ; **points et segments numérotés, pas lettrés** (les choix du QCM portent A, B, C) ; texte sur fond coloré illisible ; jamais de variable `e` ; **un seul modèle publié par place dans le classement et par niveau** : numéroter les niveaux dès l'écriture.
-- **Worktree / branche** : aucun (retiré après #1777).
+- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-formes`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -238,3 +238,4 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 2026-10-25 : question d'accès B3 tranchée par David (personne) ; #1779 (ligne « Accès » de la migration) mergée ; `db:migrate` joué depuis le dépôt principal, vérifié en prod : 7 modèles B3 sur leur sous-notion, 1 tag chacun, en brouillon.
 - 2026-10-25 : page à cocher B3 relue par David : 7/7 « ok », aucun commentaire.
 - 2026-10-25 : publication des 62 brouillons CP (go de David) par `publishTemplates` (script du scratchpad, même contrôle que l'admin) : 43 publiés, 19 refusés pour collision de catégorie (même sous-notion, niveau 1 partout), restés en brouillon.
+- 2026-10-25 : « Combien de formes dans le dessin ? » n'est pas une propriété (David) : option A, nouvelle sous-notion « reconnaître et nommer des formes » pour CP-054/055 ; question d'accès tranchée AVANT le SQL (personne) ; niveaux validés ; migration `20261026170000` et test, rouge (9/11) puis vert (11/11).
