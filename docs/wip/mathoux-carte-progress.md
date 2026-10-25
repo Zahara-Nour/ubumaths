@@ -5,17 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, avant la PR._
+_Mis à jour le 2026-10-25, après #1752._
 
-- **État** : carte réorganisée (avatar 80 px, stade dessous ; race au titre de section ; notion en
-  petites capitales grises ; partie droite centrée, nom en `text-lg`). Tests Chatterie verts, typecheck 0 erreur.
-- **Prochaine action** : PR ouverte, CI puis merge.
-- **En attente de David** : rien (rendu validé).
-- **Pièges en cours** : la couleur d'accent (`--color-primary`, orange clair) n'a pas été retenue pour la
-  notion : contraste trop faible en petit texte sur fond clair.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-carte` · `fix/mathoux-carte`.
+- **État** : carte réorganisée, mergée (#1752, CI verte), sur `main`, pas en prod. Rendu validé par David.
+- **Prochaine action** : aucune ; journal à archiver avec celui du lot D
+  ([mathoux-chapeaux-lunettes-progress.md](mathoux-chapeaux-lunettes-progress.md)) à la clôture.
+- **En attente de David** : la suite de la recette du lot D ; le `deploy:prod` quand il le voudra.
+- **Pièges en cours** : la couleur d'accent (`--color-primary`) écartée pour la notion : contraste trop
+  faible en petit texte sur fond clair.
+- **Worktree / branche** : supprimés après le merge.
 
 ## Journal
 
 - 2026-10-25 : demande de David pendant la recette du lot D (carte « mal organisée »).
 - 2026-10-25 : partie droite centrée, nom plus grand que la notion ; rendu validé par David.
+- 2026-10-25 : #1752 mergée.
