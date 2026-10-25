@@ -80,15 +80,58 @@ def grandeur(nombre, unite):
 
 
 # ---- 1. Écrire un nombre en lettres (CP-004, QCM) ----
-# Choix : 0 = le bon, 1 = chiffres inversés (n + 10 quand ils sont égaux : 11, 22, 33, 44),
-# 2 et 3 = les voisins n − 1 et n + 1.
+# Chaque leurre vise une erreur (relecture de David, 2026-10-25) :
+#   1 = orthographe d'un mot (« vint », « troi », « quatorse ») ;
+#   2 = forme : traits d'union oubliés (« vingt trois »), « et » oublié (« vingt-un »), accord
+#       fautif (« vingts »), ou chiffres lus un par un pour 11 à 16 (« un-quatre ») ;
+#   3 = numération : chiffres inversés (« trente-deux » pour 23), dizaines lues à la lettre
+#       (« deux-dix » pour 20, « dix-quatre » pour 14), ordre des mots inversé (« sept-dix »).
 
 NOMBRES_QCM = range(11, 51)
+FAUTES = {'deux': 'deu', 'trois': 'troi', 'quatre': 'quatres', 'cinq': 'cinque', 'six': 'sis',
+          'sept': 'set', 'huit': 'uit', 'neuf': 'neufe', 'onze': 'onse', 'douze': 'douse',
+          'treize': 'treise', 'quatorze': 'quatorse', 'quinze': 'kinze', 'seize': 'seise',
+          'vingt': 'vint', 'trente': 'trante', 'quarante': 'karante', 'cinquante': 'cinquente'}
 
 
-def inverse(n):
+def faute(n):
+    """Une faute d'orthographe : sur l'unité quand elle a une faute connue, sinon sur la dizaine."""
     d, u = divmod(n, 10)
-    return n + 10 if d == u else 10 * u + d
+    if n <= 16:
+        return FAUTES[lettres(n)]
+    dizaine = 'dix' if d == 1 else DIZAINES[d]
+    if u >= 2:
+        return lettres(n)[:-len(UNITES[u])] + FAUTES[UNITES[u]]
+    return FAUTES[dizaine] + lettres(n)[len(dizaine):] if d >= 2 else 'dis-' + UNITES[u]
+
+
+def forme(n):
+    d, u = divmod(n, 10)
+    if n <= 16:
+        return UNITES[d] + '-' + UNITES[u]
+    if u == 0:
+        return DIZAINES[d] + 's'
+    if u == 1:
+        return DIZAINES[d] + '-un'
+    return lettres(n).replace('-', ' ')
+
+
+def numeration(n):
+    d, u = divmod(n, 10)
+    if n <= 16:
+        return 'dix-' + UNITES[u]
+    if d == 1:
+        return UNITES[u] + '-dix'
+    if u == 0:
+        return UNITES[d] + '-dix'
+    if d == u:
+        return UNITES[d] + '-' + UNITES[u]
+    return lettres(10 * u + d)
+
+
+for _n in NOMBRES_QCM:
+    _choix = [lettres(_n), faute(_n), forme(_n), numeration(_n)]
+    assert len(set(_choix)) == 4, _choix
 
 
 def explication(n):
@@ -110,21 +153,30 @@ EN_LETTRES = qcm(
     'Comment écrit-on le nombre ${{n}}$ en lettres ?',
     variables(('n', '11..50')), [],
     [par('n', NOMBRES_QCM, lettres),
-     par('n', NOMBRES_QCM, lambda n: lettres(inverse(n))),
-     par('n', NOMBRES_QCM, lambda n: lettres(n - 1)),
-     par('n', NOMBRES_QCM, lambda n: lettres(n + 1))], '0',
+     par('n', NOMBRES_QCM, faute),
+     par('n', NOMBRES_QCM, forme),
+     par('n', NOMBRES_QCM, numeration)], '0',
     [par('n', NOMBRES_QCM, explication)])
 
 SPECS_EN_LETTRES = [
     spec('37 : trente-sept', 0, {'n': '37'}, 'correct', choix=0),
-    spec('Erreur : 37, chiffres inversés (soixante-treize)', 0, {'n': '37'},
-         'incorrect', choix=1),
-    spec('Erreur : 37, trente-six', 0, {'n': '37'}, 'incorrect', choix=2),
-    spec('Erreur : 37, trente-huit', 0, {'n': '37'}, 'incorrect', choix=3),
+    spec('Erreur : 37, orthographe (trente-set)', 0, {'n': '37'}, 'incorrect', choix=1),
+    spec('Erreur : 37, sans traits d\'union (trente sept)', 0, {'n': '37'}, 'incorrect',
+         choix=2),
+    spec('Erreur : 37, chiffres inversés (soixante-treize)', 0, {'n': '37'}, 'incorrect',
+         choix=3),
     spec('21 : vingt-et-un', 0, {'n': '21'}, 'correct', choix=0),
+    spec('Erreur : 21, « et » oublié (vingt-un)', 0, {'n': '21'}, 'incorrect', choix=2),
+    spec('Erreur : 21, orthographe (vint-et-un)', 0, {'n': '21'}, 'incorrect', choix=1),
     spec('borne : 11, onze', 0, {'n': '11'}, 'correct', choix=0),
+    spec('Erreur : 14, dizaine lue à la lettre (dix-quatre)', 0, {'n': '14'}, 'incorrect',
+         choix=3),
+    spec('Erreur : 17, mots inversés (sept-dix)', 0, {'n': '17'}, 'incorrect', choix=3),
     spec('borne : 50, cinquante', 0, {'n': '50'}, 'correct', choix=0),
-    spec('Erreur : 50, cinq (chiffres inversés)', 0, {'n': '50'}, 'incorrect', choix=1),
+    spec('Erreur : 20, accord (vingts)', 0, {'n': '20'}, 'incorrect', choix=2),
+    spec('Erreur : 20, deux-dix', 0, {'n': '20'}, 'incorrect', choix=3),
+    spec('Erreur : 33, chiffres lus un par un (trois-trois)', 0, {'n': '33'}, 'incorrect',
+         choix=3),
 ]
 
 # ---- 2. Lire un nombre écrit en lettres (CP-004, case) ----
@@ -545,8 +597,8 @@ SPECS_MOMENT = [
 MODELES = {
     '01-ecrire-en-lettres': modele(
         'Écrire un nombre en lettres (jusqu\'à cinquante)',
-        'Choisir l\'écriture en lettres d\'un nombre de 11 à 50 (leurres : chiffres inversés,'
-        ' voisins) ; orthographe rectifiée',
+        'Choisir l\'écriture en lettres d\'un nombre de 11 à 50 (leurres : orthographe, traits'
+        ' d\'union, « et », accord, chiffres inversés ou lus un par un) ; orthographe rectifiée',
         'Entiers', 'Apprivoiser', 'Ecriture', 13, 30, [EN_LETTRES], SPECS_EN_LETTRES),
     '02-lire-en-lettres': modele(
         'Lire un nombre écrit en lettres (jusqu\'à cinquante)',
