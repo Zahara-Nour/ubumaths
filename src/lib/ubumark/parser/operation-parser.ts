@@ -275,7 +275,8 @@ export function parseOperationContent(source: string): OperationNode {
 	} else if (read.operator === '+' && seen.has('méthode')) {
 		fail(seen.get('méthode')!, 'méthode: seulement pour une soustraction');
 	}
-	if (caseIndex !== undefined && cells === 'aucune') {
+	// `cells` est réaffectée dans le forEach : TS la croit encore à sa valeur initiale
+	if (caseIndex !== undefined && (cells as OperationCells) === 'aucune') {
 		fail(seen.get('case')!, 'case: sans objet avec cases: aucune');
 	}
 
