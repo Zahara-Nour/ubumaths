@@ -5,8 +5,9 @@
 _Mis à jour le 2026-10-25, lot A4 en cours (après #1720)._
 
 - **État** : lot A4 (sens des opérations), phase 0 validée (§ 4 quinquies) ; 5 modèles écrits en fichiers (`scripts/questions/cp-a4/`, générés par `docs/wip/questions/lot-a4.py`), specs vertes, rendu relu. A1 + A2 : 13 brouillons en prod, relus OK.
-- **Prochaine action** : go de David pour créer les 5 brouillons en prod (`create-questions --publier`), puis migration nœud + tag (dériver celle d'A2 ; les modèles vont sur la NOTION, sans sous-notion) + test d'intégration, PR.
-- **En attente de David** : go de création des brouillons A4 ; publication des 13 brouillons A1 + A2 ; vérification manuelle #1702.
+- **Brouillons A4 en prod** (créés le 2026-10-25, go de David, vérifiés : `draft`, CP, ni nœud ni tag) : `a59fba89` Addition ou soustraction ? (CP-014 + CP-077), `c342f32e` Les signes + et − (CP-015 + CP-078), `f7463b7d` Le signe = (CP-079), `6e712e78` fois : quel calcul ? (CP-017), `b873739e` fois : combien ? (CP-017).
+- **Prochaine action** : question d'accès à faire trancher par David, puis migration nœud + tag (dériver celle d'A2 ; les modèles vont sur la NOTION, sans sous-notion) + test d'intégration, PR.
+- **En attente de David** : question d'accès de la migration A4 ; publication des 13 brouillons A1 + A2 ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle est QCM OU à cases, jamais les deux (d'où 5 modèles et non 4) ; parler de branche / notion / sous-notion, jamais de « domaine » (colonnes `domain`/`subdomain` = anciennes, remplies pour le script seulement) ; accords au singulier (« 1 bille ») à prévoir ; nouveaux modèles = `scripts/create-questions.ts` puis migration ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point ou en dessous (trigger) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu (`question:specs --file … --apercu N`).
 - **Worktree / branche** : `../ubumaths-wt-questions`, `feat/questions-cp-a4`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -136,3 +137,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : A2, 7 brouillons créés en prod (`create-questions --publier`, go de David) ; question d'accès tranchée (personne ne gagne ni ne perd d'accès) ; migration nœud + tag et son test.
 - 2026-10-25 : #1720 mergée, `db:migrate`, vérifié en prod ; page à cocher A2 publiée, relue 7/7 OK par David.
 - 2026-10-25 : lot A4, phase 0 validée (§ 4 quinquies) ; 5 modèles écrits, specs vertes, rendu relu (accord « 1 bille » corrigé).
+- 2026-10-25 : A4, 5 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés.
