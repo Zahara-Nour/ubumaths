@@ -8,7 +8,8 @@ couvre:
 
 > **Mesuré le 2026-09-21** sur `main` à `006873aad`, remis à jour le 2026-10-10 (lettre `e`
 > = constante d'Euler) le 2026-10-11 (colonne `factoriser` : ordre du noyau, ADR 0024) et le 2026-10-23
-> (`reduire` et `auto` sans `normalize`, `simplify` sans factorisation : chantier simplify-carte § 33), et **pinné** par
+> (`reduire` et `auto` sans `normalize`, `simplify` sans factorisation : chantier simplify-carte § 33) et le 2026-10-25
+> (quotient `e^{2x}/e^x` réduit par `auto` et `reduire`, lot 5f-5), et **pinné** par
 > `src/lib/mathAST/__tests__/panel-simplifications.test.ts`. Si vous modifiez le
 > moteur, le test rougit : mettez les deux à jour **ensemble**, sinon ce
 > document pourrit en silence comme l'a fait le §1 de
@@ -119,12 +120,12 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 
 ## Exponentielle et logarithme
 
-| entrée                 | `simplify`                                     | `auto`                                         | `reduire`                                      | `developper`                                   | `factoriser`                                   |
-| ---------------------- | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- | ---------------------------------------------- |
-| `e^{x}`                | `\exponentialE^x`                              | `\exponentialE^x`                              | `\exponentialE^x`                              | `\exponentialE^x`                              | `\exponentialE^x`                              |
-| `\ln(e^{x})`           | `x`                                            | `x`                                            | `x`                                            | `x`                                            | `x`                                            |
-| `\frac{e^{2x}}{e^{x}}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` |
-| `e^{0}`                | `1`                                            | `1`                                            | `1`                                            | `1`                                            | `1`                                            |
+| entrée                 | `simplify`                                     | `auto`            | `reduire`         | `developper`                                   | `factoriser`                                   |
+| ---------------------- | ---------------------------------------------- | ----------------- | ----------------- | ---------------------------------------------- | ---------------------------------------------- |
+| `e^{x}`                | `\exponentialE^x`                              | `\exponentialE^x` | `\exponentialE^x` | `\exponentialE^x`                              | `\exponentialE^x`                              |
+| `\ln(e^{x})`           | `x`                                            | `x`               | `x`               | `x`                                            | `x`                                            |
+| `\frac{e^{2x}}{e^{x}}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\exponentialE^x` | `\exponentialE^x` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` |
+| `e^{0}`                | `1`                                            | `1`               | `1`               | `1`                                            | `1`                                            |
 
 ## Trigonométrie
 
@@ -189,9 +190,11 @@ travail, et le panel le rend visible.
    les parseurs la lisent comme la constante d'Euler : les cinq colonnes rendent
    `x`, et `ln(e)` vaut `1` (test `pedagogical-simplify/__tests__/ln-exp-lettre-e.test.ts`).
    Les sorties écrivent la constante `\exponentialE` (`toLatex(euler())`).
-4. ⚠️ Restent aussi : `simplify((e^x)^3)` garde `\left( e^x \right)^3`
-   (barrière de coût), et le **quotient** `e^{2x}/e^x` n'est réduit par aucune
-   colonne.
+4. ⚠️ Reste aussi : `simplify((e^x)^3)` garde `\left( e^x \right)^3`
+   (barrière de coût). ~~Le **quotient** `e^{2x}/e^x` n'est réduit par aucune
+   colonne~~ : `auto` et `reduire` le réduisent depuis le lot 5f-5 de
+   simplify-carte (Q48, règle `same-base-div`, base `e` ou rationnel positive) ;
+   `simplify`, `developper` et `factoriser` le gardent.
 
 ## Longueurs de segments (mode `capitalPairs: 'length'`)
 

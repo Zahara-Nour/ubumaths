@@ -140,9 +140,10 @@ describe('valeur lue en arbre', () => {
 			expect(evaluateQuantityValue('5^2')).toBe(25);
 		});
 
-		test('exposant décimal : illisible (tidy ne le réduit pas)', () => {
-			// Refus honnête : aucune saisie élève ni aucun attendu publié ne l'écrit
-			expect(evaluateQuantityValue('9^{0.5}')).toBeNull();
+		test('exposant décimal de dénominateur 2 : une racine carrée', () => {
+			// `tidy` l'écrit `√9 = 3` depuis le lot 5f-5 de simplify-carte (Q47) ;
+			// avant, la valeur était illisible
+			expect(evaluateQuantityValue('9^{0.5}')).toBe(3);
 		});
 	});
 
