@@ -1,6 +1,6 @@
 {
 	"title": "Addition ou soustraction ?",
-	"description": "Choisir le calcul : réunion, ajout, retrait, écart",
+	"description": "Choisir l'addition : réunion, ajout (un retrait en leurre)",
 	"grades": ["CP"],
 	"theme": "Entiers",
 	"domain": "Additionner",
@@ -98,36 +98,6 @@
 					"Il reste ${{eval:a-b}}$ bille{{if:a-b==1||s}} à Léo."
 				]
 			}
-		},
-		{
-			"statement": "Sami a ${{a}}$ images. Lina a ${{b}}$ images. Combien d'images Sami a-t-il de plus que Lina ?\n\nQuel calcul permet de trouver la réponse ?",
-			"variables": [
-				{
-					"name": "a",
-					"expression": "2..19"
-				},
-				{
-					"name": "b",
-					"expression": "2..17"
-				}
-			],
-			"conditions": ["a > b", "a + b <= 20"],
-			"choices": [
-				{
-					"content": "${{a}}+{{b}}$"
-				},
-				{
-					"content": "${{a}}-{{b}}$"
-				}
-			],
-			"correctChoiceIndex": ["1"],
-			"correction": {
-				"steps": [
-					"On cherche l'écart entre ${{a}}$ et ${{b}}$ : ce qu'il faut enlever à ${{a}}$ pour arriver à ${{b}}$. C'est une **soustraction**.",
-					"$${{a}}-{{b}}={{eval:a-b}}$$",
-					"Sami a ${{eval:a-b}}$ image{{if:a-b==1||s}} de plus que Lina."
-				]
-			}
 		}
 	],
 	"testSpecs": [
@@ -180,7 +150,7 @@
 			"selectedChoices": [1]
 		},
 		{
-			"description": "retrait : soustraction",
+			"description": "retrait (leurre) : soustraction",
 			"variationIndex": 2,
 			"variables": {
 				"a": "13",
@@ -192,32 +162,8 @@
 			"selectedChoices": [1]
 		},
 		{
-			"description": "Erreur : retrait, l'autre opération",
+			"description": "Erreur : retrait (leurre), l'autre opération",
 			"variationIndex": 2,
-			"variables": {
-				"a": "13",
-				"b": "5"
-			},
-			"expected": {
-				"status": "incorrect"
-			},
-			"selectedChoices": [0]
-		},
-		{
-			"description": "écart : soustraction",
-			"variationIndex": 3,
-			"variables": {
-				"a": "13",
-				"b": "5"
-			},
-			"expected": {
-				"status": "correct"
-			},
-			"selectedChoices": [1]
-		},
-		{
-			"description": "Erreur : écart, l'autre opération",
-			"variationIndex": 3,
 			"variables": {
 				"a": "13",
 				"b": "5"
@@ -238,18 +184,6 @@
 				"status": "correct"
 			},
 			"selectedChoices": [0]
-		},
-		{
-			"description": "borne : retrait 3 − 2",
-			"variationIndex": 2,
-			"variables": {
-				"a": "3",
-				"b": "2"
-			},
-			"expected": {
-				"status": "correct"
-			},
-			"selectedChoices": [1]
 		}
 	]
 }

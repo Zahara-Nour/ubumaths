@@ -1,4 +1,4 @@
-"""Écrit les 5 modèles du lot A4 (sens des opérations, CP) dans scripts/questions/cp-a4/."""
+"""Écrit les 7 modèles du lot A4 (sens des opérations, CP) dans scripts/questions/cp-a4/."""
 import json
 import sys
 
@@ -25,7 +25,9 @@ def modele(title, description, domain, level, delay, variations, specs):
             'status': 'draft', 'variations': variations, 'testSpecs': specs}
 
 
-# ---- 1. Addition ou soustraction ? (CP-014, CP-077) ----
+# ---- 1. Addition ou soustraction ? (CP-014), Soustraction ou addition ? (CP-077) ----
+# Un modèle porte au plus un point par programme (ADR 0020) : deux modèles, chacun avec une
+# situation de l'autre opération en leurre, pour que la bonne réponse ne soit pas toujours la même.
 
 PLUS_MOINS = [{'content': '${{a}}+{{b}}$'}, {'content': '${{a}}-{{b}}$'}]
 QUEL_CALCUL = '\n\nQuel calcul permet de trouver la réponse ?'
@@ -69,57 +71,71 @@ ECART = situation(
     'Sami a $R$ image§ de plus que Lina.')
 
 AB = {'a': '13', 'b': '5'}
-SPECS_1 = []
-for vi, nom, bonne in ((0, 'réunion', 0), (1, 'ajout', 0), (2, 'retrait', 1), (3, 'écart', 1)):
-    SPECS_1 += [spec(f'{nom} : {"addition" if bonne == 0 else "soustraction"}', vi, AB,
-                     'correct', choix=bonne),
-                spec(f'Erreur : {nom}, l\'autre opération', vi, AB, 'incorrect', choix=1 - bonne)]
-SPECS_1 += [spec('borne : réunion 18 + 2', 0, {'a': '18', 'b': '2'}, 'correct', choix=0),
-           spec('borne : retrait 3 − 2', 2, {'a': '3', 'b': '2'}, 'correct', choix=1)]
 
 
-# ---- 2. Les signes + et − (CP-015, CP-078) ----
+def specs_situations(situations):
+    specs = []
+    for vi, (nom, bonne) in enumerate(situations):
+        specs += [spec(f'{nom} : {"addition" if bonne == 0 else "soustraction"}', vi, AB,
+                       'correct', choix=bonne),
+                  spec(f'Erreur : {nom}, l\'autre opération', vi, AB, 'incorrect', choix=1 - bonne)]
+    return specs
 
-# s = 0 : signe +, s = 1 : signe −
+
+SPECS_1 = specs_situations([('réunion', 0), ('ajout', 0), ('retrait (leurre)', 1)]) + [
+    spec('borne : réunion 18 + 2', 0, {'a': '18', 'b': '2'}, 'correct', choix=0)]
+SPECS_1B = specs_situations([('retrait', 1), ('écart', 1), ('ajout (leurre)', 0)]) + [
+    spec('borne : retrait 3 − 2', 0, {'a': '3', 'b': '2'}, 'correct', choix=1)]
+
+
+# ---- 2. Les signes + et − (CP-015), Les signes − et + (CP-078) ----
+
+# s = 0 : signe +, s = 1 : signe −. Tiré par r de 0 à 2 : le signe du point sort deux fois sur
+# trois, l'autre une fois (leurre) — un point par modèle (ADR 0020)
 SIGNE = '{{if:s==0|+|-}}'
-SIGNES_VARIABLES = [{'name': 'a', 'expression': '2..9'},
-                    {'name': 'b', 'expression': '1..8'},
-                    {'name': 's', 'expression': '0..1'}]
+PLUTOT_PLUS = 'eval:floor(r/2)'
+PLUTOT_MOINS = 'eval:ceil(r/2)'
 SIGNES_CONDITIONS = ['a > b']
 SIGNE_ETAPE = ('{{if:s==0|Le signe $+$ se lit « plus » : on part de ${{a}}$ et on **ajoute** ${{b}}$.'
                '|Le signe $-$ se lit « moins » : on part de ${{a}}$ et on **enlève** ${{b}}$.}}')
 SIGNE_CALCUL = '$${{a}}' + SIGNE + '{{b}}={{if:s==0|{{eval:a+b}}|{{eval:a-b}}}}$$'
 
 
-def signes(statement, choices):
-    return {'statement': statement, 'variables': SIGNES_VARIABLES,
+def signes(statement, choices, tirage):
+    variables = [{'name': 'a', 'expression': '2..9'}, {'name': 'b', 'expression': '1..8'},
+                 {'name': 'r', 'expression': '0..2'}, {'name': 's', 'expression': tirage}]
+    return {'statement': statement, 'variables': variables,
             'conditions': SIGNES_CONDITIONS, 'choices': choices,
             'correctChoiceIndex': ['{{s}}'],
             'correction': {'steps': [SIGNE_ETAPE, SIGNE_CALCUL]}}
 
 
-LIRE = signes('Comment lit-on cette écriture ?\n\n$${{a}}' + SIGNE + '{{b}}$$',
-              [{'content': '« ${{a}}$ plus ${{b}}$ »'}, {'content': '« ${{a}}$ moins ${{b}}$ »'},
-               {'content': '« ${{a}}$ égale ${{b}}$ »'}])
-SENS = signes('Que veut dire cette écriture ?\n\n$${{a}}' + SIGNE + '{{b}}$$',
-              [{'content': 'On part de ${{a}}$ et on ajoute ${{b}}$.'},
-               {'content': 'On part de ${{a}}$ et on enlève ${{b}}$.'},
-               {'content': 'C\'est le nombre ${{eval:10*a+b}}$.'}])
-ECRIRE = signes('On part de ${{a}}$ et on {{if:s==0|ajoute|enlève}} ${{b}}$.'
-                ' Quelle écriture correspond ?',
-                [{'content': '${{a}}+{{b}}$'}, {'content': '${{a}}-{{b}}$'},
-                 {'content': '${{a}}={{b}}$'}])
+def variations_signes(tirage):
+    lire = signes('Comment lit-on cette écriture ?\n\n$${{a}}' + SIGNE + '{{b}}$$',
+                  [{'content': '« ${{a}}$ plus ${{b}}$ »'},
+                   {'content': '« ${{a}}$ moins ${{b}}$ »'},
+                   {'content': '« ${{a}}$ égale ${{b}}$ »'}], tirage)
+    sens = signes('Que veut dire cette écriture ?\n\n$${{a}}' + SIGNE + '{{b}}$$',
+                  [{'content': 'On part de ${{a}}$ et on ajoute ${{b}}$.'},
+                   {'content': 'On part de ${{a}}$ et on enlève ${{b}}$.'},
+                   {'content': 'C\'est le nombre ${{eval:10*a+b}}$.'}], tirage)
+    ecrire = signes('On part de ${{a}}$ et on {{if:s==0|ajoute|enlève}} ${{b}}$.'
+                    ' Quelle écriture correspond ?',
+                    [{'content': '${{a}}+{{b}}$'}, {'content': '${{a}}-{{b}}$'},
+                     {'content': '${{a}}={{b}}$'}], tirage)
+    return [lire, sens, ecrire]
 
+
+# r = 0 : signe + et r = 2 : signe −, quel que soit le modèle
+PLUS = {'a': '5', 'b': '3', 'r': '0'}
+MOINS = {'a': '8', 'b': '3', 'r': '2'}
 SPECS_2 = []
 for vi, nom in ((0, 'lire'), (1, 'sens'), (2, 'écrire')):
-    SPECS_2 += [spec(f'{nom} : signe +', vi, {'a': '5', 'b': '3', 's': '0'}, 'correct', choix=0),
-                spec(f'{nom} : signe −', vi, {'a': '8', 'b': '3', 's': '1'}, 'correct', choix=1),
-                spec(f'Erreur : {nom}, + pris pour −', vi, {'a': '5', 'b': '3', 's': '0'},
-                     'incorrect', choix=1),
-                spec(f'Erreur : {nom}, − pris pour +', vi, {'a': '8', 'b': '3', 's': '1'},
-                     'incorrect', choix=0),
-                spec(f'Erreur : {nom}, troisième choix', vi, {'a': '5', 'b': '3', 's': '0'},
-                     'incorrect', choix=2)]
+    SPECS_2 += [spec(f'{nom} : signe +', vi, PLUS, 'correct', choix=0),
+                spec(f'{nom} : signe −', vi, MOINS, 'correct', choix=1),
+                spec(f'Erreur : {nom}, + pris pour −', vi, PLUS, 'incorrect', choix=1),
+                spec(f'Erreur : {nom}, − pris pour +', vi, MOINS, 'incorrect', choix=0),
+                spec(f'Erreur : {nom}, troisième choix', vi, PLUS, 'incorrect', choix=2)]
 
 
 # ---- 3. Le signe = (CP-079) ----
@@ -254,11 +270,17 @@ SPECS_5 = [
 
 MODELES = {
     '01-addition-ou-soustraction': modele(
-        'Addition ou soustraction ?', 'Choisir le calcul : réunion, ajout, retrait, écart',
-        'Additionner', 1, 30, [REUNION, AJOUT, RETRAIT, ECART], SPECS_1),
+        'Addition ou soustraction ?', 'Choisir l\'addition : réunion, ajout (un retrait en leurre)',
+        'Additionner', 1, 30, [REUNION, AJOUT, RETRAIT], SPECS_1),
+    '01b-soustraction-ou-addition': modele(
+        'Soustraction ou addition ?', 'Choisir la soustraction : retrait, écart (un ajout en leurre)',
+        'Additionner', 4, 30, [RETRAIT, ECART, AJOUT], SPECS_1B),
     '02-signes-plus-et-moins': modele(
-        'Les signes + et −', 'Lire, comprendre et écrire 5 + 3 et 8 − 3',
-        'Additionner', 2, 20, [LIRE, SENS, ECRIRE], SPECS_2),
+        'Les signes + et −', 'Lire, comprendre et écrire 5 + 3 (8 − 3 une fois sur trois)',
+        'Additionner', 2, 20, variations_signes(PLUTOT_PLUS), SPECS_2),
+    '02b-signes-moins-et-plus': modele(
+        'Les signes − et +', 'Lire, comprendre et écrire 8 − 3 (5 + 3 une fois sur trois)',
+        'Additionner', 5, 20, variations_signes(PLUTOT_MOINS), SPECS_2),
     '03-signe-egal': modele(
         'Le signe =', 'Le signe manquant ; égalités vraies ou fausses (8 = 5 + 3)',
         'Additionner', 3, 20, [MANQUANT, VRAI_FAUX], SPECS_3),

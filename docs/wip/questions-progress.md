@@ -4,11 +4,10 @@
 
 _Mis à jour le 2026-10-25, lot A4 en cours (après #1720)._
 
-- **État** : lot A4 (sens des opérations), phase 0 validée (§ 4 quinquies) ; 5 modèles écrits en fichiers (`scripts/questions/cp-a4/`, générés par `docs/wip/questions/lot-a4.py`), specs vertes, rendu relu. A1 + A2 : 13 brouillons en prod, relus OK.
-- **Brouillons A4 en prod** (créés le 2026-10-25, go de David, vérifiés : `draft`, CP, ni nœud ni tag) : `a59fba89` Addition ou soustraction ? (CP-014 + CP-077), `c342f32e` Les signes + et − (CP-015 + CP-078), `f7463b7d` Le signe = (CP-079), `6e712e78` fois : quel calcul ? (CP-017), `b873739e` fois : combien ? (CP-017).
-- **Prochaine action** : question d'accès à faire trancher par David, puis migration nœud + tag (dériver celle d'A2 ; les modèles vont sur la NOTION, sans sous-notion) + test d'intégration, PR.
-- **En attente de David** : question d'accès de la migration A4 ; publication des 13 brouillons A1 + A2 ; vérification manuelle #1702.
-- **Pièges en cours** : un modèle est QCM OU à cases, jamais les deux (d'où 5 modèles et non 4) ; parler de branche / notion / sous-notion, jamais de « domaine » (colonnes `domain`/`subdomain` = anciennes, remplies pour le script seulement) ; accords au singulier (« 1 bille ») à prévoir ; nouveaux modèles = `scripts/create-questions.ts` puis migration ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point ou en dessous (trigger) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu (`question:specs --file … --apercu N`).
+- **État** : lot A4 (sens des opérations), 7 brouillons en prod sans nœud ni tag (§ 4 quinquies) : `a59fba89` Addition ou soustraction ? (CP-014), `3bde8d25` Soustraction ou addition ? (CP-077), `c342f32e` Les signes + et − (CP-015), `c4644788` Les signes − et + (CP-078), `f7463b7d` Le signe = (CP-079), `6e712e78` fois : quel calcul ? et `b873739e` fois : combien ? (CP-017). Migration nœud + tag `20261025210000_questions_cp_a4_rangement_tags` et son test : rouges sans elle, 24/24 verts (A1 + A2 + A4).
+- **Prochaine action** : PR, `security-auditor`, CI verte → merge → `db:migrate` depuis le dépôt principal → vérifier en prod → page à cocher A4.
+- **En attente de David** : descriptions périmées de `a59fba89` et `c342f32e` (`create-questions` ne les met pas à jour) ; publication des brouillons A1 + A2 (+ A4 après relecture) ; vérification manuelle #1702.
+- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020, règle en base) — lire les ADR avant de proposer un tag double ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau et ne touche pas la description ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` ; dater les migrations après la prod ; **jamais de variable `e`** ; relire le rendu (`question:specs --apercu`).
 - **Worktree / branche** : `../ubumaths-wt-questions`, `feat/questions-cp-a4`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
@@ -111,7 +110,7 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 ## 4 quinquies. Lot A4 : décisions (David, 2026-10-25)
 
 - Rangement : sur la **notion** du point, sans sous-notion ni nœud neuf — « Entiers : addition et soustraction » (CP-014, 077, 015, 078, 079), « Entiers : multiplication » (CP-017).
-- Modèles mélangés (deux tags) : « Addition ou soustraction ? » (CP-014 + CP-077 : réunion, ajout, retrait, écart ; nombres ≤ 20) et « Les signes + et − » (CP-015 + CP-078 : lire, sens, écrire) — sinon la bonne réponse serait toujours la même.
+- ~~Modèles mélangés à deux tags~~ : interdit par l'ADR 0020 (au plus un point par programme), que j'avais manqué (refus vu au test d'intégration). **Option A choisie** : un modèle par point, l'autre opération en leurre — « Addition ou soustraction ? » (CP-014 : réunion, ajout, retrait) et « Soustraction ou addition ? » (CP-077 : retrait, écart, ajout), nombres ≤ 20 ; « Les signes + et − » (CP-015) et « Les signes − et + » (CP-078) : lire, sens, écrire, le signe du point deux fois sur trois.
 - « Addition ou soustraction ? » : deux choix seulement (a + b / a − b), pas de leurre artificiel.
 - « Le signe = » (CP-079) : signe manquant (+, −, =) et égalités vraies ou fausses (8 = 5 + 3, 5 + 3 = 3 + 5, 5 + 3 = 5 + 5).
 - CP-017 : « fois » et addition répétée, **sans le signe ×** (livret CP : × en fin de CP ou au CE1) ; groupes et taille de 2 à 5. Deux modèles (QCM « quel calcul ? » et case « combien ? »), un modèle ne pouvant mêler QCM et cases.
@@ -138,3 +137,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : #1720 mergée, `db:migrate`, vérifié en prod ; page à cocher A2 publiée, relue 7/7 OK par David.
 - 2026-10-25 : lot A4, phase 0 validée (§ 4 quinquies) ; 5 modèles écrits, specs vertes, rendu relu (accord « 1 bille » corrigé).
 - 2026-10-25 : A4, 5 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés.
+- 2026-10-25 : A4, tag double refusé par la base (ADR 0020) ; option A : 2 brouillons mis à jour, 2 créés (7 modèles) ; migration nœud + tag et test, rouge puis vert.

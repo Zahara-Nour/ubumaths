@@ -1,0 +1,189 @@
+{
+	"title": "Soustraction ou addition ?",
+	"description": "Choisir la soustraction : retrait, écart (un ajout en leurre)",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Additionner",
+	"subdomain": "Sens",
+	"level": 4,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Léo a ${{a}}$ billes. Il en perd ${{b}}$. Combien de billes lui reste-t-il ?\n\nQuel calcul permet de trouver la réponse ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..19"
+				},
+				{
+					"name": "b",
+					"expression": "2..17"
+				}
+			],
+			"conditions": ["a > b", "a + b <= 20"],
+			"choices": [
+				{
+					"content": "${{a}}+{{b}}$"
+				},
+				{
+					"content": "${{a}}-{{b}}$"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"Léo perd des billes : il en a moins qu'avant. On enlève, c'est une **soustraction**.",
+					"$${{a}}-{{b}}={{eval:a-b}}$$",
+					"Il reste ${{eval:a-b}}$ bille{{if:a-b==1||s}} à Léo."
+				]
+			}
+		},
+		{
+			"statement": "Sami a ${{a}}$ images. Lina a ${{b}}$ images. Combien d'images Sami a-t-il de plus que Lina ?\n\nQuel calcul permet de trouver la réponse ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..19"
+				},
+				{
+					"name": "b",
+					"expression": "2..17"
+				}
+			],
+			"conditions": ["a > b", "a + b <= 20"],
+			"choices": [
+				{
+					"content": "${{a}}+{{b}}$"
+				},
+				{
+					"content": "${{a}}-{{b}}$"
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": [
+					"On cherche l'écart entre ${{a}}$ et ${{b}}$ : ce qu'il faut enlever à ${{a}}$ pour arriver à ${{b}}$. C'est une **soustraction**.",
+					"$${{a}}-{{b}}={{eval:a-b}}$$",
+					"Sami a ${{eval:a-b}}$ image{{if:a-b==1||s}} de plus que Lina."
+				]
+			}
+		},
+		{
+			"statement": "Il y a ${{a}}$ oiseaux sur un arbre. ${{b}}$ oiseaux arrivent. Combien y a-t-il d'oiseaux sur l'arbre maintenant ?\n\nQuel calcul permet de trouver la réponse ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "2..19"
+				},
+				{
+					"name": "b",
+					"expression": "2..17"
+				}
+			],
+			"conditions": ["a > b", "a + b <= 20"],
+			"choices": [
+				{
+					"content": "${{a}}+{{b}}$"
+				},
+				{
+					"content": "${{a}}-{{b}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Des oiseaux arrivent : il y en a plus qu'avant. On ajoute, c'est une **addition**.",
+					"$${{a}}+{{b}}={{eval:a+b}}$$",
+					"Il y a maintenant ${{eval:a+b}}$ oiseaux sur l'arbre."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "retrait : soustraction",
+			"variationIndex": 0,
+			"variables": {
+				"a": "13",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : retrait, l'autre opération",
+			"variationIndex": 0,
+			"variables": {
+				"a": "13",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "écart : soustraction",
+			"variationIndex": 1,
+			"variables": {
+				"a": "13",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : écart, l'autre opération",
+			"variationIndex": 1,
+			"variables": {
+				"a": "13",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "ajout (leurre) : addition",
+			"variationIndex": 2,
+			"variables": {
+				"a": "13",
+				"b": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : ajout (leurre), l'autre opération",
+			"variationIndex": 2,
+			"variables": {
+				"a": "13",
+				"b": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "borne : retrait 3 − 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "3",
+				"b": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}

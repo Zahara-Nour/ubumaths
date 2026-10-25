@@ -1,6 +1,6 @@
 {
 	"title": "Les signes + et −",
-	"description": "Lire, comprendre et écrire 5 + 3 et 8 − 3",
+	"description": "Lire, comprendre et écrire 5 + 3 (8 − 3 une fois sur trois)",
 	"grades": ["CP"],
 	"theme": "Entiers",
 	"domain": "Additionner",
@@ -21,8 +21,12 @@
 					"expression": "1..8"
 				},
 				{
+					"name": "r",
+					"expression": "0..2"
+				},
+				{
 					"name": "s",
-					"expression": "0..1"
+					"expression": "eval:floor(r/2)"
 				}
 			],
 			"conditions": ["a > b"],
@@ -57,8 +61,12 @@
 					"expression": "1..8"
 				},
 				{
+					"name": "r",
+					"expression": "0..2"
+				},
+				{
 					"name": "s",
-					"expression": "0..1"
+					"expression": "eval:floor(r/2)"
 				}
 			],
 			"conditions": ["a > b"],
@@ -93,8 +101,12 @@
 					"expression": "1..8"
 				},
 				{
+					"name": "r",
+					"expression": "0..2"
+				},
+				{
 					"name": "s",
-					"expression": "0..1"
+					"expression": "eval:floor(r/2)"
 				}
 			],
 			"conditions": ["a > b"],
@@ -125,7 +137,7 @@
 			"variables": {
 				"a": "5",
 				"b": "3",
-				"s": "0"
+				"r": "0"
 			},
 			"expected": {
 				"status": "correct"
@@ -138,7 +150,7 @@
 			"variables": {
 				"a": "8",
 				"b": "3",
-				"s": "1"
+				"r": "2"
 			},
 			"expected": {
 				"status": "correct"
@@ -151,7 +163,7 @@
 			"variables": {
 				"a": "5",
 				"b": "3",
-				"s": "0"
+				"r": "0"
 			},
 			"expected": {
 				"status": "incorrect"
@@ -164,7 +176,7 @@
 			"variables": {
 				"a": "8",
 				"b": "3",
-				"s": "1"
+				"r": "2"
 			},
 			"expected": {
 				"status": "incorrect"
@@ -177,7 +189,7 @@
 			"variables": {
 				"a": "5",
 				"b": "3",
-				"s": "0"
+				"r": "0"
 			},
 			"expected": {
 				"status": "incorrect"
@@ -190,7 +202,7 @@
 			"variables": {
 				"a": "5",
 				"b": "3",
-				"s": "0"
+				"r": "0"
 			},
 			"expected": {
 				"status": "correct"
@@ -203,7 +215,7 @@
 			"variables": {
 				"a": "8",
 				"b": "3",
-				"s": "1"
+				"r": "2"
 			},
 			"expected": {
 				"status": "correct"
@@ -216,7 +228,7 @@
 			"variables": {
 				"a": "5",
 				"b": "3",
-				"s": "0"
+				"r": "0"
 			},
 			"expected": {
 				"status": "incorrect"
@@ -229,7 +241,7 @@
 			"variables": {
 				"a": "8",
 				"b": "3",
-				"s": "1"
+				"r": "2"
 			},
 			"expected": {
 				"status": "incorrect"
@@ -242,7 +254,7 @@
 			"variables": {
 				"a": "5",
 				"b": "3",
-				"s": "0"
+				"r": "0"
 			},
 			"expected": {
 				"status": "incorrect"
@@ -255,7 +267,7 @@
 			"variables": {
 				"a": "5",
 				"b": "3",
-				"s": "0"
+				"r": "0"
 			},
 			"expected": {
 				"status": "correct"
@@ -268,7 +280,7 @@
 			"variables": {
 				"a": "8",
 				"b": "3",
-				"s": "1"
+				"r": "2"
 			},
 			"expected": {
 				"status": "correct"
@@ -281,7 +293,7 @@
 			"variables": {
 				"a": "5",
 				"b": "3",
-				"s": "0"
+				"r": "0"
 			},
 			"expected": {
 				"status": "incorrect"
@@ -294,7 +306,7 @@
 			"variables": {
 				"a": "8",
 				"b": "3",
-				"s": "1"
+				"r": "2"
 			},
 			"expected": {
 				"status": "incorrect"
@@ -307,7 +319,7 @@
 			"variables": {
 				"a": "5",
 				"b": "3",
-				"s": "0"
+				"r": "0"
 			},
 			"expected": {
 				"status": "incorrect"
