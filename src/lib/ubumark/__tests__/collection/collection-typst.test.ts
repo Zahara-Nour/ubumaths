@@ -17,10 +17,10 @@ const count = (text: string, pattern: RegExp) => (text.match(pattern) ?? []).len
 const FRAME = /#box\(width: [\d.]+cm, height: [\d.]+cm, stroke:/g;
 
 describe('bloc ```collection au PDF', () => {
-	it('une collection dans son cadre, à l’échelle de 6 cm pleine largeur (décision 9)', () => {
+	it('une collection dans son cadre, à l’échelle de 8 cm pleine largeur (décision 9, relevée de 6 cm)', () => {
 		const n = node('dizaines: 10');
 		const scene = buildCollectionScene(n.spec!, 0);
-		const width = Number(((scene.width * 6) / COLLECTION_VIEW.fullWidth).toFixed(4));
+		const width = Number(((scene.width * 8) / COLLECTION_VIEW.fullWidth).toFixed(4));
 		const out = generateCollectionTypst(n);
 		expect(count(out, FRAME)).toBe(1);
 		expect(out).toContain(`#box(width: ${width}cm`);

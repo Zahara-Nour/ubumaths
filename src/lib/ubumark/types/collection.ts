@@ -26,11 +26,11 @@ import type { BaseNode } from './ast';
 // ============================================================================
 
 /**
- * Largeur d'une collection « pleine largeur », en cm : 6 cm au PDF, 3 cm dans
+ * Largeur d'une collection « pleine largeur », en cm : 8 cm (écran et PDF), 3 cm dans
  * un choix de QCM. Une collection plus étroite garde la même échelle : deux
  * collections comparées ont des objets de même taille.
  */
-export const COLLECTION_SIZE_CM = { min: 2, max: 12, default: 6, choice: 3 } as const;
+export const COLLECTION_SIZE_CM = { min: 2, max: 12, default: 8, choice: 3 } as const;
 
 /** Nombre de collections d'un bloc (comparaison) */
 export const COLLECTION_MAX_SETS = 3;
