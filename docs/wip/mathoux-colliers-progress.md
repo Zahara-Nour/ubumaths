@@ -17,8 +17,8 @@ _Mis à jour le 2026-10-25, après #1714 et son `db:migrate`._
 - **En attente de David** : rien.
 - **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; base
   locale sans élève de démo ; un seul compte prof autorisé dans les tests.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-colliers` (branche `feat/mathoux-colliers`
-  mergée : en partir avec une branche neuve depuis `origin/main`).
+- **Worktree / branche** : aucun (supprimé après #1714) ; PR 2 : recréer
+  `../ubumaths-wt-mathoux-colliers` sur une branche neuve depuis `origin/main`.
 
 ## Phase 0 — décisions (2026-10-25)
 
