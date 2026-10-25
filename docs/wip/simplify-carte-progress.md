@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot 7 codé (après #1762)._
+_Mis à jour le 2026-10-25, après #1765 (lot 7)._
 
-- **État** : lot 6b mergé (#1762) : `computeNumericValue` dans `eval/numeric-value.ts` (+ `computeNumericValueOrInfinity`), 17 fonctions locales et 11 blocs inline remplacés, aucun résultat changé (suite serveur ; banc aveugle). Pas de vérification manuelle. Code pas en prod.
+- **État** : **tous les lots sont mergés** (1 → 7). Lot 7 (#1765) : renommages seuls, aucun résultat changé (suite serveur 61 402 verte) ; `tidyWithoutReordering` → `tidyEachFactor` (gardé : `tidy` multiplierait les facteurs). Pas de vérification manuelle. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → 6a ✓ → 6b ✓ → **7 renommages** (dernier lot).
-- **Prochaine action** : lot 7 codé (§ 102), PR `refactor/simplify-carte-7` : revue Sonnet, CI, merge ; puis versement du chantier (dernier lot) — à proposer à David.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93).
-- **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; banc des modèles : script non gardé, réécrit au § 99 (`generateInstance`, graines 1..8, `generatedAt` à retirer), aveugle hors questions ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `refactor/simplify-carte-7`.
+- **Prochaine action** : **versement du chantier** (fin de chantier) : le durable passe dans `docs/systeme/` (`mathast/README.md`, `tidy-spec.md`…), le journal est archivé, worktree retiré — à proposer à David, phase 0 d'abord (quoi verser où).
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93). À trier avant le versement : ce qui reste ouvert part dans les Points ouverts de la doc système ou dans un futur chantier.
+- **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; banc des modèles aveugle hors questions ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** ; perl sans `-CSD` casse l'UTF-8 (utiliser python).
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, détaché sur `origin/main` ; `refactor/simplify-carte-7` supprimée.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1242,3 +1241,7 @@ Relevé sur `origin/main` (grep hors tests, définitions relues). **Aucun résul
 - **Fait (branche)** : R1 (relais `solve/numeric-value.ts` supprimé, + un second relais trouvé dans `solvers/polynomial.ts`, réexport pour `quartic.ts`) ; R2 ; R3 — écart : la copie `getNumericValue` d'`infer.ts` n'était pas identique (lit `+3`, signes imbriqués, rend `undefined`) → renommée `signedLiteralValue` au lieu d'être supprimée ; R5 (en-tête de `tidyTerms`).
 - PR #1765. Revue `code-reviewer` Sonnet : aucun bloquant ; important corrigé (en-tête de `tidyEachFactor` renvoyait au journal wip → mesure écrite en clair).
 - Mesures : `check:incremental` 0 ; suite serveur complète verte (61 402) ; cliquet tenu ; `lint:fast` ; garde doc verte. Docs système : `mathast/README.md`, `atelier.md` (noms).
+
+## 103. Lot 7 mergé (#1765, 2026-10-25)
+
+CI verte (16 checks ; un rouge `vercel-maintenance` hors PR, code 141, vert à la relance). Dernier lot du chantier : reste le versement.
