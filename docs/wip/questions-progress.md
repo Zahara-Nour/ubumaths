@@ -64,6 +64,30 @@ quadrillage), 058 (vérifier un alignement à la règle), 034 (reporter une long
 la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipulation, espace de la classe), 074 (oral) ;
 002 (construire une collection) relève du bloc `collection` s'il devient interactif.
 
+### Verdict du conseil (2026-10-25) — remplace le « cœur » proposé ci-dessus
+
+Proposition passée au conseil (5 conseillers + relecture croisée anonyme). Ce qui change :
+
+- **Pas de vérifications « il existe » au CP** : avec l'aimantation obligatoire, chaque point de l'élève est sur un nœud ;
+  on retrouve ses objets **par leurs coordonnées**, plus de problème d'identifiants. « Il existe » → collège.
+- **Vérifier des propriétés, pas comparer à UNE figure attendue** : plusieurs bonnes réponses sont possibles (carré
+  construit d'un côté ou de l'autre de [AB]). Ex. : 4 sommets sur des nœuds, côtés égaux, angles droits. Les `check*`
+  de `checks.ts` resservent si on les fait porter sur des positions plutôt que sur des identifiants.
+- **Questions ouvertes tranchées par le conseil** : juger le **résultat** (pas la manière) ; **tout-ou-rien** avec message
+  précis sur la première vérification échouée ; **liste nommée** de vérifications (DSL quand deux vrais modèles l'exigeront).
+- **Découpage** : CP-059 seul de bout en bout sur tablette → CP-060 → CP-034. **CP-008** sort vers les « réponses à
+  placer » (§ 3.4) ; **CP-058** à réexaminer (pas forcément une figure). Tolérance et test « en bougeant les points » :
+  collège (sans objet au CP avec aimantation).
+- **Ordre des chantiers inchangé** (§ 4 bis). Journal des gestes, note partielle, DSL dès le lot 1 : écartés pour
+  l'instant (périmètre ; enregistrer des gestes contredirait « aucune réponse d'élève conservée »).
+- **Angles morts à traiter en phase 0** : le prof qui écrit le modèle (exemple, temps d'écriture) ; l'enfant de 6 ans
+  (précision au doigt, consigne mal lue, message d'échec, indice, reprise d'une figure à moitié faite) ; exercice rendu
+  trivial par quadrillage + aimantation + peu d'outils ; alternative d'une grille cliquable (CP-060).
+- Écartés après vérification : « la figure attendue est visible côté client » (vrai de toutes les questions, décision
+  figée) ; « geometry-core tourne-t-il dans le navigateur ? » (oui, l'atelier l'utilise).
+- **Première action du chantier** : en phase 0, écrire le modèle CP-059 tel que le prof l'écrirait et ce que voit
+  l'enfant (consigne, outils, réussite, erreur, blocage), avant toute ligne de code.
+
 ## 3. Outils proposés
 
 1. Bloc `horloge` (cadran paramétrable ; CP heures entières, puis minutes CE1/CE2) — recommandé en premier.
