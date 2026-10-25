@@ -163,8 +163,8 @@ class GrapheurStore {
 	 *
 	 * @example
 	 * ```typescript
-	 * const id = grapheurStore.addFunction('x^2');
-	 * grapheurStore.addFunction('\\sin(x)');
+	 * const id = graph.addFunction('x^2');
+	 * graph.addFunction('\\sin(x)');
 	 * ```
 	 */
 	// ===========================================================================
@@ -292,13 +292,13 @@ class GrapheurStore {
 	 * @example
 	 * ```typescript
 	 * // Update expression
-	 * grapheurStore.updateFunction(id, { latex: 'x^3' });
+	 * graph.updateFunction(id, { latex: 'x^3' });
 	 *
 	 * // Update appearance
-	 * grapheurStore.updateFunction(id, { color: '#ff0000', lineWidth: 3 });
+	 * graph.updateFunction(id, { color: '#ff0000', lineWidth: 3 });
 	 *
 	 * // Toggle visibility
-	 * grapheurStore.updateFunction(id, { visible: false });
+	 * graph.updateFunction(id, { visible: false });
 	 * ```
 	 */
 	updateFunction(
@@ -353,7 +353,7 @@ class GrapheurStore {
 	 *
 	 * @example
 	 * ```typescript
-	 * grapheurStore.addSequence('recurrence', '0.5u_n+3');
+	 * graph.addSequence('recurrence', '0.5u_n+3');
 	 * ```
 	 */
 	addSequence(mode: SequenceMode = 'explicit', latex: string = ''): string {
