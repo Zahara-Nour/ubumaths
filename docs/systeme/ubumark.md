@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc construction le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -178,7 +178,7 @@ en retrait sous un item de liste.
 | `trig`                                                                                                                    | `trig-circle`               | `trig-circle-parser.ts`             | `TrigCircle.svelte`      | `trig-circle-typst.ts`           |
 | `line`                                                                                                                    | `number-line`               | `number-line-parser.ts`             | `NumberLine.svelte`      | `number-line-typst.ts`           |
 | `courbe`                                                                                                                  | `courbe`                    | `courbe-parser.ts`                  | `Courbe.svelte`          | `courbe-typst.ts`                |
-| `figure`, `construction`                                                                                                  | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`     | `figure-typst.ts` (via registre) |
+| `figure`, `figure-a-completer`                                                                                            | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`     | `figure-typst.ts` (via registre) |
 | `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`              | `StatChart.svelte`       | `stat-chart-typst.ts`            |
 | `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`         | `qr-typst.ts`                    |
 | `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`         | `horloge-typst.ts`               |
@@ -246,11 +246,11 @@ Clés de l'en-tête : `fenetre:` (obligatoire), `taille:`, `description:`, `axes
 stockées, option `interactive` de `parseFigureContent`) : dans un bloc d'exercice, refus situé
 « réglage réservé aux figures interactives » — `src/lib/ubumark/__tests__/figure/figure-reglages-interactifs.test.ts`.
 
-**Construction** (case « figure » d'une question : la figure de départ que l'élève complète) —
+**Figure à compléter** (case « figure » d'une question : la figure de départ que l'élève complète) —
 `src/lib/ubumark/__tests__/construction/construction-parser.test.ts` :
 
 ````text
-```construction
+```figure-a-completer
 fenetre: 0 ; 10 ; 0 ; 6
 outils: droite
 verifier: droite_par A ; B
@@ -268,7 +268,7 @@ de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS`, `droite` seul, défaut), `v
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
 le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `
-(`isFigureBlockStart` reconnaît les deux mots) ; l'éditeur riche rend le bloc à son mot
+(`isFigureBlockStart` reconnaît les deux mots ; ` ```construction ` n'ouvre rien : le mot désigne les constructions animées, voir [CONTEXT.md](../../CONTEXT.md) « Figure à compléter ») ; l'éditeur riche rend le bloc à son mot
 (`figureFence`, `markdown-import.ts`). Jugement : [questions](questions.md) (case « figure »).
 
 **Statistiques** — `src/lib/ubumark/__tests__/stat-chart/markdown.test.ts` sauf mention :

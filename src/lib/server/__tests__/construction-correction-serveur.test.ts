@@ -1,5 +1,5 @@
 /**
- * Case « figure » (bloc ```construction) corrigée au serveur (évaluations
+ * Case « figure » (bloc ```figure-a-completer) corrigée au serveur (évaluations
  * notées, ADR 0015) : les modules de correction inscrivent le calcul des
  * positions (registre `questions/construction/positions`).
  */

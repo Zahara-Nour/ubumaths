@@ -1,5 +1,5 @@
 /**
- * Inscrit le calcul réel des positions d'un bloc ```construction (effet de
+ * Inscrit le calcul réel des positions d'un bloc ```figure-a-completer (effet de
  * bord voulu, cf. `positions.ts`) : interprète la figure avec geometry-core
  * et rend la position de chaque point NOMMÉ.
  *

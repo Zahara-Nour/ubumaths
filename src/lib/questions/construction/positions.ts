@@ -1,5 +1,5 @@
 /**
- * Positions des points d'un bloc ```construction : registre LÉGER
+ * Positions des points d'un bloc ```figure-a-completer : registre LÉGER
  * ===============================================================
  *
  * Le juge doit savoir où sont les points nommés (A, B…), donc interpréter le

@@ -1,11 +1,11 @@
 /**
- * Bloc ```construction — lecture de ses lignes propres
+ * Bloc ```figure-a-completer — lecture de ses lignes propres
  * ====================================================
  *
  * Le bloc est une figure de départ : en-tête et langage de ```figure, plus
  * trois lignes d'en-tête à lui :
  *
- * ```construction
+ * ```figure-a-completer
  * fenetre: 0 ; 10 ; 0 ; 6
  * outils: droite
  * verifier: droite_par A ; B
@@ -31,7 +31,7 @@ import {
 } from '../types/construction';
 import type { FigureIssue } from '../types/figure';
 
-const CONSTRUCTION_BLOCK_START_REGEX = /^```construction\s*$/;
+const CONSTRUCTION_BLOCK_START_REGEX = /^```figure-a-completer\s*$/;
 const SEPARATOR_REGEX = /^\s*---\s*$/;
 const KEY_LINE_REGEX = /^(outils|verifier|vérifier|case)\s*:\s*(.*)$/i;
 const POINT_NAME_REGEX = /^[A-Za-z][A-Za-z0-9_']*$/;

@@ -13,7 +13,7 @@
  * - `<<expr:NAME>>` in math → reserves indices for ? in answerFormats[NAME]
  * - Bloc ```operation à remplir → UNE case, numéro posé dans le bloc (`case: N`) ;
  *   division euclidienne : DEUX cases, N (quotient) et N + 1 (reste), seul N est posé
- * - Bloc ```construction → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
+ * - Bloc ```figure-a-completer → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
  *   son contenu est mis à l'abri : ni `?` ni `[_]` n'y crée de case
  *
  * @module questions/generator/assign-blank-indices
@@ -55,26 +55,26 @@ export interface AssignBlankIndicesResult {
 	/** Blocs ```operation à remplir mal placés (liste, citation) : messages pour l'auteur */
 	operationErrors?: string[];
 	/**
-	 * Case → texte du bloc ```construction qui la porte (sans `case:`), pour que
+	 * Case → texte du bloc ```figure-a-completer qui la porte (sans `case:`), pour que
 	 * le générateur lise ses vérifications. Absent sans tel bloc.
 	 */
 	constructionBlanks?: Record<number, string>;
-	/** Blocs ```construction mal placés (liste, citation) : messages pour l'auteur */
+	/** Blocs ```figure-a-completer mal placés (liste, citation) : messages pour l'auteur */
 	constructionErrors?: string[];
 }
 
-/** Fence d'ouverture d'un bloc ```construction, au premier niveau seulement */
-const CONSTRUCTION_FENCE_REGEX = /^```construction\s*$/;
+/** Fence d'ouverture d'un bloc ```figure-a-completer, au premier niveau seulement */
+const CONSTRUCTION_FENCE_REGEX = /^```figure-a-completer\s*$/;
 
 /** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
-const NESTED_CONSTRUCTION_FENCE_REGEX = /^(?:\s+|\s*>\s*)```construction\s*$/;
+const NESTED_CONSTRUCTION_FENCE_REGEX = /^(?:\s+|\s*>\s*)```figure-a-completer\s*$/;
 
-/** Marque d'un bloc ```construction mis à l'abri : début, rang du bloc, fin */
+/** Marque d'un bloc ```figure-a-completer mis à l'abri : début, rang du bloc, fin */
 const CONSTRUCTION_MARK_START = '\u0000construction:';
 const CONSTRUCTION_MARK_END = '\u0000';
 
 const CONSTRUCTION_NESTED_MESSAGE =
-	'Un bloc construction doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)';
+	'Un bloc figure-a-completer doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)';
 
 interface ConstructionBlock {
 	/** Lignes du bloc entre les clôtures */
@@ -84,7 +84,7 @@ interface ConstructionBlock {
 }
 
 /**
- * Met à l'abri les blocs ```construction : chacun devient une marque d'une
+ * Met à l'abri les blocs ```figure-a-completer : chacun devient une marque d'une
  * ligne, numérotée ensuite avec les autres cases puis rendue avec `case: N`.
  * Étendue du bloc : celle du parseur (`findFigureBlocks`, bloc non fermé compris).
  */
@@ -124,7 +124,7 @@ function markConstructionBlocks(statement: string): {
 /** Le bloc rendu à son texte, sa case posée en première ligne */
 function restoreConstructionBlock(block: ConstructionBlock, caseIndex: number): string {
 	return [
-		'```construction',
+		'```figure-a-completer',
 		`case: ${caseIndex}`,
 		...block.body,
 		...(block.closed ? ['```'] : [])

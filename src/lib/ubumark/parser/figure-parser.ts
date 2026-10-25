@@ -53,8 +53,8 @@ import { compile } from '$lib/mathAST/eval/compile';
 // CONSTANTES
 // ============================================================================
 
-/** ```figure, et ```construction (une figure de départ à compléter, cf. construction-parser.ts) */
-const FIGURE_BLOCK_START_REGEX = /^```(?:figure|construction)\s*$/;
+/** ```figure, et ```figure-a-completer (une figure de départ à compléter, cf. construction-parser.ts) */
+const FIGURE_BLOCK_START_REGEX = /^```(?:figure|figure-a-completer)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 const SEPARATOR_REGEX = /^\s*---\s*$/;
 
@@ -381,7 +381,7 @@ export function parseFigureContent(source: string, options: FigureParseOptions =
 }
 
 /**
- * Bloc ```construction : ses lignes propres lues à part, le reste analysé
+ * Bloc ```figure-a-completer : ses lignes propres lues à part, le reste analysé
  * comme une figure ; le texte du bloc reste celui écrit (aller-retour).
  */
 function parseConstructionBody(source: string): FigureNode {

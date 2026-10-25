@@ -1,5 +1,5 @@
 /**
- * Juge d'une case « figure » (bloc ```construction) — comportements de la
+ * Juge d'une case « figure » (bloc ```figure-a-completer) — comportements de la
  * phase 0 de CP-059 (`docs/wip/geometrie-validation-progress.md` § 3) :
  * on juge le RÉSULTAT par des positions, en tout-ou-rien, avec le message de
  * la première vérification ratée.

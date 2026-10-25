@@ -1,5 +1,5 @@
 /**
- * Bloc ```construction — types
+ * Bloc ```figure-a-completer — types
  * ============================
  *
  * Figure de départ (même en-tête, même langage que ```figure) que l'élève
