@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-10-25, phase 0 validée._
 
-- **État** : phase 0 validée (« je suis tes recos », § 10 bis). PR 1 (scène commune) en cours.
+- **État** : phase 0 validée (§ 10 bis). PR 1 (scène commune) écrite, revue faite (aucun bloquant) ; typecheck puis PR.
 - **Prochaine action** : PR 1 (§ 8) : test qui fige les scènes de la collection → extraction → collection verte ; puis PR 2 (bloc complet).
 - **En attente de David** : rien.
 - **Pièges en cours** : la scène est partagée avec ` ```collection ` (EN PAUSE, `collection-progress.md`) : ses tests doivent rester verts, sans un pixel changé.
@@ -336,3 +336,9 @@ CP-045 (« peut-il acheter ? » seulement).
   QCM, éditeur, `check:ubumark`) → réutilisé / neuf (§ 7), découpage étayé par la taille de #1766
   (§ 8), 3e exemple (CP-044 en QCM), questions renumérotées Q1 à Q11.
 - 2026-10-25 : phase 0 validée par David (« je suis tes recos ») → § 10 bis.
+- 2026-10-25 : PR 1 écrite : `utils/scene-commune.ts` (hasard, vrac paramétré par la case, décalage, toucher),
+  `nodes/scene-marks.svelte.ts` (`SceneMarks`) ; collection branchée dessus. Garde : instantanés
+  `collection-scene-figee.test.ts` — passent tels quels sur l'ancien code de `main`, et un décalage de 0,01
+  en fait échouer 6 sur 7. Revue `code-reviewer` : aucun bloquant ; ajoutés le test direct de `SceneMarks`
+  et la preuve sur l'ancien code ; mineurs laissés (`scatterCenters` ne vérifie pas `spread > 1` : à garder
+  en tête pour la monnaie).
