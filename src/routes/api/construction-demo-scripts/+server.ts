@@ -4,8 +4,8 @@
  * POST   - Create or update (upsert by name) a demo script
  * DELETE - Delete a demo script by id
  *
- * Réservée au prof et à l'admin (décision de David du 2026-10-23) ; la RLS tient la
- * même règle (migration 20261023150000).
+ * Réservée au prof (décision de David du 2026-10-25, l'admin retiré) ; la RLS tient la
+ * même règle (migration 20261026020000).
  */
 
 import { json, error } from '@sveltejs/kit';

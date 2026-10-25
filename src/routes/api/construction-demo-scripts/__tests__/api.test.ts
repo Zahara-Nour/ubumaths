@@ -1,6 +1,6 @@
 /**
- * Scripts de démo des constructions : réservés au prof et à l'admin (décision de David
- * du 2026-10-23), suppression vérifiée (un refus RLS rend zéro ligne, sans erreur) et
+ * Scripts de démo des constructions : réservés au prof (décision de David du 2026-10-23,
+ * l'admin retiré le 2026-10-25), suppression vérifiée (un refus RLS rend zéro ligne, sans erreur) et
  * messages de la base gardés côté serveur. La RLS tient la même règle
  * (tests/integration/construction-demo-scripts-reserves.test.ts).
  */
@@ -87,20 +87,25 @@ async function outcomeOf(run: () => unknown): Promise<{ status: number; message:
 // TESTS
 // ============================================================================
 
-describe('API scripts de démo : un élève n’y a pas accès', () => {
-	it.each([
+describe('API scripts de démo : ni l’élève ni l’admin n’y ont accès', () => {
+	const VERBES = [
 		['GET', (locals: unknown) => GET({ locals } as never)],
 		['POST', (locals: unknown) => POST({ locals, request: postRequest() } as never)],
 		['DELETE', (locals: unknown) => DELETE({ locals, url: deleteUrl() } as never)]
-	])('%s par un élève → 403, table non touchée', async (_verb, run) => {
-		const { locals, tablesTouched } = fakeLocals('student');
+	] as const;
+	const CAS = (['student', 'admin'] as const).flatMap((role) =>
+		VERBES.map(([verbe, run]) => [verbe, role, run] as const)
+	);
+
+	it.each(CAS)('%s par %s → 403, table non touchée', async (_verbe, role, run) => {
+		const { locals, tablesTouched } = fakeLocals(role);
 		const { status } = await outcomeOf(() => run(locals));
 		expect(status).toBe(403);
 		expect(tablesTouched).toEqual([]);
 	});
 
-	it.each(['teacher', 'admin'] as const)('%s : GET, POST et DELETE passent', async (role) => {
-		const { locals, tablesTouched } = fakeLocals(role);
+	it('prof : GET, POST et DELETE passent', async () => {
+		const { locals, tablesTouched } = fakeLocals('teacher');
 		expect((await outcomeOf(() => GET({ locals } as never))).status).toBe(200);
 		expect((await outcomeOf(() => POST({ locals, request: postRequest() } as never))).status).toBe(
 			201
