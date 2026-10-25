@@ -13,9 +13,11 @@
  * @module questions/construction/drawing
  */
 
-import type { ConstructionCheck } from '$lib/ubumark/types/construction';
+import type { ConstructionCheck, ConstructionTool } from '$lib/ubumark/types/construction';
+import type { FigureStep } from '$lib/ubumark/types/figure';
 import { CONSTRUCTION_ANSWER_LIMITS, serializeConstructionAnswer, type DrawnLine } from './answer';
 import type { Position } from './judge';
+import { polygonSolution } from './polygon';
 
 /** Rayon d'aimantation, en pixels À L'ÉCRAN (un doigt d'enfant sur tablette) */
 export const SNAP_RADIUS_PX = 24;
@@ -79,16 +81,40 @@ export function snapTap(
 }
 
 /**
- * Un toucher : premier → départ ; second → la droite. Toucher le départ une
+ * Quadrillage avec l'outil segment (CP-060) : chaque toucher va au nœud le
+ * plus proche (plus de toucher libre, verdict du conseil § 2).
+ */
+export function snapToGrid(tap: Position, grid: FigureStep, window?: FigureWindow): Position {
+	const node = (value: number, step: number, min: number, max: number) => {
+		let n = Math.round(value / step) * step;
+		// Bord de fenêtre hors des nœuds : rester sur un nœud de la fenêtre
+		if (n < min - 1e-9) n += step;
+		else if (n > max + 1e-9) n -= step;
+		// `+ 0` : jamais de « -0 » dans la réponse
+		return n + 0;
+	};
+	return {
+		x: node(tap.x, grid.x, window?.xMin ?? -Infinity, window?.xMax ?? Infinity),
+		y: node(tap.y, grid.y, window?.yMin ?? -Infinity, window?.yMax ?? Infinity)
+	};
+}
+
+/**
+ * Un toucher : premier → départ ; second → la droite (ou le segment, qui
+ * s'arrête à ses deux bouts). Toucher le départ une
  * seconde fois ne fait rien ; au-delà des plafonds du juge, la droite n'est
  * pas ajoutée (elle rendrait la réponse illisible).
  */
-export function addTap(drawing: Drawing, position: Position): Drawing {
+export function addTap(
+	drawing: Drawing,
+	position: Position,
+	tool: ConstructionTool = 'droite'
+): Drawing {
 	const { start } = drawing;
 	if (!start) return { lines: drawing.lines, start: position };
 	if (Math.hypot(position.x - start.x, position.y - start.y) <= SAME_TAP_EPSILON) return drawing;
 	const line: DrawnLine = {
-		kind: 'droite',
+		kind: tool,
 		x1: start.x,
 		y1: start.y,
 		x2: position.x,
@@ -114,12 +140,18 @@ export function canErase(drawing: Drawing): boolean {
 	return drawing.start !== null || drawing.lines.length > 0;
 }
 
-/** Bonne(s) droite(s) : une par vérification, par ses deux points */
+/**
+ * La bonne figure : une droite par vérification `droite_par`, par ses deux
+ * points ; carré / rectangle : les côtés qui manquent (carré : du côté où
+ * l'élève a le plus tracé, d'où `drawn`).
+ */
 export function solutionLines(
 	checks: readonly ConstructionCheck[],
-	points: ReadonlyMap<string, Position>
+	points: ReadonlyMap<string, Position>,
+	drawn: readonly DrawnLine[] = []
 ): DrawnLine[] {
 	return checks.flatMap((check): DrawnLine[] => {
+		if (check.kind !== 'droite_par') return polygonSolution(check, points, drawn);
 		const a = points.get(check.points[0]);
 		const b = points.get(check.points[1]);
 		if (!a || !b) return [];

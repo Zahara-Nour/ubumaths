@@ -1,0 +1,493 @@
+{
+	"title": "Termine le carré ou le rectangle sur le quadrillage",
+	"description": "Sur quadrillage, compléter un carré (un côté tracé) ou un rectangle (deux côtés consécutifs tracés), côtés suivant les lignes",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Tracés",
+	"subdomain": "Carrés et rectangles",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Termine le carré.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: segment\nverifier: carre A ; B\n---\nA = point({{xa}}, {{ya}}, visible=faux)\nB = point({{xb}}, {{yb}}, visible=faux)\nab = segment(A, B)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "xa",
+					"expression": "1..9"
+				},
+				{
+					"name": "ya",
+					"expression": "2..6"
+				},
+				{
+					"name": "xb",
+					"expression": "eval:xa + c"
+				},
+				{
+					"name": "yb",
+					"expression": "eval:ya"
+				}
+			],
+			"conditions": ["xa + c <= 11", "ya - c >= 0", "ya + c <= 8"],
+			"correction": {
+				"steps": [
+					"Un carré a quatre côtés de la même longueur et quatre angles droits.",
+					"Le côté tracé mesure {{c}} carreaux : on trace les trois autres côtés, de {{c}} carreaux chacun, en suivant les lignes du quadrillage.",
+					"On peut construire le carré d'un côté ou de l'autre du côté tracé."
+				]
+			}
+		},
+		{
+			"statement": "Termine le carré.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: segment\nverifier: carre A ; B\n---\nA = point({{xa}}, {{ya}}, visible=faux)\nB = point({{xb}}, {{yb}}, visible=faux)\nab = segment(A, B)\n```",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "2..4"
+				},
+				{
+					"name": "xa",
+					"expression": "2..10"
+				},
+				{
+					"name": "ya",
+					"expression": "1..5"
+				},
+				{
+					"name": "xb",
+					"expression": "eval:xa"
+				},
+				{
+					"name": "yb",
+					"expression": "eval:ya + c"
+				}
+			],
+			"conditions": ["xa - c >= 0", "xa + c <= 12", "ya + c <= 7"],
+			"correction": {
+				"steps": [
+					"Un carré a quatre côtés de la même longueur et quatre angles droits.",
+					"Le côté tracé mesure {{c}} carreaux : on trace les trois autres côtés, de {{c}} carreaux chacun, en suivant les lignes du quadrillage.",
+					"On peut construire le carré d'un côté ou de l'autre du côté tracé."
+				]
+			}
+		},
+		{
+			"statement": "Termine le rectangle.\n\n```figure-a-completer\nfenetre: 0 ; 12 ; 0 ; 8\ngrille: 1\noutils: segment\nverifier: rectangle A ; B ; C\n---\nA = point({{xa}}, {{ya}}, visible=faux)\nB = point({{xb}}, {{yb}}, visible=faux)\nC = point({{xc}}, {{yc}}, visible=faux)\nab = segment(A, B)\nbc = segment(B, C)\n```",
+			"variables": [
+				{
+					"name": "l",
+					"expression": "2..6"
+				},
+				{
+					"name": "h",
+					"expression": "2..5"
+				},
+				{
+					"name": "t",
+					"expression": "0..1"
+				},
+				{
+					"name": "u",
+					"expression": "0..1"
+				},
+				{
+					"name": "xb",
+					"expression": "1..11"
+				},
+				{
+					"name": "yb",
+					"expression": "1..7"
+				},
+				{
+					"name": "xa",
+					"expression": "eval:xb"
+				},
+				{
+					"name": "ya",
+					"expression": "eval:yb + (2*t - 1)*h"
+				},
+				{
+					"name": "xc",
+					"expression": "eval:xb + (2*u - 1)*l"
+				},
+				{
+					"name": "yc",
+					"expression": "eval:yb"
+				}
+			],
+			"conditions": ["l != h", "ya >= 1", "ya <= 7", "xc >= 1", "xc <= 11"],
+			"correction": {
+				"steps": [
+					"Dans un rectangle, les côtés qui se font face ont la même longueur, et les quatre angles sont droits.",
+					"On trace en face de chaque côté tracé un côté de la même longueur, en suivant les lignes du quadrillage, et la figure se ferme."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "les trois côtés d'un côté",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"xa": "2",
+				"ya": "4",
+				"xb": "5",
+				"yb": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["segment(5;4;5;7)|segment(5;7;2;7)|segment(2;7;2;4)"]
+		},
+		{
+			"description": "les trois côtés de l'autre côté",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"xa": "2",
+				"ya": "4",
+				"xb": "5",
+				"yb": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["segment(5;4;5;1)|segment(5;1;2;1)|segment(2;1;2;4)"]
+		},
+		{
+			"description": "un côté en deux morceaux",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"xa": "2",
+				"ya": "4",
+				"xb": "5",
+				"yb": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["segment(5;4;5;5)|segment(5;5;5;7)|segment(5;7;2;7)|segment(2;7;2;4)"]
+		},
+		{
+			"description": "un trait repassé sur le côté donné",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"xa": "2",
+				"ya": "4",
+				"xb": "5",
+				"yb": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["segment(5;4;5;7)|segment(5;7;2;7)|segment(2;7;2;4)|segment(2;4;5;4)"]
+		},
+		{
+			"description": "Erreur : un côté manque",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"xa": "2",
+				"ya": "4",
+				"xb": "5",
+				"yb": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(5;4;5;7)|segment(5;7;2;7)"]
+		},
+		{
+			"description": "Erreur : rectangle au lieu de carré",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"xa": "2",
+				"ya": "4",
+				"xb": "5",
+				"yb": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(5;4;5;6)|segment(5;6;2;6)|segment(2;6;2;4)"]
+		},
+		{
+			"description": "Erreur : le bon carré et un trait en trop, sans le toucher",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"xa": "2",
+				"ya": "4",
+				"xb": "5",
+				"yb": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(5;4;5;7)|segment(5;7;2;7)|segment(2;7;2;4)|segment(6;4;7;4)"]
+		},
+		{
+			"description": "Erreur : le bon carré et un côté qui dépasse",
+			"variationIndex": 0,
+			"variables": {
+				"c": "3",
+				"xa": "2",
+				"ya": "4",
+				"xb": "5",
+				"yb": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(5;4;5;7)|segment(5;7;2;7)|segment(2;7;2;4)|segment(5;4;5;1)"]
+		},
+		{
+			"description": "les trois côtés d'un côté",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"xa": "6",
+				"ya": "2",
+				"xb": "6",
+				"yb": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["segment(6;5;3;5)|segment(3;5;3;2)|segment(3;2;6;2)"]
+		},
+		{
+			"description": "les trois côtés de l'autre côté",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"xa": "6",
+				"ya": "2",
+				"xb": "6",
+				"yb": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["segment(6;5;9;5)|segment(9;5;9;2)|segment(9;2;6;2)"]
+		},
+		{
+			"description": "un côté en deux morceaux",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"xa": "6",
+				"ya": "2",
+				"xb": "6",
+				"yb": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["segment(6;5;5;5)|segment(5;5;3;5)|segment(3;5;3;2)|segment(3;2;6;2)"]
+		},
+		{
+			"description": "un trait repassé sur le côté donné",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"xa": "6",
+				"ya": "2",
+				"xb": "6",
+				"yb": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["segment(6;5;3;5)|segment(3;5;3;2)|segment(3;2;6;2)|segment(6;2;6;5)"]
+		},
+		{
+			"description": "Erreur : un côté manque",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"xa": "6",
+				"ya": "2",
+				"xb": "6",
+				"yb": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(6;5;3;5)|segment(3;5;3;2)"]
+		},
+		{
+			"description": "Erreur : rectangle au lieu de carré",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"xa": "6",
+				"ya": "2",
+				"xb": "6",
+				"yb": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(6;5;4;5)|segment(4;5;4;2)|segment(4;2;6;2)"]
+		},
+		{
+			"description": "Erreur : le bon carré et un trait en trop, sans le toucher",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"xa": "6",
+				"ya": "2",
+				"xb": "6",
+				"yb": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(6;5;3;5)|segment(3;5;3;2)|segment(3;2;6;2)|segment(6;6;6;7)"]
+		},
+		{
+			"description": "Erreur : le bon carré et un côté qui dépasse",
+			"variationIndex": 1,
+			"variables": {
+				"c": "3",
+				"xa": "6",
+				"ya": "2",
+				"xb": "6",
+				"yb": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(6;5;3;5)|segment(3;5;3;2)|segment(3;2;6;2)|segment(6;5;9;5)"]
+		},
+		{
+			"description": "les deux côtés qui manquent",
+			"variationIndex": 2,
+			"variables": {
+				"l": "4",
+				"h": "2",
+				"t": "1",
+				"u": "1",
+				"xa": "3",
+				"ya": "5",
+				"xb": "3",
+				"yb": "3",
+				"xc": "7",
+				"yc": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["segment(7;3;7;5)|segment(7;5;3;5)"]
+		},
+		{
+			"description": "dans l'autre sens",
+			"variationIndex": 2,
+			"variables": {
+				"l": "4",
+				"h": "2",
+				"t": "1",
+				"u": "1",
+				"xa": "3",
+				"ya": "5",
+				"xb": "3",
+				"yb": "3",
+				"xc": "7",
+				"yc": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["segment(3;5;7;5)|segment(7;5;7;3)"]
+		},
+		{
+			"description": "Erreur : un côté manque",
+			"variationIndex": 2,
+			"variables": {
+				"l": "4",
+				"h": "2",
+				"t": "1",
+				"u": "1",
+				"xa": "3",
+				"ya": "5",
+				"xb": "3",
+				"yb": "3",
+				"xc": "7",
+				"yc": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(7;3;7;5)"]
+		},
+		{
+			"description": "Erreur : un trait oblique",
+			"variationIndex": 2,
+			"variables": {
+				"l": "4",
+				"h": "2",
+				"t": "1",
+				"u": "1",
+				"xa": "3",
+				"ya": "5",
+				"xb": "3",
+				"yb": "3",
+				"xc": "7",
+				"yc": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(7;3;3;5)"]
+		},
+		{
+			"description": "Erreur : le bon rectangle et un trait en trop, sans le toucher",
+			"variationIndex": 2,
+			"variables": {
+				"l": "4",
+				"h": "2",
+				"t": "1",
+				"u": "1",
+				"xa": "3",
+				"ya": "5",
+				"xb": "3",
+				"yb": "3",
+				"xc": "7",
+				"yc": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(7;3;7;5)|segment(7;5;3;5)|segment(3;2;3;1)"]
+		},
+		{
+			"description": "Erreur : le bon rectangle et un côté qui dépasse",
+			"variationIndex": 2,
+			"variables": {
+				"l": "4",
+				"h": "2",
+				"t": "1",
+				"u": "1",
+				"xa": "3",
+				"ya": "5",
+				"xb": "3",
+				"yb": "3",
+				"xc": "7",
+				"yc": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["segment(7;3;7;5)|segment(7;5;3;5)|segment(3;3;3;1)"]
+		}
+	]
+}

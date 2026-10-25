@@ -2,8 +2,8 @@
  * Réponse d'une case « figure » (bloc ```figure-a-completer)
  * ====================================================
  *
- * Ce que l'élève a tracé, écrit en coordonnées : `droite(x1;y1;x2;y2)`, les
- * objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
+ * Ce que l'élève a tracé, écrit en coordonnées : `droite(x1;y1;x2;y2)` ou
+ * `segment(x1;y1;x2;y2)` (par ses deux bouts), les objets séparés par `|`. Entrée de l'élève : bornée (longueur, nombre
  * d'objets, valeurs finies et modérées) avant toute lecture ; illisible → null.
  *
  * @module questions/construction/answer
@@ -23,7 +23,7 @@ const SAME_POINT_EPSILON = 1e-9;
 
 const NUMBER = String.raw`-?\d+(?:\.\d+)?(?:e[+-]?\d+)?`;
 const LINE_REGEX = new RegExp(
-	`^droite\\(\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*\\)$`
+	`^(droite|segment)\\(\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*;\\s*(${NUMBER})\\s*\\)$`
 );
 
 const coordinate = z
@@ -34,7 +34,7 @@ const coordinate = z
 
 const drawnLineSchema = z
 	.object({
-		kind: z.literal('droite'),
+		kind: z.enum(['droite', 'segment']),
 		x1: coordinate,
 		y1: coordinate,
 		x2: coordinate,
@@ -42,7 +42,7 @@ const drawnLineSchema = z
 	})
 	.refine((l) => Math.hypot(l.x2 - l.x1, l.y2 - l.y1) > SAME_POINT_EPSILON);
 
-/** Droite tracée par l'élève, par deux de ses points */
+/** Droite (par deux de ses points) ou segment (par ses deux bouts) tracé par l'élève */
 export type DrawnLine = z.infer<typeof drawnLineSchema>;
 
 /** Objets tracés ; `[]` si rien ; null si la réponse est illisible */
@@ -57,11 +57,11 @@ export function parseConstructionAnswer(answer: string): DrawnLine[] | null {
 		const match = LINE_REGEX.exec(part.trim());
 		if (!match) return null;
 		const parsed = drawnLineSchema.safeParse({
-			kind: 'droite',
-			x1: Number(match[1]),
-			y1: Number(match[2]),
-			x2: Number(match[3]),
-			y2: Number(match[4])
+			kind: match[1],
+			x1: Number(match[2]),
+			y1: Number(match[3]),
+			x2: Number(match[4]),
+			y2: Number(match[5])
 		});
 		if (!parsed.success) return null;
 		lines.push(parsed.data);
@@ -71,5 +71,5 @@ export function parseConstructionAnswer(answer: string): DrawnLine[] | null {
 
 /** Écrire ce que l'élève a tracé (écran de l'élève, tests) */
 export function serializeConstructionAnswer(lines: readonly DrawnLine[]): string {
-	return lines.map((l) => `droite(${l.x1};${l.y1};${l.x2};${l.y2})`).join('|');
+	return lines.map((l) => `${l.kind}(${l.x1};${l.y1};${l.x2};${l.y2})`).join('|');
 }

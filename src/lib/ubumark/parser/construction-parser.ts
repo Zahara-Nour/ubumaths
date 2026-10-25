@@ -3,7 +3,8 @@
  * ====================================================
  *
  * Le bloc est une figure de départ : en-tête et langage de ```figure, plus
- * trois lignes d'en-tête à lui :
+ * trois lignes d'en-tête à lui (`verifier: carre A ; B` ou
+ * `rectangle A ; B ; C` avec l'outil segment, CP-060) :
  *
  * ```figure-a-completer
  * fenetre: 0 ; 10 ; 0 ; 6
@@ -23,9 +24,11 @@
  */
 
 import {
+	CHECK_TOOL,
 	CONSTRUCTION_CHECK_KINDS,
 	CONSTRUCTION_TOOLS,
 	type ConstructionCheck,
+	type ConstructionCheckKind,
 	type ConstructionSpec,
 	type ConstructionTool
 } from '../types/construction';
@@ -57,26 +60,59 @@ function readTools(value: string): ConstructionTool[] {
 			throw new LineError(`outil « ${word} » inconnu (${CONSTRUCTION_TOOLS.join(', ')})`);
 		}
 	}
-	return [...new Set(words)] as ConstructionTool[];
+	const tools = [...new Set(words)] as ConstructionTool[];
+	if (tools.length > 1) throw new LineError('un seul outil par figure');
+	return tools;
 }
 
+/** Nombre de points de chaque vérification, et comment l'écrire */
+const CHECK_ARITY: Record<ConstructionCheckKind, { count: number; example: string; word: string }> =
+	{
+		droite_par: { count: 2, example: 'droite_par A ; B', word: 'deux' },
+		carre: { count: 2, example: 'carre A ; B', word: 'deux' },
+		rectangle: { count: 3, example: 'rectangle A ; B ; C', word: 'trois' }
+	};
+
 function readCheck(value: string, line: number): ConstructionCheck {
-	const [kind = '', ...rest] = value.split(/\s+/);
-	if (!(CONSTRUCTION_CHECK_KINDS as readonly string[]).includes(kind)) {
+	const [word = '', ...rest] = value.split(/\s+/);
+	if (!(CONSTRUCTION_CHECK_KINDS as readonly string[]).includes(word)) {
 		throw new LineError(
-			`vérification « ${kind} » inconnue (${CONSTRUCTION_CHECK_KINDS.join(', ')})`
+			`vérification « ${word} » inconnue (${CONSTRUCTION_CHECK_KINDS.join(', ')})`
 		);
 	}
+	const kind = word as ConstructionCheckKind;
+	const { count, example, word: countWord } = CHECK_ARITY[kind];
 	const points = rest
 		.join(' ')
 		.split(';')
 		.map((name) => name.trim())
 		.filter((name) => name !== '');
-	if (points.length !== 2 || !points.every((name) => POINT_NAME_REGEX.test(name))) {
-		throw new LineError('droite_par attend deux points : « droite_par A ; B »');
+	if (points.length !== count || !points.every((name) => POINT_NAME_REGEX.test(name))) {
+		throw new LineError(`${kind} attend ${countWord} points : « ${example} »`);
 	}
-	if (points[0] === points[1]) throw new LineError('droite_par attend deux points différents');
-	return { kind: 'droite_par', points: [points[0], points[1]], line };
+	if (new Set(points).size !== count) {
+		throw new LineError(`${kind} attend ${countWord} points différents`);
+	}
+	if (kind === 'rectangle') {
+		return { kind, points: [points[0], points[1], points[2]], line };
+	}
+	return { kind, points: [points[0], points[1]], line };
+}
+
+/**
+ * Une vérification qui ne va pas avec les autres : son outil n'est pas celui
+ * de la figure, ou c'est un second carré / rectangle (le juge compte les
+ * segments en trop sur UN polygone).
+ */
+function coherenceError(check: ConstructionCheck, spec: ConstructionSpec): string | null {
+	const tool = CHECK_TOOL[check.kind];
+	if (!spec.tools.includes(tool))
+		return `${check.kind} se trace avec l’outil ${tool} (outils: ${tool})`;
+	const polygons = spec.checks.filter((c) => c.kind !== 'droite_par');
+	if (check.kind !== 'droite_par' && polygons[0] !== check) {
+		return 'un seul carré ou rectangle par figure';
+	}
+	return null;
 }
 
 /**
@@ -129,5 +165,14 @@ export function readConstructionHeader(source: string): {
 	if (spec.checks.length === 0 && checkErrors === 0) {
 		errors.push({ message: CONSTRUCTION_MISSING_CHECK_MESSAGE });
 	}
+	// `outils:` absent : l'outil de la première vérification (droite par défaut)
+	if (!toolsSeen && spec.checks.length > 0) spec.tools = [CHECK_TOOL[spec.checks[0].kind]];
+	const coherent: ConstructionCheck[] = [];
+	for (const check of spec.checks) {
+		const message = coherenceError(check, spec);
+		if (message) errors.push({ message: `Ligne ${check.line} : ${message}`, line: check.line });
+		else coherent.push(check);
+	}
+	spec.checks = coherent;
 	return { figureSource: lines.join('\n'), spec, errors };
 }

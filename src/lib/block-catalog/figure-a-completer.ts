@@ -16,22 +16,23 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 	nodeType: 'figure',
 	summary: 'Une figure de départ sur laquelle l’élève trace ; sa figure est corrigée seule.',
 	intro:
-		'Dans une question, le bloc est à la fois la figure de départ et la case réponse : l’élève touche un point puis un autre, la droite se trace, et « Valider » la juge. On écrit la figure comme un bloc figure (fenêtre, puis les points après ---), et on dit ce qu’il faut vérifier. Hors d’une question, ou dans une fiche imprimée, seule la figure de départ s’affiche.',
+		'Dans une question, le bloc est à la fois la figure de départ et la case réponse : l’élève touche un point puis un autre, la droite (ou le segment) se trace, et « Valider » la juge. On écrit la figure comme un bloc figure (fenêtre, puis les points après ---), et on dit ce qu’il faut vérifier. Hors d’une question, ou dans une fiche imprimée, seule la figure de départ s’affiche.',
 	settingGroups: [
 		{
 			settings: [
 				{
 					key: 'verifier',
-					values: 'droite_par A ; B (une ligne par vérification)',
+					values: 'droite_par A ; B · carre A ; B · rectangle A ; B ; C',
 					defaultValue: null,
 					description:
-						'Ce que la figure de l’élève doit contenir : une droite qui passe par les deux points nommés. Toute droite en plus est comptée fausse.'
+						'Ce que la figure de l’élève doit contenir. droite_par : une droite qui passe par les deux points nommés (une ligne par droite ; toute droite en plus est fausse). carre : le côté [AB] est tracé, l’élève trace les trois autres, d’un côté ou de l’autre. rectangle : les côtés [AB] et [BC] sont tracés, l’élève trace les deux autres. Un seul carré ou rectangle par figure.'
 				},
 				{
 					key: 'outils',
-					values: 'droite',
-					defaultValue: 'droite',
-					description: 'Les outils proposés à l’élève. Pour l’instant, la droite seule.'
+					values: 'droite ou segment',
+					defaultValue: 'celui de la vérification',
+					description:
+						'L’outil proposé à l’élève, un seul par figure : droite pour droite_par, segment pour carre et rectangle. Avec un quadrillage (grille:) et le segment, chaque toucher va au nœud le plus proche.'
 				},
 				{
 					key: 'fenetre, taille…',
@@ -72,6 +73,22 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 				'C = point(4, 5)'
 			),
 			explanation: 'Une ligne par droite attendue ; il faut toutes les tracer, et rien de plus.'
+		},
+		{
+			title: 'Terminer un carré sur quadrillage, sans lettres',
+			source: fence(
+				'figure-a-completer',
+				'fenetre: 0 ; 12 ; 0 ; 8',
+				'grille: 1',
+				'outils: segment',
+				'verifier: carre A ; B',
+				'---',
+				'A = point(2, 4, visible=faux)',
+				'B = point(5, 4, visible=faux)',
+				'ab = segment(A, B)'
+			),
+			explanation:
+				'Le côté [AB] est tracé, ses sommets sont cachés. Un côté tracé en plusieurs morceaux est accepté ; un trait qui dépasse ou qui ne suit pas les lignes est faux.'
 		}
 	],
 	mistakes: [

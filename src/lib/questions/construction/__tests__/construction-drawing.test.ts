@@ -9,6 +9,7 @@ import {
 	clipLineToWindow,
 	eraseLast,
 	snapTap,
+	snapToGrid,
 	solutionLines,
 	type Drawing
 } from '../drawing';
@@ -146,5 +147,83 @@ describe('bonne droite et découpe', () => {
 	it('hors de la fenêtre : rien à dessiner', () => {
 		const window = { xMin: 0, xMax: 10, yMin: 0, yMax: 6 };
 		expect(clipLineToWindow({ kind: 'droite', x1: 0, y1: 8, x2: 1, y2: 8 }, window)).toBeNull();
+	});
+});
+
+describe('segments sur quadrillage (CP-060, § 9)', () => {
+	it('chaque toucher va au nœud le plus proche', () => {
+		expect(snapToGrid({ x: 3.4, y: 1.6 }, { x: 1, y: 1 })).toEqual({ x: 3, y: 2 });
+		expect(snapToGrid({ x: 2.9, y: 0.9 }, { x: 2, y: 1 })).toEqual({ x: 2, y: 1 });
+		expect(Object.is(snapToGrid({ x: -0.2, y: -0.4 }, { x: 1, y: 1 }).x, -0)).toBe(false);
+	});
+
+	it('bord de fenêtre hors des nœuds : le nœud le plus proche DANS la fenêtre', () => {
+		const window = { xMin: 0.3, xMax: 9.7, yMin: 0.3, yMax: 6.7 };
+		expect(snapToGrid({ x: 0.31, y: 6.69 }, { x: 1, y: 1 }, window)).toEqual({ x: 1, y: 6 });
+	});
+
+	it('toucher un nœud puis un autre : un segment, qui s’arrête à ses deux bouts', () => {
+		const one = addTap(EMPTY, { x: 5, y: 3 }, 'segment');
+		const two = addTap(one, { x: 5, y: 6 }, 'segment');
+		expect(two).toEqual({ lines: [{ kind: 'segment', x1: 5, y1: 3, x2: 5, y2: 6 }], start: null });
+		expect(serializeConstructionAnswer(two.lines)).toBe('segment(5;3;5;6)');
+	});
+
+	const SQUARE_POINTS = new Map([
+		['A', { x: 2, y: 3 }],
+		['B', { x: 5, y: 3 }]
+	]);
+	const square = [{ kind: 'carre' as const, points: ['A', 'B'] as [string, string], line: 1 }];
+
+	it('carré, sans réponse : la bonne figure au-dessus', () => {
+		expect(solutionLines(square, SQUARE_POINTS)).toEqual([
+			{ kind: 'segment', x1: 5, y1: 3, x2: 5, y2: 6 },
+			{ kind: 'segment', x1: 5, y1: 6, x2: 2, y2: 6 },
+			{ kind: 'segment', x1: 2, y1: 6, x2: 2, y2: 3 }
+		]);
+	});
+
+	it('carré, côté vertical sans réponse : à droite', () => {
+		const points = new Map([
+			['A', { x: 2, y: 1 }],
+			['B', { x: 2, y: 3 }]
+		]);
+		expect(solutionLines(square, points)[0]).toEqual({
+			kind: 'segment',
+			x1: 2,
+			y1: 3,
+			x2: 4,
+			y2: 3
+		});
+	});
+
+	it('carré : du côté où l’élève a le plus tracé', () => {
+		const drawn = parseConstructionAnswer('segment(5;3;5;1)|segment(5;1;2;1)') ?? [];
+		expect(solutionLines(square, SQUARE_POINTS, drawn)[0]).toEqual({
+			kind: 'segment',
+			x1: 5,
+			y1: 3,
+			x2: 5,
+			y2: 0
+		});
+	});
+
+	it('rectangle : les deux côtés qui manquent', () => {
+		const points = new Map([
+			['A', { x: 2, y: 5 }],
+			['B', { x: 2, y: 2 }],
+			['C', { x: 6, y: 2 }]
+		]);
+		const checks = [
+			{ kind: 'rectangle' as const, points: ['A', 'B', 'C'] as [string, string, string], line: 1 }
+		];
+		const lines = solutionLines(checks, points);
+		expect(lines).toEqual([
+			{ kind: 'segment', x1: 6, y1: 2, x2: 6, y2: 5 },
+			{ kind: 'segment', x1: 6, y1: 5, x2: 2, y2: 5 }
+		]);
+		expect(judgeConstruction(checks, points, serializeConstructionAnswer(lines))).toEqual({
+			status: 'correct'
+		});
 	});
 });
