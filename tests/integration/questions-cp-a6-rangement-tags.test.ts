@@ -236,6 +236,21 @@ describe('Questions CP, lot A6 : les branches d’échec de la migration', () =>
 		});
 	});
 
+	// La garde « déjà tagué » ne peut pas être atteinte seule : la base refuse un tag sur un modèle
+	// sans nœud, et un modèle rangé entre-temps est arrêté par la garde « déjà rangé » (test ci-dessus).
+	it('un tag posé à la main suppose un rangement : la base refuse un tag sans nœud', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await expect(
+				pg.query(
+					`insert into public.question_template_points (template_id, point_id)
+					 select $1, id from public.curriculum_points where grade = 'CP' and code = 'CP-032' and archived_at is null`,
+					[LOT[2].id]
+				)
+			).rejects.toThrow(/n'est rangé dans aucun nœud de l'arbre/);
+		});
+	});
+
 	it('un point du lot archivé fait échouer la migration (résolution stricte)', async () => {
 		await enTransaction(async () => {
 			await poserEtatProd(pg, auteur);
