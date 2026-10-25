@@ -16,6 +16,8 @@ describe('slideColorScheme', () => {
 		expect(slideColorScheme({ background: 'rgba(255, 255, 255, 1)' })).toBe('light');
 		expect(slideColorScheme({ background: ' WHITE ' })).toBe('light');
 		expect(slideColorScheme({ background: 'black' })).toBe('dark');
+		expect(slideColorScheme({ background: 'rgb(255 255 255)' })).toBe('light');
+		expect(slideColorScheme({ background: 'rgb(0 0 0 / 1)' })).toBe('dark');
 	});
 
 	it('le thème imposé l’emporte sur le fond', () => {
@@ -37,6 +39,9 @@ describe('slideColorScheme', () => {
 		expect(slideColorScheme({ background: 'hsl(200 50% 20%)' })).toBe('unknown');
 		expect(slideColorScheme({ background: 'transparent' })).toBe('unknown');
 		expect(slideColorScheme({ background: '#00000080' })).toBe('unknown');
+		expect(slideColorScheme({ background: 'rgb(0 0 0 / 0.5)' })).toBe('unknown');
+		expect(slideColorScheme({ background: 'rgba(0, 0, 0, 0.5)' })).toBe('unknown');
+		expect(slideColorScheme({ background: 'rgb(300, 0, 0)' })).toBe('unknown');
 		expect(slideColorScheme({ background: '#000', backgroundImage: 'photo.jpg' })).toBe('unknown');
 		expect(slideColorScheme({ backgroundVideo: 'film.mp4' })).toBe('unknown');
 		expect(slideColorScheme({ backgroundIframe: 'https://example.org' })).toBe('unknown');

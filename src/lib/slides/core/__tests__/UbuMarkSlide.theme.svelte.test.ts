@@ -35,6 +35,24 @@ describe('couleur du texte d’une diapositive', () => {
 			background: '#1a1a2e'
 		});
 		expect(await paragraphColor(container, '.ubumark-slide p')).toBe(DARK_TEXT);
+		expect(getComputedStyle(container.querySelector('.slide') as HTMLElement).colorScheme).toBe(
+			'dark'
+		);
+	});
+
+	it('fond clair : bordures de tableau visibles (foncées), plus blanches', async () => {
+		const { container } = await render(ThemeDeckHarness, {
+			content: '| a | b |\n| --- | --- |\n| 1 | 2 |',
+			background: '#ffffff'
+		});
+		await expect.poll(() => container.querySelector('.ubumark-slide td')).not.toBeNull();
+		const border = getComputedStyle(
+			container.querySelector('.ubumark-slide td') as HTMLElement
+		).borderTopColor;
+		// rgba(26, 26, 26, 0.3) : la couleur du texte à 30 %
+		expect(border).toMatch(
+			/^(rgba\(26, 26, 26, 0\.3\)|color\(srgb 0\.1\d* 0\.1\d* 0\.1\d* \/ 0\.3\))$/
+		);
 	});
 
 	it('fond clair, site en thème sombre : texte foncé', async () => {
@@ -85,7 +103,8 @@ describe('taille du contenu d’une diapositive UbuMark', () => {
 	it('un contenu court garde sa taille', async () => {
 		const { container } = await render(ThemeDeckHarness, { content: '## Titre\n\nUn paragraphe' });
 		const fit = await fitOf(container);
-		await new Promise((resolve) => requestAnimationFrame(resolve));
+		// Attendre la première mesure, sinon le test passerait sans rien vérifier
+		await expect.poll(() => fit.dataset.fitScale).toBe('1');
 		expect(getComputedStyle(fit).transform).toBe('none');
 	});
 
@@ -98,6 +117,23 @@ describe('taille du contenu d’une diapositive UbuMark', () => {
 		const boxRect = box.getBoundingClientRect();
 		expect(fitRect.top).toBeGreaterThanOrEqual(boxRect.top - 1);
 		expect(fitRect.bottom).toBeLessThanOrEqual(boxRect.bottom + 1);
+	});
+
+	it('un tableau trop large défile dans son cadre, sans être coupé à gauche', async () => {
+		const header = Array.from({ length: 30 }, (_, i) => `colonne ${i + 1}`).join(' | ');
+		const rule = Array.from({ length: 30 }, () => '---').join(' | ');
+		const { container } = await render(ThemeDeckHarness, {
+			content: `| ${header} |\n| ${rule} |`
+		});
+		await expect.poll(() => container.querySelector('.ubumark-fit table')).not.toBeNull();
+		const box = (container.querySelector('.ubumark-slide') as HTMLElement).getBoundingClientRect();
+		const table = container.querySelector('.ubumark-fit table') as HTMLElement;
+		// Le cadre du tableau (TableNode, overflow-x auto) tient dans la diapositive
+		const frame = (table.parentElement as HTMLElement).getBoundingClientRect();
+		expect(frame.left).toBeGreaterThanOrEqual(box.left - 1);
+		expect(frame.right).toBeLessThanOrEqual(box.right + 1);
+		// et le tableau commence au bord gauche de son cadre : sa première colonne se lit
+		expect(table.getBoundingClientRect().left).toBeGreaterThanOrEqual(frame.left - 1);
 	});
 
 	it('au-delà de la moitié, il ne rétrécit plus : il défile', async () => {

@@ -10,6 +10,8 @@
  * - fond de couleur unie lisible (`#rgb`, `#rrggbb`, `rgb()`, `rgba()` opaque,
  *   `white`, `black`) → d'après sa luminance ;
  * - aucun fond → la diapositive est posée sur le fond du site : elle suit le site ;
+ *   (un `theme` sans fond s'applique quand même : il doit accompagner un fond
+ *   que la diapositive ne déclare pas, peint par son parent) ;
  * - dégradé, image, vidéo, page, couleur transparente ou illisible → on ne
  *   devine pas (la diapositive garde son texte blanc d'avant).
  *
@@ -39,7 +41,9 @@ const NAMED_COLORS: Record<string, [number, number, number]> = {
 };
 
 const HEX_COLOR = /^#([0-9a-f]{3}|[0-9a-f]{6})$/;
-const RGB_COLOR = /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(1|1\.0+)\s*)?\)$/;
+// rgb(r, g, b), rgba(r, g, b, 1), rgb(r g b), rgb(r g b / 1) : opaque seulement
+const RGB_COLOR =
+	/^rgba?\(\s*(\d{1,3})(?:\s*,\s*|\s+)(\d{1,3})(?:\s*,\s*|\s+)(\d{1,3})\s*(?:[,/]\s*(?:1|1\.0+|100%)\s*)?\)$/;
 
 // Functions
 /** Le thème de la diapositive : imposé, déduit de son fond, celui du site, ou inconnu. */

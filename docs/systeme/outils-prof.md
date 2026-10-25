@@ -160,14 +160,18 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
   du site basculent pour tout son contenu (texte, tableaux, blocs ubumark), quel que soit le thème
   du site. Sans fond, elle suit le site (couleur `--color-foreground`) ; sous un dégradé, une image,
   une vidéo ou une page sans `theme`, le texte reste blanc, comme avant. `AnnotatableSlide` et
-  `WhiteboardSlide` relaient `theme`. Testé par `slide-theme.test.ts` et
+  `WhiteboardSlide` relaient `theme`. Un `theme` sans fond s'applique aussi : il doit accompagner
+  un fond peint par le parent. Bordures de tableau et fond des blocs de code d'une `UbuMarkSlide`
+  sont tirés de `--color-foreground` (`color-mix`), lisibles dans les deux thèmes. Testé par `slide-theme.test.ts` et
   `UbuMarkSlide.theme.svelte.test.ts` ; `UbuMarkSlide.couleur.svelte.test.ts` garde la formule en
   bloc de la couleur du texte sur le fond du thème (carnets).
 - **Une `UbuMarkSlide` trop grande se réduit pour tenir**, sans jamais grossir : contenu à largeur
   fixe (celle de la diapositive), échelle `min(1, hauteur dispo / hauteur, largeur dispo / largeur)`
   remesurée par `ResizeObserver` (formules et figures se rendent après coup). Plancher
   `MIN_FIT_SCALE` = 0,5 : au-delà, la diapositive défile (le haut reste visible, `safe center`).
-  Concerne aussi les cellules longues de la présentation des carnets, avant coupées.
+  Concerne aussi les cellules longues de la présentation des carnets, avant coupées. Un tableau
+  trop large défile dans son propre cadre (`TableNode`), sans être coupé. Sous la réduction, un
+  cercle trigo interactif lit la souris en unités de son dessin (voir `ubumark.md`).
 - Quand la barre d'annotation disparaît (on quitte la diapositive annotable), le focus revient au
   deck si le dernier focus était dans la barre et qu'il n'est allé nulle part ailleurs (`<body>`) :
   le clavier pilote toujours le diaporama, et un champ focalisé hors de la barre garde son focus

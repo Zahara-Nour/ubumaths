@@ -182,6 +182,7 @@
 			<div
 				class="ubumark-fit"
 				bind:this={slideElement}
+				data-fit-scale={fit.height > 0 ? fit.scale : undefined}
 				style:width={scaled ? `${fit.boxWidth}px` : undefined}
 				style:transform={scaled ? `scale(${fit.scale})` : undefined}
 			>
@@ -201,7 +202,9 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
-		/* safe : un contenu qui déborde commence en haut, jamais coupé au-dessus */
+		/* safe : un contenu qui déborde commence en haut, jamais coupé au-dessus
+		   (la première ligne sert de repli à un navigateur qui ignorerait safe) */
+		justify-content: center;
 		justify-content: safe center;
 		align-items: center;
 		text-align: center;
@@ -222,7 +225,10 @@
 	.ubumark-fit {
 		display: flex;
 		flex-direction: column;
+		/* safe : un enfant plus large (tableau, formule) déborde à droite seulement,
+		   donc scrollWidth le mesure en entier */
 		align-items: center;
+		align-items: safe center;
 		width: 100%;
 		transform-origin: top left;
 	}
@@ -277,7 +283,7 @@
 		text-align: left;
 		padding: 1em;
 		border-radius: 8px;
-		background: rgba(0, 0, 0, 0.3);
+		background: color-mix(in srgb, var(--color-foreground) 8%, transparent);
 	}
 
 	/* Tables */
@@ -289,7 +295,7 @@
 	.ubumark-slide :global(th),
 	.ubumark-slide :global(td) {
 		padding: 0.5em 1em;
-		border: 1px solid rgba(255, 255, 255, 0.3);
+		border: 1px solid color-mix(in srgb, var(--color-foreground) 30%, transparent);
 	}
 
 	/* Images */
