@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot (a) codé (§ 3), revue en cours, PR pas ouverte._
+_Mis à jour le 2026-10-25, lot (a) revu et corrigé (§ 4), PR à ouvrir._
 
-- **État** : lot (a) codé sur `feat/normalize-usages-developper` (6 commits) : `expand.ts` remplace `normalize` pour `developper` ; suite serveur 58 985 verts (2 attendus mis à jour) ; check 0 ; cliquet tenu ; lint propre ; doc README + panel à jour.
-- **Prochaine action** : traiter la revue `code-reviewer` (opus), fusionner `origin/main`, ouvrir la PR, CI, merge ; puis lot (b).
-- **En attente de David** : rien de bloquant ; à lui montrer : `√x√x → (√x)²` (rien à distribuer, `tidy` réécrit), ordre d'une primitive (`… − 2 sin x + x²/2`).
-- **Pièges connus** : banc des modèles de la prod AVEUGLE pour `developper` (aucun modèle n'a de `generatedSteps`, témoin à 0) : l'effet est dans l'Atelier ; `nodesEqual` ignore le style du × (d'où `expandedForm` pour les termes des étapes) ; `tidy({ order: 'kept' })` garde le × écrit ; `distributeBinomialProduct` et `algebraicExpandingRules` n'ont plus d'appelant en prod.
+- **État** : lot (a) codé, revu (`code-reviewer` opus), corrigé ; suite serveur 58 996 verts ; check 0 ; cliquet tenu ; lint propre.
+- **Prochaine action** : PR du lot (a), CI, merge ; vérification manuelle à noter ; puis lot (b) (une fonction partagée au lieu des ~12 copies, `polynomialCoefficients`).
+- **En attente de David** : rien de bloquant ; à lui montrer : `√x√x → (√x)²`, ordre d'une primitive (`… − 2 sin x + x²/2`), mineurs laissés (§ 4).
+- **Pièges connus** : banc des modèles de la prod AVEUGLE pour `developper` (aucun `generatedSteps`) : l'effet est dans l'Atelier ; `nodesEqual` ignore le style du × ; `tidy({ order: 'kept' })` garde le × écrit ; `distributeBinomialProduct` et `algebraicExpandingRules` sans appelant en prod.
 - **Worktree / branche** : `ubumaths-wt-normalize-usages` · `feat/normalize-usages-developper`.
 
 ## Contexte
@@ -79,3 +79,10 @@ Une douzaine de ces appels sont déjà enveloppés dans des fonctions locales qu
 - **`expand-steps.ts`** : termes par `expandedForm` ; division par un nombre lue comme facteur `1/n` (« On distribue ½ », Q2).
 - **Tests** : `developper-sans-normalize.test.ts` (19 ; 5 rouges sur l'ancien code — Q1, Q3 ; Q2 : la réponse était déjà `½x + ½`, l'étape est nouvelle). Mis à jour (comportement voulu) : panel (`developper` : 15 lignes, identités, racines, fractions rationnelles), `pipeline.test` (noms d'étapes de `normalize`), `ln-exp-lettre-e` (developper garde l'entrée), `expand-explained` / atelier (somme dans un exposant : développée, sans étapes), `renderer`, `intent-rules`, `segment-length-positivite` (`√(x²)` gardé), `primitive-ecriture` (ordre `… − 2 sin x + x²/2`, venu de l'ordre du développement : `tidyTerms` le garde).
 - **Mesures** : suite serveur `src/lib` 58 985 verts + 2 mis à jour ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre. **Banc 1 164 modèles de la prod × 8 tirages (9 312) : 0 différence, mais aveugle** — témoin (`developper` neutralisé) : 0 aussi ; aucun modèle n'a de `generatedSteps` : `developper` n'atteint l'élève que par l'Atelier.
+
+## 4. Revue du lot (a) et règle du domaine (2026-10-25)
+
+- **Revue `code-reviewer` (opus)** : aucune réponse fausse (contrôle numérique, ~190 entrées). Corrigés, tests rouges d'abord (13 rouges) : termes opposés et `x·1/x` (domaine) ; produits de racines de nombres (`√2√3 → √6`) et `i² = −1` (`withValuesComputed` : les facteurs sans lettre calculés par `exactValueToShow`) ; puissance négative d'une base littérale = quotient (`x^{-1}(x+1) → (x+1)/x`, Q1) ; `(√u)ⁿ` levé pour n impair (`(√x+1)³ → x√x + …`) ; base d'une puissance développée sur place (`cos(2(x+1))²`) ; division par zéro : rien à développer ; `MAX_EXPONENT` 200.
+- **Règle du domaine (David, 2026-10-25 : « oui »)**, après sa question « quand on a réécrit tidy, on ne réduisait pas 1/√x − 1/√x = 0, il faudrait être cohérent » : le résultat garde le domaine de l'entrée. `expand` calcule la forme stricte (`tidy` sans domaine acquis) et la forme réduite sur le domaine de l'entrée ; il garde la réduite si `computeDomain` lui trouve le même domaine que l'entrée, lettre par lettre (non résolu : la stricte). `(x + 1/x)² → x² + 2 + 1/x²`, `√x(√x+1) → x + √x` ; `x(1/x − 1) → −x + x/x`, `(√x+1)(√x−1) → x − √x + √x − 1`. « `1 − x`, pour x ≠ 0 » attend la variante `{ result, conditions }` de `tidy` (points ouverts).
+- **Laissés (mineurs)** : `timeoutMs` ignoré pour `developper` (`requested-form.ts` garde un `aborted` mort ; budget par termes) ; `(x+1)/π → x/π + 1/π`, `(x+1)/√2` en deux écritures (`coefficientFirst` : dénominateur entier seulement) ; ordre d'une somme d'exponentielles (déjà désordonné avant) ; `\sqrt8` seul reste (`√8(x+1) → 2√2x + 2√2`).
+- Mesures : suite serveur 58 996 verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre.
