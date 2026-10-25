@@ -69,6 +69,7 @@
 	import TableNode from '$lib/components/markdown/nodes/TableNode.svelte';
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
 	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
+	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import {
 		provideCapitalPairs,
@@ -184,6 +185,7 @@
 			);
 		}
 		if (node.type === 'operation') return node.caseIndex !== undefined;
+		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		return false;
 	}
 
@@ -770,6 +772,25 @@
 									minDigits: digitGrouping()
 								}
 							: undefined}
+					/>
+				{/if}
+			{:else if node.type === 'figure' && node.construction?.caseIndex !== undefined}
+				<!-- Case « figure » (```figure-a-completer) : l'élève trace sur la figure de départ -->
+				{@const caseIndex = node.construction.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if flashMode}
+					<FigureBlock {node} />
+				{:else if showCorrectAnswers}
+					<FigureBlock {node} showSolution />
+				{:else}
+					<FigureBlock
+						{node}
+						answer={{
+							value: state?.value ?? '',
+							isCorrect: state?.isCorrect ?? null,
+							disabled: effectiveDisabled,
+							onChange: (value) => handleInputChange(caseIndex, value)
+						}}
 					/>
 				{/if}
 			{:else if node.type === 'image'}

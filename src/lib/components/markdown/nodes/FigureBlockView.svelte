@@ -16,6 +16,8 @@
 	- `role="img"` + `aria-label` (description de l'auteur, sinon automatique).
 	- Repère (`axes:`, `grille:`) : grille puis axes SOUS les objets, marge pour
 	  les flèches et graduations ; les objets restent découpés à la fenêtre.
+	- `overlay` : couche dessinée PAR-DESSUS les objets, dans la fenêtre (tracé
+	  de l'élève d'un bloc ```figure-a-completer, `FigureACompleterView`).
 
 	@module components/markdown/nodes/FigureBlockView
 -->
@@ -26,14 +28,18 @@
 	import FigureErrors from './FigureErrors.svelte';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget, withinBudget } from '../render-budget';
 	import { readContentLocale } from '../content-locale';
+	import type { FigureScene } from '$lib/ubumark/utils/figure-scene';
+	import type { Snippet } from 'svelte';
 
 	interface Props {
 		node: FigureNode;
 		errorsVisible: boolean;
 		class?: string;
+		/** Couche par-dessus les objets : la scène et la taille de la fenêtre, en px */
+		overlay?: Snippet<[{ scene: FigureScene; width: number; height: number }]>;
 	}
 
-	let { node, errorsVisible, class: className = '' }: Props = $props();
+	let { node, errorsVisible, class: className = '', overlay }: Props = $props();
 
 	const budget = readRenderBudget();
 	/** Séparateur décimal des graduations */
@@ -193,6 +199,11 @@
 					overflow="hidden"
 				>
 					{@render shapesList(drawing.shapes)}
+					{@render overlay?.({
+						scene: result.scene,
+						width: drawing.width,
+						height: drawing.height
+					})}
 				</svg>
 			</svg>
 		{:else}
@@ -204,6 +215,7 @@
 				class="figure-svg"
 			>
 				{@render shapesList(drawing.shapes)}
+				{@render overlay?.({ scene: result.scene, width: drawing.width, height: drawing.height })}
 			</svg>
 		{/if}
 
