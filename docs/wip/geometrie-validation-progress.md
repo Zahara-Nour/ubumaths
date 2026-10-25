@@ -8,10 +8,8 @@ _Mis à jour le 2026-10-25, après #1782._
   figure, garde de `CorrectionCard`, fiche du catalogue) mergés ; rien en prod. Brouillon CP-059 en prod
   (`010d81a5-61dd-441d-a4d6-fdd0bd6c7af4`), sans nœud ni tag.
 - **Prochaine action** : migration nœud « Géométrie > Figures planes > constructions » + tag CP-059 (gabarit
-  `20261026130000_questions_cp_h_rangement_tags.sql` et son test d'intégration) ; puis phase 0 de CP-060.
-- **En attente de David** : question d'accès de cette migration (reco : personne ne gagne ni ne perd d'accès) ;
-  recos CP-034 (couvert par le QCM B2), CP-058 (figure + case oui / non), PDF des séries (tel quel) ; Q3/Q4 du § 5
-  (texte non gardé : clore ?).
+  `20261026130000_questions_cp_h_rangement_tags.sql` et son test d'intégration) ; puis phase 0 de CP-060 et CP-058.
+- **En attente de David** : rien (décisions du § 6 prises le 2026-10-25).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; case « figure » mêlée à une autre case :
   prise en charge à l'affichage, jamais encore dans un modèle.
 - **Worktree / branche** : aucun (retirés après #1782).
@@ -227,6 +225,11 @@ rouge : garde neutralisée → « juste » affiché « faux ».
 (```operation compris). Reco : laisser tel quel (une série d'automatismes CP en PDF n'est pas demandée) ; à rouvrir
 avec les fiches CP.
 
+**Décisions de David (2026-10-25, « je te suis »)** : question d'accès de la migration nœud + tag de CP-059 →
+personne ne gagne ni ne perd d'accès ; **CP-034** couvert par le QCM du lot B2 (pas d'outil figure) ; **CP-058** = figure
+à compléter (« Trace la droite (AB) ») + case texte oui / non (points presque alignés), phase 0 avec CP-060 ; corrigé
+PDF des séries laissé tel quel ; Q3/Q4 du § 5 closes.
+
 ## Journal
 
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 1), au journal questions.
@@ -244,3 +247,4 @@ avec les fiches CP.
 - 2026-10-25 : carte CP-059 essayée par David sur `/dev/carte-question` (OK) ; brouillon créé en prod (`010d81a5-61dd-441d-a4d6-fdd0bd6c7af4`, `create-questions --publier`, go de David), vérifié : brouillon, 3 variations, 18 specs, sans nœud ni tag.
 - 2026-10-25 : revue Opus de #1782 : 2 à corriger + 3 mineurs, tous traités (garde en échec → bonne droite seule ; case « figure » mêlée à une autre case : bloc retiré de l'énoncé rempli ; consigne pendant le chargement ; libellé de la bonne droite seule ; écart vertical précisé dans le § 6) ; 3 tests neufs, rouges sans les correctifs.
 - 2026-10-25 : #1782 mergée (CI verte, revue Opus traitée).
+- 2026-10-25 : David suit les recos (accès, CP-034, CP-058, PDF, Q3/Q4) ; migration CP-059 lancée.
