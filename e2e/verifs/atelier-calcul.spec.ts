@@ -6,7 +6,8 @@ import {
 	hasSteps,
 	normalizeLatex,
 	openAtelier,
-	steps
+	steps,
+	stepsAs
 } from './helpers/atelier';
 
 /**
@@ -327,4 +328,230 @@ test('#1655 — dérivées à coefficients décimaux (partie console)', async ({
 	expectLatex(await calc(page, '.dériver 0,5x^2-1,5x'), 'x - 1{,}5');
 	expectLatex(await calc(page, '.dériver -4,9x^2+20x'), '20 - 9{,}8x');
 	expectLatex(await calc(page, '.dériver x^2/1,5'), '\\dfrac{4x}{3}');
+});
+
+test('#1253 — équations avec une valeur absolue', async ({ page }) => {
+	const five = await calc(page, '.résoudre |2x+1|=5');
+	expectLatex(five, 'S = \\left\\{ -3 ; 2 \\right\\}');
+	const fiveSteps = await steps(five);
+	expectStepsContaining(fiveSteps, 'Deux nombres ont pour valeur absolue $5$ : $5$ et $-5$');
+	expectStepsContaining(fiveSteps, 'On résout $2x + 1 = 5$');
+	expectStepsContaining(fiveSteps, 'On résout $2x + 1 = -5$');
+	// Les deux branches à plat : une seule numérotation, pas de sous-étapes
+	expect(fiveSteps.split('Étape 1 ')).toHaveLength(2);
+
+	const negative = await calc(page, '.résoudre |x|=-2');
+	expectLatex(negative, 'S = \\emptyset');
+	expectStepsContaining(await steps(negative), 'Une valeur absolue est positive ou nulle');
+});
+
+test('#1278, #1279 — inéquations : terme soustrait en bleu, relation gardée', async ({ page }) => {
+	const first = await calc(page, '.résoudre 3x-4\\leq 2x+1');
+	expectLatex(first, 'x \\leqslant 5');
+	const firstSteps = await steps(first);
+	expectStepsContaining(firstSteps, 'On soustrait $2x$ aux deux membres');
+	expectStepsContaining(firstSteps, '3x - 4 \\textcolor{blue}{- 2x}');
+	expectStepsNotContaining(firstSteps, '+ -2x');
+
+	for (const input of ['3x-4\\leq 2x+1', '2x^2<2', '-2x^2\\geq -8']) {
+		const answer = await calc(page, `.résoudre ${input}`);
+		const detail = await steps(answer);
+		// Aucune ligne alignée en « = » (« = 0 ») ni « >= » / « <= » à la place de la relation
+		expectStepsNotContaining(detail, '&=');
+		expectStepsNotContaining(detail, '>=');
+		expectStepsNotContaining(detail, '<=');
+	}
+
+	const reversed = await calc(page, '.résoudre -2x^2\\geq -8');
+	expectLatex(reversed, 'S = [-2 ; 2]');
+	const reversedSteps = await steps(reversed);
+	expectStepsContaining(reversedSteps, '-2x^2 + 8 &\\geqslant 0');
+	expectStepsContaining(
+		reversedSteps,
+		'Comme $-2$ est négatif, l’opérateur de l’inéquation est retourné'
+	);
+});
+
+test('#1282 — inéquation à valeur interdite : pas de « Comment ? »', async ({ page }) => {
+	const forbidden = await calc(page, '.résoudre \\frac{2x^3}{x}<2');
+	expectLatex(forbidden, 'S = ]-1 ; 0[ \\cup ]0 ; 1[');
+	expect(await hasSteps(forbidden)).toBe(false);
+	expect(await hasSteps(await calc(page, '.résoudre 2x^2<2'))).toBe(true);
+});
+
+test('#1300 — commandes de /cas absentes, .latex sans expression', async ({ page }) => {
+	await calc(page, 'a = 3');
+	const erase = await calc(page, '.effacer');
+	expect(erase.refused).toBe(true);
+	expect(erase.text).toContain("« .effacer » n'est pas une commande");
+	expectLatex(await calc(page, 'a+1'), '4');
+
+	// La liste des commandes, ouverte sur `.lat`, se ferme sur `.pose` : plus de `.poser`
+	const field = page.getByLabel('Calcul, définition ou commande');
+	const commands = page.getByRole('listbox', { name: 'Commandes disponibles' });
+	await field.fill('.lat');
+	await expect(commands.getByRole('option', { name: /\.latex/ })).toBeVisible();
+	await field.fill('.pose');
+	await expect(commands).toBeHidden();
+
+	// `.latex` puis Entrée complète la commande ; la seconde Entrée la lance
+	const lines = page.locator('ol.historique > li');
+	const before = await lines.count();
+	await field.fill('.latex');
+	await field.press('Enter');
+	await expect(page.getByText('Modèle : Écrire une expression en LaTeX')).toBeVisible();
+	await expect(lines).toHaveCount(before);
+	await field.press('Enter');
+	await expect(lines).toHaveCount(before + 1);
+	await expect(lines.nth(before)).toContainText("Écris l'expression après la commande");
+	await expect(lines.nth(before)).toHaveClass(/refus/);
+
+	expectLatex(await calc(page, 'sqrt(2)*sqrt(8)'), '4');
+});
+
+test('#1321 — quantités de données', async ({ page }) => {
+	expectLatex(await calc(page, '2^10[o]'), '1024~\\mathrm{o}');
+	await calc(page, '1[Kio]');
+	expectLatex(await calc(page, '.convertir o'), '1~\\mathrm{Kio} = 1024~\\mathrm{o}');
+	const mixed = await calc(page, '5[Mo]+3[m]');
+	expect(mixed.refused).toBe(true);
+	expect(mixed.text).toContain('quantité de données');
+});
+
+test('#1483 — unité écrite après un nombre, lettre posée', async ({ page }) => {
+	expectLatex(await calc(page, '10^3 m'), '1000~\\mathrm{m}');
+	expectLatex(await calc(page, '(1+2) m'), '3~\\mathrm{m}');
+	expectLatex(await calc(page, '2π m'), '2 \\pi~\\mathrm{m}');
+	expectLatex(await calc(page, '2^10 o'), '1024~\\mathrm{o}');
+	await calc(page, 'm = 70');
+	await calc(page, 'g = 10');
+	// Des valeurs, pas des grammes
+	expectLatex(await calc(page, 'm g'), '700');
+	await calc(page, 'r = 3');
+	// m posée : un produit (2π × 3 × 70), pas des mètres
+	expectLatex(await calc(page, '2πr m'), '420 \\pi');
+	expectLatex(await calc(page, '2πr[m]'), '6 \\pi~\\mathrm{m}');
+});
+
+test('#1326 — intégrale sur un intervalle qui contient une valeur interdite', async ({ page }) => {
+	const refusal = await calc(page, '.intégrer \\frac1x de -1 à 1');
+	expect(refusal.refused).toBe(true);
+	expect(refusal.text).toContain("L'intégrale diverge ou n'est pas définie sur [-1 ; 1]");
+	const forbidden =
+		'\\text{La fonction n’est pas définie en } x = 0 \\text{, qui appartient à } \\left[ -1 ; 1 \\right]';
+	const why = 'Le théorème fondamental ne s’applique';
+	const detailed = await steps(refusal);
+	expectStepsContaining(detailed, forbidden);
+	expectStepsContaining(detailed, why);
+	// « Résumé » retire l'explication, garde l'étape
+	const summarized = await stepsAs(refusal, 'Résumé');
+	expectStepsContaining(summarized, forbidden);
+	expectStepsNotContaining(summarized, why);
+	expectStepsContaining(await stepsAs(refusal, 'Détaillé'), why);
+});
+
+test('#1329 — « On fait apparaître u′ », ln avec ou sans valeur absolue', async ({ page }) => {
+	const exponential = await calc(page, '.intégrer e^{2x}');
+	expectLatex(exponential, '\\dfrac{1}{2} e^{2 x} + C');
+	expectStepsContaining(await steps(exponential), "On fait apparaître $u'$");
+
+	const quotient = await calc(page, '.intégrer \\frac{x}{x^2+1}');
+	expectLatex(quotient, '\\dfrac{1}{2} \\ln\\left( x^2 + 1 \\right) + C');
+	expectStepsContaining(await steps(quotient), "On fait apparaître $u'$");
+
+	const product = await calc(page, '.intégrer xe^{2x}');
+	expectLatex(product, '\\dfrac{1}{2} x e^{2 x} - \\dfrac{1}{4} e^{2 x} + C');
+	expectStepsContaining(await steps(product), "On fait apparaître $u'$");
+
+	// u peut s'annuler : la réponse de la ligne écrit |…| comme les étapes
+	const absolute = await calc(page, '.intégrer \\frac{2x}{x^2-1}');
+	expectLatex(absolute, '\\ln\\left| x^2 - 1 \\right| + C');
+	expectStepsContaining(await steps(absolute), '= \\ln\\left| x^2 - 1 \\right|');
+});
+
+test('#1333 — singularité dans l’intervalle d’intégration', async ({ page }) => {
+	const pole = await calc(page, '.intégrer \\frac{3x^2}{x^3-2} de 1 à 2');
+	expect(pole.refused).toBe(true);
+	expect(pole.text).toContain('singularité en x ≈ 1,26');
+	expectLatex(await calc(page, '.intégrer \\frac{x}{\\sqrt{1-x^2}} de 0 à 1'), '1');
+});
+
+test('#1334 — intégration par parties : u, v′, u′, v', async ({ page }) => {
+	const parts = await calc(page, '.intégrer xe^x de 0 à 1');
+	expectLatex(parts, '1');
+	const partsSteps = await steps(parts);
+	expectStepsContaining(
+		partsSteps,
+		"On pose $u(x) = x$ et $v'(x) = e^x$, donc $u'(x) = 1$ et $v(x) = e^x$"
+	);
+	expectStepsContaining(partsSteps, "u'(x)v(x)");
+
+	const pole = await calc(page, '.intégrer \\frac{3x^2}{x^3-2} de 1 à 2');
+	expectStepsContaining(await steps(pole), 'x \\approx 1{,}26');
+});
+
+test('#1347, #1349 — .domaine en formule', async ({ page }) => {
+	const quotient = await calc(page, '.domaine \\frac{\\ln x}{x-2}');
+	expectLatex(quotient, 'D = ]0 ; +\\infty[ \\setminus \\left\\{2\\right\\}');
+	expect(quotient.text).not.toContain('Condition');
+	const quotientSteps = await steps(quotient);
+	expectStepsContaining(quotientSteps, 'Étape 1 Contrainte du logarithme népérien');
+	expectStepsContaining(quotientSteps, 'Étape 2 Contrainte de la division');
+	expectStepsContaining(quotientSteps, '\\mathbb{R} \\setminus \\left\\{2\\right\\}');
+	expectStepsContaining(quotientSteps, 'Étape 3 Intersection des contraintes');
+	expect(quotientSteps).not.toContain('Étape 4');
+
+	expectLatex(
+		await calc(page, '.domaine \\tan x'),
+		'D = \\mathbb{R}\\setminus\\left\\{\\frac{\\pi}{2}+k\\pi,\\ k\\in\\mathbb{Z}\\right\\}'
+	);
+	const alpha = await calc(page, '.domaine \\frac{1}{x^3-2}');
+	expectLatex(
+		alpha,
+		'D = \\mathbb{R} \\setminus \\left\\{\\alpha\\right\\} \\text{ avec } \\alpha \\approx 1{,}26'
+	);
+	expect(await hasSteps(alpha)).toBe(false);
+	const unknown = await calc(page, '.domaine \\sqrt{\\sin x}');
+	expect(unknown.refused).toBe(true);
+	expect(unknown.text).toContain('Je ne sais pas encore déterminer ce domaine.');
+});
+
+test('#1353, #1357 — .évaluer : remplacement puis une opération par étape', async ({ page }) => {
+	const trinomial = await calc(page, '.évaluer 2x^2-3x+1 en x=-1');
+	expectLatex(trinomial, '6');
+	const detailed = await steps(trinomial);
+	expectStepsContaining(detailed, 'Étape 1 On remplace $x$ par $-1$');
+	expectStepsContaining(detailed, '\\left( -1 \\right) \\times \\left( -1 \\right)');
+	expectStepsContaining(detailed, "Soustraire $-3$, c'est ajouter $3$");
+	const summarized = await stepsAs(trinomial, 'Résumé');
+	expectStepsContaining(summarized, 'On remplace $x$ par $-1$');
+	expectStepsContaining(summarized, 'On effectue les calculs');
+	expectStepsNotContaining(summarized, 'Soustraire $-3$');
+
+	const product = await calc(page, '.évaluer x(x-1) en x=-2');
+	expectLatex(product, '6');
+	// Le remplacement, écrit avec ses parenthèses, est dans les deux rédactions
+	const replaced = 'On remplace $x$ par $-2$ \\left( -2 \\right) \\left( -2 - 1 \\right)';
+	await steps(product);
+	expectStepsContaining(await stepsAs(product, 'Détaillé'), replaced);
+	expectStepsContaining(await stepsAs(product, 'Résumé'), replaced);
+
+	const exponential = await calc(page, '.évaluer e^x en x=0');
+	expectLatex(exponential, '1');
+	expect(await hasSteps(exponential)).toBe(false);
+});
+
+test('#1361 — .limite dans la console', async ({ page }) => {
+	expectLatex(
+		await calc(page, '.limite (x^2-1)/(x-1) en 1'),
+		'\\lim\\limits_{x\\to 1} \\dfrac{x^2 - 1}{x - 1} = 2'
+	);
+	expect((await calc(page, '.limite 1/x en 0')).text).toContain(
+		'Pas de limite en 0 : à gauche −∞, à droite +∞'
+	);
+	expectLatex(
+		await calc(page, '.limite x^2 en 3/4-'),
+		'\\lim\\limits_{x\\to {\\tfrac{3}{4}}^-} x^2 = \\dfrac{9}{16}'
+	);
+	expect((await calc(page, '.aide')).text).toContain('.limite');
 });
