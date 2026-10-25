@@ -30,6 +30,7 @@ import type {
 	TemplateBlank,
 	ValidationRule
 } from '../types';
+import { getQuestionType } from '../types';
 import type { ResolvedMarkdown, TemplateMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
 import { validateTemplate } from '../validators/template-validator';
@@ -453,8 +454,15 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let expressionsArray: QuestionInstance['expressions'] = undefined;
 		let finalStatement: ResolvedMarkdown = resolvedStatement;
 
-		// Un bloc ```operation à remplir porte sa case, même sans `blanks` dans le modèle
-		const hasOperationBlock = /^\s*>?\s*```operation\s*$/m.test(String(resolvedStatement));
+		// Un bloc ```operation à remplir porte sa case, même sans `blanks` dans le modèle —
+		// dans une question à trous seulement (un QCM, une carte de cours n'ont pas de case)
+		const hasOperationBlock =
+			/^\s*>?\s*```operation\s*$/m.test(String(resolvedStatement)) &&
+			getQuestionType({
+				choices: resolvedVariation.choices,
+				shared: template.shared,
+				options: template.options
+			}) === 'fill_in_blanks';
 		if (resolvedVariation.blanks || hasOperationBlock) {
 			// 7a. Fill-in-blanks pipeline
 			const templateBlanks = resolvedVariation.blanks ?? [];
@@ -493,6 +501,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			for (const [key, source] of Object.entries(blankResult.operationBlanks ?? {})) {
 				const index = Number(key);
 				const node = parseOperationContent(source);
+				if (node.caseIndex !== undefined) {
+					return {
+						success: false,
+						errors: [
+							`Case ${index + 1} (bloc operation) : case: est posée automatiquement, retirer cette ligne du bloc`
+						]
+					};
+				}
 				if (node.spec === null || node.errors.length > 0) {
 					return {
 						success: false,
@@ -510,7 +526,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			let alignedBlanks: TemplateBlank[];
 			if (templateBlanks.length === blankResult.totalBlanks) {
 				for (const index of operationAnswers.keys()) {
-					if (templateBlanks[index].expectedAnswer.trim() !== '') {
+					if ((templateBlanks[index].expectedAnswer ?? '').trim() !== '') {
 						return {
 							success: false,
 							errors: [

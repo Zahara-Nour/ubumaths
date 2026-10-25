@@ -168,3 +168,48 @@ describe('bloc ```operation : validation du modèle', () => {
 		expect(result.errors.join(' ')).toMatch(/fill_in_blanks requires blanks/);
 	});
 });
+
+describe('bloc ```operation : revue #1726', () => {
+	it('QCM avec un bloc : aucune case créée, génération inchangée', () => {
+		const t = template({
+			statement: `$3 + ? = 5$\n\n${op('calcul: 45 + 37')}`,
+			choices: [{ content: templateMarkdown('2') }, { content: templateMarkdown('3') }],
+			correctChoiceIndex: ['0']
+		} as never);
+		const instance = generate(t);
+		expect(instance.blanks ?? []).toEqual([]);
+		expect(String(instance.statement)).not.toContain('case:');
+	});
+
+	it('carte de cours avec un bloc : aucune case', () => {
+		const t = {
+			...template({ statement: op('calcul: 45 + 37'), correction: { steps: ['82'] } } as never),
+			options: { courseCard: true }
+		} as QuestionTemplate;
+		const result = generateInstance(t, 42);
+		if (result.success) expect(result.instance.blanks ?? []).toEqual([]);
+	});
+
+	it('case: écrite par l’auteur : refusée avec un message (jamais de case morte)', () => {
+		const result = generateInstance(template({ statement: op('case: 3', 'calcul: 45 + 37') }), 42);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/case: est posée automatiquement/);
+	});
+
+	it('entrée du bloc sans expectedAnswer (jsonb) : acceptée', () => {
+		const instance = generate(
+			template({ statement: op('calcul: 45 + 37'), blanks: [{} as never] })
+		);
+		expect(instance.blanks?.[0].expectedAnswer).toBe('82');
+	});
+
+	it('énoncé partagé portant le bloc, sans blanks : valide', () => {
+		const t = {
+			...template({ statement: '' }),
+			shared: { statement: templateMarkdown(op('calcul: 45 + 37')) },
+			variations: [{}]
+		} as unknown as QuestionTemplate;
+		expect(generate(t).blanks?.[0].expectedAnswer).toBe('82');
+	});
+});

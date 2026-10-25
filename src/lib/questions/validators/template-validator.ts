@@ -186,7 +186,7 @@ function validateVariation(
 			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul)
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
-				!hasOperationToFill(String(variation.statement ?? ''))
+				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? ''))
 			) {
 				errors.push(`${prefix} fill_in_blanks requires blanks[]`);
 			}

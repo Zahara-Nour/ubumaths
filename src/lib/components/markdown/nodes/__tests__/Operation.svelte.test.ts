@@ -149,6 +149,24 @@ describe('Operation — saisie (case d’une question)', () => {
 		expect(changes.at(-1)).toBe('82');
 	});
 
+	it('corriger une case pleine, curseur avant le chiffre : le nouveau chiffre remplace (revue #1726)', async () => {
+		const { cells, changes } = await renderAnswer(['calcul: 45 + 37']);
+		await userEvent.click(cells()[2]);
+		await userEvent.keyboard('3');
+		cells()[2].focus();
+		cells()[2].setSelectionRange(0, 0);
+		await userEvent.keyboard('2');
+		expect(cells()[2].value).toBe('2');
+		expect(changes.at(-1)).toBe('2');
+	});
+
+	it('au focus, le chiffre de la case est sélectionné (la saisie le remplace)', async () => {
+		const { cells } = await renderAnswer(['calcul: 45 + 37'], { value: '82' });
+		await userEvent.click(cells()[2]);
+		expect(cells()[2].selectionStart).toBe(0);
+		expect(cells()[2].selectionEnd).toBe(1);
+	});
+
 	it('une touche autre qu’un chiffre est ignorée (comportement 15)', async () => {
 		const { cells, changes } = await renderAnswer(['calcul: 45 + 37']);
 		await userEvent.click(cells()[2]);

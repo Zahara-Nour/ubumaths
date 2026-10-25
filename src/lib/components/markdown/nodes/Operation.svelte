@@ -143,10 +143,14 @@
 		resultInputs[c]?.select();
 	}
 
-	/** Un chiffre tapé : il reste, le curseur passe à gauche ; tout autre caractère est ignoré */
+	/**
+	 * Un chiffre tapé : il remplace celui de la case (où que soit le curseur), le curseur
+	 * passe à gauche ; tout autre caractère est ignoré
+	 */
 	function onResultInput(event: Event & { currentTarget: HTMLInputElement }, c: number) {
 		const typed = event.currentTarget.value;
-		const digit = typed.replace(/\D/g, '').slice(-1);
+		const data = event instanceof InputEvent ? (event.data ?? '') : '';
+		const digit = /^\d$/.test(data) ? data : typed.replace(/\D/g, '').slice(-1);
 		if (digit === '') {
 			// Case vidée (effacement natif) ou caractère refusé : la case garde son chiffre
 			if (typed === '') digits[c] = '';
@@ -296,6 +300,8 @@
 								aria-invalid={wrong[c] === true ? 'true' : undefined}
 								value={digits[c] ?? ''}
 								disabled={answer?.disabled}
+								onfocus={(e) => e.currentTarget.select()}
+								onpointerup={(e) => e.currentTarget.select()}
 								oninput={(e) => onResultInput(e, c)}
 								onkeydown={(e) => onResultKeydown(e, c)}
 							/>

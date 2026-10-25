@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-25, PR 1b codée, avant ouverture de la PR._
 
 - **État** : PR 1b (saisie + juge) codée sur `feat/operations-posees-saisie` : case `case: N` posée par `assignBlankIndices`, réponse calculée par le bloc, grille saisissable (`Operation.svelte` + `FillBlanksInput`), correction chiffre par chiffre. Tests, typecheck, cliquet, lint rapide verts ; docs `ubumark.md` et `questions.md` à jour.
 - **Prochaine action** : PR, revue `code-reviewer` (Opus : correction des réponses), CI, merge ; puis republier la page de démonstration avec la saisie.
-- **En attente de David** : vérification #1716 dans `verifications-manuelles.md` ; avis sur la précision du comportement 5 (§ 9).
+- **En attente de David** : vérification #1716 ; avis sur la précision du comportement 5 (§ 9) ; décimales de fin laissées vides (journal, 2026-10-25).
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie).
 - **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` ; sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas (l'élève écrit les deux 1 sur papier).
 - **Worktree / branche** : `../ubumaths-wt-operations-posees` · `feat/operations-posees-saisie`.
@@ -250,6 +250,11 @@ David a répondu « je te suis » aux quatre recommandations, une par question :
   `template-validator` (un bloc à remplir suffit sans `blanks`) ; `Operation.svelte` (`answer`) ;
   `FillBlanksInput` (rendu, ordre des cases, Entrée, correction).
 - Écart au § 9 : comportement 5 précisé (zéros retirés, espaces posés), voir le § 9.
+- Revue Opus #1726 : 3 importants corrigés (QCM / carte de cours avec bloc passaient en cases à
+  trous ; chiffre retapé dans une case pleine perdu ; `case:` écrite par l'auteur → case morte),
+  mineurs corrigés (`shared.statement` au validateur, `figure-name-check` réaligné, entrée sans
+  `expectedAnswer`). **Question ouverte à David** : dixièmes de fin laissés vides (`0,5 + 0,5`,
+  élève « 1 » sans le 0) → aujourd'hui réponse incomplète, jugée fausse.
 
 - 2026-10-25 : worktree créé, phase 0 rédigée.
 - 2026-10-25 : décisions de David (§ 7 bis). PR 1a : `types/operation.ts`, `parser/operation-parser.ts`,
