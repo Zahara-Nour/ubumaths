@@ -4,7 +4,7 @@
  *
  * Pour le QR code d'une série : son lien porte toute la composition et dépasse
  * toujours ce qu'un QR lisible contient. Prof et admin seulement.
- * Phase 0 : `docs/wip/liens-courts-phase0.md`.
+ * Phase 0 : `docs/archive/wip/liens-courts-phase0.md`.
  *
  * @module qr/short-link
  */

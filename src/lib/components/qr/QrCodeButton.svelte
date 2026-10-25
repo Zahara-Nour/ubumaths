@@ -9,7 +9,7 @@
 	 *
 	 * Avec `resolveUrl` (lien de série, trop long pour un QR), l'adresse du QR
 	 * est fabriquée à l'ouverture de la fenêtre : c'est un lien court
-	 * (`docs/wip/liens-courts-phase0.md`).
+	 * (`docs/archive/wip/liens-courts-phase0.md`).
 	 */
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Button } from '$lib/components/ui/button';

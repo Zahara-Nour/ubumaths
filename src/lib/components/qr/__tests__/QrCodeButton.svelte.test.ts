@@ -162,7 +162,7 @@ describe('la fenêtre', () => {
 	});
 });
 
-describe('l’adresse fabriquée à l’ouverture (lien court, docs/wip/liens-courts-phase0.md)', () => {
+describe('l’adresse fabriquée à l’ouverture (lien court, docs/archive/wip/liens-courts-phase0.md)', () => {
 	const LONG = `/automaths/test?categories=${'%2522x'.repeat(200)}`;
 
 	it('porte l’adresse COURTE, canonique, dans le QR et en clair', async () => {

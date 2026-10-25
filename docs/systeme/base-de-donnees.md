@@ -563,7 +563,7 @@ chemin **interne** du site, en ASCII imprimable (jamais un autre domaine : la co
 `\`, les espaces, les caractères de contrôle et l'Unicode). RLS sans policy et aucun droit direct : un prof ou l'admin crée par
 `create_short_link` (même cible → même code, unicité sur l'empreinte `target_hash`), et quiconque a
 le code, `anon` compris, lit la cible par `resolve_short_link`. Personne ne liste la table. Les liens
-n'expirent pas : un QR imprimé ne se reprend pas. Phase 0 : `docs/wip/liens-courts-phase0.md`.
+n'expirent pas : un QR imprimé ne se reprend pas. Phase 0 : `docs/archive/wip/liens-courts-phase0.md`.
 
 ---
 

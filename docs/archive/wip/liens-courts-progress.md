@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, après le déploiement v0.41.0._
+_Mis à jour le 2026-10-25 : chantier CLOS, journal versé dans `docs/archive/wip/`._
 
-- **État** : chantier livré côté code. #1537 (migration, jouée en prod) et #1539 (route `/l/[code]`, `POST /api/short-links`, QR de série par lien court, cibles limitées aux séries) mergées et en prod depuis la v0.41.0 (vérifié : `chiph.re/l/AAAAAAAA` → 404 « Ce lien n’existe pas »). Doc durable : `docs/systeme/qr-codes.md`.
-- **Prochaine action** : vérification manuelle par David (ligne #1539 de `verifications-manuelles.md`), puis versement : archiver ce journal et `liens-courts-phase0.md` dans `docs/archive/`.
-- **En attente de David** : la vérification au téléphone.
+- **État** : livré et en prod depuis la v0.41.0 (#1537 migration, #1539 route `/l/[code]` + `POST /api/short-links` + QR de série par lien court). Doc durable : `docs/systeme/qr-codes.md`.
+- **Prochaine action** : aucune. La vérification au téléphone reste notée dans `docs/wip/verifications-manuelles.md` (ligne #1539).
 - **Pièges** : cible = lien de série seulement (`SERIES_TARGET`, Zod) ; la base n'exige qu'un chemin interne. Un nouvel usage (atelier public) ajoutera son préfixe.
-- **Worktree / branche** : aucun (supprimés après #1539).
+- **Worktree / branche** : aucun.
 
 ## Historique
 

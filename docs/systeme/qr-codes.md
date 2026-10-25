@@ -14,7 +14,7 @@ couvre:
 
 # QR codes vers les pages et les ressources
 
-> Vérifié contre le code le 2026-10-19 (lots 1, 2, QR stylés et liens courts). Décisions : [qr-codes-phase0.md](../wip/qr-codes-phase0.md), [qr-codes-style-phase0.md](../wip/qr-codes-style-phase0.md), [liens-courts-phase0.md](../wip/liens-courts-phase0.md).
+> Vérifié contre le code le 2026-10-19 (lots 1, 2, QR stylés et liens courts). Décisions : [qr-codes-phase0.md](../wip/qr-codes-phase0.md), [qr-codes-style-phase0.md](../wip/qr-codes-style-phase0.md), [liens-courts-phase0.md](../archive/wip/liens-courts-phase0.md).
 
 ## Ce que fait le bouton
 
