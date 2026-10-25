@@ -48,4 +48,18 @@ describe('evaluateNumeric', () => {
 		expect(evaluateNumeric(parseLatex('\\frac{1}{x-2}'), 'x', 2, 'undefined')).toBeNull();
 		expect(evaluateNumeric(parseLatex('\\ln(x)'), 'x', 0, 'undefined')).toBeNull();
 	});
+
+	// Revue du lot 6a : chaque réglage garde les fonctions qu'il acceptait
+	it('réglage « infinity » : log reste non lu (log_{0,5} en 0 n’est pas −∞)', () => {
+		expect(evaluateNumeric(parseLatex('\\log_{0.5}(x)'), 'x', 0)).toBeNull();
+	});
+
+	it('réglage « undefined » : partie entière, signe et arctan restent non lus', () => {
+		expect(evaluateNumeric(parseLatex('\\lfloor x\\rfloor'), 'x', 1, 'undefined')).toBeNull();
+		expect(evaluateNumeric(parseLatex('\\arctan(x)'), 'x', 1, 'undefined')).toBeNull();
+	});
+
+	it('une puissance de fonction sans valeur réelle rend null, pas NaN', () => {
+		expect(evaluateNumeric(parseLatex('\\cos^{1/2}(x)'), 'x', 2)).toBeNull();
+	});
 });

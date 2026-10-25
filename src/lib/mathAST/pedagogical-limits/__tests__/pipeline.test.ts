@@ -31,6 +31,7 @@ import {
 } from '../../factory';
 import type { MathNode } from '../../types';
 import { toLatex } from '../../latex-generator';
+import { parseLatex } from '../../parser';
 import { generatePedagogicalLimitSteps } from '../pipeline';
 import { PedagogicalLimitNotImplemented } from '../types';
 import type { PedagogicalLimitStep } from '../types';
@@ -87,6 +88,21 @@ function poly(coeffs: number[], varName = 'x') {
 // =============================================================================
 
 describe('pipeline — direct substitution', () => {
+	// Revue du lot 6a : la substitution directe ne voit pas le saut d'une
+	// fonction en escalier (le moteur exact dit « pas de limite »)
+	it('⌊x⌋ en 1 : pas de « substitution directe »', () => {
+		try {
+			const result = generatePedagogicalLimitSteps(parseLatex('\\lfloor x\\rfloor'), {
+				variable: 'x',
+				approach: number('1'),
+				schoolLevel: 'lycee'
+			});
+			expect(flatRules(result.steps)).not.toContain('apply-direct-substitution');
+		} catch (error) {
+			expect(error).toBeInstanceOf(PedagogicalLimitNotImplemented);
+		}
+	});
+
 	it('x² + 2x at x = 3 → 15 (lycée)', () => {
 		const expr = poly([0, 2, 1]); // 2x + x²
 		const result = generatePedagogicalLimitSteps(expr, {
