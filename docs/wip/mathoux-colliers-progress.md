@@ -5,18 +5,20 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 1 (migration) ouverte._
+_Mis à jour le 2026-10-25, après #1714._
 
-- **État** : catalogue choisi (4 colliers) ; PR 1 = migration `20261025160000_mathoux_colliers.sql`
-  et `tests/integration/mathoux-colliers.test.ts` (21/21 rouges sans, verts avec ; suites Mathoux
-  125 vertes ; garde DEFINER verte).
-- **Prochaine action** : revue (`code-reviewer` + `security-auditor`), CI, merge, `db:migrate`,
-  `db:types` sur la branche de la PR 2 (code : catalogue TS, dessins, routes, « Décorer », vitrine,
-  vue prof, export RGPD).
-- **En attente de David** : rien.
-- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ;
-  la base locale n'a pas d'élève de démo ; un seul compte prof autorisé dans les tests.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-colliers` · `feat/mathoux-colliers`.
+- **État** : PR 1 (migration des colliers) mergée, CI verte ; revue et audit sans bloquant.
+  **`db:migrate` PAS joué** : refusé par le classifieur du mode auto ; seule cette migration est en
+  attente (vérifié au `--dry-run`).
+- **Prochaine action** : `pnpm db:migrate` depuis le dépôt principal (par David), relire les droits
+  en prod, puis PR 2 sur une branche neuve (`feat/mathoux-colliers-code`) : `db:types`, catalogue
+  TS + test d'égalité, dessins dans `MathouAvatar` (règle de la fraise), mémoire, routes de pose,
+  rangée « Cou » de « Décorer », vitrine, vue prof, export RGPD (`collar`).
+- **En attente de David** : lancer `! pnpm db:migrate` (ou autoriser la commande).
+- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; base
+  locale sans élève de démo ; un seul compte prof autorisé dans les tests.
+- **Worktree / branche** : `../ubumaths-wt-mathoux-colliers` (branche `feat/mathoux-colliers`
+  mergée, à remplacer par la branche de la PR 2).
 
 ## Phase 0 — décisions (2026-10-25)
 
@@ -53,3 +55,5 @@ acceptées :
   supprimé seul → cou nu », refus explicite du visiteur (`42501`), commentaire de
   `set_mathou_decoration`. Pour la PR 2 : `collar` dans l'export RGPD et la mémoire (`memory.ts`),
   en-tête de `src/lib/mathoux/decorations.ts`, audit des routes de collier.
+- 2026-10-25 — #1714 mergée (CI verte sur 47599aced). `db:migrate` refusé par le classifieur du
+  mode auto : à lancer par David.
