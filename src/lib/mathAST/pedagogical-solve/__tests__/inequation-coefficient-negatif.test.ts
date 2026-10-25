@@ -78,10 +78,19 @@ function renderedProse(steps: readonly EquationStep[], level: LinearSchoolLevel)
 		.join('\n');
 }
 
+/**
+ * L'étape qui défait le coefficient : division, ou multiplication par l'inverse
+ * d'un coefficient écrit en fraction (Q51, 2026-10-25 : `-\\frac{2}{3}x` → × −3/2).
+ */
 function divisionOperation(steps: readonly EquationStep[]): EquationOperation | undefined {
 	return flattenSteps(steps)
 		.map((s) => s.operation)
-		.find((op) => op?.kind === 'divide-both-sides' || op?.kind === 'simplify-coefficient');
+		.find(
+			(op) =>
+				op?.kind === 'divide-both-sides' ||
+				op?.kind === 'multiply-both-sides' ||
+				op?.kind === 'simplify-coefficient'
+		);
 }
 
 // =============================================================================
@@ -105,7 +114,8 @@ describe('V36 — division par un coefficient négatif non entier', () => {
 				const prose = renderedProse(steps, level);
 				expect(prose).not.toContain('est positif');
 				if (level === 'college') {
-					expect(prose).toContain('changement de sens car $-\\dfrac{2}{3}$ est négatif');
+					// Q51 : on multiplie par l'inverse du coefficient écrit en fraction
+					expect(prose).toContain('changement de sens car $-\\dfrac{3}{2}$ est négatif');
 				}
 			});
 		}
@@ -229,11 +239,12 @@ describe('V36 — tableau de signes du second degré : signe de a lu sur sa vale
 // =============================================================================
 
 describe('V36 — la prose du changement de sens, mot pour mot', () => {
+	// Coefficient écrit en fraction : on multiplie par son inverse (Q51)
 	const CASES: readonly { latex: string; coefficient: string }[] = [
-		{ latex: '-\\dfrac{2}{3}x+1<5', coefficient: '-\\dfrac{2}{3}' },
+		{ latex: '-\\dfrac{2}{3}x+1<5', coefficient: '-\\dfrac{3}{2}' },
 		{ latex: '-0.5x<2', coefficient: '-\\dfrac{1}{2}' },
 		{ latex: '-\\sqrt2x<1', coefficient: '-\\sqrt{2}' },
-		{ latex: '\\frac{-3}{4}x\\ge1', coefficient: '-\\dfrac{3}{4}' }
+		{ latex: '\\frac{-3}{4}x\\ge1', coefficient: '-\\dfrac{4}{3}' }
 	];
 	for (const { latex, coefficient } of CASES) {
 		for (const level of LEVELS) {

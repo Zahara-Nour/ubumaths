@@ -27,23 +27,25 @@ import {
 	type GenerationStrategy,
 	STRATEGIES
 } from './types';
-import { add, divide, opposite, relation, variable as varNode } from '../factory';
+import { add, divide, opposite, variable as varNode } from '../factory';
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
-import { detectVariable, getPolynomialDegree } from '../solve/classify';
+import { detectVariable, getPolynomialDegree, unwrapGroupingMembers } from '../solve/classify';
 import {
 	canon,
 	addToBothSides,
 	chooseAddOrSubtract,
 	movedTerm,
 	divideBothSides,
+	inverseFactor,
 	isOne,
 	isZero,
 	makeStep,
 	prepareLinearRelation,
 	renumberSteps
 } from './_helpers';
+import { unwrapLinearRelation } from './linear-unwrap';
 
 // =============================================================================
 // Linear-specific helpers
@@ -103,17 +105,12 @@ export function generateLinearEquationSteps(
 	if (variable === null) {
 		throw new Error('generateLinearEquationSteps: cannot detect a single variable');
 	}
-	// Membre parenthésé déballé ; terme en x non développé → UndevelopedLinearForm
-	const equation = prepareLinearRelation(input, variable);
+	// Membre parenthésé déballé : `(2x-4)=0` se raconte comme `2x-4=0` (#860)
+	const typed = unwrapGroupingMembers(input);
 
 	// Sanity check: must be linear in the chosen variable
-	const exprForDegree = canon(
-		relation('=', equation.left, equation.right).left
-	); /* placeholder — see below */
 	// Use the standard form to compute degree (matches solver's classify.ts)
-	const standardForm = canon(
-		add(equation.left, opposite(equation.right))
-	); /* f(x) − g(x) for degree probe */
+	const standardForm = canon(add(typed.left, opposite(typed.right))); // f(x) − g(x) for degree probe
 	const degree = getPolynomialDegree(standardForm, variable);
 	if (degree !== 1 && degree !== 0) {
 		// degree 0 happens for `x = 5` after standardize (x − 5), still linear-equivalent
@@ -121,7 +118,6 @@ export function generateLinearEquationSteps(
 			`generateLinearEquationSteps: equation is not linear in '${variable}' (degree=${degree})`
 		);
 	}
-	void exprForDegree; // silence unused
 
 	let nextId = 1;
 	const id = () => nextId++;
@@ -132,14 +128,19 @@ export function generateLinearEquationSteps(
 				id: id(),
 				rule: 'identify-equation',
 				description: 'Équation du premier degré',
-				before: equation,
-				after: equation,
+				before: typed,
+				after: typed,
 				operation: { kind: 'identify-equation', equationType: 'linear', variable }
 			})
 		: null;
 
+	// Membre non développé défait d'abord (`0,5(x+1) = 2` → `x + 1 = 4`, Q52) ;
+	// une forme qu'on ne sait pas défaire → UndevelopedLinearForm
+	const unwrapped = unwrapLinearRelation(typed, variable, id);
+	const equation = prepareLinearRelation(unwrapped.relation, variable);
+
 	let current: RelationNode = equation;
-	const regroupementSteps: EquationStep[] = [];
+	const regroupementSteps: EquationStep[] = [...unwrapped.steps];
 
 	// Compute the two regroupement operands once (shared by atomic + combined modes)
 	const rightSplit = splitSide(current.right, variable);
@@ -218,6 +219,8 @@ export function generateLinearEquationSteps(
 	const coefficient = extractCoefficientOfX(current.left, variable);
 	if (coefficient !== null && !isOne(coefficient) && !isZero(coefficient)) {
 		const after = divideBothSides(current, coefficient);
+		// `x/4 = 0,5` : on multiplie par 4 plutôt que diviser par 1/4 (Q51)
+		const inverse = inverseFactor(coefficient, equation, variable);
 		if (strategy.divisionMode === 'compact') {
 			divisionStep = makeStep({
 				id: id(),
@@ -226,6 +229,15 @@ export function generateLinearEquationSteps(
 				before: current,
 				after,
 				operation: { kind: 'simplify-coefficient', coefficient }
+			});
+		} else if (inverse !== null) {
+			divisionStep = makeStep({
+				id: id(),
+				rule: 'multiply-both-sides',
+				description: `On multiplie les deux membres par ${operandPretty(inverse)}`,
+				before: current,
+				after,
+				operation: { kind: 'multiply-both-sides', operand: inverse }
 			});
 		} else {
 			divisionStep = makeStep({

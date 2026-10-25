@@ -19,6 +19,7 @@ import {
 	add,
 	divide,
 	multiply,
+	number,
 	opposite,
 	relation,
 	subtract,
@@ -37,6 +38,7 @@ import { InequalityNotSolvable } from '../solve/inequality/types';
 import { getVariables } from '../eval/substitute';
 import { toLatex } from '../latex-generator';
 import { exactValueToShow } from '../eval/exact-value';
+import { hasDecimalLiteral } from '../tidy/decimal';
 import type { EquationOperation, EquationStep } from './types';
 
 // =============================================================================
@@ -88,14 +90,86 @@ export class UndevelopedLinearForm extends Error {
  */
 export function prepareLinearRelation(rel: RelationNode, variable: string): RelationNode {
 	const unwrapped = unwrapGroupingMembers(rel);
-	for (const side of [unwrapped.left, unwrapped.right]) {
+	const term = undevelopedTerm(unwrapped, variable);
+	if (term !== null) throw new UndevelopedLinearForm(term);
+	return unwrapped;
+}
+
+/** Un terme en x d'un membre qui n'est pas de la forme `a·x`, ou `null`. */
+export function undevelopedTerm(rel: RelationNode, variable: string): MathNode | null {
+	for (const side of [rel.left, rel.right]) {
 		for (const { term } of flattenSumShallow(side)) {
-			if (!containsVariable(term, variable)) continue;
-			const coefficient = canon(divide(term, varNode(variable), 'fraction'));
-			if (containsVariable(coefficient, variable)) throw new UndevelopedLinearForm(term);
+			if (!isLinearTerm(term, variable)) return term;
 		}
 	}
-	return unwrapped;
+	return null;
+}
+
+/** Sans x, ou de la forme `a·x` avec `a` constant. */
+export function isLinearTerm(term: MathNode, variable: string): boolean {
+	if (!containsVariable(term, variable)) return true;
+	return !containsVariable(canon(divide(term, varNode(variable), 'fraction')), variable);
+}
+
+// =============================================================================
+// Coefficient écrit en fraction : on multiplie par l'inverse (Q51)
+// =============================================================================
+
+/**
+ * Un coefficient constant écrit en fraction d'entiers : `\frac{2}{3}`,
+ * `-\frac{1}{2}`. Un décimal (`0,5`), un entier ou une fraction qui porte une
+ * racine (`\frac{\sqrt{2}}{2}`) ne l'est pas.
+ */
+export function isFractionWritten(node: MathNode): boolean {
+	if (node.type === 'opposite') return isFractionWritten(node.operand);
+	const isInteger = (n: MathNode): boolean =>
+		n.type === 'opposite' ? isInteger(n.operand) : n.type === 'number' && /^\d+$/.test(n.value);
+	return node.type === 'division' && isInteger(node.numerator) && isInteger(node.denominator);
+}
+
+/**
+ * Un terme en x écrit avec une fraction : l'inconnue divisée (`x/4`,
+ * `\frac{2x}{3}`) ou un coefficient fraction (`\frac{2}{3}x`).
+ */
+function isFractionWrittenXTerm(term: MathNode, variable: string): boolean {
+	if (term.type === 'opposite') return isFractionWrittenXTerm(term.operand, variable);
+	if (term.type === 'division') {
+		return (
+			containsVariable(term.numerator, variable) &&
+			!containsVariable(term.denominator, variable) &&
+			!hasDecimalLiteral(term)
+		);
+	}
+	if (term.type === 'multiplication') {
+		return isFractionWritten(term.left) && containsVariable(term.right, variable);
+	}
+	return false;
+}
+
+/**
+ * Le facteur par lequel multiplier les deux membres pour défaire le
+ * coefficient `a` de `a·x = b`, ou `null` s'il faut diviser par `a`.
+ *
+ * Q51 (David, 2026-10-25 : « x/4 = 0,5 doit être résolu en multipliant par
+ * 4 ») : on multiplie par l'inverse quand `a` est une fraction non entière et
+ * que les termes en x de la relation tapée sont écrits en fraction (`x/4`,
+ * `\frac{2}{3}x`) — aucun avec un décimal : `0,5x = 1` se divise par 0,5.
+ * `canon` récrit `0,25x` en `\frac{1}{4}x` : l'écriture se lit sur `written`.
+ */
+export function inverseFactor(
+	coefficient: MathNode,
+	written: RelationNode,
+	variable: string
+): MathNode | null {
+	if (!isFractionWritten(coefficient)) return null;
+	const xTerms = [written.left, written.right].flatMap((side) =>
+		flattenSumShallow(side)
+			.map(({ term }) => term)
+			.filter((term) => containsVariable(term, variable))
+	);
+	if (xTerms.some(hasDecimalLiteral)) return null;
+	if (!xTerms.some((term) => isFractionWrittenXTerm(term, variable))) return null;
+	return canon(divide(number(1), coefficient, 'fraction'));
 }
 
 /**
@@ -182,6 +256,25 @@ export function divideBothSidesWithFlip(
 		)
 	);
 	return { result, flipped: shouldFlip };
+}
+
+/**
+ * Multiplier ou diviser les deux membres par `factor` retourne-t-il le sens ?
+ * Oui pour une inégalité (`<`, `>`, `≤`, `≥`) et un facteur négatif ; signe
+ * indécidable → `InequalityNotSolvable`, mieux vaut aucune étape qu'un sens
+ * deviné. Jamais pour `=` ni `≠`.
+ */
+export function flipsOrdering(rel: RelationNode['relation'], factor: MathNode): boolean {
+	const ordering = rel === '<' || rel === '>' || rel === '<=' || rel === '>=';
+	if (!ordering) return false;
+	const sign = constantSign(factor);
+	if (sign === null) {
+		throw new InequalityNotSolvable(
+			`Signe du facteur indécidable : ${toLatex(factor)}`,
+			'Le sens de l’inégalité dépend du signe du facteur.'
+		);
+	}
+	return sign === -1;
 }
 
 /**

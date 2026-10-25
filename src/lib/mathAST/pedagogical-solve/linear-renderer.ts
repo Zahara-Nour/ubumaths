@@ -146,6 +146,8 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 			`On multiplie les deux membres par ${operandStr(op)}${flipNote(op)}`,
 		'divide-both-sides': (op) => `On divise les deux membres par ${operandStr(op)}${flipNote(op)}`,
 		simplify: () => 'On simplifie',
+		expand: () => 'On développe',
+		'remove-parentheses': () => 'On supprime les parenthèses',
 		'group-variable-terms': (op) =>
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
 		'group-constants': () => 'On regroupe les constantes',
@@ -168,6 +170,8 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 		'simplify-coefficient': (op, step) =>
 			`On termine en simplifiant le coefficient de ${variableOf(step)}${flipNote(op)}`,
 		simplify: () => 'On simplifie',
+		expand: () => 'On développe',
+		'remove-parentheses': () => 'On supprime les parenthèses',
 		'group-variable-terms': (op) =>
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
 		'group-constants': () => 'On regroupe les constantes',
@@ -188,6 +192,8 @@ const TITLES: Record<LinearSchoolLevel, Partial<Record<EquationOperation['kind']
 		'simplify-coefficient': (op, step) =>
 			`On termine en simplifiant le coefficient de ${variableOf(step)}${flipNote(op)}`,
 		simplify: () => 'On simplifie',
+		expand: () => 'On développe',
+		'remove-parentheses': () => 'On supprime les parenthèses',
 		'group-variable-terms': (op) =>
 			`On regroupe les termes en ${(op as { variable: string }).variable}`,
 		'group-constants': () => 'On regroupe les constantes',
@@ -293,6 +299,10 @@ const EXPLANATIONS: Record<
 			`On soustrait ${operandStr(op)} aux deux membres : ${preservedNoun(step)} est préservée.`,
 		'divide-both-sides': divideExplanation,
 		'multiply-both-sides': multiplyExplanation,
+		expand: (_op, step) =>
+			`On développe pour pouvoir regrouper ensuite les termes en ${variableOf(step)}.`,
+		'remove-parentheses': () =>
+			'Des parenthèses précédées d’un + s’enlèvent sans changer les signes de ce qu’elles contiennent.',
 		'reduce-to-canonical': (_op, step) =>
 			`On regroupe les termes en x à gauche et les constantes à droite pour atteindre la forme ax ${isInequalityStep(step) ? '⊻' : '='} b.`,
 		'read-solution': () => "L'inconnue est isolée : on lit directement la solution.",
@@ -475,7 +485,9 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 		op.kind === 'reduce-to-canonical' ||
 		op.kind === 'group-variable-terms' ||
 		op.kind === 'group-constants' ||
-		op.kind === 'simplify'
+		op.kind === 'simplify' ||
+		op.kind === 'expand' ||
+		op.kind === 'remove-parentheses'
 	) {
 		if (beforeEqualsAfter) return null;
 		return [
@@ -538,8 +550,9 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 		}
 		case 'multiply-both-sides': {
 			const operand = fmt(op.operand);
-			leftApplied = `\\textcolor{blue}{${operand} \\times} \\left(${bL}\\right)`;
-			rightApplied = `\\textcolor{blue}{${operand} \\times} \\left(${bR}\\right)`;
+			const sides = step.before.type === 'relation' ? step.before : null;
+			leftApplied = `\\textcolor{blue}{${operand} \\times} ${factorLatex(bL, sides?.left)}`;
+			rightApplied = `\\textcolor{blue}{${operand} \\times} ${factorLatex(bR, sides?.right)}`;
 			break;
 		}
 		case 'divide-both-sides': {
@@ -557,6 +570,20 @@ export function formatTransformationLines(step: EquationStep): readonly string[]
 		`  ${aL} &${relAfter} ${aR}`,
 		'\\end{aligned}'
 	];
+}
+
+/**
+ * Un membre multiplié : entre parenthèses s'il est une somme ou commence par
+ * un signe moins (`2 \\times \\left(x + 1\\right)`, `-2 \\times \\left(-\\dfrac{x}{2}\\right)`),
+ * nu sinon (`2 \\times 3`, pas `2 \\times \\left(3\\right)`).
+ */
+function factorLatex(latex: string, node: MathNode | undefined): string {
+	const bare =
+		node !== undefined &&
+		node.type !== 'addition' &&
+		node.type !== 'subtraction' &&
+		!latex.trimStart().startsWith('-');
+	return bare ? latex : `\\left(${latex}\\right)`;
 }
 
 /**
@@ -609,7 +636,9 @@ export function formatTransformationCustom(step: EquationStep): string | null {
 		op.kind === 'reduce-to-canonical' ||
 		op.kind === 'group-variable-terms' ||
 		op.kind === 'group-constants' ||
-		op.kind === 'simplify'
+		op.kind === 'simplify' ||
+		op.kind === 'expand' ||
+		op.kind === 'remove-parentheses'
 	) {
 		const beforeEqualsAfter = bL === aL && bR === aR && relBefore === relAfter;
 		if (beforeEqualsAfter) return null;

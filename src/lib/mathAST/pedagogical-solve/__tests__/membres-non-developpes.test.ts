@@ -10,6 +10,9 @@
  *
  * Le correctif #860 avait réparé le même défaut dans `solve.command.ts`, un
  * AUTRE générateur d'étapes : `pedagogical-solve` n'en a jamais bénéficié.
+ *
+ * Ces formes levaient ensuite `UndevelopedLinearForm` (aucune étape) ; depuis
+ * Q52 (2026-10-25), elles sont défaites avant les étapes (`linear-unwrap.ts`).
  */
 
 import { describe, expect, it } from 'vitest';
@@ -17,7 +20,7 @@ import { parseLatex } from '../../parser';
 import { isRelation } from '../../guards';
 import type { RelationNode } from '../../types';
 import { toLatex } from '../../latex-generator';
-import { generateEquationSteps, generateInequalitySteps, UndevelopedLinearForm } from '..';
+import { generateEquationSteps, generateInequalitySteps } from '..';
 
 function rel(latex: string): RelationNode {
 	const node = parseLatex(latex);
@@ -55,18 +58,20 @@ describe('membre entièrement parenthésé : raconté comme son contenu', () => 
 	});
 });
 
-describe('terme en x non développé : pas d’étapes plutôt que des étapes fausses', () => {
-	it.each(['2(x-1)=4', '-(x-3)=0', '(2x-4)/2=0', '3+(x-1)=5', '-(x-1)>0'])(
-		'%s lève UndevelopedLinearForm',
-		(input) => {
-			const r = rel(input);
-			expect(() =>
-				r.relation === '='
-					? generateEquationSteps(r, { level: 'college', variable: 'x' })
-					: generateInequalitySteps(r, { level: 'college', variable: 'x' })
-			).toThrow(UndevelopedLinearForm);
-		}
-	);
+describe('terme en x non développé : défait avant les étapes (Q52, 2026-10-25)', () => {
+	// Levaient UndevelopedLinearForm (aucune étape plutôt que des étapes
+	// fausses) ; le membre est maintenant défait comme sur papier
+	// (`linear-unwrap.ts`) : la conclusion est juste.
+	it.each([
+		['2(x-1)=4', 'x = 3'],
+		['-(x-3)=0', 'x = 3'],
+		['(2x-4)/2=0', 'x = 2'],
+		['3+(x-1)=5', 'x = 3'],
+		['(x+1)\\cdot 3=6', 'x = 1'],
+		['-(x-1)>0', 'x < 1']
+	])('%s conclut %s', (input, expected) => {
+		expect(lastAfter(input)).toBe(expected);
+	});
 
 	it.each([
 		['3x+5=14x', 'x = \\dfrac{5}{11}'],
