@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-25, après #1744._
 
-- **État** : A1 (#1712), A2 (#1720), A4 (#1728), A5 (#1736) livrés et relus. **A3 ordinaux** : #1744 mergée ; 6 brouillons en prod (`d437959a`, `c3b236fc` CP-009 ; `7dc1629e` CP-010 ; `10226cae` CP-011 ; `0559204d` CP-012 ; `62ae6847` CP-013), sans nœud ni tag tant que la migration n'est pas jouée. Migration `20261026010000_questions_cp_a3_rangement_tags` : test rouge puis vert, `security-auditor` sans finding bloquant. Page à cocher : https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71 (collection `verdicts`).
-- **Prochaine action** : `db:migrate` depuis le dépôt principal dès que David a tranché la question d'accès, puis vérifier en prod (nœud, 1 tag chacun, `updated_at` inchangé) ; ensuite lot A6 grandeurs et lexique (036, 038, 037, 032, 039, 041, 048), phase 0.
-- **En attente de David** : question d'accès A3 (« personne ne gagne ni ne perd d'accès ») ; relecture des 6 brouillons A3 ; publication des 24 brouillons A1 + A2 + A4 + A5 (tous relus OK) ; vérification manuelle #1702.
+- **État** : A1 (#1712), A2 (#1720), A4 (#1728), A5 (#1736) livrés et relus. **A3 ordinaux** : #1744 mergée ; 6 brouillons en prod (`d437959a`, `c3b236fc` CP-009 ; `7dc1629e` CP-010 ; `10226cae` CP-011 ; `0559204d` CP-012 ; `62ae6847` CP-013). Migration `20261026010000_questions_cp_a3_rangement_tags` **jouée en prod le 2026-10-25** (question d'accès tranchée : personne) : 6 modèles sur « ordinaux et rangs », 1 tag chacun, `updated_at` inchangé, triggers `O`. Page à cocher : https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71 (collection `verdicts`).
+- **Prochaine action** : lot A6 grandeurs et lexique (036, 038, 037, 032, 039, 041, 048), phase 0.
+- **En attente de David** : relecture des 6 brouillons A3 ; publication des 28 brouillons A1 à A5 en un lot (24 relus OK + 6 A3 après relecture) ; vérification manuelle #1702.
 - **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; **le bon choix d'un QCM n'accepte qu'UN `{{if:…}}`, pas une chaîne imbriquée** → formule `{{eval:mod(…)}}` ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; script d'un tirage hors du dépôt → `.mts`.
 - **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1744).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -166,3 +166,4 @@ David suit mes cinq recommandations (« je te suis », après les avoir demandé
 - 2026-10-25 : lot A3, phase 0 validée (§ 4 septies), worktree `../ubumaths-wt-questions` (`feat/questions-a3`) ; 6 modèles écrits, 59 specs vertes, rendu relu (accords et corrigés retouchés).
 - 2026-10-25 : A3, 6 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; migration nœud + tag et test, rouge puis vert.
 - 2026-10-25 : #1744 mergée ; page à cocher A3 publiée ; `db:migrate` en attente de la question d'accès.
+- 2026-10-25 : question d'accès A3 tranchée par David (personne) ; `db:migrate` joué, vérifié en prod (6 modèles sur « ordinaux et rangs », 1 tag chacun, `updated_at` inchangé, triggers actifs).
