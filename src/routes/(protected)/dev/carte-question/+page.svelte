@@ -74,7 +74,39 @@
 		'C = point(4, 5)'
 	].join('\n');
 
+	// CP-060 : terminer un carré sur quadrillage (outil segment, sommets sans lettre)
+	const CARRE_BODY = [
+		'fenetre: 0 ; 12 ; 0 ; 8',
+		'grille: 1',
+		'outils: segment',
+		'verifier: carre A ; B',
+		'---',
+		'A = point(2, 4, visible=faux)',
+		'B = point(5, 4, visible=faux)',
+		'ab = segment(A, B)'
+	].join('\n');
+
 	const sampleQuestions: Record<string, DebugInstance> = {
+		figure_carre: {
+			templateId: 'demo-figure-carre',
+			statement: resolvedMarkdown(
+				`Termine le carré.\n\n\`\`\`figure-a-completer\ncase: 0\n${CARRE_BODY}\n\`\`\``
+			),
+			blanks: [
+				{
+					expectedAnswer: 'carre(A;B)',
+					type: 'graphical',
+					construction: {
+						source: CARRE_BODY,
+						checks: [{ kind: 'carre', points: ['A', 'B'], line: 4 }]
+					}
+				}
+			],
+			grades: ['CP'],
+			theme: 'Géométrie',
+			domain: 'Terminer un carré',
+			level: 1
+		},
 		figure_a_completer: {
 			templateId: 'demo-figure-a-completer',
 			statement: resolvedMarkdown(
@@ -242,7 +274,8 @@
 		{ value: 'fraction_sum', label: 'Somme de fractions, à trou' },
 		{ value: 'qcm_pi', label: 'QCM : valeur de π' },
 		{ value: 'pythagore_blanks', label: 'Pythagore, deux trous' },
-		{ value: 'figure_a_completer', label: 'Figure à compléter (CP-059)' }
+		{ value: 'figure_a_completer', label: 'Figure à compléter (CP-059)' },
+		{ value: 'figure_carre', label: 'Terminer un carré (CP-060)' }
 	];
 	const SIZE_ITEMS = [
 		{ value: 'sm', label: 'Petite' },
