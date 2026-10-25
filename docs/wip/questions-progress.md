@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1753 (suite décidée le même jour)._
+_Mis à jour le 2026-10-25, après #1759._
 
-- **État** : **groupe A (texte seul) COMPLET** — A1 (#1712), A2 (#1720), A4 (#1728), A5 (#1736), A3 (#1744), A6 (#1753) livrés, migrations jouées. A6 : 9 brouillons sur le nœud de leur point, 1 tag chacun (`db:migrate` joué et vérifié en prod le 2026-10-25, question d'accès tranchée : personne). Page à cocher A6 : https://claude.ai/artifact/Y9pL4cNshyjycC2wtbdtWG (collection `verdicts`) — 8/9 OK ; « Écrire un nombre en lettres » (`92c8e499`) refait (leurres d'orthographe, de forme, de numération), mis à jour en prod, à relire.
-- **Prochaine action** : lot H (§ 4 decies) : 3 modèles écrits et verts dans `scripts/questions/cp-h/` ; brouillons créés en prod, migration nœud + tag et test verts ; audit OK, page à cocher https://claude.ai/artifact/PG6EhGTHaAkTiEkSSst4st ; PR puis `db:migrate` au merge — **bloqué** tant que `20261026120000_demo_scripts_prof_seul` (autre session) n'est pas jouée ou tranchée par David ; ensuite B1 tableaux → B2 reconnaître sur une figure → B3 images fixes, puis case « figure » (§ 4 nonies).
-- **En attente de David** : relecture de `92c8e499` (page A6) ; relecture des 6 brouillons A3 (https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71, aucun verdict encore) ; publication des brouillons A1 à A6 en un lot ; vérification manuelle #1702.
-- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; **le bon choix d'un QCM n'accepte qu'UN `{{if:…}}`, pas une chaîne imbriquée** ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau (dossier d'un seul fichier pour n'en toucher qu'un) ; leurres d'un QCM de mots : chacun vise une erreur (orthographe, forme, numération) ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; la base refuse un tag sur un modèle sans nœud.
-- **Worktree / branche** : `../ubumaths-wt-questions` (`feat/questions-h`).
+- **État** : groupe A COMPLET (#1712 → #1753) ; **lot H mergé (#1759)** : 3 brouillons en prod (`9780d3c1` CP-046, `f1759d81` CP-047, `0f7381e6` CP-016), migration `20261026130000` (nœud + tag) **pas encore jouée**. Page à cocher H : https://claude.ai/artifact/PG6EhGTHaAkTiEkSSst4st (collection `verdicts`, aucun verdict). Blocs horloge et opération pas en prod : brouillons mal rendus dans l'admin de prod jusqu'au `deploy:prod`.
+- **Prochaine action** : `db:migrate` — ⚠️ jouerait aussi `20261026120000_demo_scripts_prof_seul` (chantier demo-debug, à lancer par David : `! pnpm db:migrate`) ; ensuite vérifier en prod les 3 modèles rangés et tagués (et les 5 scripts au prof). Puis lot **B1** tableaux (068, 069, 084) → B2 → B3 (§ 4 nonies).
+- **En attente de David** : `! pnpm db:migrate` ; relecture pages H, A3 (https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71) et `92c8e499` (A6) ; publication A1 à H en un lot ; vérification manuelle #1702.
+- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; le bon choix d'un QCM n'accepte qu'UN `{{if:…}}` ; **une variable `h` remplace la lettre « h » des valeurs (« 6 h » → « 6 12 ») : ne pas nommer une variable comme une lettre du texte** ; bloc ```operation : plus grand terme en premier ; sous zsh, `$LISTE` ne se découpe pas ; corps de commit ≤ 100 caractères par ligne ; jamais de variable `e` ; relire le rendu ; la base refuse un tag sur un modèle sans nœud.
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1759).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -204,3 +204,4 @@ David suit mes recommandations (« je suis tes recos. go »).
 - 2026-10-25 : lot H, phase 0 validée (§ 4 decies), worktree `../ubumaths-wt-questions` (`feat/questions-h`) ; 3 modèles écrits, 21 specs vertes, rendu relu (singulier « 1 heure », variable `h` renommée `n` : la lettre « h » des valeurs était remplacée).
 - 2026-10-25 : H, 3 brouillons créés en prod (`create-questions --publier`, go de David : `9780d3c1`, `f1759d81`, `0f7381e6`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026130000` nœud + tag et test, rouge (5/9) puis vert.
 - 2026-10-25 : H, audit sécurité sans finding bloquant (⚠️ `20261026120000_demo_scripts_prof_seul` est sur `main` et pas jouée en prod : un `db:migrate` la jouerait aussi) ; page à cocher H publiée : https://claude.ai/artifact/PG6EhGTHaAkTiEkSSst4st (collection `verdicts`).
+- 2026-10-25 : #1759 mergée (CI verte) ; `db:migrate` en attente (migration demo_scripts en file, à lancer par David).
