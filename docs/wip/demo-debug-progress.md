@@ -2,16 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1729 (6i-a)._
+_Mis à jour le 2026-10-25, après #1731 (6i-b)._
 
-- **État** : PR 1 à 5 et 6a à 6h mergées, pas en prod. Phase 0 du diaporama faite et validée le 2026-10-25 (section « PR 6i » plus bas) : elle se découpe en 3 PR, **6i-a** coloration de ` ```python ` (`CodeBlock`), **6i-b** thème d'après le fond + réduction automatique des diapositives, **6i-c** la vitrine.
-- **Fait** : 6i-a = #1729, mergée (coloration des blocs de code, pas en prod).
-- **Prochaine action** : 6i-b en cours sur `feat/diapositives-theme` (thème d'après le fond, réduction automatique) ; puis 6i-c, la vitrine.
+- **État** : PR 1 à 5 et 6a à 6h mergées ; 6i-a = #1729 (coloration des blocs de code) et 6i-b = #1731 (thème des diapositives d'après le fond, réduction d'une `UbuMarkSlide` trop longue, cercle trigo juste à toute échelle) mergées. Rien de tout cela en prod.
+- **Prochaine action** : **6i-c**, la vitrine `/demo/diaporama` (13 diapositives, plan et décisions dans « PR 6i » plus bas), sur `feat/demo-diaporama` (créée, pas encore poussée). Phase 0 déjà validée : coder directement, tests d'abord.
 - **Hors chantier, décidé par David le 2026-10-25** : le cahier de texte passe à ubumark (voie 2), **futur chantier à part** `cahier-ubumark` ; énigmes (HTML lu comme markdown) à mesurer.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** ; `z` ≈ `2` → regarder en dernier, PR à part dans `tools/chiphre-math/`.
 - **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : degrés par défaut, **courbe() comprise**, `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : chemin relatif ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; test de page qui lit le lexique : simuler `fetchDictionary` ; commitlint : lignes du corps ≤ 100 caractères ; **`{@html}` n'est pas corrigé à l'hydratation** (calculer après `onMount`) ; dans un test, cliquer au milieu de l'éditeur tombe sur un champ MathLive.
-- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/diapositives-theme` (6i-b). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/demo-diaporama` (6i-c). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
@@ -400,3 +399,15 @@ no position before the top-level node` dans les raccourcis Backspace de la droit
   jusqu'à la nouvelle. Revue `code-reviewer` (Sonnet) : 0 bloquant, 2 « à corriger » corrigés.
 - Piège : un test client qui charge un module **nouveau** pour Vite peut échouer au premier passage
   (cache Vite d'avant le module, rechargement en plein test) ; à froid ou au 2ᵉ passage, vert.
+
+### 6i-b — thème et réduction des diapositives (#1731, mergée le 2026-10-25)
+
+- `slide-theme.ts` (`slideColorScheme`) : couleur unie → luminance, prop `theme` ; `Slide` pose
+  `color-scheme`. Sans fond : couleur du site ; dégradé / image : blanc comme avant.
+- `UbuMarkSlide` : réduction à largeur fixe (`ResizeObserver`), plancher 0,5 puis défilement ;
+  bordures de tableau et fond des `pre` en `color-mix` du texte.
+- Revue `code-reviewer` (Sonnet) : 0 bloquant ; trouvé en chemin un bug antérieur — le cercle trigo
+  interactif comparait des coordonnées d'écran au dessin (faux dès qu'il est affiché à une autre
+  taille) → `svgPoint`, test `TrigCircle-echelle`.
+- Pour 6i-c : fonds de couleur unie (thème déduit), blocs grossis par `taille:` si besoin ; un
+  tableau large défile dans son cadre (`TableNode`), il n'est pas réduit.
