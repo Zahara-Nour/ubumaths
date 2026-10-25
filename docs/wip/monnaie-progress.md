@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1778._
+_Mis à jour le 2026-10-25, après #1781._
 
-- **État** : bloc ` ```monnaie ` complet sur `main` (#1776 scène commune, #1778 bloc : parseur, scène, écran + marquage, PDF, QCM à 6 cm, série figée, éditeur, `check:ubumark`, doc `ubumark.md`) ; pas en prod.
-- **Prochaine action** : recette de David (captures 390 px clair/sombre + PDF) ; puis fin de chantier = versement (le durable est déjà dans `docs/systeme/ubumark.md`, ce journal part en archive). Modèles CP-042/043/044/071 : session « questions » ; « construire » : lot commun avec la collection (décision 7).
-- **En attente de David** : la recette à l'œil.
-- **Pièges en cours** : dans un choix de QCM, monnaie à 6 cm (décision 12), collection à 3 ; `0×10` accepté sans message (voulu, § 3).
-- **Worktree / branche** : aucun (`../ubumaths-wt-monnaie` retiré après #1778).
+- **État** : bloc ` ```monnaie ` complet sur `main` (#1776, #1778) ; recette faite sur captures, corrigés en #1781 (cadre rogné à l'écran, monnaie ET collection ; légende du PDF ≥ 3 cm, non justifiée ; décisions 13 et 14) ; pas en prod.
+- **Prochaine action** : coup d'œil de David sur les captures v2 (`…/scratchpad/recette/v2/`, session du 2026-10-25 — se refont en 1 min : `exemples.mjs` + `captures.mjs` montent `MarkdownRenderer` dans `/demo/blocs` via Vite) ; puis fin de chantier = versement (durable déjà dans `docs/systeme/ubumark.md`, ce journal part en archive). Modèles CP-042/043/044/071 : session « questions » ; « construire » : lot commun avec la collection (décision 7).
+- **En attente de David** : son OK sur les captures v2.
+- **Pièges en cours** : QCM à 6 cm (décision 12) ; `0×10` sans message (voulu) ; point ouvert hors chantier : au PDF, une phrase peut finir en bas de page et son bloc partir sur la suivante (tous les blocs).
+- **Worktree / branche** : aucun (`../ubumaths-wt-monnaie` retiré après #1781).
 
 ## 1. Origine et périmètre
 
