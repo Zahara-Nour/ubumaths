@@ -93,8 +93,8 @@ Proposition passée au conseil (5 conseillers + relecture croisée anonyme). Ce 
 1. Bloc `horloge` (cadran paramétrable ; CP heures entières, puis minutes CE1/CE2) — recommandé en premier.
 2. Bloc `collection` (vrac, barres de dix + cubes, groupements partiels).
 3. Bloc `monnaie` (pièces et billets d'euros).
-4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles).
-5. **Case « figure »** (§ 2 bis) : branche les prédicats existants et la barre d'outils de l'atelier dans une question.
+4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles) — reçoit **CP-008** (verdict du conseil, § 2 bis, suivi par David le 2026-10-25).
+5. **Case « figure »** (§ 2 bis, verdict du conseil) : objets de l'élève retrouvés par leur position sur les nœuds, vérification de propriétés en tout-ou-rien ; CP-059 d'abord, puis 060, puis 034.
 6. **Opérations posées** (demandé par David le 2026-10-24) : bloc « en colonnes » (addition au CP, CP-016 ; puis soustraction, multiplication, division aux niveaux suivants) — aucun rendu « posé » n'existe dans `ubumark`. Place dans l'ordre : à trancher.
 
 ## 4. Questions à David
@@ -176,7 +176,7 @@ David suit mes recommandations (« je te suis »).
 
 1. D'abord, ses relectures en attente (A3, `92c8e499`) puis la publication A1-A6 en un lot : elles orientent les lots suivants.
 2. **Lot H** (une PR) : modèles d'horloge CP-046 (lire) et CP-047 (positionner, en QCM d'horloges) + **CP-016** (addition posée, le lot 1 d'`operations-posees` est sur `main`). Les deux blocs ne sont pas en prod : brouillons jusqu'au `deploy:prod`.
-3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 008, 058, 034 restent pour la case « figure ».
+3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 034 (avec 059, 060) reste pour la case « figure » ; **008** passe aux « réponses à placer » (§ 3.4) et **058** est à réexaminer (pas forcément une figure) — David suit le verdict du conseil (§ 2 bis), 2026-10-25.
 4. Puis case « figure » (chantier à part), collection, monnaie — inchangé (§ 4 bis).
 
 ## 4 decies. Lot H : décisions (David, 2026-10-25)
@@ -232,3 +232,4 @@ David suit mes recommandations (« je suis tes recos. go »).
 - 2026-10-25 : `db:migrate` lancé par David (demo_scripts + lot H), vérifié en prod : 3 modèles H sur leur sous-notion, 1 tag chacun ; 5 scripts de démo au prof, 0 à l'admin. Page à cocher H relue : 3/3 OK.
 - 2026-10-25 : relevé des pages : `92c8e499` (A6) OK depuis 14 h 22 → A6 9/9 OK ; A3 toujours sans verdict.
 - 2026-10-25 : page A3 relue par David, 6/6 OK. Tous les brouillons du chantier (A1 à H) sont validés.
+- 2026-10-25 : validation des figures faites par l'élève passée au conseil ; verdict consigné (§ 2 bis) et suivi par David : 008 → réponses à placer, 058 à réexaminer (§ 3, § 4 nonies).
