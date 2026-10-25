@@ -30,6 +30,7 @@ tests/
 └── cleanup-test-data.ts       aucun script pnpm ni config ne les appelle
 
 e2e/<rôle>/*.spec.ts         ← Playwright : auth/, exercises/, navadra/, public/, student/, teacher/ (+ helpers/)
+e2e/verifs/*.spec.ts         ← lignes de docs/wip/verifications-manuelles.md automatisées (+ sonde.spec.ts)
 eslint-rules/*.test.js       ← tests des règles ESLint maison
 ```
 
@@ -48,15 +49,16 @@ En cas de doute : « est-ce que ça peut vivre à côté de son code ? » Si oui
 
 ## 2. Quel runner pour quoi — le suffixe route
 
-| Suffixe / fichier                             | Runner                                          | Config                           | Lancement                               |
-| --------------------------------------------- | ----------------------------------------------- | -------------------------------- | --------------------------------------- |
-| `src/**`, `scripts/**` `*.test.ts`            | vitest projet **`server`** (node)               | `vite.config.ts`                 | `pnpm test:server <chemin>`             |
-| `src/**/*.svelte.test.ts`                     | vitest projet **`client`** (Chromium)           | `vite.config.ts`                 | `pnpm test:client <chemin>`             |
-| `src/**/*-real.svelte.test.ts`                | projet `client`, **exclu en CI** (Pyodide réel) | `vite.config.ts`                 | nightly, ou `pnpm test:client` en local |
-| `tests/integration/**/*.test.ts`              | vitest **`integration`** (node, séquentiel)     | `vitest.integration.config.ts`   | `pnpm test:integration`                 |
-| `garde-fonctions-security-definer.test.ts`    | vitest **`definer-guard`** (seul)               | `vitest.definer-guard.config.ts` | `pnpm test:definer-guard`               |
-| `e2e/**/*.spec.ts`                            | Playwright (chromium, firefox, webkit)          | `playwright.config.ts`           | `pnpm test:e2e`                         |
-| `eslint-rules/require-zod-validation.test.js` | node                                            | —                                | `pnpm test:lint-rules`                  |
+| Suffixe / fichier                             | Runner                                          | Config                           | Lancement                                        |
+| --------------------------------------------- | ----------------------------------------------- | -------------------------------- | ------------------------------------------------ |
+| `src/**`, `scripts/**` `*.test.ts`            | vitest projet **`server`** (node)               | `vite.config.ts`                 | `pnpm test:server <chemin>`                      |
+| `src/**/*.svelte.test.ts`                     | vitest projet **`client`** (Chromium)           | `vite.config.ts`                 | `pnpm test:client <chemin>`                      |
+| `src/**/*-real.svelte.test.ts`                | projet `client`, **exclu en CI** (Pyodide réel) | `vite.config.ts`                 | nightly, ou `pnpm test:client` en local          |
+| `tests/integration/**/*.test.ts`              | vitest **`integration`** (node, séquentiel)     | `vitest.integration.config.ts`   | `pnpm test:integration`                          |
+| `garde-fonctions-security-definer.test.ts`    | vitest **`definer-guard`** (seul)               | `vitest.definer-guard.config.ts` | `pnpm test:definer-guard`                        |
+| `e2e/**/*.spec.ts`                            | Playwright (chromium, firefox, webkit)          | `playwright.config.ts`           | `pnpm test:e2e`                                  |
+| `e2e/verifs/*.spec.ts`                        | Playwright (chromium), serveur de dev           | `playwright.verifs.config.ts`    | `pnpm test:verifs` (`VERIFS_PORT`, `VERIFS_URL`) |
+| `eslint-rules/require-zod-validation.test.js` | node                                            | —                                | `pnpm test:lint-rules`                           |
 
 Détails qui comptent :
 
@@ -81,13 +83,13 @@ Détails qui comptent :
 
 ## 3. Ce qui tourne où
 
-| Où                                                      | Ce qui tourne                                                                                                                                                                                                                                                               |
-| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Local**                                               | Ce que tu lances : tests **ciblés** (contrainte RAM, cf. CLAUDE.md). Intégration sous verrou Supabase.                                                                                                                                                                      |
-| **Toute PR + push sur `main`** (`quality.yml`)          | `test-server` (**4 shards**), `test-client` (**2 shards**, hors `*-real`), `definer-guard` (Supabase `db start` + `pnpm test:definer-guard`) ; plus Lint (dont `check:await-render`), Type Check, Types des tests (cliquet), Build, Audit. Tous agrégés par **CI Summary**. |
-| **PR filtrées par `paths`** (`nightly-integration.yml`) | **Integration tests (Supabase local)** : `pnpm test:integration` sur une pile Supabase complète, + job **Integration paths filter** (`pnpm check:integration-paths`).                                                                                                       |
-| **Nuit**                                                | Intégration (cron `17 2 * * *`, 02:17 UTC, `nightly-integration.yml`) ; Pyodide réel (cron `0 3 * * *`, `nightly-pyodide.yml`, `RUN_PYODIDE_REAL=1`, `vitest run --project client src/**/*-real.svelte.test.ts`).                                                           |
-| **Jamais en CI**                                        | `pnpm test:e2e` (build + preview, lancé à la demande — le `pnpm build` du `webServer` prend le verrou gros process) ; `pnpm test:lint-rules`.                                                                                                                               |
+| Où                                                      | Ce qui tourne                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Local**                                               | Ce que tu lances : tests **ciblés** (contrainte RAM, cf. CLAUDE.md). Intégration sous verrou Supabase.                                                                                                                                                                                                                                              |
+| **Toute PR + push sur `main`** (`quality.yml`)          | `test-server` (**4 shards**), `test-client` (**2 shards**, hors `*-real`), `definer-guard` (Supabase `db start` + `pnpm test:definer-guard`) ; plus Lint (dont `check:await-render`), Type Check, Types des tests (cliquet), Build, Audit. Tous agrégés par **CI Summary**.                                                                         |
+| **PR filtrées par `paths`** (`nightly-integration.yml`) | **Integration tests (Supabase local)** : `pnpm test:integration` sur une pile Supabase complète, + job **Integration paths filter** (`pnpm check:integration-paths`).                                                                                                                                                                               |
+| **Nuit**                                                | Intégration (cron `17 2 * * *`, 02:17 UTC, `nightly-integration.yml`) ; Pyodide réel (cron `0 3 * * *`, `nightly-pyodide.yml`, `RUN_PYODIDE_REAL=1`, `vitest run --project client src/**/*-real.svelte.test.ts`).                                                                                                                                   |
+| **Jamais en CI**                                        | `pnpm test:e2e` (build + preview, lancé à la demande — le `pnpm build` du `webServer` prend le verrou gros process) ; `pnpm test:verifs` (serveur de dev, ou la prod avec `VERIFS_URL=https://chiph.re` : une ligne de vérification manuelle par test, un test rouge = bug ou ligne périmée, jamais un attendu à changer) ; `pnpm test:lint-rules`. |
 
 **Intégration : PR ou nightly ? Les deux.** Le workflow `nightly-integration.yml` se déclenche
 (1) chaque nuit, (2) sur toute PR qui touche un fichier de son filtre `paths` (`supabase/**`,
