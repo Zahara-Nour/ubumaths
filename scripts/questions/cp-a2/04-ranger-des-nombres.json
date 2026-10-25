@@ -1,0 +1,265 @@
+{
+	"title": "Ranger des nombres",
+	"description": "Quatre nombres jusqu'à 100, ordre croissant ou décroissant",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Comparer",
+	"level": 5,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Range ces nombres du plus petit au plus grand.\n\n${{x1}} \\quad ; \\quad {{x2}} \\quad ; \\quad {{x3}} \\quad ; \\quad {{x4}}$\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "s1",
+					"expression": "0..60"
+				},
+				{
+					"name": "s2",
+					"expression": "{{eval:s1+1}}..75"
+				},
+				{
+					"name": "s3",
+					"expression": "{{eval:s2+1}}..90"
+				},
+				{
+					"name": "s4",
+					"expression": "{{eval:s3+1}}..100"
+				},
+				{
+					"name": "o",
+					"expression": "1..4"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:{{if:o==1|s3|{{if:o==2|s2|{{if:o==3|s4|s3}}}}}}"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:{{if:o==1|s1|{{if:o==2|s4|{{if:o==3|s2|s4}}}}}}"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:{{if:o==1|s4|{{if:o==2|s1|{{if:o==3|s3|s1}}}}}}"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:{{if:o==1|s2|{{if:o==2|s3|{{if:o==3|s1|s2}}}}}}"
+				},
+				{
+					"name": "expression1",
+					"expression": "?<?<?<?"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s1}}"
+				},
+				{
+					"expectedAnswer": "{{s2}}"
+				},
+				{
+					"expectedAnswer": "{{s3}}"
+				},
+				{
+					"expectedAnswer": "{{s4}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour comparer deux nombres, on regarde d'abord le chiffre des dizaines (un nombre à un chiffre a $0$ dizaine) ; si c'est le même, on regarde le chiffre des unités.",
+					"$${{s1}} < {{s2}} < {{s3}} < {{s4}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Range ces nombres du plus grand au plus petit.\n\n${{x1}} \\quad ; \\quad {{x2}} \\quad ; \\quad {{x3}} \\quad ; \\quad {{x4}}$\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "s1",
+					"expression": "0..60"
+				},
+				{
+					"name": "s2",
+					"expression": "{{eval:s1+1}}..75"
+				},
+				{
+					"name": "s3",
+					"expression": "{{eval:s2+1}}..90"
+				},
+				{
+					"name": "s4",
+					"expression": "{{eval:s3+1}}..100"
+				},
+				{
+					"name": "o",
+					"expression": "1..4"
+				},
+				{
+					"name": "x1",
+					"expression": "eval:{{if:o==1|s3|{{if:o==2|s2|{{if:o==3|s4|s3}}}}}}"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:{{if:o==1|s1|{{if:o==2|s4|{{if:o==3|s2|s4}}}}}}"
+				},
+				{
+					"name": "x3",
+					"expression": "eval:{{if:o==1|s4|{{if:o==2|s1|{{if:o==3|s3|s1}}}}}}"
+				},
+				{
+					"name": "x4",
+					"expression": "eval:{{if:o==1|s2|{{if:o==2|s3|{{if:o==3|s1|s2}}}}}}"
+				},
+				{
+					"name": "expression1",
+					"expression": "?>?>?>?"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{s4}}"
+				},
+				{
+					"expectedAnswer": "{{s3}}"
+				},
+				{
+					"expectedAnswer": "{{s2}}"
+				},
+				{
+					"expectedAnswer": "{{s1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Pour comparer deux nombres, on regarde d'abord le chiffre des dizaines (un nombre à un chiffre a $0$ dizaine) ; si c'est le même, on regarde le chiffre des unités.",
+					"$${{s4}} > {{s3}} > {{s2}} > {{s1}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "croissant : 9 < 25 < 47 < 52",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "9",
+				"s2": "25",
+				"s3": "47",
+				"s4": "52",
+				"o": "1"
+			},
+			"answers": ["9", "25", "47", "52"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "même dizaine et chiffres inversés : 34 < 38 < 43 < 48",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "34",
+				"s2": "38",
+				"s3": "43",
+				"s4": "48",
+				"o": "2"
+			},
+			"answers": ["34", "38", "43", "48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "bornes : 0 < 1 < 99 < 100",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "0",
+				"s2": "1",
+				"s3": "99",
+				"s4": "100",
+				"o": "3"
+			},
+			"answers": ["0", "1", "99", "100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre décroissant",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "9",
+				"s2": "25",
+				"s3": "47",
+				"s4": "52",
+				"o": "1"
+			},
+			"answers": ["52", "47", "25", "9"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : ordre d'affichage recopié",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "9",
+				"s2": "25",
+				"s3": "47",
+				"s4": "52",
+				"o": "1"
+			},
+			"answers": ["47", "9", "52", "25"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : unités avant dizaines (43 < 34)",
+			"variationIndex": 0,
+			"variables": {
+				"s1": "34",
+				"s2": "38",
+				"s3": "43",
+				"s4": "48",
+				"o": "2"
+			},
+			"answers": ["43", "34", "48", "38"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "décroissant : 52 > 47 > 25 > 9",
+			"variationIndex": 1,
+			"variables": {
+				"s1": "9",
+				"s2": "25",
+				"s3": "47",
+				"s4": "52",
+				"o": "4"
+			},
+			"answers": ["52", "47", "25", "9"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : ordre croissant",
+			"variationIndex": 1,
+			"variables": {
+				"s1": "9",
+				"s2": "25",
+				"s3": "47",
+				"s4": "52",
+				"o": "4"
+			},
+			"answers": ["9", "25", "47", "52"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

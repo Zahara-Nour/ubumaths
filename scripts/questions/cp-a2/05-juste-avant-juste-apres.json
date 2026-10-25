@@ -1,0 +1,119 @@
+{
+	"title": "Le nombre juste avant, le nombre juste après",
+	"description": "Encadrer par les deux voisins : 46 < 47 < 48",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Encadrer",
+	"level": 4,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Écris le nombre juste avant et le nombre juste après.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..99"
+				},
+				{
+					"name": "expression1",
+					"expression": "?<{{n}}<?"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:n+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le nombre juste avant ${{n}}$ est celui qu'on dit en reculant de $1$ ; le nombre juste après, celui qu'on dit en avançant de $1$.",
+					"$${{eval:n-1}} < {{n}} < {{eval:n+1}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "46 < 47 < 48",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47"
+			},
+			"answers": ["46", "48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "passage de la dizaine : 39 < 40 < 41",
+			"variationIndex": 0,
+			"variables": {
+				"n": "40"
+			},
+			"answers": ["39", "41"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "bornes : 98 < 99 < 100",
+			"variationIndex": 0,
+			"variables": {
+				"n": "99"
+			},
+			"answers": ["98", "100"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "bornes : 0 < 1 < 2",
+			"variationIndex": 0,
+			"variables": {
+				"n": "1"
+			},
+			"answers": ["0", "2"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : voisins inversés",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47"
+			},
+			"answers": ["48", "46"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : pas les voisins (45, 49)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "47"
+			},
+			"answers": ["45", "49"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dizaine non reculée (49 < 40)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "40"
+			},
+			"answers": ["49", "41"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

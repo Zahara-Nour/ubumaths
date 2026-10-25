@@ -1,0 +1,163 @@
+{
+	"title": "Compléter la suite des nombres",
+	"description": "Quatre nombres qui se suivent, un manque",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ecriture",
+	"level": 12,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète la suite des nombres.\n\n$${{s}} \\quad ; \\quad {{if:k==1|?|{{eval:s+1}}}} \\quad ; \\quad {{if:k==2|?|{{eval:s+2}}}} \\quad ; \\quad {{eval:s+3}}$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..97"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s+k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans la suite des nombres, on avance de $1$ à chaque fois.",
+					"Après ${{eval:s+k-1}}$ vient ${{solution}}${{if:mod(s+k,10)==0| : on passe à la dizaine suivante|}}.",
+					"$${{s}} \\quad ; \\quad {{eval:s+1}} \\quad ; \\quad {{eval:s+2}} \\quad ; \\quad {{eval:s+3}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète la suite des nombres.\n\n$${{s}} \\quad ; \\quad {{if:k==1|?|{{eval:s+1}}}} \\quad ; \\quad {{if:k==2|?|{{eval:s+2}}}} \\quad ; \\quad {{eval:s+3}}$$",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "0..97"
+				},
+				{
+					"name": "k",
+					"expression": "1..2"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:s+k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Dans la suite des nombres, on avance de $1$ à chaque fois.",
+					"Après ${{eval:s+k-1}}$ vient ${{solution}}${{if:mod(s+k,10)==0| : on passe à la dizaine suivante|}}.",
+					"$${{s}} \\quad ; \\quad {{eval:s+1}} \\quad ; \\quad {{eval:s+2}} \\quad ; \\quad {{eval:s+3}}$$"
+				]
+			},
+			"conditions": ["mod(s,10) >= 7"]
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "37 ; 38 ; ? ; 40 : 39",
+			"variationIndex": 0,
+			"variables": {
+				"s": "37",
+				"k": "2"
+			},
+			"answers": ["39"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "47 ; ? ; 49 ; 50 : 48",
+			"variationIndex": 0,
+			"variables": {
+				"s": "47",
+				"k": "1"
+			},
+			"answers": ["48"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 97 ; 98 ; ? ; 100 : 99",
+			"variationIndex": 0,
+			"variables": {
+				"s": "97",
+				"k": "2"
+			},
+			"answers": ["99"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 0 ; ? ; 2 ; 3 : 1",
+			"variationIndex": 0,
+			"variables": {
+				"s": "0",
+				"k": "1"
+			},
+			"answers": ["1"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "passage de la dizaine : 38 ; 39 ; ? ; 41 : 40",
+			"variationIndex": 1,
+			"variables": {
+				"s": "38",
+				"k": "2"
+			},
+			"answers": ["40"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : dizaine non passée (310)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "38",
+				"k": "2"
+			},
+			"answers": ["310"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dizaine sautée (50)",
+			"variationIndex": 1,
+			"variables": {
+				"s": "38",
+				"k": "2"
+			},
+			"answers": ["50"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zéro inutile 040",
+			"variationIndex": 1,
+			"variables": {
+				"s": "38",
+				"k": "2"
+			},
+			"answers": ["040"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		}
+	]
+}
