@@ -9,7 +9,7 @@
  *
  * Décision de David (2026-10-23) : lire, créer, modifier, supprimer = prof et admin
  * seuls, chacun ses scripts. Le 2026-10-25 : l'admin retiré, ses scripts passés au prof
- * (migration 20261026020000).
+ * (migration 20261026120000).
  *
  * @vitest-environment node
  */

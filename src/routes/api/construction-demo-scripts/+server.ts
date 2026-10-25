@@ -5,7 +5,7 @@
  * DELETE - Delete a demo script by id
  *
  * Réservée au prof (décision de David du 2026-10-25, l'admin retiré) ; la RLS tient la
- * même règle (migration 20261026020000).
+ * même règle (migration 20261026120000).
  */
 
 import { json, error } from '@sveltejs/kit';
