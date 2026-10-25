@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1759 et son `db:migrate`._
+_Mis à jour le 2026-10-25, lot B1 en cours (avant PR)._
 
-- **État** : groupe A COMPLET (#1712 → #1753) ; **lot H mergé (#1759)** : 3 brouillons en prod (`9780d3c1` CP-046, `f1759d81` CP-047, `0f7381e6` CP-016), migration `20261026130000` jouée et vérifiée en prod (sous-notion + 1 tag chacun, `updated_at` inchangé, trigger actif). Page à cocher H : https://claude.ai/artifact/PG6EhGTHaAkTiEkSSst4st — **3/3 OK** par David. Blocs horloge et opération pas en prod : brouillons mal rendus dans l'admin de prod jusqu'au `deploy:prod`.
-- **Prochaine action** : phase 0 du lot **B1** tableaux (068, 069, 084), puis B2 → B3 (§ 4 nonies).
-- **En attente de David** : **toutes les pages relues OK** (A1 à A6, H) ; publication A1 à H en un lot ; vérification manuelle #1702.
-- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; le bon choix d'un QCM n'accepte qu'UN `{{if:…}}` ; **une variable `h` remplace la lettre « h » des valeurs (« 6 h » → « 6 12 ») : ne pas nommer une variable comme une lettre du texte** ; bloc ```operation : plus grand terme en premier ; sous zsh, `$LISTE` ne se découpe pas ; corps de commit ≤ 100 caractères par ligne ; jamais de variable `e` ; relire le rendu ; la base refuse un tag sur un modèle sans nœud.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1759).
+- **État** : groupe A et lot H en prod (brouillons validés). **Lot B1** (tableaux, § 4 undecies) : 3 modèles écrits dans `scripts/questions/cp-b1/` (générateur `docs/wip/questions/lot-b1.py`), 16 specs vertes, 100/100 tirages, rendu relu à 390 px, simulation `create-questions` verte.
+- **Prochaine action** : go de David pour `create-questions --publier` → migration nœud + tag (sous-notions « tableaux » et « tableau à double entrée ») et son test → PR → page à cocher.
+- **En attente de David** : go de création des brouillons B1 ; publication A1 à H en un lot ; vérification manuelle #1702.
+- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; **case dans un tableau = `$?$` (un `[_]` déborde au téléphone)** ; **un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte** ; le moteur ne mélange pas : indicatrices de Lagrange ; ne pas nommer une variable comme une lettre du texte ; jamais de variable `e` ; corps de commit ≤ 100 caractères par ligne ; la base refuse un tag sur un modèle sans nœud.
+- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-b1`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -186,6 +186,16 @@ David suit mes recommandations (« je suis tes recos. go »).
 - 3 modèles, chacun sur la sous-notion de son point, un tag : CP-046 « Quelle heure est-il ? » (case, « Il est [_] h. », réponse 1 à 12, 15 refusé pour 3 h) ; CP-047 « Quelle horloge indique… ? » (QCM de 3 horloges : bonne, aiguilles inversées — 12 h 5n, ou 6 h pour 12 h —, heure voisine ; V2 en contexte : école 8 h, cantine midi, goûter 4 h de l'après-midi, dîner 7 h du soir) ; CP-016 « Pose et calcule une addition » (bloc ```operation, `retenues: oui`, cases de retenue non jugées ; sans retenue, avec retenue, 2 + 1 chiffres, trois termes avec retenue ; somme ≤ 99, le plus grand terme en premier).
 - Pas de QCM pour CP-046 (la case suffit). Les blocs `horloge et `operation ne sont pas en prod : brouillons jusqu'au `deploy:prod`.
 
+## 4 undecies. Lot B1 : décisions (David, 2026-10-25)
+
+David suit mes recommandations (« je suis tes recos, go »).
+
+- 3 modèles, réponses en case nombre dans un tableau markdown (`tableau-croise` n'a pas de case jugée) ; chacun sur la sous-notion de son point, un tag.
+- CP-068 « Compte et range dans un tableau » (« tableaux ») : file de formes mélangées, tableau Forme / Nombre ; 3 formes ● ▲ ■ et 9 objets, ou 4 formes (+ ★) et 12 objets ; un compte à 0 est une réponse valable.
+- CP-069 « Complète le tableau à double entrée » : table d'addition 3 × 3 (en-têtes croissants de 1 à 9, 4 cases en croix) ; formes pleines ou vides (10 objets parmi ● ○ ▲ △ ■ □, rond / triangle / carré × plein / vide, 2 cases données, 4 à remplir).
+- CP-084 « Remplis le tableau à double entrée » : tableau préparé entièrement vide, données en phrases (« Léa a 3 billes rouges et 2 billes bleues. ») ; 2 ou 3 enfants × 2 couleurs. Nombres de 1 à 9 (et non 0 à 9 : « Léa a 0 bille rouge » ne se dit pas). En-tête à trouver : écarté (réponse en mot).
+- Formes en symboles (pas d'emojis : rendu PDF incertain).
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -232,3 +242,4 @@ David suit mes recommandations (« je suis tes recos. go »).
 - 2026-10-25 : `db:migrate` lancé par David (demo_scripts + lot H), vérifié en prod : 3 modèles H sur leur sous-notion, 1 tag chacun ; 5 scripts de démo au prof, 0 à l'admin. Page à cocher H relue : 3/3 OK.
 - 2026-10-25 : relevé des pages : `92c8e499` (A6) OK depuis 14 h 22 → A6 9/9 OK ; A3 toujours sans verdict.
 - 2026-10-25 : page A3 relue par David, 6/6 OK. Tous les brouillons du chantier (A1 à H) sont validés.
+- 2026-10-25 : lot B1, phase 0 validée (§ 4 undecies), worktree `../ubumaths-wt-questions` (`feat/questions-b1`) ; 3 modèles écrits, 16 specs vertes, rendu relu à 390 px (cases `[_]` → `$?$` : le champ texte débordait ; « la ligne de Inès » → Lina).
