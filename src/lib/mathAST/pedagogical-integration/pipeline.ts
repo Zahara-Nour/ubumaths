@@ -128,7 +128,7 @@ import type {
 import { abs, ln } from '../factory';
 import { findProportionalityConstant, findProportionalityRatio } from '../integration/patterns';
 import { forbiddenValueOnInterval, numericValue } from '../integration/forbidden-value';
-import { withUniformCoefficients } from '../integration/coefficient-register';
+import { withUniformCoefficients, withValueInRegister } from '../integration/coefficient-register';
 import { isCertainlyPositive } from './positivity';
 import { isMinusOneCoefficient, onlyConstantOut } from './descriptions-fr';
 import { arcsinRule, arctanRule } from '../integration/rules';
@@ -390,7 +390,7 @@ function generateDefiniteSteps(
 	// Simplify F(b) - F(a) into a numeric / closed-form value. Un décimal tapé :
 	// la valeur dans le registre de la primitive (Q49 — David, 2026-10-25)
 	const exact = tryEvaluateExact(symbolicDifference);
-	const value = exact === null ? symbolicDifference : withUniformCoefficients(exact, integrand);
+	const value = exact === null ? symbolicDifference : withValueInRegister(exact, integrand);
 	steps.push(
 		buildStep(ctx, {
 			rule: 'simplify-bounds-result',

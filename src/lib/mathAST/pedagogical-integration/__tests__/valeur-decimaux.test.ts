@@ -4,8 +4,9 @@
  *
  * Elle suit le registre de la primitive (R5) : décimal si son écriture est
  * finie (`∫₀¹ 0,5x dx = 0,25`), sinon fraction (`∫₀¹ 0,5x² dx = 1/6`). Une
- * valeur avec e ou ln : ses coefficients dans un seul registre
- * (`∫₀¹ 0,5eˣ dx = 0,5e − 0,5`). Sans décimal tapé, rien ne change.
+ * valeur irrationnelle n'a pas d'écriture décimale finie (Q22) : fraction
+ * (`∫₀^{π/4} 0,5 cos x = √2/4`, point 2 de la revue de Q49 — David,
+ * 2026-10-25). Sans décimal tapé, rien ne change.
  */
 import { describe, expect, it } from 'vitest';
 import { toLatex } from '../../latex-generator';
@@ -35,9 +36,7 @@ describe('Q49 : la valeur tombe juste → décimal', () => {
 		['2x+0{,}5', '0', '1', '1.5'],
 		['x+0{,}1', '0', '1', '0.6'],
 		['0{,}3x^2-0{,}1x', '0', '1', '0.05'],
-		['0{,}5x', '0{,}5', '1', '0.1875'],
-		['0{,}5e^x', '0', '1', '0.5 \\exponentialE - 0.5'],
-		['\\dfrac{0{,}5}{x}', '1', '2', '0.5 \\ln\\left( 2 \\right)']
+		['0{,}5x', '0{,}5', '1', '0.1875']
 	])('∫ %s de %s à %s = %s', (integrand, lower, upper, expected) => {
 		expect(value(integrand, lower, upper)).toBe(expected);
 	});
@@ -58,6 +57,24 @@ describe('Q49 : la valeur ne tombe pas juste → fraction', () => {
 		['0{,}5x^2', '0', '1', '\\dfrac{1}{6}'],
 		['0{,}5x^2', '1', '2', '\\dfrac{7}{6}'],
 		['0{,}5x^2', '0', '2', '\\dfrac{4}{3}']
+	])('∫ %s de %s à %s = %s', (integrand, lower, upper, expected) => {
+		expect(value(integrand, lower, upper)).toBe(expected);
+	});
+});
+
+describe('Q49 : une valeur irrationnelle → fraction, jamais un décimal devant (Q22)', () => {
+	it.each([
+		['0{,}5\\cos(x)', '0', '\\dfrac{\\pi}{4}'],
+		['0{,}5x', '0', '\\pi'],
+		['0{,}5e^x', '0', '1'],
+		['\\dfrac{0{,}5}{x}', '1', '2']
+	])('∫ %s de %s à %s : aucun décimal', (integrand, lower, upper) => {
+		expect(value(integrand, lower, upper)).not.toMatch(/\d\.\d/);
+	});
+
+	it.each([
+		['0{,}5\\cos(x)', '0', '\\dfrac{\\pi}{4}', '\\dfrac{\\sqrt{2}}{4}'],
+		['0{,}5x', '0', '\\pi', '\\dfrac{\\pi^2}{4}']
 	])('∫ %s de %s à %s = %s', (integrand, lower, upper, expected) => {
 		expect(value(integrand, lower, upper)).toBe(expected);
 	});

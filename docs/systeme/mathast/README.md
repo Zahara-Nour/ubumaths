@@ -1204,8 +1204,10 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   sont lus les coefficients devant les termes (`-\dfrac{3}{10}x^2` compris) et ceux d'UNE somme
   facteur (∫0,5xeˣ → `(0,5x − 0,5)e^x`) ; un nombre non entier ailleurs (exposant, argument)
   laisse la primitive telle quelle. La VALEUR d'une intégrale bornée suit le même registre quand
-  elle est calculée exactement (Q49 : ∫₀¹ 0,5x → `0,25`, ∫₀¹ 0,5x² → `1/6`, ∫₀¹ 0,5eˣ →
-  `0,5e − 0,5`). Même règle pour `.intégrer` de l'atelier, primitive et valeur.
+  elle est calculée exactement (Q49, `withValueInRegister` : ∫₀¹ 0,5x → `0,25`, ∫₀¹ 0,5x² →
+  `1/6`) ; une valeur irrationnelle n'a pas d'écriture décimale finie : `exactValueToShow` l'écrit
+  (∫₀^π 0,5x → `π²/4`, ∫₀¹ 0,5eˣ → `(e − 1)/2`, jamais `0,25π²`, Q22) ; une valeur à paramètre
+  suit la primitive (`0,25a`). Même règle pour `.intégrer` de l'atelier, primitive et valeur.
   Sans exponentielle partagée, une parenthèse de `- ∫ v du` est développée puis rangée par `tidy`
   (∫x² sin x) ; sinon `tidy` seul (∫x cos x, ∫ln x, la parenthèse de u dans ∫(2x+1) sin x). Seul
   `PedagogicalSimplifyNotImplemented` fait revenir à `tidy` ; les autres erreurs remontent. L'IPP accepte `e^{ax+b}`
