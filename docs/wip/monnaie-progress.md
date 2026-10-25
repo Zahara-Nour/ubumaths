@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 validée._
+_Mis à jour le 2026-10-25, après #1776._
 
-- **État** : phase 0 validée (§ 10 bis). PR 1 (scène commune) écrite, revue faite (aucun bloquant) ; typecheck puis PR.
-- **Prochaine action** : PR 1 (§ 8) : test qui fige les scènes de la collection → extraction → collection verte ; puis PR 2 (bloc complet).
+- **État** : phase 0 validée (§ 10 bis). PR 1 « scène commune » mergée (#1776) : `utils/scene-commune.ts` + `nodes/scene-marks.svelte.ts`, collection branchée dessus, inchangée.
+- **Prochaine action** : PR 2, bloc ` ```monnaie ` complet (§ 7, § 8) : tests rouges (parseur, scène, écran, PDF, QCM) → code → captures 390 px clair/sombre + PDF.
 - **En attente de David** : rien.
-- **Pièges en cours** : la scène est partagée avec ` ```collection ` (EN PAUSE, `collection-progress.md`) : ses tests doivent rester verts, sans un pixel changé.
-- **Worktree / branche** : `../ubumaths-wt-monnaie` · `feat/monnaie`.
+- **Pièges en cours** : instantanés `collection-scene-figee.test.ts` = garde de la collection ; `scatterCenters` ne vérifie pas `spread > 1` (cases du vrac à dimensionner pour la pièce de 2 €).
+- **Worktree / branche** : `../ubumaths-wt-monnaie` · `feat/monnaie-bloc` (`feat/monnaie` supprimée après #1776).
 
 ---
 
@@ -342,3 +342,4 @@ CP-045 (« peut-il acheter ? » seulement).
   en fait échouer 6 sur 7. Revue `code-reviewer` : aucun bloquant ; ajoutés le test direct de `SceneMarks`
   et la preuve sur l'ancien code ; mineurs laissés (`scatterCenters` ne vérifie pas `spread > 1` : à garder
   en tête pour la monnaie).
+- 2026-10-25 : CI verte, #1776 mergée ; branche `feat/monnaie` supprimée, PR 2 sur `feat/monnaie-bloc`.
