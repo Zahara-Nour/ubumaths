@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25).
 
 ## À quoi ça sert
 
@@ -1203,7 +1203,9 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   écriture finie (`0,3x² + 1,2x`, `0,3e^{2x}`, `0,5\ln|x|`), sinon tous en fraction (`x³/3 + x/2`) ;
   sont lus les coefficients devant les termes (`-\dfrac{3}{10}x^2` compris) et ceux d'UNE somme
   facteur (∫0,5xeˣ → `(0,5x − 0,5)e^x`) ; un nombre non entier ailleurs (exposant, argument)
-  laisse la primitive telle quelle. Même règle pour `.intégrer` de l'atelier (primitive sans bornes).
+  laisse la primitive telle quelle. La VALEUR d'une intégrale bornée suit le même registre quand
+  elle est calculée exactement (Q49 : ∫₀¹ 0,5x → `0,25`, ∫₀¹ 0,5x² → `1/6`, ∫₀¹ 0,5eˣ →
+  `0,5e − 0,5`). Même règle pour `.intégrer` de l'atelier, primitive et valeur.
   Sans exponentielle partagée, une parenthèse de `- ∫ v du` est développée puis rangée par `tidy`
   (∫x² sin x) ; sinon `tidy` seul (∫x cos x, ∫ln x, la parenthèse de u dans ∫(2x+1) sin x). Seul
   `PedagogicalSimplifyNotImplemented` fait revenir à `tidy` ; les autres erreurs remontent. L'IPP accepte `e^{ax+b}`

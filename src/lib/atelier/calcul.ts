@@ -2724,11 +2724,10 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		const exponents =
 			parameters.length > 0 ? reducedExponents(reduced, integrationVariable) : reduced;
 		// Une primitive d'une fonction à décimaux : un seul registre, comme les
-		// corrections (R5, Q42 b — David, 2026-10-24)
+		// corrections (R5, Q42 b — David, 2026-10-24) ; la valeur d'une intégrale
+		// à bornes aussi (Q49 — David, 2026-10-25)
 		const shown =
-			integrand === undefined || finalArgs?.bounds != null
-				? exponents
-				: withUniformCoefficients(exponents, integrand);
+			integrand === undefined ? exponents : withUniformCoefficients(exponents, integrand);
 		// Q3 (David, 2026-10-14) : une primitive qui DIVISE par le paramètre
 		// (`e^{ax}` → `e^{ax}/a`) le dit — « (a ≠ 0) »
 		const conditions =
