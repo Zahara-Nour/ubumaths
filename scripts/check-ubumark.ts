@@ -4,7 +4,7 @@
  * `~…~` et `$…$` au rendu écran et signale : erreur rouge, lettres découpées (un
  * nom de fonction non déclaré, `CM` lu comme `C·M`), nom grec sans antislash,
  * `\unit` résiduel. Signale aussi les blocs ```courbe et ```figure en erreur ou hors fenêtre,
- * et les blocs ```horloge en erreur.
+ * et les blocs ```horloge et ```operation en erreur.
  *
  * Les lettres de fonctions sont celles de `generic_functions` de l'exercice ; sans
  * elles, `C'(x)` s'affiche comme un produit.
@@ -22,10 +22,11 @@ import { buildCourbeScene } from '$lib/ubumark/utils/courbe-scene';
 import type { FigureNode } from '$lib/ubumark/types/figure';
 import { buildFigureScene } from '$lib/ubumark/utils/figure-scene';
 import type { HorlogeNode } from '$lib/ubumark/types/horloge';
+import type { OperationNode } from '$lib/ubumark/types/operation';
 
-type BlocNode = CourbeNode | FigureNode | HorlogeNode;
+type BlocNode = CourbeNode | FigureNode | HorlogeNode | OperationNode;
 
-/** Blocs ```courbe, ```figure et ```horloge d'un arbre ubumark, listes comprises. */
+/** Blocs ```courbe, ```figure, ```horloge et ```operation d'un arbre ubumark, listes comprises. */
 function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 	if (Array.isArray(node)) {
 		for (const child of node) blocs(child, found);
@@ -34,6 +35,7 @@ function blocs(node: unknown, found: BlocNode[] = []): BlocNode[] {
 		if (record.type === 'courbe') found.push(node as CourbeNode);
 		else if (record.type === 'figure') found.push(node as FigureNode);
 		else if (record.type === 'horloge') found.push(node as HorlogeNode);
+		else if (record.type === 'operation') found.push(node as OperationNode);
 		else {
 			blocs(record.children, found);
 			blocs(record.items, found);
@@ -48,7 +50,9 @@ function blocMessages(bloc: BlocNode): string[] {
 		const { errors, warnings } = buildFigureScene(bloc);
 		return [...errors, ...warnings].map((m) => m.message);
 	}
-	if (bloc.type === 'horloge') return bloc.errors.map((m) => m.message);
+	if (bloc.type === 'horloge' || bloc.type === 'operation') {
+		return bloc.errors.map((m) => m.message);
+	}
 	return [
 		...bloc.errors,
 		...bloc.warnings,

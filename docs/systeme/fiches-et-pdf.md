@@ -625,7 +625,10 @@ la **même scène** que l'écran ; tout module qui appelle `generateTypst` pour 
 `src/lib/ubumark/generators/figure-typst-setup.ts` (c'est le cas des deux générateurs de fiche) →
 [ubumark.md](ubumark.md) § Invariants. Un **QR code** placé par l'auteur (bloc ` ```qr `) est
 dessiné par Typst lui-même, sans cetz ni registre, et compte pour une figure dans la hauteur des
-cadres de réponse (`answer-frames.ts`) → [qr-codes.md](qr-codes.md).
+cadres de réponse (`answer-frames.ts`) → [qr-codes.md](qr-codes.md). Une **horloge**
+(` ```horloge `) et une **opération posée** (` ```operation `, `table` Typst native, cases de
+retenue non dessinées : l'élève écrit sur papier libre) sont aussi du Typst natif et comptent
+chacune pour une figure dans ces cadres → [ubumark.md](ubumark.md).
 
 **Version anglaise** ([journal](../archive/wip/worksheet-english-progress.md)) : la langue est
 `worksheets.config.language` (`fr` par défaut), lue par `worksheetLocale`. Elle pilote **tout** le

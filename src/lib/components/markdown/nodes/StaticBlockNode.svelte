@@ -30,6 +30,7 @@
 	import FigureBlock from './FigureBlock.svelte';
 	import QrBlock from './QrBlock.svelte';
 	import Horloge from './Horloge.svelte';
+	import Operation from './Operation.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -86,4 +87,6 @@
 	<QrBlock {node} />
 {:else if node.type === 'horloge'}
 	<Horloge {node} />
+{:else if node.type === 'operation'}
+	<Operation {node} />
 {/if}

@@ -134,6 +134,7 @@ function nodeLines(node: ASTNode): number {
 		case 'stat-chart':
 		case 'qr':
 		case 'horloge':
+		case 'operation':
 			return FIGURE_LINES;
 		default:
 			// Nœud en ligne isolé : une ligne de texte

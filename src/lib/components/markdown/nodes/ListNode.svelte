@@ -38,6 +38,7 @@
 	import StatChart from './StatChart.svelte';
 	import QrBlock from './QrBlock.svelte';
 	import Horloge from './Horloge.svelte';
+	import Operation from './Operation.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
 	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
@@ -48,6 +49,7 @@
 	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
 	import type { QrNode } from '$lib/ubumark/types/qr';
 	import type { HorlogeNode } from '$lib/ubumark/types/horloge';
+	import type { OperationNode } from '$lib/ubumark/types/operation';
 
 	interface Props {
 		ordered: boolean;
@@ -257,6 +259,13 @@
 	}
 
 	/**
+	 * Bloc ```operation en retrait dans un item de liste
+	 */
+	function isOperationNode(node: ASTNode): node is OperationNode {
+		return node.type === 'operation';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
@@ -274,7 +283,8 @@
 			'figure',
 			'stat-chart',
 			'qr',
-			'horloge'
+			'horloge',
+			'operation'
 		].includes(node.type);
 	}
 
@@ -403,6 +413,8 @@
 						<QrBlock node={child} />
 					{:else if isHorlogeNode(child)}
 						<Horloge node={child} />
+					{:else if isOperationNode(child)}
+						<Operation node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -489,6 +501,8 @@
 						<QrBlock node={child} />
 					{:else if isHorlogeNode(child)}
 						<Horloge node={child} />
+					{:else if isOperationNode(child)}
+						<Operation node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
