@@ -6,15 +6,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 tranchée._
+_Mis à jour le 2026-10-25, planche publiée._
 
-- **État** : phase 0 tranchée par David (ci-dessous) ; rien de codé.
-- **Prochaine action** : planche de dessins (comme `scripts/mathoux-planches/colliers.test.ts`) :
-  plusieurs lunettes et plusieurs chapeaux, en variantes A/B, sur le vrai `MathouAvatar`
-  (chaton, matou, grand matou SANS couronne quand il porte un chapeau ; sieste = bonnet de nuit,
-  sans lunettes) ; page publiée pour que David choisisse modèles et prix.
-- **En attente de David** : le catalogue (combien, lesquels, prix), sur la planche.
-- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar`.
+- **État** : planche des dessins publiée (https://claude.ai/artifact/7iaTAB3MWhm6dCg764kKqb) :
+  5 lunettes et 6 chapeaux, en A/B, sur le vrai `MathouAvatar` ; rien de codé dans l'appli.
+- **Prochaine action** : lire les choix de David (`ArtifactData` list, collection `choix`, doc
+  `david`), puis écrire le plan (migration additive `glasses` / `hat`, dessins dans
+  `mathou-dessin.ts`, rendu dans `MathouAvatar`, Chatterie et Marché).
+- **En attente de David** : le catalogue (modèles, variante A/B, prix) sur la planche.
+- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ;
+  chapeau à l'échelle bornée (0,92 à 1,35 de la tête du matou), sinon trop petit sur le grand matou.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-chapeaux-lunettes`, `feat/mathoux-chapeaux-lunettes`.
 
 ## Phase 0 — décisions (2026-10-25)
@@ -38,3 +39,4 @@ _Mis à jour le 2026-10-25, phase 0 tranchée._
 ## Historique
 
 - 2026-10-25 — phase 0 tranchée (questions posées en fin de session des colliers, #1725).
+- 2026-10-25 — planche `scripts/mathoux-planches/chapeaux-lunettes.test.ts` publiée pour le choix.
