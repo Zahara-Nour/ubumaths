@@ -11,6 +11,7 @@
  * - `?` in math zones ($...$, $$...$$) → \placeholder[N]{}
  * - `[_]` in text (outside math) → {{blank:N}}
  * - `<<expr:NAME>>` in math → reserves indices for ? in answerFormats[NAME]
+ * - Bloc ```operation à remplir → UNE case, numéro posé dans le bloc (`case: N`)
  *
  * @module questions/generator/assign-blank-indices
  */
@@ -38,6 +39,71 @@ export interface AssignBlankIndicesResult {
 	 * Undefined when no `<<expr:NAME>>` marker matched a known answerFormat.
 	 */
 	expressionNameByIndex?: Record<number, string>;
+	/**
+	 * Case → texte du bloc ```operation à remplir qui la porte (sans `case:`),
+	 * pour que le générateur calcule la réponse attendue. Absent sans tel bloc.
+	 */
+	operationBlanks?: Record<number, string>;
+	/** Blocs ```operation à remplir mal placés (liste, citation) : messages pour l'auteur */
+	operationErrors?: string[];
+}
+
+/** Fence d'ouverture d'un bloc ```operation, au premier niveau seulement */
+const OPERATION_FENCE_REGEX = /^```operation\s*$/;
+
+/** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
+const NESTED_OPERATION_FENCE_REGEX = /^(?:\s+|\s*>\s*)```operation\s*$/;
+
+/** Marque provisoire de la case d'un bloc, remplacée par `case: N` à son rang */
+const OPERATION_CASE_MARK = '\u0000operation-case\u0000';
+
+const OPERATION_NESTED_MESSAGE =
+	'Un bloc operation à remplir doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)';
+
+/** Bloc `cases: aucune` : opération résolue, rien à remplir */
+function isSolvedOperation(body: string[]): boolean {
+	return body.some((line) => /^\s*cases\s*:\s*aucune\s*$/i.test(line));
+}
+
+/**
+ * Repère les blocs ```operation à remplir : une marque est posée en tête de
+ * chacun (numérotée ensuite, dans l'ordre du texte, avec les autres cases).
+ * Fin du bloc : ``` ou ligne vide, comme le parseur.
+ */
+function markOperationBlocks(statement: string): {
+	statement: string;
+	sources: string[];
+	errors: string[];
+} {
+	const lines = statement.split('\n');
+	const out: string[] = [];
+	const sources: string[] = [];
+	const errors: string[] = [];
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		const nested = NESTED_OPERATION_FENCE_REGEX.test(line);
+		if (!OPERATION_FENCE_REGEX.test(line) && !nested) {
+			out.push(line);
+			continue;
+		}
+		let end = i + 1;
+		while (end < lines.length && !/^\s*>?\s*```\s*$/.test(lines[end]) && lines[end].trim() !== '') {
+			end++;
+		}
+		const body = lines.slice(i + 1, end);
+		out.push(line);
+		if (!isSolvedOperation(body)) {
+			if (nested) {
+				errors.push(OPERATION_NESTED_MESSAGE);
+			} else {
+				out.push(OPERATION_CASE_MARK);
+				sources.push(body.join('\n'));
+			}
+		}
+		out.push(...body);
+		i = end - 1;
+	}
+	return { statement: out.join('\n'), sources, errors };
 }
 
 /**
@@ -59,18 +125,22 @@ const EXPR_MARKER_REGEX = /^<<expr:(expression[a-zA-Z0-9]*)>>/;
  *    - Otherwise, replace each ? with \placeholder[N]{}
  * 2. For each [_] in text (outside math), replace with {{blank:N}}
  *
- * @param statement - Resolved statement string (variables already replaced)
+ * @param rawStatement - Resolved statement string (variables already replaced)
  * @param answerFormats - Optional map of expression names to answer format strings
  * @returns Modified statement, modified answerFormats, and total blank count
  */
 export function assignBlankIndices(
-	statement: string,
+	rawStatement: string,
 	answerFormats?: Record<string, string>
 ): AssignBlankIndicesResult {
 	let counter = 0;
 	const blankTypes: ('math' | 'text')[] = [];
 	const modifiedAnswerFormats = answerFormats ? { ...answerFormats } : undefined;
 	const expressionNameByIndex: Record<number, string> = {};
+	const operationBlanks: Record<number, string> = {};
+	const operations = markOperationBlocks(rawStatement);
+	const statement = operations.statement;
+	let operationCount = 0;
 
 	// Split statement into math zones and text zones, preserving order.
 	// We need to process left-to-right, handling math zones and text zones differently.
@@ -143,7 +213,13 @@ export function assignBlankIndices(
 			let i = 0;
 			const text = segment.content;
 			while (i < text.length) {
-				if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {
+				if (text.startsWith(OPERATION_CASE_MARK, i)) {
+					newText += `case: ${counter}`;
+					operationBlanks[counter] = operations.sources[operationCount++];
+					counter++;
+					blankTypes.push('math');
+					i += OPERATION_CASE_MARK.length;
+				} else if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {
 					newText += `{{blank:${counter}}}`;
 					counter++;
 					blankTypes.push('text');
@@ -163,7 +239,9 @@ export function assignBlankIndices(
 		...(modifiedAnswerFormats !== undefined && { answerFormats: modifiedAnswerFormats }),
 		totalBlanks: counter,
 		blankTypes,
-		...(hasExpressionMapping && { expressionNameByIndex })
+		...(hasExpressionMapping && { expressionNameByIndex }),
+		...(operationCount > 0 && { operationBlanks }),
+		...(operations.errors.length > 0 && { operationErrors: operations.errors })
 	};
 }
 

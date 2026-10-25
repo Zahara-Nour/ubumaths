@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1716._
+_Mis à jour le 2026-10-25, PR 1b codée, avant ouverture de la PR._
 
-- **État** : PR 1a #1716 MERGÉE (bloc ```operation d'affichage : addition, soustraction, compensation, cassage, décimaux ; écran + PDF). Pas en prod.
-- **Prochaine action** : PR 1b (saisie + juge) — nouveau worktree `git worktree add -b feat/operations-posees-saisie ../ubumaths-wt-operations-posees origin/main`, puis présenter à David les questions du § 8 AVANT de coder.
-- **En attente de David** : vérification #1716 dans `verifications-manuelles.md` ; réponses du § 8 au début de la PR 1b.
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (grilles calculées par la vraie scène ; à republier quand la saisie arrive).
-- **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` ; sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write`.
-- **Worktree / branche** : supprimés après #1716.
+- **État** : PR 1b (saisie + juge) codée sur `feat/operations-posees-saisie` : case `case: N` posée par `assignBlankIndices`, réponse calculée par le bloc, grille saisissable (`Operation.svelte` + `FillBlanksInput`), correction chiffre par chiffre. Tests, typecheck, cliquet, lint rapide verts ; docs `ubumark.md` et `questions.md` à jour.
+- **Prochaine action** : PR, revue `code-reviewer` (Opus : correction des réponses), CI, merge ; puis republier la page de démonstration avec la saisie.
+- **En attente de David** : vérification #1716 ; avis sur la précision du comportement 5 (§ 9) ; décimales de fin laissées vides (journal, 2026-10-25).
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie).
+- **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` ; sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas (l'élève écrit les deux 1 sur papier).
+- **Worktree / branche** : `../ubumaths-wt-operations-posees` · `feat/operations-posees-saisie`.
 
 ---
 
@@ -181,7 +181,80 @@ Découpage du lot 1 : **PR 1a** bloc d'affichage (parseur, scène, écran, PDF, 
   `InstanceBlank.type` ? (c) cases de retenue sur téléphone : taille, et saisie de la compensation
   (deux positions par colonne) ; (d) surlignage des chiffres faux à la correction (décision 5).
 
+## 8 bis. Décisions de la PR 1b (David, 2026-10-25)
+
+David a répondu « je te suis » aux quatre recommandations, une par question :
+
+- (a) La réponse attendue vient du calcul du bloc (`operationResult`) ; l'auteur n'écrit rien.
+- (b) Case `type: 'math'` ordinaire, marquée comme venant d'un bloc ```operation (juge existant).
+- (c) Une seule case de retenue par colonne, en haut (~28 px ; résultat ≥ 40 px) ; en compensation,
+  le petit 1 du bas s'affiche de lui-même quand l'élève écrit celui du haut.
+- (d) Correction : chiffres faux de la saisie surlignés (comparaison alignée à droite), opération
+  résolue montrée à côté.
+
+## 9. Comportements de la PR 1b (validés par David le 2026-10-25)
+
+### Nominal
+
+1. Un bloc ```operation en `cases: résultat` compte pour **une** case de la question, numérotée dans
+   l'ordre du texte avec les `?` et `[_]` ; `cases: aucune` ne compte pour rien.
+2. Le générateur remplit la réponse attendue de cette case avec le résultat calculé par le bloc
+   (`45 + 37` → `82`) ; l'auteur ne met pas d'entrée pour elle dans `blanks[]`. S'il en met une
+   (réglages de case), elle est acceptée sans `answer`.
+3. Saisie : l'élève touche une case du résultat, tape un chiffre, le curseur passe à la case de
+   gauche. Effacer : vide la case et revient à droite. Clavier physique et clavier virtuel.
+4. Les cases de résultat lues de gauche à droite, virgule de la grille comprise, donnent la réponse :
+   cases de tête vides = rien (`_ 8 2` → `82`) ; `291,55` reste `291,55`.
+5. Cette réponse passe au juge ordinaire : `82` juste, `81` faux. Décimaux : `4,0` et `4` sont
+   jugés comme le juge actuel le fait pour une case nombre.
+   **Précisé en codant (2026-10-25)** : le juge met `4{,}0` en ambre (« zéros inutiles ») ; la lecture
+   de la grille retire donc les zéros de tête et les zéros décimaux de fin (`1,0` → `1`) et pose les
+   espaces de milliers (`30 000`) — aucune remarque de forme que la grille impose. Signalé à David.
+6. Retenues : cases facultatives, jamais jugées ni envoyées au juge, perdues au rechargement de la
+   question. Compensation : écrire 1 en haut d'une colonne montre le petit 1 contre le chiffre du
+   bas de la colonne suivante. Cassage : la case au-dessus du chiffre reçoit sa nouvelle valeur
+   (deux chiffres possibles, `12`).
+7. Correction : la grille de l'élève reste affichée ; ses chiffres faux sont surlignés
+   (`var(--color-*)`), et l'opération résolue (`cases: aucune`) est montrée à côté. Réponse juste :
+   pas de surlignage.
+8. Plusieurs blocs dans une question = plusieurs cases ; un bloc et des `?` ordinaires cohabitent.
+9. PDF : inchangé (grille vide à compléter).
+
+### Limites
+
+10. Case de tête prévue pour la retenue finale (`99 + 1`) : vide → résultat lu sans elle ; remplie
+    → elle compte (`100`).
+11. Une case au milieu laissée vide (`8 _ 2`) : réponse incomplète, jugée fausse (pas de 0 implicite
+    au milieu).
+12. Chiffre faux à gauche d'une réponse plus courte (`1 000 − 998`, élève `0 0 2`) : zéros de tête
+    acceptés (`2`).
+13. Téléphone : la grille ne déborde jamais ; si elle ne tient pas en 40 px, elle défile dans son
+    cadre, pas la page.
+
+### Erreurs
+
+14. Bloc en erreur (`Opération indisponible`) dans une question : la question est refusée au test
+    du modèle (message situé pour le prof), jamais une case morte devant l'élève.
+15. Une touche autre qu'un chiffre est ignorée dans la case.
+16. Aucune valeur attendue dans le DOM (ni attribut, ni nom accessible) ; nom accessible de chaque
+    case : « chiffre des unités », « chiffre des dizaines »…
+
 ## Journal
+
+### 2026-10-25 — PR 1b codée
+
+- § 8 tranché (§ 8 bis, « je te suis »), § 9 écrit puis validé par David.
+- Fait : clé `case:` du parseur ; `utils/operation-answer.ts` (lecture, attendu, chiffres faux) ;
+  scène : compensation à remplir sans case du bas ; `assignBlankIndices` (`operationBlanks`,
+  `operationErrors`) ; générateur (case insérée ou entrée de réglages, réponse calculée) ;
+  `template-validator` (un bloc à remplir suffit sans `blanks`) ; `Operation.svelte` (`answer`) ;
+  `FillBlanksInput` (rendu, ordre des cases, Entrée, correction).
+- Écart au § 9 : comportement 5 précisé (zéros retirés, espaces posés), voir le § 9.
+- Revue Opus #1726 : 3 importants corrigés (QCM / carte de cours avec bloc passaient en cases à
+  trous ; chiffre retapé dans une case pleine perdu ; `case:` écrite par l'auteur → case morte),
+  mineurs corrigés (`shared.statement` au validateur, `figure-name-check` réaligné, entrée sans
+  `expectedAnswer`). **Question ouverte à David** : dixièmes de fin laissés vides (`0,5 + 0,5`,
+  élève « 1 » sans le 0) → aujourd'hui réponse incomplète, jugée fausse.
 
 - 2026-10-25 : worktree créé, phase 0 rédigée.
 - 2026-10-25 : décisions de David (§ 7 bis). PR 1a : `types/operation.ts`, `parser/operation-parser.ts`,

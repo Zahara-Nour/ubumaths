@@ -5,6 +5,7 @@
  */
 import { describe, it, expect, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+import { userEvent } from 'vitest/browser';
 import Operation from '../Operation.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
 import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
@@ -98,5 +99,182 @@ describe('Operation — bloc en erreur', () => {
 			'a) Calcule.\n\n   ```operation\n   calcul: 45 + 37\n   ```' as ResolvedMarkdown;
 		const screen = await render(MarkdownRenderer, { target: mainElement(), props: { content } });
 		expect(screen.container.querySelector('.operation-grille')).not.toBeNull();
+	});
+});
+
+// Case d'une question (PR 1b, docs/wip/operations-posees-progress.md § 9)
+describe('Operation — saisie (case d’une question)', () => {
+	type Answer = {
+		value: string;
+		isCorrect: boolean | null;
+		disabled: boolean;
+		onChange: (value: string) => void;
+		onSubmit?: () => void;
+	};
+
+	async function renderAnswer(lines: string[], answer: Partial<Answer> = {}) {
+		const changes: string[] = [];
+		const screen = await render(Operation, {
+			target: mainElement(),
+			props: {
+				node: node('case: 0', ...lines),
+				answer: {
+					value: '',
+					isCorrect: null,
+					disabled: false,
+					onChange: (value: string) => changes.push(value),
+					...answer
+				}
+			}
+		});
+		const cells = () => [
+			...screen.container.querySelectorAll<HTMLInputElement>(
+				'input[data-operation-cell="résultat"]'
+			)
+		];
+		const helpers = () => [
+			...screen.container.querySelectorAll<HTMLInputElement>('input[data-operation-cell="aide"]')
+		];
+		return { screen, cells, helpers, changes };
+	}
+
+	it('de droite à gauche : le curseur passe à gauche, la réponse est lue (comportements 3-4)', async () => {
+		const { cells, changes } = await renderAnswer(['calcul: 45 + 37']);
+		expect(cells()).toHaveLength(3);
+		await userEvent.click(cells()[2]);
+		await userEvent.keyboard('2');
+		expect(document.activeElement).toBe(cells()[1]);
+		await userEvent.keyboard('8');
+		expect(document.activeElement).toBe(cells()[0]);
+		expect(changes.at(-1)).toBe('82');
+	});
+
+	it('corriger une case pleine, curseur avant le chiffre : le nouveau chiffre remplace (revue #1726)', async () => {
+		const { cells, changes } = await renderAnswer(['calcul: 45 + 37']);
+		await userEvent.click(cells()[2]);
+		await userEvent.keyboard('3');
+		cells()[2].focus();
+		cells()[2].setSelectionRange(0, 0);
+		await userEvent.keyboard('2');
+		expect(cells()[2].value).toBe('2');
+		expect(changes.at(-1)).toBe('2');
+	});
+
+	it('au focus, le chiffre de la case est sélectionné (la saisie le remplace)', async () => {
+		const { cells } = await renderAnswer(['calcul: 45 + 37'], { value: '82' });
+		await userEvent.click(cells()[2]);
+		expect(cells()[2].selectionStart).toBe(0);
+		expect(cells()[2].selectionEnd).toBe(1);
+	});
+
+	it('une touche autre qu’un chiffre est ignorée (comportement 15)', async () => {
+		const { cells, changes } = await renderAnswer(['calcul: 45 + 37']);
+		await userEvent.click(cells()[2]);
+		await userEvent.keyboard('a');
+		expect(cells()[2].value).toBe('');
+		expect(document.activeElement).toBe(cells()[2]);
+		expect(changes.every((v) => v === '')).toBe(true);
+	});
+
+	it('effacer : case vide → on revient effacer celle de droite (comportement 3)', async () => {
+		const { cells, changes } = await renderAnswer(['calcul: 45 + 37']);
+		await userEvent.click(cells()[2]);
+		await userEvent.keyboard('2');
+		await userEvent.keyboard('{Backspace}');
+		expect(document.activeElement).toBe(cells()[2]);
+		expect(cells()[2].value).toBe('');
+		expect(changes.at(-1)).toBe('');
+	});
+
+	it('Entrée : demande la validation', async () => {
+		let submitted = 0;
+		const { cells } = await renderAnswer(['calcul: 45 + 37'], { onSubmit: () => submitted++ });
+		await userEvent.click(cells()[2]);
+		await userEvent.keyboard('{Enter}');
+		expect(submitted).toBe(1);
+	});
+
+	it('aucune valeur attendue dans le DOM ; noms accessibles par rang (comportement 16)', async () => {
+		const { screen, cells, helpers } = await renderAnswer(['calcul: 45 + 37']);
+		const html = screen.container.innerHTML;
+		expect(html).not.toMatch(/82/);
+		expect(cells().map((c) => c.getAttribute('aria-label'))).toEqual([
+			'Chiffre des centaines',
+			'Chiffre des dizaines',
+			'Chiffre des unités'
+		]);
+		expect(helpers().map((c) => c.getAttribute('aria-label'))).toEqual([
+			'Retenue, colonne des centaines',
+			'Retenue, colonne des dizaines'
+		]);
+	});
+
+	it('décimaux : noms des rangs après la virgule', async () => {
+		const { cells } = await renderAnswer(['calcul: 2,5 + 1,25']);
+		expect(
+			cells()
+				.map((c) => c.getAttribute('aria-label'))
+				.slice(-2)
+		).toEqual(['Chiffre des dixièmes', 'Chiffre des centièmes']);
+	});
+
+	it('compensation : une case par colonne en haut, le 1 du bas suit (décision c)', async () => {
+		const { screen, helpers } = await renderAnswer(['calcul: 52 - 37']);
+		expect(helpers()).toHaveLength(1);
+		await userEvent.click(helpers()[0]);
+		await userEvent.keyboard('1');
+		const bottomRow = [...screen.container.querySelectorAll('.operation-retenue')];
+		expect(bottomRow.map((e) => e.textContent)).toEqual(['1']);
+	});
+
+	it('retenues : jamais envoyées au juge (comportement 6)', async () => {
+		const { helpers, changes } = await renderAnswer(['calcul: 45 + 37']);
+		await userEvent.click(helpers()[1]);
+		await userEvent.keyboard('1');
+		expect(changes).toEqual([]);
+	});
+
+	it('réponse déjà saisie : remise dans les cases', async () => {
+		const { cells } = await renderAnswer(['calcul: 56,75 + 234 + 0,8'], { value: '291{,}55' });
+		expect(cells().map((c) => c.value)).toEqual(['', '2', '9', '1', '5', '5']);
+	});
+
+	it('réponse fausse : chiffres faux surlignés, opération résolue à côté (comportement 7)', async () => {
+		const { screen, cells } = await renderAnswer(['calcul: 45 + 37'], {
+			value: '72',
+			isCorrect: false,
+			disabled: true
+		});
+		expect(cells().map((c) => c.getAttribute('aria-invalid'))).toEqual([null, 'true', null]);
+		const correction = screen.container.querySelector('.operation-correction')!;
+		expect(text(correction)).toBe('Correction145+3782');
+	});
+
+	it('réponse juste : pas de surlignage, pas de correction', async () => {
+		const { screen, cells } = await renderAnswer(['calcul: 45 + 37'], {
+			value: '82',
+			isCorrect: true,
+			disabled: true
+		});
+		expect(cells().some((c) => c.getAttribute('aria-invalid'))).toBe(false);
+		expect(screen.container.querySelector('.operation-correction')).toBeNull();
+	});
+
+	it('téléphone : la grille défile dans son cadre, la page ne déborde pas (comportement 13)', async () => {
+		const main = mainElement();
+		main.style.width = '320px';
+		await render(Operation, {
+			target: main,
+			props: {
+				node: node('case: 0', 'calcul: 9999999999 + 9999999999'),
+				answer: { value: '', isCorrect: null, disabled: false, onChange: () => {} }
+			}
+		});
+		const frame = main.querySelector('.operation-defile')!;
+		expect(frame.getBoundingClientRect().width).toBeLessThanOrEqual(320);
+		const cell = main.querySelector('input[data-operation-cell="résultat"]')!;
+		expect(
+			cell.closest('.operation-carreau')!.getBoundingClientRect().width
+		).toBeGreaterThanOrEqual(40);
 	});
 });

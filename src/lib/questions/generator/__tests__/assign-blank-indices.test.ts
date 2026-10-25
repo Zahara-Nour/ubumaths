@@ -304,3 +304,52 @@ describe('assignBlankIndices', () => {
 		});
 	});
 });
+
+// Bloc ```operation à remplir : UNE case (PR 1b, docs/wip/operations-posees-progress.md § 9)
+describe('assignBlankIndices — bloc ```operation', () => {
+	const op = (...body: string[]) => ['```operation', ...body, '```'].join('\n');
+
+	it('cases: résultat (défaut) : une case, numéro posé dans le bloc (comportement 1)', () => {
+		const result = assignBlankIndices(op('calcul: 45 + 37'));
+		expect(result.totalBlanks).toBe(1);
+		expect(result.blankTypes).toEqual(['math']);
+		expect(result.statement).toBe(op('case: 0', 'calcul: 45 + 37'));
+		expect(result.operationBlanks).toEqual({ 0: 'calcul: 45 + 37' });
+	});
+
+	it('cases: aucune : aucune case, bloc inchangé', () => {
+		const statement = op('calcul: 45 + 37', 'cases: aucune');
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(0);
+		expect(result.statement).toBe(statement);
+		expect(result.operationBlanks).toBeUndefined();
+	});
+
+	it('numérotée dans l’ordre du texte avec les ? et [_] (comportement 8)', () => {
+		const statement = ['$? + 1$', '', op('calcul: 45 + 37'), '', 'Mot : [_]'].join('\n');
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(3);
+		expect(result.blankTypes).toEqual(['math', 'math', 'text']);
+		expect(result.statement).toContain('case: 1');
+		expect(result.statement).toContain('{{blank:2}}');
+		expect(result.operationBlanks).toEqual({ 1: 'calcul: 45 + 37' });
+	});
+
+	it('deux blocs : deux cases', () => {
+		const statement = [op('calcul: 45 + 37'), '', op('calcul: 52 - 37', 'cases: résultat')].join(
+			'\n'
+		);
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(2);
+		expect(Object.keys(result.operationBlanks ?? {})).toEqual(['0', '1']);
+	});
+
+	it('bloc en retrait (liste) ou cité : pas de case, signalé', () => {
+		const statement = ['- Pose :', '', '  ```operation', '  calcul: 45 + 37', '  ```'].join('\n');
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(0);
+		expect(result.operationErrors).toEqual([
+			'Un bloc operation à remplir doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)'
+		]);
+	});
+});
