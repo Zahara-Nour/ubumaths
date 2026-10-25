@@ -10,7 +10,7 @@ _Mis à jour le 2026-10-25, PR 4 en cours._
 
 - **État** : #1709 (`/calc` retirée) et #1715 (code mort du grapheur) mergées, sur `main`, pas en
   prod. Revue de #1715 : harnais `WithAtelier` sans grapheur, corrigé dans la PR.
-- **Prochaine action** : PR 4 (`outputHtml` retiré) écrite, vérifs vertes → revue, CI, merge.
+- **Prochaine action** : PR 4 (#1718, `outputHtml` retiré) ouverte → revue, CI, merge.
   Puis fin de chantier : archiver ce journal dans `docs/archive/wip/`.
 - **En attente de David** : rien (« supprime les », 2026-10-25).
 - **Pièges** : `docs:check-a-jour` réclame `statistiques.md` dès que `desk.svelte.ts` change.
