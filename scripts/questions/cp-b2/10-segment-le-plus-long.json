@@ -1,0 +1,134 @@
+{
+	"title": "Quel segment est le plus long ?",
+	"description": "Comparer trois segments de directions différentes (1 cm d'écart au moins)",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Comparaison et mesure",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel segment est le plus {{if:q==1|long|court}} ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 8\ndescription: Trois segments numérotés 1, 2 et 3, dans des directions différentes.\n---\nA1 = point(0.5, 6.5, visible=faux)\nA2 = point({{if:v==1|5.5|{{if:v==2|3.5|{{if:v==3|3.5|{{if:v==4|5.5|{{if:v==5|4.5|{{if:v==6|4.5|{{if:v==7|6.5|{{if:v==8|4.5|{{if:v==9|4.5|{{if:v==10|6.5|{{if:v==11|5.5|{{if:v==12|5.5|{{if:v==13|3.5|{{if:v==14|4.5|{{if:v==15|4.5|{{if:v==16|3.5|{{if:v==17|5.5|{{if:v==18|5.5|{{if:v==19|4.5|{{if:v==20|5.5|{{if:v==21|5.5|{{if:v==22|4.5|{{if:v==23|6.5|6.5}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}, {{if:v==1|6.5|{{if:v==2|6.5|{{if:v==3|6.5|{{if:v==4|6.5|{{if:v==5|6.5|{{if:v==6|6.5|{{if:v==7|6.5|{{if:v==8|6.5|{{if:v==9|6.5|{{if:v==10|6.5|{{if:v==11|6.5|{{if:v==12|6.5|{{if:v==13|6.5|{{if:v==14|6.5|{{if:v==15|6.5|{{if:v==16|6.5|{{if:v==17|6.5|{{if:v==18|6.5|{{if:v==19|6.5|{{if:v==20|6.5|{{if:v==21|6.5|{{if:v==22|6.5|{{if:v==23|6.5|6.5}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}, visible=faux)\nsegment(A1, A2, couleur=\"bleu\", epaisseur=3)\ntexte(0.5, 7.1, \"1\")\nB1 = point(1, 0.5, visible=faux)\nB2 = point({{if:v==1|3.12|{{if:v==2|4.54|{{if:v==3|3.83|{{if:v==4|3.83|{{if:v==5|4.54|{{if:v==6|3.12|{{if:v==7|3.83|{{if:v==8|5.24|{{if:v==9|4.54|{{if:v==10|4.54|{{if:v==11|5.24|{{if:v==12|3.83|{{if:v==13|3.83|{{if:v==14|3.12|{{if:v==15|4.54|{{if:v==16|4.54|{{if:v==17|3.12|{{if:v==18|3.83|{{if:v==19|4.54|{{if:v==20|3.83|{{if:v==21|5.24|{{if:v==22|5.24|{{if:v==23|3.83|4.54}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}, {{if:v==1|2.62|{{if:v==2|4.04|{{if:v==3|3.33|{{if:v==4|3.33|{{if:v==5|4.04|{{if:v==6|2.62|{{if:v==7|3.33|{{if:v==8|4.74|{{if:v==9|4.04|{{if:v==10|4.04|{{if:v==11|4.74|{{if:v==12|3.33|{{if:v==13|3.33|{{if:v==14|2.62|{{if:v==15|4.04|{{if:v==16|4.04|{{if:v==17|2.62|{{if:v==18|3.33|{{if:v==19|4.04|{{if:v==20|3.33|{{if:v==21|4.74|{{if:v==22|4.74|{{if:v==23|3.33|4.04}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}, visible=faux)\nsegment(B1, B2, couleur=\"rouge\", epaisseur=3)\ntexte(0.6, 1.4, \"2\")\nC1 = point(8.5, 0.5, visible=faux)\nC2 = point({{if:v==1|8.5|{{if:v==2|8.5|{{if:v==3|8.5|{{if:v==4|8.5|{{if:v==5|8.5|{{if:v==6|8.5|{{if:v==7|8.5|{{if:v==8|8.5|{{if:v==9|8.5|{{if:v==10|8.5|{{if:v==11|8.5|{{if:v==12|8.5|{{if:v==13|8.5|{{if:v==14|8.5|{{if:v==15|8.5|{{if:v==16|8.5|{{if:v==17|8.5|{{if:v==18|8.5|{{if:v==19|8.5|{{if:v==20|8.5|{{if:v==21|8.5|{{if:v==22|8.5|{{if:v==23|8.5|8.5}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}, {{if:v==1|4.5|{{if:v==2|4.5|{{if:v==3|5.5|{{if:v==4|3.5|{{if:v==5|3.5|{{if:v==6|5.5|{{if:v==7|5.5|{{if:v==8|5.5|{{if:v==9|6.5|{{if:v==10|4.5|{{if:v==11|4.5|{{if:v==12|6.5|{{if:v==13|5.5|{{if:v==14|5.5|{{if:v==15|3.5|{{if:v==16|4.5|{{if:v==17|4.5|{{if:v==18|3.5|{{if:v==19|6.5|{{if:v==20|6.5|{{if:v==21|4.5|{{if:v==22|5.5|{{if:v==23|5.5|4.5}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}, visible=faux)\nsegment(C1, C2, couleur=\"vert\", epaisseur=3)\ntexte(9.2, 1, \"3\")\n```",
+			"variables": [
+				{
+					"name": "q",
+					"expression": "1..2"
+				},
+				{
+					"name": "s",
+					"expression": "3..4"
+				},
+				{
+					"name": "m",
+					"expression": "0..1"
+				},
+				{
+					"name": "g",
+					"expression": "0..2"
+				},
+				{
+					"name": "v",
+					"expression": "eval:1+g+3*m+6*(s-3)+12*(q-1)"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Le segment 1."
+				},
+				{
+					"content": "Le segment 2."
+				},
+				{
+					"content": "Le segment 3."
+				}
+			],
+			"correctChoiceIndex": ["{{g}}"],
+			"correction": {
+				"steps": [
+					"Les segments ne sont pas dans la même direction : on peut reporter leur longueur sur une bande de papier pour les comparer.",
+					"Le segment 1 mesure {{if:v==1|5|{{if:v==2|3|{{if:v==3|3|{{if:v==4|5|{{if:v==5|4|{{if:v==6|4|{{if:v==7|6|{{if:v==8|4|{{if:v==9|4|{{if:v==10|6|{{if:v==11|5|{{if:v==12|5|{{if:v==13|3|{{if:v==14|4|{{if:v==15|4|{{if:v==16|3|{{if:v==17|5|{{if:v==18|5|{{if:v==19|4|{{if:v==20|5|{{if:v==21|5|{{if:v==22|4|{{if:v==23|6|6}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} cm, le segment 2 mesure {{if:v==1|3|{{if:v==2|5|{{if:v==3|4|{{if:v==4|4|{{if:v==5|5|{{if:v==6|3|{{if:v==7|4|{{if:v==8|6|{{if:v==9|5|{{if:v==10|5|{{if:v==11|6|{{if:v==12|4|{{if:v==13|4|{{if:v==14|3|{{if:v==15|5|{{if:v==16|5|{{if:v==17|3|{{if:v==18|4|{{if:v==19|5|{{if:v==20|4|{{if:v==21|6|{{if:v==22|6|{{if:v==23|4|5}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} cm et le segment 3 mesure {{if:v==1|4|{{if:v==2|4|{{if:v==3|5|{{if:v==4|3|{{if:v==5|3|{{if:v==6|5|{{if:v==7|5|{{if:v==8|5|{{if:v==9|6|{{if:v==10|4|{{if:v==11|4|{{if:v==12|6|{{if:v==13|5|{{if:v==14|5|{{if:v==15|3|{{if:v==16|4|{{if:v==17|4|{{if:v==18|3|{{if:v==19|6|{{if:v==20|6|{{if:v==21|4|{{if:v==22|5|{{if:v==23|5|4}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} cm : le plus {{if:q==1|long|court}} est le segment {{if:g==0|1|{{if:g==1|2|3}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Le plus long : C",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"s": "3",
+				"m": "0",
+				"g": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Erreur : le penché pris pour le plus long",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"s": "3",
+				"m": "0",
+				"g": "2",
+				"v": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Le plus court : A",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"s": "4",
+				"m": "1",
+				"g": "0",
+				"v": "22"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : le plus long pris pour le plus court",
+			"variationIndex": 0,
+			"variables": {
+				"q": "2",
+				"s": "4",
+				"m": "1",
+				"g": "0",
+				"v": "22"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Le plus long : B (penché)",
+			"variationIndex": 0,
+			"variables": {
+				"q": "1",
+				"s": "4",
+				"m": "1",
+				"g": "1",
+				"v": "11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}

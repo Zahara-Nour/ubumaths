@@ -1,0 +1,69 @@
+{
+	"title": "Mesure avec la règle",
+	"description": "Lire la longueur d'un segment (2 à 12 cm) posé sur une règle, le 0 au début",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Comparaison et mesure",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Mesure ce segment avec la règle.\n\n```figure\nfenetre: -0.8 ; 13.8 ; -0.2 ; 3.5\ndescription: Un segment posé au-dessus d'une règle graduée en centimètres, le 0 au début du segment.\n---\nregle1 = point(-0.4, 0, visible=faux)\nregle2 = point(13.4, 0, visible=faux)\nregle3 = point(13.4, 1.4, visible=faux)\nregle4 = point(-0.4, 1.4, visible=faux)\nregle = polygone(regle1, regle2, regle3, regle4, couleur=\"noir\")\ng0a = point(0, 1.4, visible=faux)\ng0b = point(0, 0.9, visible=faux)\nsegment(g0a, g0b, couleur=\"noir\")\ntexte(0, 0.5, \"0\")\ng1a = point(1, 1.4, visible=faux)\ng1b = point(1, 0.9, visible=faux)\nsegment(g1a, g1b, couleur=\"noir\")\ntexte(1, 0.5, \"1\")\ng2a = point(2, 1.4, visible=faux)\ng2b = point(2, 0.9, visible=faux)\nsegment(g2a, g2b, couleur=\"noir\")\ntexte(2, 0.5, \"2\")\ng3a = point(3, 1.4, visible=faux)\ng3b = point(3, 0.9, visible=faux)\nsegment(g3a, g3b, couleur=\"noir\")\ntexte(3, 0.5, \"3\")\ng4a = point(4, 1.4, visible=faux)\ng4b = point(4, 0.9, visible=faux)\nsegment(g4a, g4b, couleur=\"noir\")\ntexte(4, 0.5, \"4\")\ng5a = point(5, 1.4, visible=faux)\ng5b = point(5, 0.9, visible=faux)\nsegment(g5a, g5b, couleur=\"noir\")\ntexte(5, 0.5, \"5\")\ng6a = point(6, 1.4, visible=faux)\ng6b = point(6, 0.9, visible=faux)\nsegment(g6a, g6b, couleur=\"noir\")\ntexte(6, 0.5, \"6\")\ng7a = point(7, 1.4, visible=faux)\ng7b = point(7, 0.9, visible=faux)\nsegment(g7a, g7b, couleur=\"noir\")\ntexte(7, 0.5, \"7\")\ng8a = point(8, 1.4, visible=faux)\ng8b = point(8, 0.9, visible=faux)\nsegment(g8a, g8b, couleur=\"noir\")\ntexte(8, 0.5, \"8\")\ng9a = point(9, 1.4, visible=faux)\ng9b = point(9, 0.9, visible=faux)\nsegment(g9a, g9b, couleur=\"noir\")\ntexte(9, 0.5, \"9\")\ng10a = point(10, 1.4, visible=faux)\ng10b = point(10, 0.9, visible=faux)\nsegment(g10a, g10b, couleur=\"noir\")\ntexte(10, 0.5, \"10\")\ng11a = point(11, 1.4, visible=faux)\ng11b = point(11, 0.9, visible=faux)\nsegment(g11a, g11b, couleur=\"noir\")\ntexte(11, 0.5, \"11\")\ng12a = point(12, 1.4, visible=faux)\ng12b = point(12, 0.9, visible=faux)\nsegment(g12a, g12b, couleur=\"noir\")\ntexte(12, 0.5, \"12\")\ng13a = point(13, 1.4, visible=faux)\ng13b = point(13, 0.9, visible=faux)\nsegment(g13a, g13b, couleur=\"noir\")\ntexte(13, 0.5, \"13\")\nM = point(0, 2, visible=faux)\nN = point({{L}}, 2, visible=faux)\ns = segment(M, N, couleur=\"bleu\", epaisseur=3)\nMt1 = point(0, 1.7, visible=faux)\nMt2 = point(0, 2.3, visible=faux)\nsegment(Mt1, Mt2, couleur=\"bleu\", epaisseur=3)\nNt1 = point({{L}}, 1.7, visible=faux)\nNt2 = point({{L}}, 2.3, visible=faux)\nsegment(Nt1, Nt2, couleur=\"bleu\", epaisseur=3)\n```\n\nLe segment mesure [_] cm.",
+			"variables": [
+				{
+					"name": "L",
+					"expression": "2..12"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{L}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Le segment commence au $0$ de la règle et s'arrête au ${{L}}$.",
+					"Il mesure ${{L}}$ cm."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "7 cm",
+			"variationIndex": 0,
+			"variables": {
+				"L": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "Erreur : les traits comptés, 0 compris",
+			"variationIndex": 0,
+			"variables": {
+				"L": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["8"]
+		},
+		{
+			"description": "12 cm",
+			"variationIndex": 0,
+			"variables": {
+				"L": "12"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		}
+	]
+}

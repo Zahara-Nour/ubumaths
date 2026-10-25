@@ -1,0 +1,142 @@
+{
+	"title": "Le robot sur le quadrillage",
+	"description": "Suivre un code de flèches sur un quadrillage, ou choisir le code qui mène à un point",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Repérage et déplacements",
+	"subdomain": "Coder un déplacement",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Le robot part du carré rouge. Chaque flèche le fait avancer d'un carreau.\n\nCode : {{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\uparrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}}\n\n```figure\nfenetre: -0.5 ; 7.5 ; -0.9 ; 5.5\ndescription: Un quadrillage, la case de départ du robot et trois points 1, 2 et 3.\ngrille: oui\n---\ndep1 = point(0.8, 0.8, visible=faux)\ndep2 = point(1.2, 0.8, visible=faux)\ndep3 = point(1.2, 1.2, visible=faux)\ndep4 = point(0.8, 1.2, visible=faux)\ndep = polygone(dep1, dep2, dep3, dep4, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(1, 0.45, \"départ\")\nP0 = point({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|4}}}}}}, {{if:m==1|2|{{if:m==2|3|{{if:m==3|3|3}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\ntexte({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|4}}}}}}, {{if:m==1|2.4|{{if:m==2|3.4|{{if:m==3|3.4|3.4}}}}}}, \"{{if:l==1|1|{{if:l==2|2|3}}}}\")\nP1 = point({{if:m==1|3|{{if:m==2|1|{{if:m==3|3|4}}}}}}, {{if:m==1|0|{{if:m==2|3|{{if:m==3|1|1}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\ntexte({{if:m==1|3|{{if:m==2|1|{{if:m==3|3|4}}}}}}, {{if:m==1|0.4|{{if:m==2|3.4|{{if:m==3|1.4|1.4}}}}}}, \"{{if:l==1|2|{{if:l==2|3|1}}}}\")\nP2 = point({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|3}}}}}}, {{if:m==1|1|{{if:m==2|2|{{if:m==3|2|3}}}}}}, couleur=\"noir\", etiquette=\"aucune\")\ntexte({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|3}}}}}}, {{if:m==1|1.4|{{if:m==2|2.4|{{if:m==3|2.4|3.4}}}}}}, \"{{if:l==1|3|{{if:l==2|1|2}}}}\")\n```\n\nOù arrive le robot ?",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..4"
+				},
+				{
+					"name": "l",
+					"expression": "0..2"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Au point 1."
+				},
+				{
+					"content": "Au point 2."
+				},
+				{
+					"content": "Au point 3."
+				}
+			],
+			"correctChoiceIndex": ["{{l}}"],
+			"correction": {
+				"steps": [
+					"On suit les flèches une par une, depuis le carré rouge : le robot arrive au point {{if:l==1|1|{{if:l==2|2|3}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Le robot part du carré rouge. Chaque flèche le fait avancer d'un carreau.\n\n```figure\nfenetre: -0.5 ; 7.5 ; -0.9 ; 5.5\ndescription: Un quadrillage, le carré rouge du départ et le carré vert de l'arrivée.\ngrille: oui\n---\ndep1 = point(0.8, 0.8, visible=faux)\ndep2 = point(1.2, 0.8, visible=faux)\ndep3 = point(1.2, 1.2, visible=faux)\ndep4 = point(0.8, 1.2, visible=faux)\ndep = polygone(dep1, dep2, dep3, dep4, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntexte(1, 0.45, \"départ\")\narr1 = point({{if:m==1|2.8|{{if:m==2|2.8|{{if:m==3|2.8|3.8}}}}}}, {{if:m==1|1.8|{{if:m==2|2.8|{{if:m==3|2.8|2.8}}}}}}, visible=faux)\narr2 = point({{if:m==1|3.2|{{if:m==2|3.2|{{if:m==3|3.2|4.2}}}}}}, {{if:m==1|1.8|{{if:m==2|2.8|{{if:m==3|2.8|2.8}}}}}}, visible=faux)\narr3 = point({{if:m==1|3.2|{{if:m==2|3.2|{{if:m==3|3.2|4.2}}}}}}, {{if:m==1|2.2|{{if:m==2|3.2|{{if:m==3|3.2|3.2}}}}}}, visible=faux)\narr4 = point({{if:m==1|2.8|{{if:m==2|2.8|{{if:m==3|2.8|3.8}}}}}}, {{if:m==1|2.2|{{if:m==2|3.2|{{if:m==3|3.2|3.2}}}}}}, visible=faux)\narr = polygone(arr1, arr2, arr3, arr4, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\ntexte({{if:m==1|3|{{if:m==2|3|{{if:m==3|3|4}}}}}}, {{if:m==1|2.55|{{if:m==2|3.55|{{if:m==3|3.55|3.55}}}}}}, \"arrivée\")\n```\n\nQuel code mène le robot au carré vert ?",
+			"variables": [
+				{
+					"name": "m",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "{{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\uparrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}}"
+				},
+				{
+					"content": "{{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\downarrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\leftarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\downarrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\downarrow\\ \\uparrow$}}}}}}"
+				},
+				{
+					"content": "{{if:m==1|$\\rightarrow\\ \\rightarrow$|{{if:m==2|$\\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow$|$\\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}}"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"On suit chaque code depuis le carré rouge. Seul {{if:m==1|$\\rightarrow\\ \\rightarrow\\ \\uparrow$|{{if:m==2|$\\uparrow\\ \\uparrow\\ \\rightarrow\\ \\rightarrow$|{{if:m==3|$\\rightarrow\\ \\uparrow\\ \\rightarrow\\ \\uparrow$|$\\rightarrow\\ \\rightarrow\\ \\rightarrow\\ \\uparrow\\ \\uparrow$}}}}}} arrive au carré vert."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Où arrive : bon point",
+			"variationIndex": 0,
+			"variables": {
+				"m": "1",
+				"l": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Où arrive : bon point, lettres décalées",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"l": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Erreur : point d'une flèche changée",
+			"variationIndex": 0,
+			"variables": {
+				"m": "2",
+				"l": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Quel code : le bon",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : une flèche oubliée",
+			"variationIndex": 1,
+			"variables": {
+				"m": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Erreur : une flèche changée",
+			"variationIndex": 1,
+			"variables": {
+				"m": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}

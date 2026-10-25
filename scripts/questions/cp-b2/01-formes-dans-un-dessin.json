@@ -1,0 +1,250 @@
+{
+	"title": "Combien de formes dans le dessin ?",
+	"description": "Compter les triangles, carrés, rectangles ou disques d'un dessin fait de formes (maison, bateau, robot)",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Propriétés",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici une maison faite de formes.\n\n```figure\nfenetre: 0 ; 13 ; 0 ; 9\ndescription: Une maison fait de triangles, de carrés, de rectangles et de disques.\n---\nmur1 = point(2, 1, visible=faux)\nmur2 = point(7, 1, visible=faux)\nmur3 = point(7, 6, visible=faux)\nmur4 = point(2, 6, visible=faux)\nmur = polygone(mur1, mur2, mur3, mur4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=1)\ntoit1 = point(1.5, 6, visible=faux)\ntoit2 = point(7.5, 6, visible=faux)\ntoit3 = point(4.5, 8.5, visible=faux)\ntoit = polygone(toit1, toit2, toit3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nporte1 = point(4, 1, visible=faux)\nporte2 = point(5.5, 1, visible=faux)\nporte3 = point(5.5, 4, visible=faux)\nporte4 = point(4, 4, visible=faux)\nporte = polygone(porte1, porte2, porte3, porte4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\nfa1 = point(2.5, 4.5, visible=faux)\nfa2 = point(3.5, 4.5, visible=faux)\nfa3 = point(3.5, 5.5, visible=faux)\nfa4 = point(2.5, 5.5, visible=faux)\nfa = polygone(fa1, fa2, fa3, fa4, couleur=\"noir\", remplissage=\"cyan\", opacite_fond=1)\nfb1 = point(5.8, 4.5, visible=faux)\nfb2 = point(6.8, 4.5, visible=faux)\nfb3 = point(6.8, 5.5, visible=faux)\nfb4 = point(5.8, 5.5, visible=faux)\nfb = polygone(fb1, fb2, fb3, fb4, couleur=\"noir\", remplissage=\"cyan\", opacite_fond=1, visible={{if:n1>=2|vrai|faux}})\nfc1 = point(2.5, 2, visible=faux)\nfc2 = point(3.5, 2, visible=faux)\nfc3 = point(3.5, 3, visible=faux)\nfc4 = point(2.5, 3, visible=faux)\nfc = polygone(fc1, fc2, fc3, fc4, couleur=\"noir\", remplissage=\"cyan\", opacite_fond=1, visible={{if:n1==3|vrai|faux}})\nsoleilo = point(11, 7.5, visible=faux)\nsoleil = cercle(soleilo, rayon=1, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\ntronc1 = point(9.2, 1, visible=faux)\ntronc2 = point(9.8, 1, visible=faux)\ntronc3 = point(9.8, 2.5, visible=faux)\ntronc4 = point(9.2, 2.5, visible=faux)\ntronc = polygone(tronc1, tronc2, tronc3, tronc4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\nsapin1 = point(8.3, 2.5, visible=faux)\nsapin2 = point(10.7, 2.5, visible=faux)\nsapin3 = point(9.5, 5.5, visible=faux)\nsapin = polygone(sapin1, sapin2, sapin3, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1)\nbao = point(11.6, 1.5, visible=faux)\nba = cercle(bao, rayon=0.5, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:n2>=1|vrai|faux}})\nbbo = point(12.5, 1.5, visible=faux)\nbb = cercle(bbo, rayon=0.4, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:n2==2|vrai|faux}})\n```\n\nCombien de {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}} vois-tu dans ce dessin ?{{if:t==3| Un carré ne compte pas comme un rectangle.|}}\n\nNombre de {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}} : [_]",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..4"
+				},
+				{
+					"name": "n1",
+					"expression": "1..3"
+				},
+				{
+					"name": "n2",
+					"expression": "0..2"
+				},
+				{
+					"name": "nrep",
+					"expression": "eval:((t-2)*(t-3)*(t-4)/(-6))*(2)+((t-1)*(t-3)*(t-4)/(2))*(1+n1)+((t-1)*(t-2)*(t-4)/(-2))*(2)+((t-1)*(t-2)*(t-3)/(6))*(1+n2)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{nrep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche les {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}} un par un : {{if:t==1|le toit et le sapin|{{if:t==2|le mur et {{if:n1==1|la fenêtre|les fenêtres}}|{{if:t==3|la porte et le tronc du sapin|le soleil{{if:n2==1| et le buisson|}}{{if:n2==2| et les deux buissons|}}}}}}}}.",
+					"Il y a ${{nrep}}$ {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici un bateau fait de formes.\n\n```figure\nfenetre: 0 ; 12 ; 0 ; 9.5\ndescription: Un bateau fait de triangles, de carrés, de rectangles et de disques.\n---\ncoque1 = point(1, 1, visible=faux)\ncoque2 = point(11, 1, visible=faux)\ncoque3 = point(11, 3, visible=faux)\ncoque4 = point(1, 3, visible=faux)\ncoque = polygone(coque1, coque2, coque3, coque4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\nhao = point(3, 2, visible=faux)\nha = cercle(hao, rayon=0.4, couleur=\"noir\", remplissage=\"blanc\", opacite_fond=1)\nhbo = point(5, 2, visible=faux)\nhb = cercle(hbo, rayon=0.4, couleur=\"noir\", remplissage=\"blanc\", opacite_fond=1)\nhco = point(7, 2, visible=faux)\nhc = cercle(hco, rayon=0.4, couleur=\"noir\", remplissage=\"blanc\", opacite_fond=1, visible={{if:n1>=3|vrai|faux}})\nhdo = point(9, 2, visible=faux)\nhd = cercle(hdo, rayon=0.4, couleur=\"noir\", remplissage=\"blanc\", opacite_fond=1, visible={{if:n1==4|vrai|faux}})\nmat1 = point(5.8, 3, visible=faux)\nmat2 = point(6.2, 3, visible=faux)\nmat3 = point(6.2, 8, visible=faux)\nmat4 = point(5.8, 8, visible=faux)\nmat = polygone(mat1, mat2, mat3, mat4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1)\nvoile11 = point(6.4, 3.5, visible=faux)\nvoile12 = point(9.5, 3.5, visible=faux)\nvoile13 = point(6.4, 7.5, visible=faux)\nvoile1 = polygone(voile11, voile12, voile13, couleur=\"noir\", remplissage=\"blanc\", opacite_fond=1)\nvoile21 = point(5.6, 3.5, visible=faux)\nvoile22 = point(2.8, 3.5, visible=faux)\nvoile23 = point(5.6, 7, visible=faux)\nvoile2 = polygone(voile21, voile22, voile23, couleur=\"noir\", remplissage=\"blanc\", opacite_fond=1)\ndrapeau1 = point(6.2, 7.2, visible=faux)\ndrapeau2 = point(7, 7.2, visible=faux)\ndrapeau3 = point(7, 8, visible=faux)\ndrapeau4 = point(6.2, 8, visible=faux)\ndrapeau = polygone(drapeau1, drapeau2, drapeau3, drapeau4, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\nsoleilo = point(1.5, 8, visible=faux)\nsoleil = cercle(soleilo, rayon=0.9, couleur=\"noir\", remplissage=\"orange\", opacite_fond=1)\nca1 = point(1.2, 3, visible=faux)\nca2 = point(2, 3, visible=faux)\nca3 = point(2, 3.8, visible=faux)\nca4 = point(1.2, 3.8, visible=faux)\nca = polygone(ca1, ca2, ca3, ca4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1, visible={{if:n2>=1|vrai|faux}})\ncb1 = point(10, 3, visible=faux)\ncb2 = point(10.8, 3, visible=faux)\ncb3 = point(10.8, 3.8, visible=faux)\ncb4 = point(10, 3.8, visible=faux)\ncb = polygone(cb1, cb2, cb3, cb4, couleur=\"noir\", remplissage=\"marron\", opacite_fond=1, visible={{if:n2==2|vrai|faux}})\n```\n\nCombien de {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}} vois-tu dans ce dessin ?{{if:t==3| Un carré ne compte pas comme un rectangle.|}}\n\nNombre de {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}} : [_]",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..4"
+				},
+				{
+					"name": "n1",
+					"expression": "2..4"
+				},
+				{
+					"name": "n2",
+					"expression": "0..2"
+				},
+				{
+					"name": "nrep",
+					"expression": "eval:((t-2)*(t-3)*(t-4)/(-6))*(2)+((t-1)*(t-3)*(t-4)/(2))*(1+n2)+((t-1)*(t-2)*(t-4)/(-2))*(2)+((t-1)*(t-2)*(t-3)/(6))*(1+n1)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{nrep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche les {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}} un par un : {{if:t==1|les deux voiles|{{if:t==2|le drapeau{{if:n2==1| et la caisse|}}{{if:n2==2| et les deux caisses|}}|{{if:t==3|la coque et le mât|le soleil et les ${{n1}}$ hublots}}}}}}.",
+					"Il y a ${{nrep}}$ {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici un robot fait de formes.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 12.5\ndescription: Un robot fait de triangles, de carrés, de rectangles et de disques.\n---\nantenne1 = point(4.5, 11, visible=faux)\nantenne2 = point(5.5, 11, visible=faux)\nantenne3 = point(5, 12, visible=faux)\nantenne = polygone(antenne1, antenne2, antenne3, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1)\ntete1 = point(3.5, 8, visible=faux)\ntete2 = point(6.5, 8, visible=faux)\ntete3 = point(6.5, 11, visible=faux)\ntete4 = point(3.5, 11, visible=faux)\ntete = polygone(tete1, tete2, tete3, tete4, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\noao = point(4.3, 9.9, visible=faux)\noa = cercle(oao, rayon=0.4, couleur=\"noir\", remplissage=\"blanc\", opacite_fond=1)\nobo = point(5.7, 9.9, visible=faux)\nob = cercle(obo, rayon=0.4, couleur=\"noir\", remplissage=\"blanc\", opacite_fond=1)\nbouche1 = point(4.2, 8.4, visible=faux)\nbouche2 = point(5.8, 8.4, visible=faux)\nbouche3 = point(5.8, 8.9, visible=faux)\nbouche4 = point(4.2, 8.9, visible=faux)\nbouche = polygone(bouche1, bouche2, bouche3, bouche4, couleur=\"noir\", remplissage=\"rose\", opacite_fond=1)\ncorps1 = point(2, 4.5, visible=faux)\ncorps2 = point(8, 4.5, visible=faux)\ncorps3 = point(8, 7.5, visible=faux)\ncorps4 = point(2, 7.5, visible=faux)\ncorps = polygone(corps1, corps2, corps3, corps4, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1)\nba1 = point(0.3, 6.5, visible=faux)\nba2 = point(2, 6.5, visible=faux)\nba3 = point(2, 7.1, visible=faux)\nba4 = point(0.3, 7.1, visible=faux)\nba = polygone(ba1, ba2, ba3, ba4, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nbb1 = point(8, 6.5, visible=faux)\nbb2 = point(9.7, 6.5, visible=faux)\nbb3 = point(9.7, 7.1, visible=faux)\nbb4 = point(8, 7.1, visible=faux)\nbb = polygone(bb1, bb2, bb3, bb4, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nja1 = point(3, 1, visible=faux)\nja2 = point(4, 1, visible=faux)\nja3 = point(4, 4.5, visible=faux)\nja4 = point(3, 4.5, visible=faux)\nja = polygone(ja1, ja2, ja3, ja4, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\njb1 = point(6, 1, visible=faux)\njb2 = point(7, 1, visible=faux)\njb3 = point(7, 4.5, visible=faux)\njb4 = point(6, 4.5, visible=faux)\njb = polygone(jb1, jb2, jb3, jb4, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\nka1 = point(2.9, 5.6, visible=faux)\nka2 = point(3.7, 5.6, visible=faux)\nka3 = point(3.7, 6.4, visible=faux)\nka4 = point(2.9, 6.4, visible=faux)\nka = polygone(ka1, ka2, ka3, ka4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=1)\nkb1 = point(4.6, 5.6, visible=faux)\nkb2 = point(5.4, 5.6, visible=faux)\nkb3 = point(5.4, 6.4, visible=faux)\nkb4 = point(4.6, 6.4, visible=faux)\nkb = polygone(kb1, kb2, kb3, kb4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=1, visible={{if:n1>=2|vrai|faux}})\nkc1 = point(6.3, 5.6, visible=faux)\nkc2 = point(7.1, 5.6, visible=faux)\nkc3 = point(7.1, 6.4, visible=faux)\nkc4 = point(6.3, 6.4, visible=faux)\nkc = polygone(kc1, kc2, kc3, kc4, couleur=\"noir\", remplissage=\"jaune\", opacite_fond=1, visible={{if:n1==3|vrai|faux}})\n```\n\nCombien de {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}} vois-tu dans ce dessin ?{{if:t==3| Un carré ne compte pas comme un rectangle.|}}\n\nNombre de {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}} : [_]",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "1..4"
+				},
+				{
+					"name": "n1",
+					"expression": "1..3"
+				},
+				{
+					"name": "nrep",
+					"expression": "eval:((t-2)*(t-3)*(t-4)/(-6))*(1)+((t-1)*(t-3)*(t-4)/(2))*(1+n1)+((t-1)*(t-2)*(t-4)/(-2))*(6)+((t-1)*(t-2)*(t-3)/(6))*(2)"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{nrep}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On cherche les {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}} un par un : {{if:t==1|l'antenne|{{if:t==2|la tête et {{if:n1==1|le bouton|les ${{n1}}$ boutons}}|{{if:t==3|la bouche, le corps, les deux bras et les deux jambes|les deux yeux}}}}}}.",
+					"Il y a ${{nrep}}$ {{if:t==1|triangles|{{if:t==2|carrés|{{if:t==3|rectangles|disques}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Maison, triangles : 2",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"n1": "2",
+				"n2": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Maison, carrés : 3 (mur + 2 fenêtres)",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"n1": "2",
+				"n2": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur : le mur oublié",
+			"variationIndex": 0,
+			"variables": {
+				"t": "2",
+				"n1": "2",
+				"n2": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Maison, rectangles : 2",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n1": "3",
+				"n2": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Erreur : carrés comptés avec les rectangles",
+			"variationIndex": 0,
+			"variables": {
+				"t": "3",
+				"n1": "3",
+				"n2": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Maison, disques : 3",
+			"variationIndex": 0,
+			"variables": {
+				"t": "4",
+				"n1": "1",
+				"n2": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Bateau, disques : soleil + 4 hublots",
+			"variationIndex": 1,
+			"variables": {
+				"t": "4",
+				"n1": "4",
+				"n2": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Bateau, carrés : drapeau + 2 caisses",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"n1": "2",
+				"n2": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Robot, rectangles : 6",
+			"variationIndex": 2,
+			"variables": {
+				"t": "3",
+				"n1": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Robot, carrés : tête + 3 boutons",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2",
+				"n1": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Erreur : la tête oubliée",
+			"variationIndex": 2,
+			"variables": {
+				"t": "2",
+				"n1": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		}
+	]
+}

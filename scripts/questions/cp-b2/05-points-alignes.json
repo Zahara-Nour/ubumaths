@@ -1,0 +1,175 @@
+{
+	"title": "Quels points sont alignés ?",
+	"description": "Repérer à l'œil trois points alignés parmi cinq",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Propriétés",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quels points sont alignés ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Cinq points numérotés de 1 à 5.\n---\nA = point(1, 1, couleur=\"noir\", etiquette=\"aucune\")\ntexte(1, 1.45, \"1\")\nB = point(3, 5.5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(3, 5.95, \"2\")\nC = point(4, 3, couleur=\"noir\", etiquette=\"aucune\")\ntexte(4, 3.45, \"3\")\nD = point(7, 5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(7, 5.45, \"4\")\nE = point(9, 1.5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(9, 1.95, \"5\")\n```",
+			"variables": [],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Les points 1, 3 et 4."
+				},
+				{
+					"content": "Les points 1, 2 et 4."
+				},
+				{
+					"content": "Les points 2, 3 et 5."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les points 1, 3 et 4 sont sur une même ligne droite qui monte. On peut le vérifier avec une règle."
+				]
+			}
+		},
+		{
+			"statement": "Quels points sont alignés ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Cinq points numérotés de 1 à 5.\n---\nA = point(1, 4, couleur=\"noir\", etiquette=\"aucune\")\ntexte(1, 4.45, \"1\")\nB = point(3, 1, couleur=\"noir\", etiquette=\"aucune\")\ntexte(3, 1.45, \"2\")\nC = point(5, 4.5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(5, 4.95, \"3\")\nD = point(7, 2, couleur=\"noir\", etiquette=\"aucune\")\ntexte(7, 2.45, \"4\")\nE = point(9, 5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(9, 5.45, \"5\")\n```",
+			"variables": [],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Les points 1, 3 et 5."
+				},
+				{
+					"content": "Les points 1, 2 et 4."
+				},
+				{
+					"content": "Les points 2, 3 et 4."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les points 1, 3 et 5 sont sur une même ligne droite presque horizontale. On peut le vérifier avec une règle."
+				]
+			}
+		},
+		{
+			"statement": "Quels points sont alignés ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Cinq points numérotés de 1 à 5.\n---\nA = point(2, 1.5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(2, 1.95, \"1\")\nB = point(2, 6, couleur=\"noir\", etiquette=\"aucune\")\ntexte(2, 6.45, \"2\")\nC = point(5, 3.5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(5, 3.95, \"3\")\nD = point(5, 6, couleur=\"noir\", etiquette=\"aucune\")\ntexte(5, 6.45, \"4\")\nE = point(8, 1, couleur=\"noir\", etiquette=\"aucune\")\ntexte(8, 1.45, \"5\")\n```",
+			"variables": [],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Les points 2, 3 et 5."
+				},
+				{
+					"content": "Les points 1, 3 et 4."
+				},
+				{
+					"content": "Les points 2, 4 et 5."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les points 2, 3 et 5 sont sur une même ligne droite qui descend. On peut le vérifier avec une règle."
+				]
+			}
+		},
+		{
+			"statement": "Quels points sont alignés ?\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 7\ndescription: Cinq points numérotés de 1 à 5.\n---\nA = point(1, 1, couleur=\"noir\", etiquette=\"aucune\")\ntexte(1, 1.45, \"1\")\nB = point(3.5, 3.5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(3.5, 3.95, \"2\")\nC = point(5, 1, couleur=\"noir\", etiquette=\"aucune\")\ntexte(5, 1.45, \"3\")\nD = point(8, 3.5, couleur=\"noir\", etiquette=\"aucune\")\ntexte(8, 3.95, \"4\")\nE = point(6, 6, couleur=\"noir\", etiquette=\"aucune\")\ntexte(6, 6.45, \"5\")\n```",
+			"variables": [],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Les points 1, 2 et 5."
+				},
+				{
+					"content": "Les points 1, 3 et 4."
+				},
+				{
+					"content": "Les points 3, 4 et 5."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les points 1, 2 et 5 sont sur une même ligne droite qui monte. On peut le vérifier avec une règle."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Configuration 1 : bon groupe",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Configuration 1 : leurre",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Configuration 2 : bon groupe",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Configuration 2 : leurre",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Configuration 3 : bon groupe",
+			"variationIndex": 2,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Configuration 3 : leurre",
+			"variationIndex": 2,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Configuration 4 : bon groupe",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Configuration 4 : leurre",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		}
+	]
+}

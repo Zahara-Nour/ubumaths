@@ -1,0 +1,164 @@
+{
+	"title": "Qui suis-je ? (formes)",
+	"description": "Reconnaître une forme à sa description : côtés, sommets, longueurs",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Figures planes",
+	"subdomain": "Propriétés",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Qui suis-je ?\n\n_J'ai 3 côtés._\n\n_J'ai 3 sommets._",
+			"variables": [],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Je suis un triangle."
+				},
+				{
+					"content": "Je suis un carré."
+				},
+				{
+					"content": "Je suis un rectangle."
+				},
+				{
+					"content": "Je suis un disque."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": ["C'est un triangle.", "Un triangle a 3 côtés et 3 sommets."]
+			}
+		},
+		{
+			"statement": "Qui suis-je ?\n\n_J'ai 4 côtés et 4 sommets._\n\n_Mes 4 côtés ont la même longueur._",
+			"variables": [],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Je suis un triangle."
+				},
+				{
+					"content": "Je suis un carré."
+				},
+				{
+					"content": "Je suis un rectangle."
+				},
+				{
+					"content": "Je suis un disque."
+				}
+			],
+			"correctChoiceIndex": ["1"],
+			"correction": {
+				"steps": ["C'est un carré.", "Un carré a 4 côtés, tous de la même longueur, et 4 sommets."]
+			}
+		},
+		{
+			"statement": "Qui suis-je ?\n\n_J'ai 4 côtés et 4 sommets._\n\n_J'ai deux grands côtés et deux petits côtés._",
+			"variables": [],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Je suis un triangle."
+				},
+				{
+					"content": "Je suis un carré."
+				},
+				{
+					"content": "Je suis un rectangle."
+				},
+				{
+					"content": "Je suis un disque."
+				}
+			],
+			"correctChoiceIndex": ["2"],
+			"correction": {
+				"steps": [
+					"C'est un rectangle.",
+					"Un rectangle a 4 côtés et 4 sommets : deux grands côtés et deux petits côtés."
+				]
+			}
+		},
+		{
+			"statement": "Qui suis-je ?\n\n_Je suis tout rond._\n\n_Je n'ai ni côté ni sommet._",
+			"variables": [],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "Je suis un triangle."
+				},
+				{
+					"content": "Je suis un carré."
+				},
+				{
+					"content": "Je suis un rectangle."
+				},
+				{
+					"content": "Je suis un disque."
+				}
+			],
+			"correctChoiceIndex": ["3"],
+			"correction": {
+				"steps": ["C'est un disque.", "Un disque est tout rond : il n'a ni côté ni sommet."]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 côtés : triangle",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Côtés égaux : carré",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : côtés égaux, rectangle",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Grands et petits côtés : rectangle",
+			"variationIndex": 2,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Erreur : grands et petits côtés, carré",
+			"variationIndex": 2,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Tout rond : disque",
+			"variationIndex": 3,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [3]
+		}
+	]
+}

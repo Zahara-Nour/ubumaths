@@ -1,0 +1,260 @@
+{
+	"title": "Qui est assis à côté ?",
+	"description": "Situer des élèves sur un plan de classe : à gauche, à droite, devant, derrière, entre",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Repérage et déplacements",
+	"subdomain": "Positions et plans",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici le plan de la classe, vu du dessus. Les élèves sont assis face au tableau.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 10\ndescription: Plan de la classe vu du dessus : le tableau en haut, trois rangées de trois tables avec le prénom de chaque élève.\n---\ntableau1 = point(2, 8.2, visible=faux)\ntableau2 = point(8, 8.2, visible=faux)\ntableau3 = point(8, 8.8, visible=faux)\ntableau4 = point(2, 8.8, visible=faux)\ntableau = polygone(tableau1, tableau2, tableau3, tableau4, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\ntexte(5, 9.3, \"tableau\")\nt111 = point(1, 5.9, visible=faux)\nt112 = point(3, 5.9, visible=faux)\nt113 = point(3, 7.1, visible=faux)\nt114 = point(1, 7.1, visible=faux)\nt11 = polygone(t111, t112, t113, t114, couleur=\"noir\")\ntexte(2, 6.5, \"{{if:k==1|Léa|{{if:k==2|Lina|{{if:k==3|Jade|Nour}}}}}}\")\nt121 = point(4, 5.9, visible=faux)\nt122 = point(6, 5.9, visible=faux)\nt123 = point(6, 7.1, visible=faux)\nt124 = point(4, 7.1, visible=faux)\nt12 = polygone(t121, t122, t123, t124, couleur=\"noir\")\ntexte(5, 6.5, \"{{if:k==1|Tom|{{if:k==2|Sami|{{if:k==3|Hugo|Léo}}}}}}\")\nt131 = point(7, 5.9, visible=faux)\nt132 = point(9, 5.9, visible=faux)\nt133 = point(9, 7.1, visible=faux)\nt134 = point(7, 7.1, visible=faux)\nt13 = polygone(t131, t132, t133, t134, couleur=\"noir\")\ntexte(8, 6.5, \"{{if:k==1|Lina|{{if:k==2|Jade|{{if:k==3|Nour|Maya}}}}}}\")\nt211 = point(1, 3.4999999999999996, visible=faux)\nt212 = point(3, 3.4999999999999996, visible=faux)\nt213 = point(3, 4.699999999999999, visible=faux)\nt214 = point(1, 4.699999999999999, visible=faux)\nt21 = polygone(t211, t212, t213, t214, couleur=\"noir\")\ntexte(2, 4.1, \"{{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}}\")\nt221 = point(4, 3.4999999999999996, visible=faux)\nt222 = point(6, 3.4999999999999996, visible=faux)\nt223 = point(6, 4.699999999999999, visible=faux)\nt224 = point(4, 4.699999999999999, visible=faux)\nt22 = polygone(t221, t222, t223, t224, couleur=\"noir\")\ntexte(5, 4.1, \"{{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}}\")\nt231 = point(7, 3.4999999999999996, visible=faux)\nt232 = point(9, 3.4999999999999996, visible=faux)\nt233 = point(9, 4.699999999999999, visible=faux)\nt234 = point(7, 4.699999999999999, visible=faux)\nt23 = polygone(t231, t232, t233, t234, couleur=\"noir\")\ntexte(8, 4.1, \"{{if:k==1|Hugo|{{if:k==2|Léo|{{if:k==3|Léa|Lina}}}}}}\")\nt311 = point(1, 1.1, visible=faux)\nt312 = point(3, 1.1, visible=faux)\nt313 = point(3, 2.3000000000000003, visible=faux)\nt314 = point(1, 2.3000000000000003, visible=faux)\nt31 = polygone(t311, t312, t313, t314, couleur=\"noir\")\ntexte(2, 1.7, \"{{if:k==1|Nour|{{if:k==2|Maya|{{if:k==3|Tom|Sami}}}}}}\")\nt321 = point(4, 1.1, visible=faux)\nt322 = point(6, 1.1, visible=faux)\nt323 = point(6, 2.3000000000000003, visible=faux)\nt324 = point(4, 2.3000000000000003, visible=faux)\nt32 = polygone(t321, t322, t323, t324, couleur=\"noir\")\ntexte(5, 1.7, \"{{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}}\")\nt331 = point(7, 1.1, visible=faux)\nt332 = point(9, 1.1, visible=faux)\nt333 = point(9, 2.3000000000000003, visible=faux)\nt334 = point(7, 2.3000000000000003, visible=faux)\nt33 = polygone(t331, t332, t333, t334, couleur=\"noir\")\ntexte(8, 1.7, \"{{if:k==1|Maya|{{if:k==2|Tom|{{if:k==3|Sami|Hugo}}}}}}\")\n```\n\nQui est assis à gauche de {{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}} ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "{{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}}."
+				},
+				{
+					"content": "{{if:k==1|Hugo|{{if:k==2|Léo|{{if:k==3|Léa|Lina}}}}}}."
+				},
+				{
+					"content": "{{if:k==1|Tom|{{if:k==2|Sami|{{if:k==3|Hugo|Léo}}}}}}."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les élèves regardent le tableau : la gauche de {{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}} est la gauche du plan. {{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}} est à gauche de {{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le plan de la classe, vu du dessus. Les élèves sont assis face au tableau.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 10\ndescription: Plan de la classe vu du dessus : le tableau en haut, trois rangées de trois tables avec le prénom de chaque élève.\n---\ntableau1 = point(2, 8.2, visible=faux)\ntableau2 = point(8, 8.2, visible=faux)\ntableau3 = point(8, 8.8, visible=faux)\ntableau4 = point(2, 8.8, visible=faux)\ntableau = polygone(tableau1, tableau2, tableau3, tableau4, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\ntexte(5, 9.3, \"tableau\")\nt111 = point(1, 5.9, visible=faux)\nt112 = point(3, 5.9, visible=faux)\nt113 = point(3, 7.1, visible=faux)\nt114 = point(1, 7.1, visible=faux)\nt11 = polygone(t111, t112, t113, t114, couleur=\"noir\")\ntexte(2, 6.5, \"{{if:k==1|Léa|{{if:k==2|Lina|{{if:k==3|Jade|Nour}}}}}}\")\nt121 = point(4, 5.9, visible=faux)\nt122 = point(6, 5.9, visible=faux)\nt123 = point(6, 7.1, visible=faux)\nt124 = point(4, 7.1, visible=faux)\nt12 = polygone(t121, t122, t123, t124, couleur=\"noir\")\ntexte(5, 6.5, \"{{if:k==1|Tom|{{if:k==2|Sami|{{if:k==3|Hugo|Léo}}}}}}\")\nt131 = point(7, 5.9, visible=faux)\nt132 = point(9, 5.9, visible=faux)\nt133 = point(9, 7.1, visible=faux)\nt134 = point(7, 7.1, visible=faux)\nt13 = polygone(t131, t132, t133, t134, couleur=\"noir\")\ntexte(8, 6.5, \"{{if:k==1|Lina|{{if:k==2|Jade|{{if:k==3|Nour|Maya}}}}}}\")\nt211 = point(1, 3.4999999999999996, visible=faux)\nt212 = point(3, 3.4999999999999996, visible=faux)\nt213 = point(3, 4.699999999999999, visible=faux)\nt214 = point(1, 4.699999999999999, visible=faux)\nt21 = polygone(t211, t212, t213, t214, couleur=\"noir\")\ntexte(2, 4.1, \"{{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}}\")\nt221 = point(4, 3.4999999999999996, visible=faux)\nt222 = point(6, 3.4999999999999996, visible=faux)\nt223 = point(6, 4.699999999999999, visible=faux)\nt224 = point(4, 4.699999999999999, visible=faux)\nt22 = polygone(t221, t222, t223, t224, couleur=\"noir\")\ntexte(5, 4.1, \"{{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}}\")\nt231 = point(7, 3.4999999999999996, visible=faux)\nt232 = point(9, 3.4999999999999996, visible=faux)\nt233 = point(9, 4.699999999999999, visible=faux)\nt234 = point(7, 4.699999999999999, visible=faux)\nt23 = polygone(t231, t232, t233, t234, couleur=\"noir\")\ntexte(8, 4.1, \"{{if:k==1|Hugo|{{if:k==2|Léo|{{if:k==3|Léa|Lina}}}}}}\")\nt311 = point(1, 1.1, visible=faux)\nt312 = point(3, 1.1, visible=faux)\nt313 = point(3, 2.3000000000000003, visible=faux)\nt314 = point(1, 2.3000000000000003, visible=faux)\nt31 = polygone(t311, t312, t313, t314, couleur=\"noir\")\ntexte(2, 1.7, \"{{if:k==1|Nour|{{if:k==2|Maya|{{if:k==3|Tom|Sami}}}}}}\")\nt321 = point(4, 1.1, visible=faux)\nt322 = point(6, 1.1, visible=faux)\nt323 = point(6, 2.3000000000000003, visible=faux)\nt324 = point(4, 2.3000000000000003, visible=faux)\nt32 = polygone(t321, t322, t323, t324, couleur=\"noir\")\ntexte(5, 1.7, \"{{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}}\")\nt331 = point(7, 1.1, visible=faux)\nt332 = point(9, 1.1, visible=faux)\nt333 = point(9, 2.3000000000000003, visible=faux)\nt334 = point(7, 2.3000000000000003, visible=faux)\nt33 = polygone(t331, t332, t333, t334, couleur=\"noir\")\ntexte(8, 1.7, \"{{if:k==1|Maya|{{if:k==2|Tom|{{if:k==3|Sami|Hugo}}}}}}\")\n```\n\nQui est assis à droite de {{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}} ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "{{if:k==1|Maya|{{if:k==2|Tom|{{if:k==3|Sami|Hugo}}}}}}."
+				},
+				{
+					"content": "{{if:k==1|Nour|{{if:k==2|Maya|{{if:k==3|Tom|Sami}}}}}}."
+				},
+				{
+					"content": "{{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}}."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les élèves regardent le tableau : la droite de {{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}} est la droite du plan. {{if:k==1|Maya|{{if:k==2|Tom|{{if:k==3|Sami|Hugo}}}}}} est à droite de {{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le plan de la classe, vu du dessus. Les élèves sont assis face au tableau.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 10\ndescription: Plan de la classe vu du dessus : le tableau en haut, trois rangées de trois tables avec le prénom de chaque élève.\n---\ntableau1 = point(2, 8.2, visible=faux)\ntableau2 = point(8, 8.2, visible=faux)\ntableau3 = point(8, 8.8, visible=faux)\ntableau4 = point(2, 8.8, visible=faux)\ntableau = polygone(tableau1, tableau2, tableau3, tableau4, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\ntexte(5, 9.3, \"tableau\")\nt111 = point(1, 5.9, visible=faux)\nt112 = point(3, 5.9, visible=faux)\nt113 = point(3, 7.1, visible=faux)\nt114 = point(1, 7.1, visible=faux)\nt11 = polygone(t111, t112, t113, t114, couleur=\"noir\")\ntexte(2, 6.5, \"{{if:k==1|Léa|{{if:k==2|Lina|{{if:k==3|Jade|Nour}}}}}}\")\nt121 = point(4, 5.9, visible=faux)\nt122 = point(6, 5.9, visible=faux)\nt123 = point(6, 7.1, visible=faux)\nt124 = point(4, 7.1, visible=faux)\nt12 = polygone(t121, t122, t123, t124, couleur=\"noir\")\ntexte(5, 6.5, \"{{if:k==1|Tom|{{if:k==2|Sami|{{if:k==3|Hugo|Léo}}}}}}\")\nt131 = point(7, 5.9, visible=faux)\nt132 = point(9, 5.9, visible=faux)\nt133 = point(9, 7.1, visible=faux)\nt134 = point(7, 7.1, visible=faux)\nt13 = polygone(t131, t132, t133, t134, couleur=\"noir\")\ntexte(8, 6.5, \"{{if:k==1|Lina|{{if:k==2|Jade|{{if:k==3|Nour|Maya}}}}}}\")\nt211 = point(1, 3.4999999999999996, visible=faux)\nt212 = point(3, 3.4999999999999996, visible=faux)\nt213 = point(3, 4.699999999999999, visible=faux)\nt214 = point(1, 4.699999999999999, visible=faux)\nt21 = polygone(t211, t212, t213, t214, couleur=\"noir\")\ntexte(2, 4.1, \"{{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}}\")\nt221 = point(4, 3.4999999999999996, visible=faux)\nt222 = point(6, 3.4999999999999996, visible=faux)\nt223 = point(6, 4.699999999999999, visible=faux)\nt224 = point(4, 4.699999999999999, visible=faux)\nt22 = polygone(t221, t222, t223, t224, couleur=\"noir\")\ntexte(5, 4.1, \"{{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}}\")\nt231 = point(7, 3.4999999999999996, visible=faux)\nt232 = point(9, 3.4999999999999996, visible=faux)\nt233 = point(9, 4.699999999999999, visible=faux)\nt234 = point(7, 4.699999999999999, visible=faux)\nt23 = polygone(t231, t232, t233, t234, couleur=\"noir\")\ntexte(8, 4.1, \"{{if:k==1|Hugo|{{if:k==2|Léo|{{if:k==3|Léa|Lina}}}}}}\")\nt311 = point(1, 1.1, visible=faux)\nt312 = point(3, 1.1, visible=faux)\nt313 = point(3, 2.3000000000000003, visible=faux)\nt314 = point(1, 2.3000000000000003, visible=faux)\nt31 = polygone(t311, t312, t313, t314, couleur=\"noir\")\ntexte(2, 1.7, \"{{if:k==1|Nour|{{if:k==2|Maya|{{if:k==3|Tom|Sami}}}}}}\")\nt321 = point(4, 1.1, visible=faux)\nt322 = point(6, 1.1, visible=faux)\nt323 = point(6, 2.3000000000000003, visible=faux)\nt324 = point(4, 2.3000000000000003, visible=faux)\nt32 = polygone(t321, t322, t323, t324, couleur=\"noir\")\ntexte(5, 1.7, \"{{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}}\")\nt331 = point(7, 1.1, visible=faux)\nt332 = point(9, 1.1, visible=faux)\nt333 = point(9, 2.3000000000000003, visible=faux)\nt334 = point(7, 2.3000000000000003, visible=faux)\nt33 = polygone(t331, t332, t333, t334, couleur=\"noir\")\ntexte(8, 1.7, \"{{if:k==1|Maya|{{if:k==2|Tom|{{if:k==3|Sami|Hugo}}}}}}\")\n```\n\nQui est assis juste devant {{if:k==1|Nour|{{if:k==2|Maya|{{if:k==3|Tom|Sami}}}}}} ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "{{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}}."
+				},
+				{
+					"content": "{{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}}."
+				},
+				{
+					"content": "{{if:k==1|Tom|{{if:k==2|Sami|{{if:k==3|Hugo|Léo}}}}}}."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"« Devant », c'est plus près du tableau, dans la même colonne. {{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}} est juste devant {{if:k==1|Nour|{{if:k==2|Maya|{{if:k==3|Tom|Sami}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le plan de la classe, vu du dessus. Les élèves sont assis face au tableau.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 10\ndescription: Plan de la classe vu du dessus : le tableau en haut, trois rangées de trois tables avec le prénom de chaque élève.\n---\ntableau1 = point(2, 8.2, visible=faux)\ntableau2 = point(8, 8.2, visible=faux)\ntableau3 = point(8, 8.8, visible=faux)\ntableau4 = point(2, 8.8, visible=faux)\ntableau = polygone(tableau1, tableau2, tableau3, tableau4, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\ntexte(5, 9.3, \"tableau\")\nt111 = point(1, 5.9, visible=faux)\nt112 = point(3, 5.9, visible=faux)\nt113 = point(3, 7.1, visible=faux)\nt114 = point(1, 7.1, visible=faux)\nt11 = polygone(t111, t112, t113, t114, couleur=\"noir\")\ntexte(2, 6.5, \"{{if:k==1|Léa|{{if:k==2|Lina|{{if:k==3|Jade|Nour}}}}}}\")\nt121 = point(4, 5.9, visible=faux)\nt122 = point(6, 5.9, visible=faux)\nt123 = point(6, 7.1, visible=faux)\nt124 = point(4, 7.1, visible=faux)\nt12 = polygone(t121, t122, t123, t124, couleur=\"noir\")\ntexte(5, 6.5, \"{{if:k==1|Tom|{{if:k==2|Sami|{{if:k==3|Hugo|Léo}}}}}}\")\nt131 = point(7, 5.9, visible=faux)\nt132 = point(9, 5.9, visible=faux)\nt133 = point(9, 7.1, visible=faux)\nt134 = point(7, 7.1, visible=faux)\nt13 = polygone(t131, t132, t133, t134, couleur=\"noir\")\ntexte(8, 6.5, \"{{if:k==1|Lina|{{if:k==2|Jade|{{if:k==3|Nour|Maya}}}}}}\")\nt211 = point(1, 3.4999999999999996, visible=faux)\nt212 = point(3, 3.4999999999999996, visible=faux)\nt213 = point(3, 4.699999999999999, visible=faux)\nt214 = point(1, 4.699999999999999, visible=faux)\nt21 = polygone(t211, t212, t213, t214, couleur=\"noir\")\ntexte(2, 4.1, \"{{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}}\")\nt221 = point(4, 3.4999999999999996, visible=faux)\nt222 = point(6, 3.4999999999999996, visible=faux)\nt223 = point(6, 4.699999999999999, visible=faux)\nt224 = point(4, 4.699999999999999, visible=faux)\nt22 = polygone(t221, t222, t223, t224, couleur=\"noir\")\ntexte(5, 4.1, \"{{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}}\")\nt231 = point(7, 3.4999999999999996, visible=faux)\nt232 = point(9, 3.4999999999999996, visible=faux)\nt233 = point(9, 4.699999999999999, visible=faux)\nt234 = point(7, 4.699999999999999, visible=faux)\nt23 = polygone(t231, t232, t233, t234, couleur=\"noir\")\ntexte(8, 4.1, \"{{if:k==1|Hugo|{{if:k==2|Léo|{{if:k==3|Léa|Lina}}}}}}\")\nt311 = point(1, 1.1, visible=faux)\nt312 = point(3, 1.1, visible=faux)\nt313 = point(3, 2.3000000000000003, visible=faux)\nt314 = point(1, 2.3000000000000003, visible=faux)\nt31 = polygone(t311, t312, t313, t314, couleur=\"noir\")\ntexte(2, 1.7, \"{{if:k==1|Nour|{{if:k==2|Maya|{{if:k==3|Tom|Sami}}}}}}\")\nt321 = point(4, 1.1, visible=faux)\nt322 = point(6, 1.1, visible=faux)\nt323 = point(6, 2.3000000000000003, visible=faux)\nt324 = point(4, 2.3000000000000003, visible=faux)\nt32 = polygone(t321, t322, t323, t324, couleur=\"noir\")\ntexte(5, 1.7, \"{{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}}\")\nt331 = point(7, 1.1, visible=faux)\nt332 = point(9, 1.1, visible=faux)\nt333 = point(9, 2.3000000000000003, visible=faux)\nt334 = point(7, 2.3000000000000003, visible=faux)\nt33 = polygone(t331, t332, t333, t334, couleur=\"noir\")\ntexte(8, 1.7, \"{{if:k==1|Maya|{{if:k==2|Tom|{{if:k==3|Sami|Hugo}}}}}}\")\n```\n\nQui est assis juste derrière {{if:k==1|Lina|{{if:k==2|Jade|{{if:k==3|Nour|Maya}}}}}} ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "{{if:k==1|Hugo|{{if:k==2|Léo|{{if:k==3|Léa|Lina}}}}}}."
+				},
+				{
+					"content": "{{if:k==1|Tom|{{if:k==2|Sami|{{if:k==3|Hugo|Léo}}}}}}."
+				},
+				{
+					"content": "{{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}}."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"« Derrière », c'est plus loin du tableau, dans la même colonne. {{if:k==1|Hugo|{{if:k==2|Léo|{{if:k==3|Léa|Lina}}}}}} est juste derrière {{if:k==1|Lina|{{if:k==2|Jade|{{if:k==3|Nour|Maya}}}}}}."
+				]
+			}
+		},
+		{
+			"statement": "Voici le plan de la classe, vu du dessus. Les élèves sont assis face au tableau.\n\n```figure\nfenetre: 0 ; 10 ; 0 ; 10\ndescription: Plan de la classe vu du dessus : le tableau en haut, trois rangées de trois tables avec le prénom de chaque élève.\n---\ntableau1 = point(2, 8.2, visible=faux)\ntableau2 = point(8, 8.2, visible=faux)\ntableau3 = point(8, 8.8, visible=faux)\ntableau4 = point(2, 8.8, visible=faux)\ntableau = polygone(tableau1, tableau2, tableau3, tableau4, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\ntexte(5, 9.3, \"tableau\")\nt111 = point(1, 5.9, visible=faux)\nt112 = point(3, 5.9, visible=faux)\nt113 = point(3, 7.1, visible=faux)\nt114 = point(1, 7.1, visible=faux)\nt11 = polygone(t111, t112, t113, t114, couleur=\"noir\")\ntexte(2, 6.5, \"{{if:k==1|Léa|{{if:k==2|Lina|{{if:k==3|Jade|Nour}}}}}}\")\nt121 = point(4, 5.9, visible=faux)\nt122 = point(6, 5.9, visible=faux)\nt123 = point(6, 7.1, visible=faux)\nt124 = point(4, 7.1, visible=faux)\nt12 = polygone(t121, t122, t123, t124, couleur=\"noir\")\ntexte(5, 6.5, \"{{if:k==1|Tom|{{if:k==2|Sami|{{if:k==3|Hugo|Léo}}}}}}\")\nt131 = point(7, 5.9, visible=faux)\nt132 = point(9, 5.9, visible=faux)\nt133 = point(9, 7.1, visible=faux)\nt134 = point(7, 7.1, visible=faux)\nt13 = polygone(t131, t132, t133, t134, couleur=\"noir\")\ntexte(8, 6.5, \"{{if:k==1|Lina|{{if:k==2|Jade|{{if:k==3|Nour|Maya}}}}}}\")\nt211 = point(1, 3.4999999999999996, visible=faux)\nt212 = point(3, 3.4999999999999996, visible=faux)\nt213 = point(3, 4.699999999999999, visible=faux)\nt214 = point(1, 4.699999999999999, visible=faux)\nt21 = polygone(t211, t212, t213, t214, couleur=\"noir\")\ntexte(2, 4.1, \"{{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}}\")\nt221 = point(4, 3.4999999999999996, visible=faux)\nt222 = point(6, 3.4999999999999996, visible=faux)\nt223 = point(6, 4.699999999999999, visible=faux)\nt224 = point(4, 4.699999999999999, visible=faux)\nt22 = polygone(t221, t222, t223, t224, couleur=\"noir\")\ntexte(5, 4.1, \"{{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}}\")\nt231 = point(7, 3.4999999999999996, visible=faux)\nt232 = point(9, 3.4999999999999996, visible=faux)\nt233 = point(9, 4.699999999999999, visible=faux)\nt234 = point(7, 4.699999999999999, visible=faux)\nt23 = polygone(t231, t232, t233, t234, couleur=\"noir\")\ntexte(8, 4.1, \"{{if:k==1|Hugo|{{if:k==2|Léo|{{if:k==3|Léa|Lina}}}}}}\")\nt311 = point(1, 1.1, visible=faux)\nt312 = point(3, 1.1, visible=faux)\nt313 = point(3, 2.3000000000000003, visible=faux)\nt314 = point(1, 2.3000000000000003, visible=faux)\nt31 = polygone(t311, t312, t313, t314, couleur=\"noir\")\ntexte(2, 1.7, \"{{if:k==1|Nour|{{if:k==2|Maya|{{if:k==3|Tom|Sami}}}}}}\")\nt321 = point(4, 1.1, visible=faux)\nt322 = point(6, 1.1, visible=faux)\nt323 = point(6, 2.3000000000000003, visible=faux)\nt324 = point(4, 2.3000000000000003, visible=faux)\nt32 = polygone(t321, t322, t323, t324, couleur=\"noir\")\ntexte(5, 1.7, \"{{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}}\")\nt331 = point(7, 1.1, visible=faux)\nt332 = point(9, 1.1, visible=faux)\nt333 = point(9, 2.3000000000000003, visible=faux)\nt334 = point(7, 2.3000000000000003, visible=faux)\nt33 = polygone(t331, t332, t333, t334, couleur=\"noir\")\ntexte(8, 1.7, \"{{if:k==1|Maya|{{if:k==2|Tom|{{if:k==3|Sami|Hugo}}}}}}\")\n```\n\nQui est assis entre {{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}} et {{if:k==1|Hugo|{{if:k==2|Léo|{{if:k==3|Léa|Lina}}}}}} ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "{{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}}."
+				},
+				{
+					"content": "{{if:k==1|Tom|{{if:k==2|Sami|{{if:k==3|Hugo|Léo}}}}}}."
+				},
+				{
+					"content": "{{if:k==1|Léo|{{if:k==2|Léa|{{if:k==3|Lina|Jade}}}}}}."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Jade|{{if:k==2|Nour|{{if:k==3|Maya|Tom}}}}}} est assis au milieu de la rangée, entre {{if:k==1|Sami|{{if:k==2|Hugo|{{if:k==3|Léo|Léa}}}}}} et {{if:k==1|Hugo|{{if:k==2|Léo|{{if:k==3|Léa|Lina}}}}}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Question 1, k = 1 : bon prénom",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Question 1, k = 3 : leurre",
+			"variationIndex": 0,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Question 2, k = 1 : bon prénom",
+			"variationIndex": 1,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Question 2, k = 3 : leurre",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Question 3, k = 1 : bon prénom",
+			"variationIndex": 2,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Question 3, k = 3 : leurre",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Question 4, k = 1 : bon prénom",
+			"variationIndex": 3,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Question 4, k = 3 : leurre",
+			"variationIndex": 3,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Question 5, k = 1 : bon prénom",
+			"variationIndex": 4,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Question 5, k = 3 : leurre",
+			"variationIndex": 4,
+			"variables": {
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}
