@@ -57,34 +57,39 @@ export function stepsInRegister(
 	return steps.map(rewrite);
 }
 
+/** Réglages de `inDecimalRegister` (lot 5f-4, solveur). */
+export interface DecimalRegisterOptions {
+	/** Un nœud gardé tel quel, sous-arbres compris : l'écriture tapée (`\dfrac{x}{2}`). */
+	readonly keep?: (node: MathNode) => boolean;
+	/** Entrer dans la racine d'un NOMBRE : `\sqrt{0,16}`, comme `Δ = 0,16`. */
+	readonly roots?: boolean;
+}
+
 /** Les nombres et coefficients à écriture décimale finie de `node`, en décimal. */
-export function inDecimalRegister(node: MathNode): MathNode {
+export function inDecimalRegister(node: MathNode, options: DecimalRegisterOptions = {}): MathNode {
+	if (options.keep?.(node)) return node;
+	const write = (inner: MathNode): MathNode => inDecimalRegister(inner, options);
 	switch (node.type) {
 		case 'addition':
 		case 'subtraction':
 		case 'multiplication':
-			return {
-				...node,
-				left: inDecimalRegister(node.left),
-				right: inDecimalRegister(node.right)
-			};
+			return { ...node, left: write(node.left), right: write(node.right) };
 		case 'opposite':
-			return { ...node, operand: inDecimalRegister(node.operand) };
+			return { ...node, operand: write(node.operand) };
 		case 'delimiter':
-			return { ...node, content: inDecimalRegister(node.content) };
+			return { ...node, content: write(node.content) };
 		case 'superscript':
-			return { ...node, base: inDecimalRegister(node.base) };
-		// La racine d'un NOMBRE est un nombre : `\sqrt{0,16}`, comme `Δ = 0,16`
-		// (lot 5f-4) ; `\sqrt{x/4}` reste
+			return { ...node, base: write(node.base) };
+		// `\sqrt{x/4}` reste toujours
 		case 'function':
-			return node.name === 'sqrt' && getVariables(node).size === 0
-				? { ...node, args: node.args.map(inDecimalRegister) }
+			return options.roots === true && node.name === 'sqrt' && getVariables(node).size === 0
+				? { ...node, args: node.args.map(write) }
 				: node;
 		case 'division': {
 			const division: DivisionNode = {
 				...node,
-				numerator: inDecimalRegister(node.numerator),
-				denominator: inDecimalRegister(node.denominator)
+				numerator: write(node.numerator),
+				denominator: write(node.denominator)
 			};
 			return decimalQuotient(division) ?? division;
 		}
@@ -120,7 +125,10 @@ function decimalQuotient(node: DivisionNode): MathNode | null {
 	const numeric = factors.map(({ factor }) => factor).filter(isNumber);
 	if (numeric.length > 1 || (numeric.length === 1 && !isPositiveInteger(numeric[0]))) return null;
 	const others = factors.filter(({ factor }) => !isNumber(factor));
-	if (others.some(({ factor }) => findNodes(factor, (n) => n.type === 'constant').length > 0)) {
+	// Ni constante (`π/4`) ni racine (`√2/2`, Q22) : un irrationnel n'a pas d'écriture décimale finie
+	const irrational = (n: MathNode): boolean =>
+		n.type === 'constant' || (n.type === 'function' && n.name === 'sqrt');
+	if (others.some(({ factor }) => findNodes(factor, irrational).length > 0)) {
 		return null;
 	}
 	const decimal = decimalString({

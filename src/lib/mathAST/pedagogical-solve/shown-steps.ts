@@ -24,6 +24,8 @@ import type { EquationOperation, EquationStep } from './types';
 import { exactValueToShow } from '../eval/exact-value';
 import { hasDecimalLiteral } from '../tidy/decimal';
 import { inDecimalRegister } from '../pedagogical-limits/decimal-register';
+import type { DecimalRegisterOptions } from '../pedagogical-limits/decimal-register';
+import { findNodes } from '../transforms';
 
 // =============================================================================
 // Fonctions
@@ -39,9 +41,11 @@ export function stepsAsShown(
 ): readonly EquationStep[] {
 	if (equation.relation !== '=') return steps;
 	const decimal = hasDecimalLiteral(equation);
-	// L'équation tapée garde son écriture (`\dfrac{x}{4} = 0,5` reste)
-	const write = (node: MathNode): MathNode =>
-		!decimal || node === equation ? node : inRegister(node);
+	// L'écriture tapée reste, jusque dans les branches d'une valeur absolue
+	// (`\dfrac{x}{2} - 0,5 = 1`) : les pipelines y reprennent les nœuds tapés
+	const typed = new Set(findNodes(equation, () => true));
+	const options = { keep: (node: MathNode) => typed.has(node), roots: true };
+	const write = (node: MathNode): MathNode => (decimal ? inRegister(node, options) : node);
 	const value = (node: MathNode): MathNode => exactValueToShow(node, { decimal });
 
 	const rewrite = (step: EquationStep): EquationStep => ({
@@ -55,9 +59,13 @@ export function stepsAsShown(
 }
 
 /** `inDecimalRegister`, membre à membre pour une relation. */
-function inRegister(node: MathNode): MathNode {
-	if (node.type !== 'relation') return inDecimalRegister(node);
-	return { ...node, left: inDecimalRegister(node.left), right: inDecimalRegister(node.right) };
+function inRegister(node: MathNode, options: DecimalRegisterOptions): MathNode {
+	if (options.keep?.(node) || node.type !== 'relation') return inDecimalRegister(node, options);
+	return {
+		...node,
+		left: inDecimalRegister(node.left, options),
+		right: inDecimalRegister(node.right, options)
+	};
 }
 
 function writeRelation(node: RelationNode, write: (n: MathNode) => MathNode): RelationNode {

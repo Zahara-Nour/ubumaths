@@ -130,6 +130,18 @@ describe('.résoudre — les décimaux tapés restent décimaux dans les étapes
 		expect(text).not.toMatch(NUMERIC_FRACTION);
 	});
 
+	it('valeur absolue : les branches gardent le u tapé (revue)', () => {
+		const text = shown('|x/2-0,5|=1');
+		expect(text).toContain('\\dfrac{x}{2}-0.5=1');
+		expect(text).not.toContain('0.5x-0.5');
+	});
+
+	it('un facteur tapé avec une racine garde sa fraction : x − √2/2 (revue)', () => {
+		const text = shown('(x-\\frac{\\sqrt{2}}{2})(x+0,5)=0');
+		expect(text).not.toContain('0.5\\sqrt');
+		expect(text).toContain('x-\\dfrac{\\sqrt{2}}{2}');
+	});
+
 	it("l'équation tapée reste telle qu'elle est écrite", () => {
 		const { steps } = solved('x/4=0,5');
 		expect(flat(steps[0].expressionLatex)).toBe('\\dfrac{x}{4}=0.5');

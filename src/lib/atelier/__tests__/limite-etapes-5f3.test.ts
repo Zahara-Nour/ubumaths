@@ -182,3 +182,10 @@ describe('« Simplification du facteur commun » montre le calcul', () => {
 		expect(lines[2]).toBe('=\\lim_{x\\to1}\\dfrac{x+1}{x}');
 	});
 });
+
+describe('.limite — la racine d’un nombre tapée reste écrite (revue du lot 5f-4)', () => {
+	it('√(1/4)x² + 0,5x : pas de √0,25 à côté de √(1/4)', () => {
+		const text = steps('.limite \\sqrt{\\frac{1}{4}}x^2+0,5x en +inf').map(flat).join('\n');
+		expect(text).not.toMatch(/\\sqrt\{0(\{,\}|[.,])25\}/);
+	});
+});

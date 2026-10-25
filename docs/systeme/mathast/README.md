@@ -1117,8 +1117,10 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   `.résoudre` et par `generateCorrection` (`linear-equation`, `quadratic-equation`). Quand
   l'équation tape un décimal, chaque nœud des étapes (membres, opérandes, coefficients, branches)
   passe par `inDecimalRegister` (`pedagogical-limits/decimal-register.ts`) : `x = 0,3`,
-  `0,5x = 1`, « On divise les deux membres par 0,5 », `a = 0,5`, `2 × 0,5`, `√0,16` ; une fraction
-  sans écriture décimale finie reste (`x = 10/3`) ; l'équation tapée garde son écriture. Les
+  `0,5x = 1`, « On divise les deux membres par 0,5 », `a = 0,5`, `2 × 0,5`, et la racine d'un
+  nombre (`√0,16`, réglage `roots`) ; une fraction sans écriture décimale finie reste
+  (`x = 10/3`) ; l'écriture tapée reste, jusque dans les branches d'une valeur absolue
+  (`\dfrac{x}{2} − 0,5 = 1` ; réglage `keep` : les nœuds de l'équation tapée). Les
   valeurs lues (`read-solution`, `read-solutions`, `simplify-solutions`, `solve-each-factor`)
   passent par `exactValueToShow` : `S = {−√2/2 ; √2/2}`, `x₁ = (1 − √5)/2` ; les solutions
   brutes de la formule restent non calculées. Les inéquations ne passent pas par là (leur
@@ -1389,7 +1391,8 @@ x(x + 2)/x = x + 2`, `(x² − 1)/(x − 1) = (x − 1)(x + 1)/(x − 1) = x + 1
   `stepsInRegister` (`decimal-register.ts`) récrit les étapes finies quand l'expression tape un
   décimal — un nombre ou un coefficient à écriture décimale finie en décimal (`x²(0,5 + 1/x²)`,
   « La limite vaut 0,5 », `0,5(x − 1)(x + 1)`), sinon en fraction (`1/3` reste) ; ni exposant,
-  ni argument de fonction (sauf la racine d'un nombre : `\sqrt{0,16}`, lot 5f-4), ni constante
+  ni argument de fonction (la racine d'un nombre, seulement avec le réglage `roots` du solveur,
+  lot 5f-4), ni constante ni racine (`π/4`, `√2/2` restent)
   (`π/4`), et l'expression tapée reste telle quelle. La
   valeur rendue (`value`) ne change pas. Tests : `atelier/__tests__/limite-etapes-5f3.test.ts`.
   **Limites de référence** (`tryKnownLimit`) : `e^u` est lu comme `\exp(u)` pour la table
