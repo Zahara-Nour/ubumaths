@@ -2,14 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1787._
+_Mis à jour le 2026-10-26, phases 0 de CP-060 et CP-058 écrites._
 
 - **État** : PR 1 (#1768), renommage (#1774), PR 2 (#1775), PR 3 (#1782) mergés, code pas encore en prod (attend un
-  `deploy:prod`). Brouillon CP-059 en prod (`010d81a5`), rangé sous « Géométrie > Figures planes > constructions » et
-  tagué CP-059 (#1787, `db:migrate` joué et vérifié) ; à publier par David après le `deploy:prod`.
-- **Prochaine action** : phase 0 de CP-060 (carré / rectangle sur quadrillage : outil neuf) et de CP-058 (figure +
-  case oui / non, § 6) ; à écrire puis à faire valider.
-- **En attente de David** : rien.
+  `deploy:prod`). Brouillon CP-059 en prod (`010d81a5`), rangé et tagué (#1787) ; à publier par David après le `deploy:prod`.
+- **Prochaine action** : faire valider les phases 0 de CP-060 (§ 7) et CP-058 (§ 8), puis plan technique et worktree.
+- **En attente de David** : Q1-Q7 du § 7, Q1-Q4 du § 8.
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; case « figure » mêlée à une autre case :
   prise en charge à l'affichage, jamais encore dans un modèle ; le brouillon CP-059 ne s'affiche qu'avec le code de
   #1775/#1782 (à publier seulement après le `deploy:prod`).
@@ -231,6 +229,118 @@ personne ne gagne ni ne perd d'accès ; **CP-034** couvert par le QCM du lot B2 
 à compléter (« Trace la droite (AB) ») + case texte oui / non (points presque alignés), phase 0 avec CP-060 ; corrigé
 PDF des séries laissé tel quel ; Q3/Q4 du § 5 closes.
 
+## 7. Phase 0 de CP-060 — compléter un carré / un rectangle sur quadrillage (2026-10-26, À VALIDER)
+
+**Le programme** : « Sur quadrillage ou papier pointé, côtés suivant les lignes ; compléter un rectangle (deux côtés
+consécutifs tracés) ou un carré (un côté tracé) ». Triangle, assemblages, gabarits : hors de ce modèle (Q1).
+
+**Ce que le prof écrit** — même bloc, un outil et deux vérifications neufs :
+
+````text
+Termine le carré.
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 7
+grille: 1
+outils: segment
+verifier: carre A ; B
+---
+A = point({{xa}}, {{ya}}, visible=faux)
+B = point({{xb}}, {{yb}}, visible=faux)
+s = segment(A, B)
+```
+````
+
+Rectangle : « Termine le rectangle. », `[AB]` et `[BC]` tracés, `verifier: rectangle A ; B ; C`.
+
+- `carre A ; B` : le côté donné et les segments de l'élève forment un carré de côté [AB], **d'un côté ou de l'autre**
+  (deux bonnes réponses : on juge des propriétés, § 2). `rectangle A ; B ; C` : ils forment le rectangle ABCD
+  (une seule réponse, D = A + C − B).
+- Réponse élève : `segment(x1;y1;x2;y2)`, même format et mêmes plafonds que `droite(…)`.
+- **Variations** : carré, côté de 2 à 4, donné horizontal ou vertical ; rectangle, côtés de 2 à 5 (inégaux), quatre
+  coins possibles. Les deux carrés possibles tiennent dans la fenêtre (l'élève ne doit pas être bloqué par le bord).
+
+**Ce que voit l'enfant** : quadrillage, le côté donné en trait épais, pas de lettres (Q2) ; un seul outil ; **chaque
+toucher est aimanté sur le nœud le plus proche** (verdict du conseil : plus de toucher libre) ; toucher un nœud puis
+un autre trace un segment ; Effacer = le dernier segment ; Valider grisé tant que rien n'est tracé.
+
+**Comportements** (message = la première vérification ratée, dans cet ordre) :
+
+| Ce que trace l'élève                                  | Verdict | Message                                                                |
+| ----------------------------------------------------- | ------- | ---------------------------------------------------------------------- |
+| les 3 côtés du carré, d'un côté ou de l'autre de [AB] | juste   | Bravo                                                                  |
+| un côté en plusieurs morceaux (2 + 1 carreaux)        | juste   | — (Q3)                                                                 |
+| un trait par-dessus le côté donné, en plus            | juste   | — (Q4)                                                                 |
+| un trait oblique                                      | faux    | « Trace les côtés en suivant les lignes du quadrillage. »              |
+| figure ouverte (un côté manque, ou trop court)        | faux    | « Ta figure n'est pas fermée. »                                        |
+| fermée mais rectangle au lieu de carré                | faux    | « Ce n'est pas un carré : ses côtés n'ont pas tous la même longueur. » |
+| la bonne figure + un trait ailleurs                   | faux    | « Tu as tracé un trait de trop. »                                      |
+
+Rectangle : mêmes lignes sauf la sixième (avec les deux côtés donnés suivant les lignes, une figure fermée est le
+bon rectangle). Faux → la (une) bonne figure en pointillés, ses traits restent (§ 5).
+
+**Questions à David** :
+
+1. **Périmètre** : carré + rectangle seulement ; triangle, assemblage, papier pointé plus tard ? (reco : oui)
+2. **Lettres** : aucune au CP, le côté tracé suffit (reco) — ou A, B nommés comme en CP-059 ?
+3. **Côté en morceaux** : accepté (reco : on juge le résultat, pas la manière) ou faux ?
+4. **Trait repassé sur le côté donné** : ignoré (reco) ou « de trop » ?
+5. **Carré faux** : quelle bonne figure en pointillés ? Reco : celle du côté où l'élève a le plus tracé, sinon au-dessus / à droite.
+6. **Temps** : `delay` 90 s (reco ; 60 s pour une droite).
+7. **Grille cliquable** (toucher le sommet manquant, piste du conseil) : écartée (reco) — « construire » = tracer les côtés.
+
+## 8. Phase 0 de CP-058 — vérifier un alignement à la règle (2026-10-26, À VALIDER)
+
+**Le programme** : « Dire si trois points sont alignés quand ce n'est pas évident à l'œil. » Décidé (§ 6) : figure à
+compléter + case oui / non.
+
+**Ce que le prof écrit** :
+
+````text
+Les points A, B et C sont-ils alignés ? Trace la droite (AB) pour vérifier.
+
+```figure-a-completer
+fenetre: 0 ; 10 ; 0 ; 6
+outils: droite
+verifier: droite_par A ; B
+---
+A = point(…) · B = point(…) · C = point(…)
+```
+
+Réponds oui ou non : [_]
+````
+
+- Feuille blanche (un quadrillage trahirait l'alignement), droite (AB) **oblique**, A et B écartés (6 au moins),
+  C entre les deux, vers le milieu.
+- **Deux variations** : C sur la droite (point entier : A(1;1), B(9;5), C(5;3)…) ; C **presque** dessus, décalé de
+  0,25 carreau (Q3), invisible à l'œil, net une fois la droite tracée.
+- Lettres : positions tirées par rôle, lettres en `{{if:…}}` comme CP-059 (piège du § 6).
+
+**Constaté en écrivant** : une question est QCM **ou** à cases (`types.ts:144`), pas les deux ; il n'existe pas de
+case à choix dans un énoncé. La réponse oui / non est donc une **case texte** que l'enfant tape (Q1). La case
+« figure » mêlée à une autre case n'a encore servi dans aucun modèle (piège du § 6) : ce modèle sera le premier.
+
+**Comportements** :
+
+| L'élève                                     | Verdict | Message                                          |
+| ------------------------------------------- | ------- | ------------------------------------------------ |
+| trace (AB), répond juste                    | juste   | Bravo                                            |
+| trace (AB) (ou A puis C quand C est dessus) | juste   | — (juge par positions, comme CP-059)             |
+| trace (AB), répond faux                     | faux    | la bonne réponse                                 |
+| trace (AC) quand C n'est pas dessus         | faux    | « Ta droite passe par A et C, pas par B. »       |
+| répond sans tracer                          | Q2      | —                                                |
+| tape « Oui », « OUI », « oui » avec espace  | juste   | — (à vérifier dans le validateur avant de coder) |
+
+**Questions à David** :
+
+1. **Oui / non tapé** au clavier de la tablette (reco : suffit pour l'instant, rien de neuf à coder) — ou une case à
+   deux boutons « oui » / « non », à créer (outil réutilisable, plus lisible pour un enfant de 6 ans) ?
+2. **Répondre sans tracer** : Valider grisé tant que la droite manque (reco : la consigne dit de tracer, c'est le
+   geste qu'on évalue) — ou seule la réponse compte ?
+3. **Écart** quand C n'est pas aligné : 0,25 carreau (reco, ~10 px à taille moyenne) ; plus petit = plus dur à voir
+   même avec la droite.
+4. **Temps** : `delay` 60 s, comme CP-059 (reco).
+
 ## Journal
 
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 1), au journal questions.
@@ -251,3 +361,4 @@ PDF des séries laissé tel quel ; Q3/Q4 du § 5 closes.
 - 2026-10-25 : David suit les recos (accès, CP-034, CP-058, PDF, Q3/Q4) ; migration CP-059 lancée.
 - 2026-10-25 : migration nœud + tag de CP-059 écrite (gabarit du lot H) ; test d'intégration 8/8 vert, 4 rouges sans la migration.
 - 2026-10-25 : #1787 mergée (CI verte, audit sécurité sans finding bloquant) ; `db:migrate` joué, vérifié en prod (nœud « constructions », tag CP-059, `updated_at` préservé, brouillon).
+- 2026-10-26 : phases 0 de CP-060 (§ 7) et CP-058 (§ 8) écrites ; constaté : QCM et cases ne se mêlent pas (oui / non = case texte).
