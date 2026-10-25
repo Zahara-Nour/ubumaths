@@ -56,26 +56,27 @@ pythonStore (PythonPlaygroundStore, singleton)
 
 ### Forwardé depuis l'executor (getters)
 
-| Propriété           | Type                | Source                       |
-| ------------------- | ------------------- | ---------------------------- |
-| `state`             | `ExecutorState`     | `_executor.state`            |
-| `stdout`            | `string`            | `_executor.stdout`           |
-| `stderr`            | `string`            | `_executor.stderr`           |
-| `plotData`          | `string \| null`    | base64 PNG matplotlib        |
-| `plotlyData`        | `string \| null`    | JSON spec Plotly             |
-| `latexOutput`       | `string \| null`    | LaTeX SymPy                  |
-| `loadingProgress`   | `number` (0-100)    |                              |
-| `loadingStage`      | `string`            |                              |
-| `executionTime`     | `number` (ms)       |                              |
-| `errorLine`         | `number \| null`    |                              |
-| `packagesLoading`   | `string[]`          | Lazy-load en cours           |
-| `loadedPackages`    | `string[]`          | Packages chargés (cumulatif) |
-| `isReady`           | `boolean` (derived) |                              |
-| `isExecuting`       | `boolean` (derived) |                              |
-| `isLoading`         | `boolean` (derived) | Pyodide ou packages          |
-| `hasError`          | `boolean` (derived) |                              |
-| `hasOutput`         | `boolean` (derived) |                              |
-| `isLoadingPackages` | `boolean` (derived) |                              |
+| Propriété           | Type                 | Source                                              |
+| ------------------- | -------------------- | --------------------------------------------------- |
+| `state`             | `ExecutorState`      | `_executor.state`                                   |
+| `stdout`            | `string`             | `_executor.stdout`                                  |
+| `stderr`            | `string`             | `_executor.stderr`                                  |
+| `plotData`          | `string \| null`     | base64 PNG matplotlib                               |
+| `plotlyData`        | `string \| null`     | JSON spec Plotly                                    |
+| `latexOutput`       | `string \| null`     | LaTeX SymPy                                         |
+| `atelierLists`      | `PythonListReport[]` | listes du programme, pour « Ouvrir dans l'atelier » |
+| `loadingProgress`   | `number` (0-100)     |                                                     |
+| `loadingStage`      | `string`             |                                                     |
+| `executionTime`     | `number` (ms)        |                                                     |
+| `errorLine`         | `number \| null`     |                                                     |
+| `packagesLoading`   | `string[]`           | Lazy-load en cours                                  |
+| `loadedPackages`    | `string[]`           | Packages chargés (cumulatif)                        |
+| `isReady`           | `boolean` (derived)  |                                                     |
+| `isExecuting`       | `boolean` (derived)  |                                                     |
+| `isLoading`         | `boolean` (derived)  | Pyodide ou packages                                 |
+| `hasError`          | `boolean` (derived)  |                                                     |
+| `hasOutput`         | `boolean` (derived)  |                                                     |
+| `isLoadingPackages` | `boolean` (derived)  |                                                     |
 
 ### Local au store (Svelte 5 runes)
 

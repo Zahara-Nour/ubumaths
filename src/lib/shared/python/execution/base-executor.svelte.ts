@@ -31,6 +31,7 @@ import type {
 	DebugSnapshot,
 	DebugPauseReason
 } from '$lib/shared/python/debug/types';
+import type { PythonListReport } from '$lib/atelier/from-python';
 
 // Use a simple browser check instead of $app/environment
 // This avoids issues with SvelteKit runtime modules in worker-related contexts
@@ -123,6 +124,9 @@ export abstract class BasePythonExecutor {
 
 	/** Plotly JSON spec for interactive charts */
 	plotlyData = $state<string | null>(null);
+
+	/** « Ouvrir dans l'atelier » : les listes affectées par la dernière exécution réussie */
+	atelierLists = $state<PythonListReport[]>([]);
 
 	/** Error line number for highlighting */
 	errorLine = $state<number | null>(null);
@@ -444,6 +448,12 @@ export abstract class BasePythonExecutor {
 				}
 				break;
 
+			case 'atelier-lists':
+				if (message.id === this.currentExecutionId) {
+					this.atelierLists = message.lists;
+				}
+				break;
+
 			case 'error':
 				if (message.id === this.currentExecutionId || message.id === '') {
 					this.stderr = message.message;
@@ -610,6 +620,7 @@ export abstract class BasePythonExecutor {
 		this.plotData = null;
 		this.latexOutput = null;
 		this.plotlyData = null;
+		this.atelierLists = [];
 		this.executionTime = 0;
 		this.errorLine = null;
 	}

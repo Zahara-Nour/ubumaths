@@ -10,7 +10,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25).
 
 ## À quoi ça sert
 
@@ -77,6 +77,8 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/cell-colors.ts`            | Les couleurs de la mise en forme : CSS du texte et du fond, réglages de contraste mesurés                                                                                                                         |
 | `src/lib/atelier/tabulate.ts`               | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut                                                                                                           |
 | `src/lib/atelier/to-python.ts`              | « Ouvrir dans Python » : `pythonOf` traduit un objet (et ce qu'il cite) en code Python, `pythonPageOf` en fait l'adresse `/python?code=`                                                                          |
+| `src/lib/atelier/from-python.ts`            | « Ouvrir dans l'atelier » depuis `/python` : `offerOf` dit ce que le menu propose pour une liste rapportée par le worker (liste, ses effectifs, ou refus nommé)                                                   |
+| `src/lib/atelier/python-mailbox.ts`         | La boîte aux lettres à usage unique de ce pont : `postToAtelier` dépose dans `localStorage`, `takeFromPython` relit (Zod) et efface                                                                               |
 | `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)                                                                                                                |
 | `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)                                                                                                             |
 | `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                                                                      |
@@ -160,7 +162,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/history-storage.ts` | Les lignes de Calcul gardées au rechargement (`loadCalcHistory`, `saveCalcHistory`), Zod, plafonds                                |
 | `src/lib/atelier/safe-latex.ts`      | Liste blanche des commandes LaTeX d'une formule relue du stockage (`isSafeLatex`)                                                 |
 | `src/lib/atelier/url.ts`             | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                                                              |
-| `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`                                                |
+| `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=`, `?f=` et `?depuis-python=` (`openLink`), pour `/atelier` et `/grapheur`                             |
 | `src/lib/atelier/merge.ts`           | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                                                         |
 | `src/lib/atelier/replace.ts`         | « Remplacer mon atelier » : la copie mise de côté (`replacePersonal`, `swapWithSetAside`, `keepAside`, `readSetAside`)            |
 | `src/lib/atelier/rename.ts`          | Réécrire une définition qui cite un objet renommé (`renameInObject`) : `Atelier.rename` et la fusion                              |
@@ -2237,6 +2239,34 @@ Côté `/python` (Q1) : si l'éditeur contient du code de l'élève (`pythonStor
 
 La carte d'une liste de nombres passe à **13 actions au plus** (David, 2026-10-24).
 
+### Ouvrir dans l'atelier, depuis Python (2026-10-25)
+
+Le sens inverse, à sens unique lui aussi (phase 0
+[python-vers-atelier-phase0.md](../wip/python-vers-atelier-phase0.md), Q1-Q6 validées par David).
+Après une exécution réussie, `/python` propose « Ouvrir dans l'atelier » pour chaque **liste**
+affectée par le programme (détection : [worker.md](python/worker.md#les-listes-pour-latelier-_chiphre_atelier_lists)).
+`offerOf` (`from-python.ts`) applique les règles de l'atelier : au plus `MAX_LIST_VALUES` valeurs ;
+au-delà, **ses effectifs** (deux listes, valeurs croissantes ou mots dans l'ordre d'apparition) s'il
+y a au plus `MAX_CATEGORIES` valeurs différentes (des mots réunis par modalité : `P` et `p` comptent
+ensemble) ; sinon refus. Refus nommés aussi : liste vide,
+booléens, entier au-delà de 2⁵³, `nan`/`inf`, autre type (nommé), texte que l'atelier ne lirait pas
+comme un mot (vide, sans lettre, avec « ; », une virgule ou un retour à la ligne, qui se lit comme un
+nombre — `'12'`, `'0x10'` —, plus de `MAX_CATEGORY_LENGTH` caractères), plus de `MAX_CATEGORIES`
+modalités (comptées sans la casse ni les espaces, comme l'atelier), plus d'un million d'éléments, définition de plus de `MAX_DEFINITION_LENGTH` caractères (« arrondis-les en Python »). Les
+nombres passent par `String(x)`, qui écrit comme le `repr` de Python : `0.30000000000000004`
+revient exact, sans arrondi caché.
+
+Transport (Q4) : un `?a=` ne tient pas 200 flottants. `postToAtelier` (`python-mailbox.ts`) dépose
+les listes dans `localStorage` sous `chiphre-python-vers-atelier:<uuid>` (et balaie les dépôts de
+plus d'un jour) ; la page ouvre `/atelier?depuis-python=<uuid>` dans un nouvel onglet. `openLink`
+relit par `takeFromPython` — UUID et contenu validés par Zod aux plafonds de l'atelier, clé effacée
+à la lecture — et construit un atelier **éphémère**, hors pile d'annulation (`untracked`), qu'on
+garde par « Garder dans mon atelier ». Rouvrir l'adresse (rechargement) ne retrouve rien et le dit.
+
+Noms (Q6) : un nom Python qui est un nom d'atelier valide (`L`) est gardé ; sinon la liste prend la
+lettre libre suivante (`L`, `M`…) et sa colonne a pour **titre** le nom Python (« lancers »,
+« lancers (effectifs) », borné à `MAX_TITLE_LENGTH`).
+
 ### Export et rejeu de l'historique
 
 Le JSON « pour rejouer » ne se télécharge plus que par `.exporter` tapé ; la barre « Exporter
@@ -2926,8 +2956,9 @@ note, l'atelier ne valide pas (décision 2). À la place, des **ponts à sens un
    `/python` comme du code lisible (`def f(x): return …`, `L = [12, 15, 9]`), par l'entrée
    `?code=` qui existe déjà (`routes/(public)/python/+page.svelte`). Seul travail : la traduction
    `mathAST` → Python, refusée avec un message pour ce qui ne se traduit pas sans perte.
-2. **Plus tard, si l'usage le justifie** : le sens inverse, une liste produite par un programme
-   (simulation, seuil d'une suite) gardée comme objet de l'atelier.
+2. **« Ouvrir dans l'atelier »** (livré le 2026-10-25, voir la section du même nom) : le sens
+   inverse, une liste produite par un programme (simulation, seuil d'une suite) copiée dans un
+   atelier éphémère, puis gardée si l'élève le veut.
 
 Blockly reste l'entrée vers Python au cycle 4 ; ce n'est pas un argument pour fusionner.
 

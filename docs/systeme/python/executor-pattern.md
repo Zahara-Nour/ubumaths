@@ -80,6 +80,7 @@ loadingProgress: number        // 0-100
 loadingStage: string
 stdout, stderr: string
 plotData, latexOutput, plotlyData: string | null
+atelierLists: PythonListReport[] // « Ouvrir dans l'atelier » : message `atelier-lists` (worker.md)
 errorLine: number | null
 executionTime: number          // ms
 packagesLoading, loadedPackages: string[]
@@ -95,7 +96,7 @@ isReady, isExecuting, isLoading, hasError, hasOutput, isLoadingPackages: boolean
 | `initPyodide()`                        | `void`                              | Crée le worker via Vite URL, envoie `init`                                    |
 | `execute(code)`                        | `void`                              | Génère un `id`, arme le watchdog 30 s + `TIMEOUT_BUFFER_MS`, envoie `execute` |
 | `cancel()`                             | `void`                              | Arrête de traiter les messages de l'`id` courant                              |
-| `clearOutput()`                        | `void`                              | Vide stdout/stderr/plot/latex/plotly                                          |
+| `clearOutput()`                        | `void`                              | Vide stdout/stderr/plot/latex/plotly et `atelierLists`                        |
 | `requestCompletion(code, cursor)`      | `Promise<CompletionItem[]>`         | Debounce 150 ms, timeout 500 ms, cancel des requêtes en cours                 |
 | `validateExercise(code, config)`       | `Promise<ExerciseValidationResult>` | N'altère **pas** l'état réactif ; runs en parallèle d'un `execute`            |
 | `startDebugSession(code, breakpoints)` | `void`                              | Démarre une session debug                                                     |

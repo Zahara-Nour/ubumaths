@@ -106,28 +106,29 @@ Tous les messages traversent la frontière worker ↔ main avec **validation Zod
 
 ### Worker → Main (`FromWorkerMessage`)
 
-| `type`                       | Champs                                   | Usage                                                |
-| ---------------------------- | ---------------------------------------- | ---------------------------------------------------- |
-| `loading-progress`           | `percent`, `stage`                       | Avance le bandeau de chargement                      |
-| `pyodide-ready`              | —                                        | Pyodide bootstrappé                                  |
-| `packages-loading`           | `packages`, `id`                         | Lazy-load en cours (ex : `['numpy']`)                |
-| `packages-loaded`            | `packages`, `id`                         | Lazy-load fini                                       |
-| `stdout` / `stderr`          | `data`, `id`                             | Sortie incrémentale                                  |
-| `plot`                       | `imageData` (base64 PNG), `id`           | Figure matplotlib                                    |
-| `plotly`                     | `jsonSpec`, `id`                         | Figure Plotly (JSON spec → rendu CDN côté main)      |
-| `latex`                      | `latex`, `id`                            | Expression SymPy en LaTeX                            |
-| `error`                      | `message`, `line?`, `id`                 | Erreur d'exécution (id `''` = erreur init)           |
-| `complete`                   | `id`, `duration`                         | Exécution terminée                                   |
-| `timeout`                    | `id`                                     | Watchdog 30 s atteint                                |
-| `autocomplete-result`        | `completions`, `id`                      | Réponse à `autocomplete`                             |
-| `context-created`            | `contextId`                              | ack `create-context`                                 |
-| `context-destroyed`          | `contextId`                              | ack `destroy-context`                                |
-| `context-reset`              | `contextId`                              | ack `reset-context`                                  |
-| `validation-result`          | `result`, `id`                           | Résultat `validate`                                  |
-| `validation-exercise-result` | `result: ExerciseValidationResult`, `id` | Résultat `validate-exercise`                         |
-| `debug-snapshot`             | `id`, `snapshot: DebugSnapshot`          | État runtime (frames, heap, locals)                  |
-| `debug-paused`               | `id`, `reason: DebugPauseReason`         | Cause de la pause (`breakpoint`, `step`, `entry`, …) |
-| `debug-finished`             | `id`, `duration`                         | Session debug terminée                               |
+| `type`                       | Champs                                   | Usage                                                                                                       |
+| ---------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `loading-progress`           | `percent`, `stage`                       | Avance le bandeau de chargement                                                                             |
+| `pyodide-ready`              | —                                        | Pyodide bootstrappé                                                                                         |
+| `packages-loading`           | `packages`, `id`                         | Lazy-load en cours (ex : `['numpy']`)                                                                       |
+| `packages-loaded`            | `packages`, `id`                         | Lazy-load fini                                                                                              |
+| `stdout` / `stderr`          | `data`, `id`                             | Sortie incrémentale                                                                                         |
+| `plot`                       | `imageData` (base64 PNG), `id`           | Figure matplotlib                                                                                           |
+| `plotly`                     | `jsonSpec`, `id`                         | Figure Plotly (JSON spec → rendu CDN côté main)                                                             |
+| `latex`                      | `latex`, `id`                            | Expression SymPy en LaTeX                                                                                   |
+| `atelier-lists`              | `lists`, `id`                            | Listes affectées par le programme, pour « Ouvrir dans l'atelier » (playground seulement, exécution réussie) |
+| `error`                      | `message`, `line?`, `id`                 | Erreur d'exécution (id `''` = erreur init)                                                                  |
+| `complete`                   | `id`, `duration`                         | Exécution terminée                                                                                          |
+| `timeout`                    | `id`                                     | Watchdog 30 s atteint                                                                                       |
+| `autocomplete-result`        | `completions`, `id`                      | Réponse à `autocomplete`                                                                                    |
+| `context-created`            | `contextId`                              | ack `create-context`                                                                                        |
+| `context-destroyed`          | `contextId`                              | ack `destroy-context`                                                                                       |
+| `context-reset`              | `contextId`                              | ack `reset-context`                                                                                         |
+| `validation-result`          | `result`, `id`                           | Résultat `validate`                                                                                         |
+| `validation-exercise-result` | `result: ExerciseValidationResult`, `id` | Résultat `validate-exercise`                                                                                |
+| `debug-snapshot`             | `id`, `snapshot: DebugSnapshot`          | État runtime (frames, heap, locals)                                                                         |
+| `debug-paused`               | `id`, `reason: DebugPauseReason`         | Cause de la pause (`breakpoint`, `step`, `entry`, …)                                                        |
+| `debug-finished`             | `id`, `duration`                         | Session debug terminée                                                                                      |
 
 ---
 
@@ -160,6 +161,25 @@ Tous préfixés `_chiphre_` pour ne pas polluer le namespace de l'utilisateur.
 | `_chiphre_get_plotly_json()`                      | Sérialise `_chiphre_plotly_fig` en JSON spec et reset                     |
 | `_chiphre_check_plotly_result(result)`            | Détecte une `plotly.graph_objs.Figure` et la stocke pour export           |
 | `_chiphre_check_sympy_result(result)`             | Détecte une expression SymPy et renvoie `sympy.latex(result)`             |
+| `_chiphre_atelier_lists(code, ns, …)`             | Les listes affectées au niveau du module par `code` (voir ci-dessous)     |
+
+### Les listes pour l'atelier (`_chiphre_atelier_lists`)
+
+« Ouvrir dans l'atelier » (phase 0 [python-vers-atelier-phase0.md](../../wip/python-vers-atelier-phase0.md)) :
+après une exécution **isolée** réussie, le worker relit l'AST de `code` et retient les noms affectés
+**au niveau du module** (`=`, `+=`, cible de `for`, `with … as`, corps de `if`/`while`/`try`), jamais
+dans une `def` ou une `class`, ni en `_`. Seuls ces noms comptent : l'espace global garde les
+variables des exécutions précédentes (voir plus bas), qui ne doivent pas réapparaître.
+
+Pour chaque nom dont la valeur est une `list` (au plus `MAX_ATELIER_LISTS`, 50) : `name`, `length`,
+`distinct`, puis **soit** `problem` (`bool`, `big-int` au-delà de 2⁵³, `not-finite`, `other` + nom du type, `long-text` pour un texte de plus de `MAX_CATEGORY_LENGTH` caractères, `too-long` au-delà de `MAX_PYTHON_LIST_LENGTH` éléments, jamais parcourus), **soit** `items` (au plus `MAX_LIST_VALUES`, 200), **soit** `counts` (valeur, effectif, dans
+l'ordre de première apparition, au plus `MAX_CATEGORIES`, 20 valeurs différentes), soit rien de plus.
+Le main thread valide le message par Zod (`atelierListsMessageSchema`, mêmes bornes) ; les règles de
+l'atelier s'appliquent ensuite côté page (`$lib/atelier/from-python`, `offerOf`).
+
+Limites assumées (revue de la PR) : `match` et `except*` sont parcourus, mais ni l'opérateur morse
+(`(L := […])`) ni `global L` dans une fonction ; une affectation dans une branche **non exécutée**
+propose la valeur restée d'une exécution précédente.
 
 ### Détection de l'expression finale (SymPy / Plotly)
 
@@ -178,7 +198,7 @@ Ce mécanisme permet d'afficher la valeur d'une expression finale style REPL (ut
 
 1. Sécurise l'ID et arme le timeout 30 s (worker-side).
 2. **Lazy-load** des packages requis (`loadRequiredPackages`).
-3. Récupère le namespace cible via `getContextNamespace(contextId)` (crée un `dict()` éphémère si playground, retourne le dict persistant si notebook).
+3. Récupère le namespace cible via `getContextNamespace(contextId)` : `null` sans `contextId` (playground) — le code s'exécute alors dans l'espace **global** de Pyodide ; le dict persistant du contexte si notebook.
 4. Redirige `sys.stdout` / `sys.stderr` vers des `StringIO` capturables.
 5. Exécute le code (split AST trailing expression, voir au-dessus).
 6. Pousse `stdout` / `stderr` accumulés vers le main thread.
@@ -186,10 +206,11 @@ Ce mécanisme permet d'afficher la valeur d'une expression finale style REPL (ut
 8. Détecte matplotlib (`plt.get_fignums()`) → `plot`.
 9. Détecte Plotly (`_chiphre_plotly_fig`) → `plotly`.
 10. `_chiphre_cleanup_matplotlib()`.
-11. Envoie `complete` avec la durée.
-12. En cas d'erreur Python : `_chiphre_reformat_exception` + `extractLineNumber(...)` regex sur `File "<exec>"|"<expr>"|"<unknown>", line N` → `error`.
+11. Exécution isolée : `_chiphre_atelier_lists` → `atelier-lists` s'il y a au moins une liste.
+12. Envoie `complete` avec la durée.
+13. En cas d'erreur Python : `_chiphre_reformat_exception` + `extractLineNumber(...)` regex sur `File "<exec>"|"<expr>"|"<unknown>", line N` → `error`.
 
-Le namespace éphémère n'est jamais réutilisé : il est détruit (`PyProxy.destroy()`) entre exécutions playground.
+⚠️ Il n'y a **pas** de namespace éphémère en playground (doc corrigée le 2026-10-25, d'après `getContextNamespace`) : les variables d'une exécution restent dans l'espace global de Pyodide et sont visibles à la suivante, tant que le worker vit.
 
 ---
 

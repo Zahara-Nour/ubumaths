@@ -205,6 +205,7 @@ type FromWorkerMessage =
 	| { type: 'stderr'; data: string; id: string }
 	| { type: 'plot'; imageData: string; id: string } // Matplotlib PNG base64
 	| { type: 'plotly'; jsonSpec: string; id: string } // Plotly JSON spec
+	| { type: 'atelier-lists'; lists: PythonListReport[]; id: string } // « Ouvrir dans l'atelier »
 	| { type: 'latex'; latex: string; id: string } // SymPy LaTeX
 	// Exécution
 	| { type: 'error'; message: string; line?: number; id: string }
