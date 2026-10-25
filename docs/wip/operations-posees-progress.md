@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0._
+_Mis à jour le 2026-10-25, PR #1716 ouverte._
 
-- **État** : PR 1a (bloc ```operation d'affichage : parseur, scène, écran, PDF, éditeur riche, `check:ubumark`) ouverte.
-- **Prochaine action** : CI + revue de la PR 1a, merge ; puis phase de conception de la PR 1b (saisie + juge), à présenter à David avant de coder.
-- **En attente de David** : rien.
-- **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` (pas un objet) ; `pnpm format` avec une variable de liste ne découpe pas sous zsh → `xargs prettier`.
+- **État** : PR 1a #1716 (bloc ```operation d'affichage) ouverte, tests locaux verts ; CI et revue `code-reviewer` (Sonnet) lancées en fin de session.
+- **Prochaine action** : `gh pr checks 1716` ; si la revue n'a pas été lue, la relancer (Sonnet) sur `git diff origin/main...HEAD` ; corriger, merger si vert. Puis PR 1b : présenter à David les questions du § 8 avant de coder.
+- **En attente de David** : rien (réponses du § 8 au début de la PR 1b).
+- **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` ; sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write`.
 - **Worktree / branche** : `../ubumaths-wt-operations-posees`, `feat/operations-posees`.
 
 ---
@@ -160,6 +160,24 @@ Toutes les recommandations retenues :
 
 Découpage du lot 1 : **PR 1a** bloc d'affichage (parseur, scène, écran, PDF, éditeur riche,
 `check:ubumark`) ; **PR 1b** saisie et juge (nouvelle nature de case).
+
+## 8. PR 1b — pistes relevées dans le code (à présenter à David avant de coder)
+
+- **Indexation** : `assignBlankIndices` (`src/lib/questions/generator/assign-blank-indices.ts`)
+  compte les `?` (formule) et `[_]` (texte) ; `instance-generator.ts` exige autant d'entrées dans
+  `blanks[]` que de cases (« Blank count mismatch »). Un bloc ```operation en `cases: résultat`
+  devrait y compter pour **une** case (décision 5), et recevoir son numéro (ex. clé ajoutée au bloc
+  à l'indexation, `case: N`).
+- **Valeur saisie** : `InputState[]` descend en props `MarkdownRenderer` → `ParagraphNode` →
+  `BlankInput` (`getInputState(index)`). Les blocs (`StaticBlockNode`, `ListNode`) ne reçoivent
+  pas encore `inputs` : à faire passer jusqu'à `Operation.svelte`.
+- **Juge** : la valeur (chiffres lus de gauche à droite, virgule de la grille) passe au juge
+  existant comme un nombre (`validateSingleBlank`, case ordinaire) ; cases de tête vides = 0.
+- **Questions à poser** : (a) l'auteur écrit-il la réponse de la case (`answer: {{eval:a+b}}`,
+  contrôlée contre le calcul du bloc) ou le générateur la remplit-il depuis `operationResult` ?
+  (b) nature de la case : `type: 'math'` existante, ou nouvelle nature `'operation'` dans
+  `InstanceBlank.type` ? (c) cases de retenue sur téléphone : taille, et saisie de la compensation
+  (deux positions par colonne) ; (d) surlignage des chiffres faux à la correction (décision 5).
 
 ## Journal
 
