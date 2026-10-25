@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR de suite en cours._
+_Mis à jour le 2026-10-25, après #1748._
 
-- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740 affichage, #1745 saisie), sur `main`, pas en prod. PR de suite (0 des dixièmes non écrit → incomplète) en cours.
-- **Prochaine action** : merger la PR de suite ; puis lot 3 (division posée), phase 0 à écrire.
-- **En attente de David** : vérifications #1716, #1726, #1738, #1740, #1745 avant `deploy:prod`. Précision Q1 (§ 10).
+- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740, #1745, #1748 : 0 des dixièmes non écrit → incomplète), sur `main`, pas en prod.
+- **Prochaine action** : lot 3 (division posée), phase 0 à écrire et à faire valider.
+- **En attente de David** : vérifications #1716, #1726, #1738, #1740, #1745, #1748 avant `deploy:prod`. Précision Q1 (§ 10).
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie de la multiplication).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
-- **Worktree / branche** : `ubumaths-wt-operations-posees` gardé tant que le serveur de test (5179) sert à David ; branche mergée. PR de suite : `ubumaths-wt-operations-posees-suite` · `fix/operations-posees-zero-apres-virgule`.
+- **Worktree / branche** : `ubumaths-wt-operations-posees` gardé tant que le serveur de test (5179) sert à David ; branche mergée.
 
 ---
 
