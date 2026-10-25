@@ -2,15 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1756 et #1757._
+_Mis à jour le 2026-10-25 : chantier CLOS._
 
-- **État** : phases 1 à 8 mergées (#1750) ; retrait de l'admin sur les scripts de démo mergé (#1756 : API `DEMO_SCRIPT_AUTHOR_ROLES = ['teacher']`, RLS `is_teacher()`, transfert des 5 scripts de l'admin au prof ; #1757 : migration renommée `20261026120000`, l'horodatage `20261026020000` étant déjà pris en prod par `questions_cp_a6`). Rien en prod côté code avant le prochain `deploy:prod`.
-- **Prochaine action** : fin de chantier = versement (durable → `docs/systeme/`, journal archivé). Migration `20261026120000` jouée en prod le 2026-10-25 (portée par le `db:migrate` d'une autre session) ; vérifié : 5 scripts au prof, seule policy « Teacher can CRUD own demo scripts ».
-- **Hors chantier, décidé par David le 2026-10-25** : cahier de texte → ubumark, **futur chantier `cahier-ubumark`** ; énigmes (HTML lu comme markdown) à mesurer ; bug FSRS → **chantier `fsrs`** ; `z` ≈ `2` → PR à part dans `tools/chiphre-math/`, en dernier.
-- **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
-- **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians (`dsl-builtins.md` dit « radians ») → `geometry-expert`, plus tard. Images des 4 cartes Mathémo à vérifier.
-- **Pièges en cours** : nouvelle vitrine → une entrée dans `DEMO_PAGES` + `<SeoHead {...demoSeo(…)} />` (le test l'exige) ; sous `/dev`, ni `+layout@` ni donnée sensible par un load universel ; dans `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale` ; `wrapDynamicImport` dans la sortie des tests client = bruit, déjà sur `main` ; 1er test de `page-demo-lexique` lent à froid en CI (1 échec, vert à la relance).
-- **Worktree / branche** : aucun (celui de la phase 8 est supprimé) ; la PR suivante partira d'un nouveau worktree depuis `origin/main`. Serveurs de test : 5176 = simplify-carte, 5179 = operations-posees.
+- **État** : chantier clos et archivé. Phases 1 à 8 mergées (#1750), retrait de l'admin sur les scripts de démo (#1756, #1757), migration `20261026120000` jouée en prod. Le code part en prod au prochain `deploy:prod` (vérifications dans `docs/wip/verifications-manuelles.md`).
+- **Versé dans** : [`docs/systeme/utilitaires-et-demos.md`](../../systeme/utilitaires-et-demos.md) § 1 (les trois espaces, la vitrine, pièges, écarts connus = suites hors chantier) ; [`srs.md`](../../systeme/srs.md) (note ignorée par FSRS) ; déjà versés pendant le chantier : `auth.md`, `seo.md`, `editeur-riche.md`, `outils-prof.md`, `geometrie/constructions.md`.
+- **Suites, hors chantier** : `cahier-ubumark`, `fsrs`, `z` ≈ `2` (`tools/chiphre-math/`), `angle_polaire` en mode radians, images Mathémo, VIP et lexique au prof → écarts connus de `utilitaires-et-demos.md`.
 
 ## Décisions de David (2026-10-24)
 

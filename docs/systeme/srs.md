@@ -373,6 +373,10 @@ Colonnes et policies : [base-de-donnees-tables.md](base-de-donnees-tables.md) et
   désormais les lignes supprimées et répondent 403 quand la RLS refuse en silence (paquet assigné
   ou géré automatiquement — Programme, chapitre). Test :
   `src/routes/api/srs/__tests__/suppressions-silencieuses.test.ts`.
+- **La note ignorée après la 1re révision** (trouvé le 2026-10-25, chantier demo-debug) :
+  `calculateNewStability` (`src/lib/srs/fsrs.ts`) ne lit `grade` que pour une carte neuve
+  (stabilité 0) ; ensuite Difficile, Bien et Facile donnent la même stabilité, donc le même
+  intervalle (22 j dans l'essai). Futur chantier `fsrs`.
 - `reviewedToday` (`src/lib/server/course-card-attempts.ts`) n'a aucun appelant hors de ses tests
   (relevé du 2026-10-12).
 - Des en-têtes de code (renvois corrigés par la PR #1027) parlent encore de

@@ -83,7 +83,7 @@ couvre:
 # Utilitaires, composants isolés et pages de démo
 
 > Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; `french-math.ts` le 2026-10-23 ; pages de
-> démo et de mise au point le 2026-10-24 ; vitrine `/demo` le 2026-10-25.
+> démo et de mise au point le 2026-10-24 ; vitrine `/demo` et clôture du chantier demo-debug le 2026-10-25.
 > Ce fichier **recense** : il dit ce que fait chaque fichier, qui l'appelle, et s'il est mort.
 > Chaque fichier de l'index est dans le `couvre:` : une PR qui le modifie relit sa ligne.
 > Il ne remplace pas la doc du domaine qui l'utilise ; quand elle existe, elle est citée.
@@ -105,48 +105,59 @@ Un appelant compté ici est un import réel (`git grep "<chemin d'import>" -- sr
 
 ## 1. Pages de démo et de mise au point
 
-**Rangement en cours** (chantier demo-debug, `docs/wip/demo-debug-progress.md`) : les pages de
-mise au point sont passées sous `/dev/…` (admin seul), les aides pour écrire du contenu sous
-`/aide-ecriture/…` (prof seul) ; les deux espaces sont gardés dans le hook
-(`reservedAreasHandle`, [auth.md](auth.md#la-chaîne-de-handles)), contrôle refait par le
-`+layout.server.ts` de chaque espace (navigation côté client), et fermés aux robots. Leur
-accueil (`/dev`, `/aide-ecriture`) liste leurs pages par `PageIndex.svelte` (`DEV_PAGES` pour `/dev`, `AIDE_PAGES` pour
-`/aide-ecriture`).
+Trois espaces, chacun pour un public (décisions de David du 2026-10-24, chantier demo-debug,
+journal dans `docs/archive/wip/demo-debug-progress.md`) :
 
-Pages déjà déplacées sous `/dev` (PR 2) : `/dev/theme`, `/dev/saisie-naturelle`, `/dev/cadres`,
-`/dev/polices`, `/dev/erreurs/page`, `/dev/erreurs/surveillance`, `/dev/blockly` et les anciennes pages
-de `/dashboard/admin/debug/` (`/dev/session`, `/dev/rls`, `/dev/api`, `/dev/avatar`, `/dev/roue`,
-`/dev/champ-math`, `/dev/apercu-question`, `/dev/correction-generee`, `/dev/pdf-typst`,
-`/dev/pdf-latex`, `/dev/latex-vers-ubumark`).
+| Espace             | Pour qui          | Contenu                                                                | Robots  |
+| ------------------ | ----------------- | ---------------------------------------------------------------------- | ------- |
+| `/demo/…`          | tous, sans compte | **vitrine** : ce que fait Chiphre, contenu choisi page par page        | ouverts |
+| `/aide-ecriture/…` | prof seul         | **aide à l'écriture** : essayer et apprendre à écrire scripts et blocs | fermés  |
+| `/dev/…`           | admin seul        | **mise au point** : bancs d'essai, pages de contrôle, outils de debug  | fermés  |
 
-Fusions et parts dev (PR 3) : `/dev/carte-question` (ex-`/dashboard/admin/debug/question-display`
-et `/demo/question-display-demo`), `/dev/editeur-riche` (ex-`/dashboard/admin/debug/rich-text` et
+- **Le contenu pédagogique est au prof, jamais à l'admin** : d'où l'aide à l'écriture, à part de
+  `/dev`. Un vrai compte admin n'entre pas dans `/aide-ecriture` (403, tranché par David le
+  2026-10-24). Même règle pour l'éditeur de constructions, rangé à côté des constructions
+  (`/constructions/essais`, prof seul, [constructions.md](geometrie/constructions.md)).
+- **Garde** : `/dev` et `/aide-ecriture` sont gardés dans le hook (`reservedAreasHandle`,
+  [auth.md](auth.md#la-chaîne-de-handles)) ; le `+layout.server.ts` de chaque espace refait le
+  contrôle pour la navigation côté client (sans nœud serveur, le hook ne tournerait pas). `/dev`
+  admet aussi le prof **élevé** (`adminElevationHandle` lit le cookie sous `/dev`) ; un prof non
+  élevé est envoyé vers `/dashboard/elevate`.
+- **Accueils** : `/dev` et `/aide-ecriture` listent leurs pages par `PageIndex.svelte`
+  (`DEV_PAGES`, `AIDE_PAGES`) ; le lien « Debug » du menu admin mène à `/dev`. `/demo` est le
+  carrefour de la vitrine (plus bas).
+- **Plus rien sous `/dashboard/admin/debug/`**. Seule la page de contrôle de la base y est restée,
+  devenue `/dashboard/admin/integrite-donnees` (« Intégrité des données »).
+- **Anciennes adresses** (`/test-*`, `/geometry-demo/…`, `/slides/…`, `/blockly/playground`,
+  `/construction-demo`, `/dashboard/admin/debug/…`, anciennes `/demo/…`) : redirigées en 308 par
+  `redirectHandle` (table `MOVED_PAGES`, [auth.md](auth.md#la-chaîne-de-handles)), sous-pages et
+  query string comprises ; une ancienne adresse publique mène donc le visiteur à la connexion.
+  `/test-font` ne l'est qu'à l'adresse exacte, ses images restant sous `static/test-font/`.
+  `/test-exercises` a été supprimée (404), avec ses orphelins `ExerciseMarkdownEditor.svelte` et
+  `exercises/services/image-markdown-editor.ts`.
+
+Pages fusionnées : `/dev/carte-question` (ex-`/dashboard/admin/debug/question-display` et
+`/demo/question-display-demo`), `/dev/editeur-riche` (ex-`/dashboard/admin/debug/rich-text` et
 `/demo/rich-text-editor-demo`, voir [editeur-riche.md](editeur-riche.md)), `/dev/diaporama`
 (ex-`/slides/demo`, `/slides/demo-embedded`, `/slides/test-transitions`, voir
-[outils-prof.md](outils-prof.md)), `/dev/structure` (ex-`/test-structure`), `/dev/cartes` et
-`/dev/cartes/exemples` (ex-`/demo/vip-cards-demo`, voir [jeux-et-economie.md](jeux-et-economie.md)),
-`/dev/mots-cliquables` (ex-`/demo/mots-cliquables`, voir [dictionnaire.md](dictionnaire.md)),
-`/dev/bancs-essai` (bancs d'essai sortis du carrefour `/demo`). Plus rien sous
-`/dashboard/admin/debug/`.
+[outils-prof.md](outils-prof.md)). Pages dont la vitrine a pris une part : `/dev/structure`
+(ex-`/test-structure`), `/dev/cartes` et `/dev/cartes/exemples` (ex-`/demo/vip-cards-demo`, voir
+[jeux-et-economie.md](jeux-et-economie.md)), `/dev/mots-cliquables` (ex-`/demo/mots-cliquables`,
+voir [dictionnaire.md](dictionnaire.md)), `/dev/bancs-essai` (bancs d'essai sortis du carrefour
+`/demo`). Aide à l'écriture : `/aide-ecriture/geometrie/…` (ex-`/geometry-demo/…`, 30 pages, voir
+[geometrie/README.md](geometrie/README.md)) et `/aide-ecriture/cercle-trigo`
+(ex-`/demo/trig-circle-demo`).
 
-Aide à l'écriture (PR 4) : `/aide-ecriture/geometrie/…` (ex-`/geometry-demo/…`, 30 pages, voir
-[geometrie/README.md](geometrie/README.md)) et `/aide-ecriture/cercle-trigo` (ex-`/demo/trig-circle-demo`,
-carte retirée du carrefour `/demo`). Un vrai compte admin n'y entre pas (403).
-
-Supprimée (PR 5) : `/test-exercises`, avec ses orphelins `ExerciseMarkdownEditor.svelte` et
-`exercises/services/image-markdown-editor.ts` (et son test).
-
-Les anciennes adresses sont redirigées en 308 par `redirectHandle` (table `MOVED_PAGES`,
-[auth.md](auth.md#la-chaîne-de-handles)), sous-pages comprises ; une ancienne adresse publique mène
-donc le visiteur à la connexion. `/test-font` ne l'est qu'à l'adresse exacte, ses images restant
-sous `static/test-font/`. Les pages vitrine (`/demo/…`) arrivent une par une (phase 6 du
-chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d), `/demo/corriges` (PR 6e), `/demo/geometrie` (PR 6f), `/demo/questions` (PR 6g), `/demo/editeur` (PR 6h), `/demo/diaporama` (PR 6i-c) ; `/demo/constructions` après coup (phase 8).
-
-**La vitrine est ouverte** (phase 7) : une seule liste, `DEMO_PAGES` de `src/lib/seo/demo-pages.ts`,
-nourrit les cartes de l'accueil `/demo`, le sitemap (`/demo` en 0,6, les vitrines en 0,5) et la
-`<title>` et la `meta description` de chaque vitrine (`<SeoHead {...demoSeo('/demo/…')} />`) ; le test `demo-pages.test.ts` exige
-une entrée par dossier de `/demo`, le passage par `SeoHead` (canonique, Open Graph), l'absence de `noindex` et de `Disallow: /demo`. L'accueil est
-relié depuis les trois vues des publics (`DEMO` de `src/lib/kingdom-tour/views.ts`) et l'`InfoPanel`.
+**La vitrine** : 10 pages (`/demo/structure`, `cercle-trigo`, `cartes`, `lexique`, `corriges`,
+`geometrie`, `constructions`, `questions`, `editeur`, `diaporama`), chacune écrite pour un
+visiteur : contenu dans le code, rien lu en base sauf le dictionnaire public, rien enregistré.
+Une seule liste, `DEMO_PAGES` de `src/lib/seo/demo-pages.ts`, nourrit les cartes de l'accueil
+`/demo`, le sitemap (`/demo` en 0,6, les vitrines en 0,5) et la `<title>` et la
+`meta description` de chaque vitrine (`<SeoHead {...demoSeo('/demo/…')} />`) ; le test
+`demo-pages.test.ts` exige une entrée par dossier de `/demo`, le passage par `SeoHead`
+(canonique, Open Graph), l'absence de `noindex` et de `Disallow: /demo`. L'accueil est relié
+depuis les trois vues des publics (`DEMO` de `src/lib/kingdom-tour/views.ts` : un seul lien par
+page de public) et l'`InfoPanel`.
 
 Les pages de mise au point restent hors du sitemap (`/dev` est protégé, donc absent) et interdites
 aux robots par `static/robots.txt` (`/test-`, `/dev`, `/aide-ecriture`) ; `/a-propos` et `/upsilon`
@@ -199,25 +210,24 @@ Précisions :
 - **`/demo/structure`** (vitrine, PR 6a) : la même formule pour un visiteur, sans corpus ni cases à
   cocher (réglages par défaut : `AB` lu comme une longueur, terme soulevé pendant un déplacement),
   6 exemples (priorités, somme algébrique, différence, puissance, fractions, équation) ; à
-  l'ouverture, l'expression de l'article Sésamath. `noindex` jusqu'à la phase 7.
+  l'ouverture, l'expression de l'article Sésamath.
 - **`/demo/cercle-trigo`** (vitrine, PR 6b) : 4 exemples du bloc `trig` rendus par
   `MarkdownRenderer`, sans leur texte : mode interactif (angle de départ π/4, le parseur refuse
   `preset: custom` sans angle), π/6 seul avec projections et tableau, cos x = 1/2, cos x > 1/2 en
   arc. Le catalogue complet et la syntaxe restent sur `/aide-ecriture/cercle-trigo`, dont un test
-  vérifie que chaque exemple se dessine. `noindex` jusqu'à la phase 7.
+  vérifie que chaque exemple se dessine.
 - **`/demo/cartes`** (vitrine, PR 6c) : 4 cartes VIP (`VipCardHolo`), une par rareté (Coup
   Double, Super Bonus, Game of throne, Batman and Robin), écrites dans `cartes.ts` avec les textes
   du catalogue. Leurs images sont recopiées dans `static/images/demo-cartes/` : la page ne lit ni
   la base ni le stockage (dont la CSP locale refuse les images de la prod). La légendaire tourne
   seule (`showcase`). Les feuilles `/css/holo-cards/*.css` sont chargées par la page, comme dans
-  `/dev/cartes`. `noindex` jusqu'à la phase 7.
+  `/dev/cartes`.
 - **`/demo/lexique`** (vitrine, PR 6d) : les mots du dictionnaire soulignés dans une question
   (l'aire d'un carré, à remplir) et dans 5 phrases dont la fiche change avec le niveau (carré,
   aire, périmètre, fonction, fonction exponentielle), chacune avec une ligne d'aide non soulignée
   (`lexiconGrade={null}`). Un sélecteur (CM1 à 1re générale, 6e à l'ouverture) pose le niveau
   pour toute la page par `provideReaderGrade`. Le dictionnaire vient de `/api/dictionnaire`,
-  public. La page de test, avec l'indice, reste sur `/dev/mots-cliquables`. `noindex` jusqu'à la
-  phase 7.
+  public. La page de test, avec l'indice, reste sur `/dev/mots-cliquables`.
 - **`/demo/corriges`** (vitrine, PR 6e) : la première page du Corrigé d'une fiche en image fixe
   (WebP, `static/demo/corriges/`), sans Typst ni polices chargés par la page. Chemin et
   dimensions dans `corriges.ts`, vérifiés par un test. L'image vient de la vraie chaîne des
@@ -226,8 +236,7 @@ Précisions :
   `sol/`, `en/`, `sol-en/`) passé à `pnpm tsx scripts/fiches/rendu-fiche.ts`, puis
   `node scripts/fiches/compile-prod.mjs --polices-corrige corrige.typ`, page 1 rendue par
   `pdftoppm -r 200`, recadrée sans le pied de page (`magick … -crop 1654x2225+0+0 -quality 85`).
-  À refaire quand le modèle de fiche ou les polices du Corrigé changent. `noindex` jusqu'à la
-  phase 7.
+  À refaire quand le modèle de fiche ou les polices du Corrigé changent.
 - **`/demo/geometrie`** (vitrine, PR 6f) : 10 figures manipulables en trois sections (Au collège,
   Au lycée, Pour le plaisir), titre, texte et script replié sous « Voir le script ». Scripts dans
   `figures.ts`, repris des pages d'aide `/aide-ecriture/geometrie/…`, sauf l'épicycloïde, écrite
@@ -235,7 +244,7 @@ Précisions :
   Koch vient de `$lib/components/geometry/koch-dsl.ts`, partagé avec l'aide. Un test construit
   chaque figure. Textes rendus par le serveur, figures montées dans le navigateur
   (`DemoFigureCard.svelte`) et réduites à la largeur disponible, l'échelle suivant (la toile de
-  `GeometryCanvas` a une largeur fixe). `noindex` jusqu'à la phase 7.
+  `GeometryCanvas` a une largeur fixe).
 - **`/demo/constructions`** (vitrine, phase 8) : 3 constructions (parallélogramme par ses
   diagonales, partage d'un segment en trois, symétrique d'un point au compas), titre, texte et
   script replié sous « Voir le script ». Scripts dans `constructions.ts`, recopiés des réécritures
@@ -252,7 +261,7 @@ Précisions :
   (`SpacedReviewDemo.svelte` : carte, 4 notes et la prochaine date d'une carte neuve, calculée
   par `$lib/srs/fsrs`). Rien n'est enregistré : la fin de série n'appelle rien, et le bandeau
   « Connecte-toi… » d'Entraînement et Flash-cards est coupé par `loginNote={false}`. Les boutons
-  « Retour au panier » mènent à `/automaths/panier`. `noindex` jusqu'à la phase 7.
+  « Retour au panier » mènent à `/automaths/panier`.
 - **`/demo/editeur`** (vitrine, PR 6h) : un seul `RichTextEditor` (`preset="standard"`) dont le
   JSON alimente trois cartes, chacune par le vrai moteur de son usage : message privé au prof
   (`RestrictedRichText`, comme `/messages/[id]`), cahier de texte (`generateHTML`, même
@@ -260,7 +269,7 @@ Précisions :
   comme la page élève) et énoncé d'exercice (`tipTapToMarkdown` puis `MarkdownRenderer`). Le HTML
   du cahier est calculé après `onMount` : l'hydratation garde le `{@html}` du serveur sans le
   corriger. Les formules de la carte « cahier » sortent vides (écart de
-  [editeur-riche.md](editeur-riche.md)). Rien n'est envoyé ; `noindex` jusqu'à la phase 7.
+  [editeur-riche.md](editeur-riche.md)). Rien n'est envoyé ;
 - **`/demo/diaporama`** (vitrine, PR 6i-c) : un `Deck` de 13 diapositives dans un cadre (bouton
   ou F pour le plein écran, `hash: false`) : comment avancer, pile verticale, fragments,
   transitions, $(x+1)^2$ développé tout seul (`autoSlide` de 2 s et fragments `->`), formules
@@ -270,8 +279,7 @@ Précisions :
   correction), `AnnotatableSlide`, `WhiteboardSlide`, liens vers `/demo` et `/atelier`. Contenu
   dans `diaporama.ts`. Dans `<main>`, titres, paragraphes et listes suivent `--font-scale`
   (`app.css`) : la page le règle selon la largeur du cadre (requêtes de conteneur), cellules de
-  tableau et code compris. Le banc d'essai complet reste `/dev/diaporama` ;
-  `noindex` jusqu'à la phase 7.
+  tableau et code compris. Le banc d'essai complet reste `/dev/diaporama`.
 - **`/dev/polices`** (ex-`/test-font`) : outil de comparaison des polices de rendu ; décision de ne rien changer à
   KaTeX. Seul appelant de `src/lib/utils/mathlive-fonts.ts`. L'éditeur s'ouvre sur une
   expression (`\begin{gathered}`, une famille de symboles par ligne) qui réunit tous les symboles
@@ -307,7 +315,43 @@ Précisions :
   `\hat` et `\tilde` sont `^` et `~`. Redessiner le glyphe attendu ne change alors rien à
   l'écran : relever d'abord, dans le navigateur, le caractère et la police (`font-family`) de
   chaque symbole. `\widehat` et `\overline` ne passent pas par la police (SVG, filet).
-- Les pages `/demo/**` sont publiques et sans `noindex` : seul `robots.txt` les écarte. Celles de `/dev` sont réservées à l'admin.
+- **Nouvelle vitrine** = une entrée dans `DEMO_PAGES` et `<SeoHead {...demoSeo('/demo/…')} />`
+  dans la page : `demo-pages.test.ts` échoue sinon.
+- **Sous `/dev` et `/aide-ecriture`, pas de `+layout@`** : il sauterait le `+layout.server.ts`
+  de l'espace, donc la garde en navigation côté client. Pas non plus de donnée sensible par un
+  `load` universel (`+page.ts`) : seule la garde serveur la protège.
+- **Dans `<main>`, `h2`, `p` et `li` ont une taille `!important` × `--font-scale`** (`app.css`) :
+  les classes `text-*` n'y font rien. Une vitrine qui veut d'autres tailles règle
+  `--font-scale` (ainsi `/demo/diaporama`) ou passe par une classe `!`.
+
+### Écarts connus
+
+Notés pendant le rangement (chantier demo-debug), pas traités :
+
+- **Contenu pédagogique encore géré par l'admin** : catalogue des cartes VIP
+  (`/dashboard/admin/vip-cards`, `api/admin/vip-cards/`, privilèges de classe) et lexique
+  (`/dashboard/admin/dictionnaire`, `api/admin/dictionnaire/`). Règle : au prof. David : « on le
+  fera plus tard ».
+- **`/dev/saisie-naturelle`** : prototype jetable dont le travail est fait (#1355), candidat à la
+  suppression ; à trancher par David.
+- **`/dev/blockly`** : deviendra une vraie fonctionnalité (algorithmique par blocs, cycle 4,
+  relais vers Python ; décidé par David le 2026-10-24) ; phase 0 à ouvrir. Ne pas le supprimer.
+- **Scripts d'essai de constructions et brouillons de `/constructions`** : doublon possible, à
+  revoir.
+- **Images de 4 cartes VIP de Mathémo** (Voyelles Révélées, Multiplicateur x1.5, Lettre Bonus,
+  Retour en Arrière) : en prod, `image_path` en `/images/vip-cards/…`, dossier absent de
+  `static/` ; sans doute cassées, pas vérifié dans le navigateur.
+- **`angle_polaire` rend des degrés même en mode radians** (cos(3θ) faux dès qu'on combine les
+  deux) ; `dsl-builtins.md` dit « en radians », faux en mode degrés. Les courbes trigonométriques
+  de l'aide à l'écriture déclarent `unite_angle("radians")`, gardé par
+  `courbes-trigo-radians.test.ts`.
+- **Carte « cahier » de `/demo/editeur`** : formules vides, voir l'écart de
+  [editeur-riche.md](editeur-riche.md) (futur chantier : cahier de texte en ubumark).
+- **Révisions espacées** : `calculateNewStability` (`src/lib/srs/fsrs.ts`) ignore la note après
+  la 1re révision ([srs.md](srs.md), futur chantier `fsrs`) ; `/demo/questions` n'affiche que la
+  1re, non touchée.
+- **Sur téléphone**, les flèches du `Deck` chevauchent parfois le bas d'une diapositive de
+  `/demo/diaporama` (comportement du Deck).
 
 ---
 
