@@ -223,9 +223,7 @@
 			<!-- Case « figure » : la figure dit tout (tracés de l'élève, bonne droite en pointillés) -->
 			<div class="space-y-1" data-kind="figure" data-status={line.status}>
 				<FigureAnswer source={line.source} answer={line.answer} status={line.status} />
-				{#if line.answer !== null}
-					<p class="flex justify-center">{@render statusTag(line.status)}</p>
-				{/if}
+				<p class="flex justify-center">{@render statusTag(line.status)}</p>
 			</div>
 		{/if}
 	{/each}

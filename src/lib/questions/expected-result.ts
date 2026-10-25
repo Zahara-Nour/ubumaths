@@ -108,6 +108,9 @@ export const EMPTY_ANSWER_TEXT = "Tu n'as rien répondu.";
 /** Case sans valeur connue : pointillés, comme sur une fiche */
 const BLANK_TEXT = '……';
 
+/** Bloc ```figure-a-completer : la case « figure », montrée par sa ligne `figure` */
+const FIGURE_CASE_BLOCK = /^```figure-a-completer\b[\s\S]*?^```[ \t]*$/gm;
+
 /** Une formule : bloc `$$…$$` ou en ligne `$…$` (une seule passe, cf. content-resolver) */
 const MATH_ZONE = /\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g;
 /** Marqueur de la convention « expression » en tête de formule */
@@ -181,6 +184,23 @@ export function fillMarkdown(
  * aux formules de la convention « expression » (comme `augmentASTForExpressions`
  * à l'écran), sauf si la formule a déjà ses propres cases.
  */
+/** L'énoncé sans ses blocs ```figure-a-completer (la ligne `figure` les montre) */
+export function withoutFigureCases(statement: string): string {
+	return statement.replace(FIGURE_CASE_BLOCK, '');
+}
+
+/**
+ * Consigne seule au-dessus du résultat attendu : calcul R1 (Q104), ou case
+ * « figure » quand aucun énoncé rempli ne tient lieu d'énoncé
+ */
+export function showsInstructionOnly(lines: readonly ExpectedLine[]): boolean {
+	if (lines.some((l) => l.kind === 'comparison' || l.kind === 'solution')) return true;
+	return (
+		lines.some((l) => l.kind === 'figure') &&
+		!lines.some((l) => l.kind === 'filled-statement' || l.kind === 'your-answer')
+	);
+}
+
 function prepareStatement(statement: string, instance: QuestionInstance): string {
 	const expressions = instance.expressions ?? [];
 	return statement.replace(MATH_ZONE, (_m, block: string | undefined, inline: string) => {
@@ -448,7 +468,8 @@ function build(
 	if (type === 'multiple_choice') return { status, lines: choiceLines(instance, verdict) };
 
 	const statement = typeof instance.statement === 'string' ? instance.statement : '';
-	const markdown = prepareStatement(statement, instance);
+	// Case « figure » : hors de l'énoncé rempli, sa figure est dans sa ligne
+	const markdown = prepareStatement(withoutFigureCases(statement), instance);
 	const marked = markedIndexes(markdown);
 	const views = blankViews(instance, answer, verdict);
 	const inStatement = views.filter((v) => !v.graphical && marked.has(v.index));

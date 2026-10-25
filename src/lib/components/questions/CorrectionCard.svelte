@@ -26,7 +26,7 @@
 <script lang="ts">
 	import type { TestAnswerResult } from '$lib/types/test';
 	import { getQuestionType } from '$lib/questions/types';
-	import { buildExpectedResult } from '$lib/questions/expected-result';
+	import { buildExpectedResult, showsInstructionOnly } from '$lib/questions/expected-result';
 	import {
 		filledMarkdown,
 		expectedOnlyMarkdown,
@@ -118,20 +118,27 @@
 	// Case « figure » jugée ici : positions des points chargées d'abord (la vue de
 	// saisie, qui les inscrit, n'a pas tourné sur cette page) ; sans elles, le
 	// validateur rendrait « faux » en silence
+	// Chargement impossible (réseau, version déployée entre-temps) : la solution
+	// seule, sans verdict, comme un détail indisponible
 	let positionsLoaded = $state(false);
-	const waitsForPositions = $derived(
+	let positionsFailed = $state(false);
+	const needsPositions = $derived(
 		!verdict &&
 			!positionsLoaded &&
 			!hasConstructionPositions() &&
 			(instance.blanks ?? []).some((blank) => blank?.construction)
 	);
+	const waitsForPositions = $derived(needsPositions && !positionsFailed);
 	$effect(() => {
 		if (!waitsForPositions) return;
-		loadConstructionPositions().then(() => (positionsLoaded = true));
+		loadConstructionPositions().then(
+			() => (positionsLoaded = true),
+			() => (positionsFailed = true)
+		);
 	});
 	const detailedVerdict = $derived.by((): DetailedVerdict | undefined => {
 		if (verdict) return 'unavailable' in verdict ? undefined : verdict;
-		if (isCourseCard || waitsForPositions) return undefined;
+		if (isCourseCard || needsPositions) return undefined;
 		return {
 			...validateAnswerDetailed(instance, studentAnswer),
 			status: trainingStatus(instance, studentAnswer)
@@ -142,7 +149,7 @@
 	const expected = $derived(
 		isCourseCard || waitsForPositions
 			? null
-			: detailUnavailable
+			: detailUnavailable || needsPositions
 				? buildExpectedResult(instance)
 				: buildExpectedResult(instance, studentAnswer, detailedVerdict)
 	);
@@ -151,11 +158,10 @@
 	const globalVerdict = $derived(globalStatus ? globalVerdictOf(globalStatus) : null);
 
 	// Comparaison R1 (Q104) : la consigne seule, sans la formule à case vide
-	// Case « figure » : de même, la consigne seule (la figure est dans le résultat attendu)
+	// Case « figure » : de même, la consigne seule (la figure est dans le résultat
+	// attendu), dès l'attente des positions (pas d'énoncé complet qui disparaît)
 	const isComparison = $derived(
-		expected?.lines.some(
-			(l) => l.kind === 'comparison' || l.kind === 'solution' || l.kind === 'figure'
-		) ?? false
+		waitsForPositions || (expected !== null && showsInstructionOnly(expected.lines))
 	);
 	const instruction = $derived(isComparison ? instructionOf(instance.statement) : '');
 	// L'énoncé rempli tient lieu d'énoncé ; sinon (QCM, attendu seul) on le montre
@@ -328,6 +334,14 @@
 							</p>
 						{:else if expected}
 							<ExpectedResultView result={expected} />
+						{:else if waitsForPositions}
+							<!-- Calcul des positions en cours de chargement : cadre de la figure -->
+							<div
+								class="mx-auto aspect-[5/3] w-full max-w-md rounded-md bg-muted/40"
+								aria-busy="true"
+								aria-label="Correction en cours de chargement"
+								data-testid="figure-chargement"
+							></div>
 						{/if}
 
 						{#if detailUnavailable}

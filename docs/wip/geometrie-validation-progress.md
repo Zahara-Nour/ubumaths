@@ -206,7 +206,7 @@ tests du repère en cadre étroit et des bords, zone live permanente, type parta
 **Modèle** (`scripts/questions/cp-figure/01-tracer-une-droite.json`, écrit par
 `docs/wip/geometrie-validation/modele-cp059.py`) : « Trace la droite qui passe par deux points », `delay` 60 s,
 3 variations (horizontale, verticale, oblique montante ou descendante), fenêtre 0..10 × 0..6, points entiers à 1 du
-bord au moins. Les deux points à relier sont écartés (4 au moins) ; le piège est à 2 au moins de la droite
+bord au moins. Les deux points à relier sont écartés (4 au moins en horizontale et en oblique, 2 au moins en verticale : la fenêtre fait 6 de haut ; 80 px à taille moyenne, l'aimantation prend le plus proche) ; le piège est à 2 au moins de la droite
 (horizontale, verticale) ou à environ 1 (oblique : |produit vectoriel| ≥ 9) et à 3 (Manhattan) des deux points.
 `k` (1..3) choisit la lettre du piège (C, B ou A) : les lettres ne pouvant pas être des valeurs de variables, les
 positions sont tirées par **rôle** puis données aux lettres (`xa`…`yc`), et les lettres s'écrivent en `{{if:k==…}}`.
@@ -240,3 +240,4 @@ avec les fiches CP.
 - 2026-10-25 : revue Opus de #1775 : 6 points corrigés, 4 tests d'écran ajoutés (13), 1 point reporté à la PR 3.
 - 2026-10-25 : PR 3 codée : modèle CP-059 (18 specs, 150 tirages), copie corrigée et verso en figure, garde de `CorrectionCard` (rouge sans elle), fiche du catalogue ; 9 tests neufs, rouges sans le code.
 - 2026-10-25 : carte CP-059 essayée par David sur `/dev/carte-question` (OK) ; brouillon créé en prod (`010d81a5-61dd-441d-a4d6-fdd0bd6c7af4`, `create-questions --publier`, go de David), vérifié : brouillon, 3 variations, 18 specs, sans nœud ni tag.
+- 2026-10-25 : revue Opus de #1782 : 2 à corriger + 3 mineurs, tous traités (garde en échec → bonne droite seule ; case « figure » mêlée à une autre case : bloc retiré de l'énoncé rempli ; consigne pendant le chargement ; libellé de la bonne droite seule ; écart vertical précisé dans le § 6) ; 3 tests neufs, rouges sans les correctifs.

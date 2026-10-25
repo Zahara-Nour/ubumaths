@@ -8,7 +8,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import '$lib/questions/construction/positions-setup';
-import { buildExpectedResult } from '../expected-result';
+import { buildExpectedResult, showsInstructionOnly } from '../expected-result';
 import { instructionOf } from '../correction-card-verdict';
 import { generateInstance } from '../generator/instance-generator';
 import type { QuestionInstance, QuestionTemplate } from '../types';
@@ -28,14 +28,14 @@ const STATEMENT = [
 	'```'
 ].join('\n');
 
-function instance(): QuestionInstance {
+function instance(statement = STATEMENT, blanks?: { expectedAnswer: string }[]): QuestionInstance {
 	const result = generateInstance(
 		{
 			id: 'test-cp059',
 			title: 'Tracer une droite',
 			status: 'draft',
 			type: 'fill_in_blanks',
-			variations: [{ statement: templateMarkdown(STATEMENT) }],
+			variations: [{ statement: templateMarkdown(statement), ...(blanks && { blanks }) }],
 			grades: ['CP'],
 			theme: 'Test',
 			domain: 'Test',
@@ -91,5 +91,30 @@ describe('consigne d’une case « figure »', () => {
 		const statement = String(instance().statement);
 		expect(statement).toContain('```figure-a-completer');
 		expect(instructionOf(statement)).toBe('Trace la droite qui passe par les points A et B.');
+	});
+});
+
+describe('case « figure » avec une autre case (revue de #1782)', () => {
+	const MIXED = `${STATEMENT}\n\nLe point C est-il sur la droite ? [_]`;
+	// blanks[] : les cases hors bloc seulement (la case du bloc vient du bloc)
+	const mixed = () => instance(MIXED, [{ expectedAnswer: 'non' }]);
+
+	it('l’énoncé rempli sans le bloc : la figure n’est que dans sa ligne', () => {
+		const { lines } = buildExpectedResult(mixed(), { values: ['droite(1;2;7;2)', 'non'] });
+		const kinds = lines.map((l) => l.kind);
+		expect(kinds).toContain('figure');
+		for (const line of lines) {
+			if (line.kind === 'filled-statement' || line.kind === 'your-answer') {
+				expect(line.markdown).not.toContain('figure-a-completer');
+				expect(line.markdown).toContain('Trace la droite');
+			}
+		}
+		expect(kinds.some((k) => k === 'filled-statement' || k === 'your-answer')).toBe(true);
+	});
+
+	it('pas de consigne seule : l’énoncé rempli en tient lieu', () => {
+		const { lines } = buildExpectedResult(mixed(), { values: ['droite(1;2;7;2)', 'non'] });
+		expect(showsInstructionOnly(lines)).toBe(false);
+		expect(showsInstructionOnly(buildExpectedResult(instance()).lines)).toBe(true);
 	});
 });

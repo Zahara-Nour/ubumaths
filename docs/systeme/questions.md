@@ -325,8 +325,9 @@ Statuts (`ValidationStatus`) : `correct` (1), `unoptimal_form` (½), `bad_form` 
    (`FigureACompleterView.svelte`). Sans inscription : exception, que `validateAnswer` rend dans
    `message` — et que `validateAnswerDetailed` rend en `incorrect`. Une page qui juge sans avoir
    monté la vue (copie corrigée rechargée, `CorrectionCard`) charge d'abord le calcul à la demande
-   (`loadConstructionPositions`) et n'affiche ni verdict ni résultat attendu avant (garde :
-   `figure-a-completer-correction.svelte.test.ts`).
+   (`loadConstructionPositions`) : pendant le chargement, la consigne et un cadre `aria-busy` ;
+   chargement impossible → la bonne droite seule, sans verdict (gardes :
+   `figure-a-completer-correction.svelte.test.ts`, `…-correction-echec.svelte.test.ts`).
 1. **`validationRules`** (précondition) : `divisor`, `multiple`, `range`, `equation_root`,
    `equivalent`, `predicate` (`isPrime`, `isEven`…), `custom`. Une règle violée → faux, avec son
    message français. `rulesSuffice` : les règles **décident seules**, `expectedAnswer` n'est plus
@@ -395,8 +396,10 @@ Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(�
 markdown, lue par le juge borné) au lieu de « Réponse attendue : `droite(A;B)` ». `FigureAnswer.svelte`
 la dessine en lecture seule : droites de l'élève (vertes si juste ; sinon la bonne droite en
 pointillés par-dessus), ou la bonne droite seule sans réponse (R9) ; suivent le message du juge
-(remarque) ou « Tu n'as rien répondu. ». Au-dessus, la consigne seule (`instructionOf` retire le
-bloc) : la figure n'apparaît qu'une fois, au verso de la `FlashCard` comme dans la copie corrigée.
+(remarque) ou « Tu n'as rien répondu. ». Le bloc est retiré de l'énoncé rempli (`withoutFigureCases`) ;
+s'il n'y a pas d'énoncé rempli (la figure est la seule case), la consigne seule au-dessus
+(`showsInstructionOnly`, `instructionOf`) : la figure n'apparaît qu'une fois, au verso de la `FlashCard`
+comme dans la copie corrigée, case « figure » mêlée à d'autres cases comprise.
 
 ### 7. Correction (concise / détaillée, étapes)
 

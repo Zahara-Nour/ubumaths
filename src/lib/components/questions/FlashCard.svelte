@@ -32,7 +32,7 @@
 		type StudentAnswer
 	} from '$lib/utils/answer-validator';
 	import { isDisplayedChoiceCorrect, toOriginalChoiceIndexes } from '$lib/questions/choices';
-	import { buildExpectedResult } from '$lib/questions/expected-result';
+	import { buildExpectedResult, showsInstructionOnly } from '$lib/questions/expected-result';
 	import {
 		globalVerdictOf,
 		instructionOf,
@@ -197,9 +197,7 @@
 	// Calcul R1 et case « figure » : la consigne seule au-dessus (Q104) — le verso
 	// se lit sans le recto (grille des corrections « En classe »)
 	const instruction = $derived(
-		expected?.lines.some(
-			(l) => l.kind === 'comparison' || l.kind === 'solution' || l.kind === 'figure'
-		)
+		expected && showsInstructionOnly(expected.lines)
 			? instructionOf(typeof instance.statement === 'string' ? instance.statement : '')
 			: ''
 	);
