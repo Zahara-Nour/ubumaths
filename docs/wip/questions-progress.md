@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot B2 en cours (avant création en prod)._
+_Mis à jour le 2026-10-25, après #1772._
 
-- **État** : B1 relu 3/3 OK. **Lot B2** (§ 4 duodecies) : 10 brouillons créés en prod (go de David) : `9d6bc8b3` CP-054, `e7453c9b` 055, `c85626fa` 056, `91012bab` 056, `b5389494` 057, `d5a36be9` 061, `2fc01600` 062, `f7167af7` 067, `d50c6e21` 035, `7093b797` 034. Migration `20261026150000` nœud + tag et test (rouge 3/9 sans, vert 9/9) ; question d'accès tranchée (personne).
-- **Prochaine action** : (audit sécurité fait : aucun finding bloquant) PR → CI verte → merge → `db:migrate` → vérification en prod → page à cocher B2. Puis phase 0 de B3 (images fixes : 049-052, 040).
+- **État** : B1 relu 3/3 OK. **Lot B2** (§ 4 duodecies) : 10 brouillons créés en prod (go de David) : `9d6bc8b3` CP-054, `e7453c9b` 055, `c85626fa` 056, `91012bab` 056, `b5389494` 057, `d5a36be9` 061, `2fc01600` 062, `f7167af7` 067, `d50c6e21` 035, `7093b797` 034. #1772 mergée, `db:migrate` joué, vérifié en prod (10 modèles sur leur sous-notion, 1 tag chacun). Page à cocher B2 : https://claude.ai/artifact/DzfztZrpHKs82BgnxnydrC (collection `verdicts`).
+- **Prochaine action** : relire les verdicts de la page B2 ; puis phase 0 de B3 (images fixes : 049-052, 040).
 - **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 058 à réexaminer.
-- **En attente de David** : publication A1 à H et B1 en un lot ; vérification manuelle #1702.
+- **En attente de David** : relecture de la page B2 ; publication A1 à H, B1 (et B2 si OK) en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (la bonne réponse = une variable) ; **virgule décimale = figure cassée** (coordonnées tirées : chaînes de `{{if:…}}` sur des valeurs écrites) ; **points et segments numérotés, pas lettrés** (les choix du QCM portent A, B, C) ; texte sur fond coloré illisible ; jamais de variable `e`.
-- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-b2`.
+- **Worktree / branche** : aucun (retiré après #1772) ; B3 → `git worktree add -b feat/questions-b3 ../ubumaths-wt-questions origin/main`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -221,3 +221,4 @@ David suit mes cinq recommandations (« je te suis »).
 - 2026-10-25 : B2, 10 modèles écrits, 76 specs vertes ; rendu relu à 390 px en base locale : étiquettes S0-S2 qui donnaient la réponse masquées, texte sur fond olive illisible (contours seuls), lettres des points mêlées aux lettres du QCM (numéros), `str.format` qui mangeait les `{{if:…}}` des prénoms, « une maison faite », « 1 triangles » évité.
 - 2026-10-25 : B2, 10 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026150000` nœud + tag et test, rouge (3/9) puis vert.
 - 2026-10-25 : B2, audit sécurité de la migration sans finding bloquant (même structure que B1, 10 lignes exactement, rollback juste).
+- 2026-10-25 : #1772 mergée (CI verte) ; `db:migrate` joué depuis le dépôt principal (le worktree n'est pas lié à Supabase), vérifié en prod : 10 modèles B2 sur leur sous-notion, 1 tag chacun ; page à cocher B2 publiée (figures dessinées par `figureToSvg`, script `_page-b2.mts` du scratchpad).
