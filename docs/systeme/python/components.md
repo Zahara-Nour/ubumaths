@@ -21,6 +21,7 @@ src/lib/components/python/
 ├── PythonToolbar.svelte              # Barre d'actions
 ├── PythonEditor.svelte               # CodeMirror 6 + autocomplete Pyodide
 ├── PythonOutput.svelte               # stdout/stderr/plot/latex/plotly
+├── PythonToAtelier.svelte            # « Ouvrir dans l'atelier » : menu des listes du programme
 ├── PythonSplitter.svelte             # Splitter draggable horizontal
 ├── PythonSettings.svelte             # Modale paramètres (thème, font, errors)
 ├── PythonFileManager.svelte          # Dialog "Mes fichiers / Assignés / Bibliothèque"
@@ -149,6 +150,21 @@ Affichage 5-en-1 : stdout, stderr (+ message pédagogique français basé sur 13
   executionTime?: number,
   showPedagogicErrors?: boolean
 }
+```
+
+### `PythonToAtelier.svelte`
+
+« Ouvrir dans l'atelier » (phase 0 [python-vers-atelier-phase0.md](../../wip/python-vers-atelier-phase0.md)),
+rendu sous `PythonOutput` dans les deux mises en page du playground, avec `lists={pythonStore.atelierLists}`.
+Rien n'apparaît tant que la dernière exécution réussie n'a affecté aucune liste. Le menu montre une
+entrée par liste (`offerOf`, `$lib/atelier/from-python`) : « lancers (12 valeurs) », « lancers : ses
+effectifs (1000 valeurs, 6 différentes) », ou la liste refusée, atteignable au clavier, avec sa raison
+(`aria-disabled`, motif de `FunctionCard`). Le clic dépose les listes (`postToAtelier`,
+`$lib/atelier/python-mailbox`) et ouvre `/atelier?depuis-python=<clé>` dans un **nouvel onglet** ;
+stockage plein ou bloqué → toast, rien d'ouvert. Le playground ne bouge pas.
+
+```typescript
+{ lists: readonly PythonListReport[] }
 ```
 
 ### `PythonSplitter.svelte`

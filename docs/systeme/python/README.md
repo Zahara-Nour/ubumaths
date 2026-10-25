@@ -104,18 +104,19 @@ L'import statique de `@supabase/ssr` dans `+layout.ts` cassait sur iPad. Solutio
 
 REPL Python complet en navigateur avec éditeur CodeMirror, sortie multi-format, autocomplétion intelligente.
 
-| Fonctionnalité         | Détails                                                                                                                                              |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Éditeur                | CodeMirror 6, 12 thèmes, taille de police ajustable                                                                                                  |
-| Autocomplétion         | Introspection Python (`dir()`, `getattr()`), debounce 150ms                                                                                          |
-| Sorties                | stdout / stderr / plots PNG / Plotly / LaTeX SymPy                                                                                                   |
-| Erreurs pédagogiques   | 13 patterns traduits en français                                                                                                                     |
-| Highlight ligne erreur | StateField CodeMirror (rouge + gutter marker)                                                                                                        |
-| Partage                | URL avec code compressé LZ-String (~2000 chars)                                                                                                      |
-| Code reçu              | `?code=` aussi utilisé par « Ouvrir dans Python » de l'atelier ; si l'éditeur contient du code de l'élève, « Remplacer ton code ? » avant de charger |
-| Modes                  | Plein écran, splitter redimensionnable (20-80%)                                                                                                      |
-| Persistance            | localStorage (anonyme) + DB JSONB (`profiles.python_settings`)                                                                                       |
-| Service Worker         | Cache Pyodide CDN après 1er chargement                                                                                                               |
+| Fonctionnalité         | Détails                                                                                                                                                        |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Éditeur                | CodeMirror 6, 12 thèmes, taille de police ajustable                                                                                                            |
+| Autocomplétion         | Introspection Python (`dir()`, `getattr()`), debounce 150ms                                                                                                    |
+| Sorties                | stdout / stderr / plots PNG / Plotly / LaTeX SymPy                                                                                                             |
+| Erreurs pédagogiques   | 13 patterns traduits en français                                                                                                                               |
+| Highlight ligne erreur | StateField CodeMirror (rouge + gutter marker)                                                                                                                  |
+| Partage                | URL avec code compressé LZ-String (~2000 chars)                                                                                                                |
+| Code reçu              | `?code=` aussi utilisé par « Ouvrir dans Python » de l'atelier ; si l'éditeur contient du code de l'élève, « Remplacer ton code ? » avant de charger           |
+| Vers l'atelier         | « Ouvrir dans l'atelier » : les listes affectées par le programme, copiées dans un atelier éphémère (`PythonToAtelier.svelte`, [components.md](components.md)) |
+| Modes                  | Plein écran, splitter redimensionnable (20-80%)                                                                                                                |
+| Persistance            | localStorage (anonyme) + DB JSONB (`profiles.python_settings`)                                                                                                 |
+| Service Worker         | Cache Pyodide CDN après 1er chargement                                                                                                                         |
 
 ### Documentation détaillée
 
