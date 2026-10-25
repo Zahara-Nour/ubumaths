@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après le commit du nuancier (pas de PR : chantier 100 % doc pour l'instant)._
+_Mis à jour le 2026-10-26, après les décisions sur l'usage des deux nuanciers (pas de PR : chantier 100 % doc pour l'instant)._
 
 - **État** : style choisi (lithographie d'affiche 1896 à la Steinlen, famille des Mathoux, sans halo systématique) ; deux nuanciers faits, numérique et encre d'imprimerie, plus une démo (`docs/Chiphres/illustrations/nuancier/`) ; Glitchistan réécrit en steampunk dans le Compendium (`aca9748bc`).
-- **Prochaine action** : David choisit la palette (numérique / imprimerie, peut-être l'une pour l'affiche et l'autre pour la carte) et tranche la couleur de la mer ; puis il fait le test dans Midjourney et Nano Banana (demandes ci-dessous).
-- **En attente de David** : choix de palette · bleu de mer (glace du Czar autorisée pour l'eau, ou nouveau bleu) · résultats du test des outils · géographie (position des six provinces).
+- **Prochaine action** : David fait le test dans Midjourney et Nano Banana (demandes ci-dessous) ; puis fiches visuelles des personnages et plan schématique de la carte.
+- **En attente de David** : bleu de mer (proposé : le bleu de Pile `#2F62B0`) · résultats du test des outils · géographie (position des six provinces).
 - **Pièges en cours** : les noms de couleurs inventés (« phynance gold ») ne veulent rien dire pour une IA → noms courants ; texte dans une image de référence = recopié par l'IA → références sans texte ; Midjourney `--sref` sur un nuancier copie les rayures → référence = 1ʳᵉ illustration réussie. Le Lexique parle encore de Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
@@ -16,7 +16,9 @@ _Mis à jour le 2026-10-26, après le commit du nuancier (pas de PR : chantier 1
 - 2026-10-25 — **Pas de halo partout** : réservé, au plus, aux portraits au format carte.
 - 2026-10-25 — **Palette Chat Noir abandonnée pour les illustrations** (le Compendium § XI la réserve aux écrans culturels) ; palette du Royaume à 7 couleurs, par image une base de 4 (encre, parchemin, vert, or) + 1 ou 2 accents.
 - 2026-10-25 — **Glitchistan entièrement steampunk victorien** (Compendium mis à jour).
-- 2026-10-26 — Nuancier « numérique » validé ; « j'aime bien les deux » (numérique et imprimerie), choix pas encore fait.
+- 2026-10-26 — **Deux versions du nuancier, chacune son usage** : _imprimerie_ pour les objets imprimés du Royaume (grande carte, Shtam, Almanach, Édits Royaux et Sceau Secret, diplômes et certificats, affiches d'événements) ; _numérique_ (palette du Compendium § XI) pour tout ce qui vit dans l'interface (personnages qui parlent à l'élève, icônes, vignettes, bannières, lieux en pleine page, cartes à collectionner).
+- 2026-10-26 — **Mathoux et Palotins gardent leurs couleurs** : le nuancier vaut pour les nouvelles illustrations. Les Palotins (`static/images/buddies/`) sont déjà de la famille (encre `#16181F`, papier `#F6E9D2`, or `#F2B83B`, pourpre `#8E2C4F`, vert `#2E8B57`) avec deux couleurs d'identité en plus (orange `#E0612F`, bleu de Pile `#2F62B0`).
+- ⚠️ La palette du Compendium § XI n'est PAS celle de l'interface du site (`src/app.css` : orange `#fc8f1b`, ambre `#ffa000`…) ; David a choisi la palette du Compendium pour les illustrations, en connaissance de cause.
 
 ## Le nuancier
 
