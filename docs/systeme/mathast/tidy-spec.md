@@ -111,6 +111,7 @@ Compléments mesurés :
   registre du radicande gardé (`0,25^{0,5} → 0,5`) ; un autre dénominateur
   seulement sur un entier dont la racine est exacte (`27^{2/3} → 9`,
   `16^{3/4} → 8`) — `2^{1/3}`, `(8/27)^{1/3}` et `x^{1/2}` restent écrits ;
+  écart visible, voulu : `(1/8)^{1/3}` reste, `8^{−1/3} → 1/2` (base entière) ;
 - **signe d'une somme dans un facteur** (2026-10-06, étendu le 2026-10-20) :
   si son terme de gauche est négatif, le signe sort, à tout degré, parité
   respectée — `3(−x−1) → −3(x+1)`, `(−x²−1)² → (x²+1)²`,

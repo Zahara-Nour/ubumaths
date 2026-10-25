@@ -19,6 +19,7 @@ import { add, func, multiply, number, subtract, superscript } from '../../factor
 import { isEulerConstant, isFunction } from '../../guards';
 import { extractRational } from '../../common/numeric';
 import { nodesEqual } from '../../normal/hash';
+import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { tidy } from '../../tidy';
 import type { MathNode } from '../../types';
 import { P } from '../builder';
@@ -59,8 +60,11 @@ function squaredRadicandBase(root: MathNode | null): MathNode | null {
  * le dit (Q4) ; même restriction que le regroupement de `tidy` (Q29).
  */
 function isNonVanishingBase(node: MathNode): boolean {
-	if (isEulerConstant(node)) return true;
-	const value = extractRational(node);
+	const bare = unwrapDelimiters(node) ?? node;
+	if (isEulerConstant(bare)) return true;
+	if (bare.type === 'division')
+		return isNonVanishingBase(bare.numerator) && isNonVanishingBase(bare.denominator);
+	const value = extractRational(bare);
 	return value !== null && value.n > 0n;
 }
 
@@ -77,7 +81,24 @@ function sameNonVanishingBase(left: MathNode | null, right: MathNode | null): bo
 	if (left === null || right === null) return false;
 	const l = asPower(left);
 	const r = asPower(right);
-	return isNonVanishingBase(l.base) && nodesEqual(l.base, r.base);
+	// `(1/2)^x` et `(1/2)` : même base, parenthèses mises à part
+	const lBase = unwrapDelimiters(l.base) ?? l.base;
+	const rBase = unwrapDelimiters(r.base) ?? r.base;
+	return isNonVanishingBase(lBase) && nodesEqual(lBase, rBase);
+}
+
+/** La base écrite de la puissance (`(1/2)` de `(1/2)^x`, parenthèses gardées). */
+function writtenBase(left: MathNode, right: MathNode): MathNode {
+	const power = [left, right].find((n) => unwrapDelimiters(n)?.type === 'superscript');
+	return asPower(power ?? left).base;
+}
+
+/**
+ * L'exposant `m ± n`, réduit : `tidy` seul garderait `x − (x + 1)` tel qu'écrit
+ * (Q40) ; la somme est d'abord ouverte, `x − x − 1 → −1` (revue de #1743).
+ */
+function reducedExponent(sum: MathNode): MathNode {
+	return tidy(unflattenSum(flattenSumShallow(sum)) ?? sum);
 }
 
 /** Le nœud lié à `name` ; inatteignable sans lui, `condition` l'a déjà lu. */
@@ -85,6 +106,19 @@ function boundNode(bindings: MatchBindings, name: string): MathNode {
 	const node = getBindingNode(bindings, name);
 	if (node === null) throw new Error(`powers: liaison « ${name} » absente`);
 	return node;
+}
+
+/**
+ * Un quotient de puissances, pas une fraction de nombres : au moins une
+ * puissance, et une base `e` ou un exposant non numérique. `2/2` et `2/2²`
+ * restent à la réduction de fraction, comme `6/2` (revue de #1743).
+ */
+function isPowerQuotient(num: MathNode | null, den: MathNode | null): boolean {
+	if (num === null || den === null) return false;
+	if (![num, den].some((n) => unwrapDelimiters(n)?.type === 'superscript')) return false;
+	const base = unwrapDelimiters(asPower(num).base);
+	if (base !== null && isEulerConstant(base)) return true;
+	return [num, den].some((n) => extractRational(asPower(n).exponent) === null);
 }
 
 /** Exactement un des deux facteurs est une puissance (les deux : `same-base-mul`). */
@@ -265,9 +299,10 @@ export const powerRules: readonly Rule[] = [
 	createRule(
 		P.mul(P._('l'), P._('r')),
 		(bindings) => {
-			const l = asPower(boundNode(bindings, 'l'));
-			const r = asPower(boundNode(bindings, 'r'));
-			return superscript(l.base, tidy(add(l.exponent, r.exponent)));
+			const left = boundNode(bindings, 'l');
+			const right = boundNode(bindings, 'r');
+			const exponent = reducedExponent(add(asPower(left).exponent, asPower(right).exponent));
+			return superscript(writtenBase(left, right), exponent);
 		},
 		{
 			name: 'same-base-mul-bare',
@@ -284,14 +319,18 @@ export const powerRules: readonly Rule[] = [
 	createRule(
 		P.div(P._('num'), P._('den')),
 		(bindings) => {
-			const num = asPower(boundNode(bindings, 'num'));
-			const den = asPower(boundNode(bindings, 'den'));
-			return superscript(num.base, tidy(subtract(num.exponent, den.exponent)));
+			const num = boundNode(bindings, 'num');
+			const den = boundNode(bindings, 'den');
+			const exponent = reducedExponent(subtract(asPower(num).exponent, asPower(den).exponent));
+			return superscript(writtenBase(num, den), exponent);
 		},
 		{
 			name: 'same-base-div',
-			condition: (bindings) =>
-				sameNonVanishingBase(getBindingNode(bindings, 'num'), getBindingNode(bindings, 'den'))
+			condition: (bindings) => {
+				const num = getBindingNode(bindings, 'num');
+				const den = getBindingNode(bindings, 'den');
+				return isPowerQuotient(num, den) && sameNonVanishingBase(num, den);
+			}
 		}
 	),
 

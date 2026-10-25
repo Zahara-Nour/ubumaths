@@ -84,6 +84,28 @@ describe('R10 (Q48) : .simplifier, quotient et produit de puissances de même ba
 		expect(lineOf(input)).toBe(expected);
 	});
 
+	// Revue de #1743 (B1) : l'exposant soustrait se réduit, pas `x − (x + 1)`
+	it.each([
+		// a⁻¹ = 1/a ensuite
+		['.simplifier e^x/e^{x+1}', '\\dfrac{1}{\\exponentialE}'],
+		['.simplifier 2^x/2^{x+1}', '\\dfrac{1}{2}'],
+		['.simplifier e^{2x}/e^{x-1}', '\\exponentialE^{x + 1}'],
+		['.simplifier e^x/e^{2x+1}', '\\exponentialE^{-x - 1}']
+	])('exposant réduit : %s → %s', (input, expected) => {
+		expect(lineOf(input)).not.toContain('\\left(');
+		expect(lineOf(input)).toBe(expected);
+	});
+
+	// Revue de #1743 (M1) : deux nombres sans puissance se réduisent comme une fraction
+	it.each(['.simplifier 2/2', '.simplifier 2/2^2'])('%s ne passe pas par aᵐ/aⁿ', (input) => {
+		expect(titlesOf(input)).not.toContain('aᵐ / aⁿ = aᵐ⁻ⁿ');
+	});
+
+	// Revue de #1743 (M3) : une base écrite en fraction comme en décimal
+	it('.simplifier (1/2)^x·(1/2) se regroupe', () => {
+		expect(titlesOf('.simplifier (1/2)^x*(1/2)')).toContain('aᵐ · aⁿ = aᵐ⁺ⁿ');
+	});
+
 	it('e^{2x}/e^x : l’étape aᵐ/aⁿ = aᵐ⁻ⁿ', () => {
 		expect(titlesOf('.simplifier e^{2x}/e^x')).toEqual(['aᵐ / aⁿ = aᵐ⁻ⁿ']);
 	});
