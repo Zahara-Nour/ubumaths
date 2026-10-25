@@ -1,0 +1,243 @@
+{
+	"title": "Mètre ou centimètre ?",
+	"description": "L'unité qui convient (un crayon mesure 15 cm, la classe 8 m), le symbole, la lecture",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Longueurs",
+	"subdomain": "Unités",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "{{if:k==1|Un crayon mesure $15$ …|{{if:k==2|Une gomme mesure $4$ …|{{if:k==3|Un livre mesure $25$ …|{{if:k==4|Une cuillère mesure $18$ …|{{if:k==5|Une feuille de cahier mesure $30$ …|{{if:k==6|La classe mesure $8$ …|{{if:k==7|Un bus mesure $12$ …|{{if:k==8|Une piscine mesure $25$ …|{{if:k==9|Le couloir de l'école mesure $30$ …|Un arbre de la cour mesure $10$ …}}}}}}}}}}}}}}}}}}\n\nQuelle unité convient ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..10"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "cm"
+				},
+				{
+					"content": "m"
+				}
+			],
+			"correctChoiceIndex": ["{{if:k<=5|0|1}}"],
+			"correction": {
+				"steps": [
+					"{{if:k==1|Un crayon mesure $15~\\unit{cm}$ (quinze centimètres) : c'est petit, on mesure en **centimètres**.|{{if:k==2|Une gomme mesure $4~\\unit{cm}$ (quatre centimètres) : c'est petit, on mesure en **centimètres**.|{{if:k==3|Un livre mesure $25~\\unit{cm}$ (vingt-cinq centimètres) : c'est petit, on mesure en **centimètres**.|{{if:k==4|Une cuillère mesure $18~\\unit{cm}$ (dix-huit centimètres) : c'est petit, on mesure en **centimètres**.|{{if:k==5|Une feuille de cahier mesure $30~\\unit{cm}$ (trente centimètres) : c'est petit, on mesure en **centimètres**.|{{if:k==6|La classe mesure $8~\\unit{m}$ (huit mètres) : c'est grand, on mesure en **mètres**.|{{if:k==7|Un bus mesure $12~\\unit{m}$ (douze mètres) : c'est grand, on mesure en **mètres**.|{{if:k==8|Une piscine mesure $25~\\unit{m}$ (vingt-cinq mètres) : c'est grand, on mesure en **mètres**.|{{if:k==9|Le couloir de l'école mesure $30~\\unit{m}$ (trente mètres) : c'est grand, on mesure en **mètres**.|Un arbre de la cour mesure $10~\\unit{m}$ (dix mètres) : c'est grand, on mesure en **mètres**.}}}}}}}}}}}}}}}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Comment écrit-on « **{{if:w==0|centimètre|mètre}}** » en abrégé ?",
+			"variables": [
+				{
+					"name": "w",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "cm"
+				},
+				{
+					"content": "m"
+				},
+				{
+					"content": "ct"
+				},
+				{
+					"content": "mt"
+				}
+			],
+			"correctChoiceIndex": ["{{w}}"],
+			"correction": {
+				"steps": [
+					"{{if:w==0|« centimètre » s'écrit **cm**|« mètre » s'écrit **m**}} : on écrit $2~\\unit{m}$ pour deux mètres, $2~\\unit{cm}$ pour deux centimètres."
+				]
+			}
+		},
+		{
+			"statement": "Comment lit-on {{if:u==0|${{n}}~\\unit{cm}$|${{n}}~\\unit{m}$}} ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "2..50"
+				},
+				{
+					"name": "u",
+					"expression": "0..1"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|{{if:n==10|dix|{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt-et-un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|{{if:n==30|trente|{{if:n==31|trente-et-un|{{if:n==32|trente-deux|{{if:n==33|trente-trois|{{if:n==34|trente-quatre|{{if:n==35|trente-cinq|{{if:n==36|trente-six|{{if:n==37|trente-sept|{{if:n==38|trente-huit|{{if:n==39|trente-neuf|{{if:n==40|quarante|{{if:n==41|quarante-et-un|{{if:n==42|quarante-deux|{{if:n==43|quarante-trois|{{if:n==44|quarante-quatre|{{if:n==45|quarante-cinq|{{if:n==46|quarante-six|{{if:n==47|quarante-sept|{{if:n==48|quarante-huit|{{if:n==49|quarante-neuf|cinquante}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} centimètres"
+				},
+				{
+					"content": "{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|{{if:n==10|dix|{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt-et-un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|{{if:n==30|trente|{{if:n==31|trente-et-un|{{if:n==32|trente-deux|{{if:n==33|trente-trois|{{if:n==34|trente-quatre|{{if:n==35|trente-cinq|{{if:n==36|trente-six|{{if:n==37|trente-sept|{{if:n==38|trente-huit|{{if:n==39|trente-neuf|{{if:n==40|quarante|{{if:n==41|quarante-et-un|{{if:n==42|quarante-deux|{{if:n==43|quarante-trois|{{if:n==44|quarante-quatre|{{if:n==45|quarante-cinq|{{if:n==46|quarante-six|{{if:n==47|quarante-sept|{{if:n==48|quarante-huit|{{if:n==49|quarante-neuf|cinquante}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} mètres"
+				}
+			],
+			"correctChoiceIndex": ["{{u}}"],
+			"correction": {
+				"steps": [
+					"« {{if:u==0|cm|m}} » veut dire « {{if:u==0|centimètre|mètre}} » : {{if:u==0|${{n}}~\\unit{cm}$|${{n}}~\\unit{m}$}} se lit **{{if:n==2|deux|{{if:n==3|trois|{{if:n==4|quatre|{{if:n==5|cinq|{{if:n==6|six|{{if:n==7|sept|{{if:n==8|huit|{{if:n==9|neuf|{{if:n==10|dix|{{if:n==11|onze|{{if:n==12|douze|{{if:n==13|treize|{{if:n==14|quatorze|{{if:n==15|quinze|{{if:n==16|seize|{{if:n==17|dix-sept|{{if:n==18|dix-huit|{{if:n==19|dix-neuf|{{if:n==20|vingt|{{if:n==21|vingt-et-un|{{if:n==22|vingt-deux|{{if:n==23|vingt-trois|{{if:n==24|vingt-quatre|{{if:n==25|vingt-cinq|{{if:n==26|vingt-six|{{if:n==27|vingt-sept|{{if:n==28|vingt-huit|{{if:n==29|vingt-neuf|{{if:n==30|trente|{{if:n==31|trente-et-un|{{if:n==32|trente-deux|{{if:n==33|trente-trois|{{if:n==34|trente-quatre|{{if:n==35|trente-cinq|{{if:n==36|trente-six|{{if:n==37|trente-sept|{{if:n==38|trente-huit|{{if:n==39|trente-neuf|{{if:n==40|quarante|{{if:n==41|quarante-et-un|{{if:n==42|quarante-deux|{{if:n==43|quarante-trois|{{if:n==44|quarante-quatre|{{if:n==45|quarante-cinq|{{if:n==46|quarante-six|{{if:n==47|quarante-sept|{{if:n==48|quarante-huit|{{if:n==49|quarante-neuf|cinquante}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} {{if:u==0|centimètres|mètres}}**."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "un crayon : 15 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : un crayon, 15 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "la classe : 8 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : la classe, 8 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "borne : une feuille, 30 cm",
+			"variationIndex": 0,
+			"variables": {
+				"k": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "borne : un arbre, 10 m",
+			"variationIndex": 0,
+			"variables": {
+				"k": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "centimètre : cm",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : centimètre, ct",
+			"variationIndex": 1,
+			"variables": {
+				"w": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "mètre : m",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : mètre, cm",
+			"variationIndex": 1,
+			"variables": {
+				"w": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "15 cm : quinze centimètres",
+			"variationIndex": 2,
+			"variables": {
+				"n": "15",
+				"u": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : 15 cm, quinze mètres",
+			"variationIndex": 2,
+			"variables": {
+				"n": "15",
+				"u": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "3 m : trois mètres",
+			"variationIndex": 2,
+			"variables": {
+				"n": "3",
+				"u": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}

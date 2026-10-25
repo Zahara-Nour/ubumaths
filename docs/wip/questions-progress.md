@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1744._
+_Mis à jour le 2026-10-25, phase 0 du lot A6 validée._
 
-- **État** : A1 (#1712), A2 (#1720), A4 (#1728), A5 (#1736) livrés et relus. **A3 ordinaux** : #1744 mergée ; 6 brouillons en prod (`d437959a`, `c3b236fc` CP-009 ; `7dc1629e` CP-010 ; `10226cae` CP-011 ; `0559204d` CP-012 ; `62ae6847` CP-013). Migration `20261026010000_questions_cp_a3_rangement_tags` **jouée en prod le 2026-10-25** (question d'accès tranchée : personne) : 6 modèles sur « ordinaux et rangs », 1 tag chacun, `updated_at` inchangé, triggers `O`. Page à cocher : https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71 (collection `verdicts`).
-- **Prochaine action** : lot A6 grandeurs et lexique (036, 038, 037, 032, 039, 041, 048), phase 0.
-- **En attente de David** : relecture des 6 brouillons A3 ; publication des 28 brouillons A1 à A5 en un lot (24 relus OK + 6 A3 après relecture) ; vérification manuelle #1702.
+- **État** : A1 à A5 livrés (A3 : #1744, migration jouée). **A6 grandeurs et lexique** : phase 0 validée (§ 4 octies), 9 modèles écrits (`docs/wip/questions/lot-a6.py` → `scripts/questions/cp-a6/`), 87 specs vertes, rendu relu ; 9 brouillons en prod (`92c8e499`, `54ea05d7` CP-004 ; `192f52f3` CP-032 ; `9ee150a2` CP-036 ; `39dfd0cc` CP-037 ; `7e11b651` CP-038 ; `e9e9970b` CP-039 ; `35426707` CP-041 ; `fc63fdf0` CP-048) ; migration `20261026020000_questions_cp_a6_rangement_tags` + test (rouge puis vert, 8/8).
+- **Prochaine action** : PR A6 #1753 (CI), merge, puis question d'accès et `db:migrate`. Page à cocher A6 : https://claude.ai/artifact/Y9pL4cNshyjycC2wtbdtWG (collection `verdicts`). Audit sécurité : non bloquant.
+- **En attente de David** : question d'accès A6 ; relecture des 9 brouillons A6 ; relecture des 6 brouillons A3 (https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71) ; publication des brouillons A1 à A5 en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; **le bon choix d'un QCM n'accepte qu'UN `{{if:…}}`, pas une chaîne imbriquée** → formule `{{eval:mod(…)}}` ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; script d'un tirage hors du dépôt → `.mts`.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1744).
+- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-a6`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -134,6 +134,18 @@ David suit mes cinq recommandations (« je te suis », après les avoir demandé
 - Sens : CP-010 de gauche à droite seulement ; CP-011 les deux sens, le sens en gras.
 - Suites : motif montré deux fois, place demandée au-delà, jusqu'à la 20e ; pas de suite de nombres (1, 3, 5… relève de CP-003).
 
+## 4 octies. Lot A6 : décisions (David, 2026-10-25)
+
+David suit mes quatre recommandations (« je suis tes recos »).
+
+- 9 modèles, chacun sur le nœud de son point (sous-notion s'il y en a une), un tag ; `theme` Grandeurs (domain Longueurs / Masses / Monnaie / Durées) ; entiers ≤ 100.
+- CP-032 « Long, court, près, loin » (QCM : plus long / plus court, plus près / plus loin en pas, contraires) ; CP-039 « Lourd ou léger ? » (QCM : objets familiers très différents, contraire ; pas de balance, c'est CP-040).
+- CP-036 « Mètre ou centimètre ? » (QCM : unité adaptée, symbole, lecture) ; CP-037 « Quelle longueur ? » (QCM : ordre de grandeur, ex. du BO trousse 2 cm / 20 cm / 1 m) — 036 = unité et symbole, 037 = ordre de grandeur.
+- CP-038 « Un mètre, c'est 100 centimètres » (QCM : 1 m = … cm ; 1 m ou n cm, n de 30 à 90, 100 → même longueur ; pas de conversion composée).
+- CP-041 « Les mots de la monnaie » (QCM : plus / moins cher, pièce ou billet, rendre la monnaie, €) ; pas de calcul (CP-043, 045 → outil monnaie).
+- CP-048 « Quelle heure pour… ? » (QCM, sans horloge) : heures **sur 12 h avec le moment** (« 8 heures du matin », « midi », « 2 heures de l'après-midi », « 8 heures du soir »).
+- CP-004 (renvoyé de A2), ≤ 50 : « Écrire un nombre en lettres » (QCM ; leurres : chiffres inversés, voisins) et « Lire un nombre écrit en lettres » (case) ; **orthographe rectifiée** (« vingt-et-un », traits d'union partout).
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -167,3 +179,7 @@ David suit mes cinq recommandations (« je te suis », après les avoir demandé
 - 2026-10-25 : A3, 6 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; migration nœud + tag et test, rouge puis vert.
 - 2026-10-25 : #1744 mergée ; page à cocher A3 publiée ; `db:migrate` en attente de la question d'accès.
 - 2026-10-25 : question d'accès A3 tranchée par David (personne) ; `db:migrate` joué, vérifié en prod (6 modèles sur « ordinaux et rangs », 1 tag chacun, `updated_at` inchangé, triggers actifs).
+- 2026-10-25 : lot A6, phase 0 validée (§ 4 octies), worktree `../ubumaths-wt-questions` (`feat/questions-a6`).
+- 2026-10-25 : A6, 9 modèles écrits, 87 specs vertes, rendu relu (trait d'union au singulier, « qu'une », corrigé des moments retouchés).
+- 2026-10-25 : A6, 9 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; migration nœud + tag et test, rouge puis vert.
+- 2026-10-25 : A6, PR #1753 ; audit sécurité non bloquant (garde « déjà tagué » inatteignable seule : la base refuse un tag sans nœud, testé) ; page à cocher A6 publiée.
