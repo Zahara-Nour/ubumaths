@@ -6,20 +6,22 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 1 (#1734) en revue._
+_Mis à jour le 2026-10-25, après #1734 et #1739._
 
-- **État** : PR 1 #1734 (migration `20261026000100`) ouverte ; revue (Sonnet) et audit (Opus) sans
-  bloquant, corrections poussées ; 22/22 rouges sans la migration, verts avec. Comportements
-  validés par David : chapeau gardé à la transformation (pas de couronne), lunettes et chapeau en
-  fondu au réveil, clés anglaises, une fonction de pose par emplacement.
-- **Prochaine action** : CI verte → merge → `db:migrate` (depuis la branche mergée ; refusé la
-  dernière fois par le mode auto → David) → PR 2 (`db:types`, dessins, rendu, routes, Chatterie,
-  Marché, vue prof, mémoire, nouveautés, **export RGPD `glasses`/`hat` + `export.test.ts`**,
-  doc `docs/systeme/mathoux.md`).
-- **En attente de David** : peut-être `db:migrate`.
-- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ;
-  chapeau à l'échelle bornée (0,92 à 1,35 de la tête du matou), sinon trop petit sur le grand matou.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-chapeaux-lunettes`, `feat/mathoux-chapeaux-lunettes`.
+- **État** : migration `20261026000100` (lunettes et chapeaux) mergée (#1734, renommée #1739) et
+  **en prod** (`db:migrate` fait, droits relus : 5 fonctions `service_role` seul, colonnes
+  `glasses`/`hat`). Rien dans l'appli encore.
+- **Prochaine action** : PR 2 sur `feat/mathoux-chapeaux-lunettes-code` : `db:types` ; catalogue
+  TS (+ égalité avec la base en intégration) ; dessins retenus (planche
+  `scripts/mathoux-planches/chapeaux-lunettes.test.ts`) dans un fichier à côté de
+  `mathou-colliers.ts` ; rendu `MathouAvatar` (chapeau remplace la couronne, gardé à la
+  transformation ; sieste : rien ; réveil : fondu) ; routes de pose ; mémoire, nouveautés,
+  **export RGPD `glasses`/`hat` + `export.test.ts`** ; Chatterie (4 rangées), Marché, vue prof ;
+  doc `docs/systeme/mathoux.md`.
+- **En attente de David** : rien.
+- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; chapeau à
+  l'échelle bornée (0,92 à 1,35 de la tête du matou) ; horodatage de migration : `max + 1 min`.
+- **Worktree / branche** : `../ubumaths-wt-mathoux-chapeaux-lunettes`, `feat/mathoux-chapeaux-lunettes-code`.
 
 ## Catalogue (choisi par David le 2026-10-25, planche https://claude.ai/artifact/7iaTAB3MWhm6dCg764kKqb)
 
@@ -68,3 +70,5 @@ Bicorne : pas au catalogue.
 - 2026-10-25 — #1734 mergée (CI verte sur ca3118194). Avant `db:migrate` : `20261026000000`
   (autre session) déjà en prod, la nôtre devenue « antérieure » → renommée `20261026000100`
   (pas de `--include-all` sans David).
+- 2026-10-25 — #1739 mergée ; `db:migrate` (seule migration en attente, `--dry-run` vérifié) ;
+  droits relus en prod (MCP lecture seule). Branches mergées supprimées.
