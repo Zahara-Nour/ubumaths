@@ -4,10 +4,10 @@
 
 _Mis à jour le 2026-10-25, lot B2 en cours (avant création en prod)._
 
-- **État** : B1 relu 3/3 OK. **Lot B2** (§ 4 duodecies) : 10 modèles écrits (`docs/wip/questions/lot-b2.py` → `scripts/questions/cp-b2/`), 76 specs vertes, figures contrôlées sur 40 tirages, rendu relu à 390 px en base locale (port 5178).
-- **Prochaine action** : go de David → `create-questions --publier` en prod ; question d'accès ; migration nœud + tag (10 modèles, 9 points) et son test, rouge puis vert ; PR.
+- **État** : B1 relu 3/3 OK. **Lot B2** (§ 4 duodecies) : 10 brouillons créés en prod (go de David) : `9d6bc8b3` CP-054, `e7453c9b` 055, `c85626fa` 056, `91012bab` 056, `b5389494` 057, `d5a36be9` 061, `2fc01600` 062, `f7167af7` 067, `d50c6e21` 035, `7093b797` 034. Migration `20261026150000` nœud + tag et test (rouge 3/9 sans, vert 9/9) ; question d'accès tranchée (personne).
+- **Prochaine action** : (audit sécurité fait : aucun finding bloquant) PR → CI verte → merge → `db:migrate` → vérification en prod → page à cocher B2. Puis phase 0 de B3 (images fixes : 049-052, 040).
 - **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 058 à réexaminer.
-- **En attente de David** : go pour créer les 10 brouillons B2 en prod ; publication A1 à H et B1 en un lot ; vérification manuelle #1702.
+- **En attente de David** : publication A1 à H et B1 en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (la bonne réponse = une variable) ; **virgule décimale = figure cassée** (coordonnées tirées : chaînes de `{{if:…}}` sur des valeurs écrites) ; **points et segments numérotés, pas lettrés** (les choix du QCM portent A, B, C) ; texte sur fond coloré illisible ; jamais de variable `e`.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-b2`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -219,3 +219,5 @@ David suit mes cinq recommandations (« je te suis »).
 - 2026-10-25 : page à cocher B1 relue par David, 3/3 OK.
 - 2026-10-25 : lot B2, phase 0 validée (§ 4 duodecies ; CP-035 rattrapé, oublié du plan), worktree `../ubumaths-wt-questions` (`feat/questions-b2`).
 - 2026-10-25 : B2, 10 modèles écrits, 76 specs vertes ; rendu relu à 390 px en base locale : étiquettes S0-S2 qui donnaient la réponse masquées, texte sur fond olive illisible (contours seuls), lettres des points mêlées aux lettres du QCM (numéros), `str.format` qui mangeait les `{{if:…}}` des prénoms, « une maison faite », « 1 triangles » évité.
+- 2026-10-25 : B2, 10 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026150000` nœud + tag et test, rouge (3/9) puis vert.
+- 2026-10-25 : B2, audit sécurité de la migration sans finding bloquant (même structure que B1, 10 lignes exactement, rollback juste).
