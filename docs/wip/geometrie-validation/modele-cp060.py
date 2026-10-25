@@ -92,6 +92,7 @@ def add(p, q, k=1):
 def specs_carre(vi, a, b):
     c = abs(b[0] - a[0]) + abs(b[1] - a[1])
     n = (-(b[1] - a[1]), b[0] - a[0])  # quart de tour direct
+    u = ((b[0] - a[0]) // c, (b[1] - a[1]) // c)  # un carreau de A vers B
     variables_ = {'c': str(c), 'xa': str(a[0]), 'ya': str(a[1]), 'xb': str(b[0]), 'yb': str(b[1])}
     c1, d1 = add(b, n), add(a, n)
     c2, d2 = add(b, n, -1), add(a, n, -1)
@@ -109,13 +110,18 @@ def specs_carre(vi, a, b):
         spec('Erreur : un côté manque', vi, variables_, 'incorrect', s(b, c1, d1)),
         spec('Erreur : rectangle au lieu de carré', vi, variables_, 'incorrect',
              s(b, (round(court[0]), round(court[1])), (round(court_a[0]), round(court_a[1])), a)),
-        spec('Erreur : le bon carré et un trait en trop', vi, variables_, 'incorrect',
+        # Sur le prolongement de [AB], séparé de B par un carreau
+        spec('Erreur : le bon carré et un trait en trop, sans le toucher', vi, variables_,
+             'incorrect', s(b, c1, d1, a) + '|' + s(add(b, u), add(b, u, 2))),
+        spec('Erreur : le bon carré et un côté qui dépasse', vi, variables_, 'incorrect',
              s(b, c1, d1, a) + '|' + s(b, c2)),
     ]
 
 
 def specs_rectangle(vi, extra, a, b, c):
     d = (a[0] + c[0] - b[0], a[1] + c[1] - b[1])
+    h = abs(b[1] - a[1]) + abs(b[0] - a[0])
+    v = ((b[0] - a[0]) // h, (b[1] - a[1]) // h)  # un carreau de A vers B
     variables_ = {**extra, 'xa': str(a[0]), 'ya': str(a[1]), 'xb': str(b[0]), 'yb': str(b[1]),
                   'xc': str(c[0]), 'yc': str(c[1])}
     return [
@@ -123,7 +129,10 @@ def specs_rectangle(vi, extra, a, b, c):
         spec('dans l\'autre sens', vi, variables_, 'correct', s(a, d, c)),
         spec('Erreur : un côté manque', vi, variables_, 'incorrect', s(c, d)),
         spec('Erreur : un trait oblique', vi, variables_, 'incorrect', s(c, a)),
-        spec('Erreur : le bon rectangle et un trait en trop', vi, variables_, 'incorrect',
+        # Sur le prolongement de [AB] au-delà de B, séparé de B par un carreau
+        spec('Erreur : le bon rectangle et un trait en trop, sans le toucher', vi, variables_,
+             'incorrect', s(c, d, a) + '|' + s(add(b, v), add(b, v, 2))),
+        spec('Erreur : le bon rectangle et un côté qui dépasse', vi, variables_, 'incorrect',
              s(c, d, a) + '|' + s(b, (b[0], b[1] + (b[1] - a[1])))),
     ]
 

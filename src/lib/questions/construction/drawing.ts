@@ -84,11 +84,18 @@ export function snapTap(
  * Quadrillage avec l'outil segment (CP-060) : chaque toucher va au nœud le
  * plus proche (plus de toucher libre, verdict du conseil § 2).
  */
-export function snapToGrid(tap: Position, grid: FigureStep): Position {
-	// `+ 0` : jamais de « -0 » dans la réponse
+export function snapToGrid(tap: Position, grid: FigureStep, window?: FigureWindow): Position {
+	const node = (value: number, step: number, min: number, max: number) => {
+		let n = Math.round(value / step) * step;
+		// Bord de fenêtre hors des nœuds : rester sur un nœud de la fenêtre
+		if (n < min - 1e-9) n += step;
+		else if (n > max + 1e-9) n -= step;
+		// `+ 0` : jamais de « -0 » dans la réponse
+		return n + 0;
+	};
 	return {
-		x: Math.round(tap.x / grid.x) * grid.x + 0,
-		y: Math.round(tap.y / grid.y) * grid.y + 0
+		x: node(tap.x, grid.x, window?.xMin ?? -Infinity, window?.xMax ?? Infinity),
+		y: node(tap.y, grid.y, window?.yMin ?? -Infinity, window?.yMax ?? Infinity)
 	};
 }
 

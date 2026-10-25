@@ -119,6 +119,24 @@ describe('carre A ; B — tableau de la phase 0', () => {
 		});
 	});
 
+	it('un trait aligné avec un côté, sans le toucher : faux, trait de trop (revue #CP-060)', () => {
+		for (const extra of ['segment(7;3;8;3)', 'segment(8;6;9;6)', 'segment(5;0;5;1)']) {
+			expect(square(`${ABOVE}|${extra}`)).toEqual({
+				status: 'incorrect',
+				feedback: EXTRA_SEGMENT_FEEDBACK
+			});
+		}
+		// Commencé au-dessus, fini en dessous, sans tout effacer
+		expect(square(`${BELOW}|segment(2;5;2;6)`)).toEqual({
+			status: 'incorrect',
+			feedback: EXTRA_SEGMENT_FEEDBACK
+		});
+		expect(rectangle('segment(6;2;6;5)|segment(6;5;2;5)|segment(8;5;9;5)')).toEqual({
+			status: 'incorrect',
+			feedback: EXTRA_SEGMENT_FEEDBACK
+		});
+	});
+
 	it('les deux carrés : faux, traits de trop', () => {
 		expect(square(`${ABOVE}|${BELOW}`)).toEqual({
 			status: 'incorrect',
@@ -207,6 +225,22 @@ describe('erreurs de l’auteur (jamais un verdict pour l’élève)', () => {
 	it('point inconnu', () => {
 		expect(() => judgeConstruction(SQUARE, new Map([['A', { x: 0, y: 0 }]]), ABOVE)).toThrow(
 			ConstructionAuthorError
+		);
+	});
+
+	it('carré ou rectangle aplati : deux sommets au même endroit', () => {
+		const flat = new Map([
+			['A', { x: 2, y: 3 }],
+			['B', { x: 2, y: 3 }]
+		]);
+		expect(() => judgeConstruction(SQUARE, flat, ABOVE)).toThrow('au même endroit');
+		const flatRectangle = new Map([
+			['A', { x: 2, y: 5 }],
+			['B', { x: 2, y: 2 }],
+			['C', { x: 2, y: 2 }]
+		]);
+		expect(() => judgeConstruction(RECTANGLE, flatRectangle, 'segment(6;2;6;5)')).toThrow(
+			'au même endroit'
 		);
 	});
 

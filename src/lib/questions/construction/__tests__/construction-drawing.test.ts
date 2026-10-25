@@ -157,6 +157,11 @@ describe('segments sur quadrillage (CP-060, § 9)', () => {
 		expect(Object.is(snapToGrid({ x: -0.2, y: -0.4 }, { x: 1, y: 1 }).x, -0)).toBe(false);
 	});
 
+	it('bord de fenêtre hors des nœuds : le nœud le plus proche DANS la fenêtre', () => {
+		const window = { xMin: 0.3, xMax: 9.7, yMin: 0.3, yMax: 6.7 };
+		expect(snapToGrid({ x: 0.31, y: 6.69 }, { x: 1, y: 1 }, window)).toEqual({ x: 1, y: 6 });
+	});
+
 	it('toucher un nœud puis un autre : un segment, qui s’arrête à ses deux bouts', () => {
 		const one = addTap(EMPTY, { x: 5, y: 3 }, 'segment');
 		const two = addTap(one, { x: 5, y: 6 }, 'segment');

@@ -155,7 +155,8 @@ describe('case « figure » sur quadrillage (CP-060)', () => {
 			props: { instance: instance(), interactive: true }
 		});
 		const rect = await zone(container);
-		rect.focus();
+		// Focus au clavier (Tab) : `focus()` seul ne rend pas `:focus-visible` partout
+		rect.focus({ focusVisible: true } as FocusOptions);
 		await expect.poll(() => container.querySelector('[data-testid="curseur"]')).not.toBeNull();
 		const key = (k: string) =>
 			rect.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true }));
@@ -166,5 +167,17 @@ describe('case « figure » sur quadrillage (CP-060)', () => {
 		key('Enter');
 		await expect.poll(() => segments(container, 'segment-eleve').length).toBe(1);
 		expect(container.querySelector('[data-testid="depart"]')).toBeNull();
+	});
+
+	it('souris : un clic ne fait pas apparaître le curseur clavier', async () => {
+		const { container } = await render(FlashCard, {
+			target: mainElement(),
+			props: { instance: instance(), interactive: true }
+		});
+		const rect = await zone(container);
+		rect.focus({ focusVisible: false } as FocusOptions);
+		tap(rect, 5, 3);
+		await expect.poll(() => container.querySelector('[data-testid="depart"]')).not.toBeNull();
+		expect(container.querySelector('[data-testid="curseur"]')).toBeNull();
 	});
 });

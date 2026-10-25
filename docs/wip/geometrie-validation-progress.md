@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-26, phases 0 de CP-060 et CP-058 validées._
 
 - **État** : PR 1 (#1768), renommage (#1774), PR 2 (#1775), PR 3 (#1782) mergés, code pas encore en prod (attend un
   `deploy:prod`). Brouillon CP-059 en prod (`010d81a5`), rangé et tagué (#1787) ; à publier par David après le `deploy:prod`.
-- **Prochaine action** : PR 4 (CP-060, § 9) en cours ; puis PR 5 (CP-058).
+- **Prochaine action** : PR 4 (CP-060, § 9) codée et revue, à ouvrir et merger ; puis PR 5 (CP-058).
 - **En attente de David** : rien.
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; case « figure » mêlée à une autre case :
   prise en charge à l'affichage, jamais encore dans un modèle ; le brouillon CP-059 ne s'affiche qu'avec le code de
@@ -360,6 +360,17 @@ tracé, sinon au-dessus / à droite ; (6) `delay` 90 s ; (7) grille cliquable é
   deux bouts ; clavier : à trancher en codant (les nœuds ne sont pas des points nommés).
 - **Modèle** `scripts/questions/cp-figure/02-…` (carré, rectangle), catalogue, doc système. Revue Opus.
 
+**Codé (2026-10-26)** : moteur (`construction/polygon.ts`), écran (nœuds, curseur clavier aux flèches), modèle
+`scripts/questions/cp-figure/02-terminer-carre-rectangle.json` (écrit par `geometrie-validation/modele-cp060.py`,
+3 variations, 22 specs, message de chaque spec vérifié), exemple sur `/dev/carte-question`.
+
+**Revue Opus** : 1 à corriger — un trait aligné avec un côté, sans le toucher, passait pour juste (corrigé : « trait
+de trop », 5 cas rouges avant) ; mineurs corrigés : auteur à sommets confondus → erreur d'auteur ; toucher au bord
+hors des nœuds → nœud de la fenêtre ; curseur au clavier seulement (pas au clic) et annonce au lecteur d'écran ;
+specs du modèle qui testaient « dépasse » sous le nom « de trop ». **Limites connues, laissées** : un carré fermé sur
+une PARTIE du côté donné reçoit « pas fermée » (verdict juste, message imprécis) ; un sommet donné hors des nœuds
+rend toute réponse fausse sans prévenir l'auteur (le modèle tire des entiers).
+
 **PR 5 — CP-058** : modèle mixte (figure + case texte), Valider grisé tant que la figure est vide, casse de « oui ».
 
 ## Journal
@@ -384,3 +395,4 @@ tracé, sinon au-dessus / à droite ; (6) `delay` 90 s ; (7) grille cliquable é
 - 2026-10-25 : #1787 mergée (CI verte, audit sécurité sans finding bloquant) ; `db:migrate` joué, vérifié en prod (nœud « constructions », tag CP-059, `updated_at` préservé, brouillon).
 - 2026-10-26 : phases 0 de CP-060 (§ 7) et CP-058 (§ 8) écrites ; constaté : QCM et cases ne se mêlent pas (oui / non = case texte).
 - 2026-10-26 : David suit les recos des § 7 et § 8 ; plan des PR 4 et 5 (§ 9) ; worktree recréé.
+- 2026-10-26 : PR 4 codée (moteur, écran, modèle CP-060) ; revue Opus : 1 faux verdict corrigé (trait aligné détaché), 5 mineurs traités, 2 limites notées.

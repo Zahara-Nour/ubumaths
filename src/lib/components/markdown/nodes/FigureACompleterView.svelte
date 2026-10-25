@@ -112,7 +112,10 @@
 		const math = transformer.svgToMath(local.x, local.y);
 		// Rayon à l'écran → unités de la fenêtre (échelle d'affichage) → unités de la figure
 		if (grid) {
-			tapAt(snapToGrid(math, grid));
+			const node = snapToGrid(math, grid, scene.viewport);
+			// Le curseur clavier (s'il est là) suit le dernier toucher
+			if (cursor) cursor = node;
+			tapAt(node);
 			return;
 		}
 		const radius = SNAP_RADIUS_PX / Math.abs(matrix.a) / transformer.scaleX;
@@ -136,7 +139,8 @@
 					x: (scene.viewport.xMin + scene.viewport.xMax) / 2,
 					y: (scene.viewport.yMin + scene.viewport.yMax) / 2
 				},
-				grid
+				grid,
+				scene.viewport
 			);
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
@@ -152,11 +156,22 @@
 		cursor = next.x >= xMin && next.x <= xMax && next.y >= yMin && next.y <= yMax ? next : at;
 	}
 
-	function focusGrid(scene: FigureScene) {
+	/** Focus au clavier seulement (un clic donne aussi le focus : pas de curseur au centre) */
+	function focusGrid(event: FocusEvent, scene: FigureScene) {
 		if (!grid || cursor) return;
+		if (event.currentTarget instanceof Element && !event.currentTarget.matches(':focus-visible')) {
+			return;
+		}
 		const { xMin, xMax, yMin, yMax } = scene.viewport;
-		cursor = snapToGrid({ x: (xMin + xMax) / 2, y: (yMin + yMax) / 2 }, grid);
+		cursor = snapToGrid({ x: (xMin + xMax) / 2, y: (yMin + yMax) / 2 }, grid, scene.viewport);
 	}
+
+	/** Annonce du lecteur d'écran sur le quadrillage : nœud du curseur, départ choisi */
+	let gridStatus = $derived(
+		cursor
+			? `Nœud ${cursor.x} ; ${cursor.y}${drawing.start ? ', départ choisi' : ''}, ${lines.length} trait${lines.length > 1 ? 's' : ''} tracé${lines.length > 1 ? 's' : ''}`
+			: ''
+	);
 
 	function handlePointKey(event: KeyboardEvent, position: Position) {
 		if (event.key !== 'Enter' && event.key !== ' ') return;
@@ -200,7 +215,7 @@
 					tabindex="0"
 					aria-label="Quadrillage : flèches pour choisir un nœud, Entrée pour le toucher"
 					onclick={(event) => handleTap(event, scene, width, height)}
-					onfocus={() => focusGrid(scene)}
+					onfocus={(event) => focusGrid(event, scene)}
 					onblur={() => (cursor = null)}
 					onkeydown={(event) => handleGridKey(event, scene)}
 				/>
@@ -287,7 +302,7 @@
 	<!-- Zone toujours présente : une zone live insérée déjà remplie est souvent tue -->
 	<p class="sr-only" role="status">
 		{#if answer?.isCorrect === true}réponse juste{:else if answer?.isCorrect === false}réponse
-			fausse{/if}
+			fausse{:else}{gridStatus}{/if}
 	</p>
 </div>
 

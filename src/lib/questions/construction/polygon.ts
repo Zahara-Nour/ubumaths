@@ -120,7 +120,11 @@ function leftoverFeedback(
 	const sides = sidesOf(vertices).map(carrierOf);
 	let overshoot = false;
 	for (const piece of pieces) {
-		const side = sides.find((s) => sameLine(piece, s, eps));
+		// Le morceau qui porte un côté le couvre en entier (fusion) ; un autre morceau
+		// sur la même droite, séparé du côté par un trou, est un trait de trop
+		const side = sides.find(
+			(s) => sameLine(piece, s, eps) && piece.t0 <= s.t0 + eps && piece.t1 >= s.t1 - eps
+		);
 		if (!side) return EXTRA_SEGMENT_FEEDBACK;
 		if (piece.t1 - piece.t0 > side.t1 - side.t0 + eps) overshoot = true;
 	}
@@ -137,6 +141,15 @@ function positionOf(points: ReadonlyMap<string, Position>, name: string): Positi
 /** Les côtés donnés de la vérification (déjà tracés dans la figure de départ) */
 function givenVertices(check: PolygonCheck, points: ReadonlyMap<string, Position>): Position[] {
 	const vertices = check.points.map((name) => positionOf(points, name));
+	const eps = tolerance(...vertices);
+	for (let i = 1; i < vertices.length; i++) {
+		const [p, q] = [vertices[i - 1], vertices[i]];
+		if (Math.hypot(p.x - q.x, p.y - q.y) <= eps) {
+			throw new PolygonAuthorError(
+				`verifier: ${check.kind} : ${check.points[i - 1]} et ${check.points[i]} sont au même endroit`
+			);
+		}
+	}
 	if (check.kind === 'rectangle') {
 		const [a, b, c] = vertices;
 		if (Math.abs(dot(sub(a, b), sub(c, b))) > tolerance(a, b, c)) {
