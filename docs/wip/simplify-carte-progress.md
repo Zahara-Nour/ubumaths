@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, M2 en PR (#1749)._
+_Mis à jour le 2026-10-25, après #1749 (M2)._
 
-- **État** : lot 5 CLOS (#1743). M2 (regrouper les puissances de même base non voisines, § 93) en PR **#1749**, revue opus corrigée, CI en cours → merger si verte. Code pas en prod.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`** (M2 et les décisions § 93 à y porter).
+- **État** : lot 5 CLOS (#1743), et M2 (puissances de même base non voisines, § 93) mergé en #1749 ; les questions de 5f-5 sont closes (§ 93). Code pas en prod.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → ~~5~~ → **6 valeurs approchées** → 7 renommages.
-- **Prochaine action** : merger #1749 (puis § 94, page, vérification manuelle) ; ensuite lot 6 (valeurs approchées), phase 0 à faire valider par David.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1743) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64) ; § 87 : pipeline rationnel qui multiplie la fraction tapée, `(x − 1)/(x² − 1) ≥ 0`, `x² < −1` sans étapes ; **§ 89** : `\frac{2}{3}x = 0,5` → « × 1,5 », x à droite (échanger les membres ?), termes mixtes → ÷ 1/6, inéquation sans `stepsAsShown` (« ÷ −1/4 »).
+- **Prochaine action** : lot 6 (valeurs approchées) — relire son périmètre dans le journal, phase 0 (comportements, à valider par David).
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64) ; § 87 : pipeline rationnel qui multiplie la fraction tapée, `(x − 1)/(x² − 1) ≥ 0`, `x² < −1` sans étapes ; **§ 89** : `\frac{2}{3}x = 0,5` → « × 1,5 », x à droite (échanger les membres ?), termes mixtes → ÷ 1/6, inéquation sans `stepsAsShown` (« ÷ −1/4 ») ; mineurs de M2 (§ 93) : `x(−eˣ)e`, `x/x` visible.
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; l'Atelier écrit `0{,}25`, le moteur `0.25` ; sonde vitest : `console.log` muet, faire échouer un `expect` ; `number(-1)` interdit ; `check:incremental` : erreurs fantômes → `FRESH=1` ; client CI : `wrapDynamicImport` = relancer le job ; **PR sans CI = conflit avec `main`** ; commitlint : corps ≤ 100 caractères par ligne ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** (PR comprise).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-6` (#1749) ; lot 6 sur une branche neuve depuis `origin/main`.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-6` (repartie d'`origin/main` après #1749).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1121,3 +1121,7 @@ CI verte du premier coup sur le commit des correctifs de revue, mergée. Vérifi
 - Tests : bloc M2 de `atelier/__tests__/puissances-5f5.test.ts` (8 rouges avant). Doc `pattern-matching.md`, `panel-simplifications.md`.
 - **Revue `code-reviewer` (opus)**, 42 saisies comparées à `main` : aucune valeur fausse, aucune boucle. **Corrigé, test rouge d'abord** : `6·2ˣ/2 → 6 × 2^{x−1}` au lieu de `3 × 2ˣ` (régression : la garde « nombre seul » manquait au quotient). **Non traités (mineurs, pas de régression)** : `x(−eˣ)e` non regroupé (opposé entre parenthèses) ; `\frac{e^{2x}x}{eˣx} → \frac{x eˣ}{x}` (le `x/x` reste visible).
 - Mesures : suite serveur `src/lib` 58 464 verts (+ 2 attentes connues) ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre. Banc des modèles non relancé : aucun modèle de prod n’a de correction automatique (§ 75), il ne voit pas `.simplifier`.
+
+## 94. M2 mergé (#1749, 2026-10-25)
+
+CI verte sur le commit du correctif de revue, mergée. Vérification manuelle notée (M2). Les trois questions de 5f-5 sont closes.
