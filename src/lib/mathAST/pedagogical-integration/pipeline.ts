@@ -387,8 +387,10 @@ function generateDefiniteSteps(
 		);
 	}
 
-	// Simplify F(b) - F(a) into a numeric / closed-form value.
-	const value = tryEvaluateExact(symbolicDifference) ?? symbolicDifference;
+	// Simplify F(b) - F(a) into a numeric / closed-form value. Un décimal tapé :
+	// la valeur dans le registre de la primitive (Q49 — David, 2026-10-25)
+	const exact = tryEvaluateExact(symbolicDifference);
+	const value = exact === null ? symbolicDifference : withUniformCoefficients(exact, integrand);
 	steps.push(
 		buildStep(ctx, {
 			rule: 'simplify-bounds-result',

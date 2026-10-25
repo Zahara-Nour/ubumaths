@@ -60,3 +60,24 @@ describe('R1 : intégrale à bornes avec paramètre, valeur réduite', () => {
 		expect(latex(input, setup)).toBe(expected);
 	});
 });
+
+describe('Q49 : intégrale à bornes, intégrande à décimaux, valeur dans le registre', () => {
+	it.each([
+		['.intégrer 0,5x de 0 à 1', '0{,}25'],
+		['.intégrer 0,2x+1 de 0 à 2', '2{,}4'],
+		['.intégrer 0,5x de 0 à 2', '1'],
+		['.intégrer 0,5x^2 de 0 à 1', '\\dfrac{1}{6}'],
+		['.intégrer 0,5e^x de 0 à 1', '0{,}5\\exponentialE-0{,}5'],
+		['.intégrer x de 0 à 1', '\\dfrac{1}{2}']
+	])('%s → %s', (input, expected) => {
+		expect(latex(input)).toBe(expected);
+	});
+
+	it('les étapes finissent sur la même valeur (.intégrer 0,5x de 0 à 1)', () => {
+		const result = runInput(session(), '.intégrer 0,5x de 0 à 1');
+		if (result.kind !== 'commande') throw new Error(JSON.stringify(result));
+		const last = result.steps?.at(-1);
+		expect(last?.rule).toBe('simplify-bounds-result');
+		expect(last?.expressionLatex?.replace(/\s/g, '')).toMatch(/&=0\{,\}25\\end\{aligned\}$/);
+	});
+});
