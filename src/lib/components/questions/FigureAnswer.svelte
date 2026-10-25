@@ -4,7 +4,7 @@
 
 	Verso de la carte flash et copie corrigée : la figure du bloc
 	```figure-a-completer, avec ce que l'élève a tracé (juste : en vert ; faux :
-	ses droites et la bonne en pointillés) ; sans réponse (R9), la bonne droite.
+	ses traits et la bonne figure en pointillés) ; sans réponse (R9), la bonne figure.
 	Lecture seule : la saisie est désactivée.
 
 	@module components/questions/FigureAnswer
@@ -17,7 +17,7 @@
 	interface Props {
 		/** Texte du bloc (variables résolues), entre les clôtures */
 		source: string;
-		/** Tracés de l'élève (`droite(…)`) ; null : la bonne droite seule */
+		/** Tracés de l’élève (`droite(…)`, `segment(…)`) ; null : la bonne figure seule */
 		answer: string | null;
 		status: ExpectedStatus;
 	}

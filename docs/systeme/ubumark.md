@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -264,8 +264,9 @@ C = point(4, 5)
 
 Même en-tête et même langage que ` ```figure `, plus trois lignes propres, lues par
 `construction-parser.ts` (`readConstructionHeader`) puis effacées avant le parseur de figure (numéros
-de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS`, `droite` seul, défaut), `verifier:`
-(obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`) et `case: N`, posée
+de ligne gardés) : `outils:` (`CONSTRUCTION_TOOLS` : `droite` ou `segment`, un seul ; absent : celui de la vérification,
+`CHECK_TOOL`), `verifier:` (obligatoire, une par ligne ; `CONSTRUCTION_CHECK_KINDS` : `droite_par P ; Q`,
+`carre A ; B`, `rectangle A ; B ; C` — un seul carré ou rectangle, jamais mêlé à `droite_par`) et `case: N`, posée
 par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `construction`
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
 le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `

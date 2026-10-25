@@ -8,7 +8,10 @@
 
 	- toucher un point puis un autre trace la droite, qui va jusqu'aux bords ;
 	  près d'un point, le toucher est aimanté (`SNAP_RADIUS_PX` à l'écran) ;
+	- outil segment sur quadrillage (CP-060, § 9) : chaque toucher va au nœud le
+	  plus proche, le segment s'arrête à ses deux bouts ;
 	- clavier : les points nommés sont des boutons (Tab, puis Entrée ou Espace) ;
+	  sur quadrillage, un curseur se déplace de nœud en nœud avec les flèches ;
 	- « Effacer » : le départ en attente, sinon la dernière droite ;
 	- après Valider : juste → ses droites en vert ; faux → la bonne droite en
 	  pointillés par-dessus (le message est celui de l'écran) ;
@@ -24,7 +27,10 @@
 	import type { FigureScene } from '$lib/ubumark/utils/figure-scene';
 	import { createTransformer } from '$lib/geometry-core/viewport/viewport';
 	// Inscrit aussi le calcul des positions du juge (effet de bord voulu, cf. positions.ts)
-	import { namedPointPositions } from '$lib/questions/construction/positions-setup';
+	import {
+		allNamedPointPositions,
+		namedPointPositions
+	} from '$lib/questions/construction/positions-setup';
 	import {
 		parseConstructionAnswer,
 		serializeConstructionAnswer,
@@ -38,6 +44,7 @@
 		clipLineToWindow,
 		eraseLast,
 		snapTap,
+		snapToGrid,
 		solutionLines,
 		type ConstructionAnswerInput,
 		type Drawing
@@ -78,6 +85,11 @@
 	let drawing: Drawing = $derived({ lines, start });
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
+	let tool = $derived(node.construction?.tools[0] ?? 'droite');
+	/** Quadrillage + segment : touchers sur les nœuds (sinon aimantation sur les points) */
+	let grid = $derived(tool === 'segment' ? node.header.grid : null);
+	/** Curseur clavier sur le quadrillage (nœud), affiché quand la zone a le focus */
+	let cursor = $state.raw<Position | null>(null);
 
 	function apply(next: Drawing) {
 		pending = next.start ? { node, at: next.start } : null;
@@ -86,7 +98,7 @@
 
 	function tapAt(position: Position) {
 		if (!interactive) return;
-		apply(addTap(drawing, position));
+		apply(addTap(drawing, position, tool));
 	}
 
 	/** Toucher (doigt, souris) : coordonnées de la fenêtre, puis de la figure */
@@ -99,8 +111,51 @@
 		const transformer = createTransformer(scene.viewport, width, height);
 		const math = transformer.svgToMath(local.x, local.y);
 		// Rayon à l'écran → unités de la fenêtre (échelle d'affichage) → unités de la figure
+		if (grid) {
+			tapAt(snapToGrid(math, grid));
+			return;
+		}
 		const radius = SNAP_RADIUS_PX / Math.abs(matrix.a) / transformer.scaleX;
 		tapAt(snapTap(math, namedPointPositions(scene), radius));
+	}
+
+	const ARROWS: Record<string, [number, number]> = {
+		ArrowLeft: [-1, 0],
+		ArrowRight: [1, 0],
+		ArrowUp: [0, 1],
+		ArrowDown: [0, -1]
+	};
+
+	/** Clavier sur le quadrillage : flèches = nœud voisin (dans la fenêtre), Entrée / Espace = toucher */
+	function handleGridKey(event: KeyboardEvent, scene: FigureScene) {
+		if (!grid) return;
+		const at =
+			cursor ??
+			snapToGrid(
+				{
+					x: (scene.viewport.xMin + scene.viewport.xMax) / 2,
+					y: (scene.viewport.yMin + scene.viewport.yMax) / 2
+				},
+				grid
+			);
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			cursor = at;
+			tapAt(at);
+			return;
+		}
+		const move = ARROWS[event.key];
+		if (!move) return;
+		event.preventDefault();
+		const next = { x: at.x + move[0] * grid.x, y: at.y + move[1] * grid.y };
+		const { xMin, xMax, yMin, yMax } = scene.viewport;
+		cursor = next.x >= xMin && next.x <= xMax && next.y >= yMin && next.y <= yMax ? next : at;
+	}
+
+	function focusGrid(scene: FigureScene) {
+		if (!grid || cursor) return;
+		const { xMin, xMax, yMin, yMax } = scene.viewport;
+		cursor = snapToGrid({ x: (xMin + xMax) / 2, y: (yMin + yMax) / 2 }, grid);
 	}
 
 	function handlePointKey(event: KeyboardEvent, position: Position) {
@@ -113,9 +168,9 @@
 		apply(eraseLast(drawing));
 	}
 
-	/** Une droite à l'écran : découpée à la fenêtre, en coordonnées SVG */
+	/** Un trait à l'écran, en coordonnées SVG : la droite est découpée à la fenêtre, le segment tel quel */
 	function toScreen(line: DrawnLine, scene: FigureScene, width: number, height: number) {
-		const clipped = clipLineToWindow(line, scene.viewport);
+		const clipped = line.kind === 'segment' ? line : clipLineToWindow(line, scene.viewport);
 		if (!clipped) return null;
 		const transformer = createTransformer(scene.viewport, width, height);
 		const a = transformer.mathToSvg(clipped.x1, clipped.y1);
@@ -126,27 +181,48 @@
 
 {#snippet layer({ scene, width, height }: { scene: FigureScene; width: number; height: number })}
 	{@const points = namedPointPositions(scene)}
+	{@const allPoints = allNamedPointPositions(scene)}
 	{@const transformer = createTransformer(scene.viewport, width, height)}
 	<g class="figure-a-completer-trace">
 		{#if interactive}
 			<!-- Zone de toucher : toute la fenêtre (un toucher hors d'un point part de là) -->
-			<rect
-				data-testid="zone-de-trace"
-				class="zone-de-trace"
-				x="0"
-				y="0"
-				{width}
-				{height}
-				fill="transparent"
-				role="presentation"
-				onclick={(event) => handleTap(event, scene, width, height)}
-			/>
+			{#if grid}
+				<!-- Quadrillage : la zone prend le focus, les flèches mènent le curseur -->
+				<rect
+					data-testid="zone-de-trace"
+					class="zone-de-trace"
+					x="0"
+					y="0"
+					{width}
+					{height}
+					fill="transparent"
+					role="button"
+					tabindex="0"
+					aria-label="Quadrillage : flèches pour choisir un nœud, Entrée pour le toucher"
+					onclick={(event) => handleTap(event, scene, width, height)}
+					onfocus={() => focusGrid(scene)}
+					onblur={() => (cursor = null)}
+					onkeydown={(event) => handleGridKey(event, scene)}
+				/>
+			{:else}
+				<rect
+					data-testid="zone-de-trace"
+					class="zone-de-trace"
+					x="0"
+					y="0"
+					{width}
+					{height}
+					fill="transparent"
+					role="presentation"
+					onclick={(event) => handleTap(event, scene, width, height)}
+				/>
+			{/if}
 		{/if}
 		{#each lines as line, i (i)}
 			{@const s = toScreen(line, scene, width, height)}
 			{#if s}
 				<line
-					data-testid="droite-eleve"
+					data-testid={line.kind === 'segment' ? 'segment-eleve' : 'droite-eleve'}
 					class="droite-eleve"
 					class:droite-juste={answer?.isCorrect === true}
 					x1={s.x1}
@@ -157,11 +233,11 @@
 			{/if}
 		{/each}
 		{#if corrected}
-			{#each solutionLines(checks, points) as line, i (i)}
+			{#each solutionLines(checks, allPoints, lines) as line, i (i)}
 				{@const s = toScreen(line, scene, width, height)}
 				{#if s}
 					<line
-						data-testid="bonne-droite"
+						data-testid={line.kind === 'segment' ? 'bon-segment' : 'bonne-droite'}
 						class="bonne-droite"
 						x1={s.x1}
 						y1={s.y1}
@@ -174,6 +250,10 @@
 		{#if drawing.start}
 			{@const p = transformer.mathToSvg(drawing.start.x, drawing.start.y)}
 			<circle data-testid="depart" class="depart" cx={p.x} cy={p.y} r="9" />
+		{/if}
+		{#if interactive && cursor}
+			{@const p = transformer.mathToSvg(cursor.x, cursor.y)}
+			<circle data-testid="curseur" class="curseur" cx={p.x} cy={p.y} r="7" />
 		{/if}
 		{#if interactive}
 			<!-- Clavier : chaque point nommé est un bouton (le toucher passe par la zone) -->
@@ -241,6 +321,18 @@
 		stroke: var(--color-primary);
 		stroke-width: 2.5;
 		pointer-events: none;
+	}
+
+	.curseur {
+		fill: none;
+		stroke: var(--color-ring);
+		stroke-width: 2;
+		stroke-dasharray: 3 2;
+		pointer-events: none;
+	}
+
+	.zone-de-trace:focus-visible {
+		outline: none;
 	}
 
 	.point-cible {
