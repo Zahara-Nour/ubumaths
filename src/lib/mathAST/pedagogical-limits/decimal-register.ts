@@ -9,7 +9,8 @@
  * l'écriture se choisit ici, une fois, sur les étapes finies.
  *
  * Sont lus les nombres et les coefficients : ni l'exposant d'une puissance, ni
- * l'argument d'une fonction (`\sqrt{x/4}`, `e^{x/2}` restent), ni un quotient
+ * l'argument d'une fonction (`\sqrt{x/4}`, `e^{x/2}` restent ; la racine d'un
+ * nombre, si : `\sqrt{0,16}`), ni un quotient
  * qui porte une constante (`π/4` reste) — comme `withDecimalCoefficients`
  * (`variations/display.ts`). L'expression tapée elle-même n'est pas récrite.
  *
@@ -27,6 +28,7 @@ import {
 import type { FlatSum } from '../flatten';
 import { isAddition, isNumber, isSubtraction } from '../guards';
 import { findNodes } from '../transforms';
+import { getVariables } from '../eval/substitute';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import type { PedagogicalLimitStep, TermLimits, LimitLine, LimitBindings } from './types';
 
@@ -72,6 +74,12 @@ export function inDecimalRegister(node: MathNode): MathNode {
 			return { ...node, content: inDecimalRegister(node.content) };
 		case 'superscript':
 			return { ...node, base: inDecimalRegister(node.base) };
+		// La racine d'un NOMBRE est un nombre : `\sqrt{0,16}`, comme `Δ = 0,16`
+		// (lot 5f-4) ; `\sqrt{x/4}` reste
+		case 'function':
+			return node.name === 'sqrt' && getVariables(node).size === 0
+				? { ...node, args: node.args.map(inDecimalRegister) }
+				: node;
 		case 'division': {
 			const division: DivisionNode = {
 				...node,
