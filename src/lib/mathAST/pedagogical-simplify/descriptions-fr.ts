@@ -116,6 +116,8 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'zero-pow': '0ⁿ = 0',
 	'pow-of-pow': 'Puissance de puissance : (aᵐ)ⁿ = aᵐⁿ',
 	'same-base-mul': 'Produit de puissances : aᵐ · aⁿ = aᵐ⁺ⁿ',
+	'same-base-mul-bare': 'Produit de puissances : aᵐ · aⁿ = aᵐ⁺ⁿ',
+	'same-base-div': 'Quotient de puissances : aᵐ / aⁿ = aᵐ⁻ⁿ',
 	'pow-of-quotient': "Puissance d'un quotient : (a/b)ⁿ = aⁿ/bⁿ",
 
 	// ---- radicaux (rules pattern) ---------------------------------------------
@@ -316,12 +318,15 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'abs-product': () => 'On utilise |a·b| = |a|·|b|',
 	// puissances
 	'same-base-mul': () => 'aᵐ · aⁿ = aᵐ⁺ⁿ',
+	'same-base-mul-bare': () => 'aᵐ · aⁿ = aᵐ⁺ⁿ',
+	'same-base-div': () => 'aᵐ / aⁿ = aᵐ⁻ⁿ',
 	'pow-of-pow': () => '(aᵐ)ⁿ = aᵐⁿ',
 	// radicaux
 	'sqrt-product': () => '√(a·b) = √a · √b',
 	'sqrt-square': () => '√(a²) = |a|',
 	// tidy-side (`reduire`, `auto`) : les mots des étapes de normalize qu'elles remplacent
 	'tidy-extract-radicals': () => 'On simplifie le radical',
+	'tidy-power-to-root': () => 'On écrit la puissance avec une racine carrée',
 	'tidy-fold-numbers': tidyTitle('On calcule les nombres'),
 	'tidy-terms': tidyTitle('On met chaque terme au propre'),
 	// normalize-side (frequent)
@@ -433,6 +438,8 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 	'tidy-collect-like-terms': () =>
 		'On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.',
 	'tidy-extract-radicals': () => 'On extrait du radical les facteurs qui sont des carrés parfaits.',
+	'tidy-power-to-root': () =>
+		'Une puissance d’exposant n/2 s’écrit avec une racine carrée : a^(1/2) = √a, a^(3/2) = a√a.',
 	'tidy-fold-numbers': tidyExplanation('On effectue les calculs entre nombres.'),
 	'tidy-add-fractions': () =>
 		'Pour additionner des fractions, on les écrit avec le même dénominateur, puis on additionne les numérateurs.',

@@ -104,6 +104,14 @@ Compléments mesurés :
 - l'étape 4 évalue les puissances numériques jusqu'à l'exposant 256
   (`2¹⁰ → 1024`, `2⁻¹ → 1/2`), et `3/(1/2) → 6`, `x÷2 → x/2` ;
 - l'étape 7 rationalise un dénominateur **numérique** : `1/√2 → √2/2` ;
+- **puissance d'un rationnel positif d'exposant non entier** (Q47, lot 5f-5,
+  David 2026-10-24) : un exposant de dénominateur 2 s'écrit avec une racine
+  carrée, par l'étape 7 — `2^{0,5} → √2`, `4^{0,5} → 2`, `8^{1/2} → 2√2`,
+  `2^{3/2} → 2√2`, `3^{5/2} → 9√3`, `2^{−1/2} → √2/2`, `2^{0,5}x → √2 x`,
+  registre du radicande gardé (`0,25^{0,5} → 0,5`) ; un autre dénominateur
+  seulement sur un entier dont la racine est exacte (`27^{2/3} → 9`,
+  `16^{3/4} → 8`) — `2^{1/3}`, `(8/27)^{1/3}` et `x^{1/2}` restent écrits ;
+  écart visible, voulu : `(1/8)^{1/3}` reste, `8^{−1/3} → 1/2` (base entière) ;
 - **signe d'une somme dans un facteur** (2026-10-06, étendu le 2026-10-20) :
   si son terme de gauche est négatif, le signe sort, à tout degré, parité
   respectée — `3(−x−1) → −3(x+1)`, `(−x²−1)² → (x²+1)²`,
@@ -467,7 +475,8 @@ Cas limites :
 
 - `options.recorder` (`TidyStepRecorder`) : `tidy` raconte ses étapes
   (`tidy-fold-numbers` « On calcule les nombres », `tidy-collect-like-terms`,
-  `tidy-sort-terms`, `tidy-number-first`, `tidy-choose-unit`, …). Une étape
+  `tidy-sort-terms`, `tidy-number-first`, `tidy-choose-unit`,
+  `tidy-power-to-root` « On écrit la puissance avec une racine carrée », …). Une étape
   n'est nommée que si une **seule** famille de gestes a travaillé ; sinon le
   filet `tidy-terms` « On met chaque terme au propre » (c'est le cas de la
   réduction d'une fraction de sommes, §A.1). Une relation est racontée entière
@@ -546,3 +555,7 @@ des termes notamment).
   Lot 5f-1 : une parenthèse sous-entendue compte comme écrite dans `tidy`
   lui-même (Q40, avant : dans `tidyTerms` seul) ; `∛x − ∛x → 0` ; en ordre
   rangé, les termes gardés pour le domaine restent côte à côte (Q41).
+- 2026-10-25 : lot 5f-5, une puissance d'un rationnel positif d'exposant de
+  dénominateur 2 s'écrit avec une racine carrée (`8^{1/2} → 2√2`), une racine
+  exacte d'un entier se calcule (`27^{2/3} → 9`) — Q47 ; étape
+  `tidy-power-to-root`.

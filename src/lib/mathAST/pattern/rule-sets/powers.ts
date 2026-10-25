@@ -15,8 +15,11 @@
  * ```
  */
 
-import { func, multiply } from '../../factory';
-import { isFunction } from '../../guards';
+import { add, func, multiply, number, subtract, superscript } from '../../factory';
+import { isEulerConstant, isFunction } from '../../guards';
+import { extractRational } from '../../common/numeric';
+import { nodesEqual } from '../../normal/hash';
+import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { tidy } from '../../tidy';
 import type { MathNode } from '../../types';
 import { P } from '../builder';
@@ -51,6 +54,80 @@ function squaredRadicandBase(root: MathNode | null): MathNode | null {
 	return bindings === undefined ? null : getBindingNode(bindings, 'a');
 }
 
+/**
+ * Une base qui ne s'annule jamais : `e`, un rationnel positif. Diviser par
+ * `xⁿ` supposerait x ≠ 0 — `x³/x² → x` passe par la réduction de fraction, qui
+ * le dit (Q4) ; même restriction que le regroupement de `tidy` (Q29).
+ */
+function isNonVanishingBase(node: MathNode): boolean {
+	const bare = unwrapDelimiters(node) ?? node;
+	if (isEulerConstant(bare)) return true;
+	if (bare.type === 'division')
+		return isNonVanishingBase(bare.numerator) && isNonVanishingBase(bare.denominator);
+	const value = extractRational(bare);
+	return value !== null && value.n > 0n;
+}
+
+/** La base et l'exposant d'un facteur : `aⁿ` → (a, n), `a` → (a, 1). */
+function asPower(node: MathNode): { readonly base: MathNode; readonly exponent: MathNode } {
+	const bare = unwrapDelimiters(node) ?? node;
+	return bare.type === 'superscript'
+		? { base: bare.base, exponent: bare.superscript }
+		: { base: bare, exponent: number(1) };
+}
+
+/** `aᵐ` et `aⁿ` (ou `a`) de même base qui ne s'annule pas. */
+function sameNonVanishingBase(left: MathNode | null, right: MathNode | null): boolean {
+	if (left === null || right === null) return false;
+	const l = asPower(left);
+	const r = asPower(right);
+	// `(1/2)^x` et `(1/2)` : même base, parenthèses mises à part
+	const lBase = unwrapDelimiters(l.base) ?? l.base;
+	const rBase = unwrapDelimiters(r.base) ?? r.base;
+	return isNonVanishingBase(lBase) && nodesEqual(lBase, rBase);
+}
+
+/** La base écrite de la puissance (`(1/2)` de `(1/2)^x`, parenthèses gardées). */
+function writtenBase(left: MathNode, right: MathNode): MathNode {
+	const power = [left, right].find((n) => unwrapDelimiters(n)?.type === 'superscript');
+	return asPower(power ?? left).base;
+}
+
+/**
+ * L'exposant `m ± n`, réduit : `tidy` seul garderait `x − (x + 1)` tel qu'écrit
+ * (Q40) ; la somme est d'abord ouverte, `x − x − 1 → −1` (revue de #1743).
+ */
+function reducedExponent(sum: MathNode): MathNode {
+	return tidy(unflattenSum(flattenSumShallow(sum)) ?? sum);
+}
+
+/** Le nœud lié à `name` ; inatteignable sans lui, `condition` l'a déjà lu. */
+function boundNode(bindings: MatchBindings, name: string): MathNode {
+	const node = getBindingNode(bindings, name);
+	if (node === null) throw new Error(`powers: liaison « ${name} » absente`);
+	return node;
+}
+
+/**
+ * Un quotient de puissances, pas une fraction de nombres : au moins une
+ * puissance, et une base `e` ou un exposant non numérique. `2/2` et `2/2²`
+ * restent à la réduction de fraction, comme `6/2` (revue de #1743).
+ */
+function isPowerQuotient(num: MathNode | null, den: MathNode | null): boolean {
+	if (num === null || den === null) return false;
+	if (![num, den].some((n) => unwrapDelimiters(n)?.type === 'superscript')) return false;
+	const base = unwrapDelimiters(asPower(num).base);
+	if (base !== null && isEulerConstant(base)) return true;
+	return [num, den].some((n) => extractRational(asPower(n).exponent) === null);
+}
+
+/** Exactement un des deux facteurs est une puissance (les deux : `same-base-mul`). */
+function exactlyOnePower(left: MathNode | null, right: MathNode | null): boolean {
+	if (left === null || right === null) return false;
+	const powers = [left, right].filter((n) => unwrapDelimiters(n)?.type === 'superscript');
+	return powers.length === 1;
+}
+
 // =============================================================================
 // Power Rules
 // =============================================================================
@@ -70,6 +147,7 @@ function squaredRadicandBase(root: MathNode | null): MathNode | null {
  * - (sqrt(x))^2 = x
  * - (a^m)^n = a^(m*n) (power of power)
  * - a^m * a^n = a^(m+n) (same base product)
+ * - a^m * a = a^(m+1), a^m / a^n = a^(m-n) (base e or positive rational)
  * - (a/b)^n = a^n / b^n (power of quotient)
  * - x^(-1) = 1/x (negative one exponent)
  */
@@ -214,6 +292,46 @@ export const powerRules: readonly Rule[] = [
 		P.mul(P.pow(P._('a'), P._('m')), P.pow(P._('a'), P._('n'))),
 		(bindings) => tidyExponent(P.pow(P._('a'), P.add(P._('m'), P._('n'))), bindings),
 		{ name: 'same-base-mul' }
+	),
+
+	// aᵐ · a = aᵐ⁺¹ (Q48, lot 5f-5 de simplify-carte : `eˣ·e → e^{x+1}`) — base
+	// qui ne s'annule pas, comme le quotient
+	createRule(
+		P.mul(P._('l'), P._('r')),
+		(bindings) => {
+			const left = boundNode(bindings, 'l');
+			const right = boundNode(bindings, 'r');
+			const exponent = reducedExponent(add(asPower(left).exponent, asPower(right).exponent));
+			return superscript(writtenBase(left, right), exponent);
+		},
+		{
+			name: 'same-base-mul-bare',
+			condition: (bindings) => {
+				const l = getBindingNode(bindings, 'l');
+				const r = getBindingNode(bindings, 'r');
+				return exactlyOnePower(l, r) && sameNonVanishingBase(l, r);
+			}
+		}
+	),
+
+	// aᵐ / aⁿ = aᵐ⁻ⁿ (Q48 : `e^{2x}/eˣ → eˣ`, `e/eˣ → e^{1−x}`) — base qui ne
+	// s'annule pas
+	createRule(
+		P.div(P._('num'), P._('den')),
+		(bindings) => {
+			const num = boundNode(bindings, 'num');
+			const den = boundNode(bindings, 'den');
+			const exponent = reducedExponent(subtract(asPower(num).exponent, asPower(den).exponent));
+			return superscript(writtenBase(num, den), exponent);
+		},
+		{
+			name: 'same-base-div',
+			condition: (bindings) => {
+				const num = getBindingNode(bindings, 'num');
+				const den = getBindingNode(bindings, 'den');
+				return isPowerQuotient(num, den) && sameNonVanishingBase(num, den);
+			}
+		}
 	),
 
 	// (a/b)^n = a^n / b^n (power distributes over quotient)

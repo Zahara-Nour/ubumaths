@@ -308,11 +308,13 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			// La lettre e est la constante d'Euler (2026-10-10) : les quatre intentions
 			// réduisent `ln(e^x)`. Avant, elles rendaient `x ln(e)` (e lue comme une variable).
 			['\\ln(e^{x})', 'x', 'x', 'x', 'x', 'x'],
+			// Quotient de puissances de même base, aᵐ/aⁿ = aᵐ⁻ⁿ (Q48, lot 5f-5 de
+			// simplify-carte) : `auto` et `reduire`
 			[
 				'\\frac{e^{2x}}{e^{x}}',
 				'\\dfrac{\\exponentialE^{2 x}}{\\exponentialE^x}',
-				'\\dfrac{\\exponentialE^{2 x}}{\\exponentialE^x}',
-				'\\dfrac{\\exponentialE^{2 x}}{\\exponentialE^x}',
+				'\\exponentialE^x',
+				'\\exponentialE^x',
 				'\\dfrac{\\exponentialE^{2 x}}{\\exponentialE^x}',
 				'\\dfrac{\\exponentialE^{2 x}}{\\exponentialE^x}'
 			],
