@@ -138,6 +138,9 @@ describe('M2 : facteurs de même base non voisins', () => {
 	it.each([
 		['.simplifier x*e^x*e', 'x \\exponentialE^{x + 1}'],
 		['.simplifier e^x*x*e', 'x \\exponentialE^{x + 1}'],
+		// plusieurs paires, au nœud parent comme à l'enfant (revue de #1749)
+		['.simplifier x e^x e^2 e^3', 'x \\exponentialE^{x + 5}'],
+		['.simplifier \\frac{e^x e}{e^2}', '\\exponentialE^{x - 1}'],
 		// les `×` tapés ne restent pas dans le produit regroupé
 		['.simplifier 2*x*e^x*e', '2 x \\exponentialE^{x + 1}'],
 		['.simplifier e^x(x+1)e^{2x}', '\\left( x + 1 \\right) \\exponentialE^{3 x}'],
@@ -161,6 +164,14 @@ describe('M2 : facteurs de même base non voisins', () => {
 
 	it('un nombre seul ne rejoint pas une puissance de même base (6 × 2ˣ reste)', () => {
 		expect(lineOf('.simplifier 2^x*3*2')).toBe('6 \\times 2^x');
+	});
+
+	// revue de #1749 : la fraction se réduit d'abord, comme sur `main`
+	it.each([
+		['.simplifier \\frac{6\\cdot2^x}{2}', '3 \\times 2^x'],
+		['.simplifier \\frac{2^x\\cdot 4}{2}', '2 \\times 2^x']
+	])('un nombre seul au dénominateur ne rejoint pas la puissance : %s → %s', (input, expected) => {
+		expect(lineOf(input)).toBe(expected);
 	});
 
 	it('une base qui peut s’annuler ne passe pas par aᵐ/aⁿ (domaine)', () => {

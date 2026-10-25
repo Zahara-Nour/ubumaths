@@ -184,7 +184,8 @@ function regroupQuotient(num: MathNode, den: MathNode): MathNode | null {
 		for (let j = 0; j < denFactors.length; j++) {
 			const a = numFactors[i].factor;
 			const b = denFactors[j].factor;
-			if (!isPowerQuotient(a, b) || !sameNonVanishingBase(a, b)) continue;
+			// `6·2ˣ/2` : la fraction se réduit d'abord (`3 × 2ˣ`), revue de #1749
+			if (!isPowerQuotient(a, b) || !isSpreadPair(a, b)) continue;
 			const exponent = reducedExponent(subtract(asPower(a).exponent, asPower(b).exponent));
 			const newNum = unflattenProduct(
 				replaceAndDrop(numFactors, i, superscript(writtenBase(a, b), exponent))
