@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 2 écrite (pas encore ouverte au moment de l'écriture)._
+_Mis à jour le 2026-10-25, après #1778._
 
-- **État** : PR 2 « bloc ` ```monnaie ` complet » écrite sur `feat/monnaie-bloc` : types, parseur, scène, écran + marquage, PDF, QCM (6 cm, décision 12), série figée, éditeur riche, `check:ubumark`, doc `ubumark.md`. Tests verts (serveur, navigateur, compilation Typst réelle) ; captures 390 px clair/sombre et PDF relues.
-- **Prochaine action** : PR ouverte → revue `code-reviewer` (Sonnet) → CI verte → merge.
-- **En attente de David** : recette à l'œil (captures dans le message de la session).
-- **Pièges en cours** : instantanés `collection-scene-figee.test.ts` = garde de la collection ; dans un choix de QCM la monnaie fait 6 cm, pas 3 (la collection reste à 3).
-- **Worktree / branche** : `../ubumaths-wt-monnaie` · `feat/monnaie-bloc`.
+- **État** : bloc ` ```monnaie ` complet sur `main` (#1776 scène commune, #1778 bloc : parseur, scène, écran + marquage, PDF, QCM à 6 cm, série figée, éditeur, `check:ubumark`, doc `ubumark.md`) ; pas en prod.
+- **Prochaine action** : recette de David (captures 390 px clair/sombre + PDF) ; puis fin de chantier = versement (le durable est déjà dans `docs/systeme/ubumark.md`, ce journal part en archive). Modèles CP-042/043/044/071 : session « questions » ; « construire » : lot commun avec la collection (décision 7).
+- **En attente de David** : la recette à l'œil.
+- **Pièges en cours** : dans un choix de QCM, monnaie à 6 cm (décision 12), collection à 3 ; `0×10` accepté sans message (voulu, § 3).
+- **Worktree / branche** : aucun (`../ubumaths-wt-monnaie` retiré après #1778).
 
 ## 1. Origine et périmètre
 
@@ -350,3 +350,6 @@ CP-045 (« peut-il acheter ? » seulement).
   série figée, fermeture Q66. Preuve qu'ils mordent : case du vrac à 24 → 4 échecs ; décomposition faussée →
   2 échecs. Captures : à 3 cm dans un QCM les valeurs sont illisibles → décision 12 (6 cm). Le catalogue des
   blocs (`block-catalog/`) n'a pas d'entrée pour la collection non plus : non ajouté.
+- 2026-10-25 : revue `code-reviewer` (Sonnet) : aucun bloquant ; corrigés le coin du billet de 100 € au PDF, les
+  longues légendes qui sortaient de la page, le message de `10 x 2` ; laissé `0×10` sans message (voulu). CI verte,
+  #1778 mergée.
