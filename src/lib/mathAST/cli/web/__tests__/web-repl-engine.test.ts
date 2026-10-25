@@ -109,12 +109,11 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			expect(result.error?.code).toBe('QUANTITY_ERROR');
 		});
 
-		it('HTML output contains dimensional error styling', () => {
+		it('the dimensional error is in the error message', () => {
 			const result = engine.execute('5~\\unit{m} + 3~\\unit{s}');
 
 			expect(result.success).toBe(false);
-			expect(result.outputHtml).toBeDefined();
-			expect(result.outputHtml).toContain('On ne peut pas ajouter une longueur et une durée.');
+			expect(result.error?.message).toContain('On ne peut pas ajouter une longueur et une durée.');
 		});
 	});
 
@@ -194,13 +193,12 @@ describe('WebReplEngine - Unit Integration (Phase 2)', () => {
 			expect(result.output).toBe('Indique l’unité voulue, par exemple : .convertir m.');
 		});
 
-		it('HTML output is properly formatted', () => {
+		it('the conversion is written in the output', () => {
 			engine.execute('5~\\unit{km}');
 			const result = engine.execute('.convert m');
 
 			expect(result.success).toBe(true);
-			expect(result.outputHtml).toBeDefined();
-			expect(result.outputHtml).toContain('5 km = 5000 m');
+			expect(result.output).toContain('5 km = 5000 m');
 		});
 	});
 

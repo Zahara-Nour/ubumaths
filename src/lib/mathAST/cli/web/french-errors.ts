@@ -5,9 +5,7 @@
  * \foo », « Division by zero ») — une centaine de messages, dont une cinquantaine vérifiés tels
  * quels par leurs tests. La traduction se fait donc à la SORTIE de la console, une seule fois.
  *
- * ⚠️ On traduit le MESSAGE seul, puis on le remplace tel quel dans la sortie et, échappé, dans le
- * HTML (revue) : une traduction passée sur le HTML final avalait des balises
- * (`« )</span><br><br> »`) et réécrivait la saisie recopiée de l'élève (`x + Unknown)`). La
+ * ⚠️ On traduit le MESSAGE seul, puis on le remplace tel quel dans la sortie (revue). La
  * formule générique ne prend qu'une ligne qui COMMENCE par un mot anglais : un message déjà
  * français (« Fonction inconnue : … Fonctions disponibles ») reste entier, et une consigne
  * (« Use: », « Usage: ») reste, sous « Forme attendue : ».
@@ -16,7 +14,6 @@
  */
 
 import type { ReplExecutionResult } from './types';
-import { escapeHtml } from './output-formatter-web';
 
 // =============================================================================
 // Constantes
@@ -131,14 +128,6 @@ const GENERIC = 'Écriture non reconnue';
 /** Une consigne seule (`.taylor sin(x)` → « Usage: .taylor … ») : la commande est incomplète. */
 const INCOMPLETE = 'Commande incomplète';
 
-/** Les en-têtes anglais du HTML du moteur (`outputHtml`, affiché par l'ancienne `/cas`). */
-const HTML_HEADERS: readonly (readonly [RegExp, string])[] = [
-	[/Error \[[A-Z_]+\]:/g, 'Erreur :'],
-	[/Parse error:/g, 'Erreur de lecture :'],
-	[/Hint:/g, 'Astuce :'],
-	[/Type \.help for available commands/g, 'tape .help pour la liste des commandes']
-];
-
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -184,23 +173,6 @@ export function inFrench(message: string): string {
 		.join('\n');
 }
 
-/** Le HTML d'une erreur : le message remplacé là où il est écrit, les en-têtes traduits. */
-function htmlInFrench(
-	html: string,
-	original: string | undefined,
-	french: string | undefined
-): string {
-	// Avant la saisie recopiée seulement (`<br><br>`) : `Hint: 2)` tapé reste tel quel
-	const split = html.indexOf('<br><br>');
-	let head = split === -1 ? html : html.slice(0, split);
-	const tail = split === -1 ? '' : html.slice(split);
-	if (original !== undefined && french !== undefined && original !== '') {
-		head = head.replace(escapeHtml(original), () => escapeHtml(french));
-	}
-	for (const [english, translated] of HTML_HEADERS) head = head.replace(english, translated);
-	return head + tail;
-}
-
 /** Le résultat d'une saisie, ses messages d'erreur en français ; une réussite est rendue telle quelle. */
 export function withFrenchErrors(result: ReplExecutionResult): ReplExecutionResult {
 	if (result.success) return result;
@@ -228,9 +200,6 @@ export function withFrenchErrors(result: ReplExecutionResult): ReplExecutionResu
 	return {
 		...result,
 		output,
-		...(result.outputHtml !== undefined && {
-			outputHtml: htmlInFrench(result.outputHtml, original, french)
-		}),
 		...(result.error !== undefined &&
 			message !== undefined && {
 				error: { ...result.error, message }

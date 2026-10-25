@@ -13,9 +13,7 @@
  *   au lieu d'afficher `Infinity` ou `NaN` ;
  * - `.linreg` sur des abscisses petites mais distinctes (1e-6, 2e-6, 3e-6)
  *   ajuste au lieu d'annoncer « valeurs X toutes identiques » (ancien seuil
- *   absolu de 1e-10) ;
- * - l'en-tête HTML d'une erreur est « Erreur : » (« Error [MATH_ERROR]: » avant) : les
- *   messages de la console passent en français (2026-10-12, `french-errors.ts`).
+ *   absolu de 1e-10).
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -40,12 +38,11 @@ vi.mock('../../../../statistics/bivariate', async (importOriginal) => {
 });
 
 describe('sortie inchangée par le rebranchement', () => {
-	it.each(golden)('$command', ({ command, success, output, outputHtml, latex }) => {
+	it.each(golden)('$command', ({ command, success, output, latex }) => {
 		const result = new WebReplEngine().execute(command);
 
 		expect(result.success).toBe(success);
 		expect(result.output).toBe(output);
-		expect(result.outputHtml).toBe(outputHtml);
 		expect(result.latex ?? null).toBe(latex);
 	});
 });

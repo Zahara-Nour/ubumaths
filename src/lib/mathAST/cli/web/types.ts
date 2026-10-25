@@ -2,7 +2,6 @@
  * Web REPL Types
  *
  * Type definitions specific to the browser-based REPL interface.
- * Extends the CLI types with web-specific features like HTML output.
  */
 
 import type { MathNode } from '../../types';
@@ -14,8 +13,7 @@ import type { MathNode } from '../../types';
 /**
  * Result of executing a REPL input (command or expression).
  *
- * Contains both plain text output (for accessibility/export) and
- * HTML-formatted output for rich display in the browser.
+ * Contains the plain text output, with the AST and LaTeX for display.
  */
 export interface ReplExecutionResult {
 	/** Whether execution succeeded */
@@ -23,14 +21,6 @@ export interface ReplExecutionResult {
 
 	/** Plain text output (always present) */
 	readonly output: string;
-
-	/**
-	 * HTML-formatted output for browser display.
-	 *
-	 * Aucun lecteur hors des tests depuis le retrait de `/calc` (2026-10-25), dont le
-	 * store le recopiait dans son historique sans l'afficher.
-	 */
-	readonly outputHtml?: string;
 
 	/** LaTeX representation for MathLive rendering */
 	readonly latex?: string;
