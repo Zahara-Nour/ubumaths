@@ -11,7 +11,7 @@ import type { MathNode } from '../types';
 import { add, opposite, func, ln, cos, sin, variable, divide, power } from '../factory';
 import { isNumber, isVariable, isZero, isOne } from '../guards';
 import {
-	getNumericValue,
+	literalNumberValue,
 	numericNode,
 	extractExactRational,
 	rationalToNode
@@ -30,7 +30,7 @@ import { containsVariable } from '../common/contains-variable';
 // Re-export for backward compatibility (used by integrators and tests)
 export {
 	containsVariable,
-	getNumericValue,
+	literalNumberValue,
 	numericNode,
 	zero,
 	one,

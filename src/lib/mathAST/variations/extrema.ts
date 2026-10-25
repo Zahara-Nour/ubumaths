@@ -27,7 +27,7 @@ import type {
 } from './types';
 import { evaluate } from '../eval';
 import { substitute } from '../eval/substitute';
-import { tidyExactValue } from './critical-points';
+import { exactImageToShow } from './critical-points';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { containsNode } from '../domain/algebra';
 
@@ -500,7 +500,7 @@ function computeYValue(expr: MathNode, variable: string, x: MathNode): MathNode 
 	} catch {
 		// L'évaluation a échoué : la substitution, mise au propre, reste
 	}
-	return tidyExactValue(substituted, evaluated);
+	return exactImageToShow(substituted, evaluated);
 }
 
 /**
@@ -573,7 +573,7 @@ function getBoundaryValues(
 			// Check lower bound if finite and closed
 			const lower = endpointToNumber(interval.lower.value);
 			if (Number.isFinite(lower) && interval.lower.type === 'closed') {
-				const yValue = evaluateAtPoint(expr, variable, interval.lower.value);
+				const yValue = decimalValueAt(expr, variable, interval.lower.value);
 				if (yValue !== null) {
 					values.push({ x: interval.lower.value, y: yValue, attained: true });
 				}
@@ -582,7 +582,7 @@ function getBoundaryValues(
 			// Check upper bound if finite and closed
 			const upper = endpointToNumber(interval.upper.value);
 			if (Number.isFinite(upper) && interval.upper.type === 'closed') {
-				const yValue = evaluateAtPoint(expr, variable, interval.upper.value);
+				const yValue = decimalValueAt(expr, variable, interval.upper.value);
 				if (yValue !== null) {
 					values.push({ x: interval.upper.value, y: yValue, attained: true });
 				}
@@ -605,7 +605,7 @@ function getBoundaryValues(
 /**
  * Evaluate f(x) at a specific point and return the numeric value.
  */
-function evaluateAtPoint(expr: MathNode, variable: string, x: MathNode): number | null {
+function decimalValueAt(expr: MathNode, variable: string, x: MathNode): number | null {
 	try {
 		const substituted = substitute(expr, { [variable]: x });
 		const result = evaluate(substituted, { mode: 'decimal' });

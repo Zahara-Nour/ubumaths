@@ -2,18 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1764._
+_Mis à jour le 2026-10-25, après #1767._
 
-- **État** : PR 1 mergée (#1764) : `/aide-ecriture/blocs` et les 10 fiches, en attente de
-  `deploy:prod`. Serveur de test : `http://localhost:5177/aide-ecriture/blocs` (compte prof).
-- **Prochaine action** : PR 2, la vitrine `/demo/blocs` (mêmes fichiers
-  `src/lib/block-catalog/*.ts`, sélection par niveau, « Voir ce qu'écrit le prof » replié,
-  entrée `DEMO_PAGES` + `SeoHead`), branche `feat/catalogue-blocs-vitrine`.
-- **En attente de David** : regard sur les pages ; dire s'il veut corriger les erreurs muettes des
-  parseurs (§ PR 1, « Ce que les fiches ont révélé »), hors de ce chantier.
-- **Pièges connus** : nouvelle vitrine → `DEMO_PAGES` + `<SeoHead {...demoSeo(…)} />` ; dans
-  `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale`.
-- **Worktree / branche** : `../ubumaths-wt-catalogue-blocs` · `feat/catalogue-blocs-vitrine`.
+- **État** : les deux PR du chantier sont mergées (#1764 aide à l'écriture, #1767 vitrine
+  `/demo/blocs`), en attente de `deploy:prod`. Serveur de test : `http://localhost:5177`
+  (`/aide-ecriture/blocs` en prof, `/demo/blocs` sans compte).
+- **Prochaine action** : clore le chantier après le regard de David (journal archivé, la doc
+  durable est déjà dans `docs/systeme/utilitaires-et-demos.md`), puis retirer le worktree.
+- **En attente de David** : regard sur les pages (ligne #1764, #1767 de
+  `docs/wip/verifications-manuelles.md`). Erreurs muettes des parseurs : chantier `erreurs-blocs`.
+- **Pièges connus** : la division posée est une grille, pas un svg (test de rendu de la vitrine).
+- **Worktree / branche** : `../ubumaths-wt-catalogue-blocs` · `feat/catalogue-blocs-vitrine`
+  (mergée, gardée pour le serveur de test).
 
 ## Origine
 
@@ -74,7 +74,7 @@ Pas de revue de code (pages qui assemblent des composants existants).
   nœud ; message de chaque erreur fréquente), `BlockHelpPage.svelte.test.ts` (rendu de chaque
   fiche, zone « Essayer » en direct).
 
-### Ce que les fiches ont révélé (erreurs muettes, non corrigées ici)
+### Ce que les fiches ont révélé (erreurs muettes, futur chantier `erreurs-blocs`)
 
 - **variation** : `5,5` (et un signe ou une position inconnus) → case supprimée en silence, tableau
   faux sans message ; sans `domain:` ou `variable:` → texte brut. La notation
@@ -85,3 +85,18 @@ Pas de revue de code (pages qui assemblent des composants existants).
   erreur, segment hors bornes = avertissement.
 - **trig** : `color` sans contrôle ; `projections`/`grid` vrais seulement pour `true`, `axes`/
   `labels`/`values` vrais sauf `false` (une faute de frappe agit dans les deux sens).
+
+## PR 2 — vitrine `/demo/blocs` (2026-10-25)
+
+- Sélection : `src/lib/block-catalog/showcase.ts` (`SHOWCASE_SECTIONS`, `SHOWCASE_ITEMS`), un
+  renvoi (slug de fiche + titre d'exemple) par bloc, textes écrits pour un visiteur. Primaire :
+  horloge (durée entre deux horloges), division euclidienne, quarts sur une droite graduée ;
+  collège : barres, circulaire, nuage avec ajustement ; lycée : dérivée et variations,
+  probabilités conditionnelles, parabole et tangente.
+- Page `src/routes/(public)/demo/blocs/+page.svelte` : titre « Les blocs du prof », cartes en
+  3 colonnes, rendu sans `showAuthoringErrors`, texte replié sous « Voir ce qu'écrit le prof ».
+- `DEMO_PAGES` : entrée placée après le cercle trigo (même famille de contenu), ordre du test mis
+  à jour. Carte des fonctionnalités : 11 vitrines.
+- Tests : `showcase.test.ts` (9 blocs de la phase 0 par niveau, renvois valides, renvoi cassé
+  lève), `page-demo-blocs.svelte.test.ts` (titres, 9 rendus, 9 `details` repliés, aucun message
+  d'erreur).

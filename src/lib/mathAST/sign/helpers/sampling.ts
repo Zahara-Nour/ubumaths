@@ -153,7 +153,7 @@ export function sampleSignOnInterval(
 
 	for (const point of points) {
 		try {
-			const value = evaluateAtPoint(expr, variable, point);
+			const value = decimalValueAt(expr, variable, point);
 			if (value !== null) {
 				signs.push(signFromNumber(value, tolerance));
 			}
@@ -180,7 +180,7 @@ export function sampleSignOnInterval(
 		const near = getNearSamplePoints(interval);
 		if (near.length > 0) {
 			const nearSigns = near
-				.map((point) => evaluateAtPoint(expr, variable, point))
+				.map((point) => decimalValueAt(expr, variable, point))
 				.filter((value): value is number => value !== null)
 				.map((value) => signFromNumber(value, tolerance));
 			if (nearSigns.length > 0) return determineConsensusSign(nearSigns);
@@ -354,7 +354,7 @@ function determineConsensusSign(signs: readonly Sign[]): Sign {
  * @param value - The value to substitute
  * @returns The numeric result, or null if evaluation fails
  */
-function evaluateAtPoint(expr: MathNode, variable: string, value: number): number | null {
+function decimalValueAt(expr: MathNode, variable: string, value: number): number | null {
 	try {
 		// Substitute the value
 		const substituted = substitute(expr, { [variable]: value });
@@ -490,7 +490,7 @@ export function adaptiveSampleSign(
 	const signs: Sign[] = [];
 	for (const point of points) {
 		try {
-			const value = evaluateAtPoint(expr, variable, point);
+			const value = decimalValueAt(expr, variable, point);
 			if (value !== null) {
 				signs.push(signFromNumber(value, tolerance));
 			}

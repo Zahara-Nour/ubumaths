@@ -17,7 +17,7 @@ import {
 	isInfinityResult,
 	isIndeterminateResult
 } from './exact-evaluation';
-import { evaluateNumeric, getNumericValue, ZERO_TOLERANCE, NUMERIC_DELTA } from '../common';
+import { evaluateNumeric, literalNumberValue, ZERO_TOLERANCE, NUMERIC_DELTA } from '../common';
 import { showsNoLimitAtInfinity } from './sign-tracking';
 
 // =============================================================================
@@ -79,7 +79,7 @@ export function classifyLimitValue(
 	}
 
 	// Otherwise, try direct numerical evaluation
-	const approachValue = getNumericValue(approach);
+	const approachValue = literalNumberValue(approach);
 	if (approachValue === null) {
 		return { class: 'unknown' };
 	}

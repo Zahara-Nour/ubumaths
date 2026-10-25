@@ -18,7 +18,7 @@ import { plotRestrictionOf, intervalLabelOf } from '../interval';
 import { typedLetterOf } from '../letter';
 import { mergeInto } from '../merge';
 import { loadAtelier, saveAtelier } from '../persistence';
-import { approx } from '$lib/mathAST/reciprocal/image';
+import { computeNumericValueOrInfinity } from '$lib/mathAST/eval/numeric-value';
 import { substitute } from '$lib/mathAST/eval/substitute';
 
 // =============================================================================
@@ -36,7 +36,7 @@ function deskWith(...lines: string[]): CalcDesk {
 /** La valeur de la carte `name` en x (valeurs de l'atelier remplacées). */
 function valueAt(atelier: Atelier, name: string, x: number): number | null {
 	const read = substitutedAstOf(atelier, name);
-	return read.ok ? approx(substitute(read.ast, { x })) : null;
+	return read.ok ? computeNumericValueOrInfinity(substitute(read.ast, { x })) : null;
 }
 
 function last(desk: CalcDesk) {

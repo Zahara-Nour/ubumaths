@@ -18,7 +18,7 @@ import type { Monotonicity, MonotonicInterval } from './types';
 import type { MathNode } from '../types';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { interval as makeInterval } from '$lib/math/intervals/factory';
-import { tidyCriticalAbscissa } from './critical-points';
+import { abscissaToShow } from './critical-points';
 import { tidyPeriodicMember } from '../common/periodic-member';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
@@ -87,9 +87,9 @@ export function monotonicityToSign(monotonicity: Monotonicity): Sign {
  * solveur) devient `\dfrac{1}{\exponentialE}`, comme dans la ligne des points
  * critiques. Une borne sans exponentielle reste la même référence.
  */
-function withTidyEndpoints(interval: Interval): Interval {
-	const lower = tidyCriticalAbscissa(interval.lower.value);
-	const upper = tidyCriticalAbscissa(interval.upper.value);
+function withEndpointsToShow(interval: Interval): Interval {
+	const lower = abscissaToShow(interval.lower.value);
+	const upper = abscissaToShow(interval.upper.value);
 	if (lower === interval.lower.value && upper === interval.upper.value) return interval;
 	return {
 		...interval,
@@ -126,7 +126,7 @@ export function buildMonotonicIntervals(signResult: SignAnalysisResult): Monoton
 		const derivativeSign = signToDerivativeSignLabel(signedInterval.sign);
 
 		monotonicIntervals.push({
-			interval: withTidyEndpoints(signedInterval.interval),
+			interval: withEndpointsToShow(signedInterval.interval),
 			monotonicity,
 			derivativeSign,
 			reason: buildMonotonicityReason(signedInterval, signResult.variable)

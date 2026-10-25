@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc construction le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc construction le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -183,6 +183,7 @@ en retrait sous un item de liste.
 | `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`         | `qr-typst.ts`                    |
 | `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`         | `horloge-typst.ts`               |
 | `operation`                                                                                                               | `operation`                 | `operation-parser.ts`               | `Operation.svelte`       | `operation-typst.ts`             |
+| `collection`                                                                                                              | `collection`                | `collection-parser.ts`              | `Collection.svelte`      | `collection-typst.ts`            |
 
 La liste des genres statistiques est `STAT_CHART_KINDS` (`src/lib/ubumark/types/stat-chart.ts`).
 
@@ -424,6 +425,34 @@ vides comptées 0 (`0,5 + 0,5`, élève « 1 » : juste), case vide au milieu, o
 milliers posés — jamais de remarque de forme que la grille impose. Petites cases de retenue (≈ 28 px) :
 aide, jamais jugée ni gardée. Réponse fausse : chiffres faux surlignés (`wrongResultDigits`),
 opération résolue à côté ; bonne réponse affichée (`showCorrectAnswers`) : opération résolue.
+
+**Collection d'objets** (chantier [collection](../wip/collection-progress.md), CP-001, CP-070,
+CP-004 en partie) — `src/lib/ubumark/__tests__/collection/` :
+
+````text
+```collection
+dizaines: 2 ; 3
+unités: 8 ; 1
+dessin: paquets
+```
+````
+
+`dizaines:` (0 à 10) et `unités:` (0 à 100), au moins l'une des deux ; une valeur par collection,
+séparées par `;` (1 à 3 collections ; ligne absente = 0) ; 100 objets au plus par collection.
+Facultatives : `dessin: barres | paquets` (barres de dix cubes et cubes, ou 10 jetons entourés et
+jetons ; défaut `barres`), `unités en: vrac | rangées` (rangées de 5 + 5 ; défaut `vrac`),
+`légendes:` (une par collection, 40 caractères ; A, B, C d'office s'il y en a plusieurs), `taille:`
+(2 à 12 cm, largeur d'une collection **pleine largeur** : une plus étroite garde la même échelle,
+objets de même taille d'une collection à l'autre ; 8 cm à l'écran, 6 cm au PDF, 3 cm dans un choix
+de QCM). `centaines:` est réservée (« pas encore disponible »). Groupes de dix en haut, objets
+isolés dessous ; groupement partiel (3 dizaines et 15 unités) accepté. Le vrac est tiré d'une graine
+faite du contenu du bloc et du rang de la collection : même bloc → même dessin, à l'écran comme au
+PDF ; deux objets restent à 1,5 objet l'un de l'autre au moins. Chaque objet de la scène
+(`utils/collection-scene.ts`) porte sa valeur (1 ou 10), pour la monnaie à venir. À l'écran,
+**toucher pour marquer** : un objet touché est barré (aide de comptage, non jugée, rien
+d'enregistré, effacée à la collection suivante ; « Effacer les marques »). Nom accessible
+« Collection d'objets », **jamais le nombre**. PDF en Typst natif, noir sur blanc. Dans un choix de
+QCM : `--collection-taille: 3cm` (comme l'horloge) ; série figée : `withChoiceCollectionSize`.
 
 ### Cases à compléter
 

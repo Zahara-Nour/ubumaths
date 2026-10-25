@@ -31,7 +31,7 @@ import { solve } from '../solve/solve';
 import { analyzeAbsoluteValue, type AbsoluteValueShape } from '../solve/absolute-value';
 import { detectVariable } from '../solve/classify';
 import { canon, makeStep } from './_helpers';
-import { computeNumericValue } from '../solve/numeric-value';
+import { computeNumericValue } from '../eval/numeric-value';
 import { generateLinearEquationSteps } from './linear';
 import type { EquationOperation, EquationStep, LinearSchoolLevel } from './types';
 

@@ -16,7 +16,7 @@ import { parseLatexSafe } from '$lib/mathAST/parser';
 import { areEquivalent } from '$lib/mathAST/equivalence';
 import { differentiate } from '$lib/mathAST/differentiation/differentiate';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
-import { computeNumericValue } from '$lib/mathAST/solve/numeric-value';
+import { computeNumericValue } from '$lib/mathAST/eval/numeric-value';
 import { isInfinity } from '$lib/mathAST/guards';
 import { stripLatexSpacing } from '$lib/math';
 import { isAnswerTooComplex } from '$lib/questions/answer-complexity';

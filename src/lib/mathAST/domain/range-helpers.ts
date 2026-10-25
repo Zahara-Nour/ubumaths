@@ -32,7 +32,7 @@ import { tryConvertConditionToInterval } from './algebra';
 import { differentiate } from '../differentiation';
 import { evaluate, substitute } from '../eval';
 import { containsVariable } from '../common/contains-variable';
-import { getNumericValue } from '../common/numeric';
+import { literalNumberValue } from '../common/numeric';
 import { evaluateAtCriticalPoint, findCriticalPoints } from '../variations/critical-points';
 
 // =============================================================================
@@ -178,7 +178,7 @@ export interface RationalPower {
  * Extract constant value from a node if possible.
  */
 export function extractConstant(node: MathNode): number | null {
-	return getNumericValue(node);
+	return literalNumberValue(node);
 }
 
 /**

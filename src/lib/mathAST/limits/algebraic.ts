@@ -593,7 +593,7 @@ function replaceAbs(expr: MathNode, varName: string, testValue: number): MathNod
 	if (isFunction(expr) && expr.name.toLowerCase() === 'abs' && expr.args.length === 1) {
 		const arg = expr.args[0];
 		// Evaluate f(x) at the test point
-		const argValue = evaluateAtPoint(arg, varName, testValue);
+		const argValue = approximateValueAt(arg, varName, testValue);
 		if (argValue === null) return null;
 
 		if (argValue >= 0) {
@@ -660,7 +660,7 @@ function replaceAbs(expr: MathNode, varName: string, testValue: number): MathNod
 /**
  * Evaluate an expression at a specific point using full substitution and evaluation.
  */
-function evaluateAtPoint(expr: MathNode, varName: string, value: number): number | null {
+function approximateValueAt(expr: MathNode, varName: string, value: number): number | null {
 	const valueNode: MathNode = { type: 'number', value: String(value) };
 	return computeNumericValue(substitute(expr, { [varName]: valueNode }));
 }

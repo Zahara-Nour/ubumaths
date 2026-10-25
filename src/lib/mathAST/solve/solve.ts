@@ -516,16 +516,20 @@ function sumOfSignedTerms(expr: MathNode): MathNode | null {
  * Remettre au propre les facteurs-sommes d'un produit factorisé : `(3 + −6x)`
  * se lit `(3 − 6x)`. Seule l'écriture change — la forme normale est la même.
  */
-function tidySumFactors(product: MathNode): MathNode {
+function normalizeSumFactors(product: MathNode): MathNode {
 	if (!isMultiplication(product)) return product;
-	const tidy = (factor: MathNode): MathNode => {
+	const normalizeFactor = (factor: MathNode): MathNode => {
 		const content = isDelimiter(factor) ? factor.content : null;
 		if (content && (content.type === 'addition' || content.type === 'subtraction')) {
 			return parentheses(denormalize(normalize(content)));
 		}
-		return tidySumFactors(factor);
+		return normalizeSumFactors(factor);
 	};
-	return multiply(tidy(product.left), tidy(product.right), product.displayStyle);
+	return multiply(
+		normalizeFactor(product.left),
+		normalizeFactor(product.right),
+		product.displayStyle
+	);
 }
 
 /**
@@ -567,7 +571,7 @@ function tryCommonFactorDecomposition(
 	if (direct === null) return null;
 	const fromWrittenSum = nodesEqual(direct, sum)
 		? null
-		: solveFactoredProduct(expr, tidySumFactors(direct), variable, opts);
+		: solveFactoredProduct(expr, normalizeSumFactors(direct), variable, opts);
 	if (fromWrittenSum !== null) return fromWrittenSum;
 
 	// 2. Le facteur commun enfoui dans un produit, un opposé ou une puissance :
@@ -578,7 +582,7 @@ function tryCommonFactorDecomposition(
 	const factored = factorCommon(exposed.sum);
 	if (factored === null) return null;
 	if (!isMultiplication(factored) || !nodesEqual(factored.right, exposed.factor)) return null;
-	return solveFactoredProduct(expr, tidySumFactors(factored), variable, opts);
+	return solveFactoredProduct(expr, normalizeSumFactors(factored), variable, opts);
 }
 
 /**
@@ -628,7 +632,7 @@ function tryDifferenceOfSquaresDecomposition(
 	// celle de l'identité, `(sin x + cos x)(sin x − cos x)`.
 	const isSum = (n: MathNode) =>
 		isDelimiter(n) || n.type === 'addition' || n.type === 'subtraction';
-	const written = isSum(a) || isSum(b) ? tidySumFactors(product) : product;
+	const written = isSum(a) || isSum(b) ? normalizeSumFactors(product) : product;
 	return solveFactoredProduct(expr, written, variable, opts, 'difference-of-squares');
 }
 

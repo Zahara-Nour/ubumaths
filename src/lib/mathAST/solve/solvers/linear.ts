@@ -16,7 +16,7 @@ import type {
 } from '../types';
 import { getPolynomialDegree } from '../classify';
 import { getVariables } from '../../eval/substitute';
-import { computeNumericValue } from '../numeric-value';
+import { computeNumericValue } from '../../eval/numeric-value';
 import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { number, fraction, opposite, equals, variable as varNode } from '../../factory';
 import { preprocess, denormalize, normalize, normalFormsEquivalent } from '../../normal';

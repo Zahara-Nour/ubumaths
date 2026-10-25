@@ -32,7 +32,7 @@ import {
 } from '../../factory';
 import { denormalize, normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
 import { describeCoefficients, describeDiscriminant, describeSolution } from '../descriptions-fr';
-import { computeNumericValue } from '../numeric-value';
+import { computeNumericValue } from '../../eval/numeric-value';
 import { parameterCondition } from '../literal-parameter';
 
 // =============================================================================

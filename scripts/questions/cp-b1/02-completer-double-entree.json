@@ -1,0 +1,350 @@
+{
+	"title": "Complète le tableau à double entrée",
+	"description": "Compléter un tableau à double entrée en partie rempli : table d'addition 3 × 3, formes pleines ou vides",
+	"grades": ["CP"],
+	"theme": "Statistiques",
+	"domain": "Représenter des données",
+	"subdomain": "Tableau à double entrée",
+	"level": 1,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Complète le tableau : dans chaque case, on écrit le nombre de la ligne plus le nombre de la colonne.\n\n| $+$ | ${{c1}}$ | ${{c2}}$ | ${{c3}}$ |\n|---|---|---|---|\n| ${{r1}}$ | ${{eval:r1+c1}}$ | $?$ | ${{eval:r1+c3}}$ |\n| ${{r2}}$ | $?$ | ${{eval:r2+c2}}$ | $?$ |\n| ${{r3}}$ | ${{eval:r3+c1}}$ | $?$ | ${{eval:r3+c3}}$ |",
+			"variables": [
+				{
+					"name": "r1",
+					"expression": "1..3"
+				},
+				{
+					"name": "rd2",
+					"expression": "1..3"
+				},
+				{
+					"name": "rd3",
+					"expression": "1..3"
+				},
+				{
+					"name": "r2",
+					"expression": "eval:r1+rd2"
+				},
+				{
+					"name": "r3",
+					"expression": "eval:r2+rd3"
+				},
+				{
+					"name": "c1",
+					"expression": "1..3"
+				},
+				{
+					"name": "cd2",
+					"expression": "1..3"
+				},
+				{
+					"name": "cd3",
+					"expression": "1..3"
+				},
+				{
+					"name": "c2",
+					"expression": "eval:c1+cd2"
+				},
+				{
+					"name": "c3",
+					"expression": "eval:c2+cd3"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:r1+c2}}"
+				},
+				{
+					"expectedAnswer": "{{eval:r2+c1}}"
+				},
+				{
+					"expectedAnswer": "{{eval:r2+c3}}"
+				},
+				{
+					"expectedAnswer": "{{eval:r3+c2}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque case est la somme du nombre de sa ligne et du nombre de sa colonne.",
+					"Les cases à compléter : ${{r1}}+{{c2}}={{eval:r1+c2}}$ ; ${{r2}}+{{c1}}={{eval:r2+c1}}$ ; ${{r2}}+{{c3}}={{eval:r2+c3}}$ ; ${{r3}}+{{c2}}={{eval:r3+c2}}$."
+				]
+			}
+		},
+		{
+			"statement": "Complète le tableau : compte les formes pleines (● ▲ ■) et les formes vides (○ △ □).\n\n{{if:p1==1|{{if:f1==1|●|{{if:f1==2|▲|■}}}}|{{if:f1==1|○|{{if:f1==2|△|□}}}}}} {{if:p2==1|{{if:f2==1|●|{{if:f2==2|▲|■}}}}|{{if:f2==1|○|{{if:f2==2|△|□}}}}}} {{if:p3==1|{{if:f3==1|●|{{if:f3==2|▲|■}}}}|{{if:f3==1|○|{{if:f3==2|△|□}}}}}} {{if:p4==1|{{if:f4==1|●|{{if:f4==2|▲|■}}}}|{{if:f4==1|○|{{if:f4==2|△|□}}}}}} {{if:p5==1|{{if:f5==1|●|{{if:f5==2|▲|■}}}}|{{if:f5==1|○|{{if:f5==2|△|□}}}}}} {{if:p6==1|{{if:f6==1|●|{{if:f6==2|▲|■}}}}|{{if:f6==1|○|{{if:f6==2|△|□}}}}}} {{if:p7==1|{{if:f7==1|●|{{if:f7==2|▲|■}}}}|{{if:f7==1|○|{{if:f7==2|△|□}}}}}} {{if:p8==1|{{if:f8==1|●|{{if:f8==2|▲|■}}}}|{{if:f8==1|○|{{if:f8==2|△|□}}}}}} {{if:p9==1|{{if:f9==1|●|{{if:f9==2|▲|■}}}}|{{if:f9==1|○|{{if:f9==2|△|□}}}}}} {{if:p10==1|{{if:f10==1|●|{{if:f10==2|▲|■}}}}|{{if:f10==1|○|{{if:f10==2|△|□}}}}}}\n\n|  | plein | vide |\n|---|---|---|\n| rond | $?$ | ${{n12}}$ |\n| triangle | $?$ | $?$ |\n| carré | ${{n31}}$ | $?$ |",
+			"variables": [
+				{
+					"name": "f1",
+					"expression": "1..3"
+				},
+				{
+					"name": "p1",
+					"expression": "1..2"
+				},
+				{
+					"name": "f2",
+					"expression": "1..3"
+				},
+				{
+					"name": "p2",
+					"expression": "1..2"
+				},
+				{
+					"name": "f3",
+					"expression": "1..3"
+				},
+				{
+					"name": "p3",
+					"expression": "1..2"
+				},
+				{
+					"name": "f4",
+					"expression": "1..3"
+				},
+				{
+					"name": "p4",
+					"expression": "1..2"
+				},
+				{
+					"name": "f5",
+					"expression": "1..3"
+				},
+				{
+					"name": "p5",
+					"expression": "1..2"
+				},
+				{
+					"name": "f6",
+					"expression": "1..3"
+				},
+				{
+					"name": "p6",
+					"expression": "1..2"
+				},
+				{
+					"name": "f7",
+					"expression": "1..3"
+				},
+				{
+					"name": "p7",
+					"expression": "1..2"
+				},
+				{
+					"name": "f8",
+					"expression": "1..3"
+				},
+				{
+					"name": "p8",
+					"expression": "1..2"
+				},
+				{
+					"name": "f9",
+					"expression": "1..3"
+				},
+				{
+					"name": "p9",
+					"expression": "1..2"
+				},
+				{
+					"name": "f10",
+					"expression": "1..3"
+				},
+				{
+					"name": "p10",
+					"expression": "1..2"
+				},
+				{
+					"name": "n11",
+					"expression": "eval:((f1-2)*(f1-3)/(2))*((p1-2)/(-1))+((f2-2)*(f2-3)/(2))*((p2-2)/(-1))+((f3-2)*(f3-3)/(2))*((p3-2)/(-1))+((f4-2)*(f4-3)/(2))*((p4-2)/(-1))+((f5-2)*(f5-3)/(2))*((p5-2)/(-1))+((f6-2)*(f6-3)/(2))*((p6-2)/(-1))+((f7-2)*(f7-3)/(2))*((p7-2)/(-1))+((f8-2)*(f8-3)/(2))*((p8-2)/(-1))+((f9-2)*(f9-3)/(2))*((p9-2)/(-1))+((f10-2)*(f10-3)/(2))*((p10-2)/(-1))"
+				},
+				{
+					"name": "n12",
+					"expression": "eval:((f1-2)*(f1-3)/(2))*((p1-1)/(1))+((f2-2)*(f2-3)/(2))*((p2-1)/(1))+((f3-2)*(f3-3)/(2))*((p3-1)/(1))+((f4-2)*(f4-3)/(2))*((p4-1)/(1))+((f5-2)*(f5-3)/(2))*((p5-1)/(1))+((f6-2)*(f6-3)/(2))*((p6-1)/(1))+((f7-2)*(f7-3)/(2))*((p7-1)/(1))+((f8-2)*(f8-3)/(2))*((p8-1)/(1))+((f9-2)*(f9-3)/(2))*((p9-1)/(1))+((f10-2)*(f10-3)/(2))*((p10-1)/(1))"
+				},
+				{
+					"name": "n21",
+					"expression": "eval:((f1-1)*(f1-3)/(-1))*((p1-2)/(-1))+((f2-1)*(f2-3)/(-1))*((p2-2)/(-1))+((f3-1)*(f3-3)/(-1))*((p3-2)/(-1))+((f4-1)*(f4-3)/(-1))*((p4-2)/(-1))+((f5-1)*(f5-3)/(-1))*((p5-2)/(-1))+((f6-1)*(f6-3)/(-1))*((p6-2)/(-1))+((f7-1)*(f7-3)/(-1))*((p7-2)/(-1))+((f8-1)*(f8-3)/(-1))*((p8-2)/(-1))+((f9-1)*(f9-3)/(-1))*((p9-2)/(-1))+((f10-1)*(f10-3)/(-1))*((p10-2)/(-1))"
+				},
+				{
+					"name": "n22",
+					"expression": "eval:((f1-1)*(f1-3)/(-1))*((p1-1)/(1))+((f2-1)*(f2-3)/(-1))*((p2-1)/(1))+((f3-1)*(f3-3)/(-1))*((p3-1)/(1))+((f4-1)*(f4-3)/(-1))*((p4-1)/(1))+((f5-1)*(f5-3)/(-1))*((p5-1)/(1))+((f6-1)*(f6-3)/(-1))*((p6-1)/(1))+((f7-1)*(f7-3)/(-1))*((p7-1)/(1))+((f8-1)*(f8-3)/(-1))*((p8-1)/(1))+((f9-1)*(f9-3)/(-1))*((p9-1)/(1))+((f10-1)*(f10-3)/(-1))*((p10-1)/(1))"
+				},
+				{
+					"name": "n31",
+					"expression": "eval:((f1-1)*(f1-2)/(2))*((p1-2)/(-1))+((f2-1)*(f2-2)/(2))*((p2-2)/(-1))+((f3-1)*(f3-2)/(2))*((p3-2)/(-1))+((f4-1)*(f4-2)/(2))*((p4-2)/(-1))+((f5-1)*(f5-2)/(2))*((p5-2)/(-1))+((f6-1)*(f6-2)/(2))*((p6-2)/(-1))+((f7-1)*(f7-2)/(2))*((p7-2)/(-1))+((f8-1)*(f8-2)/(2))*((p8-2)/(-1))+((f9-1)*(f9-2)/(2))*((p9-2)/(-1))+((f10-1)*(f10-2)/(2))*((p10-2)/(-1))"
+				},
+				{
+					"name": "n32",
+					"expression": "eval:((f1-1)*(f1-2)/(2))*((p1-1)/(1))+((f2-1)*(f2-2)/(2))*((p2-1)/(1))+((f3-1)*(f3-2)/(2))*((p3-1)/(1))+((f4-1)*(f4-2)/(2))*((p4-1)/(1))+((f5-1)*(f5-2)/(2))*((p5-1)/(1))+((f6-1)*(f6-2)/(2))*((p6-1)/(1))+((f7-1)*(f7-2)/(2))*((p7-1)/(1))+((f8-1)*(f8-2)/(2))*((p8-1)/(1))+((f9-1)*(f9-2)/(2))*((p9-1)/(1))+((f10-1)*(f10-2)/(2))*((p10-1)/(1))"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{n11}}"
+				},
+				{
+					"expectedAnswer": "{{n21}}"
+				},
+				{
+					"expectedAnswer": "{{n22}}"
+				},
+				{
+					"expectedAnswer": "{{n32}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Une case du tableau compte les formes de sa ligne qui sont pleines ou vides, selon sa colonne.",
+					"On compte : ronds pleins (●) : ${{n11}}$ ; triangles pleins (▲) : ${{n21}}$ ; triangles vides (△) : ${{n22}}$ ; carrés vides (□) : ${{n32}}$.",
+					"On vérifie qu'on a compté tous les objets : ${{n11}}+{{n12}}+{{n21}}+{{n22}}+{{n31}}+{{n32}}=10$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Table d'addition : 5, 5, 10, 10",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"rd2": "2",
+				"rd3": "3",
+				"c1": "1",
+				"cd2": "2",
+				"cd3": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5", "5", "10", "10"]
+		},
+		{
+			"description": "Erreur : 4 + 6 = 9",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"rd2": "2",
+				"rd3": "3",
+				"c1": "1",
+				"cd2": "2",
+				"cd3": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5", "5", "9", "10"]
+		},
+		{
+			"description": "Erreur : ligne et colonne multipliées",
+			"variationIndex": 0,
+			"variables": {
+				"r1": "2",
+				"rd2": "2",
+				"rd3": "3",
+				"c1": "1",
+				"cd2": "2",
+				"cd3": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6", "4", "24", "21"]
+		},
+		{
+			"description": "Formes : 2, 2, 1, 1",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "1",
+				"p1": "1",
+				"f2": "1",
+				"p2": "2",
+				"f3": "2",
+				"p3": "1",
+				"f4": "3",
+				"p4": "1",
+				"f5": "2",
+				"p5": "2",
+				"f6": "1",
+				"p6": "1",
+				"f7": "3",
+				"p7": "2",
+				"f8": "2",
+				"p8": "1",
+				"f9": "3",
+				"p9": "1",
+				"f10": "1",
+				"p10": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2", "2", "1", "1"]
+		},
+		{
+			"description": "Erreur : triangles plein et vide inversés",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "1",
+				"p1": "1",
+				"f2": "1",
+				"p2": "2",
+				"f3": "2",
+				"p3": "1",
+				"f4": "3",
+				"p4": "1",
+				"f5": "2",
+				"p5": "2",
+				"f6": "1",
+				"p6": "1",
+				"f7": "3",
+				"p7": "2",
+				"f8": "2",
+				"p8": "1",
+				"f9": "3",
+				"p9": "1",
+				"f10": "1",
+				"p10": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2", "1", "2", "1"]
+		},
+		{
+			"description": "Erreur : toutes les formes d'une ligne comptées",
+			"variationIndex": 1,
+			"variables": {
+				"f1": "1",
+				"p1": "1",
+				"f2": "1",
+				"p2": "2",
+				"f3": "2",
+				"p3": "1",
+				"f4": "3",
+				"p4": "1",
+				"f5": "2",
+				"p5": "2",
+				"f6": "1",
+				"p6": "1",
+				"f7": "3",
+				"p7": "2",
+				"f8": "2",
+				"p8": "1",
+				"f9": "3",
+				"p9": "1",
+				"f10": "1",
+				"p10": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4", "3", "3", "3"]
+		}
+	]
+}

@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1759 et son `db:migrate`._
+_Mis à jour le 2026-10-25, après #1763 et son `db:migrate`._
 
-- **État** : groupe A COMPLET (#1712 → #1753) ; **lot H mergé (#1759)** : 3 brouillons en prod (`9780d3c1` CP-046, `f1759d81` CP-047, `0f7381e6` CP-016), migration `20261026130000` jouée et vérifiée en prod (sous-notion + 1 tag chacun, `updated_at` inchangé, trigger actif). Page à cocher H : https://claude.ai/artifact/PG6EhGTHaAkTiEkSSst4st — **3/3 OK** par David. Blocs horloge et opération pas en prod : brouillons mal rendus dans l'admin de prod jusqu'au `deploy:prod`.
-- **Prochaine action** : phase 0 du lot **B1** tableaux (068, 069, 084), puis B2 → B3 (§ 4 nonies).
+- **État** : groupe A, lot H et **lot B1 (#1763)** en prod en brouillon. B1 : `7752c23e` CP-068, `76d14aa6` CP-069, `55662eef` CP-084 ; migration `20261026140000` jouée et vérifiée (sous-notion + 1 tag chacun, `updated_at` inchangé, trigger actif). Page à cocher B1 : https://claude.ai/artifact/CNdqUtbVKsRZneNx13ksWo (collection `verdicts`, 0 verdict).
+- **Prochaine action** : relevé des verdicts B1 ; puis phase 0 du lot **B2** (reconnaître sur une figure, affichage seul : 054-056, 057, 061, 062, 067 ; CP-034 y viendra si David le range en QCM sur figure), puis B3 (§ 4 nonies).
 - **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 034 et 058 à réexaminer.
-- **En attente de David** : **toutes les pages relues OK** (A1 à A6, H) ; publication A1 à H en un lot ; vérification manuelle #1702.
-- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; le bon choix d'un QCM n'accepte qu'UN `{{if:…}}` ; **une variable `h` remplace la lettre « h » des valeurs (« 6 h » → « 6 12 ») : ne pas nommer une variable comme une lettre du texte** ; bloc ```operation : plus grand terme en premier ; sous zsh, `$LISTE` ne se découpe pas ; corps de commit ≤ 100 caractères par ligne ; jamais de variable `e` ; relire le rendu ; la base refuse un tag sur un modèle sans nœud.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1759).
+- **En attente de David** : relecture de la page B1 ; publication A1 à H et B1 en un lot ; vérification manuelle #1702.
+- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; **case dans un tableau = `$?$` (un `[_]` déborde au téléphone)** ; **un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte** ; le moteur ne mélange pas : indicatrices de Lagrange ; ne pas nommer une variable comme une lettre du texte ; jamais de variable `e` ; corps de commit ≤ 100 caractères par ligne ; la base refuse un tag sur un modèle sans nœud.
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1763).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -143,6 +143,17 @@ David suit mes recommandations (« je suis tes recos. go »).
 - 3 modèles, chacun sur la sous-notion de son point, un tag : CP-046 « Quelle heure est-il ? » (case, « Il est [_] h. », réponse 1 à 12, 15 refusé pour 3 h) ; CP-047 « Quelle horloge indique… ? » (QCM de 3 horloges : bonne, aiguilles inversées — 12 h 5n, ou 6 h pour 12 h —, heure voisine ; V2 en contexte : école 8 h, cantine midi, goûter 4 h de l'après-midi, dîner 7 h du soir) ; CP-016 « Pose et calcule une addition » (bloc ```operation, `retenues: oui`, cases de retenue non jugées ; sans retenue, avec retenue, 2 + 1 chiffres, trois termes avec retenue ; somme ≤ 99, le plus grand terme en premier).
 - Pas de QCM pour CP-046 (la case suffit). Les blocs `horloge et `operation ne sont pas en prod : brouillons jusqu'au `deploy:prod`.
 
+## 4 undecies. Lot B1 : décisions (David, 2026-10-25)
+
+David suit mes recommandations (« je suis tes recos, go »).
+
+- 3 modèles, réponses en case nombre dans un tableau markdown (`tableau-croise` n'a pas de case jugée) ; chacun sur la sous-notion de son point, un tag.
+- CP-068 « Compte et range dans un tableau » (« tableaux ») : file de formes mélangées, tableau Forme / Nombre ; 3 formes ● ▲ ■ et 9 objets, ou 4 formes (+ ★) et 12 objets ; un compte à 0 est une réponse valable.
+- CP-069 « Complète le tableau à double entrée » : table d'addition 3 × 3 (en-têtes croissants de 1 à 9, 4 cases en croix) ; formes pleines ou vides (10 objets parmi ● ○ ▲ △ ■ □, rond / triangle / carré × plein / vide, 2 cases données, 4 à remplir).
+- CP-084 « Remplis le tableau à double entrée » : tableau préparé entièrement vide, données en phrases (« Léa a 3 billes rouges et 2 billes bleues. ») ; 2 ou 3 enfants × 2 couleurs. Nombres de 1 à 9 (et non 0 à 9 : « Léa a 0 bille rouge » ne se dit pas) — validé par David. En-tête à trouver : écarté (réponse en mot).
+- Formes en symboles (pas d'emojis : rendu PDF incertain).
+- Table d'addition 4 colonnes : léger défilement horizontal au téléphone, accepté par David (tient sur tablette).
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -193,3 +204,6 @@ David suit mes recommandations (« je suis tes recos. go »).
 - 2026-10-25 : case « figure », phase 0 de CP-059 écrite en brouillon ([geometrie-validation](geometrie-validation-progress.md)), 8 questions à David ; CP-034 à réexaminer (« comparer », pas « reporter »).
 - 2026-10-25 : phase 0 de CP-059 validée par David ([geometrie-validation](geometrie-validation-progress.md), 8 décisions) ; modèles 059/060 dans le chantier figure.
 - 2026-10-25 : § 2 bis / 2 ter (case « figure ») déplacés dans [geometrie-validation](geometrie-validation-progress.md).
+- 2026-10-25 : lot B1, phase 0 validée (§ 4 undecies), worktree `../ubumaths-wt-questions` (`feat/questions-b1`) ; 3 modèles écrits, 16 specs vertes, rendu relu à 390 px (cases `[_]` → `$?$` : le champ texte débordait ; « la ligne de Inès » → Lina).
+- 2026-10-25 : B1, 3 brouillons créés en prod (`create-questions --publier`, go de David : `7752c23e`, `76d14aa6`, `55662eef`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
+- 2026-10-25 : #1763 mergée (CI verte, audit sécurité sans finding bloquant) ; `db:migrate` joué, vérifié en prod (3 modèles B1 sur leur sous-notion, 1 tag chacun) ; page à cocher B1 publiée.

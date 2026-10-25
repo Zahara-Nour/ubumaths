@@ -38,7 +38,7 @@ import { validateTemplate } from '../../../src/lib/questions/validators/template
 import { questionTemplateSchema } from '../../../src/lib/questions/template-schema';
 import { parseLatex, parseLatexSafe } from '../../../src/lib/mathAST/parser';
 import { areEquivalent } from '../../../src/lib/math';
-import { computeNumericValue } from '../../../src/lib/mathAST/solve/numeric-value';
+import { computeNumericValue } from '../../../src/lib/mathAST/eval/numeric-value';
 import {
 	convertToLatex,
 	resolveExpression

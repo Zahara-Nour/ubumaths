@@ -33,7 +33,7 @@ import { getVariables, substitute } from '../eval/substitute';
 import { findNodes, replaceNode } from '../transforms';
 import { getPolynomialDegree } from '../analysis/expression-classify';
 import { constantSign } from '../common/constant-sign';
-import { computeNumericValue } from './numeric-value';
+import { computeNumericValue } from '../eval/numeric-value';
 import { isZeroNode } from './solvers/polynomial';
 import { createStepRecorder } from './step-recorder';
 import { getRuleDescription } from './descriptions-fr';

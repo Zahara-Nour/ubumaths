@@ -113,7 +113,7 @@ import {
 	writeLimitValue,
 	containsFloatArtifact
 } from './exact-evaluation';
-import { getNumericValue, ZERO_TOLERANCE } from '../common';
+import { literalNumberValue, ZERO_TOLERANCE } from '../common';
 import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
@@ -190,7 +190,7 @@ function validateApproachInDomain(
 				};
 	}
 
-	const approachVal = getNumericValue(approach);
+	const approachVal = literalNumberValue(approach);
 	if (approachVal === null) {
 		return { valid: true, leftDefined: true, rightDefined: true };
 	}
@@ -539,7 +539,7 @@ function containsLogOfZero(node: MathNode): boolean {
 				isFunction(n) &&
 				(n.name === 'ln' || n.name === 'log') &&
 				n.args.length === 1 &&
-				getNumericValue(stripDelimiters(n.args[0])) === 0
+				literalNumberValue(stripDelimiters(n.args[0])) === 0
 		).length > 0
 	);
 }
@@ -1461,7 +1461,7 @@ function tryConstantFactor(
 		return { value: positive ? positiveInfinity() : negativeInfinity() };
 	}
 	// k·0 = 0 : sinon « 2 0 » (produit non réduit) ou « −0 »
-	if (getNumericValue(inner.value) === 0) return { value: number('0') };
+	if (literalNumberValue(inner.value) === 0) return { value: number('0') };
 	const value = exactProduct(split.constant, inner.value);
 	return value === null ? null : { value };
 }
@@ -1858,7 +1858,7 @@ function toTermLimit(result: LimitResult): TermLimit | null {
 	if (value === null || value === undefined) return null;
 	if (result.status === 'approximate') return null;
 	if (isInfinity(value)) return { kind: 'infinite', sign: value.sign === 'positive' ? 1 : -1 };
-	const numeric = getNumericValue(value);
+	const numeric = literalNumberValue(value);
 	if (numeric === null) return null;
 	return { kind: 'finite', value: numeric };
 }
@@ -2637,7 +2637,7 @@ function hasVanishingDenominator(
  */
 function pointInDomain(expr: MathNode, varName: string, approach: MathNode): boolean {
 	// π, π/2 : pas un littéral numérique, mais une valeur approchée suffit ici
-	const value = getNumericValue(approach) ?? computeNumericValue(approach);
+	const value = literalNumberValue(approach) ?? computeNumericValue(approach);
 	if (value === null) return true;
 	try {
 		return containsValue(computeDomain(expr, varName).domain, value);
@@ -2672,7 +2672,7 @@ function tryDirectSubstitutionExact(
 				node,
 				'summarized',
 				approach,
-				`Substitution de ${varName} par ${getNumericValue(approach) ?? approach}`
+				`Substitution de ${varName} par ${literalNumberValue(approach) ?? approach}`
 			);
 			return node;
 		}
@@ -2687,7 +2687,7 @@ function tryDirectSubstitutionExact(
 			node,
 			'summarized',
 			approach,
-			`Substitution de ${varName} par ${getNumericValue(approach) ?? approach}`
+			`Substitution de ${varName} par ${literalNumberValue(approach) ?? approach}`
 		);
 		return node;
 	}
@@ -2716,7 +2716,7 @@ function tryDirectSubstitutionNumeric(
 			resultNode,
 			'summarized',
 			approach,
-			`Substitution de ${varName} par ${getNumericValue(approach) ?? approach}`
+			`Substitution de ${varName} par ${literalNumberValue(approach) ?? approach}`
 		);
 		return resultNode;
 	}

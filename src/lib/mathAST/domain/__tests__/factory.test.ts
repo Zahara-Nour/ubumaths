@@ -43,7 +43,7 @@ import {
 	UNIVERSAL_DOMAIN
 } from '../factory';
 import { isNumber, isNegativeInfinity, isPositiveInfinity } from '$lib/mathAST/guards';
-import { getNumericValue } from '$lib/mathAST/common/numeric';
+import { literalNumberValue } from '$lib/mathAST/common/numeric';
 import { number, opposite } from '$lib/mathAST/factory';
 
 describe('Endpoint factories', () => {
@@ -306,11 +306,11 @@ describe('Common domain shortcuts', () => {
 		it('creates [-1, 1]', () => {
 			const d = unitInterval();
 			expect(d.kind).toBe('interval_set');
-			// Bounds are MathNodes — use getNumericValue to accept both
+			// Bounds are MathNodes — use literalNumberValue to accept both
 			// number('1') and opposite(number('1')) (canonical for negatives).
-			expect(getNumericValue(d.intervals[0].lower.value)).toBe(-1);
+			expect(literalNumberValue(d.intervals[0].lower.value)).toBe(-1);
 			expect(d.intervals[0].lower.type).toBe('closed');
-			expect(getNumericValue(d.intervals[0].upper.value)).toBe(1);
+			expect(literalNumberValue(d.intervals[0].upper.value)).toBe(1);
 			expect(d.intervals[0].upper.type).toBe('closed');
 		});
 	});

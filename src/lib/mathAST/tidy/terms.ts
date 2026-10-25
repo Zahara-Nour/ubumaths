@@ -1,9 +1,12 @@
 /**
- * `tidyTerms()` — mettre une dérivée au propre, sans perdre ce qui la rend lisible
+ * `tidyTerms()` — mettre au propre en gardant l'ordre écrit des termes
  *
- * `differentiate` écrit a·n·xⁿ⁻¹ sans calculer le produit : la carte f′ de
- * `3x^3` montrait `3*3x^2` (retour de David, 2026-10-04). `tidy` le règle,
- * mais il RÉORDONNE une somme : la règle du produit donne `2x·sin x + x²·cos x`
+ * Un résultat rendu par une règle (dérivée, primitive) ou tapé (formule du
+ * tableur, valeur interdite) garde l'ordre de ses termes : seule l'écriture
+ * superflue part. Né pour les dérivées : `differentiate` écrit a·n·xⁿ⁻¹
+ * sans calculer le produit, la carte f′ de `3x^3` montrait `3*3x^2` (retour
+ * de David, 2026-10-04). `tidy` le règle, mais il RÉORDONNE une somme : la
+ * règle du produit donne `2x·sin x + x²·cos x`
  * (u′v + uv′), et `tidy` en faisait `x²·cos x + …`.
  *
  * La règle (lot 4c du chantier simplify-carte, S2, 2026-10-23) :
@@ -50,7 +53,10 @@ function leadsNegative(node: MathNode): boolean {
 }
 
 /**
- * Une dérivée mise au propre, en gardant l'ordre de la règle.
+ * Une expression mise au propre dans l'ordre écrit de ses termes (dérivée,
+ * primitive, formule, valeur interdite) : `tidy({ order: 'kept' })`, sauf
+ * négatif en tête évitable, numérateur d'un quotient et parenthèses
+ * sous-entendues (voir l'en-tête du module).
  *
  * @param options - Transmises à `tidy` ; `domain: [f]` pour la dérivée de `f`
  *   (S3 : `x·(1/x)` ne se simplifie que si le domaine de `f` exclut 0)

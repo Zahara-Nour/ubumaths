@@ -17,6 +17,7 @@ export type DemoPath =
 	| '/demo/geometrie'
 	| '/demo/constructions'
 	| '/demo/cercle-trigo'
+	| '/demo/blocs'
 	| '/demo/editeur'
 	| '/demo/lexique'
 	| '/demo/cartes'
@@ -39,7 +40,7 @@ export const DEMO_HUB = {
 		'Chiphre en action, sans compte : les questions, les corrigés, le diaporama, les figures de géométrie et les autres outils de la plateforme.'
 } as const;
 
-/** Du plus parlant au plus technique (ordre validé par David le 2026-10-25 ; constructions après la géométrie, phase 8) */
+/** Du plus parlant au plus technique (ordre validé par David le 2026-10-25 ; constructions après la géométrie, phase 8 ; blocs après le cercle trigo, catalogue-blocs) */
 export const DEMO_PAGES: DemoPage[] = [
 	{
 		path: '/demo/questions',
@@ -76,6 +77,12 @@ export const DEMO_PAGES: DemoPage[] = [
 		title: 'Le cercle trigonométrique',
 		description:
 			'Un cercle qui se dessine tout seul : valeurs remarquables, solutions d’équations et d’inéquations.'
+	},
+	{
+		path: '/demo/blocs',
+		title: 'Les blocs du prof',
+		description:
+			'Horloges, opérations posées, diagrammes, arbres, tableaux de variations : quelques lignes écrites par le prof, une figure pour l’élève.'
 	},
 	{
 		path: '/demo/editeur',

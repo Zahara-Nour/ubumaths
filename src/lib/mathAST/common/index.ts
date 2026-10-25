@@ -19,7 +19,7 @@ export {
 export { formatNumber, cleanNumber } from './format.js';
 
 // Numeric Evaluation
-export { getNumericValue, numericNode, extractRational, evaluateNumeric } from './numeric.js';
+export { literalNumberValue, numericNode, extractRational, evaluateNumeric } from './numeric.js';
 
 // Simplified Constructors
 export {

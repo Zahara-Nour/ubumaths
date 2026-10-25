@@ -22,7 +22,7 @@ import type { MathNode, SubscriptNode } from '$lib/mathAST/types';
 import type { Domain } from '$lib/mathAST/domain/types';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeReciprocal, type ReciprocalResult } from '$lib/mathAST/reciprocal';
-import { approx } from '$lib/mathAST/reciprocal/image';
+import { computeNumericValueOrInfinity } from '$lib/mathAST/eval/numeric-value';
 import { textbookWriting } from '$lib/mathAST/reciprocal/writing';
 import { solve } from '$lib/mathAST/solve/solve';
 import { isSolverFailure } from '$lib/mathAST/solve/types';
@@ -223,7 +223,7 @@ function parameterValues(atelier: Atelier, parameters: readonly string[]): Recor
 	const values: Record<string, number> = {};
 	for (const name of parameters) {
 		const read = substitutedAstOf(atelier, name);
-		const value = read.ok ? approx(read.ast) : null;
+		const value = read.ok ? computeNumericValueOrInfinity(read.ast) : null;
 		if (value !== null) values[name] = value;
 	}
 	return values;
@@ -338,7 +338,8 @@ function letteredFormula(
 	} catch {
 		return null;
 	}
-	const at = (node: MathNode, t: number) => approx(substitute(node, { [INTERNAL_LETTER]: t }));
+	const at = (node: MathNode, t: number) =>
+		computeNumericValueOrInfinity(substitute(node, { [INTERNAL_LETTER]: t }));
 	const points = CHECK_POINTS.filter((t) => {
 		if (!containsValue(departure, t)) return false;
 		const expected = at(numeric, t);
@@ -618,7 +619,7 @@ function inverseArguments(
 function approxOf(text: string): number | null {
 	const ast = astOf(text);
 	if (ast === null || getVariables(ast).size > 0) return null;
-	const value = approx(ast);
+	const value = computeNumericValueOrInfinity(ast);
 	return value !== null && Number.isFinite(value) ? value : null;
 }
 
@@ -688,7 +689,7 @@ function singlePoint(domain: Domain): MathNode | null {
 	if (domain.kind !== 'interval_set' || domain.intervals.length !== 1) return null;
 	const { lower, upper } = domain.intervals[0];
 	if (lower.type !== 'closed' || upper.type !== 'closed') return null;
-	const a = approx(lower.value);
-	const b = approx(upper.value);
+	const a = computeNumericValueOrInfinity(lower.value);
+	const b = computeNumericValueOrInfinity(upper.value);
 	return a !== null && b !== null && Math.abs(a - b) < 1e-12 ? lower.value : null;
 }
