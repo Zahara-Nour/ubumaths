@@ -5,10 +5,10 @@
 _Mis à jour le 2026-10-25, après #1753 (suite décidée le même jour)._
 
 - **État** : **groupe A (texte seul) COMPLET** — A1 (#1712), A2 (#1720), A4 (#1728), A5 (#1736), A3 (#1744), A6 (#1753) livrés, migrations jouées. A6 : 9 brouillons sur le nœud de leur point, 1 tag chacun (`db:migrate` joué et vérifié en prod le 2026-10-25, question d'accès tranchée : personne). Page à cocher A6 : https://claude.ai/artifact/Y9pL4cNshyjycC2wtbdtWG (collection `verdicts`) — 8/9 OK ; « Écrire un nombre en lettres » (`92c8e499`) refait (leurres d'orthographe, de forme, de numération), mis à jour en prod, à relire.
-- **Prochaine action** : phase 0 du lot H (horloge CP-046, CP-047 + addition posée CP-016), proposée le 2026-10-25, **en attente de validation** ; ensuite B1 tableaux → B2 reconnaître sur une figure → B3 images fixes, puis case « figure » (§ 4 nonies).
+- **Prochaine action** : lot H (§ 4 decies) : 3 modèles écrits et verts dans `scripts/questions/cp-h/` ; brouillons créés en prod, migration nœud + tag et test verts ; audit OK, page à cocher https://claude.ai/artifact/PG6EhGTHaAkTiEkSSst4st ; PR puis `db:migrate` au merge — **bloqué** tant que `20261026120000_demo_scripts_prof_seul` (autre session) n'est pas jouée ou tranchée par David ; ensuite B1 tableaux → B2 reconnaître sur une figure → B3 images fixes, puis case « figure » (§ 4 nonies).
 - **En attente de David** : relecture de `92c8e499` (page A6) ; relecture des 6 brouillons A3 (https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71, aucun verdict encore) ; publication des brouillons A1 à A6 en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; **le bon choix d'un QCM n'accepte qu'UN `{{if:…}}`, pas une chaîne imbriquée** ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau (dossier d'un seul fichier pour n'en toucher qu'un) ; leurres d'un QCM de mots : chacun vise une erreur (orthographe, forme, numération) ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; la base refuse un tag sur un modèle sans nœud.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1753).
+- **Worktree / branche** : `../ubumaths-wt-questions` (`feat/questions-h`).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -155,6 +155,13 @@ David suit mes recommandations (« je te suis »).
 3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 008, 058, 034 restent pour la case « figure ».
 4. Puis case « figure » (chantier à part), collection, monnaie — inchangé (§ 4 bis).
 
+## 4 decies. Lot H : décisions (David, 2026-10-25)
+
+David suit mes recommandations (« je suis tes recos. go »).
+
+- 3 modèles, chacun sur la sous-notion de son point, un tag : CP-046 « Quelle heure est-il ? » (case, « Il est [_] h. », réponse 1 à 12, 15 refusé pour 3 h) ; CP-047 « Quelle horloge indique… ? » (QCM de 3 horloges : bonne, aiguilles inversées — 12 h 5n, ou 6 h pour 12 h —, heure voisine ; V2 en contexte : école 8 h, cantine midi, goûter 4 h de l'après-midi, dîner 7 h du soir) ; CP-016 « Pose et calcule une addition » (bloc ```operation, `retenues: oui`, cases de retenue non jugées ; sans retenue, avec retenue, 2 + 1 chiffres, trois termes avec retenue ; somme ≤ 99, le plus grand terme en premier).
+- Pas de QCM pour CP-046 (la case suffit). Les blocs `horloge et `operation ne sont pas en prod : brouillons jusqu'au `deploy:prod`.
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -194,3 +201,6 @@ David suit mes recommandations (« je te suis »).
 - 2026-10-25 : A6, PR #1753 ; audit sécurité non bloquant (garde « déjà tagué » inatteignable seule : la base refuse un tag sans nœud, testé) ; page à cocher A6 publiée.
 - 2026-10-25 : page à cocher A6 relue par David, 8/9 OK ; « Écrire un nombre en lettres » à revoir (leurres sans enjeu) → leurres d'orthographe, de forme et de numération, brouillon mis à jour en prod (go de David), verdict remis à zéro.
 - 2026-10-25 : #1753 mergée ; question d'accès A6 tranchée par David (personne) ; `db:migrate` joué, vérifié en prod (9 modèles sur le nœud de leur point, 1 tag chacun, statut brouillon, trigger actif). Groupe A complet.
+- 2026-10-25 : lot H, phase 0 validée (§ 4 decies), worktree `../ubumaths-wt-questions` (`feat/questions-h`) ; 3 modèles écrits, 21 specs vertes, rendu relu (singulier « 1 heure », variable `h` renommée `n` : la lettre « h » des valeurs était remplacée).
+- 2026-10-25 : H, 3 brouillons créés en prod (`create-questions --publier`, go de David : `9780d3c1`, `f1759d81`, `0f7381e6`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026130000` nœud + tag et test, rouge (5/9) puis vert.
+- 2026-10-25 : H, audit sécurité sans finding bloquant (⚠️ `20261026120000_demo_scripts_prof_seul` est sur `main` et pas jouée en prod : un `db:migrate` la jouerait aussi) ; page à cocher H publiée : https://claude.ai/artifact/PG6EhGTHaAkTiEkSSst4st (collection `verdicts`).

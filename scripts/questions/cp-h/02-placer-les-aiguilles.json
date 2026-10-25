@@ -1,0 +1,184 @@
+{
+	"title": "Quelle horloge indique… ? (heures entières)",
+	"description": "Reconnaître l'horloge qui montre une heure entière ≤ 12 ; leurres : aiguilles inversées, heure voisine",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Durées",
+	"subdomain": "Lire l'heure",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quelle horloge indique ${{n}}$ {{if:n==1|heure|heures}} ?",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "1..12"
+				},
+				{
+					"name": "inv",
+					"expression": "{{if:n==12|6 h|12 h {{eval:5*n}}}}"
+				},
+				{
+					"name": "v",
+					"expression": "{{if:n==12|11|{{eval:n+1}}}}"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "```horloge\nheure: {{n}} h\nchiffres: tous\n```"
+				},
+				{
+					"content": "```horloge\nheure: {{inv}}\nchiffres: tous\n```"
+				},
+				{
+					"content": "```horloge\nheure: {{v}} h\nchiffres: tous\n```"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:n==12|Pour $12$ heures, les deux aiguilles sont sur le $12$.|Pour ${{n}}$ {{if:n==1|heure|heures}}, la petite aiguille est sur le ${{n}}$ et la grande sur le $12$. Attention à ne pas les inverser : la grande sur le ${{n}}$, ce serait une autre heure.}}"
+				]
+			}
+		},
+		{
+			"statement": "{{if:k==1|Tu arrives à l'école à $8$ heures du matin.|{{if:k==2|Tu déjeunes à la cantine à midi.|{{if:k==3|Tu prends ton goûter à $4$ heures de l'après-midi.|Tu dînes à $7$ heures du soir.}}}}}} Quelle horloge montre cette heure ?",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "n",
+					"expression": "{{if:k==1|8|{{if:k==2|12|{{if:k==3|4|7}}}}}}"
+				},
+				{
+					"name": "inv",
+					"expression": "{{if:n==12|6 h|12 h {{eval:5*n}}}}"
+				},
+				{
+					"name": "v",
+					"expression": "{{if:n==12|11|{{eval:n+1}}}}"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "```horloge\nheure: {{n}} h\nchiffres: tous\n```"
+				},
+				{
+					"content": "```horloge\nheure: {{inv}}\nchiffres: tous\n```"
+				},
+				{
+					"content": "```horloge\nheure: {{v}} h\nchiffres: tous\n```"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:k==2|Midi, c'est $12$ heures.|{{if:k==1|On lit $8$ heures sur le cadran.|{{if:k==3|$4$ heures de l'après-midi se lit $4$ heures sur le cadran.|$7$ heures du soir se lit $7$ heures sur le cadran.}}}}}}",
+					"{{if:n==12|Pour $12$ heures, les deux aiguilles sont sur le $12$.|Pour ${{n}}$ {{if:n==1|heure|heures}}, la petite aiguille est sur le ${{n}}$ et la grande sur le $12$. Attention à ne pas les inverser : la grande sur le ${{n}}$, ce serait une autre heure.}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 heures : bonne horloge",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"inv": "12 h 20",
+				"v": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : aiguilles inversées",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"inv": "12 h 20",
+				"v": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : heure voisine",
+			"variationIndex": 0,
+			"variables": {
+				"n": "4",
+				"inv": "12 h 20",
+				"v": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "12 heures : bonne horloge",
+			"variationIndex": 0,
+			"variables": {
+				"n": "12",
+				"inv": "6 h",
+				"v": "11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "goûter : 4 heures",
+			"variationIndex": 1,
+			"variables": {
+				"k": "3",
+				"n": "4",
+				"inv": "12 h 20",
+				"v": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "midi : 12 heures",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"n": "12",
+				"inv": "6 h",
+				"v": "11"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : dîner, aiguilles inversées",
+			"variationIndex": 1,
+			"variables": {
+				"k": "4",
+				"n": "7",
+				"inv": "12 h 35",
+				"v": "8"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}
