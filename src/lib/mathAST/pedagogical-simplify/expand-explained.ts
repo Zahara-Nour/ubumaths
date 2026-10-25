@@ -9,11 +9,9 @@
  * `intent: 'developper'`, `questions/generator/correction-generator.ts`), la
  * démo du module (`demo-helpers.ts`).
  *
- * La trace de `generatePedagogicalSimplifySteps` n'est montrée nulle part —
- * mesuré le 2026-10-14 : produits collés (`2 x 1` s'affiche « 2x1 »), la même
- * ligne jusqu'à 13 fois, distribution cachée sous « On regroupe les termes
- * semblables ». Seul son RÉSULTAT sert, ici comme à l'intégration et à la
- * stratégie 6 de `factoriser`, et il ne change pas.
+ * Le pipeline ne rend qu'une étape (`expand`) : seul son RÉSULTAT sert, ici
+ * comme à l'intégration et à la stratégie 6 de `factoriser`. Ce résultat vient
+ * de `expand.ts` (chantier normalize-usages), plus de `normalize`.
  *
  * Le chemin : résultat du pipeline → ordre du manuel (`orderExpanded`) →
  * décimaux → rédaction (`writeExpandSteps`) → rendu, détaillé et résumé.

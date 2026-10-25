@@ -222,8 +222,19 @@ raconté (`2(x+3)`, `(x+1)²` restent) ; `auto` = `reduire`, puis les fractions 
 simplifiées en montrant la factorisation et la condition (`(x²−1)/(x+1) = (x−1)(x+1)/(x+1) =
 x−1`, pour `x ≠ −1`), puis le développement **s'il est plus court** (règle de `simplify`),
 rédigé comme `.développer` ; jamais de factorisation dans le résultat. Mesuré : `auto` rend
-ce que rend `simplify` sur tout le panel, sauf 3 écarts de capacité. `developper` passe
-encore par `normalize` pour son résultat (sa rédaction est celle d'`explainExpansion`).
+ce que rend `simplify` sur tout le panel, sauf 3 écarts de capacité.
+
+**État au 2026-10-25 : `developper` fait** (chantier normalize-usages, § 23 de simplify-carte).
+Son résultat est `expand` (`pedagogical-simplify/expand.ts`), plus `normalize` : distribuer un
+facteur et le signe −, multiplier les parenthèses, puissance entière d'une somme ; une division
+par un nombre se distribue (`(x+1)/2 → ½x + ½`, étape « On distribue ½ ») ; un quotient à
+dénominateur littéral garde sa barre, son numérateur développé (`1/(x+1) + 1` et `(x²−1)/(x+1)` :
+rien à développer) ; l'argument d'une fonction et un exposant se développent sur place. Chaque
+terme calculé et la somme réduite par `tidy` (décimaux gardés), coefficient devant (`½x²`),
+puissances de e regroupées (`eˣ·e^{−x} = 1`, `(eˣ)³ = e^{3x}`). Aucune identité qui perd le
+domaine : `e^{ln x}` reste, `(√u)² → u` seulement si un `√u` reste écrit dans le résultat
+(`√x(√x+1) → x + √x`). Pas de phase A : une seule étape `expand` dit qu'il s'est passé quelque
+chose. `expandedForm` (même module) calcule les termes des étapes (`expand-steps.ts`).
 Le tableau des écarts, pinné par un test : [panel-simplifications.md](panel-simplifications.md).
 Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
 
@@ -817,11 +828,11 @@ le pipeline n'a pas su finir, `2 x 1`). Les exceptions du pipeline remontent à 
 générateur de corrections retombe en silence sur le mode A pour une relation, `unchanged`,
 `unfinished` ou des étapes `null` — jamais sur la trace.
 
-Cette trace n'est montrée nulle part : elle répétait la
-même ligne (passe `normalize`), collait les produits (`2 x 1`) et cachait la distribution — et la
-décision du 2026-09-21 sort la trace de `normalize` du chemin de l'élève. Ce n'est pas un moteur
-de plus (ADR 0007) : `writeExpandSteps(node, answer, { format })` **reçoit** la réponse — le
-résultat de `developper`, que l'intégration et la stratégie 6 emploient tel quel, rangé par
+L'ancienne trace (passe `normalize`) répétait la même ligne, collait les produits (`2 x 1`) et
+cachait la distribution ; depuis normalize-usages, le pipeline ne rend plus qu'une étape `expand`.
+Ce n'est pas un moteur de plus (ADR 0007) : `writeExpandSteps(node, answer, { format })` **reçoit**
+la réponse — le résultat de `developper` (`expand`), que l'intégration et la stratégie 6 emploient
+tel quel, rangé par
 `orderExpanded` (`expand-order.ts`, l'ordre du manuel : puissances décroissantes de x, sinon
 alphabétique, lettres indicées comprises — pour une somme de **monômes** seulement ; un terme sans
 degré, `eˣ`, `√x`, garde l'ordre du module) — et rédige le chemin jusqu'à elle.
@@ -834,24 +845,25 @@ double distribution (ligne à ×, puis « On calcule chaque produit ») ; facteu
 parenthèse ; enfin la ligne jusqu'à la réponse (`closingOf`) : « On réduit » si des termes se
 regroupent, « On ordonne les termes » si seul l'ordre change dans une somme de monômes, l'ordre du
 module fondu dans la ligne précédente, « On écrit chaque terme avec son coefficient » ou « On
-calcule chaque terme » si un terme change d'écriture. Exposant ≥ 4 : une seule ligne. Chaque terme
-est calculé par `normalize` ; chaque image est vérifiée par `areEquivalent` ; jamais deux images
+calcule chaque terme » si un terme change d'écriture. Exposant ≥ 4 : une seule ligne. Une division
+par un nombre se lit comme un facteur `1/n` (« On distribue ½ »). Chaque terme
+est calculé par `expandedForm` (`expand.ts`, le moteur de la réponse) ; chaque image est vérifiée par `areEquivalent` ; jamais deux images
 identiques de suite ; `format` (les décimaux de l'atelier) s'applique à chaque image, la dernière
 comprise. La version résumée fond chaque ligne à × dans le calcul qui la suit. Ce qui ne se lit pas
-(somme sous une fonction, une racine, dans un exposant ou une fraction ; plus de `MAX_PRODUCTS`
+(somme sous une fonction, une racine, dans un exposant ou une fraction à dénominateur littéral ; plus de `MAX_PRODUCTS`
 produits sur une ligne) rend `null` : pas d'étapes, la réponse reste. Titres : la `description` de
 chaque étape ; « pourquoi » : règles `expand-*` de `descriptions-fr.ts`.
 
-La trace de `generatePedagogicalSimplifySteps` reste celle d'avant (son résultat sert à
-l'intégration et à la stratégie 6) ; les deux instantanés qui la figeaient (`pedagogical-simplify-demo`,
-`questions/generated-steps-demo`) figent désormais la rédaction.
+Les deux instantanés qui figeaient l'ancienne trace (`pedagogical-simplify-demo`,
+`questions/generated-steps-demo`) figent la rédaction.
 
 Tests : `pedagogical-simplify/__tests__/expand-steps.test.ts` (équivalence de chaque image),
 `expand-explained.test.ts` (trois issues, réponse = résultat rangé, décimaux, niveau),
 `atelier/__tests__/developper-commande.test.ts` (titres et images rendus, résumé),
 `questions/generator/__tests__/correction-developper.test.ts` (la correction d'exercice montre la
 même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimitees.test.ts` (titres
-à maths entre `$…$`).
+à maths entre `$…$`), `developper-sans-normalize.test.ts` (Q1-Q3 de normalize-usages : fractions,
+division par un nombre, identités).
 
 ## Les nœuds
 
@@ -1382,8 +1394,7 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   `integrate.command.ts` dit « Je ne sais pas calculer cette intégrale » et nomme la technique
   tentée en français (`TECHNIQUE_LABELS`).
 - ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : `auto` et `reduire`
-  ne les montrent plus (2026-10-23) ; seule la trace brute de `developper` en contient
-  encore, et elle n'est montrée nulle part (`explainExpansion` rédige à sa place).
+  ne les montrent plus (2026-10-23), `developper` n'y passe plus (2026-10-25, `expand.ts`).
 
 ## Comment étendre
 
@@ -1651,8 +1662,9 @@ Doublons qui restent, chacun pour un autre besoin :
 
 ## Points ouverts connus (mesurés le 2026-10-10, mis à jour le 2026-10-25)
 
-- Fusion des deux moteurs : `reduire` et `auto` ne passent plus par `normalize` (2026-10-23) ;
-  `developper` y passe encore pour son résultat (voir plus haut).
+- Fusion des deux moteurs : `reduire` et `auto` ne passent plus par `normalize` (2026-10-23),
+  `developper` non plus (2026-10-25, chantier normalize-usages). Restent les ~98
+  `denormalize(normalize())` internes (valeurs exactes, coefficients), lot (b) du chantier.
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
   - `tidy` n'a pas de variante `{ result, conditions }` : `x/x` reste écrit au lieu de « 1, pour
