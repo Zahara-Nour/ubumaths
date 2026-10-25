@@ -308,7 +308,7 @@ Dans un choix de QCM : 3 cm (`--horloge-taille` posé par `MultipleChoiceInput` 
 série figée : `withChoiceClockSize` ajoute `taille: 3cm`, lettre seule sur sa ligne).
 
 **Opération posée en colonnes** (chantier [operations-posees](../wip/operations-posees-progress.md),
-addition, soustraction, multiplication ; division à venir) — `src/lib/ubumark/__tests__/operation/` :
+addition, soustraction, multiplication, division en potence) — `src/lib/ubumark/__tests__/operation/` :
 
 ````text
 ```operation
@@ -319,7 +319,8 @@ cases: aucune
 
 `calcul:` (obligatoire) : 2 ou 3 termes pour `+`, 2 pour `−` (`-` et `–` acceptés), le premier le
 plus grand, 2 facteurs pour `×` (`x` et `*` acceptés) ; virgule ou point, espaces de milliers
-acceptés ; 10 chiffres au plus avant la virgule, 3 après ; `÷` refusé pour l'instant. Facultatives : `cases: résultat | aucune` (défaut
+acceptés ; 10 chiffres au plus avant la virgule, 3 après ; 2 termes pour `÷` (`:` et `/` acceptés,
+voir **Division**). Facultatives : `cases: résultat | aucune` (défaut
 `résultat` : cases du résultat à remplir ; `aucune` : opération résolue), `retenues: oui | non`
 (cases de retenue, ou retenues écrites), `méthode: compensation | cassage` (soustraction seulement ;
 compensation : petit 1 devant le chiffre du haut et contre celui du bas de la colonne suivante —
@@ -353,6 +354,26 @@ neutres (« Résultat, case 3 sur 5 en partant de la droite », « Produit parti
 des unités » dirait où est la virgule. Correction : virgule mal placée surlignée, virgule oubliée →
 sa place entourée (`wrongComma`) ; retour sur la question : réponse remise alignée à droite, virgule
 comprise (`commaFromAnswer`), zéros de fin possiblement perdus (`10,0` → `10`).
+
+**Division** (lot 3, § 12 du journal) : potence à la française — dividende en haut à gauche, diviseur
+à droite, trait vertical sur toute la hauteur, trait sous le diviseur, quotient dessous. Diviseur
+entier de 1 ou 2 chiffres, non nul ; dividende de 6 chiffres au plus, décimales comprises.
+`quotient: entier | décimal` (défaut : `entier` si le dividende est entier — division euclidienne,
+quotient et reste —, `décimal` s'il est décimal ; `entier` avec un dividende décimal refusé) ; un
+quotient décimal doit s'arrêter au plus tard au millième (`10 ÷ 3` refusé). `étapes: soustractions
+| restes` (défaut `soustractions` : sous chaque dividende partiel, le produit soustrait avec `−` et
+trait, puis le reste avec le chiffre abaissé ; `restes` : les restes seuls). `méthode:` et
+`retenues:` refusés sur une division, `étapes:` et `quotient:` sur les autres opérations. Un 0 au
+quotient ne fait pas de ligne (le chiffre suivant s'abaisse sur la même ligne) ; une ligne de reste
+n'écrit pas ses zéros de tête (`06` → `6`). Quotient décimal résolu : zéros ajoutés au dividende,
+plus clairs (`785,00`). À remplir : quotient en cases (autant que de colonnes du dividende), reste en
+cases sous la zone (autant que de chiffres du diviseur ; euclidienne seulement), et à la place des
+étapes une zone quadrillée libre dont la hauteur ne dépend que du dividende et du diviseur (des
+lignes prêtes trahiraient la longueur du quotient) ; quotient décimal : carreaux libres à droite du
+dividende jusqu'au millième. Scène `utils/operation-division-scene.ts` (`buildDivisionScene`,
+`divisionResult`) ; nom accessible « Division posée en potence ». **Saisie pas encore disponible**
+(PR 3b) : dans une question, une division à remplir fait échouer la génération ; `cases: aucune`
+la montre résolue.
 
 Dans une question, un bloc à remplir porte **une** case (clé `case: N`, posée par
 `assignBlankIndices`, jamais écrite par l'auteur ; refusée avec `cases: aucune`). `Operation.svelte`
