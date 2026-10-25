@@ -1,0 +1,295 @@
+{
+	"title": "À quel solide ressemble cet objet ?",
+	"description": "Reconnaître un solide dans un objet de tous les jours (dé, ballon, cornet, conserve, boîte)",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Reconnaître et décrire",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "À quel solide ressemble {{if:o==1|un dé à jouer|{{if:o==2|un morceau de sucre|un glaçon carré}}}} ?",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "À un cube."
+				},
+				{
+					"content": "À une boule."
+				},
+				{
+					"content": "À un cône."
+				},
+				{
+					"content": "À un cylindre."
+				},
+				{
+					"content": "À un pavé."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:o==1|Un dé à jouer|{{if:o==2|Un morceau de sucre|Un glaçon carré}}}} ressemble à un cube.",
+					"Un cube a 6 faces carrées, toutes pareilles."
+				]
+			}
+		},
+		{
+			"statement": "À quel solide ressemble {{if:o==1|un ballon de foot|{{if:o==2|une bille|une perle ronde}}}} ?",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "À une boule."
+				},
+				{
+					"content": "À un cube."
+				},
+				{
+					"content": "À un cône."
+				},
+				{
+					"content": "À un cylindre."
+				},
+				{
+					"content": "À un pavé."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:o==1|Un ballon de foot|{{if:o==2|Une bille|Une perle ronde}}}} ressemble à une boule.",
+					"Une boule est toute ronde, sans face plate."
+				]
+			}
+		},
+		{
+			"statement": "À quel solide ressemble {{if:o==1|un cornet de glace vide|{{if:o==2|un chapeau pointu d'anniversaire|un plot de sport pointu}}}} ?",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "À un cône."
+				},
+				{
+					"content": "À un cube."
+				},
+				{
+					"content": "À une boule."
+				},
+				{
+					"content": "À un cylindre."
+				},
+				{
+					"content": "À un pavé."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:o==1|Un cornet de glace vide|{{if:o==2|Un chapeau pointu d'anniversaire|Un plot de sport pointu}}}} ressemble à un cône.",
+					"Un cône a un rond d'un côté et une pointe de l'autre."
+				]
+			}
+		},
+		{
+			"statement": "À quel solide ressemble {{if:o==1|une boîte de conserve|{{if:o==2|un rouleau de papier essuie-tout|une bougie toute droite}}}} ?",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "À un cylindre."
+				},
+				{
+					"content": "À un cube."
+				},
+				{
+					"content": "À une boule."
+				},
+				{
+					"content": "À un cône."
+				},
+				{
+					"content": "À un pavé."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:o==1|Une boîte de conserve|{{if:o==2|Un rouleau de papier essuie-tout|Une bougie toute droite}}}} ressemble à un cylindre.",
+					"Un cylindre a deux ronds pareils, en haut et en bas."
+				]
+			}
+		},
+		{
+			"statement": "À quel solide ressemble {{if:o==1|une boîte à chaussures|{{if:o==2|une brique de lait|une gomme}}}} ?",
+			"variables": [
+				{
+					"name": "o",
+					"expression": "1..3"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "À un pavé."
+				},
+				{
+					"content": "À un cube."
+				},
+				{
+					"content": "À une boule."
+				},
+				{
+					"content": "À un cône."
+				},
+				{
+					"content": "À un cylindre."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"{{if:o==1|Une boîte à chaussures|{{if:o==2|Une brique de lait|Une gomme}}}} ressemble à un pavé.",
+					"Un pavé a 6 faces rectangulaires."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "un dé à jouer : cube",
+			"variationIndex": 0,
+			"variables": {
+				"o": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "un morceau de sucre : leurre",
+			"variationIndex": 0,
+			"variables": {
+				"o": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "un ballon de foot : boule",
+			"variationIndex": 1,
+			"variables": {
+				"o": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "une bille : leurre",
+			"variationIndex": 1,
+			"variables": {
+				"o": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "un cornet de glace vide : cône",
+			"variationIndex": 2,
+			"variables": {
+				"o": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "un chapeau pointu d'anniversaire : leurre",
+			"variationIndex": 2,
+			"variables": {
+				"o": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "une boîte de conserve : cylindre",
+			"variationIndex": 3,
+			"variables": {
+				"o": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "un rouleau de papier essuie-tout : leurre",
+			"variationIndex": 3,
+			"variables": {
+				"o": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "une boîte à chaussures : pavé",
+			"variationIndex": 4,
+			"variables": {
+				"o": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "une brique de lait : leurre",
+			"variationIndex": 4,
+			"variables": {
+				"o": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}

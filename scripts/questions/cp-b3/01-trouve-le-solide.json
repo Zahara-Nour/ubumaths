@@ -1,0 +1,275 @@
+{
+	"title": "Trouve le solide",
+	"description": "Reconnaître un cube, une boule, un cône, un cylindre ou un pavé parmi les cinq, dessinés",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Reconnaître et décrire",
+	"level": 1,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici cinq solides.\n\n```figure\nfenetre: 0 ; 15 ; -0.9 ; 11.8\ndescription: Cinq solides numérotés de 1 à 5 : un cube, une boule, un cône, un cylindre et un pavé, dans le désordre.\n---\np1 = point(3.9, 7.4, visible=faux)\np2 = point(3.873, 7.322, visible=faux)\np3 = point(3.793, 7.247, visible=faux)\np4 = point(3.664, 7.178, visible=faux)\np5 = point(3.49, 7.117, visible=faux)\np6 = point(3.278, 7.067, visible=faux)\np7 = point(3.036, 7.03, visible=faux)\np8 = point(2.773, 7.008, visible=faux)\np9 = point(2.5, 7, visible=faux)\np10 = point(2.227, 7.008, visible=faux)\np11 = point(1.964, 7.03, visible=faux)\np12 = point(1.722, 7.067, visible=faux)\np13 = point(1.51, 7.117, visible=faux)\np14 = point(1.336, 7.178, visible=faux)\np15 = point(1.207, 7.247, visible=faux)\np16 = point(1.127, 7.322, visible=faux)\np17 = point(1.1, 7.4, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p5)\nsegment(p5, p6)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p10)\nsegment(p10, p11)\nsegment(p11, p12)\nsegment(p12, p13)\nsegment(p13, p14)\nsegment(p14, p15)\nsegment(p15, p16)\nsegment(p16, p17)\np18 = point(3.9, 7.4, visible=faux)\np19 = point(3.886, 7.457, visible=faux)\np20 = point(3.843, 7.513, visible=faux)\nsegment(p18, p19)\nsegment(p19, p20)\np21 = point(3.678, 7.616, visible=faux)\np22 = point(3.558, 7.662, visible=faux)\np23 = point(3.417, 7.702, visible=faux)\nsegment(p21, p22)\nsegment(p22, p23)\np24 = point(3.082, 7.764, visible=faux)\np25 = point(2.894, 7.784, visible=faux)\np26 = point(2.699, 7.796, visible=faux)\nsegment(p24, p25)\nsegment(p25, p26)\np27 = point(2.301, 7.796, visible=faux)\np28 = point(2.106, 7.784, visible=faux)\np29 = point(1.918, 7.764, visible=faux)\nsegment(p27, p28)\nsegment(p28, p29)\np30 = point(1.583, 7.702, visible=faux)\np31 = point(1.442, 7.662, visible=faux)\np32 = point(1.322, 7.616, visible=faux)\nsegment(p30, p31)\nsegment(p31, p32)\np33 = point(1.157, 7.513, visible=faux)\np34 = point(1.114, 7.457, visible=faux)\np35 = point(1.1, 7.4, visible=faux)\nsegment(p33, p34)\nsegment(p34, p35)\np36 = point(3.9, 10.8, visible=faux)\np37 = point(3.873, 10.722, visible=faux)\np38 = point(3.793, 10.647, visible=faux)\np39 = point(3.664, 10.578, visible=faux)\np40 = point(3.49, 10.517, visible=faux)\np41 = point(3.278, 10.467, visible=faux)\np42 = point(3.036, 10.43, visible=faux)\np43 = point(2.773, 10.408, visible=faux)\np44 = point(2.5, 10.4, visible=faux)\np45 = point(2.227, 10.408, visible=faux)\np46 = point(1.964, 10.43, visible=faux)\np47 = point(1.722, 10.467, visible=faux)\np48 = point(1.51, 10.517, visible=faux)\np49 = point(1.336, 10.578, visible=faux)\np50 = point(1.207, 10.647, visible=faux)\np51 = point(1.127, 10.722, visible=faux)\np52 = point(1.1, 10.8, visible=faux)\nsegment(p36, p37)\nsegment(p37, p38)\nsegment(p38, p39)\nsegment(p39, p40)\nsegment(p40, p41)\nsegment(p41, p42)\nsegment(p42, p43)\nsegment(p43, p44)\nsegment(p44, p45)\nsegment(p45, p46)\nsegment(p46, p47)\nsegment(p47, p48)\nsegment(p48, p49)\nsegment(p49, p50)\nsegment(p50, p51)\nsegment(p51, p52)\np53 = point(3.9, 10.8, visible=faux)\np54 = point(3.873, 10.878, visible=faux)\np55 = point(3.793, 10.953, visible=faux)\np56 = point(3.664, 11.022, visible=faux)\np57 = point(3.49, 11.083, visible=faux)\np58 = point(3.278, 11.133, visible=faux)\np59 = point(3.036, 11.17, visible=faux)\np60 = point(2.773, 11.192, visible=faux)\np61 = point(2.5, 11.2, visible=faux)\np62 = point(2.227, 11.192, visible=faux)\np63 = point(1.964, 11.17, visible=faux)\np64 = point(1.722, 11.133, visible=faux)\np65 = point(1.51, 11.083, visible=faux)\np66 = point(1.336, 11.022, visible=faux)\np67 = point(1.207, 10.953, visible=faux)\np68 = point(1.127, 10.878, visible=faux)\np69 = point(1.1, 10.8, visible=faux)\nsegment(p53, p54)\nsegment(p54, p55)\nsegment(p55, p56)\nsegment(p56, p57)\nsegment(p57, p58)\nsegment(p58, p59)\nsegment(p59, p60)\nsegment(p60, p61)\nsegment(p61, p62)\nsegment(p62, p63)\nsegment(p63, p64)\nsegment(p64, p65)\nsegment(p65, p66)\nsegment(p66, p67)\nsegment(p67, p68)\nsegment(p68, p69)\np70 = point(1.1, 7.4, visible=faux)\np71 = point(1.1, 10.8, visible=faux)\nsegment(p70, p71)\np72 = point(3.9, 7.4, visible=faux)\np73 = point(3.9, 10.8, visible=faux)\nsegment(p72, p73)\ntexte(2.5, 6.4, \"1\")\np74 = point(5.74, 7, visible=faux)\np75 = point(8.34, 7, visible=faux)\np76 = point(8.34, 9.6, visible=faux)\np77 = point(5.74, 9.6, visible=faux)\np78 = point(6.66, 7.919, visible=faux)\np79 = point(9.26, 7.919, visible=faux)\np80 = point(9.26, 10.519, visible=faux)\np81 = point(6.66, 10.519, visible=faux)\nsegment(p74, p75)\nsegment(p75, p76)\nsegment(p76, p77)\nsegment(p77, p74)\nsegment(p75, p79)\nsegment(p79, p80)\nsegment(p76, p80)\nsegment(p77, p81)\nsegment(p81, p80)\nsegment(p74, p78, trait=\"tirets\")\nsegment(p78, p79, trait=\"tirets\")\nsegment(p78, p81, trait=\"tirets\")\ntexte(7.5, 6.4, \"2\")\np82 = point(13.9, 7.4, visible=faux)\np83 = point(13.873, 7.322, visible=faux)\np84 = point(13.793, 7.247, visible=faux)\np85 = point(13.664, 7.178, visible=faux)\np86 = point(13.49, 7.117, visible=faux)\np87 = point(13.278, 7.067, visible=faux)\np88 = point(13.036, 7.03, visible=faux)\np89 = point(12.773, 7.008, visible=faux)\np90 = point(12.5, 7, visible=faux)\np91 = point(12.227, 7.008, visible=faux)\np92 = point(11.964, 7.03, visible=faux)\np93 = point(11.722, 7.067, visible=faux)\np94 = point(11.51, 7.117, visible=faux)\np95 = point(11.336, 7.178, visible=faux)\np96 = point(11.207, 7.247, visible=faux)\np97 = point(11.127, 7.322, visible=faux)\np98 = point(11.1, 7.4, visible=faux)\nsegment(p82, p83)\nsegment(p83, p84)\nsegment(p84, p85)\nsegment(p85, p86)\nsegment(p86, p87)\nsegment(p87, p88)\nsegment(p88, p89)\nsegment(p89, p90)\nsegment(p90, p91)\nsegment(p91, p92)\nsegment(p92, p93)\nsegment(p93, p94)\nsegment(p94, p95)\nsegment(p95, p96)\nsegment(p96, p97)\nsegment(p97, p98)\np99 = point(13.9, 7.4, visible=faux)\np100 = point(13.886, 7.457, visible=faux)\np101 = point(13.843, 7.513, visible=faux)\nsegment(p99, p100)\nsegment(p100, p101)\np102 = point(13.678, 7.616, visible=faux)\np103 = point(13.558, 7.662, visible=faux)\np104 = point(13.417, 7.702, visible=faux)\nsegment(p102, p103)\nsegment(p103, p104)\np105 = point(13.082, 7.764, visible=faux)\np106 = point(12.894, 7.784, visible=faux)\np107 = point(12.699, 7.796, visible=faux)\nsegment(p105, p106)\nsegment(p106, p107)\np108 = point(12.301, 7.796, visible=faux)\np109 = point(12.106, 7.784, visible=faux)\np110 = point(11.918, 7.764, visible=faux)\nsegment(p108, p109)\nsegment(p109, p110)\np111 = point(11.583, 7.702, visible=faux)\np112 = point(11.442, 7.662, visible=faux)\np113 = point(11.322, 7.616, visible=faux)\nsegment(p111, p112)\nsegment(p112, p113)\np114 = point(11.157, 7.513, visible=faux)\np115 = point(11.114, 7.457, visible=faux)\np116 = point(11.1, 7.4, visible=faux)\nsegment(p114, p115)\nsegment(p115, p116)\np117 = point(12.5, 11.2, visible=faux)\np118 = point(11.1, 7.4, visible=faux)\nsegment(p118, p117)\np119 = point(13.9, 7.4, visible=faux)\nsegment(p119, p117)\ntexte(12.5, 6.4, \"3\")\np120 = point(3.046, 1, visible=faux)\np121 = point(6.246, 1, visible=faux)\np122 = point(6.246, 2.7, visible=faux)\np123 = point(3.046, 2.7, visible=faux)\np124 = point(3.754, 1.707, visible=faux)\np125 = point(6.954, 1.707, visible=faux)\np126 = point(6.954, 3.407, visible=faux)\np127 = point(3.754, 3.407, visible=faux)\nsegment(p120, p121)\nsegment(p121, p122)\nsegment(p122, p123)\nsegment(p123, p120)\nsegment(p121, p125)\nsegment(p125, p126)\nsegment(p122, p126)\nsegment(p123, p127)\nsegment(p127, p126)\nsegment(p120, p124, trait=\"tirets\")\nsegment(p124, p125, trait=\"tirets\")\nsegment(p124, p127, trait=\"tirets\")\ntexte(5, 0.4, \"4\")\np128 = point(10, 2.7, visible=faux)\ncercle(p128, rayon=1.7)\np129 = point(11.7, 2.7, visible=faux)\np130 = point(11.667, 2.607, visible=faux)\np131 = point(11.571, 2.518, visible=faux)\np132 = point(11.413, 2.436, visible=faux)\np133 = point(11.202, 2.363, visible=faux)\np134 = point(10.944, 2.304, visible=faux)\np135 = point(10.651, 2.26, visible=faux)\np136 = point(10.332, 2.233, visible=faux)\np137 = point(10, 2.224, visible=faux)\np138 = point(9.668, 2.233, visible=faux)\np139 = point(9.349, 2.26, visible=faux)\np140 = point(9.056, 2.304, visible=faux)\np141 = point(8.798, 2.363, visible=faux)\np142 = point(8.587, 2.436, visible=faux)\np143 = point(8.429, 2.518, visible=faux)\np144 = point(8.333, 2.607, visible=faux)\np145 = point(8.3, 2.7, visible=faux)\nsegment(p129, p130)\nsegment(p130, p131)\nsegment(p131, p132)\nsegment(p132, p133)\nsegment(p133, p134)\nsegment(p134, p135)\nsegment(p135, p136)\nsegment(p136, p137)\nsegment(p137, p138)\nsegment(p138, p139)\nsegment(p139, p140)\nsegment(p140, p141)\nsegment(p141, p142)\nsegment(p142, p143)\nsegment(p143, p144)\nsegment(p144, p145)\np146 = point(11.7, 2.7, visible=faux)\np147 = point(11.683, 2.768, visible=faux)\np148 = point(11.631, 2.834, visible=faux)\nsegment(p146, p147)\nsegment(p147, p148)\np149 = point(11.43, 2.957, visible=faux)\np150 = point(11.285, 3.012, visible=faux)\np151 = point(11.113, 3.06, visible=faux)\nsegment(p149, p150)\nsegment(p150, p151)\np152 = point(10.706, 3.133, visible=faux)\np153 = point(10.479, 3.157, visible=faux)\np154 = point(10.242, 3.171, visible=faux)\nsegment(p152, p153)\nsegment(p153, p154)\np155 = point(9.758, 3.171, visible=faux)\np156 = point(9.521, 3.157, visible=faux)\np157 = point(9.294, 3.133, visible=faux)\nsegment(p155, p156)\nsegment(p156, p157)\np158 = point(8.887, 3.06, visible=faux)\np159 = point(8.715, 3.012, visible=faux)\np160 = point(8.57, 2.957, visible=faux)\nsegment(p158, p159)\nsegment(p159, p160)\np161 = point(8.369, 2.834, visible=faux)\np162 = point(8.317, 2.768, visible=faux)\np163 = point(8.3, 2.7, visible=faux)\nsegment(p161, p162)\nsegment(p162, p163)\ntexte(10, 0.4, \"5\")\n```\n\nQuel numéro porte {{if:s==1|le cube|{{if:s==2|la boule|{{if:s==3|le cône|{{if:s==4|le cylindre|le pavé}}}}}}}} ?\n\nNuméro : [_]",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==1|2|{{if:s==2|5|{{if:s==3|3|{{if:s==4|1|4}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|Le cube a 6 faces carrées, toutes pareilles.|{{if:s==2|La boule est toute ronde : elle n'a aucune face plate.|{{if:s==3|Le cône a un rond pour fond et une pointe en haut.|{{if:s==4|Le cylindre a deux ronds, un en haut et un en bas, comme une boîte de conserve.|Le pavé a 6 faces rectangulaires, comme une boîte à chaussures.}}}}}}}}",
+					"{{if:s==1|Le cube|{{if:s==2|La boule|{{if:s==3|Le cône|{{if:s==4|Le cylindre|Le pavé}}}}}}}} porte le numéro ${{if:s==1|2|{{if:s==2|5|{{if:s==3|3|{{if:s==4|1|4}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici cinq solides.\n\n```figure\nfenetre: 0 ; 15 ; -0.9 ; 11.8\ndescription: Cinq solides numérotés de 1 à 5 : un cube, une boule, un cône, un cylindre et un pavé, dans le désordre.\n---\np1 = point(2.5, 8.7, visible=faux)\ncercle(p1, rayon=1.7)\np2 = point(4.2, 8.7, visible=faux)\np3 = point(4.167, 8.607, visible=faux)\np4 = point(4.071, 8.518, visible=faux)\np5 = point(3.913, 8.436, visible=faux)\np6 = point(3.702, 8.363, visible=faux)\np7 = point(3.444, 8.304, visible=faux)\np8 = point(3.151, 8.26, visible=faux)\np9 = point(2.832, 8.233, visible=faux)\np10 = point(2.5, 8.224, visible=faux)\np11 = point(2.168, 8.233, visible=faux)\np12 = point(1.849, 8.26, visible=faux)\np13 = point(1.556, 8.304, visible=faux)\np14 = point(1.298, 8.363, visible=faux)\np15 = point(1.087, 8.436, visible=faux)\np16 = point(0.929, 8.518, visible=faux)\np17 = point(0.833, 8.607, visible=faux)\np18 = point(0.8, 8.7, visible=faux)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p5)\nsegment(p5, p6)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p10)\nsegment(p10, p11)\nsegment(p11, p12)\nsegment(p12, p13)\nsegment(p13, p14)\nsegment(p14, p15)\nsegment(p15, p16)\nsegment(p16, p17)\nsegment(p17, p18)\np19 = point(4.2, 8.7, visible=faux)\np20 = point(4.183, 8.768, visible=faux)\np21 = point(4.131, 8.834, visible=faux)\nsegment(p19, p20)\nsegment(p20, p21)\np22 = point(3.93, 8.957, visible=faux)\np23 = point(3.785, 9.012, visible=faux)\np24 = point(3.613, 9.06, visible=faux)\nsegment(p22, p23)\nsegment(p23, p24)\np25 = point(3.206, 9.133, visible=faux)\np26 = point(2.979, 9.157, visible=faux)\np27 = point(2.742, 9.171, visible=faux)\nsegment(p25, p26)\nsegment(p26, p27)\np28 = point(2.258, 9.171, visible=faux)\np29 = point(2.021, 9.157, visible=faux)\np30 = point(1.794, 9.133, visible=faux)\nsegment(p28, p29)\nsegment(p29, p30)\np31 = point(1.387, 9.06, visible=faux)\np32 = point(1.215, 9.012, visible=faux)\np33 = point(1.07, 8.957, visible=faux)\nsegment(p31, p32)\nsegment(p32, p33)\np34 = point(0.869, 8.834, visible=faux)\np35 = point(0.817, 8.768, visible=faux)\np36 = point(0.8, 8.7, visible=faux)\nsegment(p34, p35)\nsegment(p35, p36)\ntexte(2.5, 6.4, \"1\")\np37 = point(5.546, 7, visible=faux)\np38 = point(8.746, 7, visible=faux)\np39 = point(8.746, 8.7, visible=faux)\np40 = point(5.546, 8.7, visible=faux)\np41 = point(6.254, 7.707, visible=faux)\np42 = point(9.454, 7.707, visible=faux)\np43 = point(9.454, 9.407, visible=faux)\np44 = point(6.254, 9.407, visible=faux)\nsegment(p37, p38)\nsegment(p38, p39)\nsegment(p39, p40)\nsegment(p40, p37)\nsegment(p38, p42)\nsegment(p42, p43)\nsegment(p39, p43)\nsegment(p40, p44)\nsegment(p44, p43)\nsegment(p37, p41, trait=\"tirets\")\nsegment(p41, p42, trait=\"tirets\")\nsegment(p41, p44, trait=\"tirets\")\ntexte(7.5, 6.4, \"2\")\np45 = point(13.9, 7.4, visible=faux)\np46 = point(13.873, 7.322, visible=faux)\np47 = point(13.793, 7.247, visible=faux)\np48 = point(13.664, 7.178, visible=faux)\np49 = point(13.49, 7.117, visible=faux)\np50 = point(13.278, 7.067, visible=faux)\np51 = point(13.036, 7.03, visible=faux)\np52 = point(12.773, 7.008, visible=faux)\np53 = point(12.5, 7, visible=faux)\np54 = point(12.227, 7.008, visible=faux)\np55 = point(11.964, 7.03, visible=faux)\np56 = point(11.722, 7.067, visible=faux)\np57 = point(11.51, 7.117, visible=faux)\np58 = point(11.336, 7.178, visible=faux)\np59 = point(11.207, 7.247, visible=faux)\np60 = point(11.127, 7.322, visible=faux)\np61 = point(11.1, 7.4, visible=faux)\nsegment(p45, p46)\nsegment(p46, p47)\nsegment(p47, p48)\nsegment(p48, p49)\nsegment(p49, p50)\nsegment(p50, p51)\nsegment(p51, p52)\nsegment(p52, p53)\nsegment(p53, p54)\nsegment(p54, p55)\nsegment(p55, p56)\nsegment(p56, p57)\nsegment(p57, p58)\nsegment(p58, p59)\nsegment(p59, p60)\nsegment(p60, p61)\np62 = point(13.9, 7.4, visible=faux)\np63 = point(13.886, 7.457, visible=faux)\np64 = point(13.843, 7.513, visible=faux)\nsegment(p62, p63)\nsegment(p63, p64)\np65 = point(13.678, 7.616, visible=faux)\np66 = point(13.558, 7.662, visible=faux)\np67 = point(13.417, 7.702, visible=faux)\nsegment(p65, p66)\nsegment(p66, p67)\np68 = point(13.082, 7.764, visible=faux)\np69 = point(12.894, 7.784, visible=faux)\np70 = point(12.699, 7.796, visible=faux)\nsegment(p68, p69)\nsegment(p69, p70)\np71 = point(12.301, 7.796, visible=faux)\np72 = point(12.106, 7.784, visible=faux)\np73 = point(11.918, 7.764, visible=faux)\nsegment(p71, p72)\nsegment(p72, p73)\np74 = point(11.583, 7.702, visible=faux)\np75 = point(11.442, 7.662, visible=faux)\np76 = point(11.322, 7.616, visible=faux)\nsegment(p74, p75)\nsegment(p75, p76)\np77 = point(11.157, 7.513, visible=faux)\np78 = point(11.114, 7.457, visible=faux)\np79 = point(11.1, 7.4, visible=faux)\nsegment(p77, p78)\nsegment(p78, p79)\np80 = point(13.9, 10.8, visible=faux)\np81 = point(13.873, 10.722, visible=faux)\np82 = point(13.793, 10.647, visible=faux)\np83 = point(13.664, 10.578, visible=faux)\np84 = point(13.49, 10.517, visible=faux)\np85 = point(13.278, 10.467, visible=faux)\np86 = point(13.036, 10.43, visible=faux)\np87 = point(12.773, 10.408, visible=faux)\np88 = point(12.5, 10.4, visible=faux)\np89 = point(12.227, 10.408, visible=faux)\np90 = point(11.964, 10.43, visible=faux)\np91 = point(11.722, 10.467, visible=faux)\np92 = point(11.51, 10.517, visible=faux)\np93 = point(11.336, 10.578, visible=faux)\np94 = point(11.207, 10.647, visible=faux)\np95 = point(11.127, 10.722, visible=faux)\np96 = point(11.1, 10.8, visible=faux)\nsegment(p80, p81)\nsegment(p81, p82)\nsegment(p82, p83)\nsegment(p83, p84)\nsegment(p84, p85)\nsegment(p85, p86)\nsegment(p86, p87)\nsegment(p87, p88)\nsegment(p88, p89)\nsegment(p89, p90)\nsegment(p90, p91)\nsegment(p91, p92)\nsegment(p92, p93)\nsegment(p93, p94)\nsegment(p94, p95)\nsegment(p95, p96)\np97 = point(13.9, 10.8, visible=faux)\np98 = point(13.873, 10.878, visible=faux)\np99 = point(13.793, 10.953, visible=faux)\np100 = point(13.664, 11.022, visible=faux)\np101 = point(13.49, 11.083, visible=faux)\np102 = point(13.278, 11.133, visible=faux)\np103 = point(13.036, 11.17, visible=faux)\np104 = point(12.773, 11.192, visible=faux)\np105 = point(12.5, 11.2, visible=faux)\np106 = point(12.227, 11.192, visible=faux)\np107 = point(11.964, 11.17, visible=faux)\np108 = point(11.722, 11.133, visible=faux)\np109 = point(11.51, 11.083, visible=faux)\np110 = point(11.336, 11.022, visible=faux)\np111 = point(11.207, 10.953, visible=faux)\np112 = point(11.127, 10.878, visible=faux)\np113 = point(11.1, 10.8, visible=faux)\nsegment(p97, p98)\nsegment(p98, p99)\nsegment(p99, p100)\nsegment(p100, p101)\nsegment(p101, p102)\nsegment(p102, p103)\nsegment(p103, p104)\nsegment(p104, p105)\nsegment(p105, p106)\nsegment(p106, p107)\nsegment(p107, p108)\nsegment(p108, p109)\nsegment(p109, p110)\nsegment(p110, p111)\nsegment(p111, p112)\nsegment(p112, p113)\np114 = point(11.1, 7.4, visible=faux)\np115 = point(11.1, 10.8, visible=faux)\nsegment(p114, p115)\np116 = point(13.9, 7.4, visible=faux)\np117 = point(13.9, 10.8, visible=faux)\nsegment(p116, p117)\ntexte(12.5, 6.4, \"3\")\np118 = point(6.4, 1.4, visible=faux)\np119 = point(6.373, 1.322, visible=faux)\np120 = point(6.293, 1.247, visible=faux)\np121 = point(6.164, 1.178, visible=faux)\np122 = point(5.99, 1.117, visible=faux)\np123 = point(5.778, 1.067, visible=faux)\np124 = point(5.536, 1.03, visible=faux)\np125 = point(5.273, 1.008, visible=faux)\np126 = point(5, 1, visible=faux)\np127 = point(4.727, 1.008, visible=faux)\np128 = point(4.464, 1.03, visible=faux)\np129 = point(4.222, 1.067, visible=faux)\np130 = point(4.01, 1.117, visible=faux)\np131 = point(3.836, 1.178, visible=faux)\np132 = point(3.707, 1.247, visible=faux)\np133 = point(3.627, 1.322, visible=faux)\np134 = point(3.6, 1.4, visible=faux)\nsegment(p118, p119)\nsegment(p119, p120)\nsegment(p120, p121)\nsegment(p121, p122)\nsegment(p122, p123)\nsegment(p123, p124)\nsegment(p124, p125)\nsegment(p125, p126)\nsegment(p126, p127)\nsegment(p127, p128)\nsegment(p128, p129)\nsegment(p129, p130)\nsegment(p130, p131)\nsegment(p131, p132)\nsegment(p132, p133)\nsegment(p133, p134)\np135 = point(6.4, 1.4, visible=faux)\np136 = point(6.386, 1.457, visible=faux)\np137 = point(6.343, 1.513, visible=faux)\nsegment(p135, p136)\nsegment(p136, p137)\np138 = point(6.178, 1.616, visible=faux)\np139 = point(6.058, 1.662, visible=faux)\np140 = point(5.917, 1.702, visible=faux)\nsegment(p138, p139)\nsegment(p139, p140)\np141 = point(5.582, 1.764, visible=faux)\np142 = point(5.394, 1.784, visible=faux)\np143 = point(5.199, 1.796, visible=faux)\nsegment(p141, p142)\nsegment(p142, p143)\np144 = point(4.801, 1.796, visible=faux)\np145 = point(4.606, 1.784, visible=faux)\np146 = point(4.418, 1.764, visible=faux)\nsegment(p144, p145)\nsegment(p145, p146)\np147 = point(4.083, 1.702, visible=faux)\np148 = point(3.942, 1.662, visible=faux)\np149 = point(3.822, 1.616, visible=faux)\nsegment(p147, p148)\nsegment(p148, p149)\np150 = point(3.657, 1.513, visible=faux)\np151 = point(3.614, 1.457, visible=faux)\np152 = point(3.6, 1.4, visible=faux)\nsegment(p150, p151)\nsegment(p151, p152)\np153 = point(5, 5.2, visible=faux)\np154 = point(3.6, 1.4, visible=faux)\nsegment(p154, p153)\np155 = point(6.4, 1.4, visible=faux)\nsegment(p155, p153)\ntexte(5, 0.4, \"4\")\np156 = point(8.24, 1, visible=faux)\np157 = point(10.84, 1, visible=faux)\np158 = point(10.84, 3.6, visible=faux)\np159 = point(8.24, 3.6, visible=faux)\np160 = point(9.16, 1.919, visible=faux)\np161 = point(11.76, 1.919, visible=faux)\np162 = point(11.76, 4.519, visible=faux)\np163 = point(9.16, 4.519, visible=faux)\nsegment(p156, p157)\nsegment(p157, p158)\nsegment(p158, p159)\nsegment(p159, p156)\nsegment(p157, p161)\nsegment(p161, p162)\nsegment(p158, p162)\nsegment(p159, p163)\nsegment(p163, p162)\nsegment(p156, p160, trait=\"tirets\")\nsegment(p160, p161, trait=\"tirets\")\nsegment(p160, p163, trait=\"tirets\")\ntexte(10, 0.4, \"5\")\n```\n\nQuel numéro porte {{if:s==1|le cube|{{if:s==2|la boule|{{if:s==3|le cône|{{if:s==4|le cylindre|le pavé}}}}}}}} ?\n\nNuméro : [_]",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==1|5|{{if:s==2|1|{{if:s==3|4|{{if:s==4|3|2}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|Le cube a 6 faces carrées, toutes pareilles.|{{if:s==2|La boule est toute ronde : elle n'a aucune face plate.|{{if:s==3|Le cône a un rond pour fond et une pointe en haut.|{{if:s==4|Le cylindre a deux ronds, un en haut et un en bas, comme une boîte de conserve.|Le pavé a 6 faces rectangulaires, comme une boîte à chaussures.}}}}}}}}",
+					"{{if:s==1|Le cube|{{if:s==2|La boule|{{if:s==3|Le cône|{{if:s==4|Le cylindre|Le pavé}}}}}}}} porte le numéro ${{if:s==1|5|{{if:s==2|1|{{if:s==3|4|{{if:s==4|3|2}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici cinq solides.\n\n```figure\nfenetre: 0 ; 15 ; -0.9 ; 11.8\ndescription: Cinq solides numérotés de 1 à 5 : un cube, une boule, un cône, un cylindre et un pavé, dans le désordre.\n---\np1 = point(3.9, 7.4, visible=faux)\np2 = point(3.873, 7.322, visible=faux)\np3 = point(3.793, 7.247, visible=faux)\np4 = point(3.664, 7.178, visible=faux)\np5 = point(3.49, 7.117, visible=faux)\np6 = point(3.278, 7.067, visible=faux)\np7 = point(3.036, 7.03, visible=faux)\np8 = point(2.773, 7.008, visible=faux)\np9 = point(2.5, 7, visible=faux)\np10 = point(2.227, 7.008, visible=faux)\np11 = point(1.964, 7.03, visible=faux)\np12 = point(1.722, 7.067, visible=faux)\np13 = point(1.51, 7.117, visible=faux)\np14 = point(1.336, 7.178, visible=faux)\np15 = point(1.207, 7.247, visible=faux)\np16 = point(1.127, 7.322, visible=faux)\np17 = point(1.1, 7.4, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p5)\nsegment(p5, p6)\nsegment(p6, p7)\nsegment(p7, p8)\nsegment(p8, p9)\nsegment(p9, p10)\nsegment(p10, p11)\nsegment(p11, p12)\nsegment(p12, p13)\nsegment(p13, p14)\nsegment(p14, p15)\nsegment(p15, p16)\nsegment(p16, p17)\np18 = point(3.9, 7.4, visible=faux)\np19 = point(3.886, 7.457, visible=faux)\np20 = point(3.843, 7.513, visible=faux)\nsegment(p18, p19)\nsegment(p19, p20)\np21 = point(3.678, 7.616, visible=faux)\np22 = point(3.558, 7.662, visible=faux)\np23 = point(3.417, 7.702, visible=faux)\nsegment(p21, p22)\nsegment(p22, p23)\np24 = point(3.082, 7.764, visible=faux)\np25 = point(2.894, 7.784, visible=faux)\np26 = point(2.699, 7.796, visible=faux)\nsegment(p24, p25)\nsegment(p25, p26)\np27 = point(2.301, 7.796, visible=faux)\np28 = point(2.106, 7.784, visible=faux)\np29 = point(1.918, 7.764, visible=faux)\nsegment(p27, p28)\nsegment(p28, p29)\np30 = point(1.583, 7.702, visible=faux)\np31 = point(1.442, 7.662, visible=faux)\np32 = point(1.322, 7.616, visible=faux)\nsegment(p30, p31)\nsegment(p31, p32)\np33 = point(1.157, 7.513, visible=faux)\np34 = point(1.114, 7.457, visible=faux)\np35 = point(1.1, 7.4, visible=faux)\nsegment(p33, p34)\nsegment(p34, p35)\np36 = point(2.5, 11.2, visible=faux)\np37 = point(1.1, 7.4, visible=faux)\nsegment(p37, p36)\np38 = point(3.9, 7.4, visible=faux)\nsegment(p38, p36)\ntexte(2.5, 6.4, \"1\")\np39 = point(7.5, 8.7, visible=faux)\ncercle(p39, rayon=1.7)\np40 = point(9.2, 8.7, visible=faux)\np41 = point(9.167, 8.607, visible=faux)\np42 = point(9.071, 8.518, visible=faux)\np43 = point(8.913, 8.436, visible=faux)\np44 = point(8.702, 8.363, visible=faux)\np45 = point(8.444, 8.304, visible=faux)\np46 = point(8.151, 8.26, visible=faux)\np47 = point(7.832, 8.233, visible=faux)\np48 = point(7.5, 8.224, visible=faux)\np49 = point(7.168, 8.233, visible=faux)\np50 = point(6.849, 8.26, visible=faux)\np51 = point(6.556, 8.304, visible=faux)\np52 = point(6.298, 8.363, visible=faux)\np53 = point(6.087, 8.436, visible=faux)\np54 = point(5.929, 8.518, visible=faux)\np55 = point(5.833, 8.607, visible=faux)\np56 = point(5.8, 8.7, visible=faux)\nsegment(p40, p41)\nsegment(p41, p42)\nsegment(p42, p43)\nsegment(p43, p44)\nsegment(p44, p45)\nsegment(p45, p46)\nsegment(p46, p47)\nsegment(p47, p48)\nsegment(p48, p49)\nsegment(p49, p50)\nsegment(p50, p51)\nsegment(p51, p52)\nsegment(p52, p53)\nsegment(p53, p54)\nsegment(p54, p55)\nsegment(p55, p56)\np57 = point(9.2, 8.7, visible=faux)\np58 = point(9.183, 8.768, visible=faux)\np59 = point(9.131, 8.834, visible=faux)\nsegment(p57, p58)\nsegment(p58, p59)\np60 = point(8.93, 8.957, visible=faux)\np61 = point(8.785, 9.012, visible=faux)\np62 = point(8.613, 9.06, visible=faux)\nsegment(p60, p61)\nsegment(p61, p62)\np63 = point(8.206, 9.133, visible=faux)\np64 = point(7.979, 9.157, visible=faux)\np65 = point(7.742, 9.171, visible=faux)\nsegment(p63, p64)\nsegment(p64, p65)\np66 = point(7.258, 9.171, visible=faux)\np67 = point(7.021, 9.157, visible=faux)\np68 = point(6.794, 9.133, visible=faux)\nsegment(p66, p67)\nsegment(p67, p68)\np69 = point(6.387, 9.06, visible=faux)\np70 = point(6.215, 9.012, visible=faux)\np71 = point(6.07, 8.957, visible=faux)\nsegment(p69, p70)\nsegment(p70, p71)\np72 = point(5.869, 8.834, visible=faux)\np73 = point(5.817, 8.768, visible=faux)\np74 = point(5.8, 8.7, visible=faux)\nsegment(p72, p73)\nsegment(p73, p74)\ntexte(7.5, 6.4, \"2\")\np75 = point(10.546, 7, visible=faux)\np76 = point(13.746, 7, visible=faux)\np77 = point(13.746, 8.7, visible=faux)\np78 = point(10.546, 8.7, visible=faux)\np79 = point(11.254, 7.707, visible=faux)\np80 = point(14.454, 7.707, visible=faux)\np81 = point(14.454, 9.407, visible=faux)\np82 = point(11.254, 9.407, visible=faux)\nsegment(p75, p76)\nsegment(p76, p77)\nsegment(p77, p78)\nsegment(p78, p75)\nsegment(p76, p80)\nsegment(p80, p81)\nsegment(p77, p81)\nsegment(p78, p82)\nsegment(p82, p81)\nsegment(p75, p79, trait=\"tirets\")\nsegment(p79, p80, trait=\"tirets\")\nsegment(p79, p82, trait=\"tirets\")\ntexte(12.5, 6.4, \"3\")\np83 = point(3.24, 1, visible=faux)\np84 = point(5.84, 1, visible=faux)\np85 = point(5.84, 3.6, visible=faux)\np86 = point(3.24, 3.6, visible=faux)\np87 = point(4.16, 1.919, visible=faux)\np88 = point(6.76, 1.919, visible=faux)\np89 = point(6.76, 4.519, visible=faux)\np90 = point(4.16, 4.519, visible=faux)\nsegment(p83, p84)\nsegment(p84, p85)\nsegment(p85, p86)\nsegment(p86, p83)\nsegment(p84, p88)\nsegment(p88, p89)\nsegment(p85, p89)\nsegment(p86, p90)\nsegment(p90, p89)\nsegment(p83, p87, trait=\"tirets\")\nsegment(p87, p88, trait=\"tirets\")\nsegment(p87, p90, trait=\"tirets\")\ntexte(5, 0.4, \"4\")\np91 = point(11.4, 1.4, visible=faux)\np92 = point(11.373, 1.322, visible=faux)\np93 = point(11.293, 1.247, visible=faux)\np94 = point(11.164, 1.178, visible=faux)\np95 = point(10.99, 1.117, visible=faux)\np96 = point(10.778, 1.067, visible=faux)\np97 = point(10.536, 1.03, visible=faux)\np98 = point(10.273, 1.008, visible=faux)\np99 = point(10, 1, visible=faux)\np100 = point(9.727, 1.008, visible=faux)\np101 = point(9.464, 1.03, visible=faux)\np102 = point(9.222, 1.067, visible=faux)\np103 = point(9.01, 1.117, visible=faux)\np104 = point(8.836, 1.178, visible=faux)\np105 = point(8.707, 1.247, visible=faux)\np106 = point(8.627, 1.322, visible=faux)\np107 = point(8.6, 1.4, visible=faux)\nsegment(p91, p92)\nsegment(p92, p93)\nsegment(p93, p94)\nsegment(p94, p95)\nsegment(p95, p96)\nsegment(p96, p97)\nsegment(p97, p98)\nsegment(p98, p99)\nsegment(p99, p100)\nsegment(p100, p101)\nsegment(p101, p102)\nsegment(p102, p103)\nsegment(p103, p104)\nsegment(p104, p105)\nsegment(p105, p106)\nsegment(p106, p107)\np108 = point(11.4, 1.4, visible=faux)\np109 = point(11.386, 1.457, visible=faux)\np110 = point(11.343, 1.513, visible=faux)\nsegment(p108, p109)\nsegment(p109, p110)\np111 = point(11.178, 1.616, visible=faux)\np112 = point(11.058, 1.662, visible=faux)\np113 = point(10.917, 1.702, visible=faux)\nsegment(p111, p112)\nsegment(p112, p113)\np114 = point(10.582, 1.764, visible=faux)\np115 = point(10.394, 1.784, visible=faux)\np116 = point(10.199, 1.796, visible=faux)\nsegment(p114, p115)\nsegment(p115, p116)\np117 = point(9.801, 1.796, visible=faux)\np118 = point(9.606, 1.784, visible=faux)\np119 = point(9.418, 1.764, visible=faux)\nsegment(p117, p118)\nsegment(p118, p119)\np120 = point(9.083, 1.702, visible=faux)\np121 = point(8.942, 1.662, visible=faux)\np122 = point(8.822, 1.616, visible=faux)\nsegment(p120, p121)\nsegment(p121, p122)\np123 = point(8.657, 1.513, visible=faux)\np124 = point(8.614, 1.457, visible=faux)\np125 = point(8.6, 1.4, visible=faux)\nsegment(p123, p124)\nsegment(p124, p125)\np126 = point(11.4, 4.8, visible=faux)\np127 = point(11.373, 4.722, visible=faux)\np128 = point(11.293, 4.647, visible=faux)\np129 = point(11.164, 4.578, visible=faux)\np130 = point(10.99, 4.517, visible=faux)\np131 = point(10.778, 4.467, visible=faux)\np132 = point(10.536, 4.43, visible=faux)\np133 = point(10.273, 4.408, visible=faux)\np134 = point(10, 4.4, visible=faux)\np135 = point(9.727, 4.408, visible=faux)\np136 = point(9.464, 4.43, visible=faux)\np137 = point(9.222, 4.467, visible=faux)\np138 = point(9.01, 4.517, visible=faux)\np139 = point(8.836, 4.578, visible=faux)\np140 = point(8.707, 4.647, visible=faux)\np141 = point(8.627, 4.722, visible=faux)\np142 = point(8.6, 4.8, visible=faux)\nsegment(p126, p127)\nsegment(p127, p128)\nsegment(p128, p129)\nsegment(p129, p130)\nsegment(p130, p131)\nsegment(p131, p132)\nsegment(p132, p133)\nsegment(p133, p134)\nsegment(p134, p135)\nsegment(p135, p136)\nsegment(p136, p137)\nsegment(p137, p138)\nsegment(p138, p139)\nsegment(p139, p140)\nsegment(p140, p141)\nsegment(p141, p142)\np143 = point(11.4, 4.8, visible=faux)\np144 = point(11.373, 4.878, visible=faux)\np145 = point(11.293, 4.953, visible=faux)\np146 = point(11.164, 5.022, visible=faux)\np147 = point(10.99, 5.083, visible=faux)\np148 = point(10.778, 5.133, visible=faux)\np149 = point(10.536, 5.17, visible=faux)\np150 = point(10.273, 5.192, visible=faux)\np151 = point(10, 5.2, visible=faux)\np152 = point(9.727, 5.192, visible=faux)\np153 = point(9.464, 5.17, visible=faux)\np154 = point(9.222, 5.133, visible=faux)\np155 = point(9.01, 5.083, visible=faux)\np156 = point(8.836, 5.022, visible=faux)\np157 = point(8.707, 4.953, visible=faux)\np158 = point(8.627, 4.878, visible=faux)\np159 = point(8.6, 4.8, visible=faux)\nsegment(p143, p144)\nsegment(p144, p145)\nsegment(p145, p146)\nsegment(p146, p147)\nsegment(p147, p148)\nsegment(p148, p149)\nsegment(p149, p150)\nsegment(p150, p151)\nsegment(p151, p152)\nsegment(p152, p153)\nsegment(p153, p154)\nsegment(p154, p155)\nsegment(p155, p156)\nsegment(p156, p157)\nsegment(p157, p158)\nsegment(p158, p159)\np160 = point(8.6, 1.4, visible=faux)\np161 = point(8.6, 4.8, visible=faux)\nsegment(p160, p161)\np162 = point(11.4, 1.4, visible=faux)\np163 = point(11.4, 4.8, visible=faux)\nsegment(p162, p163)\ntexte(10, 0.4, \"5\")\n```\n\nQuel numéro porte {{if:s==1|le cube|{{if:s==2|la boule|{{if:s==3|le cône|{{if:s==4|le cylindre|le pavé}}}}}}}} ?\n\nNuméro : [_]",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==1|4|{{if:s==2|2|{{if:s==3|1|{{if:s==4|5|3}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|Le cube a 6 faces carrées, toutes pareilles.|{{if:s==2|La boule est toute ronde : elle n'a aucune face plate.|{{if:s==3|Le cône a un rond pour fond et une pointe en haut.|{{if:s==4|Le cylindre a deux ronds, un en haut et un en bas, comme une boîte de conserve.|Le pavé a 6 faces rectangulaires, comme une boîte à chaussures.}}}}}}}}",
+					"{{if:s==1|Le cube|{{if:s==2|La boule|{{if:s==3|Le cône|{{if:s==4|Le cylindre|Le pavé}}}}}}}} porte le numéro ${{if:s==1|4|{{if:s==2|2|{{if:s==3|1|{{if:s==4|5|3}}}}}}}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici cinq solides.\n\n```figure\nfenetre: 0 ; 15 ; -0.9 ; 11.8\ndescription: Cinq solides numérotés de 1 à 5 : un cube, une boule, un cône, un cylindre et un pavé, dans le désordre.\n---\np1 = point(0.546, 7, visible=faux)\np2 = point(3.746, 7, visible=faux)\np3 = point(3.746, 8.7, visible=faux)\np4 = point(0.546, 8.7, visible=faux)\np5 = point(1.254, 7.707, visible=faux)\np6 = point(4.454, 7.707, visible=faux)\np7 = point(4.454, 9.407, visible=faux)\np8 = point(1.254, 9.407, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\ntexte(2.5, 6.4, \"1\")\np9 = point(8.9, 7.4, visible=faux)\np10 = point(8.873, 7.322, visible=faux)\np11 = point(8.793, 7.247, visible=faux)\np12 = point(8.664, 7.178, visible=faux)\np13 = point(8.49, 7.117, visible=faux)\np14 = point(8.278, 7.067, visible=faux)\np15 = point(8.036, 7.03, visible=faux)\np16 = point(7.773, 7.008, visible=faux)\np17 = point(7.5, 7, visible=faux)\np18 = point(7.227, 7.008, visible=faux)\np19 = point(6.964, 7.03, visible=faux)\np20 = point(6.722, 7.067, visible=faux)\np21 = point(6.51, 7.117, visible=faux)\np22 = point(6.336, 7.178, visible=faux)\np23 = point(6.207, 7.247, visible=faux)\np24 = point(6.127, 7.322, visible=faux)\np25 = point(6.1, 7.4, visible=faux)\nsegment(p9, p10)\nsegment(p10, p11)\nsegment(p11, p12)\nsegment(p12, p13)\nsegment(p13, p14)\nsegment(p14, p15)\nsegment(p15, p16)\nsegment(p16, p17)\nsegment(p17, p18)\nsegment(p18, p19)\nsegment(p19, p20)\nsegment(p20, p21)\nsegment(p21, p22)\nsegment(p22, p23)\nsegment(p23, p24)\nsegment(p24, p25)\np26 = point(8.9, 7.4, visible=faux)\np27 = point(8.886, 7.457, visible=faux)\np28 = point(8.843, 7.513, visible=faux)\nsegment(p26, p27)\nsegment(p27, p28)\np29 = point(8.678, 7.616, visible=faux)\np30 = point(8.558, 7.662, visible=faux)\np31 = point(8.417, 7.702, visible=faux)\nsegment(p29, p30)\nsegment(p30, p31)\np32 = point(8.082, 7.764, visible=faux)\np33 = point(7.894, 7.784, visible=faux)\np34 = point(7.699, 7.796, visible=faux)\nsegment(p32, p33)\nsegment(p33, p34)\np35 = point(7.301, 7.796, visible=faux)\np36 = point(7.106, 7.784, visible=faux)\np37 = point(6.918, 7.764, visible=faux)\nsegment(p35, p36)\nsegment(p36, p37)\np38 = point(6.583, 7.702, visible=faux)\np39 = point(6.442, 7.662, visible=faux)\np40 = point(6.322, 7.616, visible=faux)\nsegment(p38, p39)\nsegment(p39, p40)\np41 = point(6.157, 7.513, visible=faux)\np42 = point(6.114, 7.457, visible=faux)\np43 = point(6.1, 7.4, visible=faux)\nsegment(p41, p42)\nsegment(p42, p43)\np44 = point(8.9, 10.8, visible=faux)\np45 = point(8.873, 10.722, visible=faux)\np46 = point(8.793, 10.647, visible=faux)\np47 = point(8.664, 10.578, visible=faux)\np48 = point(8.49, 10.517, visible=faux)\np49 = point(8.278, 10.467, visible=faux)\np50 = point(8.036, 10.43, visible=faux)\np51 = point(7.773, 10.408, visible=faux)\np52 = point(7.5, 10.4, visible=faux)\np53 = point(7.227, 10.408, visible=faux)\np54 = point(6.964, 10.43, visible=faux)\np55 = point(6.722, 10.467, visible=faux)\np56 = point(6.51, 10.517, visible=faux)\np57 = point(6.336, 10.578, visible=faux)\np58 = point(6.207, 10.647, visible=faux)\np59 = point(6.127, 10.722, visible=faux)\np60 = point(6.1, 10.8, visible=faux)\nsegment(p44, p45)\nsegment(p45, p46)\nsegment(p46, p47)\nsegment(p47, p48)\nsegment(p48, p49)\nsegment(p49, p50)\nsegment(p50, p51)\nsegment(p51, p52)\nsegment(p52, p53)\nsegment(p53, p54)\nsegment(p54, p55)\nsegment(p55, p56)\nsegment(p56, p57)\nsegment(p57, p58)\nsegment(p58, p59)\nsegment(p59, p60)\np61 = point(8.9, 10.8, visible=faux)\np62 = point(8.873, 10.878, visible=faux)\np63 = point(8.793, 10.953, visible=faux)\np64 = point(8.664, 11.022, visible=faux)\np65 = point(8.49, 11.083, visible=faux)\np66 = point(8.278, 11.133, visible=faux)\np67 = point(8.036, 11.17, visible=faux)\np68 = point(7.773, 11.192, visible=faux)\np69 = point(7.5, 11.2, visible=faux)\np70 = point(7.227, 11.192, visible=faux)\np71 = point(6.964, 11.17, visible=faux)\np72 = point(6.722, 11.133, visible=faux)\np73 = point(6.51, 11.083, visible=faux)\np74 = point(6.336, 11.022, visible=faux)\np75 = point(6.207, 10.953, visible=faux)\np76 = point(6.127, 10.878, visible=faux)\np77 = point(6.1, 10.8, visible=faux)\nsegment(p61, p62)\nsegment(p62, p63)\nsegment(p63, p64)\nsegment(p64, p65)\nsegment(p65, p66)\nsegment(p66, p67)\nsegment(p67, p68)\nsegment(p68, p69)\nsegment(p69, p70)\nsegment(p70, p71)\nsegment(p71, p72)\nsegment(p72, p73)\nsegment(p73, p74)\nsegment(p74, p75)\nsegment(p75, p76)\nsegment(p76, p77)\np78 = point(6.1, 7.4, visible=faux)\np79 = point(6.1, 10.8, visible=faux)\nsegment(p78, p79)\np80 = point(8.9, 7.4, visible=faux)\np81 = point(8.9, 10.8, visible=faux)\nsegment(p80, p81)\ntexte(7.5, 6.4, \"2\")\np82 = point(10.74, 7, visible=faux)\np83 = point(13.34, 7, visible=faux)\np84 = point(13.34, 9.6, visible=faux)\np85 = point(10.74, 9.6, visible=faux)\np86 = point(11.66, 7.919, visible=faux)\np87 = point(14.26, 7.919, visible=faux)\np88 = point(14.26, 10.519, visible=faux)\np89 = point(11.66, 10.519, visible=faux)\nsegment(p82, p83)\nsegment(p83, p84)\nsegment(p84, p85)\nsegment(p85, p82)\nsegment(p83, p87)\nsegment(p87, p88)\nsegment(p84, p88)\nsegment(p85, p89)\nsegment(p89, p88)\nsegment(p82, p86, trait=\"tirets\")\nsegment(p86, p87, trait=\"tirets\")\nsegment(p86, p89, trait=\"tirets\")\ntexte(12.5, 6.4, \"3\")\np90 = point(5, 2.7, visible=faux)\ncercle(p90, rayon=1.7)\np91 = point(6.7, 2.7, visible=faux)\np92 = point(6.667, 2.607, visible=faux)\np93 = point(6.571, 2.518, visible=faux)\np94 = point(6.413, 2.436, visible=faux)\np95 = point(6.202, 2.363, visible=faux)\np96 = point(5.944, 2.304, visible=faux)\np97 = point(5.651, 2.26, visible=faux)\np98 = point(5.332, 2.233, visible=faux)\np99 = point(5, 2.224, visible=faux)\np100 = point(4.668, 2.233, visible=faux)\np101 = point(4.349, 2.26, visible=faux)\np102 = point(4.056, 2.304, visible=faux)\np103 = point(3.798, 2.363, visible=faux)\np104 = point(3.587, 2.436, visible=faux)\np105 = point(3.429, 2.518, visible=faux)\np106 = point(3.333, 2.607, visible=faux)\np107 = point(3.3, 2.7, visible=faux)\nsegment(p91, p92)\nsegment(p92, p93)\nsegment(p93, p94)\nsegment(p94, p95)\nsegment(p95, p96)\nsegment(p96, p97)\nsegment(p97, p98)\nsegment(p98, p99)\nsegment(p99, p100)\nsegment(p100, p101)\nsegment(p101, p102)\nsegment(p102, p103)\nsegment(p103, p104)\nsegment(p104, p105)\nsegment(p105, p106)\nsegment(p106, p107)\np108 = point(6.7, 2.7, visible=faux)\np109 = point(6.683, 2.768, visible=faux)\np110 = point(6.631, 2.834, visible=faux)\nsegment(p108, p109)\nsegment(p109, p110)\np111 = point(6.43, 2.957, visible=faux)\np112 = point(6.285, 3.012, visible=faux)\np113 = point(6.113, 3.06, visible=faux)\nsegment(p111, p112)\nsegment(p112, p113)\np114 = point(5.706, 3.133, visible=faux)\np115 = point(5.479, 3.157, visible=faux)\np116 = point(5.242, 3.171, visible=faux)\nsegment(p114, p115)\nsegment(p115, p116)\np117 = point(4.758, 3.171, visible=faux)\np118 = point(4.521, 3.157, visible=faux)\np119 = point(4.294, 3.133, visible=faux)\nsegment(p117, p118)\nsegment(p118, p119)\np120 = point(3.887, 3.06, visible=faux)\np121 = point(3.715, 3.012, visible=faux)\np122 = point(3.57, 2.957, visible=faux)\nsegment(p120, p121)\nsegment(p121, p122)\np123 = point(3.369, 2.834, visible=faux)\np124 = point(3.317, 2.768, visible=faux)\np125 = point(3.3, 2.7, visible=faux)\nsegment(p123, p124)\nsegment(p124, p125)\ntexte(5, 0.4, \"4\")\np126 = point(11.4, 1.4, visible=faux)\np127 = point(11.373, 1.322, visible=faux)\np128 = point(11.293, 1.247, visible=faux)\np129 = point(11.164, 1.178, visible=faux)\np130 = point(10.99, 1.117, visible=faux)\np131 = point(10.778, 1.067, visible=faux)\np132 = point(10.536, 1.03, visible=faux)\np133 = point(10.273, 1.008, visible=faux)\np134 = point(10, 1, visible=faux)\np135 = point(9.727, 1.008, visible=faux)\np136 = point(9.464, 1.03, visible=faux)\np137 = point(9.222, 1.067, visible=faux)\np138 = point(9.01, 1.117, visible=faux)\np139 = point(8.836, 1.178, visible=faux)\np140 = point(8.707, 1.247, visible=faux)\np141 = point(8.627, 1.322, visible=faux)\np142 = point(8.6, 1.4, visible=faux)\nsegment(p126, p127)\nsegment(p127, p128)\nsegment(p128, p129)\nsegment(p129, p130)\nsegment(p130, p131)\nsegment(p131, p132)\nsegment(p132, p133)\nsegment(p133, p134)\nsegment(p134, p135)\nsegment(p135, p136)\nsegment(p136, p137)\nsegment(p137, p138)\nsegment(p138, p139)\nsegment(p139, p140)\nsegment(p140, p141)\nsegment(p141, p142)\np143 = point(11.4, 1.4, visible=faux)\np144 = point(11.386, 1.457, visible=faux)\np145 = point(11.343, 1.513, visible=faux)\nsegment(p143, p144)\nsegment(p144, p145)\np146 = point(11.178, 1.616, visible=faux)\np147 = point(11.058, 1.662, visible=faux)\np148 = point(10.917, 1.702, visible=faux)\nsegment(p146, p147)\nsegment(p147, p148)\np149 = point(10.582, 1.764, visible=faux)\np150 = point(10.394, 1.784, visible=faux)\np151 = point(10.199, 1.796, visible=faux)\nsegment(p149, p150)\nsegment(p150, p151)\np152 = point(9.801, 1.796, visible=faux)\np153 = point(9.606, 1.784, visible=faux)\np154 = point(9.418, 1.764, visible=faux)\nsegment(p152, p153)\nsegment(p153, p154)\np155 = point(9.083, 1.702, visible=faux)\np156 = point(8.942, 1.662, visible=faux)\np157 = point(8.822, 1.616, visible=faux)\nsegment(p155, p156)\nsegment(p156, p157)\np158 = point(8.657, 1.513, visible=faux)\np159 = point(8.614, 1.457, visible=faux)\np160 = point(8.6, 1.4, visible=faux)\nsegment(p158, p159)\nsegment(p159, p160)\np161 = point(10, 5.2, visible=faux)\np162 = point(8.6, 1.4, visible=faux)\nsegment(p162, p161)\np163 = point(11.4, 1.4, visible=faux)\nsegment(p163, p161)\ntexte(10, 0.4, \"5\")\n```\n\nQuel numéro porte {{if:s==1|le cube|{{if:s==2|la boule|{{if:s==3|le cône|{{if:s==4|le cylindre|le pavé}}}}}}}} ?\n\nNuméro : [_]",
+			"variables": [
+				{
+					"name": "s",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{if:s==1|3|{{if:s==2|4|{{if:s==3|5|{{if:s==4|2|1}}}}}}}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:s==1|Le cube a 6 faces carrées, toutes pareilles.|{{if:s==2|La boule est toute ronde : elle n'a aucune face plate.|{{if:s==3|Le cône a un rond pour fond et une pointe en haut.|{{if:s==4|Le cylindre a deux ronds, un en haut et un en bas, comme une boîte de conserve.|Le pavé a 6 faces rectangulaires, comme une boîte à chaussures.}}}}}}}}",
+					"{{if:s==1|Le cube|{{if:s==2|La boule|{{if:s==3|Le cône|{{if:s==4|Le cylindre|Le pavé}}}}}}}} porte le numéro ${{if:s==1|3|{{if:s==2|4|{{if:s==3|5|{{if:s==4|2|1}}}}}}}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Rangement 1, cube : n° 2",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Rangement 1, cube : n° 3, erreur",
+			"variationIndex": 0,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Rangement 1, cylindre : n° 1",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Rangement 1, cylindre : n° 2, erreur",
+			"variationIndex": 0,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Rangement 2, cube : n° 5",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Rangement 2, cube : n° 1, erreur",
+			"variationIndex": 1,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Rangement 2, cylindre : n° 3",
+			"variationIndex": 1,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Rangement 2, cylindre : n° 4, erreur",
+			"variationIndex": 1,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Rangement 3, cube : n° 4",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Rangement 3, cube : n° 5, erreur",
+			"variationIndex": 2,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Rangement 3, cylindre : n° 5",
+			"variationIndex": 2,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["5"]
+		},
+		{
+			"description": "Rangement 3, cylindre : n° 1, erreur",
+			"variationIndex": 2,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "Rangement 4, cube : n° 3",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Rangement 4, cube : n° 4, erreur",
+			"variationIndex": 3,
+			"variables": {
+				"s": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Rangement 4, cylindre : n° 2",
+			"variationIndex": 3,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Rangement 4, cylindre : n° 3, erreur",
+			"variationIndex": 3,
+			"variables": {
+				"s": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		}
+	]
+}

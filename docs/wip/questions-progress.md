@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1772._
+_Mis à jour le 2026-10-25, B3 en cours (branche `feat/questions-b3`)._
 
-- **État** : B1 relu 3/3 OK, **B2 relu 10/10 OK**. **Lot B2** (§ 4 duodecies) : 10 brouillons créés en prod (go de David) : `9d6bc8b3` CP-054, `e7453c9b` 055, `c85626fa` 056, `91012bab` 056, `b5389494` 057, `d5a36be9` 061, `2fc01600` 062, `f7167af7` 067, `d50c6e21` 035, `7093b797` 034. #1772 mergée, `db:migrate` joué, vérifié en prod (10 modèles sur leur sous-notion, 1 tag chacun). Page à cocher B2 : https://claude.ai/artifact/DzfztZrpHKs82BgnxnydrC (collection `verdicts`).
-- **Prochaine action** : phase 0 de B3 (images fixes : 049-052, 040), soumise à David le 2026-10-25.
+- **État** : A1 à H, B1, B2 relus et OK (B2 : 10/10). **Lot B3** (§ 4 terdecies) : 7 modèles écrits (`scripts/questions/cp-b3/`, générateur `docs/wip/questions/lot-b3.py`), 66 specs vertes en simulation, figures relues à 390 px (banc `figureToSvg`).
+- **Prochaine action** : go de David → `create-questions --dir scripts/questions/cp-b3 --publier` ; puis migration nœud + tag (sur le modèle de `20261026150000`), test rouge puis vert, PR.
 - **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 058 à réexaminer.
-- **En attente de David** : phase 0 de B3 ; publication A1 à H, B1, B2 en un lot ; vérification manuelle #1702.
+- **En attente de David** : go pour créer les 7 brouillons B3 en prod ; publication A1 à H, B1, B2 en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (la bonne réponse = une variable) ; **virgule décimale = figure cassée** (coordonnées tirées : chaînes de `{{if:…}}` sur des valeurs écrites) ; **points et segments numérotés, pas lettrés** (les choix du QCM portent A, B, C) ; texte sur fond coloré illisible ; jamais de variable `e`.
-- **Worktree / branche** : aucun (retiré après #1772) ; B3 → `git worktree add -b feat/questions-b3 ../ubumaths-wt-questions origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-questions` (`feat/questions-b3`) ; ⚠️ la branche suit `origin/main` : pousser avec `git push -u origin feat/questions-b3`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -163,6 +163,14 @@ David suit mes cinq recommandations (« je te suis »).
 - **CP-034 en QCM sur figure** : « Quel segment est le plus long / court ? », trois directions, 1 cm d'écart au moins ; le report (bande de papier) attend la case « figure ».
 - **CP-058** reste hors de B2, à réexaminer.
 
+## 4 terdecies. Lot B3 : décisions (David, 2026-10-25)
+
+David suit mes recommandations (« je suis tes recos, go »).
+
+- **Dessin en bloc ```figure**, pas d'image fixe (une image n'arriverait en prod qu'avec un `deploy:prod`). Le bloc refuse `courbe()` : les ellipses sont des lignes brisées aux coordonnées calculées par le générateur (16 segments par demi-ellipse) ; la moitié cachée est en **tirets faits main** (un morceau sur deux, en trait plein) : le motif du trait (12 px) ne tient pas sur des morceaux de 10 px, la ligne sortait pleine. Perspective cavalière (45°, réduction 1/2), arêtes cachées en tirets.
+- 7 modèles, chacun sur le nœud de son point, un tag : CP-049 « Trouve le solide » (les 5 solides numérotés, 4 rangements, case nombre) et « À quel solide ressemble cet objet ? » (objets de tous les jours, QCM texte) ; CP-050 « Comment s'appelle ce solide ? » (cube, petit cube, pavé couché, pavé debout, boule ; les 5 noms au choix) ; CP-051 « Comment s'appelle la partie coloriée ? » (face, côté, sommet — **pas « arête »**, hors CP ; face en bleu translucide : le jaune du thème clair sort moutarde) ; CP-052 « Combien de faces ? » (6 ; leurre 3, les faces vues) et « De quelle forme sont les faces ? » (cube → carrés ; **pavé sans face carrée** → rectangles) ; CP-040 « Lequel est le plus lourd ? » (balance à plateaux suspendus, penchée ou à l'équilibre, plus lourd ou plus léger ; **formes de même taille** ● ■ ▲ appelées disque, carré, triangle comme en B2 ; deux balances à enchaîner laissées au CE1).
+- **CP-058** hors de B3 (geste de la règle : case « figure » ou réponses à placer).
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -223,3 +231,4 @@ David suit mes cinq recommandations (« je te suis »).
 - 2026-10-25 : B2, audit sécurité de la migration sans finding bloquant (même structure que B1, 10 lignes exactement, rollback juste).
 - 2026-10-25 : #1772 mergée (CI verte) ; `db:migrate` joué depuis le dépôt principal (le worktree n'est pas lié à Supabase), vérifié en prod : 10 modèles B2 sur leur sous-notion, 1 tag chacun ; page à cocher B2 publiée (figures dessinées par `figureToSvg`, script `_page-b2.mts` du scratchpad).
 - 2026-10-25 : page à cocher B2 relue par David, 10/10 OK.
+- 2026-10-25 : lot B3, phase 0 validée (§ 4 terdecies), worktree `../ubumaths-wt-questions` (`feat/questions-b3`) ; 7 modèles écrits, 66 specs vertes (simulation) ; rendu relu à 390 px : tirets des ellipses cachées faits main, équateur de la boule en 16 segments, face en bleu translucide, fenêtres resserrées.
