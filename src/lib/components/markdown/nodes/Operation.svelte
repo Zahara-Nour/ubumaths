@@ -88,6 +88,11 @@
 		10: 'dizaines de milliards'
 	};
 
+	/** Rangées de cases, de haut en bas (flèches ↑/↓) : retenues, retenues de l'addition, produits partiels, résultat */
+	const ROW_ABOVE = 0;
+	const ROW_PARTIAL_CARRIES = 1;
+	const partialRow = (r: number) => 2 + r;
+
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
 
@@ -133,10 +138,6 @@
 	let expectedComma = $derived(scene ? scene.columns - scene.decimals - 1 : -1);
 	let compensation = $derived(node.spec?.operator === '-' && node.spec.method === 'compensation');
 
-	/** Rangées de cases, de haut en bas (flèches ↑/↓) : retenues, retenues de l'addition, produits partiels, résultat */
-	const ROW_ABOVE = 0;
-	const ROW_PARTIAL_CARRIES = 1;
-	const partialRow = (r: number) => 2 + r;
 	let resultRow = $derived(partialRow(scene?.partials.length ?? 0));
 
 	/** Texte visible d'une petite écriture : jamais l'attendu d'une case */

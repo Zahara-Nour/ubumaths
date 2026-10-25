@@ -127,8 +127,8 @@ export function commaFromAnswer(scene: OperationScene, value: string): number | 
 /**
  * Chiffres faux des cases du résultat, comparés à l'opération résolue (la
  * scène porte l'attendu de chaque case, '' pour un zéro de tête). Un zéro de
- * tête écrit ou laissé vide n'est jamais faux ; une décimale de fin laissée
- * vide vaut 0, comme à la lecture.
+ * tête écrit ou laissé vide n'est jamais faux (le 0 des unités de `0,15`
+ * compris) ; une décimale de fin laissée vide vaut 0, comme à la lecture.
  */
 export function wrongResultDigits(
 	scene: OperationScene,
@@ -136,9 +136,12 @@ export function wrongResultDigits(
 	comma: number | null = gridComma(scene)
 ): boolean[] {
 	const last = lastReadColumn(scene, digits, comma);
+	const first = digits.findIndex((d) => d !== '');
 	return scene.result.map((cell, c) => {
 		const typed = c > last ? '0' : (digits[c] ?? '');
 		if (cell.digit === '') return typed !== '' && typed !== '0';
+		// Case de tête vide là où 0 était attendu : le 0 implicite de la lecture (`, 1 5` → 0,15)
+		if (typed === '' && cell.digit === '0' && (first === -1 || c < first)) return false;
 		return typed !== cell.digit;
 	});
 }

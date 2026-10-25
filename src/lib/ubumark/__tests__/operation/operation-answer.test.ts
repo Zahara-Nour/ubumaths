@@ -237,6 +237,20 @@ describe('multiplication : la virgule posée par l’élève (§ 11)', () => {
 		expect(wrongResultDigits(m('calcul: 2,5 × 4'), cells('10_'), 1)).toEqual([false, false, false]);
 	});
 
+	it('0 implicite des unités jamais surligné (revue #1745, comportement 12)', () => {
+		expect(wrongResultDigits(m('calcul: 0,5 × 0,3'), cells('__16'), 1)).toEqual([
+			false,
+			false,
+			false,
+			true
+		]);
+		expect(wrongResultDigits(scene('calcul: 0,2 + 0,3'), cells('__6'))).toEqual([
+			false,
+			false,
+			true
+		]);
+	});
+
 	it('virgule à la correction : absente, mal placée, à sa place (comportements 8, 11)', () => {
 		const decimal = m('calcul: 7 × 46,55');
 		expect(wrongComma(decimal, 2)).toBeNull();
