@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-25, après #1712 (A2 en cours)._
 
-- **État** : lot A1 livré (#1712, 6 brouillons en prod, relus 6/6 OK). Lot A2 en cours, branche `feat/questions-cp-a2` : phase 0 validée (§ 4 quater), 7 modèles écrits (`scripts/questions/cp-a2/`, générés par `docs/wip/questions/lot-a2.py`), `checkTemplate` vert, rendu relu. Page à cocher A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb.
-- **Prochaine action** : go de David pour `create-questions --publier` (brouillons A2 en prod), puis migration nœud + tag (test rouge sans elle), PR.
-- **En attente de David** : go `--publier` A2 ; publication des 6 brouillons A1 ; vérification manuelle #1702.
+- **État** : lot A1 livré (#1712, 6 brouillons en prod, relus 6/6 OK). Lot A2, branche `feat/questions-cp-a2` : 7 brouillons créés en prod le 2026-10-25 (`b831b7b8` CP-003, `73bb66e4` CP-003, `b19dfc8e` CP-004, `78a6ba79` CP-007, `dc95f4f6` CP-075, `23acfcd1` CP-075, `1bd1f044` CP-076) ; migration `20261025190000_questions_cp_a2_rangement_tags` (nœud + tag) écrite, test 8/8 vert, 5/8 rouges sans le SQL. Page à cocher A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb.
+- **Prochaine action** : `security-auditor`, PR, CI verte → merge, `db:migrate` depuis le dépôt principal, vérification prod, page à cocher A2.
+- **En attente de David** : publication des 6 brouillons A1 ; vérification manuelle #1702.
 - **Pièges en cours** : nouveaux modèles = `scripts/create-questions.ts` (brouillons, ni nœud ni tag) puis migration nœud + tag ; la case naît d'une variable `expression1` ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point (trigger) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e` (= Euler)** ; une spec ne calcule pas les variables dérivées (`b = eval:a+k`) : une règle qui en dépend se vérifie aussi au rendu (`question-specs --apercu`).
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-cp-a2`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -125,3 +125,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-24 : #1702 mergée, `db:migrate` (M1 + M2), vérifié en prod ; horloge lancée en parallèle (session « horloge »).
 - 2026-10-25 : groupe A découpé (§ 4 ter) ; lot A1 : 6 modèles créés en brouillon (`create-questions`), #1712 (nœud + tag) mergée, `db:migrate`, vérifié en prod ; page à cocher publiée.
 - 2026-10-25 : lot A2, phase 0 validée (§ 4 quater), 7 modèles écrits et verts (`checkTemplate`) ; bug `e` = Euler trouvé au rendu et corrigé.
+- 2026-10-25 : A2, 7 brouillons créés en prod (`create-questions --publier`, go de David) ; question d'accès tranchée (personne ne gagne ni ne perd d'accès) ; migration nœud + tag et son test.
