@@ -36,7 +36,7 @@ import type {
 } from '../types';
 import { getPolynomialDegree } from '../classify';
 import { getVariables } from '../../eval/substitute';
-import { flattenSumShallow, unflattenSum } from '../../flatten';
+import { flattenSumShallow } from '../../flatten';
 import {
 	number,
 	opposite,
@@ -52,6 +52,11 @@ import {
 import { numericNode } from '../../common/numeric';
 import { denormalize, normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
 import { integerNthRoot } from '../../normal/radical';
+import {
+	canonicalForm,
+	coefficientsByDegree,
+	coefficientOfDegree
+} from '../../normal/canonical-form';
 import {
 	describeIdentifyPowerEquation,
 	describeExtractNthRoot,
@@ -138,7 +143,7 @@ export function extractPowerEquation(
 			// a·x^n, a constant non nul : on divise par a (x^n = −c/a). Sans
 			// cela, 2√2·x³ = 1 partait chez Cardano et rendait ∛0 + ∛(√2/4).
 			if (!isPurePower(signedTerm, variable)) {
-				const coefficient = extractCoefficient([signedTerm], variable, degree);
+				const coefficient = coefficientOfDegree([signedTerm], variable, degree);
 				if (!isConstantCoefficient(coefficient) || isZeroNode(coefficient)) return null;
 				powerCoefficient = coefficient;
 			}
@@ -247,139 +252,19 @@ function createNthRootNode(radicand: MathNode, n: number): MathNode {
 // =============================================================================
 
 /**
- * Get the degree of a term in the given variable.
- */
-export function getTermDegree(term: MathNode, variable: string): number {
-	const vars = getVariables(term);
-	if (!vars.has(variable)) return 0;
-
-	// x^n pattern
-	if (term.type === 'superscript' && term.base.type === 'variable' && term.base.name === variable) {
-		const exp = term.superscript;
-		if (exp.type === 'number') {
-			const n = parseInt(exp.value, 10);
-			if (!isNaN(n)) return n;
-		}
-	}
-
-	// c * x^n pattern (multiplication)
-	if (term.type === 'multiplication') {
-		const checkSide = (side: MathNode): number => {
-			if (
-				side.type === 'superscript' &&
-				side.base.type === 'variable' &&
-				side.base.name === variable
-			) {
-				const exp = side.superscript;
-				if (exp.type === 'number') {
-					const n = parseInt(exp.value, 10);
-					if (!isNaN(n)) return n;
-				}
-			}
-			if (side.type === 'variable' && side.name === variable) return 1;
-			return 0;
-		};
-		const leftDeg = checkSide(term.left);
-		const rightDeg = checkSide(term.right);
-		if (leftDeg > 0 || rightDeg > 0) return Math.max(leftDeg, rightDeg);
-	}
-
-	// Simple variable x (degree 1)
-	if (term.type === 'variable' && term.name === variable) return 1;
-
-	// Opposite term
-	if (term.type === 'opposite') {
-		return getTermDegree(term.operand, variable);
-	}
-
-	// Fallback to polynomial degree
-	return getPolynomialDegree(term, variable) ?? 0;
-}
-
-/**
- * Extract coefficient from terms of given degree.
- */
-export function extractCoefficient(terms: MathNode[], variable: string, degree: number): MathNode {
-	if (terms.length === 0) return number('0');
-
-	const termSum =
-		terms.length === 1
-			? terms[0]
-			: unflattenSum(terms.map((t) => ({ sign: '+' as const, term: t })))!;
-
-	if (degree === 0) {
-		return denormalize(normalize(termSum));
-	}
-
-	// Divide by x^degree to get coefficient
-	const divisor = degree === 1 ? varNode(variable) : power(varNode(variable), numericNode(degree));
-	const coeffExpr = fraction(termSum, divisor);
-	return denormalize(normalize(coeffExpr));
-}
-
-/**
- * Extract coefficients a, b, c, d from cubic expression ax³ + bx² + cx + d.
+ * Extract coefficients a, b, c, d from cubic expression ax³ + bx² + cx + d,
+ * read as written (no expansion). `null` without an x³ term, or when a
+ * coefficient still depends on x (`(x-1)^3` must be expanded first).
  */
 export function extractCubicCoefficients(
 	expr: MathNode,
 	variable: string
 ): { a: MathNode; b: MathNode; c: MathNode; d: MathNode } | null {
-	const flatSum = flattenSumShallow(expr);
-
-	const aTerms: MathNode[] = []; // degree 3
-	const bTerms: MathNode[] = []; // degree 2
-	const cTerms: MathNode[] = []; // degree 1
-	const dTerms: MathNode[] = []; // degree 0
-
-	for (const { sign, term } of flatSum) {
-		const signedTerm = sign === '-' ? opposite(term) : term;
-		const degree = getTermDegree(signedTerm, variable);
-
-		if (degree === 3) {
-			aTerms.push(signedTerm);
-		} else if (degree === 2) {
-			bTerms.push(signedTerm);
-		} else if (degree === 1) {
-			cTerms.push(signedTerm);
-		} else if (degree === 0) {
-			dTerms.push(signedTerm);
-		} else {
-			// Unexpected degree (>3 or transcendental)
-			return null;
-		}
-	}
-
-	// Must have x³ term
-	if (aTerms.length === 0) return null;
-
-	const a = extractCoefficient(aTerms, variable, 3);
-	const b = extractCoefficient(bTerms, variable, 2);
-	const c = extractCoefficient(cTerms, variable, 1);
-	const d = extractCoefficient(dTerms, variable, 0);
-
-	// Verify a ≠ 0
+	const coefficients = coefficientsByDegree(expr, variable, 3);
+	if (coefficients === null) return null;
+	const [d, c, b, a] = coefficients;
 	if (isZeroNode(a)) return null;
-
-	// A coefficient of ax³ + bx² + cx + d must be constant in the variable. A
-	// factored cube passes the degree test — `getTermDegree` reads `(x-1)^3` as a
-	// degree-3 term — and the division by x³ then yields `(x-1)^3 / x^3`, which
-	// still depends on x. Cardano applied to such a "coefficient" answered x = 0.
-	// Coefficients holding *other* symbols (parametric equations) stay valid.
-	if (
-		dependsOnVariable(a, variable) ||
-		dependsOnVariable(b, variable) ||
-		dependsOnVariable(c, variable) ||
-		dependsOnVariable(d, variable)
-	) {
-		return null;
-	}
-
 	return { a, b, c, d };
-}
-
-/** Whether a coefficient still involves the variable being solved for. */
-function dependsOnVariable(coefficient: MathNode, variable: string): boolean {
-	return getVariables(coefficient).has(variable);
 }
 
 /**
@@ -392,7 +277,7 @@ function cubicCoefficients(
 ): { a: MathNode; b: MathNode; c: MathNode; d: MathNode } | null {
 	return (
 		extractCubicCoefficients(expr, variable) ??
-		extractCubicCoefficients(denormalize(normalize(expr)), variable)
+		extractCubicCoefficients(canonicalForm(expr), variable)
 	);
 }
 

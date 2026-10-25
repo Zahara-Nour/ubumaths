@@ -53,7 +53,7 @@ import { mapNode } from '../transforms';
 import { flattenSumShallow, unflattenSum, flattenRelationChain } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { getVariables } from '../eval/substitute';
-import { denormalize, normalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { computeDomain } from '../domain/compute';
 import { intersect, isEmpty, isUniversal } from '../domain/algebra';
 import type { Domain, Endpoint } from '../domain/types';
@@ -208,11 +208,6 @@ export function parameterCondition(
 // Une couche
 // =============================================================================
 
-/** La forme normale réécrite (`normalize` développe). */
-function normalForm(node: MathNode): MathNode {
-	return denormalize(normalize(node));
-}
-
 /** c défini pour toute valeur de chaque paramètre (pas de ln a, √a, 1/a). */
 function definedEverywhere(node: MathNode): boolean {
 	for (const letter of getVariables(node)) {
@@ -253,7 +248,7 @@ function peel(core: MathNode, target: MathNode, variable: string): Layer | null 
 	if (ln && isFunction(core) && core.base === undefined) {
 		return {
 			argument: getBindingNode(ln, 'u') ?? core,
-			target: normalForm(superscript(euler(), target)),
+			target: canonicalForm(superscript(euler(), target)),
 			condition: null,
 			description: "On applique l'exponentielle aux deux membres",
 			equationType: 'logarithmic'
@@ -264,7 +259,7 @@ function peel(core: MathNode, target: MathNode, variable: string): Layer | null 
 	if (log && logBase !== null) {
 		return {
 			argument: getBindingNode(log, 'u') ?? core,
-			target: normalForm(superscript(logBase, target)),
+			target: canonicalForm(superscript(logBase, target)),
 			condition: null,
 			description: `On élève ${toCustom(logBase)} à la puissance de chaque membre`,
 			equationType: 'logarithmic'
@@ -276,7 +271,7 @@ function peel(core: MathNode, target: MathNode, variable: string): Layer | null 
 		const even = index % 2 === 0;
 		return {
 			argument: getBindingNode(root, 'u') ?? core,
-			target: normalForm(superscript(target, number(String(index)))),
+			target: canonicalForm(superscript(target, number(String(index)))),
 			// ⁿ√u = c, n impair : u = cⁿ pour tout c ; n pair : c ≥ 0
 			condition: even ? relation('>=', target, number('0')) : null,
 			description: even
@@ -355,7 +350,7 @@ export function tryLiteralParameter(
 		if (value === null || value === 0) return null;
 		target = divide(target, coefficient, 'fraction');
 	}
-	target = normalForm(target);
+	target = canonicalForm(target);
 
 	const layer = peel(core, target, variable);
 	if (layer === null) return null;

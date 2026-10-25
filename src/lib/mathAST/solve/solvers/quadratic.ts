@@ -16,7 +16,6 @@ import type {
 } from '../types';
 import { getPolynomialDegree } from '../classify';
 import { getVariables } from '../../eval/substitute';
-import { flattenSumShallow, unflattenSum } from '../../flatten';
 import {
 	number,
 	fraction,
@@ -27,10 +26,10 @@ import {
 	equals,
 	variable as varNode,
 	sqrt as sqrtNode,
-	power,
 	greaterThanOrEqual
 } from '../../factory';
 import { denormalize, normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
+import { canonicalForm, coefficientsByDegree } from '../../normal/canonical-form';
 import { describeCoefficients, describeDiscriminant, describeSolution } from '../descriptions-fr';
 import { computeNumericValue } from '../../eval/numeric-value';
 import { parameterCondition } from '../literal-parameter';
@@ -40,141 +39,20 @@ import { parameterCondition } from '../literal-parameter';
 // =============================================================================
 
 /**
- * Extract coefficients a, b, c from a quadratic expression ax^2 + bx + c.
- * Returns { a, b, c } such that expr = ax^2 + bx + c.
+ * Extract coefficients a, b, c from a quadratic expression ax^2 + bx + c,
+ * read as written (no expansion). `null` when a term has degree > 2 or a
+ * coefficient still depends on x (`(x-1)^2` must be expanded first).
  *
- * Exported (Phase 2 of the pedagogical-quadratic stepper) for reuse by
- * `pedagogical-solve/quadratic.ts`. The returned `MathNode`s are produced via
- * the immutable factory and are safe to pass around without copying.
+ * Exported for reuse by `pedagogical-solve/quadratic.ts`.
  */
 export function extractQuadraticCoefficients(
 	expr: MathNode,
 	variable: string
 ): { readonly a: MathNode; readonly b: MathNode; readonly c: MathNode } | null {
-	// Flatten the expression into terms
-	const flatSum = flattenSumShallow(expr);
-
-	// Separate terms by degree
-	const aTerms: MathNode[] = [];
-	const bTerms: MathNode[] = [];
-	const cTerms: MathNode[] = [];
-
-	for (const { sign, term } of flatSum) {
-		const signedTerm = sign === '-' ? opposite(term) : term;
-		const degree = getTermDegree(signedTerm, variable);
-
-		if (degree === 2) {
-			aTerms.push(signedTerm);
-		} else if (degree === 1) {
-			bTerms.push(signedTerm);
-		} else if (degree === 0) {
-			cTerms.push(signedTerm);
-		} else {
-			// Term has unexpected degree
-			return null;
-		}
-	}
-
-	// Build coefficient a (sum of x^2 terms divided by x^2)
-	const a = extractCoefficient(aTerms, variable, 2);
-	const b = extractCoefficient(bTerms, variable, 1);
-	// Note: unflattenSum returns null only for empty arrays, which we've already handled
-	const c =
-		cTerms.length === 0
-			? number('0')
-			: cTerms.length === 1
-				? cTerms[0]
-				: unflattenSum(cTerms.map((t) => ({ sign: '+' as const, term: t })))!;
-
-	// A coefficient of ax^2 + bx + c must be constant in the variable. A factored
-	// square slips through the degree test — `getPolynomialDegree` reads `(x-1)^2`
-	// as a degree-2 term — and the division by x^2 then yields `(x-1)^2 / x^2`,
-	// which still depends on x. Answering with such a "coefficient" made
-	// `solve((x-1)^2 = 0)` reply x = 0. Callers must be told the expression is not
-	// in standard form so they can expand it, or fall back to another strategy.
-	// Coefficients holding *other* symbols (parametric equations) stay valid.
-	if (
-		dependsOnVariable(a, variable) ||
-		dependsOnVariable(b, variable) ||
-		dependsOnVariable(c, variable)
-	) {
-		return null;
-	}
-
+	const coefficients = coefficientsByDegree(expr, variable, 2);
+	if (coefficients === null) return null;
+	const [c, b, a] = coefficients;
 	return { a, b, c };
-}
-
-/** Whether a coefficient still involves the variable being solved for. */
-function dependsOnVariable(coefficient: MathNode, variable: string): boolean {
-	return getVariables(coefficient).has(variable);
-}
-
-/**
- * Get the degree of a term in the given variable.
- */
-function getTermDegree(term: MathNode, variable: string): number {
-	const vars = getVariables(term);
-	if (!vars.has(variable)) return 0;
-
-	// Simple heuristic: check structure
-	// x^2 term
-	if (term.type === 'superscript' && term.base.type === 'variable' && term.base.name === variable) {
-		const exp = term.superscript;
-		if (exp.type === 'number' && exp.value === '2') return 2;
-		if (exp.type === 'number' && exp.value === '1') return 1;
-	}
-
-	// c * x^2 term (multiplication)
-	if (term.type === 'multiplication') {
-		// Check left and right for x^2 pattern
-		const checkSide = (side: MathNode): number => {
-			if (
-				side.type === 'superscript' &&
-				side.base.type === 'variable' &&
-				side.base.name === variable
-			) {
-				const exp = side.superscript;
-				if (exp.type === 'number' && exp.value === '2') return 2;
-			}
-			if (side.type === 'variable' && side.name === variable) return 1;
-			return 0;
-		};
-		const leftDeg = checkSide(term.left);
-		const rightDeg = checkSide(term.right);
-		if (leftDeg > 0 || rightDeg > 0) return Math.max(leftDeg, rightDeg);
-	}
-
-	// Simple variable x (degree 1)
-	if (term.type === 'variable' && term.name === variable) return 1;
-
-	// Opposite term
-	if (term.type === 'opposite') {
-		return getTermDegree(term.operand, variable);
-	}
-
-	// For complex terms, use polynomial degree
-	return getPolynomialDegree(term, variable) ?? 0;
-}
-
-/**
- * Extract coefficient from terms of given degree.
- */
-function extractCoefficient(terms: MathNode[], variable: string, degree: number): MathNode {
-	if (terms.length === 0) return number('0');
-
-	// Sum the terms
-	// Note: unflattenSum returns null only for empty arrays, which we've already handled
-	const termSum =
-		terms.length === 1
-			? terms[0]
-			: unflattenSum(terms.map((t) => ({ sign: '+' as const, term: t })))!;
-
-	// Divide by x^degree to get coefficient
-	const divisor = degree === 2 ? power(varNode(variable), number('2')) : varNode(variable);
-	const coeffExpr = fraction(termSum, divisor);
-	const coeffSimplified = denormalize(normalize(coeffExpr));
-
-	return coeffSimplified;
 }
 
 /**
@@ -241,7 +119,7 @@ export const quadraticSolver: EquationSolver = {
 		// read again, the way the pedagogical stepper already does.
 		const coeffs =
 			extractQuadraticCoefficients(expr, variable) ??
-			extractQuadraticCoefficients(denormalize(normalize(expr)), variable);
+			extractQuadraticCoefficients(canonicalForm(expr), variable);
 
 		if (!coeffs) {
 			return {

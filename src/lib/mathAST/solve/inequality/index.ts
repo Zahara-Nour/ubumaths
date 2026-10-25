@@ -31,7 +31,7 @@ import { isRelation } from '../../guards';
 import { analyzeSign } from '../../sign';
 import { detectVariable } from '../classify';
 import { subtract } from '../../factory';
-import { denormalize, normalize } from '../../normal';
+import { canonicalForm } from '../../normal';
 import { getVariables } from '../../eval/substitute';
 import { isEmpty as isDomainEmpty, union, difference, intersect } from '../../domain/algebra';
 import { computeDomain, normalizeExcludedPoints } from '../../domain/compute';
@@ -86,7 +86,7 @@ export function solveInequality(
 		throw new SolveInequalityError(refusal, `variable: ${options.variable}`);
 	}
 
-	const expression = canon(subtract(relation.left, relation.right));
+	const expression = canonicalForm(subtract(relation.left, relation.right));
 
 	const variable = options.variable ?? detectVariable(relation);
 	if (variable === null) {
@@ -160,10 +160,6 @@ export function solveInequality(
 // =============================================================================
 // Pipeline pieces
 // =============================================================================
-
-function canon(node: MathNode): MathNode {
-	return denormalize(normalize(node));
-}
 
 /**
  * Reject expressions that contain free variables other than the unknown.

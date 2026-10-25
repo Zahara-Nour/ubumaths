@@ -13,7 +13,7 @@
 import type { MathNode } from '../types';
 import type { PeriodicSolutionFamily, Solution } from './types';
 import { add, divide, multiply, number } from '../factory';
-import { normalize, denormalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
@@ -47,10 +47,6 @@ const MAX_COMMON_MULTIPLE = 12;
 
 function numericOf(solution: Solution): number | null {
 	return solution.approximate ?? computeNumericValue(solution.value);
-}
-
-function simplified(node: MathNode): MathNode {
-	return denormalize(normalize(node));
 }
 
 /** `a ≡ b (mod period)`, à la tolérance près. */
@@ -106,7 +102,7 @@ function reduceByDivision(
 		}
 
 		current = kept;
-		currentPeriod = simplified(divide(currentPeriod, number(String(divisor)), 'fraction'));
+		currentPeriod = canonicalForm(divide(currentPeriod, number(String(divisor)), 'fraction'));
 		currentNumeric = reduced;
 	}
 
@@ -158,7 +154,7 @@ export function mergePeriodicFamilies(
 	const commonPeriod =
 		multiple === 1
 			? longest.period
-			: simplified(multiply(number(String(multiple)), longest.period, 'implicit'));
+			: canonicalForm(multiply(number(String(multiple)), longest.period, 'implicit'));
 
 	const bases: NumericSolution[] = [];
 	for (const family of families) {
@@ -175,7 +171,9 @@ export function mergePeriodicFamilies(
 				const value =
 					k === 0
 						? base.value
-						: simplified(add(base.value, multiply(number(String(k)), family.period, 'implicit')));
+						: canonicalForm(
+								add(base.value, multiply(number(String(k)), family.period, 'implicit'))
+							);
 				bases.push({
 					solution: { ...base, value, approximate: shifted },
 					numeric: shifted

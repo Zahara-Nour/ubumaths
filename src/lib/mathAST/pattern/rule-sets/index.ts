@@ -58,7 +58,7 @@ export {
 	hypHigherPowerRules
 } from './hyperbolic-identities';
 
-export { algebraicFactoringRules, algebraicExpandingRules } from './algebraic-identities';
+export { algebraicFactoringRules } from './algebraic-identities';
 
 // =============================================================================
 // Combined Rule Sets
