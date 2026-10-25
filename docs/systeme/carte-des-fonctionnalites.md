@@ -112,7 +112,7 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 
 - Pages de mise au point : `/constructions/essais` (prof seul, ex-`/construction-demo`),
   tout `/dev/*` (admin seul : polices, cadres, pages d'erreur, Blockly, diaporama, structure…),
-  tout `/aide-ecriture/*` (prof seul : géométrie, cercle trigonométrique).
+  tout `/aide-ecriture/*` (prof seul : géométrie, cercle trigonométrique, catalogue des blocs).
 - Héritage remplacé par l'Atelier ([atelier.md](atelier.md)) : `/cas` (2026-10-13), `/spreadsheet`
   (2026-10-24) et `/calc` (2026-10-25) sont retirées : leurs adresses mènent à `/atelier`.
 - Routes sans lien ou en sommeil : `/tuteur`, `/calculatrice`, `/games/evoland`, Navadra
