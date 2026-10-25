@@ -1,15 +1,15 @@
 # Chantier « operations-posees » — opérations posées en colonnes
 
-## Reprendre ici
+## Clôture
 
-_Mis à jour le 2026-10-25, après #1758._
+_Chantier CLOS le 2026-10-25 (journal archivé)._
 
-- **État** : chantier COMPLET sur `main` (rien en prod) : lot 1 (#1716, #1726, #1738), lot 2 multiplication (#1740, #1745, #1748), lot 3 division (#1754 affichage, #1758 saisie). Tous les points du § 1 couverts.
-- **Prochaine action** : clôture du chantier (versement : le durable est déjà dans `docs/systeme/ubumark.md` et `questions.md`, journal à archiver) sur le go de David.
-- **En attente de David** : vérifications #1716 → #1758 (`verifications-manuelles.md`) avant `deploy:prod` ; précision Q1 (§ 10) ; choix du § 13 ; M2 laissée (§ 13) — à corriger ou non.
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — à jour au 2026-10-25 (version 7 : saisie de la division, testée dans Chromium).
-- **Pièges en cours** : deux prettier en même temps → le hook de pre-commit est tué (relancer le commit) ; les journaux des worktrees figés sont en retard (ne pas les lire pour reprendre).
-- **Worktree / branche** : branches mergées. Serveurs de test de David : `ubumaths-wt-operations-posees-saisie-division` (5181, saisie de la division), `…-division` (5180), `ubumaths-wt-operations-posees` (5179) — à retirer quand David n'en a plus besoin.
+- **Livré** (sur `main`, pas encore en prod) : lot 1 addition et soustraction (#1716, #1726, #1738), lot 2 multiplication (#1740, #1745, #1748), lot 3 division en potence (#1754 affichage, #1758 saisie). Tous les points du § 1 couverts.
+- **Doc durable** : `docs/systeme/ubumark.md` (bloc ```operation, saisie) et `docs/systeme/questions.md` (cases d'un bloc, deux pour une division euclidienne).
+- **Tranché par David** (recos suivies, 2026-10-25) : précision Q1 gardée (zéros de tête non comptés, § 10) ; choix du § 13 gardés ; M2 non corrigée (§ 13, à reprendre si un vrai modèle la rencontre).
+- **Reste à faire hors chantier** : vérifications #1716 → #1758 dans `docs/wip/verifications-manuelles.md`, avant `deploy:prod`.
+- **Page de démonstration, gardée** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (version 7 : affichage et saisie des trois lots).
+- **Serveur de test gardé** jusqu'à la fin des vérifications : `ubumaths-wt-operations-posees-saisie-division` (port 5181, `main` après #1758, les trois lots) ; les worktrees 5179 et 5180 sont retirés.
 
 ---
 

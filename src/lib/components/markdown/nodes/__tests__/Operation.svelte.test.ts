@@ -1,5 +1,5 @@
 /**
- * Bloc ```operation à l'écran (phase 0 : `docs/wip/operations-posees-progress.md` § 3)
+ * Bloc ```operation à l'écran (phase 0 : `docs/archive/wip/operations-posees-progress.md` § 3)
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
  */
@@ -106,7 +106,7 @@ describe('Operation — grille', () => {
 	});
 });
 
-// Division en potence (lot 3, PR 3a : docs/wip/operations-posees-progress.md § 12)
+// Division en potence (lot 3, PR 3a : docs/archive/wip/operations-posees-progress.md § 12)
 describe('Operation — division', () => {
 	it('à remplir : dividende et diviseur écrits, ni quotient ni reste dans le DOM (n° 1, 4)', async () => {
 		const screen = await render(Operation, {
@@ -185,7 +185,7 @@ describe('Operation — bloc en erreur', () => {
 	});
 });
 
-// Case d'une question (PR 1b, docs/wip/operations-posees-progress.md § 9)
+// Case d'une question (PR 1b, docs/archive/wip/operations-posees-progress.md § 9)
 describe('Operation — saisie (case d’une question)', () => {
 	type Answer = {
 		value: string;

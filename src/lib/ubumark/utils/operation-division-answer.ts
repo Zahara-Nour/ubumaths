@@ -13,7 +13,7 @@
  * - Reste : comme le résultat du lot 1 (de droite à gauche, sous les
  *   colonnes de la scène) ; vide → incomplet, pas de 0 implicite (n° 12).
  *
- * Phase 0 : `docs/wip/operations-posees-progress.md` § 12 et § 13.
+ * Phase 0 : `docs/archive/wip/operations-posees-progress.md` § 12 et § 13.
  *
  * @module ubumark/utils/operation-division-answer
  */

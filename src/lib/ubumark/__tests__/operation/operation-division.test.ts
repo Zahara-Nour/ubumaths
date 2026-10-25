@@ -1,6 +1,6 @@
 /**
  * Bloc ```operation — division en potence (lot 3, PR 3a ; phase 0 :
- * `docs/wip/operations-posees-progress.md` § 12)
+ * `docs/archive/wip/operations-posees-progress.md` § 12)
  *
  * Lecture des lignes (aide `line`) : `_` carreau vide, `,` virgule après le
  * chiffre, `(0)` zéro ajouté au dividende (Q5) ; entre crochets, une case à

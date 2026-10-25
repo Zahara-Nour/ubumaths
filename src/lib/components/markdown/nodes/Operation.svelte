@@ -3,7 +3,7 @@
 	=============================
 
 	Opération posée en colonnes (addition, soustraction, multiplication ;
-	phase 0 : `docs/wip/operations-posees-progress.md`). Dessinée depuis
+	phase 0 : `docs/archive/wip/operations-posees-progress.md`). Dessinée depuis
 	`buildOperationScene`, la même scène que le PDF. Division (lot 3) :
 	potence d'`OperationDivision.svelte` (affichage et saisie : quotient, reste).
 

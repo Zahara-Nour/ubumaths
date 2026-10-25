@@ -36,7 +36,7 @@
  * Décimaux de longueurs différentes : carreaux vides, jamais de zéro ajouté
  * (décision 10) ; un carreau vide du haut compte pour 0 dans le calcul.
  *
- * Phase 0 : `docs/wip/operations-posees-progress.md`.
+ * Phase 0 : `docs/archive/wip/operations-posees-progress.md`.
  *
  * @module ubumark/utils/operation-scene
  */

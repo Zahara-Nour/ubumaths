@@ -1,6 +1,6 @@
 /**
  * FillBlanksInput — bloc ```operation à remplir (PR 1b, phase 0 :
- * `docs/wip/operations-posees-progress.md` § 9)
+ * `docs/archive/wip/operations-posees-progress.md` § 9)
  *
  * La grille porte UNE case de la question : sa réponse (les chiffres du
  * résultat) arrive dans `values[N]` comme celle d'une case ordinaire.
