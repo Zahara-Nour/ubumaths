@@ -1,0 +1,290 @@
+{
+	"title": "Lequel est le plus lourd ?",
+	"description": "Comparer deux masses sur une balance à deux plateaux, penchée ou à l'équilibre",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Masses",
+	"subdomain": "Comparaison",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Regarde la balance.\n\n```figure\nfenetre: 0 ; 10 ; -0.2 ; 5\ndescription: Une balance à deux plateaux, penchée : le plateau de gauche est plus bas.\n---\np1 = point(3.8, 0, visible=faux)\np2 = point(6.2, 0, visible=faux)\np3 = point(5, 0.8, visible=faux)\nq4 = polygone(p1, p2, p3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np5 = point(5, 0.8, visible=faux)\np6 = point(5, 4, visible=faux)\nsegment(p5, p6, epaisseur=3)\np7 = point(1.8, 3.4, visible=faux)\np8 = point(8.2, 4.6, visible=faux)\nsegment(p7, p8, epaisseur=3)\np9 = point(1.8, 3.4, visible=faux)\np10 = point(0.6, 1.2, visible=faux)\nsegment(p9, p10)\np11 = point(3, 1.2, visible=faux)\nsegment(p9, p11)\np12 = point(0.5, 1.2, visible=faux)\np13 = point(3.1, 1.2, visible=faux)\np14 = point(2.9, 0.95, visible=faux)\np15 = point(0.7, 0.95, visible=faux)\nq16 = polygone(p12, p13, p14, p15, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np17 = point(1.8, 1.75, visible=faux)\ncercle(p17, rayon=0.55, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1, visible={{if:g==1|vrai|faux}})\np18 = point(1.25, 1.2, visible=faux)\np19 = point(2.35, 1.2, visible=faux)\np20 = point(2.35, 2.3, visible=faux)\np21 = point(1.25, 2.3, visible=faux)\nq22 = polygone(p18, p19, p20, p21, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:g==2|vrai|faux}})\np23 = point(1.15, 1.2, visible=faux)\np24 = point(2.45, 1.2, visible=faux)\np25 = point(1.8, 2.35, visible=faux)\nq26 = polygone(p23, p24, p25, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:g==3|vrai|faux}})\np27 = point(8.2, 4.6, visible=faux)\np28 = point(7, 2.4, visible=faux)\nsegment(p27, p28)\np29 = point(9.4, 2.4, visible=faux)\nsegment(p27, p29)\np30 = point(6.9, 2.4, visible=faux)\np31 = point(9.5, 2.4, visible=faux)\np32 = point(9.3, 2.15, visible=faux)\np33 = point(7.1, 2.15, visible=faux)\nq34 = polygone(p30, p31, p32, p33, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np35 = point(8.2, 2.95, visible=faux)\ncercle(p35, rayon=0.55, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1, visible={{if:d==1|vrai|faux}})\np36 = point(7.65, 2.4, visible=faux)\np37 = point(8.75, 2.4, visible=faux)\np38 = point(8.75, 3.5, visible=faux)\np39 = point(7.65, 3.5, visible=faux)\nq40 = polygone(p36, p37, p38, p39, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:d==2|vrai|faux}})\np41 = point(7.55, 2.4, visible=faux)\np42 = point(8.85, 2.4, visible=faux)\np43 = point(8.2, 3.55, visible=faux)\nq44 = polygone(p41, p42, p43, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:d==3|vrai|faux}})\n```\n\nQuel objet est le plus lourd ?",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["g != d"],
+			"choices": [
+				{
+					"content": "{{if:g==1|Le disque|{{if:g==2|Le carré|Le triangle}}}}."
+				},
+				{
+					"content": "{{if:d==1|Le disque|{{if:d==2|Le carré|Le triangle}}}}."
+				},
+				{
+					"content": "Ils ont la même masse."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Le plateau qui descend porte l'objet le plus lourd : c'est {{if:g==1|le disque|{{if:g==2|le carré|le triangle}}}}. {{if:d==1|Le disque|{{if:d==2|Le carré|Le triangle}}}} est plus léger : son plateau monte."
+				]
+			}
+		},
+		{
+			"statement": "Regarde la balance.\n\n```figure\nfenetre: 0 ; 10 ; -0.2 ; 5\ndescription: Une balance à deux plateaux, penchée : le plateau de droite est plus bas.\n---\np1 = point(3.8, 0, visible=faux)\np2 = point(6.2, 0, visible=faux)\np3 = point(5, 0.8, visible=faux)\nq4 = polygone(p1, p2, p3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np5 = point(5, 0.8, visible=faux)\np6 = point(5, 4, visible=faux)\nsegment(p5, p6, epaisseur=3)\np7 = point(1.8, 4.6, visible=faux)\np8 = point(8.2, 3.4, visible=faux)\nsegment(p7, p8, epaisseur=3)\np9 = point(1.8, 4.6, visible=faux)\np10 = point(0.6, 2.4, visible=faux)\nsegment(p9, p10)\np11 = point(3, 2.4, visible=faux)\nsegment(p9, p11)\np12 = point(0.5, 2.4, visible=faux)\np13 = point(3.1, 2.4, visible=faux)\np14 = point(2.9, 2.15, visible=faux)\np15 = point(0.7, 2.15, visible=faux)\nq16 = polygone(p12, p13, p14, p15, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np17 = point(1.8, 2.95, visible=faux)\ncercle(p17, rayon=0.55, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1, visible={{if:g==1|vrai|faux}})\np18 = point(1.25, 2.4, visible=faux)\np19 = point(2.35, 2.4, visible=faux)\np20 = point(2.35, 3.5, visible=faux)\np21 = point(1.25, 3.5, visible=faux)\nq22 = polygone(p18, p19, p20, p21, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:g==2|vrai|faux}})\np23 = point(1.15, 2.4, visible=faux)\np24 = point(2.45, 2.4, visible=faux)\np25 = point(1.8, 3.55, visible=faux)\nq26 = polygone(p23, p24, p25, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:g==3|vrai|faux}})\np27 = point(8.2, 3.4, visible=faux)\np28 = point(7, 1.2, visible=faux)\nsegment(p27, p28)\np29 = point(9.4, 1.2, visible=faux)\nsegment(p27, p29)\np30 = point(6.9, 1.2, visible=faux)\np31 = point(9.5, 1.2, visible=faux)\np32 = point(9.3, 0.95, visible=faux)\np33 = point(7.1, 0.95, visible=faux)\nq34 = polygone(p30, p31, p32, p33, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np35 = point(8.2, 1.75, visible=faux)\ncercle(p35, rayon=0.55, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1, visible={{if:d==1|vrai|faux}})\np36 = point(7.65, 1.2, visible=faux)\np37 = point(8.75, 1.2, visible=faux)\np38 = point(8.75, 2.3, visible=faux)\np39 = point(7.65, 2.3, visible=faux)\nq40 = polygone(p36, p37, p38, p39, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:d==2|vrai|faux}})\np41 = point(7.55, 1.2, visible=faux)\np42 = point(8.85, 1.2, visible=faux)\np43 = point(8.2, 2.35, visible=faux)\nq44 = polygone(p41, p42, p43, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:d==3|vrai|faux}})\n```\n\nQuel objet est le plus lourd ?",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["g != d"],
+			"choices": [
+				{
+					"content": "{{if:d==1|Le disque|{{if:d==2|Le carré|Le triangle}}}}."
+				},
+				{
+					"content": "{{if:g==1|Le disque|{{if:g==2|Le carré|Le triangle}}}}."
+				},
+				{
+					"content": "Ils ont la même masse."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Le plateau qui descend porte l'objet le plus lourd : c'est {{if:d==1|le disque|{{if:d==2|le carré|le triangle}}}}. {{if:g==1|Le disque|{{if:g==2|Le carré|Le triangle}}}} est plus léger : son plateau monte."
+				]
+			}
+		},
+		{
+			"statement": "Regarde la balance.\n\n```figure\nfenetre: 0 ; 10 ; -0.2 ; 5\ndescription: Une balance à deux plateaux, penchée : le plateau de gauche est plus bas.\n---\np1 = point(3.8, 0, visible=faux)\np2 = point(6.2, 0, visible=faux)\np3 = point(5, 0.8, visible=faux)\nq4 = polygone(p1, p2, p3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np5 = point(5, 0.8, visible=faux)\np6 = point(5, 4, visible=faux)\nsegment(p5, p6, epaisseur=3)\np7 = point(1.8, 3.4, visible=faux)\np8 = point(8.2, 4.6, visible=faux)\nsegment(p7, p8, epaisseur=3)\np9 = point(1.8, 3.4, visible=faux)\np10 = point(0.6, 1.2, visible=faux)\nsegment(p9, p10)\np11 = point(3, 1.2, visible=faux)\nsegment(p9, p11)\np12 = point(0.5, 1.2, visible=faux)\np13 = point(3.1, 1.2, visible=faux)\np14 = point(2.9, 0.95, visible=faux)\np15 = point(0.7, 0.95, visible=faux)\nq16 = polygone(p12, p13, p14, p15, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np17 = point(1.8, 1.75, visible=faux)\ncercle(p17, rayon=0.55, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1, visible={{if:g==1|vrai|faux}})\np18 = point(1.25, 1.2, visible=faux)\np19 = point(2.35, 1.2, visible=faux)\np20 = point(2.35, 2.3, visible=faux)\np21 = point(1.25, 2.3, visible=faux)\nq22 = polygone(p18, p19, p20, p21, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:g==2|vrai|faux}})\np23 = point(1.15, 1.2, visible=faux)\np24 = point(2.45, 1.2, visible=faux)\np25 = point(1.8, 2.35, visible=faux)\nq26 = polygone(p23, p24, p25, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:g==3|vrai|faux}})\np27 = point(8.2, 4.6, visible=faux)\np28 = point(7, 2.4, visible=faux)\nsegment(p27, p28)\np29 = point(9.4, 2.4, visible=faux)\nsegment(p27, p29)\np30 = point(6.9, 2.4, visible=faux)\np31 = point(9.5, 2.4, visible=faux)\np32 = point(9.3, 2.15, visible=faux)\np33 = point(7.1, 2.15, visible=faux)\nq34 = polygone(p30, p31, p32, p33, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np35 = point(8.2, 2.95, visible=faux)\ncercle(p35, rayon=0.55, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1, visible={{if:d==1|vrai|faux}})\np36 = point(7.65, 2.4, visible=faux)\np37 = point(8.75, 2.4, visible=faux)\np38 = point(8.75, 3.5, visible=faux)\np39 = point(7.65, 3.5, visible=faux)\nq40 = polygone(p36, p37, p38, p39, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:d==2|vrai|faux}})\np41 = point(7.55, 2.4, visible=faux)\np42 = point(8.85, 2.4, visible=faux)\np43 = point(8.2, 3.55, visible=faux)\nq44 = polygone(p41, p42, p43, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:d==3|vrai|faux}})\n```\n\nQuel objet est le plus léger ?",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["g != d"],
+			"choices": [
+				{
+					"content": "{{if:d==1|Le disque|{{if:d==2|Le carré|Le triangle}}}}."
+				},
+				{
+					"content": "{{if:g==1|Le disque|{{if:g==2|Le carré|Le triangle}}}}."
+				},
+				{
+					"content": "Ils ont la même masse."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Le plateau qui descend porte l'objet le plus lourd : c'est {{if:g==1|le disque|{{if:g==2|le carré|le triangle}}}}. {{if:d==1|Le disque|{{if:d==2|Le carré|Le triangle}}}} est plus léger : son plateau monte."
+				]
+			}
+		},
+		{
+			"statement": "Regarde la balance.\n\n```figure\nfenetre: 0 ; 10 ; -0.2 ; 5\ndescription: Une balance à deux plateaux, penchée : le plateau de droite est plus bas.\n---\np1 = point(3.8, 0, visible=faux)\np2 = point(6.2, 0, visible=faux)\np3 = point(5, 0.8, visible=faux)\nq4 = polygone(p1, p2, p3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np5 = point(5, 0.8, visible=faux)\np6 = point(5, 4, visible=faux)\nsegment(p5, p6, epaisseur=3)\np7 = point(1.8, 4.6, visible=faux)\np8 = point(8.2, 3.4, visible=faux)\nsegment(p7, p8, epaisseur=3)\np9 = point(1.8, 4.6, visible=faux)\np10 = point(0.6, 2.4, visible=faux)\nsegment(p9, p10)\np11 = point(3, 2.4, visible=faux)\nsegment(p9, p11)\np12 = point(0.5, 2.4, visible=faux)\np13 = point(3.1, 2.4, visible=faux)\np14 = point(2.9, 2.15, visible=faux)\np15 = point(0.7, 2.15, visible=faux)\nq16 = polygone(p12, p13, p14, p15, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np17 = point(1.8, 2.95, visible=faux)\ncercle(p17, rayon=0.55, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1, visible={{if:g==1|vrai|faux}})\np18 = point(1.25, 2.4, visible=faux)\np19 = point(2.35, 2.4, visible=faux)\np20 = point(2.35, 3.5, visible=faux)\np21 = point(1.25, 3.5, visible=faux)\nq22 = polygone(p18, p19, p20, p21, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:g==2|vrai|faux}})\np23 = point(1.15, 2.4, visible=faux)\np24 = point(2.45, 2.4, visible=faux)\np25 = point(1.8, 3.55, visible=faux)\nq26 = polygone(p23, p24, p25, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:g==3|vrai|faux}})\np27 = point(8.2, 3.4, visible=faux)\np28 = point(7, 1.2, visible=faux)\nsegment(p27, p28)\np29 = point(9.4, 1.2, visible=faux)\nsegment(p27, p29)\np30 = point(6.9, 1.2, visible=faux)\np31 = point(9.5, 1.2, visible=faux)\np32 = point(9.3, 0.95, visible=faux)\np33 = point(7.1, 0.95, visible=faux)\nq34 = polygone(p30, p31, p32, p33, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np35 = point(8.2, 1.75, visible=faux)\ncercle(p35, rayon=0.55, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1, visible={{if:d==1|vrai|faux}})\np36 = point(7.65, 1.2, visible=faux)\np37 = point(8.75, 1.2, visible=faux)\np38 = point(8.75, 2.3, visible=faux)\np39 = point(7.65, 2.3, visible=faux)\nq40 = polygone(p36, p37, p38, p39, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:d==2|vrai|faux}})\np41 = point(7.55, 1.2, visible=faux)\np42 = point(8.85, 1.2, visible=faux)\np43 = point(8.2, 2.35, visible=faux)\nq44 = polygone(p41, p42, p43, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:d==3|vrai|faux}})\n```\n\nQuel objet est le plus léger ?",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["g != d"],
+			"choices": [
+				{
+					"content": "{{if:g==1|Le disque|{{if:g==2|Le carré|Le triangle}}}}."
+				},
+				{
+					"content": "{{if:d==1|Le disque|{{if:d==2|Le carré|Le triangle}}}}."
+				},
+				{
+					"content": "Ils ont la même masse."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Le plateau qui descend porte l'objet le plus lourd : c'est {{if:d==1|le disque|{{if:d==2|le carré|le triangle}}}}. {{if:g==1|Le disque|{{if:g==2|Le carré|Le triangle}}}} est plus léger : son plateau monte."
+				]
+			}
+		},
+		{
+			"statement": "Regarde la balance.\n\n```figure\nfenetre: 0 ; 10 ; -0.2 ; 5\ndescription: Une balance à deux plateaux, à l'équilibre.\n---\np1 = point(3.8, 0, visible=faux)\np2 = point(6.2, 0, visible=faux)\np3 = point(5, 0.8, visible=faux)\nq4 = polygone(p1, p2, p3, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np5 = point(5, 0.8, visible=faux)\np6 = point(5, 4, visible=faux)\nsegment(p5, p6, epaisseur=3)\np7 = point(1.8, 4, visible=faux)\np8 = point(8.2, 4, visible=faux)\nsegment(p7, p8, epaisseur=3)\np9 = point(1.8, 4, visible=faux)\np10 = point(0.6, 1.8, visible=faux)\nsegment(p9, p10)\np11 = point(3, 1.8, visible=faux)\nsegment(p9, p11)\np12 = point(0.5, 1.8, visible=faux)\np13 = point(3.1, 1.8, visible=faux)\np14 = point(2.9, 1.55, visible=faux)\np15 = point(0.7, 1.55, visible=faux)\nq16 = polygone(p12, p13, p14, p15, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np17 = point(1.8, 2.35, visible=faux)\ncercle(p17, rayon=0.55, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1, visible={{if:g==1|vrai|faux}})\np18 = point(1.25, 1.8, visible=faux)\np19 = point(2.35, 1.8, visible=faux)\np20 = point(2.35, 2.9, visible=faux)\np21 = point(1.25, 2.9, visible=faux)\nq22 = polygone(p18, p19, p20, p21, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:g==2|vrai|faux}})\np23 = point(1.15, 1.8, visible=faux)\np24 = point(2.45, 1.8, visible=faux)\np25 = point(1.8, 2.95, visible=faux)\nq26 = polygone(p23, p24, p25, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:g==3|vrai|faux}})\np27 = point(8.2, 4, visible=faux)\np28 = point(7, 1.8, visible=faux)\nsegment(p27, p28)\np29 = point(9.4, 1.8, visible=faux)\nsegment(p27, p29)\np30 = point(6.9, 1.8, visible=faux)\np31 = point(9.5, 1.8, visible=faux)\np32 = point(9.3, 1.55, visible=faux)\np33 = point(7.1, 1.55, visible=faux)\nq34 = polygone(p30, p31, p32, p33, couleur=\"noir\", remplissage=\"gris\", opacite_fond=1)\np35 = point(8.2, 2.35, visible=faux)\ncercle(p35, rayon=0.55, couleur=\"noir\", remplissage=\"bleu\", opacite_fond=1, visible={{if:d==1|vrai|faux}})\np36 = point(7.65, 1.8, visible=faux)\np37 = point(8.75, 1.8, visible=faux)\np38 = point(8.75, 2.9, visible=faux)\np39 = point(7.65, 2.9, visible=faux)\nq40 = polygone(p36, p37, p38, p39, couleur=\"noir\", remplissage=\"rouge\", opacite_fond=1, visible={{if:d==2|vrai|faux}})\np41 = point(7.55, 1.8, visible=faux)\np42 = point(8.85, 1.8, visible=faux)\np43 = point(8.2, 2.95, visible=faux)\nq44 = polygone(p41, p42, p43, couleur=\"noir\", remplissage=\"vert\", opacite_fond=1, visible={{if:d==3|vrai|faux}})\n```\n\nQuel objet est le plus lourd ?",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				}
+			],
+			"conditions": ["g != d"],
+			"choices": [
+				{
+					"content": "Ils ont la même masse."
+				},
+				{
+					"content": "{{if:g==1|Le disque|{{if:g==2|Le carré|Le triangle}}}}."
+				},
+				{
+					"content": "{{if:d==1|Le disque|{{if:d==2|Le carré|Le triangle}}}}."
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"La balance est à l'équilibre : les deux plateaux sont à la même hauteur. {{if:g==1|Le disque|{{if:g==2|Le carré|Le triangle}}}} et {{if:d==1|le disque|{{if:d==2|le carré|le triangle}}}} ont la même masse."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "gauche descend, plus lourd : le disque",
+			"variationIndex": 0,
+			"variables": {
+				"g": "1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "gauche descend, plus lourd : erreur",
+			"variationIndex": 0,
+			"variables": {
+				"g": "1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "droite descend, plus lourd : le carré",
+			"variationIndex": 1,
+			"variables": {
+				"g": "1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "droite descend, plus lourd : erreur",
+			"variationIndex": 1,
+			"variables": {
+				"g": "1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "gauche descend, plus léger : le carré",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "gauche descend, plus léger : erreur",
+			"variationIndex": 2,
+			"variables": {
+				"g": "1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "droite descend, plus léger : le disque",
+			"variationIndex": 3,
+			"variables": {
+				"g": "1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "droite descend, plus léger : erreur",
+			"variationIndex": 3,
+			"variables": {
+				"g": "1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "équilibre : même masse",
+			"variationIndex": 4,
+			"variables": {
+				"g": "1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "équilibre : erreur",
+			"variationIndex": 4,
+			"variables": {
+				"g": "1",
+				"d": "2"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}

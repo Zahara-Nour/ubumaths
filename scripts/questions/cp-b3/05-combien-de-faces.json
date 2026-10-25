@@ -1,0 +1,120 @@
+{
+	"title": "Combien de faces ?",
+	"description": "Le nombre de faces d'un cube ou d'un pavé (6), faces cachées comprises",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Solides",
+	"subdomain": "Reconnaître et décrire",
+	"level": 1,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien de faces a ce cube ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un cube, arêtes cachées en pointillés.\n---\np1 = point(2.24, 0.3, visible=faux)\np2 = point(4.84, 0.3, visible=faux)\np3 = point(4.84, 2.9, visible=faux)\np4 = point(2.24, 2.9, visible=faux)\np5 = point(3.16, 1.219, visible=faux)\np6 = point(5.76, 1.219, visible=faux)\np7 = point(5.76, 3.819, visible=faux)\np8 = point(3.16, 3.819, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```\n\nNombre de faces : [_]",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On voit 3 faces : celle de devant, celle du dessus et celle de droite.",
+					"Il y en a 3 cachées : celle de derrière, celle du dessous et celle de gauche.",
+					"$3 + 3 = 6$ : le cube a $6$ faces."
+				]
+			}
+		},
+		{
+			"statement": "Combien de faces a ce pavé ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé couché, arêtes cachées en pointillés.\n---\np1 = point(2.046, 0.3, visible=faux)\np2 = point(5.246, 0.3, visible=faux)\np3 = point(5.246, 2, visible=faux)\np4 = point(2.046, 2, visible=faux)\np5 = point(2.754, 1.007, visible=faux)\np6 = point(5.954, 1.007, visible=faux)\np7 = point(5.954, 2.707, visible=faux)\np8 = point(2.754, 2.707, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```\n\nNombre de faces : [_]",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On voit 3 faces : celle de devant, celle du dessus et celle de droite.",
+					"Il y en a 3 cachées : celle de derrière, celle du dessous et celle de gauche.",
+					"$3 + 3 = 6$ : le pavé a $6$ faces."
+				]
+			}
+		},
+		{
+			"statement": "Combien de faces a ce pavé ?\n\n```figure\nfenetre: 0 ; 8 ; 0 ; 4.7\ndescription: Un pavé debout, arêtes cachées en pointillés.\n---\np1 = point(2.853, 0.3, visible=faux)\np2 = point(4.653, 0.3, visible=faux)\np3 = point(4.653, 3.7, visible=faux)\np4 = point(2.853, 3.7, visible=faux)\np5 = point(3.347, 0.795, visible=faux)\np6 = point(5.147, 0.795, visible=faux)\np7 = point(5.147, 4.195, visible=faux)\np8 = point(3.347, 4.195, visible=faux)\nsegment(p1, p2)\nsegment(p2, p3)\nsegment(p3, p4)\nsegment(p4, p1)\nsegment(p2, p6)\nsegment(p6, p7)\nsegment(p3, p7)\nsegment(p4, p8)\nsegment(p8, p7)\nsegment(p1, p5, trait=\"tirets\")\nsegment(p5, p6, trait=\"tirets\")\nsegment(p5, p8, trait=\"tirets\")\n```\n\nNombre de faces : [_]",
+			"variables": [],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "6"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On voit 3 faces : celle de devant, celle du dessus et celle de droite.",
+					"Il y en a 3 cachées : celle de derrière, celle du dessous et celle de gauche.",
+					"$3 + 3 = 6$ : le pavé a $6$ faces."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Dessin 1 : 6",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Dessin 1 : 3, les faces vues seulement",
+			"variationIndex": 0,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Dessin 2 : 6",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Dessin 2 : 3, les faces vues seulement",
+			"variationIndex": 1,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Dessin 3 : 6",
+			"variationIndex": 2,
+			"variables": {},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Dessin 3 : 3, les faces vues seulement",
+			"variationIndex": 2,
+			"variables": {},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		}
+	]
+}
