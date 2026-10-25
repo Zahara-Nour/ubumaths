@@ -24,7 +24,7 @@ import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 function curveFor(definition: string) {
 	const d = new CalcDesk(new Atelier());
 	d.submit(`f(x)=${definition}`);
-	const graph = new GrapheurStore(null);
+	const graph = new GrapheurStore();
 	syncPlots(d.atelier, graph);
 	return graph.functions[0] as { latex: string; parseError?: string; visible: boolean };
 }
@@ -58,7 +58,7 @@ describe('le nombre e se trace', () => {
 		const d = new CalcDesk(new Atelier());
 		d.submit('f(x)=e^x');
 		d.runFromPanel('derive', 'f');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		syncPlots(d.atelier, graph);
 

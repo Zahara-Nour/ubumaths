@@ -12,7 +12,6 @@ export {
 	curveColorValue,
 	getNextSlot,
 	isCurveColor,
-	migrateLegacyColor,
 	isValidColor,
 	normalizeColor
 } from '$lib/geometry-core/rendering/colors';

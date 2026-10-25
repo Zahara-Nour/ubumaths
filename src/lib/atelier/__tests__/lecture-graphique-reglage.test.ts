@@ -95,14 +95,14 @@ describe('la lecture reportée vers le grapheur', () => {
 	it('allumée : la courbe porte son nom et les abscisses lues dans la console', () => {
 		const atelier = withPlotted();
 		atelier.setDisplay('f', { showReading: true });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph, new Map([['f', [1, 2]]]));
 		expect(onlyCurve(graph).reading).toEqual({ name: 'f', at: [1, 2] });
 	});
 
 	it('éteinte : rien, même avec des lectures dans la console', () => {
 		const atelier = withPlotted();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph, new Map([['f', [1]]]));
 		expect(onlyCurve(graph).reading).toBeUndefined();
 	});
@@ -110,7 +110,7 @@ describe('la lecture reportée vers le grapheur', () => {
 	it('allumée sans calcul : le point glissant seul (aucune abscisse de console)', () => {
 		const atelier = withPlotted();
 		atelier.setDisplay('f', { showReading: true });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph, new Map());
 		expect(onlyCurve(graph).reading).toEqual({ name: 'f', at: [] });
 	});
@@ -118,7 +118,7 @@ describe('la lecture reportée vers le grapheur', () => {
 	it('une synchronisation sans lectures garde celles déjà posées', () => {
 		const atelier = withPlotted();
 		atelier.setDisplay('f', { showReading: true });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph, new Map([['f', [3]]]));
 		syncPlots(atelier, graph);
 		expect(onlyCurve(graph).reading).toEqual({ name: 'f', at: [3] });
@@ -127,7 +127,7 @@ describe('la lecture reportée vers le grapheur', () => {
 	it('éteindre l’option efface les lectures', () => {
 		const atelier = withPlotted();
 		atelier.setDisplay('f', { showReading: true });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph, new Map([['f', [3]]]));
 		atelier.setDisplay('f', { showReading: false });
 		syncPlots(atelier, graph, new Map([['f', [3]]]));
@@ -137,7 +137,7 @@ describe('la lecture reportée vers le grapheur', () => {
 	it('idempotente : rien n’est réécrit quand rien n’a changé', () => {
 		const atelier = withPlotted();
 		atelier.setDisplay('f', { showReading: true });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph, new Map([['f', [1]]]));
 		const before = graph.functions;
 		syncPlots(atelier, graph, new Map([['f', [1]]]));

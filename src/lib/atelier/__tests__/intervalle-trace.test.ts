@@ -63,7 +63,7 @@ describe('l’ensemble, en morceaux numériques', () => {
 describe('le grapheur reçoit l’ensemble', () => {
 	it('k = 1/x sur ]0;5] : la courbe porte sa restriction', () => {
 		const d = desk('k(x) = 1/x sur ]0;5]');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		expect(plotted(d, graph, 'k').restriction).toEqual([
 			{ from: 0, to: 5, fromClosed: false, toClosed: true }
 		]);
@@ -71,13 +71,13 @@ describe('le grapheur reçoit l’ensemble', () => {
 
 	it('sans ensemble : aucune restriction', () => {
 		const d = desk('f(x) = x^2');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		expect(plotted(d, graph, 'f').restriction).toBeUndefined();
 	});
 
 	it('suit l’ensemble quand il change, et le retire (I6)', () => {
 		const d = desk('f(x) = x^2 sur [0;+∞[');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		plotted(d, graph, 'f');
 		d.submit('f(x) = x^2 sur [1;2]');
 		syncPlots(d.atelier, graph);
@@ -91,7 +91,7 @@ describe('le grapheur reçoit l’ensemble', () => {
 
 	it('une seconde synchronisation n’écrit rien (idempotence)', () => {
 		const d = desk('f(x) = x^2 sur [0;+∞[');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		plotted(d, graph, 'f');
 		const before = graph.functions;
 		syncPlots(d.atelier, graph);
@@ -101,7 +101,7 @@ describe('le grapheur reçoit l’ensemble', () => {
 	it('f′, qui hérite de l’ensemble de f, se trace restreinte aussi', () => {
 		const d = desk('f(x) = x^2 sur [0;+∞[');
 		d.submit('.dériver f');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		expect(plotted(d, graph, "f'").restriction).toEqual([
 			{ from: 0, to: Infinity, fromClosed: true, toClosed: false }
 		]);

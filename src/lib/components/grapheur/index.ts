@@ -8,7 +8,7 @@
  *
  * @example
  * ```typescript
- * import { GraphSVG, FunctionPanel, ViewportControls, GrapheurContainer } from '$lib/components/grapheur';
+ * import { GraphSVG, ViewportControls, GrapheurContainer } from '$lib/components/grapheur';
  * ```
  */
 
@@ -23,10 +23,6 @@ export { default as FunctionCurve } from './FunctionCurve.svelte';
 export { default as SequencePlot } from './SequencePlot.svelte';
 
 // UI components
-export { default as FunctionPanel } from './FunctionPanel.svelte';
-export { default as FunctionInput } from './FunctionInput.svelte';
-export { default as SequenceInput } from './SequenceInput.svelte';
-export { default as SequenceTable } from './SequenceTable.svelte';
 export { default as ColorPicker } from './ColorPicker.svelte';
 export { default as LineWidthPicker } from './LineWidthPicker.svelte';
 export { default as LineStylePicker } from './LineStylePicker.svelte';

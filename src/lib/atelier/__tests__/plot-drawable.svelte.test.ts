@@ -45,7 +45,7 @@ describe('ce qui est tracé est dessinable', () => {
 			['h', 'a*x', 'function'],
 			['a', '1', 'value']
 		]);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('h', true);
 
 		syncPlots(atelier, graph);
@@ -58,7 +58,7 @@ describe('ce qui est tracé est dessinable', () => {
 			['h', 'a*x', 'function'],
 			['a', '1', 'value']
 		]);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('h', true);
 		syncPlots(atelier, graph);
 
@@ -71,7 +71,7 @@ describe('ce qui est tracé est dessinable', () => {
 
 	it('une fonction ordinaire reste dessinable', () => {
 		const atelier = atelierOf([['f', 'x^2-3x+1', 'function']]);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('f', true);
 
 		syncPlots(atelier, graph);
@@ -84,7 +84,7 @@ describe('ce qui est tracé est dessinable', () => {
 			['f', 'x^2-3x+1', 'function'],
 			['g', "f'", 'function']
 		]);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('g', true);
 
 		syncPlots(atelier, graph);
@@ -97,7 +97,7 @@ describe('ce qui est tracé est dessinable', () => {
 			['f', 'x^2', 'function'],
 			['k', 'f(x) + 1', 'function']
 		]);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('k', true);
 
 		syncPlots(atelier, graph);

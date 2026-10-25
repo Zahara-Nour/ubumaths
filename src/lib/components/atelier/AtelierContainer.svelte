@@ -674,11 +674,10 @@
 	/**
 	 * Le grapheur de CET atelier.
 	 *
-	 * Clé de rangement propre : sans elle, il chargerait les courbes de
-	 * `/grapheur` puis les écraserait (revue #334). L'atelier range ses objets
-	 * lui-même, le grapheur n'a donc rien à conserver — d'où `null`.
+	 * L'atelier range ses objets lui-même : le grapheur est une projection en
+	 * mémoire, il ne conserve rien.
 	 */
-	const graph = new GrapheurStore(null);
+	const graph = new GrapheurStore();
 	// Fourni à tout le conteneur, et pas seulement à la vue Graphe : la carte
 	// (« Sur le graphique ») lit la courbe dessinée et la fenêtre visible
 	provideGrapheurStore(graph);
@@ -1305,13 +1304,8 @@
 		<div class="scene" bind:this={scene}>
 			<section class="vue" class:pleine={activeView === 'graphe' || activeView === 'figure'}>
 				{#if activeView === 'graphe'}
-					<!--
-					`panel={false}` : dans l'atelier, c'est « Mes objets » qui tient ce
-					rôle. Deux listes de fonctions côte à côte ne posent pas seulement la
-					question de savoir laquelle fait foi — l'élève y PERD sa saisie, que
-					la synchronisation réécrit aussitôt avec la définition de l'objet.
-				-->
-					<GrapheurContainer store={graph} panel={false} />
+					<!-- Pas de panneau de fonctions : c'est « Mes objets » qui tient ce rôle. -->
+					<GrapheurContainer store={graph} />
 				{:else if activeView === 'figure'}
 					<!-- Une projection de l'atelier, comme les autres : elle lit l'atelier, ne garde rien -->
 					<FigureView write={writeFromFigure} />

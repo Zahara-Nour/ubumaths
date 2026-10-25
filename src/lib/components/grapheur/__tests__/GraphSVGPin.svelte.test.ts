@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import GraphSVG from '../GraphSVG.svelte';
-import { grapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { grapheurContext } from '$lib/stores/grapheur-context';
+
+// Une instance neuve par test, fournie aux composants par le contexte.
+let grapheurStore = new GrapheurStore();
 
 /**
  * Épingler une étiquette passe par un vrai geste : appuyer marque le graphe
@@ -11,7 +15,7 @@ import { grapheurStore } from '$lib/stores/grapheur.svelte';
  */
 describe('GraphSVG — épingler une étiquette au clic', () => {
 	beforeEach(() => {
-		grapheurStore.fullReset();
+		grapheurStore = new GrapheurStore();
 		grapheurStore.setInteracting(false);
 	});
 
@@ -55,7 +59,7 @@ describe('GraphSVG — épingler une étiquette au clic', () => {
 		grapheurStore.updateSequence(id, { firstIndex: 0 });
 		grapheurStore.setViewport({ xMin: -1, xMax: 6, yMin: -2, yMax: 12 });
 
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		const svg = container.querySelector('svg');
 		expect(svg).not.toBeNull();
 
@@ -75,7 +79,7 @@ describe('GraphSVG — épingler une étiquette au clic', () => {
 		grapheurStore.addFunction('x^2-2');
 		grapheurStore.setViewport({ xMin: -5, xMax: 5, yMin: -5, yMax: 5 });
 
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		const svg = container.querySelector('svg');
 
 		// La racine √2, sur l'axe des abscisses.
@@ -93,7 +97,7 @@ describe('GraphSVG — épingler une étiquette au clic', () => {
 		grapheurStore.updateSequence(id, { firstIndex: 0 });
 		grapheurStore.setViewport({ xMin: -1, xMax: 6, yMin: -4, yMax: 4 });
 
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		const svg = container.querySelector('svg');
 
 		// Le terme de rang 3 vaut -0.375, soit -3/8.
@@ -112,7 +116,7 @@ describe('GraphSVG — épingler une étiquette au clic', () => {
 		grapheurStore.updateSequence(id, { firstIndex: 0 });
 		grapheurStore.setViewport({ xMin: -1, xMax: 6, yMin: -2, yMax: 12 });
 
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		const svg = container.querySelector('svg');
 		const rect = svg!.getBoundingClientRect();
 		const x = rect.left + (WIDTH * (2 - -1)) / 7;

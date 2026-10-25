@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { GrapheurStore } from '$lib/stores/grapheur.svelte';
 
 /** Un grapheur qui ne range rien : les tests ne doivent pas écrire de stockage. */
-const graph = () => new GrapheurStore(null);
+const graph = () => new GrapheurStore();
 
 /** La place d'un tracé, telle qu'elle est enregistrée */
 const slotOf = (g: GrapheurStore, i: number) => ({

@@ -68,7 +68,7 @@ describe('statistiques d’une liste', () => {
 describe('nuage de points', () => {
 	it('pose un nuage dans le grapheur', () => {
 		const d = deskWith({ L: '1 ; 2 ; 3', M: '2 ; 4 ; 6' });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		d.runFromPanel('scatter', 'L', graph);
 
@@ -79,7 +79,7 @@ describe('nuage de points', () => {
 	// quand il n'a rien à ajouter — la partenaire se lit sur la carte (Q46)
 	it('prend la liste suivante comme ordonnées, sans ligne dans Calcul', () => {
 		const d = deskWith({ L: '1 ; 2 ; 3', M: '2 ; 4 ; 6' });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		d.runFromPanel('scatter', 'L', graph);
 
@@ -90,7 +90,7 @@ describe('nuage de points', () => {
 	// §4 L1 : seules les paires complètes, et on le dit
 	it('signale les valeurs écartées quand les listes diffèrent', () => {
 		const d = deskWith({ L: '1 ; 2 ; 3 ; 4 ; 5', M: '2 ; 4 ; 6' });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		d.runFromPanel('scatter', 'L', graph);
 
@@ -101,7 +101,7 @@ describe('nuage de points', () => {
 	// §3 L2 du nuage : il faut deux listes
 	it('refuse quand l’atelier n’a qu’une liste', () => {
 		const d = deskWith({ L: '1 ; 2 ; 3' });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		d.runFromPanel('scatter', 'L', graph);
 
@@ -119,7 +119,7 @@ describe('le nuage suit ses listes', () => {
 	it('se met à jour quand une liste change', async () => {
 		const { syncPlots } = await import('../plot-sync');
 		const d = deskWith({ L: '1 ; 2', M: '2 ; 4' });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		d.runFromPanel('scatter', 'L', graph);
 
 		d.atelier.update('L', '1 ; 2 ; 3');
@@ -134,7 +134,7 @@ describe('le nuage suit ses listes', () => {
 	it('ne pose pas un second nuage en se synchronisant deux fois', async () => {
 		const { syncPlots } = await import('../plot-sync');
 		const d = deskWith({ L: '1 ; 2', M: '2 ; 4' });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		d.runFromPanel('scatter', 'L', graph);
 
 		syncPlots(d.atelier, graph);
@@ -146,7 +146,7 @@ describe('le nuage suit ses listes', () => {
 	it('disparaît quand on le retire', async () => {
 		const { syncPlots } = await import('../plot-sync');
 		const d = deskWith({ L: '1 ; 2', M: '2 ; 4' });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		d.runFromPanel('scatter', 'L', graph);
 
 		d.atelier.setPlotted('L', false);
@@ -159,7 +159,7 @@ describe('le nuage suit ses listes', () => {
 describe('l’élève choisit sa partenaire', () => {
 	it('trace le nuage avec CELLE qu’il a cliquée', () => {
 		const d = deskWith({ L: '1 ; 2', M: '9 ; 9', N: '3 ; 6' });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		d.runFromPanel('scatter:N', 'L', graph);
 

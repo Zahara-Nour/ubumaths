@@ -3,53 +3,40 @@ GrapheurContainer Component
 
 Main container that composes all grapheur components into a complete graphing calculator UI.
 Features:
-- Responsive layout (desktop: sidebar + graph, mobile: stacked)
-- Function panel in sidebar
 - Graph with overlay controls
 - Coordinate display
 
 @component
 @example
 ```svelte
-<GrapheurContainer />
-<GrapheurContainer class="custom-height" />
+<GrapheurContainer store={graph} />
+<GrapheurContainer store={graph} class="custom-height" />
 ```
 -->
 
 <script lang="ts">
 	import GraphSVG from './GraphSVG.svelte';
-	import FunctionPanel from './FunctionPanel.svelte';
 	import ViewportControls from './ViewportControls.svelte';
 	import CoordinatesDisplay from './CoordinatesDisplay.svelte';
 	import KeyboardHandler from './KeyboardHandler.svelte';
 	import { provideGrapheurStore } from '$lib/stores/grapheur-context';
-	import { grapheurStore, type GrapheurStore } from '$lib/stores/grapheur.svelte';
+	import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
 
 	/**
 	 * Optional CSS class for container customization
 	 */
 	let {
 		class: className = '',
-		store,
-		panel = true
+		store
 	}: {
 		class?: string;
 		/**
-		 * Afficher le panneau de fonctions.
+		 * L'instance de grapheur à piloter, possédée par l'appelant (l'atelier).
 		 *
-		 * `false` quand un autre panneau tient déjà ce rôle — dans l'atelier,
-		 * c'est « Mes objets ». Deux listes de fonctions côte à côte posent la
-		 * question de savoir laquelle fait foi, et l'élève y perd sa saisie : ce
-		 * qu'il tape dans l'une est réécrit par l'autre.
+		 * Pas de panneau de fonctions ici : dans l'atelier, c'est « Mes objets »
+		 * qui tient ce rôle.
 		 */
-		panel?: boolean;
-		/**
-		 * L'instance de grapheur à piloter.
-		 *
-		 * Sans elle, c'est le singleton, qu'aucune page ne monte plus depuis le
-		 * retrait de `/calc` (2026-10-25) : l'atelier passe toujours la sienne.
-		 */
-		store?: GrapheurStore;
+		store: GrapheurStore;
 	} = $props();
 
 	// Donné aux composants descendants, qui le lisent par `useGrapheurStore()`.
@@ -59,7 +46,7 @@ Features:
 	// n'aurait de toute façon aucun effet. Pour piloter une autre instance, il
 	// faut remonter le conteneur — `{#key}` fait très bien l'affaire.
 	// svelte-ignore state_referenced_locally
-	provideGrapheurStore(store ?? grapheurStore);
+	provideGrapheurStore(store);
 
 	// ==========================================================================
 	// Export Support
@@ -82,14 +69,7 @@ Features:
 	}
 </script>
 
-<div class="grapheur-container {className}" class:sans-panneau={!panel}>
-	<!-- Sidebar: Function List -->
-	{#if panel}
-		<aside class="grapheur-sidebar">
-			<FunctionPanel />
-		</aside>
-	{/if}
-
+<div class="grapheur-container {className}">
 	<!-- Main Graph Area -->
 	<main class="grapheur-main">
 		<div class="graph-wrapper">
@@ -117,22 +97,12 @@ Features:
      Layout
      ========================================================================== */
 
-	.grapheur-container.sans-panneau {
-		grid-template-columns: 1fr;
-	}
-
 	.grapheur-container {
 		display: grid;
-		grid-template-columns: 350px 1fr;
+		grid-template-columns: 1fr;
 		gap: 1rem;
 		height: 100%;
 		min-height: 500px;
-	}
-
-	.grapheur-sidebar {
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
 	}
 
 	.grapheur-main {
@@ -168,30 +138,13 @@ Features:
 	}
 
 	/* ==========================================================================
-     Responsive: Mobile (Stack Vertically)
+     Responsive: Mobile
      ========================================================================== */
 
 	@media (max-width: 768px) {
-		.grapheur-container.sans-panneau {
-			grid-template-columns: 1fr;
-		}
-
 		.grapheur-container {
-			grid-template-columns: 1fr;
 			grid-template-rows: 1fr auto;
 			gap: 0.75rem;
-		}
-
-		/* Graph first, then function panel */
-		.grapheur-main {
-			order: 1;
-			min-height: 400px;
-		}
-
-		.grapheur-sidebar {
-			order: 2;
-			max-height: 300px;
-			overflow-y: auto;
 		}
 
 		/* Adjust overlay positions for smaller screens */
@@ -204,20 +157,6 @@ Features:
 			bottom: 0.5rem;
 			left: 0.5rem;
 			font-size: 0.75rem;
-		}
-	}
-
-	/* ==========================================================================
-     Responsive: Tablet
-     ========================================================================== */
-
-	@media (min-width: 769px) and (max-width: 1024px) {
-		.grapheur-container.sans-panneau {
-			grid-template-columns: 1fr;
-		}
-
-		.grapheur-container {
-			grid-template-columns: 300px 1fr;
 		}
 	}
 </style>

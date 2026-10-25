@@ -35,7 +35,7 @@ const drawn = (graph: GrapheurStore) => graph.functions.map((f) => ('latex' in f
 describe('une dérivée se trace', () => {
 	it('le grapheur reçoit l’expression, pas la référence', () => {
 		const atelier = atelierWithDerivative();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('g', true);
 
 		syncPlots(atelier, graph);
@@ -45,7 +45,7 @@ describe('une dérivée se trace', () => {
 
 	it('et jamais « f’ » tel quel', () => {
 		const atelier = atelierWithDerivative();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('g', true);
 
 		syncPlots(atelier, graph);
@@ -55,7 +55,7 @@ describe('une dérivée se trace', () => {
 
 	it('la courbe suit quand f change', () => {
 		const atelier = atelierWithDerivative();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('g', true);
 		syncPlots(atelier, graph);
 
@@ -67,7 +67,7 @@ describe('une dérivée se trace', () => {
 
 	it('la courbe disparaît si f disparaît', () => {
 		const atelier = atelierWithDerivative();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('g', true);
 		syncPlots(atelier, graph);
 
@@ -97,7 +97,7 @@ describe('une dérivée se trace', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' }, 'text');
 		atelier.create({ kind: 'value', name: 'a', definition: '5' }, 'text');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('f', true);
 
 		syncPlots(atelier, graph);
@@ -108,7 +108,7 @@ describe('une dérivée se trace', () => {
 
 	it('une fonction ordinaire se trace toujours', () => {
 		const atelier = atelierWithDerivative();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.setPlotted('f', true);
 
 		syncPlots(atelier, graph);

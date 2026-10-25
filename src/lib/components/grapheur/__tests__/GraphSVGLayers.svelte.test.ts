@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import GraphSVG from '../GraphSVG.svelte';
-import { grapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { grapheurContext } from '$lib/stores/grapheur-context';
+
+// Une instance neuve par test, fournie aux composants par le contexte.
+let grapheurStore = new GrapheurStore();
 
 /**
  * Ordre des couches du graphe.
@@ -14,7 +18,7 @@ import { grapheurStore } from '$lib/stores/grapheur.svelte';
  */
 describe('GraphSVG — ordre des couches', () => {
 	beforeEach(() => {
-		grapheurStore.fullReset();
+		grapheurStore = new GrapheurStore();
 		grapheurStore.setInteracting(false);
 	});
 
@@ -22,7 +26,7 @@ describe('GraphSVG — ordre des couches', () => {
 		grapheurStore.addFunction('1/x');
 		grapheurStore.setViewport({ xMin: -10, xMax: 10, yMin: -10, yMax: 10 });
 
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		const svg = container.querySelector('svg');
@@ -44,7 +48,7 @@ describe('GraphSVG — ordre des couches', () => {
 		grapheurStore.addFunction('1/x');
 		grapheurStore.setViewport({ xMin: -10, xMax: 10, yMin: -10, yMax: 10 });
 
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await new Promise((resolve) => setTimeout(resolve, 0));
 
 		const paths = [...container.querySelectorAll('g.asymptote-lines path')];

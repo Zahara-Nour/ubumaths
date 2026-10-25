@@ -86,7 +86,7 @@ describe('f(t) = t^2 : rangée en x, montrée en t', () => {
 	it('le grapheur reçoit la courbe en x', () => {
 		const s = session();
 		runInput(s, 'f(t) = t^2');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		syncPlots(s.atelier, graph);
 

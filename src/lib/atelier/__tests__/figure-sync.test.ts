@@ -428,7 +428,7 @@ describe('syncFigure — les curseurs partagés', () => {
 			['curve', 'C', 'x^2 + y^2 = a^2']
 		]);
 		atelier.setPlotted('f', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		const target = new AtelierFigure();
 		syncPlots(atelier, graph);
 		syncFigure(atelier, target);

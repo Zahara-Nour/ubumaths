@@ -233,7 +233,7 @@ describe('Calcul : f(x) = x^2 sur [0;+∞[', () => {
 	it('se trace toujours (sur tout son domaine pour l’instant)', () => {
 		const d = desk();
 		d.submit('f(x) = x^2 sur [0;+∞[');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		syncPlots(d.atelier, graph);
 
