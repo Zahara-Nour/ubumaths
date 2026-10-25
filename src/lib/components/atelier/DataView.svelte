@@ -269,7 +269,8 @@
 		const rounds =
 			activeStyle.number !== undefined && formatRounds(value.value, activeStyle.number);
 		if (value.shownExact === true && !rounds) return null;
-		return composed(value.exactLatex);
+		const done = composed(value.exactLatex);
+		return done === null ? null : { ...done, latex: value.exactLatex };
 	});
 
 	/** Ce que montre une case : la valeur d'une formule, le mot court d'une erreur (Q-L2-1). */
@@ -1090,7 +1091,8 @@
 		<!-- Q2 : la valeur exacte se voit à la sélection, même quand la case montre ≈ -->
 		<p class="note valeur-exacte">
 			Valeur exacte :
-			<span aria-hidden="true">
+			<!-- `data-latex` : ce que lisent les vérifications automatisées (`e2e/verifs/`) -->
+			<span aria-hidden="true" data-latex={selectedExact.latex}>
 				<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
 				{@html selectedExact.markup}
 			</span>
@@ -1219,6 +1221,7 @@
 								tabindex={isSelected ? 0 : -1}
 								aria-selected={selectedZone}
 								aria-label="{address} : {text || 'vide'}"
+								data-latex={math === null || value.kind !== 'number' ? undefined : value.latex}
 								class:nombre={value.kind === 'number'}
 								class:en-erreur={value.kind === 'error'}
 								class:gras={style.bold === true}

@@ -27,9 +27,17 @@ function consoleInput(page: Page): Locator {
 
 /** Tape une ligne dans la console et rend sa réponse */
 export async function calc(page: Page, input: string): Promise<Answer> {
+	const field = consoleInput(page);
+	// Fermée (pour lire la grille, par exemple), la console se rouvre. Repliée, son
+	// champ reste dans la page et passe pour visible : c'est le bouton qui le dit
+	const button = page.getByRole('button', { name: 'Console', exact: true });
+	if ((await button.getAttribute('aria-expanded')) === 'false') {
+		await button.click();
+		// Elle rend le focus à son champ après coup : attendre, sinon la frappe se perd
+		await expect(field).toBeFocused();
+	}
 	const lines = page.locator('ol.historique > li');
 	const before = await lines.count();
-	const field = consoleInput(page);
 	await field.fill(input);
 	await field.press('Enter');
 	await expect(lines).toHaveCount(before + 1);

@@ -156,7 +156,8 @@
 				<div class="ligne">
 					<dt>{row.label}</dt>
 					<dd>
-						<span aria-hidden="true">
+						<!-- `data-latex` : ce que lisent les vérifications automatisées (`e2e/verifs/`) -->
+						<span aria-hidden="true" data-latex={row.latex}>
 							<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX régénéré par le calcul (propertiesOf) -->
 							{@html row.markup}
 						</span>
