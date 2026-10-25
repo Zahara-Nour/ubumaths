@@ -72,6 +72,7 @@ import {
 	PedagogicalQuadraticNotImplemented
 } from '$lib/mathAST/pedagogical-solve/quadratic';
 import { QuadraticEquationRenderer } from '$lib/mathAST/pedagogical-solve/quadratic-renderer';
+import { stepsAsShown } from '$lib/mathAST/pedagogical-solve/shown-steps';
 import {
 	generateLinearInequalitySteps,
 	UnsupportedInequalityDegree,
@@ -377,7 +378,8 @@ function renderLinearEquation({
 		schoolLevel: linearLevel,
 		verbosity
 	};
-	return renderer.renderAll(steps, renderOptions);
+	// Les étapes écrites comme la réponse : décimaux tapés gardés (lot 5f-4)
+	return renderer.renderAll(stepsAsShown(steps, relationNode), renderOptions);
 }
 
 interface QuadraticEquationDispatch {
@@ -425,7 +427,8 @@ function renderQuadraticEquation({
 		schoolLevel: quadraticLevel,
 		verbosity
 	};
-	return renderer.renderAll(steps, renderOptions);
+	// Les étapes écrites comme la réponse : `S = {−√2/2 ; √2/2}` (lot 5f-4)
+	return renderer.renderAll(stepsAsShown(steps, relationNode), renderOptions);
 }
 
 interface LinearInequalityDispatch {

@@ -33,6 +33,7 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
+import { stepsAsShown } from '$lib/mathAST/pedagogical-solve/shown-steps';
 import {
 	DEFAULT_VARIABLE,
 	splitVariableArgument,
@@ -247,7 +248,10 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 		if (kind === null) return null;
 
 		const { renderer, schoolLevel } = rendererFor(kind);
-		const rendered = renderer.renderAll(steps, { schoolLevel, verbosity: 'detailed' });
+		// Les étapes écrites comme la réponse (lot 5f-4) ; `steps` garde les
+		// valeurs du calcul, lues par le garde-fou et la réponse
+		const shown = stepsAsShown(steps, relation);
+		const rendered = renderer.renderAll(shown, { schoolLevel, verbosity: 'detailed' });
 
 		// Sans réponse affichable, la ligne n'aurait RIEN à montrer : une zone
 		// mathématique vide, et le texte du moteur jamais affiché.
@@ -260,7 +264,7 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 		if (!conclusionAgrees(relation, variable, steps[steps.length - 1])) return null;
 
 		const solutions = concludedSolutions(steps[steps.length - 1]);
-		const summarized = renderer.renderAll(steps, { schoolLevel, verbosity: 'summarized' });
+		const summarized = renderer.renderAll(shown, { schoolLevel, verbosity: 'summarized' });
 		const decimal = hasDecimalLiteral(relation);
 		if (within !== undefined) {
 			return solutions === null
@@ -306,8 +310,8 @@ function solvedValue(after: MathNode, variable: string): readonly MathNode[] | n
  * La ligne de réponse écrite depuis les valeurs (lot 5c, Q26) : chaque solution
  * passe par la valeur exacte à afficher commune — `−√2/2`, `(1 − √5)/2`, et le
  * registre décimal de l'équation (`2x = 0,6` → `x = 0,3`). La forme (`x = …`
- * ou `S = {…}`) est celle de la conclusion ; les étapes gardent leur écriture
- * (lot 5f).
+ * ou `S = {…}`) est celle de la conclusion ; les étapes suivent la même règle
+ * (`stepsAsShown`, lot 5f-4).
  */
 function shownAnswer(
 	answer: string,

@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1717 (Q49) ; point 2 de Q49 en cours._
+_Mis à jour le 2026-10-25, après #1722 (Q49, point 2)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691), ~~5e D4~~ (#1696), ~~5f-1 `tidy`~~ (#1703), ~~5f-2 primitives~~ (#1708), ~~5f-3 limites~~ (#1710), ~~Q49 valeur d'intégrale~~ (#1717, § 80-81) mergés. Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691), ~~5e D4~~ (#1696), ~~5f-1 `tidy`~~ (#1703), ~~5f-2 primitives~~ (#1708), ~~5f-3 limites~~ (#1710), ~~Q49 valeur d'intégrale~~ (#1717, #1722, § 80-82) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → **5** (… → 5f restes : ~~5f-1~~ → ~~5f-2~~ → ~~5f-3~~ → ~~Q49~~ → **5f-4** → 5f-5) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : merger le point 2 de Q49 (branche `fix/simplify-carte-q49-irrationnels`, § 82), puis 5f-4 solveur (R8, Q46) — relire leur section du journal avant de coder.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703, #1708, #1710, #1717) ; 3 points d'écriture de Q49 laissés (§ 80 : exposant décimal, paramètre au dénominateur, `\dfrac{1}{6}a³` ; le point 2 corrigé, § 82) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
+- **Prochaine action** : 5f-4 solveur (R8, Q46) — relire leur section du journal avant de coder.
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703, #1708, #1710, #1717, #1722) ; 3 points d'écriture de Q49 laissés (§ 80 : exposant décimal, paramètre au dénominateur, `\dfrac{1}{6}a³` ; le point 2 corrigé, § 82) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc : `zz-tirages.mts` copié à la racine, `pnpm exec tsx`, `main.txt` = référence, TABLEAU zsh ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **PR sans CI = conflit avec `main`** (`mergeStateStatus` DIRTY) : fusionner `origin/main` dans la branche ; « Task killed: prettier » au pre-commit = une AUTRE tâche a échoué (lire la sortie entière) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** ; `git diff origin/main` (deux points) montre les commits de `main` en suppressions : fusionner `origin/main` avant de juger le diff.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-4` (partie d'`origin/main` après #1717).
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-4` (à jour sur `origin/main` après #1722).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1049,3 +1049,22 @@ CI verte du premier coup (après fusion d'`origin/main`), mergée. Vérification
 - **Une valeur irrationnelle sans décimal devant** : `withValueInRegister` (`integration/coefficient-register.ts`) — rationnel : registre de R5 (`0,25`, `1/6`) ; constante irrationnelle : `exactValueToShow` (Q22 : pas d'écriture décimale finie) → `∫₀^{π/4} 0,5 cos x = √2/4`, `∫₀^π 0,5x = π²/4` (avant : `0,25√2`, `0,25π²`) ; à paramètre : comme une primitive (`0,25a`). Corrections (`pipeline.ts`) et `.intégrer` à bornes.
 - **Même règle, effet aussi sur e et ln** (dit à David) : `∫₀¹ 0,5eˣ = (e − 1)/2` (§ 80 disait `0,5e − 0,5`), `∫₁² 0,5/x` sans décimal. Sans décimal tapé, rien ne change (`∫₀^{π/4} cos x/2` garde l'écriture d'`evaluate`, hors de Q49).
 - Tests : `valeur-decimaux.test.ts`, `integrer-decimaux.test.ts` — 9 rouges avant. Suite serveur `src/lib` 58 107 verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre. Branche `feat/simplify-carte-5f-4` (poussée, journal seul) : repartir d'`origin/main` après ce merge.
+
+## 83. Point 2 de Q49 mergé (#1722, 2026-10-25)
+
+CI verte, mergée. Vérification manuelle de #1717 mise à jour (π²/4, (e − 1)/2).
+
+## 84. Lot 5f-4 (solveur, R8, Q46) codé (branche `feat/simplify-carte-5f-4`, 2026-10-25)
+
+- **`stepsAsShown`** (`pedagogical-solve/shown-steps.ts`), avant le rendu, dans `.résoudre` (`solve-steps.ts` ; garde-fou et `S = …` lisent toujours les étapes du calcul) et `generateCorrection` (`linear-equation`, `quadratic-equation`). Équation à décimal tapé : chaque nœud des étapes par `inDecimalRegister` (`x = 0,3`, `0,5x = 1`, « On divise les deux membres par 0,5 », `a = 0,5`, `|2x| = 0,6` → `0,6 et −0,6`) ; l'équation tapée garde son écriture. Valeurs lues (`read-solution`, `read-solutions`, `simplify-solutions`, `solve-each-factor`) par `exactValueToShow` : `S = {−√2/2 ; √2/2}`, `x₁ = (1 − √5)/2` — aussi SANS décimal (Q46 « même écriture que la réponse »).
+- **Ajout** : `inDecimalRegister` entre dans la racine d'un nombre (`\sqrt{4/25}` → `\sqrt{0,16}`, Δ = 0,16), réglage `roots` du solveur seul.
+- Tests : `atelier/__tests__/resoudre-etapes-5f4.test.ts` (12 rouges sur 16 avant, + `√0,16` rouge sans l'ajout), `questions/generator/__tests__/correction-solveur-5f4.test.ts` (3 rouges sur 4 avant).
+- **Trouvés, hors Q46 (à poser à David)** : (1) **inéquations** : la ligne de réponse et la conclusion restent en écriture de calcul (`x² < 0,5` → `S = ]−1/2√2 ; 1/2√2[`, `x² − x − 1 < 0` → `]1/2 − 1/2√5 ; …[`), et une inéquation rationnelle écrit `S = ]1 / 2 ; +∞[` (barre en texte) — chaînes `solutionDescription` du pipeline ; (2) `x/4 = 0,5` : « On divise les deux membres par 0,25 » (le solveur divise par 1/4 au lieu de multiplier par 4, déjà vrai avant) ; (3) `0,5(x+1) = 2` : aucune étape (`UndevelopedLinearForm`, déjà vrai avant).
+- Mesures : suite serveur `src/lib` 58 129 verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre ; doc `mathast/README.md`, `atelier.md`, `questions.md`. Banc non relancé : aucun modèle de prod n'a de correction automatique (§ 75).
+- **Revue `code-reviewer` (opus)** : aucun bloquant ; parcours automatique avant/après `stepsAsShown` (20 équations, tous niveaux, nœuds compilés en deux points) : 0 écart de valeur. **3 mineurs corrigés, tests rouges d'abord** : (1) valeur absolue : le `u` tapé était récrit dans les branches (`|x/2 − 0,5| = 1 ⟺ 0,5x − 0,5 = 1`) → réglage `keep` (nœuds de l'équation tapée, que les pipelines reprennent par référence) ; (2) `x − √2/2` récrit `x − 0,5√2` → `decimalQuotient` laisse un quotient qui porte une racine (Q22) ; (3) limites : `√0,25` à côté du `√(1/4)` tapé → la racine d'un nombre seulement avec `roots` (solveur).
+- Mesures après la revue : suites atelier, solveur, limites, questions 11 694 verts ; `check:incremental` 0 ; cliquet tenu.
+
+## 85. Q50-Q52 (David, 2026-10-25 : « ok pour tes recos mais x/4 = 0,5 doit être résolu en multipliant par 4 ; pourquoi pas d'étape pour 0,5(x+1) = 2 ? on divise par 0,5 puis on enlève 1 »)
+
+- **Q50 : oui** — inéquations : ligne de réponse et conclusion écrites comme les équations (`]−√2/2 ; √2/2[`, `x < 0,3`, vraie fraction au lieu de `1 / 2`). Petite PR après 5f-4.
+- **Q51 (x/4 = 0,5 → multiplier par 4)** et **Q52 (`0,5(x+1) = 2` : diviser par 0,5, puis soustraire 1)** : demandés par David ; comportements détaillés proposés (multiplier quand l'inconnue est divisée, inverse d'un coefficient fraction ; membre factorisé `k(…) = c` divisé par k, `−(…)` multiplié par −1, terme constant ôté d'abord, développer si x des deux côtés, parenthèses ôtées après un +, inéquations avec retournement) — **validation de ces comportements et de l'ordre (5f-4 → Q50 → Q51+Q52) en attente**. Cause du « pas d'étape » : refus `UndevelopedLinearForm` posé le 2026-10-08 (`membres-non-developpes.test.ts`) pour ne plus montrer d'étapes fausses ; la vraie résolution n'a jamais été écrite.

@@ -10,7 +10,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25).
 
 ## À quoi ça sert
 
@@ -2322,6 +2322,15 @@ ligne ne compile plus. Conclusions acceptées pour la ligne : `read-solution`, `
 `no-real-solution`, les conclusions d'inéquation, et `read-all-reals` (`S = ℝ`,
 `|x-1|=|1-x|`).
 
+**Étapes écrites comme la réponse** (lot 5f-4 de `simplify-carte`, Q46, 2026-10-25). Les étapes
+d'une équation passent par `stepsAsShown` avant le rendu ; le garde-fou et la ligne `S = …`
+lisent les étapes du calcul. Décimaux tapés gardés (`2x = 0,6` : « Solution : x = 0,3 » ;
+`0,5x + 1 = 2` : `0,5x = 1`, « On divise les deux membres par 0,5 »), solutions écrites comme la
+réponse (`2x² = 1` : `S = {−√2/2 ; √2/2}` ; `x² − x − 1 = 0` : « On simplifie les solutions »
+donne `(1 − √5)/2`). Les inéquations gardent l'écriture du pipeline. Détail :
+`docs/systeme/mathast/README.md`, `pedagogical-solve` ; tests
+`__tests__/resoudre-etapes-5f4.test.ts`.
+
 Une inéquation dont l'écriture a une valeur interdite que la forme canonique efface
 (`\frac{3x^2}{2x}\geq 0`, `\frac{2x^3}{x}<2`) n'a pas d'étapes : les pipelines du premier et du
 second degré la refusent (`rejectForbiddenValues`, V47 puis V48), `solveSteps` rend `null` et
@@ -2792,7 +2801,7 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
     range l'écriture affichée** (Q27 : `RenderedResult.ast`, `2x+3x` se garde `5x`), sauf une
     grandeur, gardée par `quantityAst`. La ligne `S = …` de `.résoudre`
     (`solve-steps.ts`, `shownAnswer`) s'écrit de même depuis les solutions conclues (`−√2/2`,
-    `(1 − √5)/2`, `2x = 0,6` → `x = 0,3`) ; les étapes gardent l'écriture du moteur pédagogique, unités traduites par `displayUnitsInLatex` ; seule une **commande** peut encore montrer
+    `(1 − √5)/2`, `2x = 0,6` → `x = 0,3`) ; les étapes d'une équation suivent la même écriture (`stepsAsShown`, lot 5f-4, voir « `.résoudre` en détail »), unités traduites par `displayUnitsInLatex` ; seule une **commande** peut encore montrer
     son texte s'il ne contient que du LaTeX sûr (lot B des grandeurs, 2026-10-11).
     La constante d'Euler y arrive écrite `e` : `toCustom` l'écrit ainsi et tous les
     parseurs la relisent comme Euler (depuis le 2026-10-10 ; `withPlainEuler` et le
