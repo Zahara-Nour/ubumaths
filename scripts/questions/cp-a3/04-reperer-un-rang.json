@@ -1,0 +1,286 @@
+{
+	"title": "Repérer un rang dans une liste ou une file",
+	"description": "Le 4e nombre d'une liste, la place d'un nombre, une perle comptée depuis la gauche ou depuis la droite",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ordinaux",
+	"level": 4,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Voici une liste de nombres, **de gauche à droite** :\n\n${{a}}$, ${{eval:a+d}}$, ${{eval:a+2*d}}$, ${{eval:a+3*d}}$, ${{eval:a+4*d}}$\n\nQuel est le ${{if:k==1|1^{\\text{er}}|{{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|5^{\\text{e}}}}}}}}}}$ nombre de la liste ?\n\nC'est $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:a+(k-1)*d}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les places à partir de la gauche : ${{a}}$ est le $1^{\\text{er}}$, ${{eval:a+d}}$ le $2^{\\text{e}}$, ${{eval:a+2*d}}$ le $3^{\\text{e}}$, ${{eval:a+3*d}}$ le $4^{\\text{e}}$ et ${{eval:a+4*d}}$ le $5^{\\text{e}}$.",
+					"Le ${{if:k==1|1^{\\text{er}}|{{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|5^{\\text{e}}}}}}}}}}$ nombre est ${{eval:a+(k-1)*d}}$."
+				]
+			}
+		},
+		{
+			"statement": "Voici une liste de nombres, **de gauche à droite** :\n\n${{a}}$, ${{eval:a+d}}$, ${{eval:a+2*d}}$, ${{eval:a+3*d}}$, ${{eval:a+4*d}}$\n\nÀ quelle place est le nombre ${{eval:a+(k-1)*d}}$ ?\n\nIl est à la place numéro $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..9"
+				},
+				{
+					"name": "d",
+					"expression": "2..5"
+				},
+				{
+					"name": "k",
+					"expression": "1..5"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les places à partir de la gauche : ${{a}}$ est le $1^{\\text{er}}$, ${{eval:a+d}}$ le $2^{\\text{e}}$, ${{eval:a+2*d}}$ le $3^{\\text{e}}$, ${{eval:a+3*d}}$ le $4^{\\text{e}}$ et ${{eval:a+4*d}}$ le $5^{\\text{e}}$.",
+					"${{eval:a+(k-1)*d}}$ est à la place numéro ${{k}}$ : c'est le ${{if:k==1|1^{\\text{er}}|{{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|5^{\\text{e}}}}}}}}}}$ nombre."
+				]
+			}
+		},
+		{
+			"statement": "On enfile des perles sur un fil :\n\n{{if:k==1|●|{{if:n>=1|○|}}}}{{if:k==2| ●|{{if:n>=2| ○|}}}}{{if:k==3| ●|{{if:n>=3| ○|}}}}{{if:k==4| ●|{{if:n>=4| ○|}}}}{{if:k==5| ●|{{if:n>=5| ○|}}}}{{if:k==6| ●|{{if:n>=6| ○|}}}}{{if:k==7| ●|{{if:n>=7| ○|}}}}{{if:k==8| ●|{{if:n>=8| ○|}}}}{{if:k==9| ●|{{if:n>=9| ○|}}}}{{if:k==10| ●|{{if:n>=10| ○|}}}}{{if:k==11| ●|{{if:n>=11| ○|}}}}{{if:k==12| ●|{{if:n>=12| ○|}}}}{{if:k==13| ●|{{if:n>=13| ○|}}}}{{if:k==14| ●|{{if:n>=14| ○|}}}}{{if:k==15| ●|{{if:n>=15| ○|}}}}{{if:k==16| ●|{{if:n>=16| ○|}}}}{{if:k==17| ●|{{if:n>=17| ○|}}}}{{if:k==18| ●|{{if:n>=18| ○|}}}}{{if:k==19| ●|{{if:n>=19| ○|}}}}{{if:k==20| ●|{{if:n>=20| ○|}}}}\n\nEn comptant **à partir de la droite**, à quelle place est la perle noire ?\n\nElle est à la place numéro $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..12"
+				},
+				{
+					"name": "k",
+					"expression": "1..12"
+				}
+			],
+			"conditions": ["k <= n", "2 * k != n + 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-k+1}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de la perle **la plus à droite** (place $1$) et on compte vers la gauche jusqu'à la perle noire.",
+					"La perle noire est à la place numéro ${{eval:n-k+1}}$ en partant de la droite. (En partant de la gauche, elle serait à la place ${{k}}$ : le sens compte.)"
+				]
+			}
+		},
+		{
+			"statement": "On enfile des perles sur un fil :\n\n{{if:k==1|●|{{if:n>=1|○|}}}}{{if:k==2| ●|{{if:n>=2| ○|}}}}{{if:k==3| ●|{{if:n>=3| ○|}}}}{{if:k==4| ●|{{if:n>=4| ○|}}}}{{if:k==5| ●|{{if:n>=5| ○|}}}}{{if:k==6| ●|{{if:n>=6| ○|}}}}{{if:k==7| ●|{{if:n>=7| ○|}}}}{{if:k==8| ●|{{if:n>=8| ○|}}}}{{if:k==9| ●|{{if:n>=9| ○|}}}}{{if:k==10| ●|{{if:n>=10| ○|}}}}{{if:k==11| ●|{{if:n>=11| ○|}}}}{{if:k==12| ●|{{if:n>=12| ○|}}}}{{if:k==13| ●|{{if:n>=13| ○|}}}}{{if:k==14| ●|{{if:n>=14| ○|}}}}{{if:k==15| ●|{{if:n>=15| ○|}}}}{{if:k==16| ●|{{if:n>=16| ○|}}}}{{if:k==17| ●|{{if:n>=17| ○|}}}}{{if:k==18| ●|{{if:n>=18| ○|}}}}{{if:k==19| ●|{{if:n>=19| ○|}}}}{{if:k==20| ●|{{if:n>=20| ○|}}}}\n\nEn comptant **à partir de la gauche**, à quelle place est la perle noire ?\n\nElle est à la place numéro $?$.",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "5..20"
+				},
+				{
+					"name": "k",
+					"expression": "1..20"
+				}
+			],
+			"conditions": ["k <= n"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On part de la perle **la plus à gauche** (place $1$) et on compte vers la droite jusqu'à la perle noire.",
+					"La perle noire est à la place numéro ${{k}}$ en partant de la gauche."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "liste 2, 6, 10, 14, 18 : le 4e est 14",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"k": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["14"]
+		},
+		{
+			"description": "Erreur : le 4e, le 3e (10)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "Erreur : le 4e, le 5e (18)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"k": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["18"]
+		},
+		{
+			"description": "borne : le 1er est 2",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "liste 2, 6, 10, 14, 18 : 10 est à la place 3",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur : place de 10, le nombre lui-même",
+			"variationIndex": 1,
+			"variables": {
+				"a": "2",
+				"d": "4",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "perle 3e depuis la gauche sur 8 : 6e depuis la droite",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Erreur : compté depuis la gauche (3)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur : une perle de trop (7)",
+			"variationIndex": 2,
+			"variables": {
+				"n": "8",
+				"k": "3"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "borne : perle la plus à gauche sur 12 : 12e depuis la droite",
+			"variationIndex": 2,
+			"variables": {
+				"n": "12",
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "perle 15e sur 20 depuis la gauche",
+			"variationIndex": 3,
+			"variables": {
+				"n": "20",
+				"k": "15"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "Erreur : compté depuis la droite (6)",
+			"variationIndex": 3,
+			"variables": {
+				"n": "20",
+				"k": "15"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Zéro inutile",
+			"variationIndex": 3,
+			"variables": {
+				"n": "20",
+				"k": "15"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			},
+			"answers": ["015"]
+		}
+	]
+}
