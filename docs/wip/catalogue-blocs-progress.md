@@ -2,18 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 1 ouverte (aide à l'écriture, 10 fiches)._
+_Mis à jour le 2026-10-25, après #1764._
 
-- **État** : PR 1 écrite et vérifiée (tests catalogue 112 verts, pages 13 verts, check 0 erreur).
-  Serveur de la branche : `http://localhost:5177/aide-ecriture/blocs` (compte prof).
-- **Prochaine action** : CI verte → merge ; puis PR 2, la vitrine `/demo/blocs` (mêmes fichiers
+- **État** : PR 1 mergée (#1764) : `/aide-ecriture/blocs` et les 10 fiches, en attente de
+  `deploy:prod`. Serveur de test : `http://localhost:5177/aide-ecriture/blocs` (compte prof).
+- **Prochaine action** : PR 2, la vitrine `/demo/blocs` (mêmes fichiers
   `src/lib/block-catalog/*.ts`, sélection par niveau, « Voir ce qu'écrit le prof » replié,
-  entrée `DEMO_PAGES` + `SeoHead`).
+  entrée `DEMO_PAGES` + `SeoHead`), branche `feat/catalogue-blocs-vitrine`.
 - **En attente de David** : regard sur les pages ; dire s'il veut corriger les erreurs muettes des
   parseurs (§ PR 1, « Ce que les fiches ont révélé »), hors de ce chantier.
 - **Pièges connus** : nouvelle vitrine → `DEMO_PAGES` + `<SeoHead {...demoSeo(…)} />` ; dans
   `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale`.
-- **Worktree / branche** : `../ubumaths-wt-catalogue-blocs` · `feat/catalogue-blocs`.
+- **Worktree / branche** : `../ubumaths-wt-catalogue-blocs` · `feat/catalogue-blocs-vitrine`.
 
 ## Origine
 
