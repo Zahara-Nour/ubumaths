@@ -1,21 +1,22 @@
 ---
 title: Retrait de /calc — journal
 date: 2026-10-24
-status: PR 1 mergée (#1705) — PR 2 (retrait de /calc) en cours
+status: PR 2 mergée (#1709) — /calc retirée ; nettoyage du grapheur en attente de David
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 2 en cours._
+_Mis à jour le 2026-10-25, après #1709._
 
-- **État** : PR 2 (retrait de `/calc`) écrite, vérifications locales vertes ; PR à ouvrir, revue
-  `code-reviewer` (Sonnet), CI, merge.
-- **Prochaine action** : après le merge, fin de chantier — archiver ce journal.
-- **En attente de David** : supprimer aussi le code que plus aucune page ne monte (singleton
-  `grapheurStore`, `FunctionPanel` et ses champs, prop `panel`, `outputHtml`) ? Listé dans
-  `grapheur.md` § Écarts connus.
+- **État** : PR 2 mergée (#1709) — `/calc` retirée (308 vers `/atelier`), sur `main`, pas en prod.
+  Vérification manuelle notée dans `verifications-manuelles.md`.
+- **Prochaine action** : selon la réponse de David — PR 3 de nettoyage, ou fin de chantier
+  (archiver ce journal dans `docs/archive/wip/`).
+- **En attente de David** : supprimer le code que plus aucune page ne monte (singleton
+  `grapheurStore` + `chiphre-grapheur-state`, `FunctionPanel` et ses champs, prop `panel` de
+  `GrapheurContainer`, `outputHtml` de `WebReplEngine`) ? Listé dans `grapheur.md` § Écarts connus.
 - **Pièges** : `docs:check-a-jour` réclame `statistiques.md` dès que `desk.svelte.ts` change.
-- **Worktree / branche** : `../ubumaths-wt-retrait-calc`, `chore/retrait-calc-2`.
+- **Worktree / branche** : aucun (`../ubumaths-wt-retrait-calc` supprimé après #1709).
 
 ---
 
