@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1717 (Q49)._
+_Mis à jour le 2026-10-25, après #1717 (Q49) ; point 2 de Q49 en cours._
 
 - **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691), ~~5e D4~~ (#1696), ~~5f-1 `tidy`~~ (#1703), ~~5f-2 primitives~~ (#1708), ~~5f-3 limites~~ (#1710), ~~Q49 valeur d'intégrale~~ (#1717, § 80-81) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → **5** (… → 5f restes : ~~5f-1~~ → ~~5f-2~~ → ~~5f-3~~ → ~~Q49~~ → **5f-4** → 5f-5) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5f-4 solveur (R8, Q46) — relire leur section du journal avant de coder.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703, #1708, #1710, #1717) ; 4 points d'écriture de Q49 (§ 80 : exposant décimal, décimal devant √2/π, paramètre au dénominateur, `\dfrac{1}{6}a³`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
+- **Prochaine action** : merger le point 2 de Q49 (branche `fix/simplify-carte-q49-irrationnels`, § 82), puis 5f-4 solveur (R8, Q46) — relire leur section du journal avant de coder.
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703, #1708, #1710, #1717) ; 3 points d'écriture de Q49 laissés (§ 80 : exposant décimal, paramètre au dénominateur, `\dfrac{1}{6}a³` ; le point 2 corrigé, § 82) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc : `zz-tirages.mts` copié à la racine, `pnpm exec tsx`, `main.txt` = référence, TABLEAU zsh ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **PR sans CI = conflit avec `main`** (`mergeStateStatus` DIRTY) : fusionner `origin/main` dans la branche ; « Task killed: prettier » au pre-commit = une AUTRE tâche a échoué (lire la sortie entière) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** ; `git diff origin/main` (deux points) montre les commits de `main` en suppressions : fusionner `origin/main` avant de juger le diff.
 - **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-4` (partie d'`origin/main` après #1717).
 
@@ -1043,3 +1043,9 @@ CI verte (après deux fusions d'`origin/main` : conflit sur `verifications-manue
 ## 81. Q49 mergé (#1717, 2026-10-25)
 
 CI verte du premier coup (après fusion d'`origin/main`), mergée. Vérification manuelle notée (#1717).
+
+## 82. Q49, point 2 corrigé (David, 2026-10-25 : « corrige le point 2 »)
+
+- **Une valeur irrationnelle sans décimal devant** : `withValueInRegister` (`integration/coefficient-register.ts`) — rationnel : registre de R5 (`0,25`, `1/6`) ; constante irrationnelle : `exactValueToShow` (Q22 : pas d'écriture décimale finie) → `∫₀^{π/4} 0,5 cos x = √2/4`, `∫₀^π 0,5x = π²/4` (avant : `0,25√2`, `0,25π²`) ; à paramètre : comme une primitive (`0,25a`). Corrections (`pipeline.ts`) et `.intégrer` à bornes.
+- **Même règle, effet aussi sur e et ln** (dit à David) : `∫₀¹ 0,5eˣ = (e − 1)/2` (§ 80 disait `0,5e − 0,5`), `∫₁² 0,5/x` sans décimal. Sans décimal tapé, rien ne change (`∫₀^{π/4} cos x/2` garde l'écriture d'`evaluate`, hors de Q49).
+- Tests : `valeur-decimaux.test.ts`, `integrer-decimaux.test.ts` — 9 rouges avant. Suite serveur `src/lib` 58 107 verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre. Branche `feat/simplify-carte-5f-4` (poussée, journal seul) : repartir d'`origin/main` après ce merge.

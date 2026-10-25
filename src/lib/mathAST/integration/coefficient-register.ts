@@ -31,6 +31,8 @@ import { isDivision, isNumber } from '../guards';
 import { findNodes } from '../transforms';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { tidy } from '../tidy';
+import { getVariables } from '../eval/substitute';
+import { exactValueToShow } from '../eval/exact-value';
 
 /** Une somme lue terme à terme. */
 type ReadSum = readonly {
@@ -67,6 +69,19 @@ export function withUniformCoefficients(primitive: MathNode, integrand: MathNode
 	if (sum === null) return primitive;
 	const allDecimal = coefficients(sum).every((k) => decimalString(absRational(k)) !== null);
 	return writeSum(sum, allDecimal) ?? primitive;
+}
+
+/**
+ * La VALEUR d'une intégrale bornée quand `integrand` tape un décimal (Q49 —
+ * David, 2026-10-25) : un rationnel en décimal si son écriture est finie
+ * (`0,25`), sinon en fraction (`1/6`) ; une constante irrationnelle n'a pas
+ * d'écriture décimale finie (Q22) : écrite par la valeur exacte à afficher
+ * (`√2/4`, pas `0,25√2`) ; une valeur à paramètre comme une primitive (`0,25a`).
+ */
+export function withValueInRegister(value: MathNode, integrand: MathNode): MathNode {
+	if (!hasDecimalLiteral(integrand)) return value;
+	const irrational = getVariables(value).size === 0 && extractExactRational(value) === null;
+	return irrational ? exactValueToShow(value) : withUniformCoefficients(value, integrand);
 }
 
 function readSum(node: MathNode): ReadSum | null {

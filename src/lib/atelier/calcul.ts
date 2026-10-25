@@ -101,7 +101,10 @@ import { MAX_SEQUENCE_TERMS } from '$lib/grapheur/sequence';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { simplify } from '$lib/mathAST/simplify/simplify';
 import { tidy } from '$lib/mathAST/tidy';
-import { withUniformCoefficients } from '$lib/mathAST/integration/coefficient-register';
+import {
+	withUniformCoefficients,
+	withValueInRegister
+} from '$lib/mathAST/integration/coefficient-register';
 import { getPolynomialDegree } from '$lib/mathAST/analysis/expression-classify';
 import { differentiateN } from '$lib/mathAST/differentiation/differentiate';
 import { findNodes, mapNode } from '$lib/mathAST/transforms';
@@ -2727,7 +2730,11 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		// corrections (R5, Q42 b — David, 2026-10-24) ; la valeur d'une intégrale
 		// à bornes aussi (Q49 — David, 2026-10-25)
 		const shown =
-			integrand === undefined ? exponents : withUniformCoefficients(exponents, integrand);
+			integrand === undefined
+				? exponents
+				: finalArgs?.bounds != null
+					? withValueInRegister(exponents, integrand)
+					: withUniformCoefficients(exponents, integrand);
 		// Q3 (David, 2026-10-14) : une primitive qui DIVISE par le paramètre
 		// (`e^{ax}` → `e^{ax}/a`) le dit — « (a ≠ 0) »
 		const conditions =

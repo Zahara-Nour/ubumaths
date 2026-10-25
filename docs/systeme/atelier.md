@@ -2517,7 +2517,8 @@ primitive à décimaux, réécrit comme dans les corrections (`withUniformCoeffi
 R5/Q42 b, 2026-10-24 : `.intégrer 0,6x+1,2` → $0{,}3x^2 + 1{,}2x + C$, et non
 $\dfrac{3}{10}x^2 + \dfrac{6}{5}x$) ; la valeur d'une intégrale bornée suit le même registre
 (Q49, 2026-10-25 : `.intégrer 0,5x de 0 à 1` → $0{,}25$, `0,5x^2 de 0 à 1` → $\dfrac{1}{6}$,
-`0,5e^x de 0 à 1` → $0{,}5e - 0{,}5$). La valeur d'une intégrale bornée à paramètre est réduite par
+`0,5e^x de 0 à 1` → $\dfrac{e - 1}{2}$ : une valeur irrationnelle n'a pas d'écriture décimale
+finie, elle s'écrit par la valeur exacte à afficher, Q22). La valeur d'une intégrale bornée à paramètre est réduite par
 `tidy` (R1). Le « Comment ? » vient de
 `generatePedagogicalIntegrationSteps` (niveau `lycee`, détaillé + résumé), et ne s'affiche que si
 deux gardes passent (`integrate-steps-check.ts`) :
