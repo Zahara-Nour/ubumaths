@@ -1,6 +1,6 @@
 # Liens courts — phase 0
 
-_Ouverte le 2026-10-19, suite du chantier [qr-codes](qr-codes-progress.md). Tranchée par David le 2026-10-19._
+_Ouverte le 2026-10-19, suite du chantier [qr-codes](../../wip/qr-codes-progress.md). Tranchée par David le 2026-10-19._
 
 ## Le problème, mesuré
 
@@ -15,7 +15,7 @@ Un QR code accepte au plus 220 octets (version 15, correction H : `QR_MAX_VERSIO
 
 Seul le **lien de série** dépasse, et il dépasse **toujours**, dès la première catégorie : la composition est écrite dans l'adresse (JSON encodé deux fois, `buildSeriesLink`). Le bouton QR de `SeriesLinkShare` est donc inutile aujourd'hui (« Ce lien est trop long pour un QR code lisible »).
 
-L'Atelier est hors sujet : son QR viendra avec l'atelier sauvegardé et public (chantier à part, décision 4 de [qr-codes-phase0.md](qr-codes-phase0.md)).
+L'Atelier est hors sujet : son QR viendra avec l'atelier sauvegardé et public (chantier à part, décision 4 de [qr-codes-phase0.md](../../wip/qr-codes-phase0.md)).
 
 ## Ce que je propose
 
