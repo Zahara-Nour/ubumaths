@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 rédigée (§ 1), rien de codé._
+_Mis à jour le 2026-10-25, phase 0 validée (§ 2), lot (a) lancé._
 
-- **État** : phase 0 sondée et rédigée (§ 1), **présentée à David, pas validée**. Rien de codé.
-- **But** : (a) le RÉSULTAT de « développer » ne vient plus de `normalize` (passe `runNormalizePass`, `pedagogical-simplify/pipeline.ts:534`, + 3 appels dans `expand-steps.ts`) ; (b) les 98 `denormalize(normalize())` hors tests nommés par ce qu'ils font.
-- **Prochaine action** : réponses de David à Q1-Q5 (§ 1.4), puis worktree `ubumaths-wt-normalize-usages`, tests rouges du lot (a).
-- **En attente de David** : Q1-Q5.
-- **Pièges connus** : les règles `developper` du moteur seules ne distribuent PAS (`2(x+3)` reste, sondé § 1.2) : c'est `normalize` qui fait tout le travail aujourd'hui ; pas de `pnpm math` ; `normalize` garde son nom (Q5 de simplify-carte) ; décimaux déjà gardés par `explainExpansion` (`decimalFraction`).
-- **Worktree / branche** : aucun encore (`ubumaths-wt-normalize-usages` au premier code).
+- **État** : phase 0 validée par David (Q1-Q5 selon les recos, Q2 = a). Lot (a) en cours sur `feat/normalize-usages-developper`.
+- **But** : (a) le RÉSULTAT de « développer » vient d'un développeur du moteur pédagogique, plus de `normalize` (`runNormalizePass`, `pedagogical-simplify/pipeline.ts:534`, + `expand-steps.ts:350, 357, 473`) ; (b) ensuite, petite PR : une fonction partagée au lieu des ~12 copies locales, `polynomialCoefficients`.
+- **Prochaine action** : tests de non-régression (polynomial identique) + tests rouges des comportements du § 2, puis le développeur.
+- **En attente de David** : rien.
+- **Pièges connus** : les règles `developper` seules ne distribuent PAS (`2(x+3)` reste, § 1.2) ; le résultat sert aussi à l'intégration, `factoriser` (stratégie 6), `auto`, `requested-form` ; pas de `pnpm math` ; décimaux déjà gardés par `explainExpansion` (`decimalFraction`).
+- **Worktree / branche** : `ubumaths-wt-normalize-usages` · `feat/normalize-usages-developper`.
 
 ## Contexte
 
@@ -63,3 +63,12 @@ Une douzaine de ces appels sont déjà enveloppés dans des fonctions locales qu
 - **Q3 — identités qui perdent le domaine** (`e^{ln x}(x+1)`, `(√x)²(x+1)`). Reco : « développer » ne les applique pas (`xe^{ln x} + e^{ln x}`) ; cas absents des exercices réels, pas d'effort en plus.
 - **Q4 — comment.** Reco : un module « développer » du moteur (distribuer un facteur et le signe −, produits de sommes, puissances entières, identités ; chaque terme calculé et la somme réduite par `tidy`, décimaux gardés) qui remplace la phase B `normalize` de l'intention `developper`. Tous les appelants du § 1.1 changent avec lui (un seul moteur). `expand-steps.ts` en tire ses termes au lieu de `normalize`. Les cas polynomiaux du § 1.2 doivent rester identiques (tests de non-régression d'abord).
 - **Q5 — lot (b)**, sans effet pour l'élève. Reco : après (a), une petite PR : une fonction partagée dans `normal/` remplace les ~12 copies locales (valeur exacte : nom à choisir, p. ex. `exactForm`) et `polynomialCoefficients(expr, x)` remplace les 7 lectures de coefficients ; les autres appels restent tels quels, ils calculent des valeurs (§ 23 : voulu).
+
+## 2. Phase 0 validée (David, 2026-10-25 : « ok pour tout »)
+
+- **Q1** : « développer » ne développe que les produits et les numérateurs ; `1/(x+1) + 1` et `(x²−1)/(x+1)` → rien à développer ; `(x+1)(x−2) + 1/(x+1)` → `x² − x − 2 + 1/(x+1)` ; `(x+1)²/x` → `(x²+2x+1)/x`.
+- **Q2 = a** : division par un nombre distribuée, étape nommée : `(x+1)/2` → `½x + ½`, `(x+1)(x−1)/2` → `½x² − ½`.
+- **Q3** : pas d'identité qui perd le domaine : `e^{ln x}(x+1)` → `xe^{ln x} + e^{ln x}`.
+- **Q4** : un développeur dans le moteur pédagogique remplace la phase B `normalize` de l'intention `developper` ; tous les appelants changent avec lui ; le polynomial reste identique (tests de non-régression d'abord).
+- **Q5** : lot (b) après (a), petite PR, rien ne change à l'écran.
+- Question de David : « on avait pas déjà réécrit développer ? » — non : le 2026-10-14 (atelier-developper) a réécrit la RÉDACTION des étapes, la réponse venait toujours de `normalize` ; simplify-carte lot 3 a retiré le développement de `réduire`/`auto` (« `développer` inchangé », § 33) ; la décision § 23 n'avait jamais été codée.
