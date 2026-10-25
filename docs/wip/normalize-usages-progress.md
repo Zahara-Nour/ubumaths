@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot (b) codé, en revue._
+_Mis à jour le 2026-10-26, après #1790._
 
-- **État** : lot (a) MERGÉ (#1784), pas encore en prod. Lot (b) codé (§ 7) : suite serveur verte, revue `code-reviewer` (opus) en cours, PR pas encore ouverte.
-- **Prochaine action** : traiter la revue, `types:cliquet`, PR, CI, merge.
-- **En attente de David** : écart voulu à valider après coup : c du quadratique réduit (§ 7) ; à lui montrer : `√x√x → (√x)²`, ordre d'une primitive, mineurs du § 4.
-- **Pièges connus** : `check:incremental` / `types:cliquet` exit 2 = verrou d'une autre session, attendre ; `extractQuarticCoefficients` sans garde « coefficient sans x » (laissé, points ouverts du README mathAST).
-- **Worktree / branche** : `ubumaths-wt-normalize-usages`, `refactor/normalize-usages-noms`.
+- **État** : lots (a) #1784 et (b) #1790 MERGÉS, pas encore en prod. Les deux lots prévus sont faits.
+- **Prochaine action** : à trancher par David : clore le chantier (versement : le durable est déjà dans `docs/systeme/mathast/README.md`, archiver ce journal) ou ajouter un lot (garde « coefficient sans x » de `extractQuarticCoefficients`).
+- **En attente de David** : la clôture ci-dessus ; écarts plus justes de la lecture des coefficients (§ 7-8) ; à lui montrer : `√x√x → (√x)²`, ordre d'une primitive, mineurs du § 4.
+- **Pièges connus** : banc des modèles aveugle pour `developper` ; verrous `typecheck` partagés (exit 2 = attendre).
+- **Worktree / branche** : aucun (retiré après #1790).
 
 ## Contexte
 
@@ -121,3 +121,7 @@ Comportements : **nominal** — mêmes réponses et mêmes étapes partout (suit
 - Aucun finding bloquant ; aucun coefficient faux (la garde « coefficient sans x » attrape tout degré mal lu).
 - **Corrigé** (test rouge d'abord) : `coefficientsByDegree` levait quand `normalize` lève sur une constante (`x² + 1/0`, c n'était pas réduit avant) → `null`, la lecture ne lève jamais. Commentaires citant `canon` remis à `canonicalForm` (10).
 - **Écarts de plus que celui annoncé, tous plus justes, invisibles dans les solveurs** (relecture par la forme canonique en repli) : linéaire lu tel quel refusé là où une division par x réunissait tout (`x²−x²+2x+1`, `x²/x + 1`) ; termes constants déguisés acceptés car c est réduit (`x⁰+2x`, `2x/x+3x`, `x/x+x²`, `√x−√x+x²`) ; `0.5x+1.2` : c = 6/5 au lieu de `1.2` en lecture brute (les appelants pédagogiques lisent déjà la forme canonique). `positiveSquareRoot` : `x² − a_n` (nœud que `getPolynomialDegree` ignore) désormais lu, cas de longueurs seulement.
+
+## 9. Lot (b) mergé (#1790, 2026-10-26)
+
+CI verte (16 jobs, 1 sauté), mergée. Worktree retiré.
