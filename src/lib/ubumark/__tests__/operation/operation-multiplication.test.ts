@@ -80,8 +80,7 @@ describe('multiplication : lecture du bloc', () => {
 		[['calcul: 3 × 4 + 1'], 'un seul signe'],
 		[['calcul: 1234567 × 2'], '6 chiffres au plus'],
 		[['calcul: 1234 × 5678'], '3 chiffres au plus'],
-		[['calcul: 12 × 3', 'méthode: cassage'], 'seulement pour une soustraction'],
-		[['calcul: 12 ÷ 3'], 'pas encore disponible']
+		[['calcul: 12 × 3', 'méthode: cassage'], 'seulement pour une soustraction']
 	])('%j → %s (comportements 13 à 15)', (lines, expected) => {
 		const node = parse(...lines);
 		expect(node.spec).toBeNull();

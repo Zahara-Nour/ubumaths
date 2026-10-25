@@ -7,13 +7,19 @@
  * cases: résultat | aucune
  * retenues: oui | non
  * méthode: compensation | cassage
+ * étapes: soustractions | restes
+ * quotient: entier | décimal
  * ```
  *
  * - `calcul:` (obligatoire) : 2 ou 3 termes pour une addition, 2 pour une
- *   soustraction (`−`, `-` ou `–`) ou une multiplication (`×`, `x` ou `*`) ;
- *   virgule ou point ; espaces de milliers acceptés. `÷` : lot 3.
+ *   soustraction (`−`, `-` ou `–`), une multiplication (`×`, `x` ou `*`) ou
+ *   une division (`÷`, `:` ou `/`) ; virgule ou point ; espaces de milliers
+ *   acceptés.
  * - Multiplication : le facteur qui a le plus de chiffres est posé en haut
  *   (égalité : ordre écrit), `spec.terms` est dans l'ordre de pose.
+ * - Division (§ 12) : diviseur entier de 1 ou 2 chiffres, non nul ; quotient
+ *   `entier` (euclidienne) par défaut, `décimal` si le dividende est décimal ;
+ *   un quotient décimal doit s'arrêter au plus tard au millième.
  * - Le reste est facultatif ; une clé inconnue ou une valeur hors liste est
  *   une erreur située, jamais un réglage ignoré.
  *
@@ -30,17 +36,24 @@ import { specialBlockEnd } from './unclosed-block';
 import {
 	OPERATION_CELLS,
 	OPERATION_MAX_DIGITS,
+	OPERATION_MAX_DIVISION,
 	OPERATION_MAX_FACTOR_DIGITS,
 	OPERATION_MAX_TERMS,
 	OPERATION_METHODS,
+	OPERATION_QUOTIENTS,
+	OPERATION_STEPS,
 	type OperationBlockRange,
 	type OperationCells,
 	type OperationIssue,
 	type OperationMethod,
 	type OperationNode,
 	type OperationOperator,
+	type OperationQuotient,
+	type OperationSpec,
+	type OperationSteps,
 	type OperationTerm
 } from '../types/operation';
+import { divisionAddedZeros } from '../utils/operation-division-scene';
 
 // ============================================================================
 // CONSTANTES
@@ -55,8 +68,8 @@ const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 /** Un terme sans ses espaces : `1234`, `56,75`, `12.5` */
 const TERM_REGEX = /^(\d+)(?:[.,](\d+))?$/;
 
-/** Signes reconnus, rangés par opérateur ; `÷` est lu pour être refusé */
-const SIGNS: Record<string, OperationOperator | 'later'> = {
+/** Signes reconnus, rangés par opérateur */
+const SIGNS: Record<string, OperationOperator> = {
 	'+': '+',
 	'-': '-',
 	'−': '-',
@@ -64,20 +77,30 @@ const SIGNS: Record<string, OperationOperator | 'later'> = {
 	'×': '×',
 	x: '×',
 	'*': '×',
-	'÷': 'later',
-	':': 'later',
-	'/': 'later'
+	'÷': '÷',
+	':': '÷',
+	'/': '÷'
 };
 
 const SIGN_SPLIT_REGEX = /([+\-−–×x*÷:/])/;
 
 /** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
-const BLOCK_KEYS = ['calcul', 'cases', 'retenues', 'méthode', 'methode', 'case'] as const;
+const BLOCK_KEYS = [
+	'calcul',
+	'cases',
+	'retenues',
+	'méthode',
+	'methode',
+	'étapes',
+	'etapes',
+	'quotient',
+	'case'
+] as const;
 
-type Key = 'calcul' | 'cases' | 'retenues' | 'méthode' | 'case';
+type Key = 'calcul' | 'cases' | 'retenues' | 'méthode' | 'étapes' | 'quotient' | 'case';
 
 /** Clés de l'auteur ; `case:` est posée par le générateur de questions, jamais écrite */
-const KEY_NAMES: Key[] = ['calcul', 'cases', 'retenues', 'méthode'];
+const KEY_NAMES: Key[] = ['calcul', 'cases', 'retenues', 'méthode', 'étapes', 'quotient'];
 
 /** `case: N` : numéro de la case de la question (0, 1, 2…) */
 const CASE_INDEX_REGEX = /^\d{1,3}$/;
@@ -124,6 +147,7 @@ class LineError extends Error {}
 function normalizeKey(raw: string): Key | null {
 	const lower = raw.toLowerCase();
 	if (lower === 'methode') return 'méthode';
+	if (lower === 'etapes') return 'étapes';
 	if (lower === 'case') return 'case';
 	return KEY_NAMES.find((k) => k === lower) ?? null;
 }
@@ -190,6 +214,24 @@ function factorsInPlace([a, b]: OperationTerm[]): OperationTerm[] {
 	return [top, bottom];
 }
 
+/** Bornes d'une division : diviseur entier de 1 ou 2 chiffres, non nul ; dividende ≤ 6 chiffres */
+function checkDivision([dividend, divisor]: OperationTerm[]): void {
+	if (divisor.decimal !== '') {
+		throw new LineError('division : diviseur décimal non pris en charge (diviseur entier)');
+	}
+	if (/^0+$/.test(divisor.integer)) throw new LineError('division par 0');
+	if (divisor.integer.length > OPERATION_MAX_DIVISION.divisor) {
+		throw new LineError(
+			`division : ${OPERATION_MAX_DIVISION.divisor} chiffres au plus pour le diviseur`
+		);
+	}
+	if (digitCount(dividend) > OPERATION_MAX_DIVISION.dividend) {
+		throw new LineError(
+			`division : ${OPERATION_MAX_DIVISION.dividend} chiffres au plus pour le dividende, décimales comprises`
+		);
+	}
+}
+
 function parseCalcul(value: string): { operator: OperationOperator; terms: OperationTerm[] } {
 	const parts = value.split(SIGN_SPLIT_REGEX).map((part) => part.trim());
 	const signs = parts.filter((_, i) => i % 2 === 1);
@@ -197,16 +239,11 @@ function parseCalcul(value: string): { operator: OperationOperator; terms: Opera
 	if (signs.length === 0) {
 		throw new LineError(`calcul « ${value} » : deux termes au moins, ex. calcul: 45 + 37`);
 	}
-	if (signs.some((sign) => SIGNS[sign] === 'later')) {
-		throw new LineError(
-			'division posée : pas encore disponible (addition, soustraction et multiplication seulement)'
-		);
-	}
 	const operators = new Set(signs.map((sign) => SIGNS[sign]));
 	if (operators.size > 1) {
-		throw new LineError(`calcul « ${value} » : un seul signe par opération (+, − ou ×)`);
+		throw new LineError(`calcul « ${value} » : un seul signe par opération (+, −, × ou ÷)`);
 	}
-	const operator = signs.map((sign) => SIGNS[sign])[0] as OperationOperator;
+	const operator = SIGNS[signs[0]];
 	const empty = rawTerms.find((term) => term === '');
 	if (empty !== undefined) {
 		throw new LineError(`calcul « ${value} » : un terme manque autour d’un signe`);
@@ -219,10 +256,13 @@ function parseCalcul(value: string): { operator: OperationOperator; terms: Opera
 				? `${terms.length} termes : trois termes au plus`
 				: operator === '-'
 					? `${terms.length} termes : une soustraction a deux termes`
-					: `${terms.length} facteurs : une multiplication posée a deux facteurs`
+					: operator === '×'
+						? `${terms.length} facteurs : une multiplication posée a deux facteurs`
+						: `${terms.length} termes : une division posée a deux termes`
 		);
 	}
 	if (operator === '×') return { operator, terms: factorsInPlace(terms) };
+	if (operator === '÷') checkDivision(terms);
 	if (operator === '-' && !isAtLeast(terms[0], terms[1])) {
 		throw new LineError(
 			`calcul « ${value} » : résultat négatif (le premier nombre doit être le plus grand)`
@@ -245,6 +285,8 @@ export function parseOperationContent(source: string): OperationNode {
 	let cells: OperationCells = 'résultat';
 	let carries = true;
 	let method: OperationMethod = 'compensation';
+	let steps: OperationSteps = 'soustractions';
+	let quotient: OperationQuotient | null = null;
 	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
 
@@ -284,6 +326,12 @@ export function parseOperationContent(source: string): OperationNode {
 				case 'méthode':
 					method = oneOf(value, OPERATION_METHODS, 'méthode');
 					break;
+				case 'étapes':
+					steps = oneOf(value, OPERATION_STEPS, 'étapes');
+					break;
+				case 'quotient':
+					quotient = oneOf(value, OPERATION_QUOTIENTS, 'quotient');
+					break;
 				case 'case':
 					if (!CASE_INDEX_REGEX.test(value)) {
 						throw new LineError('case: attend un numéro de case (0, 1, 2…)');
@@ -301,8 +349,18 @@ export function parseOperationContent(source: string): OperationNode {
 	const read = calcul as { operator: OperationOperator; terms: OperationTerm[] } | null;
 	if (read === null) {
 		if (!seen.has('calcul')) fail(1, 'il manque la ligne calcul: (ex. calcul: 45 + 37)');
-	} else if (read.operator !== '-' && seen.has('méthode')) {
-		fail(seen.get('méthode')!, 'méthode: seulement pour une soustraction');
+	} else {
+		if (read.operator !== '-' && seen.has('méthode')) {
+			fail(seen.get('méthode')!, 'méthode: seulement pour une soustraction');
+		}
+		for (const key of ['étapes', 'quotient'] as const) {
+			if (read.operator !== '÷' && seen.has(key)) {
+				fail(seen.get(key)!, `${key}: seulement pour une division`);
+			}
+		}
+		if (read.operator === '÷' && seen.has('retenues')) {
+			fail(seen.get('retenues')!, 'retenues: pas pour une division');
+		}
 	}
 	// `cells` est réaffectée dans le forEach : TS la croit encore à sa valeur initiale
 	if (caseIndex !== undefined && (cells as OperationCells) === 'aucune') {
@@ -312,10 +370,35 @@ export function parseOperationContent(source: string): OperationNode {
 	if (errors.length > 0 || read === null) {
 		return { type: 'operation', source, spec: null, errors };
 	}
+	// Division : quotient décimal par défaut quand le dividende est décimal (Q3)
+	const dividendIsDecimal = read.operator === '÷' && read.terms[0].decimal !== '';
+	const chosen =
+		(quotient as OperationQuotient | null) ?? (dividendIsDecimal ? 'décimal' : 'entier');
+	const spec: OperationSpec = {
+		operator: read.operator,
+		terms: read.terms,
+		cells,
+		carries: read.operator === '÷' ? false : carries,
+		method,
+		steps,
+		quotient: read.operator === '÷' ? chosen : 'entier'
+	};
+	if (read.operator === '÷') {
+		const line = seen.get('quotient') ?? seen.get('calcul')!;
+		if (dividendIsDecimal && chosen === 'entier') {
+			fail(line, 'quotient: entier impossible avec un dividende décimal (quotient: décimal)');
+		} else if (divisionAddedZeros(spec) === null) {
+			fail(
+				line,
+				`le quotient ne s’arrête pas au millième : division décimale exacte seulement (ex. 785 ÷ 4)`
+			);
+		}
+		if (errors.length > 0) return { type: 'operation', source, spec: null, errors };
+	}
 	return {
 		type: 'operation',
 		source,
-		spec: { operator: read.operator, terms: read.terms, cells, carries, method },
+		spec,
 		errors,
 		...(caseIndex !== undefined && { caseIndex })
 	};

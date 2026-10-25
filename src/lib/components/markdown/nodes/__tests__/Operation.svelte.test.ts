@@ -9,7 +9,11 @@ import { userEvent } from 'vitest/browser';
 import Operation from '../Operation.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
 import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
-import { OPERATION_ARIA_LABEL, OPERATION_UNAVAILABLE } from '$lib/ubumark/types/operation';
+import {
+	OPERATION_ARIA_LABEL,
+	OPERATION_DIVISION_ARIA_LABEL,
+	OPERATION_UNAVAILABLE
+} from '$lib/ubumark/types/operation';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 
 let mains: HTMLElement[] = [];
@@ -99,6 +103,63 @@ describe('Operation — grille', () => {
 		});
 		const grid = screen.container.querySelector('.operation-grille')!;
 		expect(grid.getBoundingClientRect().width).toBeLessThanOrEqual(320);
+	});
+});
+
+// Division en potence (lot 3, PR 3a : docs/wip/operations-posees-progress.md § 12)
+describe('Operation — division', () => {
+	it('à remplir : dividende et diviseur écrits, ni quotient ni reste dans le DOM (n° 1, 4)', async () => {
+		const screen = await render(Operation, {
+			target: mainElement(),
+			props: { node: node('calcul: 9 456 ÷ 7') }
+		});
+		const grid = screen.container.querySelector('[role="group"]')!;
+		expect(grid.getAttribute('aria-label')).toBe(OPERATION_DIVISION_ARIA_LABEL);
+		expect(text(grid)).toBe('94567');
+		expect(screen.container.innerHTML).not.toMatch(/data-|title=/);
+		// 4 cases de quotient, 1 case de reste ; zone libre : 8 rangées de 5 carreaux
+		expect(screen.container.querySelectorAll('.operation-case')).toHaveLength(5);
+		expect(screen.container.querySelectorAll('.operation-zone')).toHaveLength(8 * 5);
+		// Potence : le trait vertical sur toute la hauteur (1 + 8 + 1 rangées)
+		expect(screen.container.querySelectorAll('.operation-potence')).toHaveLength(10);
+	});
+
+	it('résolue : quotient, soustractions et restes écrits, rangée par rangée (n° 2)', async () => {
+		const screen = await render(Operation, {
+			target: mainElement(),
+			props: { node: node('calcul: 9456 ÷ 7', 'cases: aucune') }
+		});
+		expect(text(screen.container)).toBe('94567−7135024−2135−356');
+		// Trait sous chaque produit soustrait : 1 + 2 + 2 carreaux
+		expect(screen.container.querySelectorAll('.operation-trait')).toHaveLength(5);
+	});
+
+	it('quotient décimal : zéros ajoutés plus clairs, virgules du dividende et du quotient (n° 7, Q5)', async () => {
+		const screen = await render(Operation, {
+			target: mainElement(),
+			props: { node: node('calcul: 785 ÷ 4', 'quotient: décimal', 'cases: aucune') }
+		});
+		expect(screen.container.querySelectorAll('.operation-ajoute')).toHaveLength(2);
+		expect(screen.container.querySelectorAll('.operation-virgule')).toHaveLength(2);
+	});
+
+	it('téléphone : la potence défile dans son cadre (n° 14)', async () => {
+		const main = mainElement();
+		main.style.width = '320px';
+		const screen = await render(Operation, {
+			target: main,
+			props: { node: node('calcul: 98765,4 ÷ 2', 'cases: aucune') }
+		});
+		const frame = screen.container.querySelector('.operation-defile')!;
+		expect(frame.getBoundingClientRect().width).toBeLessThanOrEqual(320);
+	});
+
+	it('bloc en erreur : messages pour le prof', async () => {
+		const prof = await render(Operation, {
+			target: mainElement(),
+			props: { node: node('calcul: 12 ÷ 0'), showErrors: true }
+		});
+		expect(prof.container.textContent).toContain('division par 0');
 	});
 });
 

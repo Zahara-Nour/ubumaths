@@ -4,7 +4,9 @@
 
 	Opération posée en colonnes (addition, soustraction, multiplication ;
 	phase 0 : `docs/wip/operations-posees-progress.md`). Dessinée depuis
-	`buildOperationScene`, la même scène que le PDF.
+	`buildOperationScene`, la même scène que le PDF. Division (lot 3) :
+	potence dessinée depuis `buildDivisionScene` ; affichage seulement en
+	PR 3a (sa saisie arrive en PR 3b).
 
 	- Grille HTML (pas SVG) : les cases de saisie s'y logent.
 	- Carreaux de cahier, une seule couleur d'accent (les cases à remplir) ;
@@ -29,10 +31,16 @@
 	import { untrack } from 'svelte';
 	import {
 		OPERATION_ARIA_LABEL,
+		OPERATION_DIVISION_ARIA_LABEL,
 		OPERATION_UNAVAILABLE,
 		type OperationNode
 	} from '$lib/ubumark/types/operation';
 	import { buildOperationScene, type OperationMark } from '$lib/ubumark/utils/operation-scene';
+	import {
+		buildDivisionScene,
+		type DivisionCell,
+		type DivisionScene
+	} from '$lib/ubumark/utils/operation-division-scene';
 	import {
 		commaFromAnswer,
 		digitsFromAnswer,
@@ -96,7 +104,11 @@
 	const authoring = readAuthoringErrors();
 	let errorsVisible = $derived(showErrors ?? authoring());
 
-	let scene = $derived(node.spec === null ? null : buildOperationScene(node.spec));
+	let division = $derived(node.spec?.operator === '÷');
+	let scene = $derived(node.spec === null || division ? null : buildOperationScene(node.spec));
+	let divisionScene = $derived(
+		node.spec !== null && division ? buildDivisionScene(node.spec) : null
+	);
 
 	/** Opération résolue, montrée à côté d'une réponse fausse */
 	let solvedNode = $derived<OperationNode | null>(
@@ -139,6 +151,22 @@
 	let compensation = $derived(node.spec?.operator === '-' && node.spec.method === 'compensation');
 
 	let resultRow = $derived(partialRow(scene?.partials.length ?? 0));
+
+	/** Division : colonnes de la partie droite (diviseur, quotient) */
+	function rightColumns(s: DivisionScene): number {
+		return Math.max(s.divisor.length, s.quotient.length);
+	}
+
+	/** Division : rangées de la partie gauche, au moins deux (diviseur, quotient à droite) */
+	function divisionRowCount(s: DivisionScene): number {
+		return Math.max(2, 1 + s.rows.length + s.zone + (s.remainder === null ? 0 : 1));
+	}
+
+	/** Division : colonnes écrites d'une ligne d'étape (premier, dernier chiffre) */
+	function writtenSpan(cells: readonly DivisionCell[]): [number, number] {
+		const written = cells.flatMap((c, i) => (c.digit === '' ? [] : [i]));
+		return [written[0] ?? 0, written[written.length - 1] ?? 0];
+	}
 
 	/** Texte visible d'une petite écriture : jamais l'attendu d'une case */
 	function markText(mark: OperationMark): string {
@@ -329,7 +357,84 @@
 	/>
 {/snippet}
 
-{#if scene === null || node.errors.length > 0}
+{#snippet divisionDigit(cell: DivisionCell)}
+	{#if cell.blank}
+		<span class="operation-case"></span>
+	{:else}
+		<span class:operation-ajoute={cell.added}>{cell.digit}</span>
+	{/if}
+	{#if cell.comma && !cell.blank}<span class="operation-virgule">,</span>{/if}
+{/snippet}
+
+<!-- Division : potence à la française ; à remplir, aucune valeur attendue dans le DOM -->
+{#snippet potence(s: DivisionScene)}
+	{@const right = rightColumns(s)}
+	{@const zoneStart = 1 + s.rows.length}
+	{@const remainderRow = zoneStart + s.zone}
+	<div class="operation-defile">
+		<div
+			class="operation-grille"
+			role="group"
+			aria-label={OPERATION_DIVISION_ARIA_LABEL}
+			style:--operation-colonnes={s.columns + 1 + right}
+		>
+			{#each Array.from({ length: divisionRowCount(s) }, (_, r) => r) as r (r)}
+				<!-- Partie gauche : colonne des signes, puis le dividende ou une étape -->
+				{#if r === 0}
+					<span class="operation-carreau"></span>
+					{#each s.dividend as cell, c (c)}
+						<span class="operation-carreau">{@render divisionDigit(cell)}</span>
+					{/each}
+				{:else if r < zoneStart}
+					{@const row = s.rows[r - 1]}
+					{@const [first, last] = writtenSpan(row.cells)}
+					<span class="operation-carreau operation-signe"
+						>{row.subtract && first === 0 ? '−' : ''}</span
+					>
+					{#each row.cells as cell, c (c)}
+						<span
+							class="operation-carreau"
+							class:operation-signe={row.subtract && c === first - 1}
+							class:operation-trait={row.subtract && c >= first && c <= last}
+						>
+							{#if row.subtract && c === first - 1}−{:else}{cell.digit}{/if}
+						</span>
+					{/each}
+				{:else if r < remainderRow}
+					{#each Array.from({ length: s.columns + 1 }, (_, c) => c) as c (c)}
+						<span class="operation-carreau operation-zone"></span>
+					{/each}
+				{:else if r === remainderRow && s.remainder}
+					<span class="operation-carreau"></span>
+					{#each s.remainder as cell, c (c)}
+						<span class="operation-carreau">{@render divisionDigit(cell)}</span>
+					{/each}
+				{:else}
+					{#each Array.from({ length: s.columns + 1 }, (_, c) => c) as c (c)}
+						<span class="operation-carreau"></span>
+					{/each}
+				{/if}
+
+				<!-- Partie droite : le diviseur, le trait, le quotient ; trait vertical sur toute la hauteur -->
+				{#each Array.from({ length: right }, (_, c) => c) as c (c)}
+					<span
+						class="operation-carreau"
+						class:operation-potence={c === 0}
+						class:operation-sous-diviseur={r === 0}
+					>
+						{#if r === 0 && c < s.divisor.length}
+							{s.divisor[c]}
+						{:else if r === 1 && c < s.quotient.length}
+							{@render divisionDigit(s.quotient[c])}
+						{/if}
+					</span>
+				{/each}
+			{/each}
+		</div>
+	</div>
+{/snippet}
+
+{#if node.spec === null || node.errors.length > 0}
 	{#if errorsVisible}
 		<div
 			class="operation-erreur rounded-md border border-destructive p-3 text-sm text-foreground {className}"
@@ -348,7 +453,11 @@
 			{OPERATION_UNAVAILABLE}
 		</div>
 	{/if}
-{:else}
+{:else if divisionScene}
+	<div class="operation-bloc my-2 flex flex-wrap items-start justify-center gap-6 {className}">
+		{@render potence(divisionScene)}
+	</div>
+{:else if scene}
 	<div
 		class="operation-bloc my-2 flex flex-wrap items-start justify-center gap-6 {className}"
 		data-operation-case={interactive ? node.caseIndex : undefined}
@@ -554,6 +663,20 @@
 
 	.operation-dessus {
 		align-items: flex-end;
+	}
+
+	/* Division : le trait vertical de la potence, le trait sous le diviseur */
+	.operation-potence {
+		border-left: 2px solid var(--color-foreground);
+	}
+
+	.operation-sous-diviseur {
+		border-bottom: 2px solid var(--color-foreground);
+	}
+
+	/* Zéros ajoutés au dividende pour continuer la division (Q5) */
+	.operation-ajoute {
+		color: var(--color-muted-foreground);
 	}
 
 	.operation-petit,

@@ -30,6 +30,9 @@
  *   partiels ; résolue, les retenues de l'addition seules quand il y a des
  *   produits partiels (Q5).
  *
+ * - **Division** (lot 3) : sa propre scène, en potence
+ *   (`operation-division-scene.ts`) ; ici, refusée.
+ *
  * Décimaux de longueurs différentes : carreaux vides, jamais de zéro ajouté
  * (décision 10) ; un carreau vide du haut compte pour 0 dans le calcul.
  *
@@ -38,11 +41,14 @@
  * @module ubumark/utils/operation-scene
  */
 
-import type { OperationSpec, OperationTerm } from '../types/operation';
+import type { OperationOperator, OperationSpec, OperationTerm } from '../types/operation';
 
 // ============================================================================
 // TYPES
 // ============================================================================
+
+/** Opérations posées en colonnes (la division est en potence) */
+export type ColumnOperator = Exclude<OperationOperator, '÷'>;
 
 /** Petite écriture : retenue, nouvelle valeur (cassage) */
 export interface OperationMark {
@@ -75,7 +81,7 @@ export interface OperationResultCell {
 }
 
 export interface OperationScene {
-	operator: OperationSpec['operator'];
+	operator: ColumnOperator;
 	/** Colonnes de chiffres */
 	columns: number;
 	/** Colonnes après la virgule du résultat (0 : nombres entiers) */
@@ -97,6 +103,15 @@ export interface OperationScene {
 // ============================================================================
 // CALCUL
 // ============================================================================
+
+/** La division a sa scène et son résultat (`operation-division-scene.ts`) */
+function assertNotDivision(
+	spec: OperationSpec
+): asserts spec is OperationSpec & { operator: ColumnOperator } {
+	if (spec.operator === '÷') {
+		throw new Error('Division posée : buildDivisionScene / divisionResult');
+	}
+}
 
 /** Décimales du résultat : celles du plus long terme ; multiplication : celles des facteurs réunies */
 function decimalsOf(spec: OperationSpec): number {
@@ -127,8 +142,9 @@ function resultDigits(spec: OperationSpec): string {
 	return value.toString().padStart(decimals + 1, '0');
 }
 
-/** Le résultat en écriture française : `82`, `291,55`, `4,0` */
+/** Le résultat en écriture française : `82`, `291,55`, `4,0` (division : `divisionResult`) */
 export function operationResult(spec: OperationSpec): string {
+	assertNotDivision(spec);
 	const digits = resultDigits(spec);
 	const decimals = decimalsOf(spec);
 	if (decimals === 0) return digits;
@@ -277,6 +293,7 @@ function buildMultiplicationScene(spec: OperationSpec): OperationScene {
  * une soustraction a deux termes, le premier le plus grand.
  */
 export function buildOperationScene(spec: OperationSpec): OperationScene {
+	assertNotDivision(spec);
 	if (spec.operator === '×') return buildMultiplicationScene(spec);
 	const decimals = decimalsOf(spec);
 	const toFill = spec.cells === 'résultat';
