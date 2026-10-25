@@ -49,6 +49,7 @@ export { GRADE_CODES, GRADES, type GradeCode } from '$lib/types/grades';
 import type { RenderedStep, SchoolLevel } from '$lib/mathAST/common/step-renderer-base';
 import type { CapitalPairs } from '$lib/mathAST/parser/types';
 import type { SuperfluRuleId } from '$lib/mathAST/superflu/rules';
+import type { ConstructionCheck } from '$lib/ubumark/types/construction';
 
 /**
  * French educational grade levels
@@ -778,6 +779,15 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 * nombre) : réponse calculée par le bloc, juge ordinaire, saisie dans la grille.
 	 */
 	operation?: true;
+	/**
+	 * Case « figure » portée par un bloc ```construction (`type: 'graphical'`) :
+	 * texte du bloc (variables résolues, sans `case:`) et vérifications. Le juge
+	 * lit les positions des points dans ce texte (questions/construction).
+	 */
+	construction?: {
+		source: string;
+		checks: ConstructionCheck[];
+	};
 
 	/**
 	 * Name of the `<<expr:NAME>>` expression this blank originates from, when

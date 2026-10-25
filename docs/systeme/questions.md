@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc ```operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -68,6 +68,7 @@ le SRS ([srs.md](srs.md)).
 | `src/lib/questions/constraint-validators.ts`                     | Ancien jeu de contrôles cosmétiques sur le LaTeX brut. **En service : `checkUnit` et `checkReducedFractions` seulement** (les anciens contrôles, morts, ont été retirés ; le jugement passe par `cosmetic-transforms.ts`).                                                                                                                                                                                                 |
 | `src/lib/questions/feedback.ts`, `constraint-constants.ts`       | Messages français des contraintes (`CONSTRAINT_FEEDBACK`), libellés et modes proposés à l'éditeur (`CONSTRAINT_IDS`, `CONSTRAINT_LABELS`). Ceux des règles de superflu sont tirés de leur fiche (`mathAST/superflu/rules.ts`).                                                                                                                                                                                             |
 | Options de case                                                  | `rounding.ts` (arrondi), `rules-suffice.ts` (`rulesDecide`), `angle-modulo.ts`, `answer-variable-prefix.ts`, `answer-degree-suffix.ts`, `answer-assumptions.ts` (ADR 0012), `generic-functions.ts` (`templateGenericFunctions`), `clean-coefficients.ts` (`cleanCoefficientsAst`), `capital-pairs.ts` (sens de `AB`), `formula-reading.ts` (`readingOf`), `figure-name-check.ts` (garde auteur).                           |
+| `construction/`                                                  | Case « figure » (bloc ```construction) : `answer.ts` (`parseConstructionAnswer`, réponse bornée), `judge.ts` (`judgeConstruction`, positions, tout-ou-rien), registre des positions `positions.ts` (`constructionPositions`) et son inscription `positions-setup.ts` (geometry-core).                                                                                                                                      |
 | Sécurité de la réponse                                           | `answer-complexity.ts` (`isAnswerTooComplex`, garde Q58), `student-answer-safety.ts` (réponse rendue chez le prof).                                                                                                                                                                                                                                                                                                        |
 | Correction                                                       | `expected-result.ts` (`buildExpectedResult`, `fillMarkdown`), `expected-result-markdown.ts`, `correction-card-verdict.ts`, `correction-detail.ts` (`splitCorrectionDetail`, `detailedCorrection`, `correctionForPrint` pour les fiches PDF, ADR 0017), `correction-placeholders.ts`, `grade-level-to-school-level.ts` (`gradeLevelToSchoolLevel`).                                                                         |
 | QCM                                                              | `choices.ts` (positions affichées ↔ indices d'origine), `single-answer.ts` (`keepFirstCorrectChoice`).                                                                                                                                                                                                                                                                                                                     |
@@ -218,15 +219,21 @@ Le **type** n'est pas déclaré : `getQuestionType` le déduit — `options.cour
    `?` dans une formule → `\placeholder[N]{}` ; `[_]` dans le texte → `{{blank:N}}` ;
    `<<expr:NAME>>` réserve les cases de `answerFormats[NAME]`. `NAME` doit commencer par
    `expression` (sinon le marqueur passe en silence au `?` ordinaire) ; le lien case →
-   `answerFormats` est porté par `InstanceBlank.expressionName`. Un bloc ```operation à remplir
-   (au premier niveau de l'énoncé ; en liste ou cité → échec de génération) compte pour **une**
-   case, son numéro écrit dans le bloc (`case: N`) ; une division euclidienne pour **deux** (quotient
-   N, reste N + 1, seul N écrit ; `operationBlanks` les liste toutes deux). Sa réponse attendue vient du calcul du bloc
-   (`operationExpectedAnswer` ; division : `divisionExpectedAnswers`, forme la plus simple), jamais du modèle : `blanks[]` peut l'omettre
-   (case insérée à son rang ; un modèle sans autre case n'a pas besoin de `blanks`), ou lui donner
-   une entrée de réglages avec `expectedAnswer` vide — une réponse écrite est refusée. Un bloc en
-   erreur fait échouer la génération (message situé). Une ligne `case:` écrite par l'auteur aussi. Dans un QCM ou une carte de cours, le bloc ne porte aucune case. La case est `type: 'math'`,
-   `operation: true`, jugée comme une case ordinaire.
+   `answerFormats` est porté par `InstanceBlank.expressionName`. Un bloc ``operation à remplir
+(au premier niveau de l'énoncé ; en liste ou cité → échec de génération) compte pour **une**
+case, son numéro écrit dans le bloc (`case: N`) ; une division euclidienne pour **deux** (quotient
+N, reste N + 1, seul N écrit ; `operationBlanks` les liste toutes deux). Sa réponse attendue vient du calcul du bloc
+(`operationExpectedAnswer` ; division : `divisionExpectedAnswers`, forme la plus simple), jamais du modèle : `blanks[]` peut l'omettre
+(case insérée à son rang ; un modèle sans autre case n'a pas besoin de `blanks`), ou lui donner
+une entrée de réglages avec `expectedAnswer` vide — une réponse écrite est refusée. Un bloc en
+erreur fait échouer la génération (message situé). Une ligne `case:` écrite par l'auteur aussi. Dans un QCM ou une carte de cours, le bloc ne porte aucune case. La case est `type: 'math'`,
+`operation: true`, jugée comme une case ordinaire. Un bloc ``construction (au premier niveau,
+   sinon échec) compte aussi pour **une** case, `case: N` posé en tête du bloc ; son contenu est mis à
+   l'abri (un `?` ou un `[_]` du bloc ne crée pas de case). `blanks[]` peut l'omettre ; une réponse
+   écrite est refusée ; un bloc en erreur (vérification manquante, fenêtre…) fait échouer la
+   génération, comme un point de `verifier:` que le script ne nomme pas (`Z = …`, lecture légère
+   `namesAssignedIn`) ou `options.orderIndependent` (l'appariement ne sait pas lire une figure). La case est `type: 'graphical'`, `construction: { source, checks }` (texte du bloc,
+   variables résolues), réponse attendue symbolique `droite(A;B)`.
 6. Chaque case reçoit ses réglages fusionnés : **case ▸ `blankDefaults`** pour `precision`,
    `unit`, `answerKind`, `rulesSuffice`, `acceptDecimal`… ; `requiredForm` : case ▸
    `blankDefaults` ▸ `requiredForm` de la variation ; `validationRules` : case ▸ variation.
@@ -272,6 +279,7 @@ Natures de réponse :
 | Nature                      | Déclaration                                 | Jugée par                                                                                                                                         |
 | --------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Expression / nombre         | case ordinaire                              | équivalence + forme (§ 5)                                                                                                                         |
+| Figure (tracé)              | bloc ```construction (`verifier:`)          | `construction/judge.ts` (ci-dessous) ; réponse `droite(x1;y1;x2;y2)`, objets séparés par `\|`                                                     |
 | Opération posée             | bloc ```operation (`cases: résultat`)       | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste) |
 | Texte                       | `[_]` hors formule                          | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                 |
 | Grandeur                    | `unit: { expected, required? }`             | `validateQuantityAnswer` (conversion, unité imposée)                                                                                              |
@@ -302,6 +310,18 @@ Statuts (`ValidationStatus`) : `correct` (1), `unoptimal_form` (½), `bad_form` 
 0. Vide → `empty`. Nature `intervalles` → sa chaîne. Puis **garde de complexité**
    (`isAnswerTooComplex`) : une écriture démesurée est `incorrect` **avant** toute lecture.
    Puis `equation`, `vecteur`, `matrice`, `primitive` / `solution-ed` : chacune sa chaîne.
+   Case « figure » (`blank.construction`), juste après le vide : `judgeConstruction`. Chaque
+   vérification `droite_par P ; Q` prend **sa** droite parmi celles tracées (une droite qui passe par
+   P et Q, quels que soient les deux points qui l'ont tracée) ; une droite qu'aucune ne prend est
+   « de trop » (faux) ; message de la première vérification ratée (« Ta droite passe par A et C, pas
+   par B. », « Ta droite ne passe pas par le point B. »…). Réponse illisible ou démesurée
+   (`CONSTRUCTION_ANSWER_LIMITS`) → faux sans message. Les positions des points viennent d'un
+   **registre** (`constructionPositions`), comme le PDF des figures : le juge reste léger (sans lui,
+   geometry-core ajoutait ~430 Ko minifiés à toutes les pages qui génèrent une question). Il est
+   inscrit par `construction/positions-setup.ts`, importé par `test-spec-runner.ts`,
+   `server/grading-budget.ts` et `server/corrected-detail.ts` (garde :
+   `server/__tests__/construction-correction-serveur.test.ts`) ; l'écran de l'élève l'importera
+   (PR 2). Sans inscription : exception, que `validateAnswer` rend dans `message`.
 1. **`validationRules`** (précondition) : `divisor`, `multiple`, `range`, `equation_root`,
    `equivalent`, `predicate` (`isPrime`, `isEven`…), `custom`. Une règle violée → faux, avec son
    message français. `rulesSuffice` : les règles **décident seules**, `expectedAnswer` n'est plus
@@ -514,6 +534,12 @@ clavier branché dans `FillBlanksInput.svelte` ; le rendu dans `expected-result.
 publics dans `public-question.ts` ; l'éditeur (`QuestionTemplateForm.svelte`,
 `SharedFieldsEditor.svelte`). Modèles : les lots `reponse-*` archivés (intervalles, équation,
 vecteur) et `case-primitive-ed-progress.md`.
+
+**Nouvelle vérification de figure** (bloc ```construction) : un membre de `ConstructionCheck` et
+de `CONSTRUCTION_CHECK_KINDS` (`ubumark/types/construction.ts`), sa lecture dans `readCheck`
+(`construction-parser.ts`), son jugement et son message dans `judgeConstruction`. Un nouvel outil :
+`CONSTRUCTION_TOOLS`, et sa forme dans `parseConstructionAnswer`. La case publique d'une évaluation
+notée (`toPublicQuestion`) ne porte que `type: 'graphical'`, jamais les vérifications.
 
 **Nouvelle règle de superflu** (écriture inutile qu'on signale à l'élève) : ajouter sa fiche
 dans le registre `src/lib/mathAST/superflu/rules.ts` (identifiant, libellé, message, et sa

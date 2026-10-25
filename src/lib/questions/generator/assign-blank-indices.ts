@@ -13,11 +13,14 @@
  * - `<<expr:NAME>>` in math → reserves indices for ? in answerFormats[NAME]
  * - Bloc ```operation à remplir → UNE case, numéro posé dans le bloc (`case: N`) ;
  *   division euclidienne : DEUX cases, N (quotient) et N + 1 (reste), seul N est posé
+ * - Bloc ```construction → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
+ *   son contenu est mis à l'abri : ni `?` ni `[_]` n'y crée de case
  *
  * @module questions/generator/assign-blank-indices
  */
 
 import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 
 /**
@@ -51,6 +54,81 @@ export interface AssignBlankIndicesResult {
 	operationBlanks?: Record<number, string>;
 	/** Blocs ```operation à remplir mal placés (liste, citation) : messages pour l'auteur */
 	operationErrors?: string[];
+	/**
+	 * Case → texte du bloc ```construction qui la porte (sans `case:`), pour que
+	 * le générateur lise ses vérifications. Absent sans tel bloc.
+	 */
+	constructionBlanks?: Record<number, string>;
+	/** Blocs ```construction mal placés (liste, citation) : messages pour l'auteur */
+	constructionErrors?: string[];
+}
+
+/** Fence d'ouverture d'un bloc ```construction, au premier niveau seulement */
+const CONSTRUCTION_FENCE_REGEX = /^```construction\s*$/;
+
+/** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
+const NESTED_CONSTRUCTION_FENCE_REGEX = /^(?:\s+|\s*>\s*)```construction\s*$/;
+
+/** Marque d'un bloc ```construction mis à l'abri : début, rang du bloc, fin */
+const CONSTRUCTION_MARK_START = '\u0000construction:';
+const CONSTRUCTION_MARK_END = '\u0000';
+
+const CONSTRUCTION_NESTED_MESSAGE =
+	'Un bloc construction doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)';
+
+interface ConstructionBlock {
+	/** Lignes du bloc entre les clôtures */
+	body: string[];
+	/** false : clôture ``` absente (le parseur dira « bloc non fermé ») */
+	closed: boolean;
+}
+
+/**
+ * Met à l'abri les blocs ```construction : chacun devient une marque d'une
+ * ligne, numérotée ensuite avec les autres cases puis rendue avec `case: N`.
+ * Étendue du bloc : celle du parseur (`findFigureBlocks`, bloc non fermé compris).
+ */
+function markConstructionBlocks(statement: string): {
+	statement: string;
+	blocks: ConstructionBlock[];
+	errors: string[];
+} {
+	const lines = statement.split('\n');
+	const ranges = findFigureBlocks(lines).filter((r) =>
+		CONSTRUCTION_FENCE_REGEX.test(lines[r.startIndex])
+	);
+	const out: string[] = [];
+	const blocks: ConstructionBlock[] = [];
+	const errors: string[] = [];
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i];
+		if (NESTED_CONSTRUCTION_FENCE_REGEX.test(line)) {
+			errors.push(CONSTRUCTION_NESTED_MESSAGE);
+		}
+		const range = ranges.find((r) => r.startIndex === i);
+		if (!range) {
+			out.push(line);
+			continue;
+		}
+		const closed = range.closed !== false;
+		out.push(`${CONSTRUCTION_MARK_START}${blocks.length}${CONSTRUCTION_MARK_END}`);
+		blocks.push({
+			body: lines.slice(i + 1, closed ? range.endIndex : range.endIndex + 1),
+			closed
+		});
+		i = range.endIndex;
+	}
+	return { statement: out.join('\n'), blocks, errors };
+}
+
+/** Le bloc rendu à son texte, sa case posée en première ligne */
+function restoreConstructionBlock(block: ConstructionBlock, caseIndex: number): string {
+	return [
+		'```construction',
+		`case: ${caseIndex}`,
+		...block.body,
+		...(block.closed ? ['```'] : [])
+	].join('\n');
 }
 
 /** Fence d'ouverture d'un bloc ```operation, au premier niveau seulement */
@@ -149,7 +227,9 @@ export function assignBlankIndices(
 	const modifiedAnswerFormats = answerFormats ? { ...answerFormats } : undefined;
 	const expressionNameByIndex: Record<number, string> = {};
 	const operationBlanks: Record<number, string> = {};
-	const operations = markOperationBlocks(rawStatement);
+	const constructions = markConstructionBlocks(rawStatement);
+	const constructionBlanks: Record<number, string> = {};
+	const operations = markOperationBlocks(constructions.statement);
 	const statement = operations.statement;
 	let operationCount = 0;
 
@@ -224,7 +304,16 @@ export function assignBlankIndices(
 			let i = 0;
 			const text = segment.content;
 			while (i < text.length) {
-				if (text.startsWith(OPERATION_CASE_MARK, i)) {
+				if (text.startsWith(CONSTRUCTION_MARK_START, i)) {
+					const rankStart = i + CONSTRUCTION_MARK_START.length;
+					const rankEnd = text.indexOf(CONSTRUCTION_MARK_END, rankStart);
+					const block = constructions.blocks[Number(text.slice(rankStart, rankEnd))];
+					newText += restoreConstructionBlock(block, counter);
+					constructionBlanks[counter] = block.body.join('\n');
+					counter++;
+					blankTypes.push('math');
+					i = rankEnd + CONSTRUCTION_MARK_END.length;
+				} else if (text.startsWith(OPERATION_CASE_MARK, i)) {
 					newText += `case: ${counter}`;
 					const source = operations.sources[operationCount++];
 					for (let k = caseCountOf(source); k > 0; k--) {
@@ -255,7 +344,9 @@ export function assignBlankIndices(
 		blankTypes,
 		...(hasExpressionMapping && { expressionNameByIndex }),
 		...(operationCount > 0 && { operationBlanks }),
-		...(operations.errors.length > 0 && { operationErrors: operations.errors })
+		...(operations.errors.length > 0 && { operationErrors: operations.errors }),
+		...(constructions.blocks.length > 0 && { constructionBlanks }),
+		...(constructions.errors.length > 0 && { constructionErrors: constructions.errors })
 	};
 }
 

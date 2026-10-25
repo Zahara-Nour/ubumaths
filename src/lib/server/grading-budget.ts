@@ -17,6 +17,8 @@
  */
 
 import { gradeQuestion, type QuestionVerdict, type SubmittedAnswer } from '$lib/questions/grading';
+// Case « figure » : le juge lit les positions des points dans ce registre (cf. questions/construction/positions)
+import '$lib/questions/construction/positions-setup';
 import type { QuestionInstance } from '$lib/questions/types';
 
 // Types

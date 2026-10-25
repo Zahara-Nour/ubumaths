@@ -33,6 +33,7 @@
  */
 
 import { bodyOpensParagraph } from './block-closure';
+import { isConstructionBlockStart, readConstructionHeader } from './construction-parser';
 import type {
 	FigureBlockRange,
 	FigureHeader,
@@ -52,7 +53,8 @@ import { compile } from '$lib/mathAST/eval/compile';
 // CONSTANTES
 // ============================================================================
 
-const FIGURE_BLOCK_START_REGEX = /^```figure\s*$/;
+/** ```figure, et ```construction (une figure de départ à compléter, cf. construction-parser.ts) */
+const FIGURE_BLOCK_START_REGEX = /^```(?:figure|construction)\s*$/;
 const BLOCK_END_REGEX = /^```\s*$/;
 const SEPARATOR_REGEX = /^\s*---\s*$/;
 
@@ -379,12 +381,29 @@ export function parseFigureContent(source: string, options: FigureParseOptions =
 }
 
 /**
+ * Bloc ```construction : ses lignes propres lues à part, le reste analysé
+ * comme une figure ; le texte du bloc reste celui écrit (aller-retour).
+ */
+function parseConstructionBody(source: string): FigureNode {
+	const { figureSource, spec, errors } = readConstructionHeader(source);
+	const node = parseFigureContent(figureSource);
+	return {
+		...node,
+		source,
+		errors: [...errors, ...node.errors].sort((a, b) => (a.line ?? 0) - (b.line ?? 0)),
+		construction: spec
+	};
+}
+
+/**
  * Analyser un bloc repéré dans les lignes d'un document (clôtures comprises).
  */
 export function parseFigure(lines: string[], startIndex: number, endIndex: number): FigureNode {
 	const closed = endIndex > startIndex && BLOCK_END_REGEX.test(lines[endIndex]);
 	const body = lines.slice(startIndex + 1, closed ? endIndex : endIndex + 1);
-	const node = parseFigureContent(body.join('\n'));
+	const node = isConstructionBlockStart(lines[startIndex])
+		? parseConstructionBody(body.join('\n'))
+		: parseFigureContent(body.join('\n'));
 	if (closed) return node;
 	return {
 		...node,
