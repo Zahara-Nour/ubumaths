@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1753._
+_Mis à jour le 2026-10-25, après #1753 (suite décidée le même jour)._
 
 - **État** : **groupe A (texte seul) COMPLET** — A1 (#1712), A2 (#1720), A4 (#1728), A5 (#1736), A3 (#1744), A6 (#1753) livrés, migrations jouées. A6 : 9 brouillons sur le nœud de leur point, 1 tag chacun (`db:migrate` joué et vérifié en prod le 2026-10-25, question d'accès tranchée : personne). Page à cocher A6 : https://claude.ai/artifact/Y9pL4cNshyjycC2wtbdtWG (collection `verdicts`) — 8/9 OK ; « Écrire un nombre en lettres » (`92c8e499`) refait (leurres d'orthographe, de forme, de numération), mis à jour en prod, à relire.
-- **Prochaine action** : choisir avec David la suite du chantier (groupe B : outils existants — droite graduée, `figure`, `tableau-croise`, images fixes ; § 2) ; l'ordre d'ensemble est au § 4 bis.
+- **Prochaine action** : phase 0 du lot H (horloge CP-046, CP-047 + addition posée CP-016), proposée le 2026-10-25, **en attente de validation** ; ensuite B1 tableaux → B2 reconnaître sur une figure → B3 images fixes, puis case « figure » (§ 4 nonies).
 - **En attente de David** : relecture de `92c8e499` (page A6) ; relecture des 6 brouillons A3 (https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71, aucun verdict encore) ; publication des brouillons A1 à A6 en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; **le bon choix d'un QCM n'accepte qu'UN `{{if:…}}`, pas une chaîne imbriquée** ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau (dossier d'un seul fichier pour n'en toucher qu'un) ; leurres d'un QCM de mots : chacun vise une erreur (orthographe, forme, numération) ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; la base refuse un tag sur un modèle sans nœud.
 - **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1753).
@@ -145,6 +145,15 @@ David suit mes quatre recommandations (« je suis tes recos »).
 - CP-041 « Les mots de la monnaie » (QCM : plus / moins cher, pièce ou billet, rendre la monnaie, €) ; pas de calcul (CP-043, 045 → outil monnaie).
 - CP-048 « Quelle heure pour… ? » (QCM, sans horloge) : heures **sur 12 h avec le moment** (« 8 heures du matin », « midi », « 2 heures de l'après-midi », « 8 heures du soir »).
 - CP-004 (renvoyé de A2), ≤ 50 : « Écrire un nombre en lettres » (QCM ; leurres : chiffres inversés, voisins) et « Lire un nombre écrit en lettres » (case) ; **orthographe rectifiée** (« vingt-et-un », traits d'union partout).
+
+## 4 nonies. Suite après le groupe A (David, 2026-10-25)
+
+David suit mes recommandations (« je te suis »).
+
+1. D'abord, ses relectures en attente (A3, `92c8e499`) puis la publication A1-A6 en un lot : elles orientent les lots suivants.
+2. **Lot H** (une PR) : modèles d'horloge CP-046 (lire) et CP-047 (positionner, en QCM d'horloges) + **CP-016** (addition posée, le lot 1 d'`operations-posees` est sur `main`). Les deux blocs ne sont pas en prod : brouillons jusqu'au `deploy:prod`.
+3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 008, 058, 034 restent pour la case « figure ».
+4. Puis case « figure » (chantier à part), collection, monnaie — inchangé (§ 4 bis).
 
 ## 5. Méthode (pour le futur skill)
 
