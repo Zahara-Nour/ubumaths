@@ -1125,3 +1125,36 @@ CI verte du premier coup sur le commit des correctifs de revue, mergée. Vérifi
 ## 94. M2 mergé (#1749, 2026-10-25)
 
 CI verte sur le commit du correctif de revue, mergée. Vérification manuelle notée (M2). Les trois questions de 5f-5 sont closes.
+
+## 95. Lot 6 (valeurs approchées, Q6) : phase 0 (2026-10-25, à valider)
+
+Inventaire refait sur `origin/main` (agent Sonnet en lecture seule, points clés relus à la main) : 118 appels à `evaluateNodeToApproximatedNumber` hors tests.
+
+- **Déjà sur `computeNumericValue`** : solveurs polynomiaux, `pedagogical-solve`, `constant-sign`, `absolute-value`, `calculus-reading`.
+- **A — fini ou `null`, identiques à `computeNumericValue`** : 16 fonctions locales (`tryNumeric`, `numericOf`, `numeric`, `numericValue` ×2, `pointToNumber`, `tryEvaluateNumeric` ×3, `constantValue`, `tryApproximate`, `approximate`, `evaluateAtValue`, `evaluateAtPoint` d'`algebraic.ts`, `periodicValueOf`, `periodToNumeric`) + 3 qui rendent `undefined`/NaN à la place de `null` (`symmetry.ts:188`, `boundary-limits.ts:392`, `substitution.ts:553`) + ~40 blocs `try/catch + isFinite` inline dont le test aval rend le même résultat.
+- **B — laissent passer ±∞ (et souvent NaN)** : ~20 sites ; seuls `inequality/index.ts:251` et `reciprocal/image.ts:55` veulent ±∞ et rien d'autre.
+- **L — l'exception remonte** : ~27 sites (ubumark, Taylor, REPL, `solve.ts:1133/1817`, `periodicity`, `algebra`, `monotonicity`…). **X** : `outOfDomainNear` (message lu), `differentiability.ts:914` (±∞/NaN = branches), `evaluate.ts:1580` (`precision`), `transcendental.ts` (repli 0).
+- **Évaluateurs maison** : `evaluateNumeric` (`common/numeric.ts:249`, 9 appels dans `limits/sign-tracking.ts` et `limits/indeterminate.ts`) et `evaluateAtPoint` (`pedagogical-limits/helpers.ts:92`, 32 appels) ignorent `power`/`isInverse` (`sin²`, `cos⁻¹`) **et π, e** (→ `null`). `compile` gère déjà les trois.
+- Écarts mesurés à la lecture entre `evaluateNumeric` et `compile` : pôle `x/0` → signe du numérateur seulement (`1/(−0)` → +∞ là où `compile` rend −∞) ; `(−8)^{1/3}` → `null` (compile : −2) ; `sign`/`sgn` absents de `compile`.
+
+### Comportements proposés
+
+**6a — limites (une PR, revue `code-reviewer` opus).** Test rouge d'abord : `sin²(1)`, `cos⁻¹(0,5)`, `π·x` évalués juste.
+
+- `evaluateNumeric` et `evaluateAtPoint` (limites pédagogiques) deviennent deux minces enveloppes de `compile` (même signature, mêmes conventions : `evaluateNumeric` garde ±∞ et rend `null` pour NaN ; `evaluateAtPoint` rend fini ou `null`, dénominateur < 1e-15 → `null`).
+- `sign`/`sgn` ajoutés à `compile` (le grapheur y gagne, rien n'y perd).
+- **Banc d'écart** avant/après : pendant la suite serveur complète, chaque appel calcule les deux et note les divergences (instrumentation jetable). Attendu : divergences seulement sur `sin²`/`cos⁻¹`/π/e/racines impaires ; toute autre divergence (signe d'un pôle…) est montrée à David avant le merge.
+
+**6b — enveloppes (une PR, revue `code-reviewer` Sonnet).** Sans changer aucun résultat :
+
+- `computeNumericValue` déménage dans `eval/numeric-value.ts` (même nom ; renommages = lot 7), réexport depuis l'ancien chemin le temps du lot.
+- (a) remplace les 16 fonctions A et les blocs A≈ ; les 3 A' gardent leur sentinelle (`?? undefined`, `?? NaN`) ; les raccourcis `sol.approximate ?? …` restent tels quels.
+- (b) `computeNumericValueOrInfinity` (fini, ±∞, ou `null`) remplace `inequality/index.ts:251` et `reciprocal/image.ts:55`.
+- **Laissés tels quels** : les autres B (NaN qui passe = comportement à changer, pas à unifier), tous les L (l'exception sert ou personne ne l'a vue — hors périmètre « sans changer de résultat »), les X, `evaluateAtPoint` d'`extrema.ts` et de `sign/helpers/sampling.ts` (moteur `evaluate` décimal, pas le même), `forbidden-value.numericValue` (déjà `compile`).
+- Preuve : suite serveur complète + banc des 1 008 modèles × 8 tirages (4b) : 0 différence.
+
+### Questions pour David
+
+1. Deux PR (6a limites puis 6b enveloppes) ?
+2. 6a : si le banc montre une divergence de **signe d'un pôle** (`1/(−x)` en 0), on garde l'ancienne règle « signe du numérateur » ou celle de `compile` (signe de −0) ?
+3. Les B qui laissent passer NaN et les L qui lèvent : hors lot 6 (proposé), ou un lot 6c « conventions d'échec » avec test rouge par site ?
