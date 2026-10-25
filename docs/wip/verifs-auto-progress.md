@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-25, lot 3 en PR._
 
 - **État** : lot 3 en PR (branche `test/verifs-auto-3`) — 14 lignes console de plus (5f-4, Q50-Q52, #1620 → #1710) : 48 tests dans `e2e/verifs/atelier-calcul.spec.ts`. Rouges : #1674, et la fin de #1703 (`.dériver x/(x+1)`) et de #1620 (`.dériver x\ln(x)`) — même bug `each_key_duplicate`, chantier à part.
 - **Prochaine action** : merger le lot 3 ; puis les lignes à cartes (#1305 → #1338, clics « Réciproque », « Dériver », et la carte f′ de #1703). La sonde d'abord, les écarts à David.
-- **En attente de David** : `.simplifier` des lignes #1682 et #1625 MIS DE CÔTÉ (chantier tidy / simplify). Run en prod (`VERIFS_URL=https://chiph.re pnpm test:verifs`) après le `deploy:prod` qui livre `data-latex`.
+- **En attente de David** : #1620, `.dériver x^x` → la ligne dit `(ln(x)+1)x^x`, l'Atelier `x^x(ln(x)+1)` : ligne périmée ou bug ? (test rouge en attendant). `.simplifier` des lignes #1682 et #1625 MIS DE CÔTÉ (chantier tidy / simplify). Run en prod (`VERIFS_URL=https://chiph.re pnpm test:verifs`) après le `deploy:prod` qui livre `data-latex`.
 - **Pièges en cours** : ports 5175-5178 souvent pris → `lsof` d'abord (5179 ce lot) ; `each_key_duplicate` casse la page de la sonde pour toutes les lignes suivantes : sonder seule une dérivée de produit/quotient/composée ; formules de « Comment ? » = `<math-span>` → `steps()` les écrit `$latex$` ; une commande seule (`.latex`) : la 1re Entrée COMPLÈTE la commande. Une ligne peut être PÉRIMÉE : test rouge = bug ou ligne périmée, le dire, ne JAMAIS changer l'attendu seul. `verifications-manuelles.md` : repérer une ligne par sa colonne PR, jamais par son numéro.
 - **Worktree / branche** : `../ubumaths-wt-verifs-auto`, `test/verifs-auto-3`.
 
