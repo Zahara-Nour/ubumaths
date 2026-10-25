@@ -92,6 +92,7 @@
 		const shown = letter !== INTERNAL_LETTER ? renameVariableIn(ast, INTERNAL_LETTER, letter) : ast;
 		const latex = forMathlive(toLatex(shown));
 		return {
+			latex,
 			markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }),
 			spoken: convertLatexToSpeakableText(latex)
 		};
@@ -226,7 +227,8 @@
 				{:else}
 					<span class="formule">
 						{#if rendered}
-							<span aria-hidden="true">
+							<!-- `data-latex` : ce que lisent les vérifications automatisées (`e2e/verifs/`) -->
+							<span aria-hidden="true" data-latex={rendered.latex}>
 								<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré par toLatex, voir `rendered` -->
 								{@html rendered.markup}
 							</span>
