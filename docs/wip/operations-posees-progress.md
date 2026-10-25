@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR #1716 ouverte._
+_Mis à jour le 2026-10-25, après #1716._
 
-- **État** : PR 1a #1716 (bloc ```operation d'affichage) ouverte, tests locaux verts ; revue `code-reviewer` faite (1 finding corrigé : chiffres barrés d'avance en cassage à remplir).
-- **Prochaine action** : `gh pr checks 1716`, merger si vert. Puis PR 1b : présenter à David les questions du § 8 avant de coder.
-- **En attente de David** : rien (réponses du § 8 au début de la PR 1b).
+- **État** : PR 1a #1716 MERGÉE (bloc ```operation d'affichage : addition, soustraction, compensation, cassage, décimaux ; écran + PDF). Pas en prod.
+- **Prochaine action** : PR 1b (saisie + juge) — nouveau worktree `git worktree add -b feat/operations-posees-saisie ../ubumaths-wt-operations-posees origin/main`, puis présenter à David les questions du § 8 AVANT de coder.
+- **En attente de David** : vérification #1716 dans `verifications-manuelles.md` ; réponses du § 8 au début de la PR 1b.
 - **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` ; sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write`.
-- **Worktree / branche** : `../ubumaths-wt-operations-posees`, `feat/operations-posees`.
+- **Worktree / branche** : supprimés après #1716.
 
 ---
 
