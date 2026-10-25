@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1706._
+_Mis à jour le 2026-10-25, après #1711._
 
-- **État** : PR 1 à 5, 6a (#1693, `/demo/structure`), 6b (#1695, `/demo/cercle-trigo`), 6c (#1698, `/demo/cartes`), 6d (#1700, `/demo/lexique`), 6e (#1701, `/demo/corriges`) et 6f (#1706, `/demo/geometrie`) mergées, pas en prod. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
-- **Prochaine action** : phase 6 suite, une PR par page : questions, éditeur, diaporama. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main` ; phase 0 de la page à faire valider.
-- **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
-- **En attente de David** : (1) le `z` manuscrit de Chiphre Math ressemble à un `2` (image de `/demo/corriges`) : à regarder ou non, hors chantier ; (2) `curves`, `point-sur` et `sliders/integrale-improper` (aide géométrie) tracent sin ou cos sans `unite_angle("radians")`, donc sans doute en degrés comme `aire-entre` avant #1706 : à corriger ou non.
-- **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : sin/cos en degrés sans `unite_angle("radians")`, le nom d'une variable s'affiche en étiquette (style en ligne ou `etiquette="aucune"`), `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : importer par chemin relatif, pas `$lib` ; port 5176 souvent pris par un autre worktree ; commitlint : lignes du corps ≤ 100 caractères.
-- **Worktree / branche** : aucun (PR 6f nettoyée). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **État** : PR 1 à 5 et 6a à 6g mergées, pas en prod ; 6g = #1711, `/demo/questions`. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
+- **Prochaine action** : PR « sin/cos en radians » de l'aide géométrie (décidée par David le 2026-10-25) : `unite_angle("radians")` dans `curves` (sin, cascade des dérivées, `sin(x) + cos(y) = 1`), `point-sur`, `sliders/integrale-improper` ; mesurer chaque figure au moteur avant / après. `trace` et `lieu` sont justes (θ = `angle_polaire`, même unité). Puis phase 6 suite : éditeur, diaporama.
+- **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** (`calculateNewStability` ignore la note ; stabilité initiale `w[0] + w[1]·(note − 1)` au lieu d'un paramètre par note, à vérifier) ; `z` ≈ `2` → regarder en dernier, image `z`, `2`, `4z`, `z²`, `2z` à montrer d'abord, PR à part dans `tools/chiphre-math/`.
+- **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : degrés par défaut, **courbe() comprise**, le nom d'une variable s'affiche en étiquette (style en ligne ou `etiquette="aucune"`), `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : importer par chemin relatif, pas `$lib` ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; test de page qui lit le lexique : simuler `fetchDictionary` ; commitlint : lignes du corps ≤ 100 caractères.
+- **Worktree / branche** : aucun (PR 6g nettoyée). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
