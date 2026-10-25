@@ -287,3 +287,24 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - Vérifié sans compte sur 5177 (Playwright) : 200, texte dans le HTML du serveur, 10 figures,
   aucune erreur de console, rien qui déborde à 390 px ; curseurs glissés (épicycloïde complète,
   spirale déroulée, flocon à l'étape 4, aire 2,828).
+
+## PR 6g — vitrine `/demo/questions` (phase 0 : David a tranché les deux questions le 2026-10-25)
+
+- Une série de 4 questions **écrites dans la page** (7 × 8, 25 % de 80, ¾ de 12, 2x + 3 = 11),
+  5 onglets : En classe (10 s par question), Entraînement, Flash-cards, Course aux nombres
+  (2 min), Révisions espacées **simulée** (une carte, 4 boutons, intervalles du vrai FSRS sur
+  une carte neuve). Une phrase « qui, quand » par onglet ; lien « Composer sa propre série »
+  vers `/automaths`. `BackLink` vers `/demo`, `noindex`, non reliée avant la phase 7.
+- Bandeau « Connecte-toi… » **masqué** (choix de David) : une ligne « Rien n'est enregistré sur
+  cette page » à la place. Rien n'est envoyé (fin de série = résultat à l'écran seulement).
+- Les boutons « Retour au panier » des formes mènent au vrai panier (`/automaths/panier`).
+- Trouvé en route, pas corrigé : `calculateNewStability` (`src/lib/srs/fsrs.ts`) ignore la note ;
+  après la 1re révision, Difficile, Bien et Facile donnent le même intervalle (22 j dans l'essai).
+  La démo n'affiche que la 1re révision (1, 3, 6, 9 j), qui n'est pas touchée. Signalé à David.
+- `TestInteractive` et `FlashSeries` gagnent `loginNote` (défaut `true`) : la vitrine coupe le
+  bandeau sans se dire connectée. Test du bandeau vu rouge sans `loginNote={false}`.
+- Tests : la page (titre, 5 onglets, chaque forme montée, simulation FSRS, aucune requête
+  d'écriture) et la série (4 réponses, intervalles croissants). Le test de page simule
+  `fetchDictionary`, sinon la vraie requête fait planter le serveur de vitest (`wrapDynamicImport`).
+- Vu sans compte sur 5177 (Playwright, 1280 et 390 px) : 200, 5 onglets, aucune erreur de console,
+  aucune requête autre que GET, rien qui déborde ; « Facile » → « dans 9 jours ». Pas de revue.
