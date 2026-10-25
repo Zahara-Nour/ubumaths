@@ -122,6 +122,16 @@ de tête retirés, tabulations et retours à la ligne supprimés partout (`java\
 
 ## Écarts connus
 
+- **Formules vides au cahier de texte** (trouvé le 2026-10-25, chantier demo-debug, PR 6h) :
+  `transformMathHtml` ne lit `latex="…"` que s'il suit directement `data-math-inline` /
+  `data-math-block`, mais l'éditeur écrit `data-math-syntax` et `data-math-original` avant
+  (depuis `6939fefb5`, 2025-12-14). L'élève reçoit des champs vides ; le prof, qui rouvre la
+  séance dans l'éditeur, voit ses formules. Les tests écrivent ce HTML à la main, dans l'ancien
+  ordre. Prod au 2026-10-25 : aucune formule au cahier. Décidé par David : le cahier de texte
+  passera à ubumark (markdown + `MarkdownRenderer`), chantier à part.
+- **Énigmes : HTML enregistré, lu comme du markdown** (vu le 2026-10-25, pas mesuré) :
+  `RiddleForm.svelte` enregistre `bind:htmlValue`, `RiddleCard` et `RiddleOfTheDayCard`
+  l'affichent par `MarkdownRenderer`.
 - **`isTrivialHtmlWrapper` n'est appelé nulle part** hors de ses tests
   (`git grep -n isTrivialHtmlWrapper -- src` : la définition et `__tests__/markdown-paste.test.ts`).
   `handlePaste` ne lit jamais `text/html` (`git log -S "text/html"` sur le fichier : aucun
