@@ -38,7 +38,12 @@
 import { GRADE_CODES, GRADES, isGradeCode } from '$lib/types/grades';
 import { buildSeriesLink, cartItemSchema, type SeriesCategories } from '$lib/validation/series';
 import { MATHOU_NAMES } from './mathou-noms';
-import type { MathouCollarId, MathouDecorationId } from './decorations';
+import type {
+	MathouCollarId,
+	MathouDecorationId,
+	MathouGlassesId,
+	MathouHatId
+} from './decorations';
 
 // ============================================================================
 // Types
@@ -64,6 +69,10 @@ export interface MathouMemory {
 	decoration?: MathouDecorationId | null;
 	/** Collier porté (`student_mathoux.collar`), lu seulement comme la décoration. */
 	collar?: MathouCollarId | null;
+	/** Lunettes portées (`student_mathoux.glasses`), lues seulement comme la décoration. */
+	glasses?: MathouGlassesId | null;
+	/** Chapeau porté (`student_mathoux.hat`), lu seulement comme la décoration. */
+	hat?: MathouHatId | null;
 }
 
 /** Ce que la mémoire doit apprendre d'un Mathou : sa ligne complète, jamais en baisse. */
@@ -169,6 +178,10 @@ export interface Mathou {
 	decoration: MathouDecorationId | null;
 	/** Collier porté (lu dans la mémoire), `null` sinon. */
 	collar: MathouCollarId | null;
+	/** Lunettes portées (lues dans la mémoire), `null` sinon. */
+	glasses: MathouGlassesId | null;
+	/** Chapeau porté (lu dans la mémoire), `null` sinon. */
+	hat: MathouHatId | null;
 	/** Totaux sur tout le parcours. */
 	workablePoints: number;
 	acquiredPoints: number;
@@ -465,6 +478,8 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 			stars,
 			decoration: remembered?.decoration ?? null,
 			collar: remembered?.collar ?? null,
+			glasses: remembered?.glasses ?? null,
+			hat: remembered?.hat ?? null,
 			workablePoints: workableTotal,
 			acquiredPoints: acquiredTotal,
 			byGrade

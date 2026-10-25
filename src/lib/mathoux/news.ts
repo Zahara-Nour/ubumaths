@@ -23,7 +23,12 @@ import {
 	type MathouMemory,
 	type MathouStage
 } from './collection-logic';
-import type { MathouCollarId, MathouDecorationId } from './decorations';
+import type {
+	MathouCollarId,
+	MathouDecorationId,
+	MathouGlassesId,
+	MathouHatId
+} from './decorations';
 
 // Types
 export type MathouNewsKind = 'birth' | 'growth' | 'wake' | 'star';
@@ -37,6 +42,10 @@ export interface MathouNewsItem {
 	decoration?: MathouDecorationId | null;
 	/** Collier porté (`Mathou.collar`), pour le dessin de la carte. */
 	collar?: MathouCollarId | null;
+	/** Lunettes portées (`Mathou.glasses`), pour le dessin de la carte. */
+	glasses?: MathouGlassesId | null;
+	/** Chapeau porté (`Mathou.hat`), pour le dessin de la carte. */
+	hat?: MathouHatId | null;
 	/** Stade atteint. */
 	stage: MathouStage;
 	/** Croissance seulement : le stade de la ligne remplacée (le dessin se transforme depuis lui). */
@@ -107,6 +116,8 @@ export function mathouNews(
 			stage,
 			decoration: mathou.decoration,
 			collar: mathou.collar,
+			glasses: mathou.glasses,
+			hat: mathou.hat,
 			...(kind === 'growth' && have ? { previousStage: have.bestStage } : {}),
 			newStars
 		});

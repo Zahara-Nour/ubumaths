@@ -12,7 +12,12 @@ import {
 	normalizeRaceIndex
 } from '../mathou-races';
 import { pearGeometry } from '../mathou-dessin';
-import { MATHOU_COLLAR_IDS, MATHOU_DECORATION_IDS } from '$lib/mathoux/decorations';
+import {
+	MATHOU_COLLAR_IDS,
+	MATHOU_DECORATION_IDS,
+	MATHOU_GLASSES_IDS,
+	MATHOU_HAT_IDS
+} from '$lib/mathoux/decorations';
 
 function svgOf(container: HTMLElement): SVGSVGElement {
 	const svg = container.querySelector('svg');
@@ -475,6 +480,221 @@ describe('MathouAvatar — collier', () => {
 		});
 		expect(collarOf(shadow.container)).toBeNull();
 		expect(hangingOf(shadow.container)).toBeNull();
+	});
+});
+
+describe('MathouAvatar — lunettes et chapeau', () => {
+	const glassesOf = (container: HTMLElement): SVGGElement | null =>
+		container.querySelector('[data-part="lunettes"]');
+	const hatOf = (container: HTMLElement): SVGGElement | null =>
+		container.querySelector('[data-part="chapeau"]');
+	/** [x, y, échelle] de la pose */
+	const placeOf = (g: Element | null | undefined): number[] =>
+		(
+			/translate\(([\d.]+) ([\d.]+)\) scale\(([\d.]+)\)/.exec(g?.getAttribute('transform') ?? '') ??
+			[]
+		)
+			.slice(1)
+			.map(Number);
+	const crownOf = (container: HTMLElement): Element | null =>
+		container.querySelector('[data-part="couronne"]');
+
+	it('ni lunettes ni chapeau par défaut', async () => {
+		const { container } = await render(MathouAvatar, { raceIndex: 0, stage: 'matou', label: 'M' });
+		expect(glassesOf(container)).toBeNull();
+		expect(hatOf(container)).toBeNull();
+	});
+
+	it('chacune des cinq lunettes se pose entre les yeux, à l’échelle de la tête, à chaque stade', async () => {
+		for (const id of MATHOU_GLASSES_IDS) {
+			for (const stage of MATHOU_STAGES) {
+				const { container } = await render(MathouAvatar, {
+					raceIndex: 0,
+					stage,
+					label: 'M',
+					glasses: id
+				});
+				const glasses = glassesOf(container);
+				expect(glasses?.getAttribute('data-glasses')).toBe(id);
+				expect(glasses?.children.length).toBeGreaterThan(0);
+				const geo = pearGeometry(stage);
+				const [x, y, s] = placeOf(glasses);
+				expect([x, y]).toEqual([geo.hx, geo.hy]);
+				expect(s).toBeCloseTo(geo.stage.hw / 26, 2);
+			}
+		}
+	});
+
+	it('chacun des cinq chapeaux se pose au sommet de la tête, à une échelle bornée', async () => {
+		for (const id of MATHOU_HAT_IDS) {
+			for (const stage of MATHOU_STAGES) {
+				const { container } = await render(MathouAvatar, {
+					raceIndex: 0,
+					stage,
+					label: 'M',
+					hat: id
+				});
+				const hat = hatOf(container);
+				expect(hat?.getAttribute('data-hat')).toBe(id);
+				expect(hat?.children.length).toBeGreaterThan(0);
+				const geo = pearGeometry(stage);
+				const [x, y, s] = placeOf(hat);
+				expect([x, y]).toEqual([geo.hx, geo.stage.top]);
+				expect(s).toBeGreaterThanOrEqual(0.92);
+				expect(s).toBeLessThanOrEqual(1.35);
+			}
+		}
+	});
+
+	it('le trait garde son épaisseur à l’écran, quel que soit le stade', async () => {
+		for (const stage of MATHOU_STAGES) {
+			const { container } = await render(MathouAvatar, {
+				raceIndex: 0,
+				stage,
+				label: 'M',
+				glasses: 'sunglasses',
+				hat: 'bowler'
+			});
+			for (const [g, width] of [
+				[glassesOf(container), 1.9],
+				[hatOf(container), 2.4]
+			] as const) {
+				const [, , s] = placeOf(g);
+				const first = g?.querySelector('path');
+				expect(Number(first?.getAttribute('stroke-width')) * s).toBeCloseTo(width, 0);
+			}
+		}
+	});
+
+	it('posés après les yeux et les moustaches, les lunettes avant le chapeau', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'matou',
+			label: 'M',
+			glasses: 'monocle',
+			hat: 'top_hat'
+		});
+		const glasses = glassesOf(container);
+		const hat = hatOf(container);
+		const eyes = container.querySelector('[data-part="yeux"]');
+		expect(glasses?.closest('[data-part="mathou"]')).toBe(
+			container.querySelector('[data-part="mathou"]')
+		);
+		expect(eyes && glasses && eyes.compareDocumentPosition(glasses)).toBe(
+			Node.DOCUMENT_POSITION_FOLLOWING
+		);
+		expect(glasses && hat && glasses.compareDocumentPosition(hat)).toBe(
+			Node.DOCUMENT_POSITION_FOLLOWING
+		);
+	});
+
+	it('se cumulent avec la décoration de panse et le collier', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'matou',
+			label: 'M',
+			decoration: 'heart',
+			collar: 'bow_tie',
+			glasses: 'round_glasses',
+			hat: 'beret'
+		});
+		expect(container.querySelector('[data-part="decoration"]')).not.toBeNull();
+		expect(container.querySelector('[data-part="collier"]')).not.toBeNull();
+		expect(glassesOf(container)?.getAttribute('data-glasses')).toBe('round_glasses');
+		expect(hatOf(container)?.getAttribute('data-hat')).toBe('beret');
+	});
+
+	it('grand matou : le chapeau remplace la couronne ; les lunettes la laissent', async () => {
+		const hatted = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'grand_matou',
+			label: 'M',
+			hat: 'pointed_hat'
+		});
+		expect(hatOf(hatted.container)).not.toBeNull();
+		expect(crownOf(hatted.container)).toBeNull();
+		// La fraise, le bâton et la gloire restent
+		expect(hatted.container.querySelector('[data-part="collerette"]')).not.toBeNull();
+
+		const glassed = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'grand_matou',
+			label: 'M',
+			glasses: 'pince_nez'
+		});
+		expect(glassesOf(glassed.container)).not.toBeNull();
+		expect(crownOf(glassed.container)).not.toBeNull();
+	});
+
+	it('transformation vers le grand matou : le chapeau reste, la couronne ne vient pas', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'grand_matou',
+			growFrom: 'matou',
+			reaction: 'bond',
+			reactionKey: 1,
+			label: 'M',
+			hat: 'boater'
+		});
+		expect(hatOf(container)).not.toBeNull();
+		await vi.waitFor(
+			() => expect(container.querySelector('[data-part="collerette"]')).not.toBeNull(),
+			{ timeout: 3000 }
+		);
+		expect(hatOf(container)?.getAttribute('data-hat')).toBe('boater');
+		expect(crownOf(container)).toBeNull();
+		// Arrivé : posé sur la tête du grand matou
+		expect(placeOf(hatOf(container))[1]).toBe(pearGeometry('grand_matou').stage.top);
+	});
+
+	it('sieste : ni lunettes ni chapeau, le bonnet de nuit ; la silhouette n’en a pas', async () => {
+		for (const stage of MATHOU_STAGES) {
+			const { container } = await render(MathouAvatar, {
+				raceIndex: 0,
+				stage,
+				asleep: true,
+				label: 'M',
+				glasses: 'spiral_glasses',
+				hat: 'top_hat'
+			});
+			expect(glassesOf(container)).toBeNull();
+			expect(hatOf(container)).toBeNull();
+			expect(container.querySelector('[data-part="bonnet"]')).not.toBeNull();
+		}
+
+		const shadow = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'matou',
+			silhouette: true,
+			label: 'M',
+			glasses: 'sunglasses',
+			hat: 'bowler'
+		});
+		expect(glassesOf(shadow.container)).toBeNull();
+		expect(hatOf(shadow.container)).toBeNull();
+	});
+
+	it('réveil : lunettes et chapeau reviennent en fondu, le bonnet s’envole', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'matou',
+			label: 'M',
+			reaction: 'reveil',
+			glasses: 'sunglasses',
+			hat: 'bowler'
+		});
+		expect(glassesOf(container)?.classList.contains('remis')).toBe(true);
+		expect(hatOf(container)?.classList.contains('remis')).toBe(true);
+		expect(container.querySelector('.bonnet-part')).not.toBeNull();
+
+		// Hors réveil, pas de fondu
+		const still = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'matou',
+			label: 'M',
+			glasses: 'sunglasses'
+		});
+		expect(glassesOf(still.container)?.classList.contains('remis')).toBe(false);
 	});
 });
 

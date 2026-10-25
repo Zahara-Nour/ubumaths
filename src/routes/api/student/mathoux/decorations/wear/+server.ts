@@ -5,7 +5,8 @@
  * Pose une décoration de panse achetée sur un Mathou (en la retirant de celui qui
  * la portait : une décoration n'orne qu'un Mathou à la fois), ou retire celle
  * qu'il porte (`decoration: null`). Gratuit (lot B des accessoires, décisions de
- * David du 2026-10-24). Les colliers : `decorations/wear-collar`.
+ * David du 2026-10-24). Les colliers : `decorations/wear-collar` ; les
+ * lunettes et le chapeau : `wear-glasses`, `wear-hat`.
  *
  * AUTH : élève seulement. Pas de consentement exigé : rien ne s'achète ici, et
  * une décoration se porte seulement si elle a été achetée. ENTRÉE (Zod) : l'UUID

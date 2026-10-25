@@ -1,10 +1,12 @@
 <script lang="ts">
 	/**
-	 * « Décorer » un Mathou de la Chatterie (lots B et C des accessoires, décisions
-	 * de David du 2026-10-24 et du 2026-10-25) : deux rangées, « Panse » (six
-	 * décorations) et « Cou » (quatre colliers), dessinées sur CE Mathou — avec ce
-	 * qu'il porte à l'autre emplacement, les deux se cumulant —, leur prix,
-	 * « Achetée » ou « Portée par … ».
+	 * « Décorer » un Mathou de la Chatterie (lots B, C et D des accessoires,
+	 * décisions de David du 2026-10-24 et du 2026-10-25) : quatre rangées,
+	 * « Panse » (six décorations), « Cou » (quatre colliers), « Yeux » (cinq
+	 * lunettes) et « Tête » (cinq chapeaux), dessinées sur CE Mathou — avec ce
+	 * qu'il porte aux autres emplacements, tous se cumulant —, leur prix,
+	 * « Achetée » ou « Portée par … ». Lunettes et chapeaux se montrent sur le
+	 * Mathou éveillé : en sieste, il les retire.
 	 *
 	 * - pas encore achetée : « Acheter » (l'achat la pose sur ce Mathou) ; sans
 	 *   consentement parental, le bouton est grisé (comme la boutique VIP) ; solde
@@ -27,8 +29,8 @@
 	import {
 		MATHOU_COLLARS,
 		MATHOU_DECORATIONS,
-		isMathouCollar,
-		isMathouDecoration,
+		MATHOU_GLASSES,
+		MATHOU_HATS,
 		type MathouCatalogId,
 		type MathouDecorationInfo
 	} from '$lib/mathoux/decorations';
@@ -50,20 +52,74 @@
 
 	type CatalogInfo = MathouDecorationInfo<MathouCatalogId>;
 
+	/** Accord des participes : « Portée », « Porté », « Portées » */
+	type Agreement = 'f' | 'm' | 'fp';
+
+	/** L'emplacement : ce que porte le Mathou (`Mathou[slot]`) */
+	type Slot = 'decoration' | 'collar' | 'glasses' | 'hat';
+
 	interface Row {
-		id: 'panse' | 'cou';
+		id: 'panse' | 'cou' | 'yeux' | 'tete';
 		title: string;
+		slot: Slot;
 		items: readonly CatalogInfo[];
-		/** Accords : une décoration (« Portée »), un collier (« Porté ») */
-		feminine: boolean;
+		/** Route de pose et nom du champ qu'elle attend */
+		wearPath: string;
+		/** Accord d'une pièce de la rangée */
+		agreement: (info: CatalogInfo) => Agreement;
+		/** Toast du retrait */
+		removed: (info: CatalogInfo) => string;
+		/** Montrée sur le Mathou éveillé (il la retire pour la sieste) */
+		awake: boolean;
 	}
 
 	// Constantes
 	const FAILURE = 'Action impossible pour l’instant : réessaie dans un moment.';
 
+	const ENDINGS: Record<Agreement, string> = { f: 'e', m: '', fp: 'es' };
+
 	const ROWS: readonly Row[] = [
-		{ id: 'panse', title: 'Panse', items: MATHOU_DECORATIONS, feminine: true },
-		{ id: 'cou', title: 'Cou', items: MATHOU_COLLARS, feminine: false }
+		{
+			id: 'panse',
+			title: 'Panse',
+			slot: 'decoration',
+			items: MATHOU_DECORATIONS,
+			wearPath: '/api/student/mathoux/decorations/wear',
+			agreement: () => 'f',
+			removed: () => 'Décoration retirée',
+			awake: false
+		},
+		{
+			id: 'cou',
+			title: 'Cou',
+			slot: 'collar',
+			items: MATHOU_COLLARS,
+			wearPath: '/api/student/mathoux/decorations/wear-collar',
+			agreement: () => 'm',
+			removed: () => 'Collier retiré',
+			awake: false
+		},
+		{
+			id: 'yeux',
+			title: 'Yeux',
+			slot: 'glasses',
+			items: MATHOU_GLASSES,
+			wearPath: '/api/student/mathoux/decorations/wear-glasses',
+			// Les lunettes, mais le monocle et le pince-nez
+			agreement: (info) => (info.plural ? 'fp' : 'm'),
+			removed: (info) => (info.plural ? 'Lunettes retirées' : `${info.name} retiré`),
+			awake: true
+		},
+		{
+			id: 'tete',
+			title: 'Tête',
+			slot: 'hat',
+			items: MATHOU_HATS,
+			wearPath: '/api/student/mathoux/decorations/wear-hat',
+			agreement: () => 'm',
+			removed: () => 'Chapeau retiré',
+			awake: true
+		}
 	];
 
 	// Variables
@@ -71,13 +127,12 @@
 
 	let busy = $state<MathouCatalogId | null>(null);
 
-	// Qui porte quoi, panse et cou
+	// Qui porte quoi, aux quatre emplacements
 	const wornBy = $derived(
 		new Map<MathouCatalogId, Mathou>(
-			mathoux.flatMap((m) => [
-				...(m.decoration ? [[m.decoration, m] as const] : []),
-				...(m.collar ? [[m.collar, m] as const] : [])
-			])
+			mathoux.flatMap((m) =>
+				[m.decoration, m.collar, m.glasses, m.hat].flatMap((id) => (id ? [[id, m] as const] : []))
+			)
 		)
 	);
 
@@ -141,29 +196,28 @@
 		});
 	}
 
-	function wear(target: Mathou, info: CatalogInfo, on: boolean) {
-		const collar = isMathouCollar(info.id);
+	function wear(row: Row, target: Mathou, info: CatalogInfo, on: boolean) {
 		return run(info, async () => {
-			const outcome = collar
-				? await post('/api/student/mathoux/decorations/wear-collar', {
-						notionId: target.notionId,
-						collar: on ? info.id : null
-					})
-				: await post('/api/student/mathoux/decorations/wear', {
-						notionId: target.notionId,
-						decoration: on ? info.id : null
-					});
+			const outcome = await post(row.wearPath, {
+				notionId: target.notionId,
+				[row.slot]: on ? info.id : null
+			});
 			if (outcome === 'done') {
-				toaster.success(
-					on
-						? `${capitalize(target.name)} porte : ${info.name}`
-						: collar
-							? 'Collier retiré'
-							: 'Décoration retirée'
-				);
+				toaster.success(on ? `${capitalize(target.name)} porte : ${info.name}` : row.removed(info));
 			}
 			return outcome;
 		});
+	}
+
+	/** Ce que porte le Mathou, avec `info` à son emplacement */
+	function wearing(target: Mathou, row: Row, info: CatalogInfo) {
+		return {
+			decoration: target.decoration,
+			collar: target.collar,
+			glasses: target.glasses,
+			hat: target.hat,
+			[row.slot]: info.id
+		};
 	}
 </script>
 
@@ -179,8 +233,9 @@
 			<Dialog.Header>
 				<Dialog.Title>Décorer {target.name}</Dialog.Title>
 				<Dialog.Description>
-					Une décoration sur la panse, un collier au cou. Chacun s’achète une fois et orne un seul
-					Mathou à la fois. Le changer de Mathou ou le retirer est gratuit.
+					Une décoration sur la panse, un collier au cou, des lunettes et un chapeau. Chacun
+					s’achète une fois et orne un seul Mathou à la fois. Le changer de Mathou ou le retirer est
+					gratuit.
 				</Dialog.Description>
 			</Dialog.Header>
 
@@ -204,6 +259,7 @@
 							{@const wearer = wornBy.get(info.id)}
 							{@const onThis = wearer?.notionId === target.notionId}
 							{@const missing = missingFor(info)}
+							{@const ending = ENDINGS[row.agreement(info)]}
 							<li
 								class="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 text-center"
 								data-decoration={info.id}
@@ -211,10 +267,9 @@
 								<MathouAvatar
 									raceIndex={target.raceIndex}
 									stage={target.growth === 'a_decouvrir' ? 'chaton' : target.growth}
-									asleep={target.asleep}
+									asleep={target.asleep && !row.awake}
 									animated={false}
-									decoration={isMathouDecoration(info.id) ? info.id : target.decoration}
-									collar={isMathouCollar(info.id) ? info.id : target.collar}
+									{...wearing(target, row, info)}
 									size={88}
 									label={`${target.name} avec : ${info.name}`}
 								/>
@@ -226,10 +281,10 @@
 									</p>
 								{:else if wearer}
 									<p class="text-sm text-muted-foreground">
-										{row.feminine ? 'Portée' : 'Porté'} par {wearer.name}
+										Porté{ending} par {wearer.name}
 									</p>
 								{:else}
-									<p class="text-sm text-muted-foreground">{row.feminine ? 'Achetée' : 'Acheté'}</p>
+									<p class="text-sm text-muted-foreground">Acheté{ending}</p>
 								{/if}
 
 								<div class="mt-auto">
@@ -254,10 +309,8 @@
 											size="sm"
 											variant="outline"
 											disabled={busy !== null}
-											aria-label="Retirer {info.name}, {row.feminine
-												? 'portée'
-												: 'porté'} par {target.name}"
-											onclick={() => wear(target, info, false)}
+											aria-label="Retirer {info.name}, porté{ending} par {target.name}"
+											onclick={() => wear(row, target, info, false)}
 										>
 											Retirer
 										</Button>
@@ -266,7 +319,7 @@
 											size="sm"
 											disabled={busy !== null}
 											aria-label="Poser {info.name} sur {target.name}"
-											onclick={() => wear(target, info, true)}
+											onclick={() => wear(row, target, info, true)}
 										>
 											Poser
 										</Button>

@@ -35,6 +35,8 @@ function mathou(notionId: string, growth: Mathou['growth'], stars: string[] = []
 		dueForRevision: false,
 		decoration: null,
 		collar: null,
+		glasses: null,
+		hat: null,
 		trainingCategories: null,
 		stars,
 		workablePoints: 2,
@@ -88,6 +90,8 @@ describe('mathouNews', () => {
 					stage: 'chaton',
 					decoration: null,
 					collar: null,
+					glasses: null,
+					hat: null,
 					newStars: []
 				}
 			]
@@ -110,6 +114,22 @@ describe('mathouNews', () => {
 		const news = newsAll(collection, memoryOf({ n1: { bestStage: 'chaton', starredGrades: [] } }));
 		expect(news.items[0]).toMatchObject({ decoration: 'heart', collar: 'order_chain' });
 		expect(mathouNewsSchema.parse(news).items[0].collar).toBe('order_chain');
+	});
+
+	it('lunettes et chapeau portés suivent aussi la nouveauté', () => {
+		const collection = collectionOf({
+			...mathou('n1', 'matou'),
+			glasses: 'spiral_glasses',
+			hat: 'pointed_hat'
+		});
+		const news = newsAll(collection, memoryOf({ n1: { bestStage: 'chaton', starredGrades: [] } }));
+		expect(news.items[0]).toMatchObject({ glasses: 'spiral_glasses', hat: 'pointed_hat' });
+		const parsed = mathouNewsSchema.parse(news).items[0];
+		expect([parsed.glasses, parsed.hat]).toEqual(['spiral_glasses', 'pointed_hat']);
+		// Une pièce à la mauvaise place ne passe pas le schéma
+		expect(
+			mathouNewsSchema.safeParse({ ...news, items: [{ ...news.items[0], hat: 'monocle' }] }).success
+		).toBe(false);
 	});
 
 	it('croissance : stade au-dessus de la mémoire', () => {
@@ -248,6 +268,8 @@ describe('mathouNews', () => {
 				stage: 'matou',
 				decoration: null,
 				collar: null,
+				glasses: null,
+				hat: null,
 				newStars: []
 			}
 		]);

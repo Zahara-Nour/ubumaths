@@ -193,16 +193,17 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.limit(5000, { referencedTable: 'tutor_messages' }),
 
 			// Jeux — mémoire des Mathoux (Chatterie) : meilleur stade, étoiles, sieste et
-			// décoration portée par notion.
+			// décorations portées (panse, cou, yeux, tête) par notion.
 			// Une ligne par notion (440 au plus) : sous le plafond de 1 000 lignes.
 			supabase
 				.from('student_mathoux')
 				.select(
-					'notion_id, best_stage, starred_grades, asleep, decoration, collar, first_seen_at, updated_at'
+					'notion_id, best_stage, starred_grades, asleep, decoration, collar, glasses, hat, first_seen_at, updated_at'
 				)
 				.eq('student_id', userId),
 
-			// Jeux — décorations de panse achetées dans la Chatterie (six au plus)
+			// Jeux — décorations achetées dans la Chatterie (panse, colliers, lunettes,
+			// chapeaux : vingt au plus)
 			supabase
 				.from('student_mathou_decorations')
 				.select('decoration, price_paid, purchased_at')

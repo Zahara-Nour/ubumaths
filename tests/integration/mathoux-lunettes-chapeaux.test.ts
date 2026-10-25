@@ -34,6 +34,12 @@ import {
 import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
+import {
+	MATHOU_GLASSES,
+	MATHOU_GLASSES_IDS,
+	MATHOU_HATS,
+	MATHOU_HAT_IDS
+} from '$lib/mathoux/decorations';
 
 // Types
 type Student = { id: string; client: SupabaseClient };
@@ -305,6 +311,26 @@ describe('Lunettes et chapeaux des Mathoux', () => {
 			expect(await wornBy(student.id)).toEqual({
 				[mathou]: { ...BARE, glasses: 'spiral_glasses', hat: 'pointed_hat' }
 			});
+		});
+
+		it('le catalogue du code (prix, libellés, emplacements) est celui de la base', async () => {
+			for (const [infos, ids, slot] of [
+				[MATHOU_GLASSES, MATHOU_GLASSES_IDS, 'eyes'],
+				[MATHOU_HATS, MATHOU_HAT_IDS, 'head']
+			] as const) {
+				expect(infos.map((info) => info.id)).toEqual([...ids]);
+				for (const info of infos) {
+					const { data, error } = await service.rpc('mathou_decoration_catalog', {
+						p_decoration: info.id
+					});
+					expect(error).toBeNull();
+					expect(data).toEqual([{ price: info.price, label: info.purchaseLabel }]);
+					const { data: found } = await service.rpc('mathou_decoration_slot', {
+						p_decoration: info.id
+					});
+					expect([info.id, found]).toEqual([info.id, slot]);
+				}
+			}
 		});
 
 		it('les quatre emplacements se cumulent sur le même Mathou', async () => {

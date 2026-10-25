@@ -8,8 +8,8 @@
  * Une lecture en échec ne se montre pas comme une Chatterie vide : la page
  * reçoit `unavailable` et le dit.
  *
- * Décorations (lots B et C des accessoires) : les décorations de panse et les
- * colliers achetés, et le solde, pour la fenêtre « Décorer ». Une lecture des décorations en échec
+ * Décorations (lots B, C et D des accessoires) : les décorations de panse, les
+ * colliers, les lunettes et les chapeaux achetés, et le solde, pour la fenêtre « Décorer ». Une lecture des décorations en échec
  * n'empêche pas la Chatterie : `ownedDecorations` vaut `null` et « Décorer »
  * ne s'affiche pas (sinon tout paraîtrait « à acheter »).
  *

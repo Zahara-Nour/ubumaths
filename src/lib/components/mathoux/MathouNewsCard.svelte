@@ -65,6 +65,8 @@
 					stage={news.items[0].stage}
 					decoration={news.items[0].decoration}
 					collar={news.items[0].collar}
+					glasses={news.items[0].glasses}
+					hat={news.items[0].hat}
 					size={40}
 					label="Un Mathou de la Chatterie"
 				/>
@@ -79,6 +81,8 @@
 							stage={item.stage}
 							decoration={item.decoration}
 							collar={item.collar}
+							glasses={item.glasses}
+							hat={item.hat}
 							size={40}
 							label={item.name}
 							reaction={REACTION[item.kind]}

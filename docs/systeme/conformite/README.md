@@ -128,6 +128,9 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 >
 > ➕ **2026-10-25.** Les colliers des Mathoux suivent : le collier porté
 > (`student_mathoux.collar`) et les colliers achetés (mêmes `mathou_decorations`).
+>
+> ➕ **2026-10-26.** Puis les lunettes et les chapeaux : portés (`student_mathoux.glasses`,
+> `.hat`) et achetés (mêmes `mathou_decorations`).
 
 ### 4. Consentement parental (Art. 8)
 

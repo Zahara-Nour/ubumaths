@@ -78,7 +78,9 @@ describe('readMathouMemory', () => {
 					rewarded_stage: 'matou',
 					rewarded_grades: ['2'],
 					decoration: 'cockade',
-					collar: 'order_chain'
+					collar: 'order_chain',
+					glasses: 'monocle',
+					hat: 'top_hat'
 				},
 				{
 					notion_id: 'n3',
@@ -89,9 +91,12 @@ describe('readMathouMemory', () => {
 					rewarded_stage: 'grand_matou',
 					rewarded_grades: ['2'],
 					// Clés inconnues (la base les interdit) : écartées ; un collier n'est pas
-					// une décoration de panse, ni l'inverse
+					// une décoration de panse, ni l'inverse ; un chapeau ne se porte pas sur
+					// les yeux, ni l'inverse
 					decoration: 'leather',
-					collar: 'heart'
+					collar: 'heart',
+					glasses: 'beret',
+					hat: 'sunglasses'
 				},
 				{
 					// Stade corrigé à la main sous le payé : rien à redemander
@@ -129,7 +134,8 @@ describe('readMathouMemory', () => {
 		expect(callOf(queries[0], 'eq')).toEqual(['student_id', STUDENT]);
 		// Un stade inconnu est écarté (la base l'interdit : défense en profondeur).
 		// Payé = stade payé égal au meilleur stade ET toutes les étoiles payées.
-		// Décoration et collier : lus tels quels, une clé inconnue ou absente → aucun.
+		// Décoration, collier, lunettes, chapeau : lus tels quels, une clé inconnue ou
+		// absente → aucun.
 		expect([...memory.entries()]).toEqual([
 			[
 				'n1',
@@ -140,7 +146,9 @@ describe('readMathouMemory', () => {
 					updatedAt: T0,
 					paid: true,
 					decoration: 'cockade',
-					collar: 'order_chain'
+					collar: 'order_chain',
+					glasses: 'monocle',
+					hat: 'top_hat'
 				}
 			],
 			[
@@ -152,7 +160,9 @@ describe('readMathouMemory', () => {
 					updatedAt: T0,
 					paid: false,
 					decoration: null,
-					collar: null
+					collar: null,
+					glasses: null,
+					hat: null
 				}
 			],
 			[
@@ -164,7 +174,9 @@ describe('readMathouMemory', () => {
 					updatedAt: T0,
 					paid: true,
 					decoration: null,
-					collar: null
+					collar: null,
+					glasses: null,
+					hat: null
 				}
 			],
 			[
@@ -176,7 +188,9 @@ describe('readMathouMemory', () => {
 					updatedAt: T0,
 					paid: false,
 					decoration: null,
-					collar: null
+					collar: null,
+					glasses: null,
+					hat: null
 				}
 			]
 		]);

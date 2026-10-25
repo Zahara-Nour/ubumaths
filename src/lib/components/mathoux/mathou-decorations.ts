@@ -28,6 +28,10 @@ export type DecorationShape =
 			width?: number;
 			/** Bouts de trait arrondis (spirales) */
 			round?: boolean;
+			/** Opacité du remplissage (verres teintés) */
+			fillOpacity?: number;
+			/** Pointillé du trait (chaînette) */
+			dash?: string;
 	  }
 	| {
 			kind: 'circle';

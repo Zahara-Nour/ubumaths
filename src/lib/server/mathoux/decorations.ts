@@ -1,15 +1,18 @@
 /**
- * Décorations des Mathoux — lecture, achat, pose (lots B et C des accessoires)
- * ============================================================================
+ * Décorations des Mathoux — lecture, achat, pose (lots B, C et D des accessoires)
+ * ===============================================================================
  *
  * Panse : décisions de David du 2026-10-24 (docs/wip/mathoux-accessoires-progress.md,
  * « Lot B : comportements validés ») ; cou (colliers) : mêmes règles, décidées le
- * 2026-10-25 (docs/wip/mathoux-colliers-progress.md). La base tient les règles
- * (migrations 20261024235000 et 20261025160000) :
+ * 2026-10-25 (docs/wip/mathoux-colliers-progress.md) ; yeux (lunettes) et tête
+ * (chapeaux) : mêmes règles encore (docs/wip/mathoux-chapeaux-lunettes-progress.md).
+ * La base tient les règles (migrations 20261024235000, 20261025160000 et
+ * 20261026000100) :
  *   - `buy_mathou_decoration` : solde vérifié, débit, décoration donnée et posée
  *     à son emplacement sur le Mathou choisi, ligne au journal, sous verrou
  *     (double clic = un débit) ;
- *   - `set_mathou_decoration` (panse) et `set_mathou_collar` (cou) : pose (en la
+ *   - `set_mathou_decoration` (panse), `set_mathou_collar` (cou),
+ *     `set_mathou_glasses` (yeux) et `set_mathou_hat` (tête) : pose (en la
  *     retirant du Mathou qui la portait), remplacement ou retrait, gratuits.
  *
  * LECTURE au client de l'appelant (RLS : l'élève lit ses décorations, le prof
@@ -28,7 +31,9 @@ import {
 	isMathouCatalogId,
 	type MathouCatalogId,
 	type MathouCollarId,
-	type MathouDecorationId
+	type MathouDecorationId,
+	type MathouGlassesId,
+	type MathouHatId
 } from '$lib/mathoux/decorations';
 
 // Types
@@ -71,7 +76,7 @@ function parseOutcome(fn: string, data: unknown): DecorationOutcome {
 }
 
 /**
- * Décorations achetées par l'élève (panse et colliers). Au client de
+ * Décorations achetées par l'élève (tous emplacements). Au client de
  * l'appelant (RLS : un refus rendrait zéro ligne, donc « rien d'acheté », sans
  * erreur — c'est sans risque : la base refusera un second achat).
  *
@@ -90,7 +95,7 @@ export async function readOwnedDecorations(
 }
 
 /**
- * Achète `decoration` (panse ou collier) et la pose à son emplacement sur le
+ * Achète `decoration` (panse, collier, lunettes ou chapeau) et la pose à son emplacement sur le
  * Mathou de `notionId`.
  *
  * @param service client SERVICE.
@@ -158,4 +163,52 @@ export async function wearMathouCollar(
 	});
 	if (error) throw new Error(`Pose de collier refusée : ${error.message}`);
 	return parseOutcome('set_mathou_collar', data);
+}
+
+/**
+ * Pose les lunettes `glasses` sur le Mathou de `notionId` (en les retirant de
+ * celui qui les portait), ou les retire (`null`). Gratuit.
+ *
+ * @param service client SERVICE.
+ * @param studentId l'élève de la SESSION.
+ * @throws si l'appel échoue ou rend une forme inattendue.
+ */
+export async function wearMathouGlasses(
+	service: SB,
+	studentId: string,
+	notionId: string,
+	glasses: MathouGlassesId | null
+): Promise<DecorationOutcome> {
+	const { data, error } = await service.rpc('set_mathou_glasses', {
+		p_student_id: studentId,
+		p_notion_id: notionId,
+		// La fonction SQL prend NULL pour « retirer »
+		p_glasses: glasses as string
+	});
+	if (error) throw new Error(`Pose de lunettes refusée : ${error.message}`);
+	return parseOutcome('set_mathou_glasses', data);
+}
+
+/**
+ * Pose le chapeau `hat` sur le Mathou de `notionId` (en le retirant de celui
+ * qui le portait), ou le retire (`null`). Gratuit.
+ *
+ * @param service client SERVICE.
+ * @param studentId l'élève de la SESSION.
+ * @throws si l'appel échoue ou rend une forme inattendue.
+ */
+export async function wearMathouHat(
+	service: SB,
+	studentId: string,
+	notionId: string,
+	hat: MathouHatId | null
+): Promise<DecorationOutcome> {
+	const { data, error } = await service.rpc('set_mathou_hat', {
+		p_student_id: studentId,
+		p_notion_id: notionId,
+		// La fonction SQL prend NULL pour « retirer »
+		p_hat: hat as string
+	});
+	if (error) throw new Error(`Pose de chapeau refusée : ${error.message}`);
+	return parseOutcome('set_mathou_hat', data);
 }

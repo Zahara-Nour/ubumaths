@@ -11542,6 +11542,8 @@ export type Database = {
           collar: string | null
           decoration: string | null
           first_seen_at: string
+          glasses: string | null
+          hat: string | null
           notion_id: string
           rewarded_grades: string[]
           rewarded_stage: string | null
@@ -11555,6 +11557,8 @@ export type Database = {
           collar?: string | null
           decoration?: string | null
           first_seen_at?: string
+          glasses?: string | null
+          hat?: string | null
           notion_id: string
           rewarded_grades?: string[]
           rewarded_stage?: string | null
@@ -11568,6 +11572,8 @@ export type Database = {
           collar?: string | null
           decoration?: string | null
           first_seen_at?: string
+          glasses?: string | null
+          hat?: string | null
           notion_id?: string
           rewarded_grades?: string[]
           rewarded_stage?: string | null
@@ -11586,6 +11592,20 @@ export type Database = {
           {
             foreignKeyName: "student_mathoux_decoration_fkey"
             columns: ["student_id", "decoration"]
+            isOneToOne: false
+            referencedRelation: "student_mathou_decorations"
+            referencedColumns: ["student_id", "decoration"]
+          },
+          {
+            foreignKeyName: "student_mathoux_glasses_fkey"
+            columns: ["student_id", "glasses"]
+            isOneToOne: false
+            referencedRelation: "student_mathou_decorations"
+            referencedColumns: ["student_id", "decoration"]
+          },
+          {
+            foreignKeyName: "student_mathoux_hat_fkey"
+            columns: ["student_id", "hat"]
             isOneToOne: false
             referencedRelation: "student_mathou_decorations"
             referencedColumns: ["student_id", "decoration"]
@@ -16400,6 +16420,14 @@ export type Database = {
           p_notion_id: string
           p_student_id: string
         }
+        Returns: Json
+      }
+      set_mathou_glasses: {
+        Args: { p_glasses: string; p_notion_id: string; p_student_id: string }
+        Returns: Json
+      }
+      set_mathou_hat: {
+        Args: { p_hat: string; p_notion_id: string; p_student_id: string }
         Returns: Json
       }
       set_riddle_of_the_day: {

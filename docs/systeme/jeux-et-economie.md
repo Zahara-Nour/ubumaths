@@ -246,6 +246,9 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
 - **Colliers des Mathoux** (lot C, 2026-10-25) : quatre, de 10 à 40, achetés de la même façon
   (même fonction, même journal : « Chatterie : collier de cuir acheté ») et montrés dans la même
   vitrine. Voir [mathoux.md § Colliers](mathoux.md#colliers).
+- **Lunettes et chapeaux des Mathoux** (lot D, 2026-10-26) : cinq lunettes et cinq chapeaux, de 10
+  à 40, achetés de la même façon (« Chatterie : monocle acheté ») et montrés dans la même vitrine.
+  Voir [mathoux.md § Lunettes et chapeaux](mathoux.md#lunettes-et-chapeaux).
 - **Cartes réservées au serveur** : personne ne modifie directement `profiles.vip_cards` (garde
   `guard_profile_reserved_fields`, migration `20261003150000_vip_cartes_verrou.sql`) ; seules les
   fonctions SECURITY DEFINER le font.
