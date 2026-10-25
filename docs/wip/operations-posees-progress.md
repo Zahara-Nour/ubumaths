@@ -5,9 +5,9 @@
 _Mis à jour le 2026-10-25, après #1726._
 
 - **État** : lot 1 COMPLET sur `main`, pas en prod — PR 1a #1716 (affichage) et PR 1b #1726 (saisie + juge : `case: N`, réponse calculée par le bloc, grille saisissable, correction chiffre par chiffre).
-- **Prochaine action** : republier la page de démonstration avec la saisie ; puis lot 2 (multiplication) — phase 0 à écrire et faire valider.
+- **Prochaine action** : lot 2 (multiplication) — phase 0 à écrire et faire valider.
 - **En attente de David** : vérifications #1716 et #1726 (`verifications-manuelles.md`) ; avis sur le comportement 5 précisé (§ 9 : zéros retirés, espaces posés) ; décimales de fin laissées vides (`0,5 + 0,5`, élève « 1 » sans le 0) → aujourd'hui incomplète, jugée fausse.
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie).
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — republiée le 2026-10-25 avec la saisie jouable (7 cas, dont `0,5 + 0,5`).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
 - **Worktree / branche** : supprimés après #1726.
 
