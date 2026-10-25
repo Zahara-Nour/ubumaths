@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -371,11 +371,23 @@ cases sous la zone (autant que de chiffres du diviseur ; euclidienne seulement),
 étapes une zone quadrillée libre dont la hauteur ne dépend que du dividende et du diviseur (des
 lignes prêtes trahiraient la longueur du quotient) ; quotient décimal : carreaux libres à droite du
 dividende jusqu'au millième. Scène `utils/operation-division-scene.ts` (`buildDivisionScene`,
-`divisionResult`) ; nom accessible « Division posée en potence ». **Saisie pas encore disponible**
-(PR 3b) : dans une question, une division à remplir fait échouer la génération ; `cases: aucune`
-la montre résolue.
+`divisionResult`) ; nom accessible « Division posée en potence ». Dessinée par
+`OperationDivision.svelte` (appelé par `Operation.svelte`). Saisie dans une question (§ 12-13 du
+journal) : une division **euclidienne porte deux cases** (quotient puis reste : `case: N` posé, le
+reste est la case N + 1 ; `operationCaseCount`), une division décimale une seule (le quotient). Le
+quotient se saisit **de gauche à droite** (le curseur passe à droite ; Retour arrière sur une case
+vide efface celle de gauche) ; l'élève pose sa virgule comme au lot 2 ; lecture
+(`utils/operation-division-answer.ts`, `readQuotientAnswer`) : cases vides à droite ignorées, zéros
+de tête retirés, case vide au milieu → réponse vide, décimales de fin vides = 0 (`2,1` juste pour
+`4,20 ÷ 2`). Le reste se saisit de droite à gauche (`readRemainderAnswer`) ; vide → réponse vide,
+pas de 0 implicite. Zone des étapes et carreaux libres à droite du dividende : chaque carreau prend
+un chiffre ou `−`, jamais jugé ni gardé ; flèches dans les quatre sens. Correction : chiffres faux du
+quotient comparés case par case depuis la gauche (un zéro de tête écrit décale, jamais faux ;
+`wrongQuotientDigits`), virgule absente ou mal placée surlignée (`wrongQuotientComma`), reste
+(`wrongRemainderDigits`) ; potence résolue à côté. Noms accessibles neutres (« Quotient, case 1 sur 4
+en partant de la gauche », « Reste, case 1 sur 2 en partant de la droite »).
 
-Dans une question, un bloc à remplir porte **une** case (clé `case: N`, posée par
+Dans une question, un bloc à remplir porte **une** case (division euclidienne : deux) (clé `case: N`, posée par
 `assignBlankIndices`, jamais écrite par l'auteur ; refusée avec `cases: aucune`). `Operation.svelte`
 reçoit alors `answer` : cases du résultat saisies de droite à gauche (le curseur passe à gauche,
 Retour arrière sur une case vide efface celle de droite, flèches ↑/↓ d'une rangée de cases à

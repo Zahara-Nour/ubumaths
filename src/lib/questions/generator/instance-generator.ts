@@ -48,6 +48,7 @@ import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
 import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
+import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 import { normalizeExpression, detectExpressionType } from '$lib/ubumark/parameterization';
 import {
@@ -500,6 +501,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			const operationAnswers = new Map<number, string>();
 			for (const [key, source] of Object.entries(blankResult.operationBlanks ?? {})) {
 				const index = Number(key);
+				// Division euclidienne : la case du reste suit celle du quotient, déjà traitée
+				if (operationAnswers.has(index)) continue;
 				const node = parseOperationContent(source);
 				if (node.caseIndex !== undefined) {
 					return {
@@ -517,15 +520,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						]
 					};
 				}
-				if (node.spec.operator === '÷') {
-					return {
-						success: false,
-						errors: [
-							`Case ${index + 1} (bloc operation) : division à remplir dans une question : pas encore disponible (cases: aucune pour la montrer résolue)`
-						]
-					};
-				}
-				operationAnswers.set(index, operationExpectedAnswer(node.spec));
+				const answers =
+					node.spec.operator === '÷'
+						? divisionExpectedAnswers(node.spec)
+						: [operationExpectedAnswer(node.spec)];
+				answers.forEach((answer, k) => operationAnswers.set(index + k, answer));
 			}
 
 			// Coherence check: totalBlanks must match blanks[] length. Les cases des blocs

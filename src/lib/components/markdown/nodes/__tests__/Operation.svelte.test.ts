@@ -573,3 +573,290 @@ describe('Operation — saisie d’une multiplication (PR 2b, § 11)', () => {
 		expect(screen.container.querySelector('.operation-correction')).toBeNull();
 	});
 });
+
+describe('Operation — saisie d’une division (PR 3b, § 12)', () => {
+	type Answer = { value?: string; isCorrect?: boolean | null; disabled?: boolean };
+
+	/** Euclidienne : `answer` = case du quotient, `remainder` = case du reste */
+	async function renderDivision(lines: string[], quotient: Answer = {}, rest: Answer | null = {}) {
+		const changes: string[] = [];
+		const remainderChanges: string[] = [];
+		const props = {
+			node: node('case: 0', ...lines),
+			answer: {
+				value: '',
+				isCorrect: null,
+				disabled: false,
+				onChange: (value: string) => changes.push(value),
+				...quotient
+			},
+			...(rest && {
+				remainder: {
+					value: '',
+					isCorrect: null,
+					disabled: false,
+					onChange: (value: string) => remainderChanges.push(value),
+					...rest
+				}
+			})
+		};
+		const screen = await render(Operation, { target: mainElement(), props });
+		const inputs = (kind: string) => [
+			...screen.container.querySelectorAll<HTMLInputElement>(`input[data-operation-cell="${kind}"]`)
+		];
+		const commas = () =>
+			inputs('quotient').filter(
+				(i) => i.closest('.operation-carreau')!.querySelector('.operation-virgule') !== null
+			);
+		return { screen, inputs, changes, remainderChanges, commas };
+	}
+
+	it('euclidienne : cases du quotient, du reste, zone des étapes saisissables (n° 4, Q7)', async () => {
+		const { screen, inputs } = await renderDivision(['calcul: 9 456 ÷ 7']);
+		expect(inputs('quotient')).toHaveLength(4);
+		expect(inputs('reste')).toHaveLength(1);
+		// Zone libre : 8 rangées de 5 carreaux (colonne des signes comprise)
+		expect(inputs('étape')).toHaveLength(8 * 5);
+		expect(inputs('quotient').every((i) => i.inputMode === 'decimal')).toBe(true);
+		expect(inputs('reste').every((i) => i.inputMode === 'numeric')).toBe(true);
+		// Deux cases de la question : le quotient (case 0), le reste (case 1)
+		const quotientCase = screen.container.querySelector('[data-operation-case="0"]')!;
+		const remainderCase = screen.container.querySelector('[data-operation-case="1"]')!;
+		expect(inputs('quotient').every((i) => quotientCase.contains(i))).toBe(true);
+		expect(inputs('reste').every((i) => remainderCase.contains(i))).toBe(true);
+	});
+
+	it('quotient de gauche à droite : le curseur passe à droite, la réponse est lue (n° 5, 6)', async () => {
+		const { inputs, changes } = await renderDivision(['calcul: 9456 ÷ 7']);
+		const cells = () => inputs('quotient');
+		await userEvent.click(cells()[0]);
+		await userEvent.keyboard('1');
+		expect(document.activeElement).toBe(cells()[1]);
+		await userEvent.keyboard('350');
+		expect(cells().map((c) => c.value)).toEqual(['1', '3', '5', '0']);
+		expect(changes.at(-1)).toBe('1350');
+	});
+
+	it('quotient, effacer : case vide → on revient effacer celle de gauche (n° 5)', async () => {
+		const { inputs, changes } = await renderDivision(['calcul: 456 ÷ 7']);
+		const cells = () => inputs('quotient');
+		await userEvent.click(cells()[0]);
+		await userEvent.keyboard('65');
+		expect(document.activeElement).toBe(cells()[2]);
+		await userEvent.keyboard('{Backspace}');
+		expect(document.activeElement).toBe(cells()[1]);
+		expect(cells().map((c) => c.value)).toEqual(['6', '', '']);
+		expect(changes.at(-1)).toBe('6');
+	});
+
+	it('reste de droite à gauche, envoyé à sa propre case (n° 5)', async () => {
+		const { inputs, changes, remainderChanges } = await renderDivision(['calcul: 9456 ÷ 23']);
+		const cells = () => inputs('reste');
+		expect(cells()).toHaveLength(2);
+		await userEvent.click(cells()[1]);
+		await userEvent.keyboard('3');
+		expect(document.activeElement).toBe(cells()[0]);
+		expect(remainderChanges.at(-1)).toBe('3');
+		expect(changes).toEqual([]);
+	});
+
+	it('virgule du quotient : posée à droite de la case, une seule (Q6)', async () => {
+		const { inputs, changes, commas } = await renderDivision(
+			['calcul: 785 ÷ 4', 'quotient: décimal'],
+			{},
+			null
+		);
+		const cells = () => inputs('quotient');
+		expect(cells()).toHaveLength(6);
+		expect(inputs('reste')).toHaveLength(0);
+		await userEvent.click(cells()[0]);
+		await userEvent.keyboard('19625');
+		expect(changes.at(-1)).toBe('19\\,625');
+		await userEvent.click(cells()[2]);
+		await userEvent.keyboard(',');
+		expect(cells()[2].value).toBe('6');
+		expect(commas()).toEqual([cells()[2]]);
+		expect(changes.at(-1)).toBe('196{,}25');
+		// Même case : enlevée
+		await userEvent.keyboard('.');
+		expect(commas()).toEqual([]);
+	});
+
+	it('virgule tapée dans la foulée : à droite du chiffre qu’on vient d’écrire (revue #1758)', async () => {
+		const { inputs, changes, commas } = await renderDivision(
+			['calcul: 785 ÷ 4', 'quotient: décimal'],
+			{},
+			null
+		);
+		const cells = () => inputs('quotient');
+		await userEvent.click(cells()[0]);
+		await userEvent.keyboard('196,');
+		expect(commas()).toEqual([cells()[2]]);
+		expect(document.activeElement).toBe(cells()[3]);
+		await userEvent.keyboard('25');
+		expect(changes.at(-1)).toBe('196{,}25');
+	});
+
+	it('virgule dans la foulée après un 0 : `0,7` (revue #1758)', async () => {
+		const { inputs, changes } = await renderDivision(['calcul: 4,2 ÷ 6'], {}, null);
+		await userEvent.click(inputs('quotient')[0]);
+		await userEvent.keyboard('0,7');
+		expect(changes.at(-1)).toBe('0{,}7');
+	});
+
+	it('virgule tapée en premier, case vide : 0 implicite (`, 7` → 0,7)', async () => {
+		const { inputs, changes } = await renderDivision(['calcul: 4,2 ÷ 6'], {}, null);
+		await userEvent.click(inputs('quotient')[0]);
+		await userEvent.keyboard(',');
+		expect(document.activeElement).toBe(inputs('quotient')[0]);
+		await userEvent.click(inputs('quotient')[1]);
+		await userEvent.keyboard('7');
+		expect(changes.at(-1)).toBe('0{,}7');
+	});
+
+	it('quotient décimal : carreaux libres à droite du dividende saisissables (Q5)', async () => {
+		const { inputs } = await renderDivision(['calcul: 785 ÷ 4', 'quotient: décimal'], {}, null);
+		// 3 carreaux libres + zone : 2 × 6 étapes de 7 carreaux
+		expect(inputs('étape')).toHaveLength(3 + 2 * 6 * 7);
+	});
+
+	it('zone des étapes : chiffres et signe −, jamais envoyés au juge (Q7, n° 16)', async () => {
+		const { inputs, changes, remainderChanges } = await renderDivision(['calcul: 9456 ÷ 7']);
+		const zone = () => inputs('étape');
+		await userEvent.click(zone()[0]);
+		await userEvent.keyboard('-');
+		expect(zone()[0].value).toBe('−');
+		expect(document.activeElement).toBe(zone()[1]);
+		await userEvent.keyboard('7a,');
+		expect(zone()[1].value).toBe('7');
+		expect(zone()[2].value).toBe('');
+		expect(changes).toEqual([]);
+		expect(remainderChanges).toEqual([]);
+	});
+
+	it('flèches : ←/→ dans une rangée, ↑/↓ d’une rangée à l’autre (zone, reste, quotient)', async () => {
+		const { inputs } = await renderDivision(['calcul: 9456 ÷ 7']);
+		const zone = inputs('étape');
+		await userEvent.click(zone[6]);
+		await userEvent.keyboard('{ArrowUp}');
+		expect(document.activeElement).toBe(zone[1]);
+		await userEvent.keyboard('{ArrowRight}');
+		expect(document.activeElement).toBe(zone[2]);
+		await userEvent.keyboard('{ArrowDown}');
+		expect(document.activeElement).toBe(zone[7]);
+		// Dernière rangée de la zone, colonne du reste : ↓ va au reste
+		await userEvent.click(zone[7 * 5 + 4]);
+		await userEvent.keyboard('{ArrowDown}');
+		expect(document.activeElement).toBe(inputs('reste')[0]);
+		await userEvent.click(inputs('quotient')[1]);
+		await userEvent.keyboard('{ArrowLeft}');
+		expect(document.activeElement).toBe(inputs('quotient')[0]);
+	});
+
+	it('noms accessibles neutres, aucune valeur attendue dans le DOM (n° 17)', async () => {
+		const { screen, inputs } = await renderDivision(['calcul: 9456 ÷ 23']);
+		expect(screen.container.innerHTML).not.toMatch(/411/);
+		expect(inputs('quotient').map((i) => i.getAttribute('aria-label'))).toEqual([
+			'Quotient, case 1 sur 4 en partant de la gauche',
+			'Quotient, case 2 sur 4 en partant de la gauche',
+			'Quotient, case 3 sur 4 en partant de la gauche',
+			'Quotient, case 4 sur 4 en partant de la gauche'
+		]);
+		expect(inputs('reste').map((i) => i.getAttribute('aria-label'))).toEqual([
+			'Reste, case 2 sur 2 en partant de la droite',
+			'Reste, case 1 sur 2 en partant de la droite'
+		]);
+		expect(inputs('étape')[0].getAttribute('aria-label')).toBe('Étapes, rangée 1, carreau 1');
+		expect(inputs('quotient').every((i) => i.value === '')).toBe(true);
+	});
+
+	it('réponses déjà saisies : quotient, virgule et reste remis', async () => {
+		const euclid = await renderDivision(['calcul: 9456 ÷ 23'], { value: '411' }, { value: '3' });
+		expect(euclid.inputs('quotient').map((i) => i.value)).toEqual(['4', '1', '1', '']);
+		expect(euclid.inputs('reste').map((i) => i.value)).toEqual(['', '3']);
+		const decimal = await renderDivision(
+			['calcul: 785 ÷ 4', 'quotient: décimal'],
+			{ value: '196{,}25' },
+			null
+		);
+		expect(decimal.commas()).toEqual([decimal.inputs('quotient')[2]]);
+	});
+
+	it('correction : chiffres faux du quotient et du reste surlignés, potence résolue à côté, zone jamais (n° 8)', async () => {
+		const { screen, inputs } = await renderDivision(
+			['calcul: 9456 ÷ 7'],
+			{ value: '1340', isCorrect: false, disabled: true },
+			{ value: '5', isCorrect: false, disabled: true }
+		);
+		expect(inputs('quotient').map((i) => i.getAttribute('aria-invalid'))).toEqual([
+			null,
+			null,
+			'true',
+			null
+		]);
+		expect(inputs('reste').map((i) => i.getAttribute('aria-invalid'))).toEqual(['true']);
+		expect(inputs('étape').some((i) => i.getAttribute('aria-invalid'))).toBe(false);
+		expect(screen.container.querySelector('.operation-correction')).not.toBeNull();
+	});
+
+	it('correction : quotient juste, reste faux → seul le reste surligné, potence résolue à côté', async () => {
+		const { screen, inputs } = await renderDivision(
+			['calcul: 9456 ÷ 7'],
+			{ value: '1350', isCorrect: true, disabled: true },
+			{ value: '5', isCorrect: false, disabled: true }
+		);
+		expect(inputs('quotient').some((i) => i.getAttribute('aria-invalid'))).toBe(false);
+		expect(inputs('reste').map((i) => i.getAttribute('aria-invalid'))).toEqual(['true']);
+		expect(screen.container.querySelector('.operation-correction')).not.toBeNull();
+	});
+
+	it('correction : virgule absente → sa place surlignée ; mal placée → celle de l’élève (Q6)', async () => {
+		const absent = await renderDivision(
+			['calcul: 785 ÷ 4', 'quotient: décimal'],
+			{ value: '19\\,625', isCorrect: false, disabled: true },
+			null
+		);
+		const missing = absent.screen.container.querySelectorAll('.operation-virgule-manquante');
+		expect(missing).toHaveLength(1);
+		expect(missing[0].closest('.operation-carreau')!.contains(absent.inputs('quotient')[2])).toBe(
+			true
+		);
+		const misplaced = await renderDivision(
+			['calcul: 785 ÷ 4', 'quotient: décimal'],
+			{ value: '19{,}625', isCorrect: false, disabled: true },
+			null
+		);
+		const wrong = misplaced.screen.container.querySelectorAll('.operation-virgule-faux');
+		expect(wrong).toHaveLength(1);
+		expect(wrong[0].closest('.operation-carreau')!.contains(misplaced.inputs('quotient')[1])).toBe(
+			true
+		);
+	});
+
+	it('réponses justes : aucun surlignage, pas de correction', async () => {
+		const { screen } = await renderDivision(
+			['calcul: 9456 ÷ 7'],
+			{ value: '1350', isCorrect: true, disabled: true },
+			{ value: '6', isCorrect: true, disabled: true }
+		);
+		expect(screen.container.querySelector('[aria-invalid]')).toBeNull();
+		expect(screen.container.querySelector('.operation-correction')).toBeNull();
+	});
+
+	it('téléphone : la potence saisissable défile dans son cadre (n° 14)', async () => {
+		const main = mainElement();
+		main.style.width = '320px';
+		const screen = await render(Operation, {
+			target: main,
+			props: {
+				node: node('case: 0', 'calcul: 98765,4 ÷ 2'),
+				answer: { value: '', isCorrect: null, disabled: false, onChange: () => {} }
+			}
+		});
+		const frame = screen.container.querySelector('.operation-defile')!;
+		expect(frame.getBoundingClientRect().width).toBeLessThanOrEqual(320);
+		expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
+			document.documentElement.clientWidth
+		);
+	});
+});

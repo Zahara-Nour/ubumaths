@@ -352,4 +352,26 @@ describe('assignBlankIndices — bloc ```operation', () => {
 			'Un bloc operation à remplir doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)'
 		]);
 	});
+
+	// Division euclidienne : DEUX cases, quotient puis reste (PR 3b, § 12 Q2)
+	it('division euclidienne : deux cases, un seul numéro posé (le premier)', () => {
+		const statement = [op('calcul: 456 ÷ 7'), '', 'Mot : [_]'].join('\n');
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(3);
+		expect(result.blankTypes).toEqual(['math', 'math', 'text']);
+		expect(result.statement).toContain('case: 0');
+		expect(result.statement).not.toContain('case: 1');
+		expect(result.statement).toContain('{{blank:2}}');
+		expect(result.operationBlanks).toEqual({ 0: 'calcul: 456 ÷ 7', 1: 'calcul: 456 ÷ 7' });
+	});
+
+	it('division décimale : une seule case', () => {
+		const result = assignBlankIndices(op('calcul: 785 ÷ 4', 'quotient: décimal'));
+		expect(result.totalBlanks).toBe(1);
+		expect(assignBlankIndices(op('calcul: 148,2 ÷ 5')).totalBlanks).toBe(1);
+	});
+
+	it('division en erreur : une case (le générateur la refuse avec ses messages)', () => {
+		expect(assignBlankIndices(op('calcul: 456 ÷ 0')).totalBlanks).toBe(1);
+	});
 });

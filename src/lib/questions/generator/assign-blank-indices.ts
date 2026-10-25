@@ -11,10 +11,14 @@
  * - `?` in math zones ($...$, $$...$$) → \placeholder[N]{}
  * - `[_]` in text (outside math) → {{blank:N}}
  * - `<<expr:NAME>>` in math → reserves indices for ? in answerFormats[NAME]
- * - Bloc ```operation à remplir → UNE case, numéro posé dans le bloc (`case: N`)
+ * - Bloc ```operation à remplir → UNE case, numéro posé dans le bloc (`case: N`) ;
+ *   division euclidienne : DEUX cases, N (quotient) et N + 1 (reste), seul N est posé
  *
  * @module questions/generator/assign-blank-indices
  */
+
+import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 
 /**
  * Result of assigning blank indices to a statement
@@ -41,7 +45,8 @@ export interface AssignBlankIndicesResult {
 	expressionNameByIndex?: Record<number, string>;
 	/**
 	 * Case → texte du bloc ```operation à remplir qui la porte (sans `case:`),
-	 * pour que le générateur calcule la réponse attendue. Absent sans tel bloc.
+	 * pour que le générateur calcule la réponse attendue ; les deux cases d'une
+	 * division euclidienne portent le même texte. Absent sans tel bloc.
 	 */
 	operationBlanks?: Record<number, string>;
 	/** Blocs ```operation à remplir mal placés (liste, citation) : messages pour l'auteur */
@@ -63,6 +68,12 @@ const OPERATION_NESTED_MESSAGE =
 /** Bloc `cases: aucune` : opération résolue, rien à remplir */
 function isSolvedOperation(body: string[]): boolean {
 	return body.some((line) => /^\s*cases\s*:\s*aucune\s*$/i.test(line));
+}
+
+/** Cases portées par un bloc à remplir : 1, ou 2 pour une division euclidienne ; bloc en erreur : 1 (refusé au générateur) */
+function caseCountOf(source: string): number {
+	const node = parseOperationContent(source);
+	return node.spec === null || node.errors.length > 0 ? 1 : operationCaseCount(node.spec);
 }
 
 /**
@@ -215,9 +226,12 @@ export function assignBlankIndices(
 			while (i < text.length) {
 				if (text.startsWith(OPERATION_CASE_MARK, i)) {
 					newText += `case: ${counter}`;
-					operationBlanks[counter] = operations.sources[operationCount++];
-					counter++;
-					blankTypes.push('math');
+					const source = operations.sources[operationCount++];
+					for (let k = caseCountOf(source); k > 0; k--) {
+						operationBlanks[counter] = source;
+						counter++;
+						blankTypes.push('math');
+					}
 					i += OPERATION_CASE_MARK.length;
 				} else if (text[i] === '[' && text[i + 1] === '_' && text[i + 2] === ']') {
 					newText += `{{blank:${counter}}}`;

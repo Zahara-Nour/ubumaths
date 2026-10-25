@@ -23,7 +23,7 @@ import type { OperationSpec } from '../types/operation';
 import { operationResult, type OperationScene } from './operation-scene';
 
 /** `0045.50` → `45.5` ; `000` → `0` */
-function canonical(integer: string, decimal: string): string {
+export function canonical(integer: string, decimal: string): string {
 	const int = integer.replace(/^0+(?=\d)/, '');
 	const dec = decimal.replace(/0+$/, '');
 	return dec === '' ? int : `${int}.${dec}`;
@@ -99,7 +99,7 @@ export function readOperationAnswer(
 }
 
 /** `291{,}55`, `30\\,000` → ['291', '55'], ['30000', ''] ; null si ce n'est pas un nombre */
-function splitAnswer(value: string): [string, string] | null {
+export function splitAnswer(value: string): [string, string] | null {
 	const plain = value
 		.replace(/\\,|\s/g, '')
 		.replace('{,}', ',')

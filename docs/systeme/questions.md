@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc ```operation le 2026-10-25 (multiplication à remplir, PR 2b, et division refusée, PR 3a, le même jour) ; étapes des inéquations (Q50) le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc ```operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -218,13 +218,13 @@ Le **type** n'est pas déclaré : `getQuestionType` le déduit — `options.cour
    `expression` (sinon le marqueur passe en silence au `?` ordinaire) ; le lien case →
    `answerFormats` est porté par `InstanceBlank.expressionName`. Un bloc ```operation à remplir
    (au premier niveau de l'énoncé ; en liste ou cité → échec de génération) compte pour **une**
-   case, son numéro écrit dans le bloc (`case: N`). Sa réponse attendue vient du calcul du bloc
-   (`operationExpectedAnswer`, forme la plus simple), jamais du modèle : `blanks[]` peut l'omettre
+   case, son numéro écrit dans le bloc (`case: N`) ; une division euclidienne pour **deux** (quotient
+   N, reste N + 1, seul N écrit ; `operationBlanks` les liste toutes deux). Sa réponse attendue vient du calcul du bloc
+   (`operationExpectedAnswer` ; division : `divisionExpectedAnswers`, forme la plus simple), jamais du modèle : `blanks[]` peut l'omettre
    (case insérée à son rang ; un modèle sans autre case n'a pas besoin de `blanks`), ou lui donner
    une entrée de réglages avec `expectedAnswer` vide — une réponse écrite est refusée. Un bloc en
    erreur fait échouer la génération (message situé). Une ligne `case:` écrite par l'auteur aussi. Dans un QCM ou une carte de cours, le bloc ne porte aucune case. La case est `type: 'math'`,
-   `operation: true`, jugée comme une case ordinaire. Une division à remplir fait échouer la
-   génération tant que sa saisie n'existe pas (lot 3, PR 3b).
+   `operation: true`, jugée comme une case ordinaire.
 6. Chaque case reçoit ses réglages fusionnés : **case ▸ `blankDefaults`** pour `precision`,
    `unit`, `answerKind`, `rulesSuffice`, `acceptDecimal`… ; `requiredForm` : case ▸
    `blankDefaults` ▸ `requiredForm` de la variation ; `validationRules` : case ▸ variation.
@@ -267,19 +267,19 @@ la longueur AA'. Ailleurs, ils restent.
 
 Natures de réponse :
 
-| Nature                      | Déclaration                                 | Jugée par                                                                                        |
-| --------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Expression / nombre         | case ordinaire                              | équivalence + forme (§ 5)                                                                        |
-| Opération posée             | bloc ```operation (`cases: résultat`)       | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts`)               |
-| Texte                       | `[_]` hors formule                          | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                |
-| Grandeur                    | `unit: { expected, required? }`             | `validateQuantityAnswer` (conversion, unité imposée)                                             |
-| Ensemble en intervalles     | `answerKind: 'intervalles'`                 | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm`                       |
-| Équation de droite / cercle | `answerKind: 'equation'`                    | `equation-answer.ts` (même ensemble de points) ; formes `reduite`, `cartesienne`, `centre-rayon` |
-| Vecteur dans une case       | `answerKind: 'vecteur'`                     | `vector-answer.ts` ; `vectorMode` `exact` ou `colineaire`                                        |
-| Matrice dans une case       | `answerKind: 'matrice'`                     | `matrix-answer.ts` (dimensions, puis chaque coefficient)                                         |
-| Primitive / solution d'ED   | `answerKind: 'primitive'` / `'solution-ed'` | `calculus/` (dérivation / substitution) ; `solutionMode`                                         |
-| QCM                         | `choices` (+ `multipleAnswers`)             | `validateChoice` ; indices d'**origine** (voir invariants)                                       |
-| Carte de cours              | `options.courseCard`                        | rien : auto-évaluation (`validateAnswer` rend un message)                                        |
+| Nature                      | Déclaration                                 | Jugée par                                                                                                                                         |
+| --------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Expression / nombre         | case ordinaire                              | équivalence + forme (§ 5)                                                                                                                         |
+| Opération posée             | bloc ```operation (`cases: résultat`)       | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste) |
+| Texte                       | `[_]` hors formule                          | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                 |
+| Grandeur                    | `unit: { expected, required? }`             | `validateQuantityAnswer` (conversion, unité imposée)                                                                                              |
+| Ensemble en intervalles     | `answerKind: 'intervalles'`                 | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm`                                                                        |
+| Équation de droite / cercle | `answerKind: 'equation'`                    | `equation-answer.ts` (même ensemble de points) ; formes `reduite`, `cartesienne`, `centre-rayon`                                                  |
+| Vecteur dans une case       | `answerKind: 'vecteur'`                     | `vector-answer.ts` ; `vectorMode` `exact` ou `colineaire`                                                                                         |
+| Matrice dans une case       | `answerKind: 'matrice'`                     | `matrix-answer.ts` (dimensions, puis chaque coefficient)                                                                                          |
+| Primitive / solution d'ED   | `answerKind: 'primitive'` / `'solution-ed'` | `calculus/` (dérivation / substitution) ; `solutionMode`                                                                                          |
+| QCM                         | `choices` (+ `multipleAnswers`)             | `validateChoice` ; indices d'**origine** (voir invariants)                                                                                        |
+| Carte de cours              | `options.courseCard`                        | rien : auto-évaluation (`validateAnswer` rend un message)                                                                                         |
 
 Après « Valider », la `FlashCard` colore chaque case au recto avec le verdict par case du
 validateur (`computeBlankColors`, `components/questions/blank-verdicts.ts` → `validateAnswerDetailed`,
