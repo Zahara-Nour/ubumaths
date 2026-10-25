@@ -238,3 +238,109 @@ describe('case « figure » : hors saisie', () => {
 		expect(eraseButton(container)).toBeUndefined();
 	});
 });
+
+describe('case « figure » : mesures à l’écran (revue #1775)', () => {
+	const AXES_BLOCK = BLOCK.replace('fenetre: 0 ; 10 ; 0 ; 6', 'fenetre: 0 ; 10 ; 0 ; 6\naxes: oui');
+	const nodeOf = (source: string) =>
+		parseMarkdown(resolvedMarkdown(source)).children[0] as FigureNode;
+
+	/** FigureBlock en saisie dans un cadre étroit (échelle d'affichage ≠ 1) ; réponses notées */
+	async function narrowFigure(source: string, widthPx: number) {
+		const changes: string[] = [];
+		const main = mainElement();
+		main.style.width = `${widthPx}px`;
+		const screen = await render(FigureBlock, {
+			target: main,
+			props: {
+				node: nodeOf(source),
+				answer: { value: '', isCorrect: null, disabled: false, onChange: (v) => changes.push(v) }
+			}
+		});
+		return { screen, changes, rect: await zone(screen.container) };
+	}
+
+	/** Toucher à `dx` px ÉCRAN à droite du point (x, y) de la figure */
+	function tapNear(rect: SVGRectElement, x: number, y: number, dx: number) {
+		const box = rect.getBoundingClientRect();
+		rect.dispatchEvent(
+			new MouseEvent('click', {
+				bubbles: true,
+				clientX: box.left + (x / 10) * box.width + dx,
+				clientY: box.top + ((6 - y) / 6) * box.height
+			})
+		);
+	}
+
+	it('repère avec marge, cadre étroit : à 18 px de A aimanté, à 30 px non', async () => {
+		const { screen, changes, rect } = await narrowFigure(AXES_BLOCK, 200);
+		// L'échelle d'affichage n'est pas 1 : le rayon de 24 px doit en tenir compte
+		expect(rect.getBoundingClientRect().width).toBeLessThan(190);
+		tapNear(rect, 1, 2, 18);
+		tapNear(rect, 7, 2, 0);
+		await expect.poll(() => changes.at(-1)).toBe('droite(1;2;7;2)');
+		tapNear(rect, 1, 2, 30);
+		tapNear(rect, 7, 2, 0);
+		await expect.poll(() => changes.length).toBe(2);
+		// La valeur passée reste '' : chaque appel ne porte que la droite tracée ; départ
+		// non aimanté (à droite de A), arrivée aimantée sur B
+		expect(changes[1]).not.toBe('droite(1;2;7;2)');
+		const [x1] = changes[1].slice('droite('.length).split(';').map(Number);
+		expect(x1).toBeGreaterThan(1);
+		expect(changes[1].endsWith(';7;2)')).toBe(true);
+		screen.unmount();
+	});
+
+	it('la droite va jusqu’aux bords de la fenêtre', async () => {
+		const { container } = await render(FigureBlock, {
+			target: mainElement(),
+			props: {
+				node: nodeOf(BLOCK),
+				answer: { value: 'droite(1;2;7;2)', isCorrect: null, disabled: false, onChange: () => {} }
+			}
+		});
+		await expect
+			.poll(() => container.querySelector('[data-testid="droite-eleve"]'), { timeout: 5000 })
+			.not.toBeNull();
+		const line = container.querySelector('[data-testid="droite-eleve"]') as SVGLineElement;
+		const width = Number(
+			(container.querySelector('[data-testid="zone-de-trace"]') as SVGRectElement).getAttribute(
+				'width'
+			)
+		);
+		expect(Number(line.getAttribute('x1'))).toBeCloseTo(0, 5);
+		expect(Number(line.getAttribute('x2'))).toBeCloseTo(width, 5);
+		expect(width).toBeGreaterThan(100);
+	});
+
+	it('saisie : figure en role="group" (boutons des points lisibles au lecteur d’écran)', async () => {
+		const { container } = await render(FigureBlock, {
+			target: mainElement(),
+			props: {
+				node: nodeOf(BLOCK),
+				answer: { value: '', isCorrect: null, disabled: false, onChange: () => {} }
+			}
+		});
+		await zone(container);
+		expect(
+			container.querySelector('svg[role="group"] [role="button"][aria-label="Point A"]')
+		).not.toBeNull();
+		expect(container.querySelector('svg[role="img"]')).toBeNull();
+	});
+
+	it('le départ en attente ne passe pas au bloc suivant (vue réutilisée)', async () => {
+		const answer = { value: '', isCorrect: null, disabled: false, onChange: () => {} };
+		const screen = await render(FigureBlock, {
+			target: mainElement(),
+			props: { node: nodeOf(BLOCK), answer }
+		});
+		tap(await zone(screen.container), 1, 2);
+		await expect
+			.poll(() => screen.container.querySelector('[data-testid="depart"]'))
+			.not.toBeNull();
+		await screen.rerender({
+			node: nodeOf(BLOCK.replace('C = point(4, 5)', 'C = point(5, 4)')),
+			answer
+		});
+		await expect.poll(() => screen.container.querySelector('[data-testid="depart"]')).toBeNull();
+	});
+});

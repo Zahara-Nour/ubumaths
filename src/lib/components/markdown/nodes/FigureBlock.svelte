@@ -23,20 +23,14 @@
 	import { readAuthoringErrors } from '../authoring-errors';
 	import { OVER_BUDGET_MESSAGE, readRenderBudget } from '../render-budget';
 	import FigureErrors from './FigureErrors.svelte';
-
-	interface ConstructionAnswer {
-		value: string;
-		isCorrect: boolean | null;
-		disabled: boolean;
-		onChange: (value: string) => void;
-	}
+	import type { ConstructionAnswerInput } from '$lib/questions/construction/drawing';
 
 	interface Props {
 		node: FigureNode;
 		/** Forcer l'affichage des erreurs d'auteur ; sinon, contexte du renderer (élève par défaut) */
 		showErrors?: boolean;
 		/** Case « figure » d'une question (bloc ```figure-a-completer) : l'élève trace */
-		answer?: ConstructionAnswer;
+		answer?: ConstructionAnswerInput;
 		/** Case « figure », mode correction : la bonne droite */
 		showSolution?: boolean;
 		class?: string;

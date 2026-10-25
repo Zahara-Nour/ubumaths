@@ -39,25 +39,17 @@
 		eraseLast,
 		snapTap,
 		solutionLines,
+		type ConstructionAnswerInput,
 		type Drawing
 	} from '$lib/questions/construction/drawing';
 	import { Button } from '$lib/components/ui/button';
 	import FigureBlockView from './FigureBlockView.svelte';
 
-	interface ConstructionAnswer {
-		/** Réponse déjà tracée (`droite(…)|…`), '' sinon */
-		value: string;
-		/** true juste, false faux, null pas encore corrigé */
-		isCorrect: boolean | null;
-		disabled: boolean;
-		onChange: (value: string) => void;
-	}
-
 	interface Props {
 		node: FigureNode;
 		errorsVisible: boolean;
 		/** Case de la question : l'élève trace */
-		answer?: ConstructionAnswer;
+		answer?: ConstructionAnswerInput;
 		/** Mode correction : la bonne droite */
 		showSolution?: boolean;
 		class?: string;
@@ -71,18 +63,24 @@
 		class: className = ''
 	}: Props = $props();
 
-	/** Départ d'une droite, en attente du second toucher (jamais dans la réponse) */
-	let start: Position | null = $state(null);
+	/**
+	 * Départ d'une droite, en attente du second toucher (jamais dans la réponse),
+	 * lié au bloc où il a été posé : la vue peut rester montée d'une question à
+	 * la suivante (`{#each}` de `FillBlanksInput` indexé par position)
+	 */
+	// `raw` : sans proxy, le nœud reste comparable par référence
+	let pending = $state.raw<{ node: FigureNode; at: Position } | null>(null);
 
 	let interactive = $derived(answer !== undefined && !answer.disabled);
 	let lines = $derived(parseConstructionAnswer(answer?.value ?? '') ?? []);
-	// Plus de saisie (Valider, correction) : le départ en attente disparaît
-	let drawing: Drawing = $derived({ lines, start: interactive ? start : null });
+	// Plus de saisie (Valider, correction) ou autre bloc : le départ en attente disparaît
+	let start = $derived(interactive && pending?.node === node ? pending.at : null);
+	let drawing: Drawing = $derived({ lines, start });
 	let corrected = $derived(answer?.isCorrect === false || showSolution);
 	let checks = $derived(node.construction?.checks ?? []);
 
 	function apply(next: Drawing) {
-		start = next.start;
+		pending = next.start ? { node, at: next.start } : null;
 		if (next.lines !== drawing.lines) answer?.onChange(serializeConstructionAnswer(next.lines));
 	}
 
@@ -198,7 +196,7 @@
 {/snippet}
 
 <div class="figure-a-completer {className}">
-	<FigureBlockView {node} {errorsVisible} overlay={layer} />
+	<FigureBlockView {node} {errorsVisible} overlay={layer} {interactive} />
 	{#if interactive}
 		<div class="figure-a-completer-outils">
 			<Button variant="outline" size="sm" onclick={erase} disabled={!canErase(drawing)}>
@@ -206,11 +204,11 @@
 			</Button>
 		</div>
 	{/if}
-	{#if answer && answer.isCorrect !== null}
-		<p class="sr-only" role="status">
-			{answer.isCorrect ? 'réponse juste' : 'réponse fausse'}
-		</p>
-	{/if}
+	<!-- Zone toujours présente : une zone live insérée déjà remplie est souvent tue -->
+	<p class="sr-only" role="status">
+		{#if answer?.isCorrect === true}réponse juste{:else if answer?.isCorrect === false}réponse
+			fausse{/if}
+	</p>
 </div>
 
 <style>

@@ -13,7 +13,8 @@
 	- Repère isotrope : la largeur suit la taille, la hauteur la fenêtre.
 	- Couleur par défaut = couleur du texte (`var(--color-foreground)`), posée en
 	  `style:` : `var()` dans un ATTRIBUT de présentation n'est pas fiable partout.
-	- `role="img"` + `aria-label` (description de l'auteur, sinon automatique).
+	- `role="img"` + `aria-label` (description de l'auteur, sinon automatique) ;
+	  `role="group"` quand la couche porte des boutons (`interactive`).
 	- Repère (`axes:`, `grille:`) : grille puis axes SOUS les objets, marge pour
 	  les flèches et graduations ; les objets restent découpés à la fenêtre.
 	- `overlay` : couche dessinée PAR-DESSUS les objets, dans la fenêtre (tracé
@@ -37,9 +38,20 @@
 		class?: string;
 		/** Couche par-dessus les objets : la scène et la taille de la fenêtre, en px */
 		overlay?: Snippet<[{ scene: FigureScene; width: number; height: number }]>;
+		/**
+		 * La couche porte des boutons (saisie) : `role="group"`, car les enfants
+		 * d'un `role="img"` sont cachés aux lecteurs d'écran
+		 */
+		interactive?: boolean;
 	}
 
-	let { node, errorsVisible, class: className = '', overlay }: Props = $props();
+	let {
+		node,
+		errorsVisible,
+		class: className = '',
+		overlay,
+		interactive = false
+	}: Props = $props();
 
 	const budget = readRenderBudget();
 	/** Séparateur décimal des graduations */
@@ -164,7 +176,7 @@
 			{@const frame = drawing.frame}
 			<!-- Repère : grille, puis axes et graduations, SOUS les objets ; marge pour les flèches -->
 			<svg
-				role="img"
+				role={interactive ? 'group' : 'img'}
 				aria-label={result.scene.ariaLabel}
 				viewBox="0 0 {drawing.width + 2 * m} {drawing.height + 2 * m}"
 				style:max-width="{drawing.width + 2 * m}px"
@@ -208,7 +220,7 @@
 			</svg>
 		{:else}
 			<svg
-				role="img"
+				role={interactive ? 'group' : 'img'}
 				aria-label={result.scene.ariaLabel}
 				viewBox="0 0 {drawing.width} {drawing.height}"
 				style:max-width="{drawing.width}px"

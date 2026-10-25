@@ -9,7 +9,7 @@ _Mis à jour le 2026-10-25, PR 2 (écran élève) codée, avant la PR._
   doc système, verso de `FlashCard` et copie corrigée en figure, corrigé PDF).
 - **En attente de David** : statut de **CP-034** et de **CP-058** ; phase 0 de CP-060 ; Q3/Q4 du § 5 prises « sans
   changement » (à corriger s'il le veut).
-- **Pièges en cours** : la correction s'affiche dans `FlashCard` (`QuestionCard` ne montre jamais de verdict) ; le verso
+- **Pièges en cours** : verdict de `CorrectionCard` sans positions inscrites (§ 5, revue) ; la correction s'affiche dans `FlashCard` (`QuestionCard` ne montre jamais de verdict) ; le verso
   de `FlashCard` montre la réponse en texte (`droite(1;2;7;2)`) jusqu'à la PR 3 ; corrigé PDF : les séries refusent
   déjà les cases portées par un bloc (```operation aussi).
 - **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `feat/geometrie-validation-ecran`.
@@ -195,6 +195,12 @@ changement », signalé à David.
 **Constaté** : le corrigé PDF d'une question n'existe que dans les séries (`serie-automatismes.ts`), qui refusent
 déjà les cases portées par un bloc (```operation compris) → PR 3, à trancher.
 
+**Revue (#1775, Opus)** : 3 à corriger + 4 mineurs, corrigés dans la PR (rôle `group` en saisie, départ lié au bloc,
+tests du repère en cadre étroit et des bords, zone live permanente, type partagé) sauf un, **pour la PR 3** :
+`CorrectionCard` recalcule le verdict côté client (`validateAnswerDetailed`) ; si la vue de saisie n'a pas été chargée
+(rechargement de la page de résultats), « positions non inscrites » devient « faux » en silence. À garder par
+`hasConstructionPositions()` (aucun appelant aujourd'hui) ou en important `positions-setup` sur cette page.
+
 ## Journal
 
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 1), au journal questions.
@@ -207,3 +213,4 @@ déjà les cases portées par un bloc (```operation compris) → PR 3, à tranch
 - 2026-10-25 : revues (code Opus, sécurité) : 5 correctifs (point inconnu refusé à la génération, bloc non fermé = parseur, tolérance par la figure, messages à deux vérifications, `orderIndependent` refusé) ; #1768 mergée.
 - 2026-10-25 : bloc renommé ` ```figure-a-completer ` (David) ; ` ```construction ` n'ouvre plus rien.
 - 2026-10-25 : PR 2 (écran élève) : phase 0 validée (§ 5), codée ; 16 tests du tracé, 9 d'écran (rouges sans le branchement), 1 PDF.
+- 2026-10-25 : revue Opus de #1775 : 6 points corrigés, 4 tests d'écran ajoutés (13), 1 point reporté à la PR 3.

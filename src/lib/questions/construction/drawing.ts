@@ -26,6 +26,16 @@ const FREE_TAP_DECIMALS = 2;
 /** Deux touchers plus proches que ça : le même endroit (pas de droite) */
 const SAME_TAP_EPSILON = 1e-9;
 
+/** Case « figure » d'une question, telle que l'écran la passe à la figure */
+export interface ConstructionAnswerInput {
+	/** Réponse déjà tracée (`droite(…)|…`), '' sinon */
+	value: string;
+	/** true juste, false faux, null pas encore corrigé */
+	isCorrect: boolean | null;
+	disabled: boolean;
+	onChange: (value: string) => void;
+}
+
 /** Ce que l'élève a tracé, et le départ d'une droite en attente du second toucher */
 export interface Drawing {
 	lines: DrawnLine[];
