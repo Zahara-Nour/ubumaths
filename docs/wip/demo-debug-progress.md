@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 8 en PR._
+_Mis à jour le 2026-10-25, après #1750 (phase 8)._
 
-- **État** : phases 1 à 7 mergées (dernière #1742) ; **phase 8** (`/constructions/essais` prof seul, vitrine `/demo/constructions`) sur `feat/demo-constructions`, **PR #1750** ouverte (revues : 0 bloquant). Rien en prod : l'ouverture de `/demo` aux robots prend effet au prochain `deploy:prod`.
-- **Prochaine action** : merger la phase 8, puis **PR à part** : retrait de l'accès admin sur `construction-demo-scripts` (API `DEMO_SCRIPT_AUTHOR_ROLES` + RLS `20261023150000` → migration, question d'accès à poser à David). Ensuite fin de chantier = versement.
+- **État** : phases 1 à 8 mergées ; dernière #1750 (`/constructions/essais` prof seul, vitrine `/demo/constructions`, 10 vitrines). Rien en prod : tout prend effet au prochain `deploy:prod`. Vérification manuelle notée (dont `/constructions/[id]`, non vue en local).
+- **Prochaine action** : **PR à part** : retrait de l'accès admin sur `construction-demo-scripts` (API `DEMO_SCRIPT_AUTHOR_ROLES` + RLS `20261023150000` → migration ; poser d'abord à David la question d'accès en miroir : « l'admin ne pourra plus lire/écrire ses scripts d'essai »). Ensuite fin de chantier = versement.
 - **Hors chantier, décidé par David le 2026-10-25** : cahier de texte → ubumark, **futur chantier `cahier-ubumark`** ; énigmes (HTML lu comme markdown) à mesurer ; bug FSRS → **chantier `fsrs`** ; `z` ≈ `2` → PR à part dans `tools/chiphre-math/`, en dernier.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
 - **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians (`dsl-builtins.md` dit « radians ») → `geometry-expert`, plus tard. Images des 4 cartes Mathémo à vérifier.
 - **Pièges en cours** : nouvelle vitrine → une entrée dans `DEMO_PAGES` + `<SeoHead {...demoSeo(…)} />` (le test l'exige) ; sous `/dev`, ni `+layout@` ni donnée sensible par un load universel ; dans `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale` ; `wrapDynamicImport` dans la sortie des tests client = bruit, déjà sur `main` ; 1er test de `page-demo-lexique` lent à froid en CI (1 échec, vert à la relance).
-- **Worktree / branche** : `../ubumaths-wt-demo-debug` · `feat/demo-constructions` ; serveur de test sur 5177 (5176 = simplify-carte). Un vieux serveur de la phase 7 tournait encore sur 5177 dans le dossier supprimé : l'arrêter au `worktree remove`.
+- **Worktree / branche** : aucun (celui de la phase 8 est supprimé) ; la PR suivante partira d'un nouveau worktree depuis `origin/main`. Serveurs de test : 5176 = simplify-carte, 5179 = operations-posees.
 
 ## Décisions de David (2026-10-24)
 
@@ -469,3 +469,4 @@ no position before the top-level node` dans les raccourcis Backspace de la droit
 - Vérifié sur 5177 (Playwright) : vitrine 200 sans erreur de console, rien ne déborde ; prof :
   `/construction-demo` → `/constructions/essais` 200, clic « Essais » ; élève et admin 403, pas
   de bouton « Essais ».
+- **Livrée : #1750, mergée le 2026-10-25.** CI verte du premier coup.
