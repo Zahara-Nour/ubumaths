@@ -262,6 +262,8 @@ export const VariationTableExtension = Node.create({
 
 				// Check if we're at the start of a paragraph
 				if ($from.parentOffset !== 0) return false;
+				// Tout le document sélectionné (Ctrl+A) : pas de bloc parent, `before()` lèverait
+				if ($from.depth === 0) return false;
 
 				// Check if there's a variationTable before us
 				const posBefore = $from.before();
