@@ -167,3 +167,118 @@ describe('FillBlanksInput — bloc ```operation', () => {
 		expect(screen.container.querySelectorAll('.operation-case')).toHaveLength(3);
 	});
 });
+
+// Division euclidienne : un bloc, DEUX cases (quotient, reste ; PR 3b, § 12 Q2)
+describe('FillBlanksInput — division posée', () => {
+	const DIVISION = [
+		'```operation',
+		'case: 0',
+		'calcul: 9456 ÷ 7',
+		'```',
+		'',
+		'Mot : {{blank:2}}'
+	].join('\n') as ResolvedMarkdown;
+
+	const divisionBlanks: InstanceBlank[] = [
+		{ type: 'math', expectedAnswer: '1350', expectedAnswerLatex: '1350', operation: true },
+		{ type: 'math', expectedAnswer: '6', expectedAnswerLatex: '6', operation: true },
+		{ type: 'text', expectedAnswer: 'division' }
+	];
+
+	const cellsOf = (root: Element, kind: string) => [
+		...root.querySelectorAll<HTMLInputElement>(`input[data-operation-cell="${kind}"]`)
+	];
+
+	it('quotient → values[N], reste → values[N+1] (n° 4)', async () => {
+		const values: string[] = [];
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: { statement: DIVISION, blanks: divisionBlanks, values, validationResults: [] }
+		});
+		await userEvent.click(cellsOf(screen.container, 'quotient')[0]);
+		await userEvent.keyboard('1350');
+		await userEvent.click(cellsOf(screen.container, 'reste')[0]);
+		await userEvent.keyboard('6');
+		expect(values.slice(0, 2)).toEqual(['1350', '6']);
+	});
+
+	it('Entrée : quotient vide → sa case vide la plus à gauche ; puis le reste', async () => {
+		let submitted = 0;
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement: DIVISION,
+				blanks: divisionBlanks,
+				validationResults: [],
+				onSubmit: () => submitted++
+			}
+		});
+		const text = screen.container.querySelector<HTMLInputElement>(
+			'input[type="text"]:not([data-operation-cell])'
+		)!;
+		await userEvent.click(text);
+		await userEvent.keyboard('division{Enter}');
+		expect(document.activeElement).toBe(cellsOf(screen.container, 'quotient')[0]);
+		await userEvent.keyboard('1350{Enter}');
+		expect(document.activeElement).toBe(cellsOf(screen.container, 'reste')[0]);
+		await userEvent.keyboard('6{Enter}');
+		expect(submitted).toBe(1);
+	});
+
+	it('correction : quotient et reste de l’élève remis, chacun jugé par sa case', async () => {
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement: DIVISION,
+				blanks: divisionBlanks,
+				values: ['1350', '5', 'division'],
+				disabled: true,
+				validationResults: [true, false, true]
+			}
+		});
+		expect(cellsOf(screen.container, 'quotient').map((c) => c.value)).toEqual(['1', '3', '5', '0']);
+		expect(cellsOf(screen.container, 'reste').map((c) => c.getAttribute('aria-invalid'))).toEqual([
+			'true'
+		]);
+		expect(screen.container.querySelector('.operation-correction')).not.toBeNull();
+	});
+
+	it('division décimale : une case, quotient et virgule de l’élève', async () => {
+		const statement = ['```operation', 'case: 0', 'calcul: 148,2 ÷ 5', '```'].join(
+			'\n'
+		) as ResolvedMarkdown;
+		const values: string[] = [];
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement,
+				blanks: [
+					{ type: 'math', expectedAnswer: '29.64', expectedAnswerLatex: '29{,}64', operation: true }
+				],
+				values,
+				validationResults: []
+			}
+		});
+		expect(cellsOf(screen.container, 'reste')).toHaveLength(0);
+		const cells = cellsOf(screen.container, 'quotient');
+		await userEvent.click(cells[0]);
+		await userEvent.keyboard('2964');
+		await userEvent.click(cells[1]);
+		await userEvent.keyboard(',');
+		expect(values[0]).toBe('29{,}64');
+	});
+
+	it('bonne réponse affichée : potence résolue, aucune case', async () => {
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement: DIVISION,
+				blanks: divisionBlanks,
+				showCorrectAnswers: true,
+				validationResults: []
+			}
+		});
+		expect(cellsOf(screen.container, 'quotient')).toHaveLength(0);
+		expect(cellsOf(screen.container, 'reste')).toHaveLength(0);
+	});
+});

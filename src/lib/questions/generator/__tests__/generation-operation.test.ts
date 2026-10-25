@@ -134,11 +134,53 @@ describe('bloc ```operation : la case et sa réponse', () => {
 		expect(instance.blanks?.[0].operation).toBeUndefined();
 	});
 
-	it('division à remplir : refusée tant que sa saisie n’existe pas (PR 3b)', () => {
-		const result = generateInstance(template({ statement: op('calcul: 9456 ÷ 7') }), 42);
-		expect(result.success).toBe(false);
-		if (result.success) return;
-		expect(result.errors.join(' ')).toMatch(/case 1.*division.*pas encore disponible/i);
+	it('division euclidienne à remplir : deux cases, quotient puis reste, calculés par le bloc (PR 3b, § 12 n° 4, Q2)', () => {
+		const instance = generate(template({ statement: op('calcul: 9456 ÷ 7') }));
+		expect(instance.blanks).toHaveLength(2);
+		expect(instance.blanks?.map((b) => b.expectedAnswer)).toEqual(['1350', '6']);
+		expect(instance.blanks?.every((b) => b.type === 'math' && b.operation === true)).toBe(true);
+		expect(String(instance.statement)).toContain('case: 0');
+		expect(String(instance.statement)).not.toContain('case: 1');
+	});
+
+	it('division euclidienne avec d’autres cases : les deux cases du bloc insérées à leur rang', () => {
+		const instance = generate(
+			template({
+				statement: `$? + 1 = 3$\n\n${op('calcul: 456 ÷ 7')}\n\nMot : [_]`,
+				blanks: [{ expectedAnswer: '2' }, { expectedAnswer: 'division' }]
+			})
+		);
+		expect(instance.blanks?.map((b) => b.expectedAnswer)).toEqual(['2', '65', '1', 'division']);
+		expect(String(instance.statement)).toContain('case: 1');
+	});
+
+	it('division euclidienne, blanks[] complet : deux entrées sans réponse pour le bloc', () => {
+		const instance = generate(
+			template({
+				statement: op('calcul: 9 ÷ 1'),
+				blanks: [{ expectedAnswer: '' }, { expectedAnswer: '' }]
+			})
+		);
+		expect(instance.blanks?.map((b) => b.expectedAnswer)).toEqual(['9', '0']);
+	});
+
+	it('division décimale à remplir : une seule case, le quotient (n° 7)', () => {
+		const instance = generate(template({ statement: op('calcul: 785 ÷ 4', 'quotient: décimal') }));
+		expect(instance.blanks).toHaveLength(1);
+		expect(instance.blanks?.[0]).toMatchObject({
+			expectedAnswer: '196.25',
+			expectedAnswerLatex: '196{,}25',
+			operation: true
+		});
+		expect(generate(template({ statement: op('calcul: 148,2 ÷ 5') })).blanks).toHaveLength(1);
+	});
+
+	it('division décimale : le juge juge la valeur (`2,1` juste pour 4,20 ÷ 2 ; virgule absente → faux, Q6)', () => {
+		const instance = generate(template({ statement: op('calcul: 4,20 ÷ 2') }));
+		expect(validateAnswer('2{,}1', instance, '2{,}1').status).toBe('correct');
+		expect(validateAnswer('21', instance, '21').isCorrect).toBe(false);
+		const whole = generate(template({ statement: op('calcul: 8 ÷ 4', 'quotient: décimal') }));
+		expect(whole.blanks?.[0].expectedAnswer).toBe('2');
 	});
 
 	it('division résolue (cases: aucune) : acceptée, sans case', () => {

@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1754._
+_Mis à jour le 2026-10-25, PR 3b commencée (tests rouges)._
 
-- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740, #1745, #1748) ; lot 3 division : PR 3a affichage mergée (#1754). Tout sur `main`, pas en prod.
-- **Prochaine action** : PR 3b (saisie de la division : quotient de gauche à droite, reste, zone des étapes, virgule posée par l'élève ; § 12), dans un worktree neuf.
-- **En attente de David** : vérifications #1716 → #1754 avant `deploy:prod`. Précision Q1 (§ 10).
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — à jour au 2026-10-25 (saisie de la multiplication, division en potence) ; à compléter avec la saisie de la division (PR 3b).
-- **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas ; le validateur de modèle accepte une division à remplir que le générateur refuse (transitoire, jusqu'à la PR 3b).
-- **Worktree / branche** : `ubumaths-wt-operations-posees-division` (serveur 5180) et `ubumaths-wt-operations-posees` (5179), figés tant qu'ils servent à David ; branches mergées.
+- **État** : lots 1 et 2 COMPLETS ; lot 3 division : PR 3a mergée (#1754) ; **PR 3b en cours** (saisie) : tests rouges écrits et commités (§ 13), code à écrire. Rien en prod.
+- **Prochaine action** : `utils/operation-division-answer.ts`, `assign-blank-indices.ts` (2 cases), générateur, `Operation.svelte` (potence saisissable, props `answer` + `remainder`), `FillBlanksInput.svelte` ; puis verts.
+- **En attente de David** : vérifications #1716 → #1754 avant `deploy:prod`. Précision Q1 (§ 10). Choix du § 13 (recos suivies, à lui signaler).
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — à compléter avec la saisie de la division.
+- **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; `Operation.svelte` fait déjà 808 lignes : la potence saisissable mérite son propre composant ; le journal du worktree `ubumaths-wt-operations-posees` est figé (à ne pas lire pour reprendre).
+- **Worktree / branche** : `ubumaths-wt-operations-posees-saisie-division` · `feat/operations-posees-saisie-division`. Figés pour David : `ubumaths-wt-operations-posees-division` (5180), `ubumaths-wt-operations-posees` (5179).
 
 ---
 
@@ -430,6 +430,20 @@ Découpage pressenti : **PR 3a** affichage (parseur, scène, potence écran et P
 - **Zéro de fin du quotient (David, 2026-10-25, reco suivie)** : la potence résolue le garde
   (`4,20 ÷ 2` → `2,10`, comme `10,0` au lot 2) ; en PR 3b, `2,1` est juste et complet (décimales de
   fin vides = 0).
+
+## 13. PR 3b — choix faits en écrivant les tests (recos suivies, David : « je suis tes recos »)
+
+- Deux cases pour une euclidienne : un seul `case: N` posé dans le bloc ; le quotient est la case N, le
+  reste la case N+1 (`operationBlanks` les liste toutes deux).
+- Zone des étapes : chaque carreau est saisissable (un chiffre ou le signe −, curseur vers la droite),
+  carreaux libres à droite du dividende compris ; flèches dans les quatre sens ; jamais jugée.
+- Correction du quotient : comparé case par case depuis la gauche ; un zéro de tête écrit n'est jamais
+  faux et décale la comparaison ; un chiffre oublié à droite (partie entière) est faux ; décimales de
+  fin vides = 0.
+- Virgule du quotient posée après le dernier chiffre écrit : aucune virgule.
+- Noms accessibles : « Quotient, case 1 sur 4 en partant de la gauche », « Reste, case 1 sur 2 en
+  partant de la droite », « Étapes, rangée 1, carreau 1 ».
+- Entrée sur une grille vide : le quotient reçoit le curseur dans sa case vide la plus à gauche.
 
 ## Journal
 
