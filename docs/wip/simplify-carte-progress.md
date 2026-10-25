@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1743 (5f-5)._
+_Mis à jour le 2026-10-25, M2 en PR (#1749)._
 
-- **État** : lot 5 CLOS — 5f restes : ~~5f-1~~ → … → ~~Q51+Q52~~ (#1741) → ~~5f-5~~ (#1743, § 91 : puissances n/2 → racine dans `tidy`, aᵐ/aⁿ et aᵐ·a dans `.simplifier`) mergés. Code pas en prod.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
+- **État** : lot 5 CLOS (#1743). M2 (regrouper les puissances de même base non voisines, § 93) en PR **#1749**, revue opus corrigée, CI en cours → merger si verte. Code pas en prod.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`** (M2 et les décisions § 93 à y porter).
 - **Ordre des lots** : … → ~~5~~ → **6 valeurs approchées** → 7 renommages.
-- **Prochaine action** : lot 6 (valeurs approchées) — relire son périmètre dans le journal, phase 0 (comportements, à valider par David).
-- **En attente de David** : § 91 : M2 (regrouper au-delà de deux facteurs voisins : `x·eˣ·e`, `3e^{2x}/eˣ`) ; `2^{−1/2} → √2/2` et `(8/27)^{1/3}` laissé écrit (« entière » à la lettre) ; vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1741) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64) ; § 87 : pipeline rationnel qui multiplie la fraction tapée, `(x − 1)/(x² − 1) ≥ 0`, `x² < −1` sans étapes ; **§ 89** : `\frac{2}{3}x = 0,5` → « × 1,5 » (3/2 ?), x à droite (`4 < 2(x−1)` : échanger les membres ?), termes mixtes `0,5x = x/3 + 1` → ÷ 1/6, correction de question d'une inéquation sans `stepsAsShown` (`-0,25(x−2) ≥ 1` → « ÷ −1/4 »).
-- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; l'Atelier écrit `0{,}25`, le moteur `0.25` ; sonde vitest : `console.log` muet, faire échouer un `expect` ; zsh ne découpe pas `$F` (`${=F}`) ; `number(-1)` interdit (`opposite(number(1))`) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; client CI : `wrapDynamicImport` = navigateur fermé, relancer le job ; **PR sans CI = conflit avec `main`** : fusionner `origin/main` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-6` (partie d'`origin/main` après #1743).
+- **Prochaine action** : merger #1749 (puis § 94, page, vérification manuelle) ; ensuite lot 6 (valeurs approchées), phase 0 à faire valider par David.
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1743) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64) ; § 87 : pipeline rationnel qui multiplie la fraction tapée, `(x − 1)/(x² − 1) ≥ 0`, `x² < −1` sans étapes ; **§ 89** : `\frac{2}{3}x = 0,5` → « × 1,5 », x à droite (échanger les membres ?), termes mixtes → ÷ 1/6, inéquation sans `stepsAsShown` (« ÷ −1/4 »).
+- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; l'Atelier écrit `0{,}25`, le moteur `0.25` ; sonde vitest : `console.log` muet, faire échouer un `expect` ; `number(-1)` interdit ; `check:incremental` : erreurs fantômes → `FRESH=1` ; client CI : `wrapDynamicImport` = relancer le job ; **PR sans CI = conflit avec `main`** ; commitlint : corps ≤ 100 caractères par ligne ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** (PR comprise).
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-6` (#1749) ; lot 6 sur une branche neuve depuis `origin/main`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1113,3 +1113,11 @@ CI verte (un shard client relancé : navigateur de test fermé, `wrapDynamicImpo
 ## 92. 5f-5 mergé (#1743, 2026-10-25)
 
 CI verte du premier coup sur le commit des correctifs de revue, mergée. Vérification manuelle notée (5f-5). Lot 5 clos.
+
+## 93. Décisions de David sur 5f-5, M2 codé (branche `feat/simplify-carte-5f-6`, 2026-10-25)
+
+- **David suit les trois recommandations du § 91** : `2^{−1/2} → √2/2` gardé ; `(8/27)^{1/3}` reste écrit (« valeur exacte entière » à la lettre) ; M2 oui, en petite PR.
+- **M2** (`pattern/rule-sets/powers.ts`) : `same-base-mul-spread` et `same-base-div-spread` regroupent deux facteurs de même base non voisins, mêmes conditions que les règles à deux facteurs (base `e` ou rationnel positif ; un nombre seul ne rejoint pas une puissance de sa base, `2ˣ·3·2` reste `6 × 2ˣ`). `.simplifier x·eˣ·e → x e^{x+1}`, `2·x·eˣ·e → 2x e^{x+1}` (le résultat passe par `tidy` : les `×` tapés restaient), `eˣ(x+1)e^{2x} → (x+1)e^{3x}`, `3e^{2x}/eˣ → 3eˣ`, `e^{2x}/(3eˣ) → eˣ/3`, `2eˣ/(4e^{3x}) → e^{−2x}/2` (exposant négatif gardé, comme `e^x/e^{2x+1}` en 5f-5).
+- Tests : bloc M2 de `atelier/__tests__/puissances-5f5.test.ts` (8 rouges avant). Doc `pattern-matching.md`, `panel-simplifications.md`.
+- **Revue `code-reviewer` (opus)**, 42 saisies comparées à `main` : aucune valeur fausse, aucune boucle. **Corrigé, test rouge d'abord** : `6·2ˣ/2 → 6 × 2^{x−1}` au lieu de `3 × 2ˣ` (régression : la garde « nombre seul » manquait au quotient). **Non traités (mineurs, pas de régression)** : `x(−eˣ)e` non regroupé (opposé entre parenthèses) ; `\frac{e^{2x}x}{eˣx} → \frac{x eˣ}{x}` (le `x/x` reste visible).
+- Mesures : suite serveur `src/lib` 58 464 verts (+ 2 attentes connues) ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre. Banc des modèles non relancé : aucun modèle de prod n’a de correction automatique (§ 75), il ne voit pas `.simplifier`.
