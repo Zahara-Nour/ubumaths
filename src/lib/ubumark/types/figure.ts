@@ -142,7 +142,7 @@ export interface FigureNode extends BaseNode {
 	interactive?: FigureInteractiveSettings;
 	/** Erreurs de l'en-tête ou de structure (le script n'est alors pas interprété) */
 	errors: FigureIssue[];
-	/** Bloc ```construction : outils et vérifications de la case « figure » */
+	/** Bloc ```figure-a-completer : outils et vérifications de la case « figure » */
 	construction?: ConstructionSpec;
 }
 

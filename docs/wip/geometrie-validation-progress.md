@@ -2,15 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1768._
+_Mis à jour le 2026-10-25, renommage du bloc (PR en cours, après #1768)._
 
-- **État** : PR 1 (moteur) MERGÉE (#1768) : bloc ` ```construction `, case, juge `droite_par`, registre des positions. Aucun écran, aucun modèle.
-- **Prochaine action** : PR 2 (écran élève : tracé dans `FillBlanksInput`, import de `positions-setup`, rendu après Valider), nouveau worktree.
-- **En attente de David** : **nom du bloc** (« construction » désigne déjà les constructions animées : table `constructions`, route
-  `/constructions`, ressource `construction`) ; statut de **CP-034** et de **CP-058** ; phase 0 de CP-060.
+- **État** : PR 1 (moteur) mergée (#1768) ; bloc renommé ` ```figure-a-completer ` (décision de David), PR de renommage en cours.
+- **Prochaine action** : merger le renommage, puis PR 2 (écran élève : tracé dans `FillBlanksInput` sur `GeometryCanvas`,
+  import de `positions-setup`, rendu après Valider).
+- **En attente de David** : statut de **CP-034** et de **CP-058** ; phase 0 de CP-060.
 - **Pièges en cours** : sans `positions-setup`, `validateAnswer` rend « positions non inscrites » dans `message` ; `snapToPoint`
-  existe (`geometry-core/interaction/snap.ts`) ; fiche du catalogue (`block-catalog/types.ts`) après le merge de `catalogue-blocs`.
-- **Worktree / branche** : aucun (retirés après #1768).
+  existe (`geometry-core/interaction/snap.ts`) ; fiche du catalogue (`block-catalog/types.ts`) après le merge de `catalogue-blocs` ;
+  noms internes restés `construction` (code anglais), le bloc et les messages disent `figure-a-completer`.
+- **Worktree / branche** : `../ubumaths-wt-geometrie-validation` · `refactor/figure-a-completer`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -152,6 +153,10 @@ Revue : `code-reviewer` en Opus (correction des réponses).
 
 **Décisions** : trait en trop → « Tu as tracé une droite de trop. » ; PDF → figure de départ seule ; 3 PR.
 
+**Nom du bloc (David, 2026-10-25)** : ` ```figure-a-completer `. « construction » désigne déjà les constructions animées
+(table `constructions`, `/constructions`, ressource `construction`) ; « figure interactive » les figures enregistrées
+(ADR 0027 : on explore, rien n'est jugé) ; `geometrie` se confondait avec ` ```figure `. Entrée « Figure à compléter » dans `CONTEXT.md`.
+
 **Positions des points (David, 2026-10-25)** : un **registre**, comme le PDF des figures (`figure-typst-registry.ts`),
 plutôt qu'une lecture légère (`point(x, y)` seulement) ou un import direct de geometry-core. Mesuré (esbuild, minifié) :
 générateur + juge 1,82 Mo ; avec l'interpréteur 2,25 Mo (+430 Ko, +110 Ko gzip, +24 %) ; avec le registre +11 Ko.
@@ -172,3 +177,4 @@ plusieurs vérifications : « Il manque la droite qui passe par A et C. »
 - 2026-10-25 : chantier ouvert sans attendre B1 → B3 (David) ; plan en 3 PR validé (§ 4).
 - 2026-10-25 : registre des positions décidé (David) ; PR 1 (moteur) codée, 46 tests neufs, suites voisines vertes.
 - 2026-10-25 : revues (code Opus, sécurité) : 5 correctifs (point inconnu refusé à la génération, bloc non fermé = parseur, tolérance par la figure, messages à deux vérifications, `orderIndependent` refusé) ; #1768 mergée.
+- 2026-10-25 : bloc renommé ` ```figure-a-completer ` (David) ; ` ```construction ` n'ouvre plus rien.

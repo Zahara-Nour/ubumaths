@@ -466,11 +466,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let expressionsArray: QuestionInstance['expressions'] = undefined;
 		let finalStatement: ResolvedMarkdown = resolvedStatement;
 
-		// Un bloc ```operation à remplir ou ```construction porte sa case, même sans `blanks`
+		// Un bloc ```operation à remplir ou ```figure-a-completer porte sa case, même sans `blanks`
 		// dans le modèle — dans une question à trous seulement (un QCM, une carte de cours
 		// n'ont pas de case)
 		const hasOperationBlock =
-			/^\s*>?\s*```(?:operation|construction)\s*$/m.test(String(resolvedStatement)) &&
+			/^\s*>?\s*```(?:operation|figure-a-completer)\s*$/m.test(String(resolvedStatement)) &&
 			getQuestionType({
 				choices: resolvedVariation.choices,
 				shared: template.shared,
@@ -512,7 +512,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				return { success: false, errors: blankResult.constructionErrors };
 			}
 
-			// Cases des blocs ```construction : la figure de l'élève, jugée par les
+			// Cases des blocs ```figure-a-completer : la figure de l'élève, jugée par les
 			// vérifications du bloc (positions lues au jugement, cf. questions/construction)
 			const constructionCases = new Map<number, NonNullable<InstanceBlank['construction']>>();
 			for (const [key, source] of Object.entries(blankResult.constructionBlanks ?? {})) {
@@ -543,7 +543,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					return {
 						success: false,
 						errors: [
-							`Case ${index + 1} (bloc construction) : ${errors.map((e) => e.message).join(' ; ')}`
+							`Case ${index + 1} (bloc figure-a-completer) : ${errors.map((e) => e.message).join(' ; ')}`
 						]
 					};
 				}
@@ -583,7 +583,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			// Coherence check: totalBlanks must match blanks[] length. Les cases des blocs
 			// ```operation peuvent manquer à blanks[] (insérées à leur rang) ; présentes,
 			// elles ne donnent que des réglages.
-			// Les cases des blocs ```construction aussi.
+			// Les cases des blocs ```figure-a-completer aussi.
 			const isBlockCase = (index: number) =>
 				operationAnswers.has(index) || constructionCases.has(index);
 			const blockCaseCount = operationAnswers.size + constructionCases.size;
@@ -604,7 +604,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						return {
 							success: false,
 							errors: [
-								`Case ${index + 1} : sa réponse est la figure de l’élève (bloc construction) ; laisser expectedAnswer vide`
+								`Case ${index + 1} : sa réponse est la figure de l’élève (bloc figure-a-completer) ; laisser expectedAnswer vide`
 							]
 						};
 					}

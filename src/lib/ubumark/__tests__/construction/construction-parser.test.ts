@@ -1,5 +1,5 @@
 /**
- * Bloc ```construction — lecture (phase 0 de CP-059 validée le 2026-10-25,
+ * Bloc ```figure-a-completer — lecture (phase 0 de CP-059 validée le 2026-10-25,
  * `docs/wip/geometrie-validation-progress.md` § 3 et § 4)
  *
  * Le bloc est une figure de départ (même en-tête, même langage que ```figure)
@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest';
 import { parseMarkdown } from '../../parser';
 import type { FigureNode } from '../../types/figure';
 
-const block = (...body: string[]) => ['```construction', ...body, '```'].join('\n');
+const block = (...body: string[]) => ['```figure-a-completer', ...body, '```'].join('\n');
 
 const CP059 = block(
 	'fenetre: 0 ; 10 ; 0 ; 6',
@@ -149,5 +149,20 @@ describe('```figure inchangé', () => {
 		);
 		expect(node.construction).toBeUndefined();
 		expect(node.errors.map((e) => e.message).join(' ')).toContain('verifier: droite_par A ; B');
+	});
+});
+
+describe('nom du bloc (décision de David du 2026-10-25)', () => {
+	it('```construction n’ouvre pas le bloc (le mot désigne les constructions animées)', () => {
+		const node = parseMarkdown(
+			[
+				'```construction',
+				'fenetre: 0 ; 10 ; 0 ; 6',
+				'verifier: droite_par A ; B',
+				'---',
+				'```'
+			].join('\n')
+		).children[0];
+		expect(node?.type).not.toBe('figure');
 	});
 });

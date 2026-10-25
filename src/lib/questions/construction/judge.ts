@@ -1,5 +1,5 @@
 /**
- * Juge d'une case « figure » (bloc ```construction)
+ * Juge d'une case « figure » (bloc ```figure-a-completer)
  * =================================================
  *
  * On juge le RÉSULTAT par des positions, jamais par des identifiants : une

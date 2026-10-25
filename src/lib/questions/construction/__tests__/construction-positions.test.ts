@@ -1,5 +1,5 @@
 /**
- * Positions des points d'un bloc ```construction : un REGISTRE, comme le PDF
+ * Positions des points d'un bloc ```figure-a-completer : un REGISTRE, comme le PDF
  * des figures (`figure-typst-registry.ts`) — décision de David du 2026-10-25.
  * Le juge reste léger ; l'interpréteur de geometry-core n'est chargé que par
  * le module d'inscription (écran de l'élève, correction serveur).

@@ -1,5 +1,5 @@
 /**
- * Question à bloc ```construction (case « figure ») : génération et jugement
+ * Question à bloc ```figure-a-completer (case « figure ») : génération et jugement
  * de bout en bout (`docs/wip/geometrie-validation-progress.md` § 3 et § 4).
  *
  * Le bloc porte sa case, comme ```operation : `blanks[]` peut l'omettre. La
@@ -31,7 +31,7 @@ function template(variation: Omit<QuestionVariation, 'statement'> & { statement:
 
 const block = (...lines: string[]) =>
 	[
-		'```construction',
+		'```figure-a-completer',
 		'fenetre: 0 ; 10 ; 0 ; 6',
 		'outils: droite',
 		...lines,
@@ -53,7 +53,7 @@ function generate(t: QuestionTemplate) {
 	return result.instance;
 }
 
-describe('bloc ```construction : la case', () => {
+describe('bloc ```figure-a-completer : la case', () => {
 	it('sans blanks[] : une case « figure », réponse attendue symbolique', () => {
 		const instance = generate(CP059);
 		expect(instance.blanks).toHaveLength(1);
@@ -125,7 +125,7 @@ describe('bloc ```construction : la case', () => {
 	});
 });
 
-describe('bloc ```construction : le jugement (validateAnswer)', () => {
+describe('bloc ```figure-a-completer : le jugement (validateAnswer)', () => {
 	const instance = generate(CP059);
 	const verdict = (answer: string) => validateAnswer([answer], instance);
 

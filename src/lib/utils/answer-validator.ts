@@ -1257,7 +1257,7 @@ function validateSingleBlank(
 		return { isCorrect: false, status: 'empty' };
 	}
 
-	// Case « figure » (bloc ```construction) : chaîne à part, cf. questions/construction/
+	// Case « figure » (bloc ```figure-a-completer) : chaîne à part, cf. questions/construction/
 	if (blank.construction) {
 		return constructionBlankResult(userAnswer, blank.construction);
 	}

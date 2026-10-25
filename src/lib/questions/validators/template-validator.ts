@@ -184,11 +184,11 @@ function validateVariation(
 	switch (questionType) {
 		case 'fill_in_blanks':
 			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul),
-			// un bloc ```construction aussi (la figure de l'élève)
+			// un bloc ```figure-a-completer aussi (la figure de l'élève)
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
 				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
-				!/^\s*>?\s*```construction\s*$/m.test(
+				!/^\s*>?\s*```figure-a-completer\s*$/m.test(
 					String(variation.statement ?? shared?.statement ?? '')
 				)
 			) {

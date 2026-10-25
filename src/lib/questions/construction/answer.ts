@@ -1,5 +1,5 @@
 /**
- * Réponse d'une case « figure » (bloc ```construction)
+ * Réponse d'une case « figure » (bloc ```figure-a-completer)
  * ====================================================
  *
  * Ce que l'élève a tracé, écrit en coordonnées : `droite(x1;y1;x2;y2)`, les

@@ -480,9 +480,9 @@ function convertBlockquote(quote: BlockquoteNode): JSONContent {
 	};
 }
 
-/** Mot d'ouverture d'un nœud figure : ```construction garde le sien */
-function figureFence(node: FigureNode): 'figure' | 'construction' {
-	return node.construction ? 'construction' : 'figure';
+/** Mot d'ouverture d'un nœud figure : ```figure-a-completer garde le sien */
+function figureFence(node: FigureNode): 'figure' | 'figure-a-completer' {
+	return node.construction ? 'figure-a-completer' : 'figure';
 }
 
 /**
