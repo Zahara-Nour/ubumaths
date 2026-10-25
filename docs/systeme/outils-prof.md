@@ -112,16 +112,17 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
 
 ### Carte du code
 
-| Fichier                                          | Rôle                                                                              |
-| ------------------------------------------------ | --------------------------------------------------------------------------------- |
-| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`… |
-| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions                      |
-| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation                            |
-| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                   |
-| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL               |
-| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)            |
-| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                    |
-| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                |
+| Fichier                                          | Rôle                                                                                          |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`…             |
+| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions                                  |
+| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation                                        |
+| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                               |
+| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL                           |
+| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)                        |
+| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                                |
+| `src/lib/slides/core/slide-theme.ts`             | `slideColorScheme` : thème du contenu d'une diapositive d'après son fond (ou sa prop `theme`) |
+| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                            |
 
 ### Consommateurs (seuls points d'entrée)
 
@@ -152,10 +153,21 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
 - Les flèches de navigation du `Deck` suivent le thème : flèche `--color-foreground` sur une
   pastille `--color-background`, visibles sur le fond du thème (carnets, séries en classe) comme
   sur une diapositive sombre (testé par `Deck.fleches.svelte.test.ts`).
-- Le contenu d'une `UbuMarkSlide` a la couleur du thème (`--color-foreground`), comme ses
-  paragraphes : sur le fond du thème (présentation des carnets), une formule en bloc reste lisible
-  en clair comme en sombre. Un fond sombre imposé à une `UbuMarkSlide` rend donc le texte illisible
-  en thème clair (testé par `UbuMarkSlide.couleur.svelte.test.ts`).
+- **La couleur du contenu suit le fond de la diapositive** (`slideColorScheme`, PR 6i-b du
+  chantier demo-debug) : un fond de couleur unie lisible (`#rgb`, `#rrggbb`, `rgb()`, `white`,
+  `black`) donne son thème par sa luminance ; la prop `theme="clair" | "sombre"` l'impose (utile sous
+  un dégradé ou une image). La diapositive pose alors `color-scheme`, et les couleurs `light-dark()`
+  du site basculent pour tout son contenu (texte, tableaux, blocs ubumark), quel que soit le thème
+  du site. Sans fond, elle suit le site (couleur `--color-foreground`) ; sous un dégradé, une image,
+  une vidéo ou une page sans `theme`, le texte reste blanc, comme avant. `AnnotatableSlide` et
+  `WhiteboardSlide` relaient `theme`. Testé par `slide-theme.test.ts` et
+  `UbuMarkSlide.theme.svelte.test.ts` ; `UbuMarkSlide.couleur.svelte.test.ts` garde la formule en
+  bloc de la couleur du texte sur le fond du thème (carnets).
+- **Une `UbuMarkSlide` trop grande se réduit pour tenir**, sans jamais grossir : contenu à largeur
+  fixe (celle de la diapositive), échelle `min(1, hauteur dispo / hauteur, largeur dispo / largeur)`
+  remesurée par `ResizeObserver` (formules et figures se rendent après coup). Plancher
+  `MIN_FIT_SCALE` = 0,5 : au-delà, la diapositive défile (le haut reste visible, `safe center`).
+  Concerne aussi les cellules longues de la présentation des carnets, avant coupées.
 - Quand la barre d'annotation disparaît (on quitte la diapositive annotable), le focus revient au
   deck si le dernier focus était dans la barre et qu'il n'est allé nulle part ailleurs (`<body>`) :
   le clavier pilote toujours le diaporama, et un champ focalisé hors de la barre garde son focus
@@ -168,6 +180,8 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
 `src/lib/slides/core/__tests__/Deck.autoSlide.svelte.test.ts`,
 `src/lib/slides/core/__tests__/Deck.annotation.svelte.test.ts`,
 `src/lib/slides/core/__tests__/UbuMarkSlide.couleur.svelte.test.ts`,
+`src/lib/slides/core/__tests__/UbuMarkSlide.theme.svelte.test.ts`,
+`src/lib/slides/core/__tests__/slide-theme.test.ts`,
 `src/lib/slides/core/__tests__/Deck.fleches.svelte.test.ts`,
 `src/lib/slides/actions/__tests__/inputFilter.svelte.test.ts`.
 
