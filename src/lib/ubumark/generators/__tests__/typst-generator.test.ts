@@ -1373,7 +1373,7 @@ describe('Edge Cases', () => {
 		const typst = generateTypst(ast, { includeSetup: false });
 
 		// Liste numérotée, avec une sous-liste à puces
-		expect(typst).toContain('#ubu-item(numbering("1)", 1), w: "1)")[Parent');
+		expect(typst).toContain('#ubu-item(numbering("1)", 1), w: "1)", tete: [Parent])');
 		expect(typst).toContain('Parent');
 		expect(typst).toContain('#ubu-item([•], w: "•")');
 		expect(typst).toContain('[Child]');

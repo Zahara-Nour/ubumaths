@@ -209,12 +209,14 @@ export function generateTypst(ast: DocumentNode, options: TypstTranspilerOptions
  *  - `ubu-item` : item de liste dont le numéro est DANS la première ligne, donc
  *    aligné sur sa ligne de base (`enum` le colle en haut d'un premier item haut) ;
  *    `w` = numéro le plus large de la liste, dont la place est réservée (comme `enum`) ;
+ *    `tete` = premier paragraphe collé au bloc qui le suit, numéro compris (sinon
+ *    le numéro resterait seul sur sa ligne, au-dessus du bloc collé) ;
  *  - `ubu-item-bloc` : item qui commence par un bloc (formule centrée, cercle…),
  *    numéro à côté du bloc comme avant.
  */
 const PDF_READABILITY_HEADER = [
 	'#show math.equation.where(block: false): set text(top-edge: "bounds", bottom-edge: "bounds")',
-	'#let ubu-item(num, body, w: "a)") = context { let n = measure(w).width + 0.5em; block(spacing: 1.5em, pad(left: n, [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#body])) }',
+	'#let ubu-item(num, body, w: "a)", tete: none) = context { let n = measure(w).width + 0.5em; let ligne(x) = [#h(-n)#box(width: n - 0.5em, align(end, num))#h(0.5em)#x]; block(spacing: 1.5em, pad(left: n, if tete == none { ligne(body) } else { block(sticky: true, ligne(tete)); body })) }',
 	'#let ubu-item-bloc(num, body, w: "a)") = context { let n = measure(w).width + 0.5em; block(spacing: 1.5em, grid(columns: (n, 1fr), box(width: n - 0.5em, align(end, num)), body)) }',
 	'// ubumark: fin de l’en-tête',
 	''
@@ -294,23 +296,50 @@ function generateBody(ast: DocumentNode, options: ResolvedTypstTranspilerOptions
 		const last = ast.children.length - 1;
 		return ast.children
 			.map((node, index) =>
-				index === last ? stickyBlock(node, options) : generateBlock(node, options)
+				index === last ? stickyBlock(node, options) : generateTopBlock(ast, index, options)
 			)
 			.join('\n\n');
 	}
-	if (!afterQuestion) return ast.children.map((node) => generateBlock(node, options)).join('\n\n');
+	if (!afterQuestion)
+		return ast.children.map((_node, index) => generateTopBlock(ast, index, options)).join('\n\n');
 
 	// Questions : éléments de premier niveau des listes numérotées de premier
 	// niveau, numérotées d'une liste à l'autre (cadres de réponse, ADR 0030)
 	let questionIndex = 0;
 	return ast.children
-		.map((node) => {
-			if (node.type !== 'list' || !node.ordered) return generateBlock(node, options);
+		.map((node, index) => {
+			if (node.type !== 'list' || !node.ordered) return generateTopBlock(ast, index, options);
 			const first = questionIndex;
 			questionIndex += node.items.length;
 			return generateList(node, options, 0, (index) => afterQuestion(first + index));
 		})
 		.join('\n\n');
+}
+
+/** Bloc de premier niveau, paragraphe collé au bloc qui le suit s'il y a lieu */
+function generateTopBlock(
+	ast: DocumentNode,
+	index: number,
+	options: ResolvedTypstTranspilerOptions
+): string {
+	const node = ast.children[index];
+	const typst = generateBlock(node, options);
+	return keepsWithNext(node, ast.children[index + 1]) ? keepWithNext(typst) : typst;
+}
+
+/** Blocs qu'un paragraphe ne quitte pas en bas de page (décision de David, 2026-10-26) */
+const NOT_KEPT_WITH: ReadonlySet<string> = new Set(['paragraph', 'heading', 'horizontal-rule']);
+
+/**
+ * Un paragraphe ne reste pas seul en bas de page quand le bloc qui le suit
+ * (dessin, formule, tableau, liste…) part sur la suivante : « 30 pièces en
+ * vrac : » puis son bloc ```monnaie.
+ */
+function keepsWithNext(
+	node: { type: string } | undefined,
+	next: { type: string } | undefined
+): boolean {
+	return node?.type === 'paragraph' && next !== undefined && !NOT_KEPT_WITH.has(next.type);
 }
 
 /**
@@ -442,8 +471,10 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 				return `\`${unescapedContent}\``;
 			}
 
-			// For regular text, escape special Typst characters
-			let text = escapeTypst(unescapedContent);
+			// For regular text, escape special Typst characters ; crochets compris : le
+			// texte est souvent posé dans un contenu `[…]` (élément de liste, bloc collé),
+			// qu'un `]` d'intervalle (`]2 ; 3[`) fermerait trop tôt
+			let text = escapeTypstBrackets(unescapedContent);
 			if (node.bold) text = `*${text}*`;
 			// Use #emph[] instead of _..._ for italic - more reliable in content blocks
 			if (node.italic) text = `#emph[${text}]`;
@@ -631,14 +662,19 @@ function generateList(
 		? widestLabel(pattern, startNumber, startNumber + node.items.length - 1)
 		: '•';
 	const items = node.items.map((item: ListItemNode, index: number) => {
-		const num = `${node.ordered ? `numbering("${pattern}", ${startNumber + index})` : '[•]'}, w: "${widest}"`;
+		const label = `${node.ordered ? `numbering("${pattern}", ${startNumber + index})` : '[•]'}, w: "${widest}"`;
 		// Fin de l'élément, après ses sous-éléments (cadre de réponse d'une question)
 		const after = afterItem?.(index) ?? '';
 		// Le cadre n'est jamais séparé de ce qui le précède : élément d'un seul bloc,
 		// insécable avec son cadre ; sinon son dernier bloc reste collé au cadre
 		const unbreakable = after !== '' && item.children.length <= 1;
+		// Premier paragraphe collé au bloc qui le suit : porté par `ubu-item`, avec le numéro
+		const [first, second] = item.children;
+		const head = keepsWithNext(first, second)
+			? `, tete: [${generateParagraph(first as ParagraphNode, options)}]`
+			: '';
 		const itemContent = generateListItemContent(
-			item,
+			head ? { ...item, children: item.children.slice(1) } : item,
 			options,
 			newDepth,
 			after !== '' && !unbreakable
@@ -648,7 +684,7 @@ function generateList(
 		const helper =
 			item.children[0] && item.children[0].type !== 'paragraph' ? 'ubu-item-bloc' : 'ubu-item';
 		const sticky = stickyLast && index === node.items.length - 1;
-		return { helper, num, content, unbreakable, sticky };
+		return { helper, num: label + head, content, unbreakable, sticky };
 	});
 
 	// `:colonnes N` : grille lue en lignes (a) b) / c) d)). `columns()` de Typst ne se
@@ -697,7 +733,8 @@ function generateListItemContent(
 		} else {
 			// Regular block (paragraph, math, etc.)
 			const generated = generateBlock(child as BlockNode, options);
-			const blockContent = sticky ? keepWithNext(generated) : generated;
+			const blockContent =
+				sticky || keepsWithNext(child, item.children[i + 1]) ? keepWithNext(generated) : generated;
 
 			// Add blank line between paragraphs to preserve line breaks
 			if (i > 0 && item.children[i - 1].type !== 'list') {
