@@ -106,7 +106,26 @@ const horloges = {
 	]
 } as unknown as QuestionTemplate;
 
-const modeles = new Map([coefficient, parite, deuxCases, carte, horloges].map((t) => [t.id, t]));
+/** QCM de collections (chantier collection, décision 9) : chaque choix est un bloc */
+const collections = {
+	...base,
+	id: 'collections',
+	variations: [
+		{
+			statement: 'Quel dessin montre {{n}} ?',
+			variables: [{ name: 'n', expression: '42' }],
+			choices: [
+				{ content: '```collection\ndizaines: 4\nunités: 2\n```', isCorrect: true },
+				{ content: '```collection\ndizaines: 2\nunités: 4\ntaille: 5cm\n```', isCorrect: false }
+			],
+			correctChoiceIndex: '0'
+		}
+	]
+} as unknown as QuestionTemplate;
+
+const modeles = new Map(
+	[coefficient, parite, deuxCases, carte, horloges, collections].map((t) => [t.id, t])
+);
 
 describe('buildSerie — cas nominaux', () => {
 	it('une question à case : énoncé à trous numéroté, corrigé avec la réponse et la correction', () => {
@@ -179,6 +198,21 @@ describe('buildSerie — cas nominaux', () => {
 		// La réponse du corrigé : la lettre seule, sans redessiner le bloc sur la ligne
 		expect(serie.solution).toMatch(/Réponse : \*\*[ab]\)\*\*\s*$/m);
 		expect(serie.solution).not.toMatch(/\*\*[ab]\)\*\* ```/);
+	});
+
+	it('QCM de collections : chaque choix reste un bloc, 3 cm sauf taille donnée', () => {
+		const serie = buildSerie(modeles, [{ templateId: 'collections', seed: 1 }]);
+		const found: { spec: { sizeCm: number | null } | null }[] = [];
+		const visit = (node: unknown): void => {
+			if (Array.isArray(node)) return node.forEach(visit);
+			if (node === null || typeof node !== 'object') return;
+			const record = node as Record<string, unknown>;
+			if (record.type === 'collection') found.push(record as never);
+			Object.values(record).forEach(visit);
+		};
+		visit(parseMarkdown(serie.statement));
+		expect(found.map((n) => n.spec?.sizeCm).sort()).toEqual([3, 5]);
+		expect(serie.solution).toMatch(/Réponse : \*\*[ab]\)\*\*\s*$/m);
 	});
 
 	it('plusieurs cases (texte et formule) : toutes à trous, toutes remplies au corrigé', () => {

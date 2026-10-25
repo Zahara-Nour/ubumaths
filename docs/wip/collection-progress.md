@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 écrite._
+_Mis à jour le 2026-10-25, phase 0 validée._
 
-- **État** : phase 0 rendue à David (§ 2 à § 8), **aucun code**.
-- **Prochaine action** : attendre les réponses de David aux questions du § 8, puis § 8 bis (décisions) et tests rouges.
-- **En attente de David** : Q1 à Q9 (§ 8).
+- **État** : phase 0 validée (§ 8 bis, toutes les recos suivies) ; implémentation de la PR 1 en cours.
+- **Prochaine action** : tests rouges → parseur, scène, écran (marquage), PDF, QCM → PR.
+- **En attente de David** : rien.
 - **Pièges en cours** : ne pas toucher au chantier « questions » (`../ubumaths-wt-questions`) ; les modèles CP-001/004/070 sont écrits par la session « questions » ; un modèle porte au plus UN point par programme (ADR 0020).
 - **Worktree / branche** : `../ubumaths-wt-collection`, `feat/bloc-collection`.
 
@@ -178,6 +178,18 @@ Une PR (ou deux si > ~800 lignes : écran / PDF + QCM).
 ## 8. Questions à David
 
 Voir le message de la session du 2026-10-25 (Q1 à Q9).
+
+## 8 bis. Décisions (David, 2026-10-25 : « je suis tes recos »)
+
+1. **v1 en affichage seul** : réponse dans une case nombre ou un QCM ; « construire » (CP-002) dans un lot suivant.
+2. **« Toucher pour marquer » en v1** : aide non jugée, état local, rien d'enregistré.
+3. **Plafond** : total ≤ 100 (vrac compris, le marquage le rend comptable).
+4. **Centaines** plus tard ; la clé `centaines:` est réservée (message « pas encore disponible »).
+5. **Matériel v1** : jetons, barres et cubes ; bûchettes plus tard.
+6. **Graine du vrac** : le contenu du bloc (aucune clé en plus).
+7. **1 à 3 collections**, légendes A, B, C par défaut.
+8. **Monnaie** : bloc ` ```monnaie ` séparé, qui partage la scène.
+9. **Tailles** : 6 cm par défaut au PDF, 3 cm dans un choix de QCM.
 
 ## Journal
 

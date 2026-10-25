@@ -146,6 +146,14 @@ export {
 	isOperationBlockStart
 } from './operation-parser';
 
+// Bloc ```collection
+export {
+	parseCollection,
+	parseCollectionContent,
+	findCollectionBlocks,
+	isCollectionBlockStart
+} from './collection-parser';
+
 // Bloc ```courbe
 export {
 	parseCourbe,
