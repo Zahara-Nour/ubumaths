@@ -2,11 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot B1 en cours (brouillons créés, PR à ouvrir)._
+_Mis à jour le 2026-10-25, lot B1 en cours (PR #1763 ouverte)._
 
 - **État** : groupe A et lot H en prod (brouillons validés). **Lot B1** (tableaux, § 4 undecies) : 3 brouillons créés en prod (go de David : `7752c23e` CP-068, `76d14aa6` CP-069, `55662eef` CP-084), vérifiés sans nœud ni tag ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
-- **Prochaine action** : PR B1 ouverte, CI, audit sécurité, merge → `db:migrate` (question d'accès tranchée : personne) → page à cocher B1 ; puis phase 0 de B2 (reconnaître sur une figure ; CP-034 y viendra si David le range en QCM sur figure).
-- **En attente de David** : publication A1 à H (et B1) en un lot ; vérification manuelle #1702 ; les 8 questions de phase 0 de la case « figure » (session `geometrie-validation`, § 2 ter).
+- **Prochaine action** : PR #1763 (audit sécurité sans finding bloquant) : CI verte → merge → `db:migrate` (question d'accès tranchée : personne) → page à cocher B1 ; puis phase 0 de B2 (reconnaître sur une figure ; CP-034 y viendra si David le range en QCM sur figure).
+- **Case « figure »** : phase 0 de CP-059 **validée** (§ 2 ter) ; code après B3, chantier à part. 034 et 058 à réexaminer.
+- **En attente de David** : publication A1 à H (et B1) en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; **case dans un tableau = `$?$` (un `[_]` déborde au téléphone)** ; **un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte** ; le moteur ne mélange pas : indicatrices de Lagrange ; ne pas nommer une variable comme une lettre du texte ; jamais de variable `e` ; corps de commit ≤ 100 caractères par ligne ; la base refuse un tag sur un modèle sans nœud.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-b1`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -88,7 +89,7 @@ Proposition passée au conseil (5 conseillers + relecture croisée anonyme). Ce 
 - **Première action du chantier** : en phase 0, écrire le modèle CP-059 tel que le prof l'écrirait et ce que voit
   l'enfant (consigne, outils, réussite, erreur, blocage), avant toute ligne de code.
 
-## 2 ter. Case « figure » : phase 0 de CP-059 (brouillon du 2026-10-25, à valider)
+## 2 ter. Case « figure » : phase 0 de CP-059 (VALIDÉE par David le 2026-10-25)
 
 Écrite avant le chantier (qui reste après B1 → B3) pour que sa phase 0 soit prête. Rien n'est codé.
 
@@ -156,6 +157,12 @@ règle graduée), pas « reporter une longueur » comme noté au § 2 bis : comm
    dans l'appli (aucun `speechSynthesis`) : la consigne se lit seule ou avec l'adulte.
 8. **Format** : un bloc ` ```construction ` (figure et réponse ensemble), ou une case `[_]` qui renvoie à un bloc
    ` ```figure ` ?
+
+**Décisions de David (2026-10-25, « je suis tes recos »)** : (1) outil **droite** seul ; (2) **toucher** A puis B ;
+(3) **feuille blanche**, sans quadrillage ; (4) **un** point piège ; (5) trait en trop = **faux** ; (6) Valider **grisé** tant
+que rien n'est tracé ; (7) `delay` **60 s** ; (8) bloc ` ```construction ` (figure de départ et réponse ensemble). Les
+modèles CP-059 / 060 s'écrivent **dans le chantier figure** (ils dépendent du bloc neuf), pas dans le chantier questions.
+Le code attend toujours la fin de B1 → B3 (§ 4 nonies).
 
 ## 3. Outils proposés
 
@@ -314,5 +321,6 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 2026-10-25 : page A3 relue par David, 6/6 OK. Tous les brouillons du chantier (A1 à H) sont validés.
 - 2026-10-25 : validation des figures faites par l'élève passée au conseil ; verdict consigné (§ 2 bis) et suivi par David : 008 → réponses à placer, 058 à réexaminer (§ 3, § 4 nonies).
 - 2026-10-25 : case « figure », phase 0 de CP-059 écrite en brouillon (§ 2 ter), 8 questions à David ; CP-034 à réexaminer (« comparer », pas « reporter »).
+- 2026-10-25 : phase 0 de CP-059 validée par David (§ 2 ter, 8 décisions) ; modèles 059/060 dans le chantier figure.
 - 2026-10-25 : lot B1, phase 0 validée (§ 4 undecies), worktree `../ubumaths-wt-questions` (`feat/questions-b1`) ; 3 modèles écrits, 16 specs vertes, rendu relu à 390 px (cases `[_]` → `$?$` : le champ texte débordait ; « la ligne de Inès » → Lina).
 - 2026-10-25 : B1, 3 brouillons créés en prod (`create-questions --publier`, go de David : `7752c23e`, `76d14aa6`, `55662eef`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
