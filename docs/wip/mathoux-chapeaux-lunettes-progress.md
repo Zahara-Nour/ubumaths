@@ -8,7 +8,7 @@
 
 _Mis à jour le 2026-10-25, PR 1 (#1734) en revue._
 
-- **État** : PR 1 #1734 (migration `20261025235500`) ouverte ; revue (Sonnet) et audit (Opus) sans
+- **État** : PR 1 #1734 (migration `20261026000100`) ouverte ; revue (Sonnet) et audit (Opus) sans
   bloquant, corrections poussées ; 22/22 rouges sans la migration, verts avec. Comportements
   validés par David : chapeau gardé à la transformation (pas de couronne), lunettes et chapeau en
   fondu au réveil, clés anglaises, une fonction de pose par emplacement.
@@ -65,3 +65,6 @@ Bicorne : pas au catalogue.
   `glasses`/`hat`, `set_mathou_glasses`/`set_mathou_hat`) ; preuve rouge 22/22. Revue (Sonnet) :
   doc du schéma, test d'accès qui essaie de vraies poses et l'achat, commentaire d'index faux
   (recopié des colliers) → corrigés. Audit (Opus) : aucun bloquant ; export RGPD à compléter en PR 2.
+- 2026-10-25 — #1734 mergée (CI verte sur ca3118194). Avant `db:migrate` : `20261026000000`
+  (autre session) déjà en prod, la nôtre devenue « antérieure » → renommée `20261026000100`
+  (pas de `--include-all` sans David).

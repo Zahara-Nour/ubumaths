@@ -488,7 +488,7 @@ décoration par emplacement : `student_mathoux.decoration` (panse) et `student_m
 portée par un seul Mathou (index unique partiel). `buy_mathou_decoration` pose à l'emplacement de
 la clé ; `set_mathou_decoration` refuse un collier ; `set_mathou_collar` pose, déplace, remplace
 ou retire le collier (mêmes gardes). Test : `tests/integration/mathoux-colliers.test.ts`.
-Lunettes et chapeaux (migration `20261025235500`) : même catalogue, même table d'achats, deux
+Lunettes et chapeaux (migration `20261026000100`) : même catalogue, même table d'achats, deux
 emplacements de plus, « yeux » (`eyes` : `round_glasses`, `sunglasses`, `monocle`, `pince_nez`,
 `spiral_glasses`) et « tête » (`head` : `bowler`, `beret`, `boater`, `top_hat`, `pointed_hat`),
 portés dans `student_mathoux.glasses` et `student_mathoux.hat` avec les mêmes garanties que
