@@ -29,8 +29,8 @@ describe('evaluateNumeric', () => {
 		expect(evaluateNumeric(parseLatex('\\ln(x)'), 'x', 0)).toBe(-Infinity);
 	});
 
-	// Lot 6a (simplify-carte § 25) : la puissance et la réciproque d'une
-	// fonction, π et e étaient ignorés
+	// Lot 6a (simplify-carte § 25, § 96) : la puissance et la réciproque d'une
+	// fonction, l'indice d'une racine étaient ignorés
 	it('évalue la puissance d’une fonction : sin²(x) en 1', () => {
 		expect(evaluateNumeric(parseLatex('\\sin^2(x)'), 'x', 1)).toBeCloseTo(Math.sin(1) ** 2);
 	});
@@ -39,8 +39,13 @@ describe('evaluateNumeric', () => {
 		expect(evaluateNumeric(parseLatex('\\cos^{-1}(x)'), 'x', 0.5)).toBeCloseTo(Math.acos(0.5));
 	});
 
-	it('évalue π et e', () => {
-		expect(evaluateNumeric(parseLatex('\\pi x'), 'x', 2)).toBeCloseTo(2 * Math.PI);
-		expect(evaluateNumeric(parseLatex('e^{x}'), 'x', 1)).toBeCloseTo(Math.E);
+	it('évalue une racine n-ième réelle : ∛x en −8, ∛(x²) en −8', () => {
+		expect(evaluateNumeric(parseLatex('\\sqrt[3]{x}'), 'x', -8)).toBeCloseTo(-2);
+		expect(evaluateNumeric(parseLatex('\\sqrt[3]{x^2}'), 'x', -8)).toBeCloseTo(4);
+	});
+
+	it('réglage « undefined » : null au pôle et pour ln(0)', () => {
+		expect(evaluateNumeric(parseLatex('\\frac{1}{x-2}'), 'x', 2, 'undefined')).toBeNull();
+		expect(evaluateNumeric(parseLatex('\\ln(x)'), 'x', 0, 'undefined')).toBeNull();
 	});
 });
