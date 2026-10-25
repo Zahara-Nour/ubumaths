@@ -80,6 +80,11 @@ function isConstant(node: MathNode): boolean {
 	return findNodes(node, (n) => n.type === 'variable' || n.type === 'greek').length === 0;
 }
 
+/** `−u` → `u`, sinon le nœud. */
+function magnitudeOrSelf(node: MathNode): MathNode {
+	return node.type === 'opposite' ? unwrapGrouping(node.operand) : node;
+}
+
 /** Un quotient dont le dénominateur a une lettre : sa barre reste (Q1). */
 function isLiteralQuotient(node: MathNode): node is Extract<MathNode, { type: 'division' }> {
 	return node.type === 'division' && !isConstant(node.denominator);
@@ -190,14 +195,18 @@ function coefficientFirst(term: MathNode): MathNode {
 
 /**
  * Une somme écrite au propre : `tidy` dans l'ordre du développement, les
- * nombres à la fin (`2eˣ + 2`), chaque coefficient devant ; des monômes, dans
+ * nombres après les autres termes (`2eˣ + 2`) mais avant les quotients à
+ * dénominateur littéral (`x² − x − 2 + 1/(x+1)`), chaque coefficient devant ; des monômes, dans
  * l'ordre du manuel.
  */
 function written(terms: readonly SignedTerm[]): MathNode {
 	const tidied = flattenSumShallow(tidy(sumOf(terms), { order: 'kept' }));
+	const quotient = ({ term }: SignedTerm) => isLiteralQuotient(magnitudeOrSelf(term));
+	const constant = ({ term }: SignedTerm) => isConstant(term);
 	const ordered = [
-		...tidied.filter(({ term }) => !isConstant(term)),
-		...tidied.filter(({ term }) => isConstant(term))
+		...tidied.filter((t) => !constant(t) && !quotient(t)),
+		...tidied.filter(constant),
+		...tidied.filter((t) => !constant(t) && quotient(t))
 	];
 	// L'ordre du manuel quand ce sont des monômes (`x² + 2xy + y²`)
 	return orderExpanded(
@@ -339,7 +348,7 @@ class Expansion {
 /** Les `(√u)²` levés, puis ce qu'ils libèrent développé (`4(√(x+1))² → 4x + 4`). */
 function resolved(node: MathNode): MathNode {
 	const next = withSquaredRootsResolved(node);
-	return next === node ? node : expand(next);
+	return next === node ? node : expandedForm(next);
 }
 
 /**
@@ -380,6 +389,9 @@ export function expand(node: MathNode): MathNode {
 		const naturalPower = top.type === 'superscript' && integerExponent(top.superscript) !== null;
 		const atomic = top.type === 'superscript' ? !naturalPower : top.type === 'function';
 		if (atomic || isLiteralQuotient(top)) return node;
+		// Une somme dont aucun terme ne se regroupe : seul l'ordre changerait
+		const isSum = top.type === 'addition' || top.type === 'subtraction';
+		if (isSum && terms.length === flattenSumShallow(top).length) return node;
 		const result = resolved(written(terms));
 		return nodesEqual(result, node) ? node : result;
 	} catch (error) {

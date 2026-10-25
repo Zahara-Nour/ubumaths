@@ -47,7 +47,7 @@
 
 import type { MathNode } from '../types';
 import type { Verbosity } from '../common/verbosity';
-import { multiply, number, opposite, parentheses, superscript } from '../factory';
+import { divide, multiply, number, opposite, parentheses, superscript } from '../factory';
 import { flattenProductShallow, flattenSumShallow, type Sign, type SignedTerm } from '../flatten';
 import { findNodes } from '../transforms';
 import { expandedForm } from './expand';
@@ -221,6 +221,11 @@ function containsSum(node: MathNode): boolean {
 	return findNodes(node, isSum).length > 0;
 }
 
+/** Une lettre quelque part (`x`, `α`) : un dénominateur qui n'est pas un nombre. */
+function hasLetter(node: MathNode): boolean {
+	return findNodes(node, (n) => n.type === 'variable' || n.type === 'greek').length > 0;
+}
+
 /** Les parenthèses de GROUPEMENT retirées (`[0;1]` est un intervalle). */
 function unwrapGrouping(node: MathNode): MathNode {
 	if (node.type !== 'delimiter') return node;
@@ -284,6 +289,16 @@ function readChunk({ sign, term }: SignedTerm): Chunk {
 		if (inner !== node) {
 			if (isSum(inner)) sums.push(readSum(inner, 1));
 			else visit(inner);
+			return;
+		}
+		// Diviser par un nombre, c'est multiplier par son inverse (Q2 de
+		// normalize-usages) : `(x+1)/2` se lit `½(x + 1)`, « On distribue ½ »
+		if (node.type === 'division' && containsSum(node.numerator) && !hasLetter(node.denominator)) {
+			plain.push(divide(number('1'), node.denominator, 'fraction'));
+			// Une barre de fraction groupe son numérateur, sans parenthèse écrite
+			const numerator = unwrapGrouping(node.numerator);
+			if (isSum(numerator)) sums.push(readSum(numerator, 1));
+			else visit(numerator);
 			return;
 		}
 		if (node.type === 'superscript' && isSum(unwrapGrouping(node.base))) {
