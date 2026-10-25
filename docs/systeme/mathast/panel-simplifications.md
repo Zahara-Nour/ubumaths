@@ -22,7 +22,7 @@ couvre:
 | `simplify`   | `simplify(node)` — `tidy` → règles (sans identité remarquable : ne factorise jamais) → « développer seulement si moins cher » → `tidy`                                                                                                                                                                                                                                                                                                                  |
 | `auto`       | `generatePedagogicalSimplifySteps`, intention `auto` : les règles de `reduire`, puis les fractions de polynômes simplifiées en montrant la factorisation (`x ≠ −1`), puis « développer seulement si plus court », rédigé comme `.développer`. Ne factorise jamais le résultat (ADR 0007, simplify-carte § 33)                                                                                                                                           |
 | `reduire`    | identités, puissances, racines, parité et période, puis `tidy` qui raconte ses gestes (`tidy-*`). Ni factorisation ni développement. **Pas** de `normalize`                                                                                                                                                                                                                                                                                             |
-| `developper` | règles de développement + identités, puis `normalize`                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `developper` | `expand` (`expand.ts`, chantier normalize-usages) : distribuer, multiplier les parenthèses, puissances entières de sommes, division par un nombre distribuée ; chaque terme calculé et la somme réduite par `tidy`. Développe et ne fait rien d'autre : ni identité (`ln(e^x)`, `sin² + cos²`), ni dénominateur commun, ni simplification de fraction. **Pas** de `normalize`                                                                           |
 | `factoriser` | factorisation + identités, puis extraction du contenu (numérique, monôme, ou non polynomial : `x\exponentialE^x - \exponentialE^x` → `(x-1)\exponentialE^x`), puis les stratégies de l'ADR 0024 (facteurs réduits, racines du trinôme, racine évidente — lycée —, développer en dernier recours ; facteurs dans l'ordre du noyau), puis `tidy` facteur par facteur (deux nombres côte à côte sont calculés : `2\times 3` → `6`). **Pas** de `normalize` |
 
 La colonne `developper` est le **résultat** de l'intention. Les étapes que voit l'élève — le
@@ -58,14 +58,14 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 
 ## Radicaux
 
-| entrée                   | `simplify`            | `auto`                | `reduire`             | `developper`            | `factoriser`                 |
-| ------------------------ | --------------------- | --------------------- | --------------------- | ----------------------- | ---------------------------- |
-| `\sqrt{8}`               | `2 \sqrt{2}`          | `2 \sqrt{2}`          | `2 \sqrt{2}`          | `2 \sqrt{2}`            | `2 \sqrt{2}`                 |
-| `\frac{1}{\sqrt{2}}`     | `\dfrac{\sqrt{2}}{2}` | `\dfrac{\sqrt{2}}{2}` | `\dfrac{\sqrt{2}}{2}` | `\dfrac{1}{2} \sqrt{2}` | `\dfrac{\sqrt{2}}{2}`        |
-| `\sqrt{x}\sqrt{x}`       | `x`                   | `x`                   | `x`                   | `x`                     | `\sqrt{x} \sqrt{x}`          |
-| `\sqrt{x^2}`             | `\sqrt{x^2}`          | `\left\| x \right\|`  | `\left\| x \right\|`  | `\left\| x \right\|`    | `\sqrt{x^2}`                 |
-| `\sqrt[3]{x}\sqrt[3]{x}` | `\sqrt[3]{x}^2`       | `\sqrt[3]{x}^2`       | `\sqrt[3]{x}^2`       | `\sqrt[3]{x^2}`         | `\sqrt[3]{x} \sqrt[3]{x}`    |
-| `\sqrt{2}\sqrt{8}`       | `4`                   | `4`                   | `4`                   | `4`                     | `\sqrt{2} \times 2 \sqrt{2}` |
+| entrée                   | `simplify`            | `auto`                | `reduire`             | `developper`          | `factoriser`                 |
+| ------------------------ | --------------------- | --------------------- | --------------------- | --------------------- | ---------------------------- |
+| `\sqrt{8}`               | `2 \sqrt{2}`          | `2 \sqrt{2}`          | `2 \sqrt{2}`          | `\sqrt{8}`            | `2 \sqrt{2}`                 |
+| `\frac{1}{\sqrt{2}}`     | `\dfrac{\sqrt{2}}{2}` | `\dfrac{\sqrt{2}}{2}` | `\dfrac{\sqrt{2}}{2}` | `\dfrac{\sqrt{2}}{2}` | `\dfrac{\sqrt{2}}{2}`        |
+| `\sqrt{x}\sqrt{x}`       | `x`                   | `x`                   | `x`                   | `\sqrt{x}^2`          | `\sqrt{x} \sqrt{x}`          |
+| `\sqrt{x^2}`             | `\sqrt{x^2}`          | `\left\| x \right\|`  | `\left\| x \right\|`  | `\sqrt{x^2}`          | `\sqrt{x^2}`                 |
+| `\sqrt[3]{x}\sqrt[3]{x}` | `\sqrt[3]{x}^2`       | `\sqrt[3]{x}^2`       | `\sqrt[3]{x}^2`       | `\sqrt[3]{x}^2`       | `\sqrt[3]{x} \sqrt[3]{x}`    |
+| `\sqrt{2}\sqrt{8}`       | `4`                   | `4`                   | `4`                   | `4`                   | `\sqrt{2} \times 2 \sqrt{2}` |
 
 ## Termes semblables
 
@@ -94,19 +94,19 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 | `2x+4`         | `2 x + 4`                             | `2 x + 4`                             | `2 x + 4`                             | `2 x + 4`                             | `2 \left( x + 2 \right)`                    |
 | `x^2+2x`       | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x^2 + 2 x`                           | `x \left( x + 2 \right)`                    |
 | `3x^2+6x+3`    | `3 x^2 + 6 x + 3`                     | `3 x^2 + 6 x + 3`                     | `3 x^2 + 6 x + 3`                     | `3 x^2 + 6 x + 3`                     | `3 \left( x + 1 \right)^2`                  |
-| `e^{x}+xe^{x}` | `x \exponentialE^x + \exponentialE^x` | `x \exponentialE^x + \exponentialE^x` | `x \exponentialE^x + \exponentialE^x` | `x \exponentialE^x + \exponentialE^x` | `\left( x + 1 \right) \exponentialE^x`      |
+| `e^{x}+xe^{x}` | `x \exponentialE^x + \exponentialE^x` | `x \exponentialE^x + \exponentialE^x` | `x \exponentialE^x + \exponentialE^x` | `\exponentialE^x + x \exponentialE^x` | `\left( x + 1 \right) \exponentialE^x`      |
 | `-2x-4`        | `-2 x - 4`                            | `-2 x - 4`                            | `-2 x - 4`                            | `-2 x - 4`                            | `-2 \left( x + 2 \right)`                   |
 | `x^2y+xy`      | `x^2 y + x y`                         | `x^2 y + x y`                         | `x^2 y + x y`                         | `x^2 y + x y`                         | `x \left( x + 1 \right) y`                  |
 
 ## Fractions rationnelles
 
-| entrée                        | `simplify`                                | `auto`                                    | `reduire`                                 | `developper`                         | `factoriser`                              |
-| ----------------------------- | ----------------------------------------- | ----------------------------------------- | ----------------------------------------- | ------------------------------------ | ----------------------------------------- |
-| `\frac{x^2-1}{x+1}`           | `x - 1`                                   | `x - 1`                                   | `\dfrac{x^2 - 1}{x + 1}`                  | `x - 1`                              | `x - 1`                                   |
-| `\frac{x^2-y^2}{x-y}`         | `x + y`                                   | `x + y`                                   | `\dfrac{x^2 - y^2}{x - y}`                | `x + y`                              | `x + y`                                   |
-| `\frac{x^2-y^2}{x^2+2xy+y^2}` | `\dfrac{x - y}{x + y}`                    | `\dfrac{x - y}{x + y}`                    | `\dfrac{x^2 - y^2}{2 x y + x^2 + y^2}`    | `\dfrac{x - y}{x + y}`               | `\dfrac{x - y}{x + y}`                    |
-| `\frac{x}{x}`                 | `1`                                       | `1`                                       | `\dfrac{x}{x}`                            | `1`                                  | `1`                                       |
-| `\frac{(x+y)^2}{x+2y}`        | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{2 x y + x^2 + y^2}{x + 2 y}` | `\dfrac{\left( x + y \right)^2}{x + 2 y}` |
+| entrée                        | `simplify`                                | `auto`                                    | `reduire`                                 | `developper`                           | `factoriser`                              |
+| ----------------------------- | ----------------------------------------- | ----------------------------------------- | ----------------------------------------- | -------------------------------------- | ----------------------------------------- |
+| `\frac{x^2-1}{x+1}`           | `x - 1`                                   | `x - 1`                                   | `\dfrac{x^2 - 1}{x + 1}`                  | `\dfrac{x^2 - 1}{x + 1}`               | `x - 1`                                   |
+| `\frac{x^2-y^2}{x-y}`         | `x + y`                                   | `x + y`                                   | `\dfrac{x^2 - y^2}{x - y}`                | `\dfrac{x^2 - y^2}{x - y}`             | `x + y`                                   |
+| `\frac{x^2-y^2}{x^2+2xy+y^2}` | `\dfrac{x - y}{x + y}`                    | `\dfrac{x - y}{x + y}`                    | `\dfrac{x^2 - y^2}{2 x y + x^2 + y^2}`    | `\dfrac{x^2 - y^2}{x^2 + 2 x y + y^2}` | `\dfrac{x - y}{x + y}`                    |
+| `\frac{x}{x}`                 | `1`                                       | `1`                                       | `\dfrac{x}{x}`                            | `\dfrac{x}{x}`                         | `1`                                       |
+| `\frac{(x+y)^2}{x+2y}`        | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{x^2 + 2 x y + y^2}{x + 2 y}`   | `\dfrac{\left( x + y \right)^2}{x + 2 y}` |
 
 ## Puissances
 
@@ -123,18 +123,18 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 | entrée                 | `simplify`                                     | `auto`            | `reduire`         | `developper`                                   | `factoriser`                                   |
 | ---------------------- | ---------------------------------------------- | ----------------- | ----------------- | ---------------------------------------------- | ---------------------------------------------- |
 | `e^{x}`                | `\exponentialE^x`                              | `\exponentialE^x` | `\exponentialE^x` | `\exponentialE^x`                              | `\exponentialE^x`                              |
-| `\ln(e^{x})`           | `x`                                            | `x`               | `x`               | `x`                                            | `x`                                            |
+| `\ln(e^{x})`           | `x`                                            | `x`               | `x`               | `\ln\left( \exponentialE^x \right)`            | `x`                                            |
 | `\frac{e^{2x}}{e^{x}}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\exponentialE^x` | `\exponentialE^x` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` | `\dfrac{\exponentialE^{2 x}}{\exponentialE^x}` |
 | `e^{0}`                | `1`                                            | `1`               | `1`               | `1`                                            | `1`                                            |
 
 ## Trigonométrie
 
-| entrée                    | `simplify`               | `auto`                   | `reduire`                | `developper`             | `factoriser`             |
-| ------------------------- | ------------------------ | ------------------------ | ------------------------ | ------------------------ | ------------------------ |
-| `\sin(x)^2+\cos(x)^2`     | `1`                      | `1`                      | `1`                      | `1`                      | `1`                      |
-| `\frac{\sin(x)}{\cos(x)}` | `\tan\left( x \right)`   | `\tan\left( x \right)`   | `\tan\left( x \right)`   | `\tan\left( x \right)`   | `\tan\left( x \right)`   |
-| `\sin(2x)`                | `\sin\left( 2 x \right)` | `\sin\left( 2 x \right)` | `\sin\left( 2 x \right)` | `\sin\left( 2 x \right)` | `\sin\left( 2 x \right)` |
-| `\cos(-x)`                | `\cos\left( x \right)`   | `\cos\left( x \right)`   | `\cos\left( x \right)`   | `\cos\left( x \right)`   | `\cos\left( -x \right)`  |
+| entrée                    | `simplify`               | `auto`                   | `reduire`                | `developper`                                         | `factoriser`             |
+| ------------------------- | ------------------------ | ------------------------ | ------------------------ | ---------------------------------------------------- | ------------------------ |
+| `\sin(x)^2+\cos(x)^2`     | `1`                      | `1`                      | `1`                      | `\sin\left( x \right)^2 + \cos\left( x \right)^2`    | `1`                      |
+| `\frac{\sin(x)}{\cos(x)}` | `\tan\left( x \right)`   | `\tan\left( x \right)`   | `\tan\left( x \right)`   | `\dfrac{\sin\left( x \right)}{\cos\left( x \right)}` | `\tan\left( x \right)`   |
+| `\sin(2x)`                | `\sin\left( 2 x \right)` | `\sin\left( 2 x \right)` | `\sin\left( 2 x \right)` | `\sin\left( 2 x \right)`                             | `\sin\left( 2 x \right)` |
+| `\cos(-x)`                | `\cos\left( x \right)`   | `\cos\left( x \right)`   | `\cos\left( x \right)`   | `\cos\left( -x \right)`                              | `\cos\left( -x \right)`  |
 
 ## Signes et neutres
 
@@ -184,11 +184,11 @@ travail, et le panel le rend visible.
    `fix/normalize-ln-exp` (2026-10-05) — `normalize` applique les identités de
    `e^{…}` (ln(eᵃ) = a, e^{ln a} = a, eᵃ·eᵇ, (eᵃ)ⁿ) en gardant la puissance
    `e^{…}` (écrite `\exponentialE^{…}`) ; `simplify` et `developper` rendent `e^{3 x}`, et `e^{\ln x}` se
-   réduit à `x`. Reste : `x^a · x^b`, que `auto` sait faire et `simplify` non.
+   réduit à `x` (pas dans `developper` : Q3 de normalize-usages). Reste : `x^a · x^b`, que `auto` sait faire et `simplify` non.
 3. ~~`ln(e^x)` : `auto`, `reduire`, `developper` et `factoriser` s'arrêtaient à
    `x ln(e)`~~ : la lettre `e` était lue comme une variable. Depuis le 2026-10-10,
-   les parseurs la lisent comme la constante d'Euler : les cinq colonnes rendent
-   `x`, et `ln(e)` vaut `1` (test `pedagogical-simplify/__tests__/ln-exp-lettre-e.test.ts`).
+   les parseurs la lisent comme la constante d'Euler : les colonnes rendent
+   `x` (sauf `developper`, qui n'applique aucune identité depuis normalize-usages), et `ln(e)` vaut `1` (test `pedagogical-simplify/__tests__/ln-exp-lettre-e.test.ts`).
    Les sorties écrivent la constante `\exponentialE` (`toLatex(euler())`).
 4. ⚠️ Reste aussi : `simplify((e^x)^3)` garde `\left( e^x \right)^3`
    (barrière de coût). ~~Le **quotient** `e^{2x}/e^x` n'est réduit par aucune

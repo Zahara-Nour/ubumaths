@@ -69,6 +69,8 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'trinomial-integer-form': 'Factorisation à coefficients entiers',
 	'evident-root': 'Factorisation par (x - r), r racine évidente',
 	'develop-to-factor': 'Développement et réduction, pour faire apparaître une forme connue',
+	// Le résultat de `developper` (`expand.ts`)
+	expand: 'Développement et réduction',
 
 	// ---- valeur absolue -------------------------------------------------------
 	'abs-negation': 'Simplification : |-x| = |x|',
@@ -297,6 +299,7 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'trinomial-integer-form': () => 'On écrit les facteurs avec des coefficients entiers',
 	'evident-root': evidentRootTitle,
 	'develop-to-factor': () => 'On développe et on réduit',
+	expand: () => 'On développe et on réduit',
 	'common-factor-products': () => 'On met le facteur commun en évidence',
 	'common-factor-bare-term': () => 'On met le facteur commun en évidence',
 	'common-factor-content-add': () => 'On met le facteur commun en évidence',
@@ -418,6 +421,8 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		'On multiplie un facteur par a, ou par un diviseur de a, pour que ses coefficients soient entiers.',
 	'develop-to-factor': () =>
 		'Aucun facteur commun ni identité n’apparaît tel quel : on développe pour faire apparaître une forme connue.',
+	expand: () =>
+		'On distribue chaque facteur sur chaque terme des parenthèses, puis on regroupe les termes semblables.',
 	'evident-root': () =>
 		'Si P(r) = 0, alors P(x) se factorise par (x − r) : le second facteur s’obtient par division (ou par identification).',
 	'common-factor-products': () =>

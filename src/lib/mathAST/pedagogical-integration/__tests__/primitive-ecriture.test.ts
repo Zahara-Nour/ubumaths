@@ -527,8 +527,9 @@ describe('parenthèse d’IPP sans exponentielle commune à tous les termes', ()
 		],
 		[
 			'x^2\\cos(x)+x',
-			// ordre de `tidy` (décision de David du 2026-10-11)
-			'x^2 \\sin\\left( x \\right) + 2 x \\cos\\left( x \\right) + \\dfrac{x^2}{2} - 2 \\sin\\left( x \\right)'
+			// `tidyTerms` garde l'ordre du développement (décision de David du
+			// 2026-10-11) : depuis normalize-usages, celui du calcul — l'IPP, puis ∫x
+			'x^2 \\sin\\left( x \\right) + 2 x \\cos\\left( x \\right) - 2 \\sin\\left( x \\right) + \\dfrac{x^2}{2}'
 		],
 		// parenthèse venue de u, pas de l'IPP : gardée
 		[

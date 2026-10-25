@@ -577,15 +577,16 @@ describe('rien à développer : une réponse, pas une ligne rouge (C)', () => {
 		expect(result.latex).toBeUndefined();
 	});
 
-	it('une somme dans un exposant : « je ne sais pas », jamais une réponse mal écrite', () => {
+	it('une somme dans un exposant : développée sur place, sans « Comment ? »', () => {
 		// Revue : la réponse affichait `e^{x^2 + 2 x 1 + 1^2}`, produit collé et
-		// puissance non calculée — le défaut des étapes passé dans la réponse
-		for (const expression of ['e^((x+1)^2)', '2^((x+1)^2)']) {
-			const result = commande(`.développer ${expression}`);
-
-			expect(result.output, expression).toBe(`Je ne sais pas développer « ${expression} ».`);
-			expect(result.latex, expression).toBeUndefined();
-		}
+		// puissance non calculée ; depuis normalize-usages, l'exposant est
+		// développé et réduit comme le reste
+		const euler = commande('.développer e^((x+1)^2)');
+		expect(euler.latex).toBe('\\exponentialE^{x^2 + 2 x + 1}');
+		expect('steps' in euler).toBe(false);
+		const two = commande('.développer 2^((x+1)^2)');
+		expect(two.latex).toBe('2^{x^2 + 2 x + 1}');
+		expect('steps' in two).toBe(false);
 	});
 
 	it('un résultat trop long est refusé avant le calcul, qui figerait la page', () => {

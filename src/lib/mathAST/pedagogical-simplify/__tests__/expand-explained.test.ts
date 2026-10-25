@@ -44,8 +44,11 @@ describe('explainExpansion — trois issues', () => {
 		expect(explain('\\frac{1}{x+1}').kind).toBe('unchanged');
 	});
 
-	it('une somme dans un exposant, développée sans être réduite : unfinished', () => {
-		expect(explain('e^{(2x+1)^2}').kind).toBe('unfinished');
+	it('une somme dans un exposant : développée sur place, sans étapes (normalize-usages)', () => {
+		const explained = explain('e^{(2x+1)^2}');
+
+		expect(answerOf(explained)).toBe('\\exponentialE^{4 x^2 + 4 x + 1}');
+		expect(explained.kind === 'expanded' && explained.steps).toBeNull();
 	});
 
 	it('une rédaction qui renonce : la réponse, sans étapes', () => {

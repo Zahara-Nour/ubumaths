@@ -21,7 +21,8 @@ const CASES: Array<[string, string]> = [
 	['\\ln(e^2)', '2']
 ];
 
-const INTENTS = ['auto', 'reduire', 'developper', 'factoriser'] as const;
+// `developper` n'applique aucune identité (chantier normalize-usages, Q3) : à part
+const INTENTS = ['auto', 'reduire', 'factoriser'] as const;
 
 describe('ln / exp avec la lettre e (constante d’Euler)', () => {
 	for (const intent of INTENTS) {
@@ -35,6 +36,18 @@ describe('ln / exp avec la lettre e (constante d’Euler)', () => {
 			});
 		});
 	}
+
+	describe('intention developper : rien à développer, la lettre lue comme e', () => {
+		it.each(CASES)('%s reste', (input) => {
+			const node = parseLatex(input);
+			const r = generatePedagogicalSimplifySteps(node, {
+				intent: 'developper',
+				schoolLevel: 'lycee'
+			});
+			expect(r.result).toBe(node);
+			expect(toLatex(r.result)).toContain('\\exponentialE');
+		});
+	});
 
 	describe('simplify()', () => {
 		it.each(CASES)('%s → %s', (input, expected) => {

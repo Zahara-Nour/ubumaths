@@ -39,7 +39,7 @@ const ruleNamesOf = (rules: { readonly name: string }[]): Set<string> =>
 
 describe('selectRulesForIntent — factoriser', () => {
 	it('includes algebraic factoring rules and excludes expansion rules', () => {
-		const { rules, useNormalize } = selectRulesForIntent('factoriser', DEFAULT_V1_FLAGS);
+		const { rules } = selectRulesForIntent('factoriser', DEFAULT_V1_FLAGS);
 		const names = ruleNamesOf([...rules]);
 		// factoring rules included
 		expect(names.has('diff-squares-symbolic')).toBe(true);
@@ -49,33 +49,21 @@ describe('selectRulesForIntent — factoriser', () => {
 		expect(names.has('expand-sum-squared')).toBe(false);
 		expect(names.has('expand-diff-squared')).toBe(false);
 		expect(names.has('product-to-diff-squares')).toBe(false);
-		// normalize disabled (would undo the factoring)
-		expect(useNormalize).toBe(false);
 	});
 });
 
 describe('selectRulesForIntent — developper', () => {
-	it('includes expansion rules and excludes factoring rules', () => {
-		const { rules, useNormalize } = selectRulesForIntent('developper', DEFAULT_V1_FLAGS);
-		const names = ruleNamesOf([...rules]);
-		expect(names.has('expand-sum-squared')).toBe(true);
-		expect(names.has('expand-diff-squared')).toBe(true);
-		expect(names.has('product-to-diff-squares')).toBe(true);
-		expect(names.has('diff-squares-symbolic')).toBe(false);
-		expect(names.has('perfect-square-trinomial')).toBe(false);
-		// normalize enabled (combine-like-terms after expansion)
-		expect(useNormalize).toBe(true);
+	it('aucune règle : le pipeline répond par expand (normalize-usages)', () => {
+		expect(selectRulesForIntent('developper', DEFAULT_V1_FLAGS).rules).toEqual([]);
 	});
 });
 
 describe('selectRulesForIntent — reduire', () => {
 	it('excludes both factoring and expansion rules, and finishes with tidy, not normalize', () => {
-		const { rules, useNormalize } = selectRulesForIntent('reduire', DEFAULT_V1_FLAGS);
+		const { rules } = selectRulesForIntent('reduire', DEFAULT_V1_FLAGS);
 		const names = ruleNamesOf([...rules]);
 		expect(names.has('diff-squares-symbolic')).toBe(false);
 		expect(names.has('expand-sum-squared')).toBe(false);
-		// normalize développe tout : `2(x+3) → 2x+6` (chantier simplify-carte § 33)
-		expect(useNormalize).toBe(false);
 	});
 
 	it('includes pythagorean (always-true identity) when trig enabled', () => {
@@ -86,7 +74,7 @@ describe('selectRulesForIntent — reduire', () => {
 
 describe('selectRulesForIntent — auto', () => {
 	it('has the rules of reduire : no factoring at all, no expansion rule, no normalize', () => {
-		const { rules, useNormalize } = selectRulesForIntent('auto', DEFAULT_V1_FLAGS);
+		const { rules } = selectRulesForIntent('auto', DEFAULT_V1_FLAGS);
 		const names = ruleNamesOf([...rules]);
 		// `auto` ne factorise jamais (ADR 0007) : les identités symboliques
 		// faisaient l'aller-retour `x²+2x+1 → (x+1)² → x²+2x+1` à l'écran
@@ -105,7 +93,6 @@ describe('selectRulesForIntent — auto', () => {
 		expect(names.has('expand-sum-squared')).toBe(false);
 		// But pythagorean (unambiguous identity) is included
 		expect(names.has('pythagorean')).toBe(true);
-		expect(useNormalize).toBe(false);
 		expect(names).toEqual(
 			ruleNamesOf([...selectRulesForIntent('reduire', DEFAULT_V1_FLAGS).rules])
 		);
@@ -113,7 +100,8 @@ describe('selectRulesForIntent — auto', () => {
 });
 
 describe('selectRulesForIntent — flag toggles', () => {
-	const intents: SimplifyIntent[] = ['factoriser', 'developper', 'reduire', 'auto'];
+	// `developper` n'a plus de règles (normalize-usages)
+	const intents: SimplifyIntent[] = ['factoriser', 'reduire', 'auto'];
 
 	it.each(intents)('enableTrig=false excludes all trig identity rules (intent=%s)', (intent) => {
 		const { rules } = selectRulesForIntent(intent, { ...DEFAULT_V1_FLAGS, enableTrig: false });

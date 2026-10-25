@@ -8,14 +8,15 @@
  *
  * Two-phase strategy :
  *
+ * `developper` stands apart : its result is `expand` (`expand.ts`, chantier
+ * normalize-usages — no `normalize`), one `expand` step ; the steps shown to
+ * the student are written by `expand-steps.ts`.
+ *
  * 1. **Phase A — pattern rule loop** : iterate `applyRulesDeepOnceTracked`
  *    until fixpoint or `maxIterations`, mapping every fired rule into a
  *    `PedagogicalSimplifyStep` (with `category` from `categorizeRule`).
  *
  * 2. **Phase B**, by intent :
- *    - `developper` — normalize bridge : run `normalize()` on the Phase A
- *      result with a `StepRecorder`, convert each `NormalizationStep` into a
- *      `PedagogicalSimplifyStep`, append ;
  *    - `reduire` / `auto` — `tidy`, told in steps, then for `auto` the
  *      polynomial fractions and « expand only if shorter » (`reduce-steps.ts`,
  *      chantier simplify-carte § 33 : normalize developed everything) ;
@@ -39,12 +40,12 @@ import { normalize, denormalize } from '../normal';
 import { segmentLengthOracle } from '../assumptions';
 import { findNodes, mapNode } from '../transforms';
 import { isFunction } from '../guards';
-import { StepRecorder } from '../normal/step-recorder';
 import type { SchoolLevel } from '../common/step-renderer-base';
 import { getPedagogicalSimplifyRuleDescription } from './descriptions-fr';
 import { commonContentFactorRules } from '../pattern/rule-sets/common-factor';
 import { categorizeRule, selectRulesForIntent } from './intent-rules';
 import { expandIfShorter, simplifyPolynomialFractions, tidyAsSteps } from './reduce-steps';
+import { expand } from './expand';
 import {
 	flattenGroupedProducts,
 	runFactoriserStrategies,
@@ -285,54 +286,6 @@ function runPatternLoop(
 }
 
 // =============================================================================
-// Phase B — normalize bridge
-// =============================================================================
-
-/**
- * Run normalize() with a step recorder, then convert each
- * `NormalizationStep` to a `PedagogicalSimplifyStep`. The whole-tree
- * before/after of the normalize pass are used as `globalBefore` /
- * `globalAfter` on every emitted step (the normalize recorder doesn't
- * preserve the exact iteration boundary per step, so a single global
- * snapshot is the honest value).
- */
-function runNormalizePass(
-	node: MathNode,
-	signal: AbortSignal | undefined,
-	makeStep: StepFactory
-): { result: MathNode; steps: PedagogicalSimplifyStep[]; aborted: boolean } {
-	const recorder = new StepRecorder();
-	let result: MathNode;
-	try {
-		const normalForm = normalize(node, {
-			recorder,
-			verbosity: 'detailed'
-		});
-		result = denormalize(normalForm);
-	} catch {
-		// Normalize-side errors (rare edge cases) are swallowed silently
-		// to match the algorithmic `simplify()`'s defensive behavior.
-		// The Phase A result is preserved as the pipeline's `result`.
-		return { result: node, steps: [], aborted: false };
-	}
-
-	// `normalize()` is synchronous and uninterruptible from here, so this
-	// post-facto check only catches abort signals raised during Phase A
-	// or by an external observer between phases. A signal aborted during
-	// the normalize call itself will not interrupt it ; that limitation
-	// is structural, not a bug.
-	if (signal?.aborted) {
-		return { result, steps: [], aborted: true };
-	}
-
-	const recorded = recorder.getSteps();
-	const steps: PedagogicalSimplifyStep[] = recorded.map((rs) =>
-		makeStep(rs.rule, rs.before, rs.after, node, result)
-	);
-	return { result, steps, aborted: false };
-}
-
-// =============================================================================
 // Longueurs : une longueur est positive (lot Q-F, 2026-10-12)
 // =============================================================================
 
@@ -422,8 +375,17 @@ export function generatePedagogicalSimplifySteps(
 		return { ...rest, steps };
 	}
 
+	// Développer, et rien d'autre (chantier normalize-usages) : la rédaction
+	// montrée est celle de `writeExpandSteps`, cette étape ne sert qu'à dire
+	// qu'il s'est passé quelque chose
+	if (options.intent === 'developper') {
+		const result = expand(node);
+		if (nodesEqual(result, node)) return { result: node, steps: [] };
+		return { result, steps: [createStepFactory()('expand', node, result, node, result)] };
+	}
+
 	const flags = resolveFlags(options.schoolLevel, options);
-	const { rules, useNormalize } = selectRulesForIntent(options.intent, flags);
+	const { rules } = selectRulesForIntent(options.intent, flags);
 	const maxIterations = options.maxIterations ?? DEFAULT_MAX_ITERATIONS;
 
 	const makeStep = createStepFactory();
@@ -450,100 +412,84 @@ export function generatePedagogicalSimplifySteps(
 			return runReduce(phaseA, options, makeStep);
 		}
 
-		if (!useNormalize) {
-			// ⚠️ La mise en facteur du CONTENU — numérique et monôme — s'applique
-			// aux sommes MAXIMALES seulement, et après la phase A.
-			//
-			// En profondeur, elle factoriserait une sous-somme avant que la somme
-			// entière ne soit vue : `x² + 2x + 1` se parse `((x² + 2x) + 1)`, et
-			// le parcours remontant visite `x² + 2x` d'abord. Il deviendrait
-			// `x(x+2)`, et `perfect-square-trinomial` ne reconnaîtrait plus le
-			// trinôme. L'élève perdrait la phrase « On reconnaît un trinôme carré
-			// parfait », qui est la raison d'être de ce module.
-			//
-			// À la racine, l'ordre est le bon : les identités ont déjà eu leur
-			// chance sur la somme entière, et ce qui reste est un contenu à
-			// sortir. On relance ensuite la phase A pour que les identités voient
-			// la somme intérieure — c'est ce qui donne `3x² + 6x + 3 → 3(x+1)²`.
-			const patternStage = (start: MathNode, first?: typeof phaseA) => {
-				const a = first ?? runPatternLoop(start, rules, maxIterations, effectiveSignal, makeStep);
-				const withContent = extractCommonContentInMaximalSums(a.result, makeStep);
-				const afterContent = withContent.changed
-					? runPatternLoop(withContent.result, rules, maxIterations, effectiveSignal, makeStep)
-					: null;
-				// Sans parenthèses doubles `3((2x−1)(2x+1))`, dans le résultat comme dans les étapes
-				const flat = flattenGroupedProducts;
-				const steps = [...a.steps, ...withContent.steps, ...(afterContent?.steps ?? [])];
-				return {
-					result: flat(afterContent?.result ?? withContent.result),
-					steps: steps.map((step) => ({
-						...step,
-						after: flat(step.after),
-						...(step.globalBefore && { globalBefore: flat(step.globalBefore) }),
-						...(step.globalAfter && { globalAfter: flat(step.globalAfter) })
-					}))
-				};
-			};
-
-			// Puis les stratégies qui racontent (ADR 0024) : facteurs réduits,
-			// racines du trinôme, racine évidente, développer en dernier recours.
-			const outcome = runFactoriserStrategies(node, {
-				level: options.schoolLevel,
-				patternStage: (start) => patternStage(start, start === node ? phaseA : undefined),
-				develop: (start) =>
-					generatePedagogicalSimplifySteps(start, { ...options, intent: 'developper' }),
-				makeStep
-			});
-
-			// Couper `normalize` ne veut pas dire ne RIEN mettre au propre.
-			// `factoriser` le coupe à juste titre — il défferait la factorisation
-			// — mais rien ne le remplaçait, et les coefficients restaient bruts :
-			// `(2/4)x + x` rendait `(2/4 + 1)x` au lieu de `(3/2)x`. `tidy` met au
-			// propre sans jamais DÉVELOPPER : c'est tout son contrat. Le rendu du
-			// noyau, lui, est déjà propre (et `tidy` y réordonnerait `x − 1 − √2`).
-			const factored = outcome.clean ? outcome.result : tidyEachFactor(outcome.result);
-			// La dernière ligne affichée EST le résultat : la mise au propre finale
-			// (ordre du noyau, `tidy`) se fait dans la dernière étape, pas en silence
-			const last = outcome.steps.length - 1;
-			const strategySteps = outcome.steps.map((step, index) =>
-				index === last && !nodesEqual(step.globalAfter ?? step.after, factored)
-					? { ...step, globalAfter: factored }
-					: step
-			);
-			// S3 (2026-10-23) : `tidy` ne simplifie plus par une base qui peut
-			// s'annuler. Une fraction factorisée se simplifie donc en étape, la
-			// condition écrite, comme dans `auto` : `(x+1)(x−1)/(x+1) = x−1`, pour
-			// x ≠ −1. Ses deux membres sont déjà factorisés, et le reste le reste.
-			const keep = (n: MathNode) => n;
-			const fractions = simplifyPolynomialFractions(factored, keep, keep, makeStep);
-			// Une fraction facteur d'un produit laisse `3·1` : mis au propre dans la
-			// dernière étape, comme la factorisation (revue)
-			const result =
-				fractions.steps.length > 0 ? tidyEachFactor(fractions.result) : fractions.result;
-			const fractionSteps = fractions.steps.map((step, index) =>
-				index === fractions.steps.length - 1 ? { ...step, globalAfter: result } : step
-			);
-			// Ids renumérotés : les étapes jetées (stratégie 6) ont consommé le compteur
-			const steps = [...strategySteps, ...fractionSteps].map((step, index) => ({
-				...step,
-				id: index + 1
-			}));
-			return { result, steps };
-		}
-
-		const phaseB = runNormalizePass(phaseA.result, effectiveSignal, makeStep);
-		const allSteps = [...phaseA.steps, ...phaseB.steps];
-		if (phaseB.aborted) {
+		// Il ne reste que `factoriser` (`developper` est sorti avant la phase A)
+		// ⚠️ La mise en facteur du CONTENU — numérique et monôme — s'applique
+		// aux sommes MAXIMALES seulement, et après la phase A.
+		//
+		// En profondeur, elle factoriserait une sous-somme avant que la somme
+		// entière ne soit vue : `x² + 2x + 1` se parse `((x² + 2x) + 1)`, et
+		// le parcours remontant visite `x² + 2x` d'abord. Il deviendrait
+		// `x(x+2)`, et `perfect-square-trinomial` ne reconnaîtrait plus le
+		// trinôme. L'élève perdrait la phrase « On reconnaît un trinôme carré
+		// parfait », qui est la raison d'être de ce module.
+		//
+		// À la racine, l'ordre est le bon : les identités ont déjà eu leur
+		// chance sur la somme entière, et ce qui reste est un contenu à
+		// sortir. On relance ensuite la phase A pour que les identités voient
+		// la somme intérieure — c'est ce qui donne `3x² + 6x + 3 → 3(x+1)²`.
+		const patternStage = (start: MathNode, first?: typeof phaseA) => {
+			const a = first ?? runPatternLoop(start, rules, maxIterations, effectiveSignal, makeStep);
+			const withContent = extractCommonContentInMaximalSums(a.result, makeStep);
+			const afterContent = withContent.changed
+				? runPatternLoop(withContent.result, rules, maxIterations, effectiveSignal, makeStep)
+				: null;
+			// Sans parenthèses doubles `3((2x−1)(2x+1))`, dans le résultat comme dans les étapes
+			const flat = flattenGroupedProducts;
+			const steps = [...a.steps, ...withContent.steps, ...(afterContent?.steps ?? [])];
 			return {
-				result: phaseB.result,
-				steps: allSteps,
-				aborted: true
+				result: flat(afterContent?.result ?? withContent.result),
+				steps: steps.map((step) => ({
+					...step,
+					after: flat(step.after),
+					...(step.globalBefore && { globalBefore: flat(step.globalBefore) }),
+					...(step.globalAfter && { globalAfter: flat(step.globalAfter) })
+				}))
 			};
-		}
-		return {
-			result: phaseB.result,
-			steps: allSteps
 		};
+
+		// Puis les stratégies qui racontent (ADR 0024) : facteurs réduits,
+		// racines du trinôme, racine évidente, développer en dernier recours.
+		const outcome = runFactoriserStrategies(node, {
+			level: options.schoolLevel,
+			patternStage: (start) => patternStage(start, start === node ? phaseA : undefined),
+			develop: (start) =>
+				generatePedagogicalSimplifySteps(start, { ...options, intent: 'developper' }),
+			makeStep
+		});
+
+		// Couper `normalize` ne veut pas dire ne RIEN mettre au propre.
+		// `factoriser` le coupe à juste titre — il défferait la factorisation
+		// — mais rien ne le remplaçait, et les coefficients restaient bruts :
+		// `(2/4)x + x` rendait `(2/4 + 1)x` au lieu de `(3/2)x`. `tidy` met au
+		// propre sans jamais DÉVELOPPER : c'est tout son contrat. Le rendu du
+		// noyau, lui, est déjà propre (et `tidy` y réordonnerait `x − 1 − √2`).
+		const factored = outcome.clean ? outcome.result : tidyEachFactor(outcome.result);
+		// La dernière ligne affichée EST le résultat : la mise au propre finale
+		// (ordre du noyau, `tidy`) se fait dans la dernière étape, pas en silence
+		const last = outcome.steps.length - 1;
+		const strategySteps = outcome.steps.map((step, index) =>
+			index === last && !nodesEqual(step.globalAfter ?? step.after, factored)
+				? { ...step, globalAfter: factored }
+				: step
+		);
+		// S3 (2026-10-23) : `tidy` ne simplifie plus par une base qui peut
+		// s'annuler. Une fraction factorisée se simplifie donc en étape, la
+		// condition écrite, comme dans `auto` : `(x+1)(x−1)/(x+1) = x−1`, pour
+		// x ≠ −1. Ses deux membres sont déjà factorisés, et le reste le reste.
+		const keep = (n: MathNode) => n;
+		const fractions = simplifyPolynomialFractions(factored, keep, keep, makeStep);
+		// Une fraction facteur d'un produit laisse `3·1` : mis au propre dans la
+		// dernière étape, comme la factorisation (revue)
+		const result = fractions.steps.length > 0 ? tidyEachFactor(fractions.result) : fractions.result;
+		const fractionSteps = fractions.steps.map((step, index) =>
+			index === fractions.steps.length - 1 ? { ...step, globalAfter: result } : step
+		);
+		// Ids renumérotés : les étapes jetées (stratégie 6) ont consommé le compteur
+		const steps = [...strategySteps, ...fractionSteps].map((step, index) => ({
+			...step,
+			id: index + 1
+		}));
+		return { result, steps };
 	} finally {
 		dispose();
 	}

@@ -79,22 +79,22 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 
 	describe('Radicaux', () => {
 		it.each([
-			['\\sqrt{8}', '2 \\sqrt{2}', '2 \\sqrt{2}', '2 \\sqrt{2}', '2 \\sqrt{2}', '2 \\sqrt{2}'],
+			['\\sqrt{8}', '2 \\sqrt{2}', '2 \\sqrt{2}', '2 \\sqrt{2}', '\\sqrt{8}', '2 \\sqrt{2}'],
 			[
 				'\\frac{1}{\\sqrt{2}}',
 				'\\dfrac{\\sqrt{2}}{2}',
 				'\\dfrac{\\sqrt{2}}{2}',
 				'\\dfrac{\\sqrt{2}}{2}',
-				'\\dfrac{1}{2} \\sqrt{2}',
+				'\\dfrac{\\sqrt{2}}{2}',
 				'\\dfrac{\\sqrt{2}}{2}'
 			],
-			['\\sqrt{x}\\sqrt{x}', 'x', 'x', 'x', 'x', '\\sqrt{x} \\sqrt{x}'],
+			['\\sqrt{x}\\sqrt{x}', 'x', 'x', 'x', '\\sqrt{x}^2', '\\sqrt{x} \\sqrt{x}'],
 			[
 				'\\sqrt{x^2}',
 				'\\sqrt{x^2}',
 				'\\left| x \\right|',
 				'\\left| x \\right|',
-				'\\left| x \\right|',
+				'\\sqrt{x^2}',
 				'\\sqrt{x^2}'
 			],
 			[
@@ -102,7 +102,7 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 				'\\sqrt[3]{x}^2',
 				'\\sqrt[3]{x}^2',
 				'\\sqrt[3]{x}^2',
-				'\\sqrt[3]{x^2}',
+				'\\sqrt[3]{x}^2',
 				'\\sqrt[3]{x} \\sqrt[3]{x}'
 			],
 			['\\sqrt{2}\\sqrt{8}', '4', '4', '4', '4', '\\sqrt{2} \\times 2 \\sqrt{2}']
@@ -206,7 +206,7 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 				'x \\exponentialE^x + \\exponentialE^x',
 				'x \\exponentialE^x + \\exponentialE^x',
 				'x \\exponentialE^x + \\exponentialE^x',
-				'x \\exponentialE^x + \\exponentialE^x',
+				'\\exponentialE^x + x \\exponentialE^x',
 				'\\left( x + 1 \\right) \\exponentialE^x'
 			],
 			['-2x-4', '-2 x - 4', '-2 x - 4', '-2 x - 4', '-2 x - 4', '-2 \\left( x + 2 \\right)'],
@@ -229,25 +229,39 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 
 	describe('Fractions rationnelles', () => {
 		it.each([
-			['\\frac{x^2-1}{x+1}', 'x - 1', 'x - 1', '\\dfrac{x^2 - 1}{x + 1}', 'x - 1', 'x - 1'],
-			['\\frac{x^2-y^2}{x-y}', 'x + y', 'x + y', '\\dfrac{x^2 - y^2}{x - y}', 'x + y', 'x + y'],
+			[
+				'\\frac{x^2-1}{x+1}',
+				'x - 1',
+				'x - 1',
+				'\\dfrac{x^2 - 1}{x + 1}',
+				'\\dfrac{x^2 - 1}{x + 1}',
+				'x - 1'
+			],
+			[
+				'\\frac{x^2-y^2}{x-y}',
+				'x + y',
+				'x + y',
+				'\\dfrac{x^2 - y^2}{x - y}',
+				'\\dfrac{x^2 - y^2}{x - y}',
+				'x + y'
+			],
 			[
 				'\\frac{x^2-y^2}{x^2+2xy+y^2}',
 				'\\dfrac{x - y}{x + y}',
 				'\\dfrac{x - y}{x + y}',
 				'\\dfrac{x^2 - y^2}{2 x y + x^2 + y^2}',
-				'\\dfrac{x - y}{x + y}',
+				'\\dfrac{x^2 - y^2}{x^2 + 2 x y + y^2}',
 				'\\dfrac{x - y}{x + y}'
 			],
 			// S3 (2026-10-23) : `reduire` ne simplifie plus par une base qui peut
 			// s'annuler ; `auto` et `factoriser` le font en étape, condition écrite.
-			['\\frac{x}{x}', '1', '1', '\\dfrac{x}{x}', '1', '1'],
+			['\\frac{x}{x}', '1', '1', '\\dfrac{x}{x}', '\\dfrac{x}{x}', '1'],
 			[
 				'\\frac{(x+y)^2}{x+2y}',
 				'\\dfrac{\\left( x + y \\right)^2}{x + 2 y}',
 				'\\dfrac{\\left( x + y \\right)^2}{x + 2 y}',
 				'\\dfrac{\\left( x + y \\right)^2}{x + 2 y}',
-				'\\dfrac{2 x y + x^2 + y^2}{x + 2 y}',
+				'\\dfrac{x^2 + 2 x y + y^2}{x + 2 y}',
 				'\\dfrac{\\left( x + y \\right)^2}{x + 2 y}'
 			]
 		])('%s', (entree, attenduSimplify, auto, reduire, developper, factoriser) => {
@@ -307,7 +321,7 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			// réduit désormais les identités de e^{…} (option A, 2026-10-05).
 			// La lettre e est la constante d'Euler (2026-10-10) : les quatre intentions
 			// réduisent `ln(e^x)`. Avant, elles rendaient `x ln(e)` (e lue comme une variable).
-			['\\ln(e^{x})', 'x', 'x', 'x', 'x', 'x'],
+			['\\ln(e^{x})', 'x', 'x', 'x', '\\ln\\left( \\exponentialE^x \\right)', 'x'],
 			// Quotient de puissances de même base, aᵐ/aⁿ = aᵐ⁻ⁿ (Q48, lot 5f-5 de
 			// simplify-carte) : `auto` et `reduire`
 			[
@@ -330,13 +344,20 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 
 	describe('Trigonométrie', () => {
 		it.each([
-			['\\sin(x)^2+\\cos(x)^2', '1', '1', '1', '1', '1'],
+			[
+				'\\sin(x)^2+\\cos(x)^2',
+				'1',
+				'1',
+				'1',
+				'\\sin\\left( x \\right)^2 + \\cos\\left( x \\right)^2',
+				'1'
+			],
 			[
 				'\\frac{\\sin(x)}{\\cos(x)}',
 				'\\tan\\left( x \\right)',
 				'\\tan\\left( x \\right)',
 				'\\tan\\left( x \\right)',
-				'\\tan\\left( x \\right)',
+				'\\dfrac{\\sin\\left( x \\right)}{\\cos\\left( x \\right)}',
 				'\\tan\\left( x \\right)'
 			],
 			[
@@ -352,7 +373,7 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 				'\\cos\\left( x \\right)',
 				'\\cos\\left( x \\right)',
 				'\\cos\\left( x \\right)',
-				'\\cos\\left( x \\right)',
+				'\\cos\\left( -x \\right)',
 				'\\cos\\left( -x \\right)'
 			]
 		])('%s', (entree, attenduSimplify, auto, reduire, developper, factoriser) => {

@@ -6,11 +6,9 @@
  * puissance d'abord (a² + 2ab + b², ax + ab) — tableau B de la phase 0
  * `docs/archive/wip/atelier-developper-phase0.md`, décision de David du 2026-10-14.
  *
- * ⚠️ **Ce n'est PAS le résultat de l'intention `developper`**, qui garde l'ordre
- * de `normalize` (`2ab + a² + b²`) : il sert à l'intégration et à la stratégie 6
- * de `factoriser`, et le panel le fige. L'ordre s'applique là où l'élève LIT la
- * forme développée : la réponse de `.développer` et les images de ses étapes
- * (`expand-steps.ts`). Il vit ici, et non dans l'atelier, parce que les étapes
+ * Le résultat de l'intention `developper` (`expand.ts`) le prend déjà pour une
+ * somme de monômes ; il s'applique aussi là où l'élève LIT la forme développée :
+ * la réponse de `.développer` et les images de ses étapes (`expand-steps.ts`). Il vit ici, et non dans l'atelier, parce que les étapes
  * l'emploient aussi (une parenthèse réduite avant d'être distribuée).
  *
  * @module mathAST/pedagogical-simplify/expand-order

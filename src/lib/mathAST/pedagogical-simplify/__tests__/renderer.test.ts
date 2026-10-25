@@ -191,7 +191,7 @@ describe('renderer — renderAll', () => {
 // =============================================================================
 
 describe('renderer — end-to-end with pipeline', () => {
-	it('(x+1)(x-1) at college produces a "On utilise (a+b)(a-b)" title', () => {
+	it('(x+1)(x-1) at college : l’étape expand de developper (normalize-usages)', () => {
 		const node = parseLatex('(x+1)(x-1)');
 		const { steps } = generatePedagogicalSimplifySteps(node, {
 			intent: 'developper',
@@ -201,8 +201,7 @@ describe('renderer — end-to-end with pipeline', () => {
 			schoolLevel: 'college',
 			verbosity: 'detailed'
 		});
-		const titles = rendered.map((r) => r.title);
-		expect(titles.some((t) => t.includes('(a+b)(a-b)'))).toBe(true);
+		expect(rendered.map((r) => r.title)).toEqual(['On développe et on réduit']);
 	});
 
 	it('every rendered step has id, rule, title, expressionLatex, schoolLevel', () => {

@@ -12,7 +12,7 @@
  * résultat de l'intention `developper`, que l'intégration et la stratégie 6 de
  * `factoriser` emploient tel quel — et la rédige : la dernière image EST la
  * réponse. Les images intermédiaires s'écrivent ici, chaque terme calculé par
- * `normalize` (le moteur du résultat), et chacune est vérifiée égale à l'entrée
+ * `expandedForm` (le moteur du résultat, chantier normalize-usages), et chacune est vérifiée égale à l'entrée
  * (`areEquivalent`) : une étape fausse ne s'affiche jamais. La trace de
  * `generatePedagogicalSimplifySteps` n'est pas touchée, mais elle n'est plus
  * montrée nulle part : l'atelier, les corrections d'exercices et la démo
@@ -47,10 +47,10 @@
 
 import type { MathNode } from '../types';
 import type { Verbosity } from '../common/verbosity';
-import { multiply, number, opposite, parentheses, superscript } from '../factory';
+import { divide, multiply, number, opposite, parentheses, superscript } from '../factory';
 import { flattenProductShallow, flattenSumShallow, type Sign, type SignedTerm } from '../flatten';
 import { findNodes } from '../transforms';
-import { denormalize, normalize } from '../normal';
+import { expandedForm } from './expand';
 import { nodesEqual } from '../pattern/match';
 import { toLatex } from '../latex-generator';
 import { areEquivalent } from '../equivalence';
@@ -221,6 +221,11 @@ function containsSum(node: MathNode): boolean {
 	return findNodes(node, isSum).length > 0;
 }
 
+/** Une lettre quelque part (`x`, `α`) : un dénominateur qui n'est pas un nombre. */
+function hasLetter(node: MathNode): boolean {
+	return findNodes(node, (n) => n.type === 'variable' || n.type === 'greek').length > 0;
+}
+
 /** Les parenthèses de GROUPEMENT retirées (`[0;1]` est un intervalle). */
 function unwrapGrouping(node: MathNode): MathNode {
 	if (node.type !== 'delimiter') return node;
@@ -286,6 +291,16 @@ function readChunk({ sign, term }: SignedTerm): Chunk {
 			else visit(inner);
 			return;
 		}
+		// Diviser par un nombre, c'est multiplier par son inverse (Q2 de
+		// normalize-usages) : `(x+1)/2` se lit `½(x + 1)`, « On distribue ½ »
+		if (node.type === 'division' && containsSum(node.numerator) && !hasLetter(node.denominator)) {
+			plain.push(divide(number('1'), node.denominator, 'fraction'));
+			// Une barre de fraction groupe son numérateur, sans parenthèse écrite
+			const numerator = unwrapGrouping(node.numerator);
+			if (isSum(numerator)) sums.push(readSum(numerator, 1));
+			else visit(numerator);
+			return;
+		}
 		if (node.type === 'superscript' && isSum(unwrapGrouping(node.base))) {
 			const exponent = integerExponent(node.superscript);
 			if (exponent === null || exponent < 1) fail();
@@ -347,14 +362,14 @@ function twiceProduct(a: MathNode, b: MathNode): MathNode {
 
 /** Un produit écrit avec × (`2 × x × 1`), calculé (`2x`), son signe à part. */
 function computeTerm({ sign, term }: SignedTerm): SignedTerm {
-	const value = orderExpanded(denormalize(normalize(term)));
+	const value = orderExpanded(expandedForm(term));
 	if (containsSum(value)) fail();
 	return withOwnSign({ sign, term: value });
 }
 
 /** Un facteur qui vaut 0 (`0`, `0x`, `x − x` réduit). */
 function isZero(node: MathNode): boolean {
-	const value = denormalize(normalize(node));
+	const value = expandedForm(node);
 	return value.type === 'number' && Number(value.value) === 0;
 }
 
@@ -470,7 +485,7 @@ const reduceInside: Phase = (chunk) => {
 	const sums: SumFactor[] = [];
 	let changed = false;
 	for (const sum of chunk.sums) {
-		const reduced = orderExpanded(denormalize(normalize(sumOf(sum.terms))));
+		const reduced = orderExpanded(expandedForm(sumOf(sum.terms)));
 		if (isSum(reduced)) {
 			const terms = flattenSumShallow(reduced).map(withOwnSign);
 			if (terms.length !== sum.terms.length) changed = true;
