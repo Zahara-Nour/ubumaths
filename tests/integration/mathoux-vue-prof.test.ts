@@ -32,7 +32,12 @@ import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import { createFakeTemplate } from '../helpers/competence-referentiel.helpers';
 import { loadMathouCollectionWithNews, readMathouCollection } from '$lib/server/mathoux/collection';
-import { buyMathouDecoration, readOwnedDecorations } from '$lib/server/mathoux/decorations';
+import {
+	buyMathouDecoration,
+	readOwnedDecorations,
+	wearMathouGlasses,
+	wearMathouHat
+} from '$lib/server/mathoux/decorations';
 import { loadMathouxCountsByStudent } from '$lib/server/mathoux/teacher';
 import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
 
@@ -354,6 +359,51 @@ describe('Chatterie vue par le professeur', () => {
 
 		expect(await readOwnedDecorations(eleve, eleveId)).toContain('bow_tie');
 		expect(await readOwnedDecorations(prof, eleveId)).toContain('bow_tie');
+		expect(await readOwnedDecorations(autre, eleveId)).toEqual([]);
+	});
+
+	it('lunettes et chapeau : l’élève et le prof les voient sur le Mathou, un autre élève rien', async () => {
+		const { error } = await service
+			.from('profiles')
+			.update({ gidouilles: 30 })
+			.eq('id', eleveId)
+			.select('id')
+			.single();
+		if (error) throw new Error(`décor : gidouilles : ${error.message}`);
+		expect(await buyMathouDecoration(service, eleveId, 'monocle', notionVecteurs)).toEqual({
+			ok: true,
+			balance: 10
+		});
+		expect(await buyMathouDecoration(service, eleveId, 'beret', notionFractions)).toEqual({
+			ok: true,
+			balance: 0
+		});
+		// Déplacé, gratuitement, par la fonction de pose du serveur
+		expect(await wearMathouHat(service, eleveId, notionVecteurs, 'beret')).toEqual({ ok: true });
+
+		const vueEleve = await loadMathouCollectionWithNews(eleve, eleveId, GRADE);
+		expect(mathouOf(vueEleve.collection, notionVecteurs)).toMatchObject({
+			glasses: 'monocle',
+			hat: 'beret'
+		});
+		expect(mathouOf(vueEleve.collection, notionFractions)).toMatchObject({
+			glasses: null,
+			hat: null
+		});
+		const vueProf = await readMathouCollection(prof, eleveId, GRADE);
+		expect(mathouOf(vueProf, notionVecteurs)).toMatchObject({ glasses: 'monocle', hat: 'beret' });
+
+		// Retrait des lunettes, gratuit
+		expect(await wearMathouGlasses(service, eleveId, notionVecteurs, null)).toEqual({ ok: true });
+		const apres = await readMathouCollection(prof, eleveId, GRADE);
+		expect(mathouOf(apres, notionVecteurs)).toMatchObject({ glasses: null, hat: 'beret' });
+
+		expect(await readOwnedDecorations(eleve, eleveId)).toEqual(
+			expect.arrayContaining(['monocle', 'beret'])
+		);
+		expect(await readOwnedDecorations(prof, eleveId)).toEqual(
+			expect.arrayContaining(['monocle', 'beret'])
+		);
 		expect(await readOwnedDecorations(autre, eleveId)).toEqual([]);
 	});
 

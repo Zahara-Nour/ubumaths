@@ -7,7 +7,8 @@
  *
  * Ne tourne qu'à la demande : `PLANCHE=1 pnpm test:server scripts/mathoux-planches/chapeaux-lunettes.test.ts`
  * écrit `planche-chapeaux-lunettes.json` (les SVG, à mettre en page) dans le dossier donné par
- * `PLANCHE_OUT`. Les dessins retenus passeront ensuite dans `mathou-dessin.ts`.
+ * `PLANCHE_OUT`. Les dessins retenus (catalogue du 2026-10-25) vivent dans
+ * `$lib/components/mathoux/mathou-chapeaux-lunettes.ts`.
  */
 
 import { describe, expect, it } from 'vitest';

@@ -8,8 +8,10 @@
 	(pas de texte ni de police). En silhouette (pas encore découvert) : une forme unie, sans aucun
 	détail de race. Une décoration de panse achetée dans la Chatterie (`mathou-decorations.ts`) se
 	pose sur la panse, un collier (`mathou-colliers.ts`) au cou — sous la fraise du grand matou —,
-	sieste comprise. Le dessin porte son propre fond (la pastille jaune) : il
-	tient en clair et en sombre.
+	sieste comprise. Lunettes et chapeau (`mathou-chapeaux-lunettes.ts`) : sur les yeux et au
+	sommet de la tête ; chez le grand matou, le chapeau remplace la couronne (transformation
+	comprise) ; en sieste, ni l'un ni l'autre, et ils reviennent en fondu au réveil. Le dessin
+	porte son propre fond (la pastille jaune) : il tient en clair et en sombre.
 -->
 <script lang="ts">
 	import {
@@ -47,7 +49,18 @@
 		type DecorationShape
 	} from './mathou-decorations';
 	import { collarDrawing, collarNeck } from './mathou-colliers';
-	import type { MathouCollarId, MathouDecorationId } from '$lib/mathoux/decorations';
+	import {
+		glassesDrawing,
+		glassesPlacement,
+		hatDrawing,
+		hatPlacement
+	} from './mathou-chapeaux-lunettes';
+	import type {
+		MathouCollarId,
+		MathouDecorationId,
+		MathouGlassesId,
+		MathouHatId
+	} from '$lib/mathoux/decorations';
 
 	// Types
 	interface Props {
@@ -73,6 +86,10 @@
 		decoration?: MathouDecorationId | null;
 		/** Collier porté (rien en silhouette) */
 		collar?: MathouCollarId | null;
+		/** Lunettes portées (rien en silhouette ni en sieste) */
+		glasses?: MathouGlassesId | null;
+		/** Chapeau porté (rien en silhouette ni en sieste) ; remplace la couronne */
+		hat?: MathouHatId | null;
 	}
 
 	// Constantes
@@ -95,7 +112,9 @@
 		reactionKey = 0,
 		growFrom,
 		decoration = null,
-		collar = null
+		collar = null,
+		glasses = null,
+		hat = null
 	}: Props = $props();
 
 	const uid = $props.id();
@@ -124,6 +143,11 @@
 	const collarParts = $derived(collar ? collarDrawing(collar, neck) : null);
 	const pendantTransform = $derived(`translate(100 ${neck.hang}) scale(${neck.s})`);
 	const sleeping = $derived(asleep && !silhouette);
+	// Lunettes et chapeau : retirés pour la sieste, ils suivent la tête pendant la transformation
+	const glassesAt = $derived(glassesPlacement(geo));
+	const glassesParts = $derived(glasses && !sleeping ? glassesDrawing(glasses, glassesAt.s) : null);
+	const hatAt = $derived(hatPlacement(geo));
+	const hatParts = $derived(hat && !sleeping ? hatDrawing(hat, hatAt.s) : null);
 	// Réveil : le dessin éveillé, avec ce qui reste de la sieste (lune, bonnet, « Zzz », yeux
 	// fermés) qui s'en va
 	const waking = $derived(reaction === 'reveil' && !asleep && !silhouette);
@@ -205,6 +229,8 @@
 				stroke={shape.stroke}
 				stroke-width={shape.width}
 				stroke-linecap={shape.round ? 'round' : undefined}
+				fill-opacity={shape.fillOpacity}
+				stroke-dasharray={shape.dash}
 			/>
 		{/if}
 	{/each}
@@ -549,6 +575,19 @@
 							/>
 						{/if}
 
+						{#if glassesParts}
+							<!-- Lunettes, par-dessus les moustaches ; au réveil, il les remet -->
+							<g
+								data-part="lunettes"
+								data-glasses={glasses}
+								transform={`translate(${glassesAt.x} ${glassesAt.y}) scale(${glassesAt.s})`}
+								stroke-linejoin="round"
+								class:remis={waking}
+							>
+								{@render shapes(glassesParts)}
+							</g>
+						{/if}
+
 						{#if ruffed}
 							<!-- Attribut du grand matou : la fraise (après la transformation) -->
 							<g
@@ -568,7 +607,18 @@
 							{/if}
 						{/if}
 
-						{#if majesty}
+						{#if hatParts}
+							<!-- Chapeau, au sommet de la tête : chez le grand matou, à la place de la couronne -->
+							<g
+								data-part="chapeau"
+								data-hat={hat}
+								transform={`translate(${hatAt.x} ${hatAt.y}) scale(${hatAt.s})`}
+								stroke-linejoin="round"
+								class:remis={waking}
+							>
+								{@render shapes(hatParts)}
+							</g>
+						{:else if majesty}
 							<!-- Couronne -->
 							<g data-part="couronne" class:apparait={crowning}>
 								<path d={crownShape.d} fill={RED} stroke={INK} stroke-width="2.6" />
@@ -809,6 +859,10 @@
 	.yeux-clos {
 		animation: yeux-clos 1.2s ease-in-out 0.3s both;
 	}
+	/* Lunettes et chapeau reviennent quand le bonnet s'est envolé */
+	.remis {
+		animation: remis 0.6s ease-out 1.6s both;
+	}
 	.bonnet-part {
 		transform-box: fill-box;
 		transform-origin: 50% 100%;
@@ -1039,6 +1093,11 @@
 		from {
 			opacity: 0;
 			transform: scale(0.6);
+		}
+	}
+	@keyframes remis {
+		from {
+			opacity: 0;
 		}
 	}
 	@keyframes zzz-part {

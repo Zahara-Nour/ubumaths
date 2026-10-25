@@ -408,18 +408,20 @@ describe('buildMathouCollection avec la mémoire', () => {
 					bestStage: 'chaton',
 					starredGrades: [],
 					decoration: 'cockade',
-					collar: 'bow_tie'
+					collar: 'bow_tie',
+					glasses: 'pince_nez',
+					hat: 'boater'
 				},
 				'n-calc': { bestStage: 'chaton', starredGrades: [] }
 			})
 		});
 		const decorations = collection.races
 			.flatMap((race) => race.mathoux)
-			.map((m) => [m.notionId, m.decoration, m.collar]);
+			.map((m) => [m.notionId, m.decoration, m.collar, m.glasses, m.hat]);
 		expect(decorations).toEqual(
 			expect.arrayContaining([
-				['n-ent', 'cockade', 'bow_tie'],
-				['n-calc', null, null]
+				['n-ent', 'cockade', 'bow_tie', 'pince_nez', 'boater'],
+				['n-calc', null, null, null, null]
 			])
 		);
 	});

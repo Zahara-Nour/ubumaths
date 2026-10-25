@@ -36,6 +36,8 @@ const COLLECTION: MathouCollection = {
 					dueForRevision: true,
 					decoration: null,
 					collar: null,
+					glasses: null,
+					hat: null,
 					trainingCategories: CATEGORIES,
 					stars: ['2'],
 					workablePoints: 4,
@@ -52,6 +54,8 @@ const COLLECTION: MathouCollection = {
 					dueForRevision: false,
 					decoration: null,
 					collar: null,
+					glasses: null,
+					hat: null,
 					trainingCategories: CATEGORIES,
 					stars: [],
 					workablePoints: 2,
@@ -109,7 +113,7 @@ describe('Chatterie d’un élève, vue du prof', () => {
 		expect(page.getByRole('link', { name: /Faire grandir/ }).elements()).toHaveLength(0);
 	});
 
-	it('décorations de panse et colliers : visibles sur les Mathoux, jamais « Décorer »', async () => {
+	it('décorations, colliers, lunettes et chapeaux : visibles sur les Mathoux, jamais « Décorer »', async () => {
 		const [fractions, ...rest] = COLLECTION.races[0].mathoux;
 		const { container } = await renderPage({
 			collection: {
@@ -117,7 +121,18 @@ describe('Chatterie d’un élève, vue du prof', () => {
 				races: [
 					{
 						...COLLECTION.races[0],
-						mathoux: [{ ...fractions, decoration: 'medal', collar: 'bell' }, ...rest]
+						mathoux: [
+							{
+								...fractions,
+								// Éveillé : en sieste, il retire lunettes et chapeau
+								asleep: false,
+								decoration: 'medal',
+								collar: 'bell',
+								glasses: 'pince_nez',
+								hat: 'pointed_hat'
+							},
+							...rest
+						]
 					},
 					...COLLECTION.races.slice(1)
 				]
@@ -127,6 +142,10 @@ describe('Chatterie d’un élève, vue du prof', () => {
 		expect(decorations.map((d) => d.getAttribute('data-decoration'))).toEqual(['medal']);
 		const collars = [...container.querySelectorAll('[data-part="collier"]')];
 		expect(collars.map((c) => c.getAttribute('data-collar'))).toEqual(['bell']);
+		const glasses = [...container.querySelectorAll('[data-part="lunettes"]')];
+		expect(glasses.map((g) => g.getAttribute('data-glasses'))).toEqual(['pince_nez']);
+		const hats = [...container.querySelectorAll('[data-part="chapeau"]')];
+		expect(hats.map((h) => h.getAttribute('data-hat'))).toEqual(['pointed_hat']);
 		expect(page.getByRole('button', { name: /Décorer/ }).elements()).toHaveLength(0);
 	});
 

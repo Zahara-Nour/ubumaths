@@ -55,6 +55,8 @@ const COLLECTION: MathouCollection = {
 					dueForRevision: true,
 					decoration: null,
 					collar: null,
+					glasses: null,
+					hat: null,
 					trainingCategories: CAT_FRAC,
 					stars: [],
 					workablePoints: 4,
@@ -71,6 +73,8 @@ const COLLECTION: MathouCollection = {
 					dueForRevision: false,
 					decoration: null,
 					collar: null,
+					glasses: null,
+					hat: null,
 					// La logique n'en donne pas à une silhouette : la page ne doit pas le montrer non plus
 					trainingCategories: CAT_ENT,
 					stars: [],
@@ -95,6 +99,8 @@ const COLLECTION: MathouCollection = {
 					dueForRevision: false,
 					decoration: null,
 					collar: null,
+					glasses: null,
+					hat: null,
 					trainingCategories: CAT_VEC,
 					stars: ['2', '1_SPE'],
 					workablePoints: 3,
@@ -271,7 +277,7 @@ describe('La Chatterie de Faustroll', () => {
 	});
 });
 
-describe('Décorer un Mathou (décorations de panse et colliers)', () => {
+describe('Décorer un Mathou (panse, cou, yeux, tête)', () => {
 	const fetchMock = vi.fn();
 
 	async function renderDecor(
@@ -528,6 +534,137 @@ describe('Décorer un Mathou (décorations de panse et colliers)', () => {
 		expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
 			notionId: 'n-frac',
 			collar: 'bow_tie'
+		});
+	});
+
+	it('lunettes et chapeau portés se voient sur le Mathou de la Chatterie', async () => {
+		const pieces = { glasses: 'monocle', hat: 'top_hat' } as const;
+		const { container } = await renderDecor(single({ asleep: false, ...pieces }), [
+			'monocle',
+			'top_hat'
+		]);
+		expect(container.querySelector('[data-part="lunettes"]')?.getAttribute('data-glasses')).toBe(
+			'monocle'
+		);
+		expect(container.querySelector('[data-part="chapeau"]')?.getAttribute('data-hat')).toBe(
+			'top_hat'
+		);
+
+		// En sieste, il les retire
+		const asleep = await renderDecor(single({ asleep: true, ...pieces }), ['monocle', 'top_hat']);
+		expect(asleep.container.querySelector('[data-part="lunettes"]')).toBeNull();
+		expect(asleep.container.querySelector('[data-part="chapeau"]')).toBeNull();
+	});
+
+	it('rangées « Yeux » et « Tête » : chaque pièce sur CE Mathou, avec ce qu’il porte ailleurs', async () => {
+		const collection: MathouCollection = {
+			...COLLECTION,
+			races: COLLECTION.races.map((race) => ({
+				...race,
+				mathoux: race.mathoux.map((m) =>
+					m.notionId === 'n-vec'
+						? { ...m, glasses: 'monocle' as const, hat: 'beret' as const }
+						: m.notionId === 'n-frac'
+							? { ...m, collar: 'bell' as const, glasses: 'sunglasses' as const }
+							: m
+				)
+			}))
+		};
+		await renderDecor(collection, ['bell', 'sunglasses', 'monocle', 'round_glasses', 'beret'], 15);
+		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
+		await expect.element(page.getByRole('heading', { name: 'Yeux' })).toBeVisible();
+		await expect.element(page.getByRole('heading', { name: 'Tête' })).toBeVisible();
+
+		const eyes = document.querySelectorAll('[role="dialog"] [data-row="yeux"] li[data-decoration]');
+		expect([...eyes].map((c) => c.getAttribute('data-decoration'))).toEqual([
+			'round_glasses',
+			'sunglasses',
+			'monocle',
+			'pince_nez',
+			'spiral_glasses'
+		]);
+		for (const c of eyes) {
+			expect(c.querySelector('[data-part="lunettes"]')?.getAttribute('data-glasses')).toBe(
+				c.getAttribute('data-decoration')
+			);
+			// Le collier qu'il porte reste au cou
+			expect(c.querySelector('[data-part="collier"]')?.getAttribute('data-collar')).toBe('bell');
+		}
+		const heads = document.querySelectorAll(
+			'[role="dialog"] [data-row="tete"] li[data-decoration]'
+		);
+		expect([...heads].map((c) => c.getAttribute('data-decoration'))).toEqual([
+			'bowler',
+			'beret',
+			'boater',
+			'top_hat',
+			'pointed_hat'
+		]);
+		for (const c of heads) {
+			expect(c.querySelector('[data-part="chapeau"]')?.getAttribute('data-hat')).toBe(
+				c.getAttribute('data-decoration')
+			);
+			// Les lunettes qu'il porte restent sur ses yeux
+			expect(c.querySelector('[data-part="lunettes"]')?.getAttribute('data-glasses')).toBe(
+				'sunglasses'
+			);
+		}
+
+		// Accords : les lunettes, le monocle, le chapeau
+		expect(card('round_glasses').textContent).toContain('Achetées');
+		expect(card('sunglasses').textContent).toContain('Portées par le Mathou des Fractions');
+		expect(card('monocle').textContent).toContain('Porté par le Mathou des Vecteurs');
+		expect(card('monocle').textContent).not.toContain('Portée');
+		expect(card('beret').textContent).toContain('Porté par le Mathou des Vecteurs');
+		expect(card('pince_nez').textContent).toContain('Il te manque 5 gidouilles');
+		expect(card('spiral_glasses').textContent).toContain('Il te manque 25 gidouilles');
+	});
+
+	it('en sieste, le Mathou montre quand même les lunettes et chapeaux à essayer', async () => {
+		await renderDecor(single({ asleep: true, hat: 'bowler' }), ['bowler'], 0);
+		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
+		expect(card('monocle').querySelector('[data-part="lunettes"]')).not.toBeNull();
+		expect(card('beret').querySelector('[data-part="chapeau"]')).not.toBeNull();
+		// Les rangées de la panse et du cou le montrent endormi, sans son chapeau
+		expect(card('heart').querySelector('svg')?.getAttribute('data-asleep')).toBe('true');
+		expect(card('heart').querySelector('[data-part="chapeau"]')).toBeNull();
+	});
+
+	it('acheter des lunettes ou un chapeau : la même route d’achat, pour CE Mathou', async () => {
+		await renderDecor(single({}), [], 30);
+		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
+		await page
+			.getByRole('button', { name: 'Acheter Monocle pour le Mathou des Fractions' })
+			.click();
+		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+		expect(fetchMock.mock.calls[0][0]).toBe('/api/student/mathoux/decorations/buy');
+		expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+			decoration: 'monocle',
+			notionId: 'n-frac'
+		});
+	});
+
+	it('poser ou retirer lunettes et chapeau : leur route, gratuit', async () => {
+		await renderDecor(single({ glasses: 'sunglasses' }), ['sunglasses', 'boater'], 0);
+		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
+		await page
+			.getByRole('button', {
+				name: 'Retirer Lunettes de soleil, portées par le Mathou des Fractions'
+			})
+			.click();
+		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+		expect(fetchMock.mock.calls[0][0]).toBe('/api/student/mathoux/decorations/wear-glasses');
+		expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+			notionId: 'n-frac',
+			glasses: null
+		});
+
+		await page.getByRole('button', { name: 'Poser Canotier sur le Mathou des Fractions' }).click();
+		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+		expect(fetchMock.mock.calls[1][0]).toBe('/api/student/mathoux/decorations/wear-hat');
+		expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
+			notionId: 'n-frac',
+			hat: 'boater'
 		});
 	});
 

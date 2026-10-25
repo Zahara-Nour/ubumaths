@@ -793,6 +793,8 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 							dueForRevision: false,
 							decoration: null,
 							collar: null,
+							glasses: null,
+							hat: null,
 							trainingCategories: null,
 							stars: [],
 							workablePoints: 2,

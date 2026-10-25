@@ -118,6 +118,8 @@ const mockMathoux = [
 		asleep: false,
 		decoration: 'cockade',
 		collar: 'leather',
+		glasses: 'monocle',
+		hat: 'bowler',
 		first_seen_at: '2026-10-01T10:00:00Z',
 		updated_at: '2026-10-18T10:00:00Z'
 	}
@@ -126,7 +128,9 @@ const mockMathoux = [
 // Décorations achetées : panse (lot B, 2026-10-24) et colliers (lot C, 2026-10-25)
 const mockMathouDecorations = [
 	{ decoration: 'cockade', price_paid: 20, purchased_at: '2026-10-24T10:00:00Z' },
-	{ decoration: 'leather', price_paid: 20, purchased_at: '2026-10-25T10:00:00Z' }
+	{ decoration: 'leather', price_paid: 20, purchased_at: '2026-10-25T10:00:00Z' },
+	{ decoration: 'monocle', price_paid: 20, purchased_at: '2026-10-26T10:00:00Z' },
+	{ decoration: 'bowler', price_paid: 10, purchased_at: '2026-10-26T11:00:00Z' }
 ];
 
 // Palotin de l'élève (une ligne par élève)
@@ -426,13 +430,13 @@ describe('GET /api/account/export', () => {
 			expect(appel).toBeGreaterThanOrEqual(0);
 			const chaine = mockSupabase.from.mock.results[appel].value;
 			expect(chaine.select.mock.calls[0][0]).toBe(
-				'notion_id, best_stage, starred_grades, asleep, decoration, collar, first_seen_at, updated_at'
+				'notion_id, best_stage, starred_grades, asleep, decoration, collar, glasses, hat, first_seen_at, updated_at'
 			);
 			const eq = chaine.select.mock.results[0].value.eq;
 			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
 		});
 
-		test('contient les décorations de panse achetées par l’appelant (catégorie gaming)', async () => {
+		test('contient les décorations achetées par l’appelant, lunettes et chapeaux compris (catégorie gaming)', async () => {
 			const response = await GET(createMockEvent() as never);
 			const data = await response.json();
 

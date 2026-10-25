@@ -1,10 +1,12 @@
 /**
- * POST /api/student/mathoux/decorations/buy, /wear et /wear-collar — achat et
- * pose des décorations de panse et des colliers (lots B et C des accessoires,
- * décisions de David du 2026-10-24 et du 2026-10-25).
+ * POST /api/student/mathoux/decorations/buy, /wear, /wear-collar, /wear-glasses et
+ * /wear-hat — achat et pose des décorations de panse, colliers, lunettes et
+ * chapeaux (lots B, C et D des accessoires, décisions de David du 2026-10-24 et
+ * du 2026-10-25).
  *
  * La base tient les règles (prouvé en intégration :
- * tests/integration/mathoux-decorations.test.ts, mathoux-colliers.test.ts). Ici : élève de la session
+ * tests/integration/mathoux-decorations.test.ts, mathoux-colliers.test.ts,
+ * mathoux-lunettes-chapeaux.test.ts). Ici : élève de la session
  * seulement, consentement pour l'achat, entrée validée, refus de la base
  * traduits pour l'élève, réponse inattendue = panne (jamais un faux succès).
  */
@@ -23,6 +25,8 @@ import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { POST as buy } from '../buy/+server';
 import { POST as wear } from '../wear/+server';
 import { POST as wearCollar } from '../wear-collar/+server';
+import { POST as wearGlasses } from '../wear-glasses/+server';
+import { POST as wearHat } from '../wear-hat/+server';
 
 // Constantes
 const NOTION = '7b0f6a52-3c1e-4d5f-9a8b-2c3d4e5f6a7b';
@@ -75,6 +79,19 @@ describe('POST /api/student/mathoux/decorations/buy', () => {
 		});
 	});
 
+	it.each(['spiral_glasses', 'top_hat'])(
+		'%s s’achète par la même route (la base le pose à son emplacement)',
+		async (piece) => {
+			rpc.mockResolvedValue({ data: { ok: true, balance: 0 }, error: null });
+			await buy(event({ decoration: piece, notionId: NOTION }));
+			expect(rpc).toHaveBeenCalledWith('buy_mathou_decoration', {
+				p_student_id: 'eleve-1',
+				p_decoration: piece,
+				p_notion_id: NOTION
+			});
+		}
+	);
+
 	it('un identifiant d’élève dans le corps est ignoré', async () => {
 		rpc.mockResolvedValue({ data: { ok: true, balance: 0 }, error: null });
 		await buy(event({ decoration: 'heart', notionId: NOTION, studentId: 'autre' }));
@@ -104,6 +121,7 @@ describe('POST /api/student/mathoux/decorations/buy', () => {
 			'décoration inconnue (le croissant est au Lunaire)',
 			{ decoration: 'crescent', notionId: NOTION }
 		],
+		['le bicorne, écarté du catalogue', { decoration: 'bicorne', notionId: NOTION }],
 		['notion qui n’est pas un UUID', { decoration: 'heart', notionId: 'n1' }],
 		['corps vide', {}],
 		['corps illisible', '{pas du json']
@@ -141,7 +159,9 @@ describe('limite de débit, partagée par l’achat et la pose', () => {
 	it.each([
 		['buy', () => buy(event({ decoration: 'heart', notionId: NOTION }))],
 		['wear', () => wear(event({ notionId: NOTION, decoration: null }))],
-		['wear-collar', () => wearCollar(event({ notionId: NOTION, collar: null }))]
+		['wear-collar', () => wearCollar(event({ notionId: NOTION, collar: null }))],
+		['wear-glasses', () => wearGlasses(event({ notionId: NOTION, glasses: null }))],
+		['wear-hat', () => wearHat(event({ notionId: NOTION, hat: null }))]
 	])('%s : clé par élève, 30 par minute ; dépassée → 429, rien n’est appelé', async (_, call) => {
 		rpc.mockResolvedValue({ data: { ok: true }, error: null });
 		await call();
@@ -270,6 +290,87 @@ describe('POST /api/student/mathoux/decorations/wear-collar', () => {
 		});
 		rpc.mockResolvedValue({ data: { ok: 'oui' }, error: null });
 		await expect(wearCollar(event({ notionId: NOTION, collar: 'bell' }))).rejects.toMatchObject({
+			status: 500
+		});
+	});
+});
+
+describe.each([
+	{
+		route: 'wear-glasses',
+		post: wearGlasses,
+		field: 'glasses',
+		fn: 'set_mathou_glasses',
+		param: 'p_glasses',
+		piece: 'monocle',
+		other: ['un chapeau ne se pose pas sur les yeux', 'beret']
+	},
+	{
+		route: 'wear-hat',
+		post: wearHat,
+		field: 'hat',
+		fn: 'set_mathou_hat',
+		param: 'p_hat',
+		piece: 'pointed_hat',
+		other: ['des lunettes ne se posent pas sur la tête', 'sunglasses']
+	}
+])('POST /api/student/mathoux/decorations/$route', ({ post, field, fn, param, piece, other }) => {
+	it('pose pour l’élève de la session, sans consentement exigé (rien ne s’achète)', async () => {
+		rpc.mockResolvedValue({ data: { ok: true }, error: null });
+		const response = await post(event({ notionId: NOTION, [field]: piece, studentId: 'autre' }));
+		expect(rpc).toHaveBeenCalledWith(fn, {
+			p_student_id: 'eleve-1',
+			p_notion_id: NOTION,
+			[param]: piece
+		});
+		expect(requireConsent).not.toHaveBeenCalled();
+		expect(response.status).toBe(200);
+	});
+
+	it('retrait : null passe NULL à la base', async () => {
+		rpc.mockResolvedValue({ data: { ok: true }, error: null });
+		await post(event({ notionId: NOTION, [field]: null }));
+		expect(rpc.mock.calls[0][1][param]).toBeNull();
+	});
+
+	it('réservé aux élèves', async () => {
+		vi.mocked(requireRole).mockRejectedValue({ status: 403 });
+		await expect(post(event({ notionId: NOTION, [field]: null }))).rejects.toMatchObject({
+			status: 403
+		});
+		expect(rpc).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		['pièce inconnue', { notionId: NOTION, [field]: 'bicorne' }],
+		[other[0], { notionId: NOTION, [field]: other[1] }],
+		['une décoration de panse non plus', { notionId: NOTION, [field]: 'heart' }],
+		['pièce absente (null explicite exigé pour retirer)', { notionId: NOTION }],
+		['notion qui n’est pas un UUID', { notionId: 'x', [field]: null }],
+		['corps illisible', '{pas du json']
+	])('400 : %s', async (_, body) => {
+		await expect(post(event(body))).rejects.toMatchObject({ status: 400 });
+		expect(rpc).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		[{ reason: 'not_owned' }, 409, 'Tu n’as pas encore cette décoration.'],
+		[{ reason: 'mathou_not_found' }, 404, 'Ce Mathou n’est pas encore né.']
+	])('refus de la base %o → %i', async (refusal, status, message) => {
+		rpc.mockResolvedValue({ data: { ok: false, ...refusal }, error: null });
+		await expect(post(event({ notionId: NOTION, [field]: piece }))).rejects.toMatchObject({
+			status,
+			body: { message }
+		});
+	});
+
+	it('panne ou réponse inattendue : 500, jamais un faux succès', async () => {
+		rpc.mockResolvedValue({ data: null, error: { message: 'boom' } });
+		await expect(post(event({ notionId: NOTION, [field]: piece }))).rejects.toMatchObject({
+			status: 500
+		});
+		rpc.mockResolvedValue({ data: { ok: 'oui' }, error: null });
+		await expect(post(event({ notionId: NOTION, [field]: piece }))).rejects.toMatchObject({
 			status: 500
 		});
 	});

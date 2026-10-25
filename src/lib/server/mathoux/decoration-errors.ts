@@ -1,6 +1,6 @@
 /**
- * Refus d’achat ou de pose d’une décoration (panse ou collier) → statut HTTP et phrase
- * pour l'élève. Partagé par les deux routes `api/student/mathoux/decorations/*`.
+ * Refus d’achat ou de pose d’une décoration (panse, collier, lunettes, chapeau) → statut
+ * HTTP et phrase pour l'élève. Partagé par les routes `api/student/mathoux/decorations/*`.
  */
 
 import type { DecorationRefusal } from './decorations';

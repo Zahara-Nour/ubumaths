@@ -447,6 +447,8 @@ describe('loadMathouCollection', () => {
 					stage: 'matou',
 					decoration: null,
 					collar: null,
+					glasses: null,
+					hat: null,
 					newStars: []
 				}
 			]

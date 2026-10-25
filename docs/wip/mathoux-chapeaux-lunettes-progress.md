@@ -6,21 +6,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1734 et #1739._
+_Mis à jour le 2026-10-25, PR 2 (code) en cours._
 
-- **État** : migration `20261026000100` (lunettes et chapeaux) mergée (#1734, renommée #1739) et
-  **en prod** (`db:migrate` fait, droits relus : 5 fonctions `service_role` seul, colonnes
-  `glasses`/`hat`). Rien dans l'appli encore.
-- **Prochaine action** : PR 2 sur `feat/mathoux-chapeaux-lunettes-code` : `db:types` ; catalogue
-  TS (+ égalité avec la base en intégration) ; dessins retenus (planche
-  `scripts/mathoux-planches/chapeaux-lunettes.test.ts`) dans un fichier à côté de
-  `mathou-colliers.ts` ; rendu `MathouAvatar` (chapeau remplace la couronne, gardé à la
-  transformation ; sieste : rien ; réveil : fondu) ; routes de pose ; mémoire, nouveautés,
-  **export RGPD `glasses`/`hat` + `export.test.ts`** ; Chatterie (4 rangées), Marché, vue prof ;
-  doc `docs/systeme/mathoux.md`.
+- **État** : PR 2 sur `feat/mathoux-chapeaux-lunettes-code` : `db:types`, catalogue TS (égalité
+  avec la base en intégration), dessins `mathou-chapeaux-lunettes.ts`, rendu `MathouAvatar`, routes
+  `wear-glasses` / `wear-hat`, mémoire, nouveautés, export RGPD, Chatterie (4 rangées), Marché, vue
+  prof, doc. Tests verts (unitaires, client, intégration 72/72), typecheck 0.
+- **Prochaine action** : revues (`code-reviewer` + `security-auditor`, routes API et export RGPD) →
+  CI verte → merge. Puis recette par David (Chatterie, réveil en fondu, grand matou).
 - **En attente de David** : rien.
-- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; chapeau à
-  l'échelle bornée (0,92 à 1,35 de la tête du matou) ; horodatage de migration : `max + 1 min`.
+- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; en
+  sieste, lunettes et chapeau ne se dessinent pas : les rangées « Yeux » et « Tête » de « Décorer »
+  montrent le Mathou éveillé.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-chapeaux-lunettes`, `feat/mathoux-chapeaux-lunettes-code`.
 
 ## Catalogue (choisi par David le 2026-10-25, planche https://claude.ai/artifact/7iaTAB3MWhm6dCg764kKqb)
@@ -72,3 +69,7 @@ Bicorne : pas au catalogue.
   (pas de `--include-all` sans David).
 - 2026-10-25 — #1739 mergée ; `db:migrate` (seule migration en attente, `--dry-run` vérifié) ;
   droits relus en prod (MCP lecture seule). Branches mergées supprimées.
+- 2026-10-25 — PR 2 (code) : catalogue TS, dessins retenus (`mathou-chapeaux-lunettes.ts`, repris
+  de la planche, rendus en `DecorationShape` : `fillOpacity` et `dash` ajoutés), rendu (lunettes
+  après les moustaches, chapeau à la place de la couronne, fondu `remis` au réveil), routes,
+  mémoire, nouveautés, export, Chatterie, Marché, vue prof, doc.

@@ -2,9 +2,9 @@
  * POST /api/student/mathoux/decorations/buy
  * =========================================
  *
- * Achète une décoration (de panse ou un collier) et la pose à son emplacement
- * sur le Mathou choisi (lots B et C des accessoires, décisions de David du
- * 2026-10-24 et du 2026-10-25).
+ * Achète une décoration (de panse, un collier, des lunettes ou un chapeau) et la
+ * pose à son emplacement sur le Mathou choisi (lots B, C et D des accessoires,
+ * décisions de David du 2026-10-24 et du 2026-10-25).
  *
  * AUTH : élève seulement, avec consentement parental (comme la boutique VIP :
  * sans consentement, l'élève voit mais n'achète pas). ENTRÉE (Zod) : la clé du
@@ -28,13 +28,23 @@ import { requireConsent } from '$lib/server/middleware/consent';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { buyMathouDecoration, type DecorationOutcome } from '$lib/server/mathoux/decorations';
 import { refusalMessage, refusalStatus } from '$lib/server/mathoux/decoration-errors';
-import { MATHOU_COLLAR_IDS, MATHOU_DECORATION_IDS } from '$lib/mathoux/decorations';
+import {
+	MATHOU_COLLAR_IDS,
+	MATHOU_DECORATION_IDS,
+	MATHOU_GLASSES_IDS,
+	MATHOU_HAT_IDS
+} from '$lib/mathoux/decorations';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/student/mathoux/decorations/buy/+server');
 
 const bodySchema = z.object({
-	decoration: z.enum([...MATHOU_DECORATION_IDS, ...MATHOU_COLLAR_IDS]),
+	decoration: z.enum([
+		...MATHOU_DECORATION_IDS,
+		...MATHOU_COLLAR_IDS,
+		...MATHOU_GLASSES_IDS,
+		...MATHOU_HAT_IDS
+	]),
 	notionId: z.string().uuid()
 });
 

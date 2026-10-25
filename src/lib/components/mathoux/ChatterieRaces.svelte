@@ -97,6 +97,8 @@
 								silhouette={toDiscover}
 								decoration={mathou.decoration}
 								collar={mathou.collar}
+								glasses={mathou.glasses}
+								hat={mathou.hat}
 								size={64}
 								label={avatarLabel(mathou)}
 							/>
