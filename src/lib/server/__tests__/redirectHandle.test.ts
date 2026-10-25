@@ -127,7 +127,8 @@ describe('redirectHandle — pages de démo et de debug rangées sous /dev et /a
 		['/demo/vip-cards-demo', '/dev/cartes'],
 		['/demo/mots-cliquables', '/dev/mots-cliquables'],
 		['/geometry-demo', '/aide-ecriture/geometrie'],
-		['/demo/trig-circle-demo', '/aide-ecriture/cercle-trigo']
+		['/demo/trig-circle-demo', '/aide-ecriture/cercle-trigo'],
+		['/construction-demo', '/constructions/essais']
 	])('%s mène à %s, en 308', async (from, to) => {
 		expect(await redirectionOf(from)).toEqual({ status: 308, location: to });
 	});

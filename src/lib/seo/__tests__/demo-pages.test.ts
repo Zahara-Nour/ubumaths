@@ -3,7 +3,7 @@
  * le 2026-10-25) :
  *
  * - `DEMO_PAGES` colle aux dossiers de `/demo` : une vitrine ajoutée sans carte échoue ici ;
- * - l'accueil et les 9 vitrines sont dans le sitemap, plus aucune exclusion ne les couvre ;
+ * - l'accueil et les 10 vitrines sont dans le sitemap, plus aucune exclusion ne les couvre ;
  * - `robots.txt` ne ferme plus `/demo`, mais garde fermées les autres démos de mise au point ;
  * - chaque vitrine n'a plus de `noindex` et passe par `SeoHead` (canonique, Open Graph), titre et
  *   description tirés de `DEMO_PAGES`.
@@ -44,6 +44,7 @@ describe('DEMO_PAGES', () => {
 			'corriges',
 			'diaporama',
 			'geometrie',
+			'constructions',
 			'cercle-trigo',
 			'editeur',
 			'lexique',
@@ -62,7 +63,7 @@ describe('DEMO_PAGES', () => {
 });
 
 describe('sitemap', () => {
-	it('liste l’accueil /demo en 0,6 et les 9 vitrines en 0,5', () => {
+	it('liste l’accueil /demo en 0,6 et les 10 vitrines en 0,5', () => {
 		const byPath = new Map(SITEMAP_PAGES.map((p) => [p.path, p]));
 		expect(byPath.get(DEMO_HUB.path)?.priority).toBe(0.6);
 		for (const { path } of DEMO_PAGES) {

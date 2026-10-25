@@ -1,7 +1,8 @@
 import { existsSync, readFileSync, readdirSync } from 'fs';
 import { resolve } from 'path';
 import { convertXmlToDsl } from '$lib/constructions-v2/converter';
-import { canAuthorDemoScripts } from '$lib/server/constructions-access';
+import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
+import { requireRoles } from '$lib/server/middleware/auth';
 import type { PageServerLoad } from './$types';
 
 interface ConvertedFixture {
@@ -11,13 +12,13 @@ interface ConvertedFixture {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	// Sauvegarder / Supprimer : prof et admin seuls (l'API répond 403 aux autres).
-	const canAuthor = canAuthorDemoScripts(locals.profile?.role);
+	// Essais de constructions : le prof seul (chantier demo-debug, phase 8).
+	await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	const fixturesDir = resolve('extern/instrumenpoche-main/devServer/fixtures');
 	// Dépôt instrumenpoche absent (retiré du dépôt, jamais déployé) : la page
 	// s'ouvre sans exemples XML au lieu de répondre 500.
-	if (!existsSync(fixturesDir)) return { fixtures: [], canAuthor };
+	if (!existsSync(fixturesDir)) return { fixtures: [] };
 
 	const files = readdirSync(fixturesDir)
 		.filter((f) => f.endsWith('.xml'))
@@ -37,5 +38,5 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}
 	}
 
-	return { fixtures, canAuthor };
+	return { fixtures };
 };

@@ -1,8 +1,16 @@
+<!--
+	Essais de constructions (`/constructions/essais`)
+	=================================================
+	L'éditeur où le prof essaie un script de construction et garde ses brouillons
+	d'essai (`/api/construction-demo-scripts`). Ancienne `/construction-demo`,
+	réservée au prof depuis le chantier demo-debug (phase 8).
+-->
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import { onMount } from 'svelte';
 	import type { Component } from 'svelte';
 	import type { PageData } from './$types';
+	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -17,7 +25,7 @@
 		dsl_script: string;
 	}
 
-	const defaultScript = `# Triangle equilateral avec mediatrice
+	const defaultScript = `# Triangle équilatéral et médiatrice
 @instruction("Placer les points A et B")
 A = point(0, 0)
 B = point(4, 0)
@@ -26,17 +34,17 @@ B = point(4, 0)
 segment(A, B)
 
 @pause(300)
-@instruction("Construire le triangle equilateral")
+@instruction("Construire le triangle équilatéral")
 T = triangle_equilateral(A, B)
 
 @pause(300)
-@instruction("Tracer la mediatrice de [AB]")
+@instruction("Tracer la médiatrice de [AB]")
 d = mediatrice(A, B)
 M = milieu(A, B)
 montre(M)
 
 @pause(500)
-@instruction("Construction terminee !")
+@instruction("Construction terminée !")
 `;
 
 	let script = $state(defaultScript);
@@ -48,16 +56,16 @@ montre(M)
 	// ─── Select items ───────────────────────────────────────────
 
 	let sourceItems = $derived([
-		{ value: '', label: 'Script par defaut' },
+		{ value: '', label: 'Script par défaut' },
 		...(savedScripts.length > 0
-			? [{ value: '---saved---', label: '── Scripts sauvegardes ──', disabled: true }]
+			? [{ value: '---saved---', label: '── Scripts enregistrés ──', disabled: true }]
 			: []),
 		...savedScripts.map((s) => ({
 			value: `saved:${s.id}`,
 			label: s.name
 		})),
 		...(data.fixtures.length > 0
-			? [{ value: '---fixtures---', label: '── Fixtures XML ──', disabled: true }]
+			? [{ value: '---fixtures---', label: '── Exemples XML ──', disabled: true }]
 			: []),
 		...data.fixtures.map((f) => ({
 			value: `fixture:${f.filename}`,
@@ -74,7 +82,7 @@ montre(M)
 				savedScripts = await res.json();
 			}
 		} catch {
-			// not logged in or error — ignore
+			// erreur réseau : la liste reste vide
 		}
 	}
 
@@ -116,11 +124,11 @@ montre(M)
 			});
 			if (!res.ok) {
 				const err = await res.json().catch(() => ({ message: 'Erreur serveur' }));
-				toaster.error(err.message ?? 'Erreur lors de la sauvegarde');
+				toaster.error(err.message ?? 'Erreur lors de l’enregistrement');
 				return;
 			}
 			const saved: SavedScript = await res.json();
-			toaster.success(`Script "${name}" sauvegarde`);
+			toaster.success(`Script « ${name} » enregistré`);
 			await loadSavedScripts();
 			selectedSource = `saved:${saved.id}`;
 		} finally {
@@ -139,7 +147,7 @@ montre(M)
 			toaster.error('Erreur lors de la suppression');
 			return;
 		}
-		toaster.success(`Script "${found.name}" supprime`);
+		toaster.success(`Script « ${found.name} » supprimé`);
 		await loadSavedScripts();
 		selectedSource = '';
 		script = defaultScript;
@@ -151,47 +159,46 @@ montre(M)
 	onMount(async () => {
 		const mod = await import('$lib/constructions-v2/components/ScriptEditor.svelte');
 		EditorComponent = mod.default;
-		if (data.canAuthor) await loadSavedScripts();
+		await loadSavedScripts();
 	});
 </script>
 
 <svelte:head>
-	<title>Demo Construction v2</title>
+	<title>Essais de constructions - Chiphre</title>
 </svelte:head>
 
 <div class="container mx-auto max-w-6xl p-4">
-	<h1 class="mb-4 text-2xl font-bold">Demo Construction v2</h1>
+	<BackLink href="/constructions" label="Retour aux constructions" />
+	<h1 class="mb-4 text-2xl font-bold">Essais de constructions</h1>
 	<p class="mb-3 text-sm text-muted-foreground">
-		Editez le script a gauche, l'apercu se met a jour en temps reel. Cliquez "Jouer" pour lancer
-		l'animation a droite.
+		Écrivez le script à gauche, l'aperçu se met à jour en temps réel. Cliquez sur « Jouer » pour
+		lancer l'animation à droite.
 	</p>
 
-	<!-- Source selector + save controls -->
+	<!-- Choix du script et enregistrement -->
 	<div class="mb-4 flex flex-wrap items-center gap-3">
 		<MySelect
 			type="single"
 			value={selectedSource}
 			items={sourceItems}
 			onValueChange={handleSourceChange}
-			placeholder="Choisir un script..."
+			placeholder="Choisir un script…"
 		/>
 
-		{#if data.canAuthor}
-			<input
-				type="text"
-				bind:value={scriptName}
-				placeholder="Nom du script"
-				class="h-9 rounded-md border bg-background px-3 text-sm"
-			/>
+		<input
+			type="text"
+			bind:value={scriptName}
+			placeholder="Nom du script"
+			aria-label="Nom du script"
+			class="h-9 rounded-md border bg-background px-3 text-sm"
+		/>
 
-			<Button size="sm" onclick={handleSave} disabled={!scriptName.trim() || saving}>
-				{saving ? 'Sauvegarde...' : 'Sauvegarder'}
-			</Button>
+		<Button size="sm" onclick={handleSave} disabled={!scriptName.trim() || saving}>
+			{saving ? 'Enregistrement…' : 'Enregistrer'}
+		</Button>
 
-			{#if selectedSource.startsWith('saved:')}
-				<Button size="sm" variant="destructive" onclick={handleDelete}>{lore.actions.delete}</Button
-				>
-			{/if}
+		{#if selectedSource.startsWith('saved:')}
+			<Button size="sm" variant="destructive" onclick={handleDelete}>{lore.actions.delete}</Button>
 		{/if}
 	</div>
 
@@ -199,7 +206,7 @@ montre(M)
 		<EditorComponent bind:value={script} width={500} height={450} interactive />
 	{:else}
 		<div class="flex h-[450px] items-center justify-center rounded-md border">
-			<p class="text-muted-foreground">Chargement de l'editeur...</p>
+			<p class="text-muted-foreground">Chargement de l'éditeur…</p>
 		</div>
 	{/if}
 </div>
