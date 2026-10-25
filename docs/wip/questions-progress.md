@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1720._
+_Mis à jour le 2026-10-25, lot A4 en cours (après #1720)._
 
-- **État** : lots A1 (#1712) et A2 (#1720) livrés. A2 = 7 brouillons en prod (`b831b7b8` CP-003, `73bb66e4` CP-003, `b19dfc8e` CP-004, `78a6ba79` CP-007, `dc95f4f6` CP-075, `23acfcd1` CP-075, `1bd1f044` CP-076), rangés et tagués (`db:migrate` fait, vérifié en prod : nœuds, 1 tag chacun, `updated_at`, trigger `tgenabled = O`). Relus par David : 7/7 OK (page https://claude.ai/artifact/BKgtf3Wv2EYsJJBHc4wwp4, collection `verdicts`). Page A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb.
-- **Prochaine action** : lot A4 sens des opérations (014, 077, 015, 078, 079, 017 — § 4 ter), phase 0, nouveau worktree `../ubumaths-wt-questions`.
-- **En attente de David** : publication des 13 brouillons A1 + A2 (tous relus OK) ; vérification manuelle #1702.
-- **Pièges en cours** : nouveaux modèles = `scripts/create-questions.ts` (brouillons, ni nœud ni tag) puis migration nœud + tag (dériver celle d'A2) ; la case naît d'une variable `expression1` (plusieurs cases : `?<{{n}}<?`) ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point (trigger) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e` (= Euler)** ; une spec ne calcule pas les variables dérivées : relire le rendu (`question-specs --file … --apercu N`) ; le moteur ne trie pas et n'écrit pas les nombres en lettres.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1720).
+- **État** : lot A4 (sens des opérations), phase 0 validée (§ 4 quinquies) ; 5 modèles écrits en fichiers (`scripts/questions/cp-a4/`, générés par `docs/wip/questions/lot-a4.py`), specs vertes, rendu relu. A1 + A2 : 13 brouillons en prod, relus OK.
+- **Prochaine action** : go de David pour créer les 5 brouillons en prod (`create-questions --publier`), puis migration nœud + tag (dériver celle d'A2 ; les modèles vont sur la NOTION, sans sous-notion) + test d'intégration, PR.
+- **En attente de David** : go de création des brouillons A4 ; publication des 13 brouillons A1 + A2 ; vérification manuelle #1702.
+- **Pièges en cours** : un modèle est QCM OU à cases, jamais les deux (d'où 5 modèles et non 4) ; parler de branche / notion / sous-notion, jamais de « domaine » (colonnes `domain`/`subdomain` = anciennes, remplies pour le script seulement) ; accords au singulier (« 1 bille ») à prévoir ; nouveaux modèles = `scripts/create-questions.ts` puis migration ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point ou en dessous (trigger) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu (`question:specs --file … --apercu N`).
+- **Worktree / branche** : `../ubumaths-wt-questions`, `feat/questions-cp-a4`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -107,6 +107,14 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - Encadrement libre : `rulesSuffice`, en bas tout entier de 0 à n − 1, en haut tout entier > n (plafond technique 1 000 000) : une réponse vraie (150) n'est jamais refusée.
 - Ranger : le moteur ne trie pas → 4 nombres tirés rangés, affichés selon une permutation fixe parmi 4 (ni croissante ni décroissante).
 
+## 4 quinquies. Lot A4 : décisions (David, 2026-10-25)
+
+- Rangement : sur la **notion** du point, sans sous-notion ni nœud neuf — « Entiers : addition et soustraction » (CP-014, 077, 015, 078, 079), « Entiers : multiplication » (CP-017).
+- Modèles mélangés (deux tags) : « Addition ou soustraction ? » (CP-014 + CP-077 : réunion, ajout, retrait, écart ; nombres ≤ 20) et « Les signes + et − » (CP-015 + CP-078 : lire, sens, écrire) — sinon la bonne réponse serait toujours la même.
+- « Addition ou soustraction ? » : deux choix seulement (a + b / a − b), pas de leurre artificiel.
+- « Le signe = » (CP-079) : signe manquant (+, −, =) et égalités vraies ou fausses (8 = 5 + 3, 5 + 3 = 3 + 5, 5 + 3 = 5 + 5).
+- CP-017 : « fois » et addition répétée, **sans le signe ×** (livret CP : × en fin de CP ou au CE1) ; groupes et taille de 2 à 5. Deux modèles (QCM « quel calcul ? » et case « combien ? »), un modèle ne pouvant mêler QCM et cases.
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -127,3 +135,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : lot A2, phase 0 validée (§ 4 quater), 7 modèles écrits et verts (`checkTemplate`) ; bug `e` = Euler trouvé au rendu et corrigé.
 - 2026-10-25 : A2, 7 brouillons créés en prod (`create-questions --publier`, go de David) ; question d'accès tranchée (personne ne gagne ni ne perd d'accès) ; migration nœud + tag et son test.
 - 2026-10-25 : #1720 mergée, `db:migrate`, vérifié en prod ; page à cocher A2 publiée, relue 7/7 OK par David.
+- 2026-10-25 : lot A4, phase 0 validée (§ 4 quinquies) ; 5 modèles écrits, specs vertes, rendu relu (accord « 1 bille » corrigé).

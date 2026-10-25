@@ -1,0 +1,96 @@
+{
+	"title": "Le sens de « fois » : quel calcul ?",
+	"description": "3 boîtes de 4 œufs : 4 + 4 + 4 (sans le signe ×)",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Sens",
+	"level": 1,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Il y a ${{g}}$ boîtes. Dans chaque boîte, il y a ${{n}}$ œufs.\n\nQuel calcul donne le nombre d'œufs ?",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"conditions": ["g != n"],
+			"choices": [
+				{
+					"content": "${{if:g==2|{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}$"
+				},
+				{
+					"content": "${{g}}+{{n}}$"
+				},
+				{
+					"content": "${{if:g==2|{{n}}+{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}$"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Chaque boîte contient ${{n}}$ œufs, et il y a ${{g}}$ boîtes : on ajoute ${{n}}$ autant de fois qu'il y a de boîtes, ${{g}}$ fois.",
+					"$${{if:g==2|{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}={{eval:g*n}}$$",
+					"Il y a ${{eval:g*n}}$ œufs."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 boîtes de 4 : 4 + 4 + 4",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : 3 + 4",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : 4 répété une fois de trop",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "bornes : 5 boîtes de 2",
+			"variationIndex": 0,
+			"variables": {
+				"g": "5",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		}
+	]
+}
