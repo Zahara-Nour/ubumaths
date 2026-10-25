@@ -9,7 +9,7 @@
  *     2026-10-25, docs/wip/mathoux-colliers-progress.md) ;
  *   - les YEUX (`student_mathoux.glasses`) : cinq lunettes, et la TÊTE
  *     (`student_mathoux.hat`) : cinq chapeaux (décisions du 2026-10-25,
- *     docs/wip/mathoux-chapeaux-lunettes-progress.md).
+ *     docs/archive/wip/mathoux-chapeaux-lunettes-progress.md).
  * Mêmes règles pour tous : achetée une fois, une décoration orne UN SEUL
  * Mathou à la fois ; la poser ailleurs la déplace, gratuitement. Un Mathou porte
  * au plus une décoration par emplacement, et les quatre se cumulent.

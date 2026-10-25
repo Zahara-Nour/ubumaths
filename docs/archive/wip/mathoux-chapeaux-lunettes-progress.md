@@ -1,22 +1,22 @@
 # Mathoux : chapeaux et lunettes (lot D des accessoires) — journal
 
 > Branche `feat/mathoux-chapeaux-lunettes`, worktree `../ubumaths-wt-mathoux-chapeaux-lunettes`.
-> Démarré le 2026-10-25. Suite de [mathoux-colliers-progress.md](mathoux-colliers-progress.md)
-> (lot C) et [mathoux-accessoires-progress.md](mathoux-accessoires-progress.md) (lots A et B).
+> Démarré le 2026-10-25. Suite de [mathoux-colliers-progress.md](../../wip/mathoux-colliers-progress.md)
+> (lot C) et [mathoux-accessoires-progress.md](../../wip/mathoux-accessoires-progress.md) (lots A et B).
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1747._
+_Mis à jour le 2026-10-25, clôture._
 
-- **État** : lot D LIVRÉ sur `main` (pas en prod) : migration en prod (#1734, #1739), code mergé
-  (#1747, CI verte sur a805a3409 ; audit sécurité sans finding, revue : 2 mineurs corrigés).
-- **Prochaine action** : recette par David (ligne #1747 de `docs/wip/verifications-manuelles.md`),
-  puis clôture : journal archivé (le durable est déjà dans `docs/systeme/mathoux.md`).
-- **En attente de David** : la recette ; le `deploy:prod` quand il le voudra.
-- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ;
-  dessins figés par l'instantané `mathou-chapeaux-lunettes.test.ts` (un dessin changé → revoir,
-  puis `-u`).
-- **Worktree / branche** : supprimés après le merge.
+- **État** : CLOS, journal archivé. Migration en prod (#1734, #1739) ; code (#1747) sur `main`, pas
+  encore en prod (part au prochain `deploy:prod`). Doc durable : `docs/systeme/mathoux.md`
+  § Lunettes et chapeaux.
+- **Prochaine action** : aucune.
+- **En attente de David** : la recette (ligne #1747 de `docs/wip/verifications-manuelles.md`) ; le
+  `deploy:prod` quand il le voudra.
+- **Pièges** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; dessins figés par
+  l'instantané `mathou-chapeaux-lunettes.test.ts` (un dessin changé → revoir, puis `-u`).
+- **Worktree / branche** : supprimés.
 
 ## Catalogue (choisi par David le 2026-10-25, planche https://claude.ai/artifact/7iaTAB3MWhm6dCg764kKqb)
 

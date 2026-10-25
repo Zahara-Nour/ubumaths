@@ -5,7 +5,7 @@
  * Panse : décisions de David du 2026-10-24 (docs/wip/mathoux-accessoires-progress.md,
  * « Lot B : comportements validés ») ; cou (colliers) : mêmes règles, décidées le
  * 2026-10-25 (docs/wip/mathoux-colliers-progress.md) ; yeux (lunettes) et tête
- * (chapeaux) : mêmes règles encore (docs/wip/mathoux-chapeaux-lunettes-progress.md).
+ * (chapeaux) : mêmes règles encore (docs/archive/wip/mathoux-chapeaux-lunettes-progress.md).
  * La base tient les règles (migrations 20261024235000, 20261025160000 et
  * 20261026000100) :
  *   - `buy_mathou_decoration` : solde vérifié, débit, décoration donnée et posée

@@ -2,7 +2,7 @@
  * Mathoux : lunettes et chapeaux (migration 20261026000100, lot D)
  * ================================================================
  *
- * Phase 0 du 2026-10-25 (docs/wip/mathoux-chapeaux-lunettes-progress.md) :
+ * Phase 0 du 2026-10-25 (docs/archive/wip/mathoux-chapeaux-lunettes-progress.md) :
  *   - dix pièces choisies par David : lunettes rondes 10, lunettes de soleil 10,
  *     monocle 20, pince-nez 20, lunettes à gidouille 40 (yeux) ; chapeau melon 10,
  *     béret 10, canotier 10, haut-de-forme 20, chapeau pointu 20 (tête) ;
