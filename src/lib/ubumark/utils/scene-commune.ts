@@ -3,7 +3,7 @@
  * ================================
  *
  * Ce que partagent les scènes de ```collection et de ```monnaie (phase 0 :
- * `docs/wip/monnaie-progress.md` § 7, décision 8) : le hasard déterministe,
+ * `docs/archive/wip/monnaie-progress.md` § 7, décision 8) : le hasard déterministe,
  * le vrac sans chevauchement, le décalage d'objets et le toucher. Chaque bloc
  * garde sa propre scène (ses objets, sa disposition) ; rien ici ne connaît les
  * cubes ni les euros.

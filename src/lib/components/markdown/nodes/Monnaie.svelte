@@ -3,7 +3,7 @@
 	=========================
 
 	Pièces et billets fictifs à lire ou comparer (CP-043, CP-042 ; phase 0 :
-	`docs/wip/monnaie-progress.md`). Dessinés depuis `buildMonnaieScene`, la
+	`docs/archive/wip/monnaie-progress.md`). Dessinés depuis `buildMonnaieScene`, la
 	même scène que le PDF.
 
 	- Rendu stylisé (décision 1) : aucun élément des vrais billets ni pièces ;

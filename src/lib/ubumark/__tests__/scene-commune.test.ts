@@ -1,7 +1,7 @@
 /**
  * Scènes d'objets — le code commun (collection et monnaie)
  *
- * Phase 0 : `docs/wip/monnaie-progress.md` § 7, décision 8. Le vrac doit
+ * Phase 0 : `docs/archive/wip/monnaie-progress.md` § 7, décision 8. Le vrac doit
  * marcher pour toute taille de case (les pièces de 2 € sont plus grosses que
  * les cubes) : rien ne se touche, tout reste dans la zone, même graine → même
  * dessin.

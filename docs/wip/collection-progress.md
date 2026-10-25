@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-25, après #1770 : chantier **EN PAUSE** (David), le chantier `monnaie` prend la suite._
 
 - **État** : EN PAUSE. Bloc ```collection livré sur `main` (#1766 ; PDF à 8 cm par défaut #1770 ; pas en prod) : parseur, scène, écran avec marquage au doigt, PDF, QCM, série figée, éditeur riche, doc `ubumark.md`.
-- **Prochaine action (à la reprise)** : recette de David (captures 390 px clair/sombre + PDF) ; modèles CP-001/004/070 par la session « questions » ; puis « construire » (CP-002). ` ```monnaie ` : chantier à part, `docs/wip/monnaie-progress.md`.
+- **Prochaine action (à la reprise)** : recette de David (captures 390 px clair/sombre + PDF) ; modèles CP-001/004/070 par la session « questions » ; puis « construire » (CP-002). ` ```monnaie ` : chantier à part, `docs/archive/wip/monnaie-progress.md`.
 - **En attente de David** : recette (vérification manuelle notée, en prod après `deploy:prod`).
 - **Pièges en cours** : marques gardées si deux questions de suite ont exactement le même bloc (constat 2 de la revue, accepté) ; marquage au doigt seulement (assumé) ; la monnaie partage `utils/collection-scene.ts` : toute retouche de la scène doit garder les tests de la collection verts.
 - **Worktree / branche** : aucun (`../ubumaths-wt-collection` retiré après #1770).

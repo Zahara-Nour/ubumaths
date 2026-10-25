@@ -459,7 +459,7 @@ de `nodes/scene-marks.svelte.ts`, commune aux deux blocs. Nom accessible
 « Collection d'objets », **jamais le nombre**. PDF en Typst natif, noir sur blanc. Dans un choix de
 QCM : `--collection-taille: 3cm` (comme l'horloge) ; série figée : `withChoiceCollectionSize`.
 
-**Pièces et billets** (chantier [monnaie](../wip/monnaie-progress.md), CP-043, CP-042 ; CP-044 et
+**Pièces et billets** (chantier [monnaie](../archive/wip/monnaie-progress.md), CP-043, CP-042 ; CP-044 et
 CP-071 en partie) — `src/lib/ubumark/__tests__/monnaie/` :
 
 ````text
@@ -481,7 +481,7 @@ Facultatives : `disposition: rangé | mélangé` (défaut `rangé` ; `mélangé`
 tiré, pièces en vrac), `légendes:`, `taille:` (comme la collection : 8 cm pleine largeur, même
 échelle d'un ensemble à l'autre). Les ensembles se placent côte à côte s'ils tiennent, sinon l'un
 sous l'autre. Pas de `prix:` : le prix va dans l'énoncé. **Rendu stylisé**
-(aucun élément des vrais billets ni pièces, règles BCE : [journal § 6](../wip/monnaie-progress.md)) :
+(aucun élément des vrais billets ni pièces, règles BCE : [journal § 6](../archive/wip/monnaie-progress.md)) :
 plus la valeur est grande, plus la coupure est grande ; valeur écrite au centre, répétée en petit
 dans deux coins d'un billet ; la pièce de 2 € a un anneau. Billets en haut, pièces dessous ; scène
 `utils/monnaie-scene.ts` (hasard, vrac et toucher de `scene-commune.ts`, graine = ce qui se dessine),
