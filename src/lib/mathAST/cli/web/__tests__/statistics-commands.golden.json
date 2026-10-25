@@ -3,63 +3,54 @@
 		"command": ".stats 12, 15, 9",
 		"success": true,
 		"output": "Effectif : 3\nMoyenne = 12\nMédiane = 12\nQ1 = 9\nQ3 = 15\nÉcart interquartile = 6\nD1 = 9\nD9 = 15\nMinimum = 9\nMaximum = 15\nÉtendue = 6\nVariance = 6\nÉcart type ≈ 2,45",
-		"outputHtml": "Effectif : 3<br>Moyenne = 12<br>Médiane = 12<br>Q1 = 9<br>Q3 = 15<br>Écart interquartile = 6<br>D1 = 9<br>D9 = 15<br>Minimum = 9<br>Maximum = 15<br>Étendue = 6<br>Variance = 6<br>Écart type ≈ 2,45",
 		"latex": null
 	},
 	{
 		"command": ".stats 42",
 		"success": true,
 		"output": "Effectif : 1\nMoyenne = 42\nMédiane = 42\nQ1 = 42\nQ3 = 42\nÉcart interquartile = 0\nD1 = 42\nD9 = 42\nMinimum = 42\nMaximum = 42\nÉtendue = 0\nVariance = 0\nÉcart type = 0",
-		"outputHtml": "Effectif : 1<br>Moyenne = 42<br>Médiane = 42<br>Q1 = 42<br>Q3 = 42<br>Écart interquartile = 0<br>D1 = 42<br>D9 = 42<br>Minimum = 42<br>Maximum = 42<br>Étendue = 0<br>Variance = 0<br>Écart type = 0",
 		"latex": null
 	},
 	{
 		"command": ".stats 1.5, 2.5, 3.5, 10",
 		"success": true,
 		"output": "Effectif : 4\nMoyenne ≈ 4,38\nMédiane = 3\nQ1 = 1,5\nQ3 = 3,5\nÉcart interquartile = 2\nD1 = 1,5\nD9 = 10\nMinimum = 1,5\nMaximum = 10\nÉtendue = 8,5\nVariance ≈ 11,05\nÉcart type ≈ 3,32",
-		"outputHtml": "Effectif : 4<br>Moyenne ≈ 4,38<br>Médiane = 3<br>Q1 = 1,5<br>Q3 = 3,5<br>Écart interquartile = 2<br>D1 = 1,5<br>D9 = 10<br>Minimum = 1,5<br>Maximum = 10<br>Étendue = 8,5<br>Variance ≈ 11,05<br>Écart type ≈ 3,32",
 		"latex": null
 	},
 	{
 		"command": ".stats 0.1, 0.1, 0.1",
 		"success": true,
 		"output": "Effectif : 3\nMoyenne = 0,1\nMédiane = 0,1\nQ1 = 0,1\nQ3 = 0,1\nÉcart interquartile = 0\nD1 = 0,1\nD9 = 0,1\nMinimum = 0,1\nMaximum = 0,1\nÉtendue = 0\nVariance = 0\nÉcart type = 0",
-		"outputHtml": "Effectif : 3<br>Moyenne = 0,1<br>Médiane = 0,1<br>Q1 = 0,1<br>Q3 = 0,1<br>Écart interquartile = 0<br>D1 = 0,1<br>D9 = 0,1<br>Minimum = 0,1<br>Maximum = 0,1<br>Étendue = 0<br>Variance = 0<br>Écart type = 0",
 		"latex": null
 	},
 	{
 		"command": ".linreg 1,2,3,4,5 : 1,3,2,4,5",
 		"success": true,
 		"output": "Ajustement affine (n = 5) :\n  y = 0,9x + 0,3\n  Coefficient directeur a = 0,9\n  Ordonnée à l’origine b = 0,3\n  Point moyen : G(3 ; 3)\n  Coefficient de corrélation : r = 0,9",
-		"outputHtml": "Ajustement affine (n = 5) :<br>y = 0,9x + 0,3<br>Coefficient directeur a = 0,9<br>Ordonnée à l’origine b = 0,3<br>Point moyen : G(3 ; 3)<br>Coefficient de corrélation : r = 0,9",
 		"latex": "y = 0.9x + 0.3"
 	},
 	{
 		"command": ".linreg 0,1,2 : 1,3,5",
 		"success": true,
 		"output": "Ajustement affine (n = 3) :\n  y = 2x + 1\n  Coefficient directeur a = 2\n  Ordonnée à l’origine b = 1\n  Point moyen : G(1 ; 3)\n  Coefficient de corrélation : r = 1",
-		"outputHtml": "Ajustement affine (n = 3) :<br>y = 2x + 1<br>Coefficient directeur a = 2<br>Ordonnée à l’origine b = 1<br>Point moyen : G(1 ; 3)<br>Coefficient de corrélation : r = 1",
 		"latex": "y = 2x + 1"
 	},
 	{
 		"command": ".linreg 1,2,3 : 6,4,2",
 		"success": true,
 		"output": "Ajustement affine (n = 3) :\n  y = −2x + 8\n  Coefficient directeur a = −2\n  Ordonnée à l’origine b = 8\n  Point moyen : G(2 ; 4)\n  Coefficient de corrélation : r = −1",
-		"outputHtml": "Ajustement affine (n = 3) :<br>y = −2x + 8<br>Coefficient directeur a = −2<br>Ordonnée à l’origine b = 8<br>Point moyen : G(2 ; 4)<br>Coefficient de corrélation : r = −1",
 		"latex": "y = -2x + 8"
 	},
 	{
 		"command": ".linreg 0.1 ; 0.1 ; 0.1 : 1 ; 2 ; 3",
 		"success": false,
 		"output": "Erreur: les valeurs X sont toutes identiques (regression impossible)",
-		"outputHtml": "<span class=\"repl-error\">Erreur :</span> Les valeurs X sont toutes identiques",
 		"latex": null
 	},
 	{
 		"command": ".linreg 5,5,5 : 1,2,3",
 		"success": false,
 		"output": "Erreur: les valeurs X sont toutes identiques (regression impossible)",
-		"outputHtml": "<span class=\"repl-error\">Erreur :</span> Les valeurs X sont toutes identiques",
 		"latex": null
 	}
 ]

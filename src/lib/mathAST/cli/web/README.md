@@ -13,20 +13,18 @@ mènent à `/atelier`.
 
 ## Fichiers
 
-| Fichier                   | Rôle                                                                                                  |
-| ------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `web-repl-engine.ts`      | `WebReplEngine` : `execute`, `getCommands`, `getEvalState`, `getState`, `getFunctions`                |
-| `types.ts`                | `ReplExecutionResult` (texte, HTML, arbre, LaTeX, valeurs exacte et approchée), `WebFunctionInfo`     |
-| `output-formatter-web.ts` | Sortie HTML des erreurs et des arbres (classes CSS à la place des couleurs du terminal), `escapeHtml` |
-| `french-errors.ts`        | Messages d'erreur du moteur traduits en français                                                      |
-| `index.ts`                | Export de `WebReplEngine`                                                                             |
+| Fichier              | Rôle                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------- |
+| `web-repl-engine.ts` | `WebReplEngine` : `execute`, `getCommands`, `getEvalState`, `getState`, `getFunctions`      |
+| `types.ts`           | `ReplExecutionResult` (texte, arbre, LaTeX, valeurs exacte et approchée), `WebFunctionInfo` |
+| `french-errors.ts`   | Messages d'erreur du moteur traduits en français                                            |
+| `index.ts`           | Export de `WebReplEngine`                                                                   |
 
 ## Lecteurs
 
 - **Atelier** (vue Calcul) : `execute`, `getCommands` (catalogue), `getEvalState` (mode),
   `getState` (`syncEngine`) ; champs `output`, `latex`, `ast`, `error`, `approximateLatex`,
   `exactLatex`, `quantityAst`, `exactTooLong`.
-- `outputHtml` n'a plus aucun lecteur hors des tests depuis le retrait de `/calc` (2026-10-25).
 - `getFunctions` n'est lu que par des tests (`atelier/__tests__/engine.test.ts` s'en sert pour
   vérifier `syncEngine`).
 
@@ -40,14 +38,23 @@ Retirés faute de lecteur : la bascule du mode de saisie (`setInputMode`, `getIn
 `ReplExecutionResult`, et `highlightRanges` ; `getLastAst` ; `TabStyle` ; les formateurs HTML `escapeWithLabel`,
 `formatHashHtml`, `formatFunction*Html`.
 
-⚠️ Côté CLI, `CommandResult` (`cli/types.ts`) déclare toujours ces champs de bascule et `.solve`
-(`solve.command.ts`) les remplit encore : seul le moteur web a cessé de les transmettre. Ils n'ont
+⚠️ Côté CLI, `CommandResult` (`cli/types.ts`) déclare toujours ces champs de bascule (sauf leurs
+versions HTML) et `.solve` (`solve.command.ts`) les remplit encore : seul le moteur web a cessé de
+les transmettre. Ils n'ont
 plus de lecteur (ni `repl.ts`, ni `cli.ts`) ; `QuantityOutcome.exact` / `.decimal`
 (`cli/quantities.ts`) non plus. À alléger dans un second temps.
 
 Sans argument, `.latex` et `.custom` sont désormais les commandes du registre (sur la dernière
 expression du moteur ; sans expression antérieure, un échec à la sortie vide) ; `.auto`, `.export` et `.exp` sont des commandes inconnues. L'atelier ne
 les envoie jamais au moteur (refus ou commande inconnue avant, `calcul.ts`).
+
+## Retrait de la sortie HTML (2026-10-25)
+
+Après `/calc`, plus rien ne lisait la version HTML des réponses : retirés `outputHtml`
+(`ReplExecutionResult`, `CommandResult`), `exactOutputHtml` / `decimalOutputHtml` (`CommandResult`),
+`output-formatter-web.ts` (`formatErrorHtml`, `formatInputErrorHtml`, `formatTreeHtml`,
+`escapeHtml`), la traduction du HTML (`htmlInFrench`, `french-errors.ts`) et les branches HTML de
+`.help` et `.solve`. Le texte `output` est inchangé.
 
 ## Tests
 

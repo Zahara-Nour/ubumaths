@@ -137,10 +137,8 @@ function wrapForDivision(expr: string): string {
 interface GlobalAlignedSteps {
 	/** Formatted header line (Equation type: ...) */
 	headerText: string;
-	headerHtml: string;
 	/** Formatted step lines */
 	textLines: string[];
-	htmlLines: string[];
 }
 
 /**
@@ -151,8 +149,7 @@ interface GlobalAlignedSteps {
 function formatAllStepsGloballyAligned(
 	headerPrefix: string, // e.g., "Equation lineaire"
 	headerEquation: string, // e.g., "-3x+4=1"
-	steps: PedagogicalStep[],
-	escapeHtml: (s: string) => string
+	steps: PedagogicalStep[]
 ): GlobalAlignedSteps {
 	// Find position of = in each line to determine max
 	const getEqIndex = (s: string) => s.indexOf('=');
@@ -176,25 +173,16 @@ function formatAllStepsGloballyAligned(
 
 	// Format header with padding AFTER colon, BEFORE equation
 	let headerText: string;
-	let headerHtml: string;
 	if (headerEqIndex !== -1) {
 		const headerPadding = maxEqPos - headerDescLen - headerEqIndex;
 		const paddingStr = ' '.repeat(Math.max(0, headerPadding));
-		const htmlPadding = '&nbsp;'.repeat(Math.max(0, headerPadding));
 		headerText = `${headerPrefix}: ${paddingStr}${formattedHeaderEq}`;
-		headerHtml =
-			`<span class="text-muted-foreground">${escapeHtml(headerPrefix)}:</span> ` +
-			`${htmlPadding}<span class="text-cyan-400">${escapeHtml(formattedHeaderEq)}</span>`;
 	} else {
 		headerText = `${headerPrefix}: ${formattedHeaderEq}`;
-		headerHtml =
-			`<span class="text-muted-foreground">${escapeHtml(headerPrefix)}:</span> ` +
-			`<span class="text-cyan-400">${escapeHtml(formattedHeaderEq)}</span>`;
 	}
 
 	// Format step lines (all equations in cyan for consistency)
 	const textLines: string[] = [];
-	const htmlLines: string[] = [];
 
 	for (const step of steps) {
 		const eqIndexTransform = getEqIndex(step.transformation);
@@ -205,13 +193,6 @@ function formatAllStepsGloballyAligned(
 			// No = in transformation, fallback
 			textLines.push(`${descPrefix}${step.transformation}`);
 			textLines.push(`    ${step.result}`);
-			htmlLines.push(
-				`<br><span class="text-muted-foreground">${escapeHtml(step.description)}:</span> ` +
-					`<span class="text-cyan-400">${escapeHtml(step.transformation)}</span>`
-			);
-			htmlLines.push(
-				`<br><span class="text-cyan-400">&nbsp;&nbsp;&nbsp;&nbsp;${escapeHtml(step.result)}</span>`
-			);
 			continue;
 		}
 
@@ -219,34 +200,22 @@ function formatAllStepsGloballyAligned(
 		const currentEqPos = descPrefix.length + eqIndexTransform;
 		const transformPadding = maxEqPos - currentEqPos;
 		const paddingStr = ' '.repeat(Math.max(0, transformPadding));
-		const htmlPadding = '&nbsp;'.repeat(Math.max(0, transformPadding));
 
 		textLines.push(`${descPrefix}${paddingStr}${step.transformation}`);
-		htmlLines.push(
-			`<br><span class="text-muted-foreground">${escapeHtml(step.description)}:</span> ` +
-				`${htmlPadding}<span class="text-cyan-400">${escapeHtml(step.transformation)}</span>`
-		);
 
 		// Format result line - align = to maxEqPos (same cyan color)
 		if (eqIndexResult !== -1) {
 			const resultPadding = maxEqPos - eqIndexResult;
 			const actualResultPadding = Math.max(4, resultPadding);
 			const resultPaddingStr = ' '.repeat(actualResultPadding);
-			const htmlResultPadding = '&nbsp;'.repeat(actualResultPadding);
 
 			textLines.push(`${resultPaddingStr}${step.result}`);
-			htmlLines.push(
-				`<br><span class="text-cyan-400">${htmlResultPadding}${escapeHtml(step.result)}</span>`
-			);
 		} else {
 			textLines.push(`    ${step.result}`);
-			htmlLines.push(
-				`<br><span class="text-cyan-400">&nbsp;&nbsp;&nbsp;&nbsp;${escapeHtml(step.result)}</span>`
-			);
 		}
 	}
 
-	return { headerText, headerHtml, textLines, htmlLines };
+	return { headerText, textLines };
 }
 
 /**
@@ -256,8 +225,7 @@ function formatAllStepsGloballyAligned(
 function formatStepsSummarized(
 	headerPrefix: string,
 	headerEquation: string,
-	steps: PedagogicalStep[],
-	escapeHtml: (s: string) => string
+	steps: PedagogicalStep[]
 ): GlobalAlignedSteps {
 	const getEqIndex = (s: string) => s.indexOf('=');
 
@@ -280,25 +248,16 @@ function formatStepsSummarized(
 
 	// Format header
 	let headerText: string;
-	let headerHtml: string;
 	if (headerEqIndex !== -1) {
 		const headerPadding = maxEqPos - headerDescLen - headerEqIndex;
 		const paddingStr = ' '.repeat(Math.max(0, headerPadding));
-		const htmlPadding = '&nbsp;'.repeat(Math.max(0, headerPadding));
 		headerText = `${headerPrefix}: ${paddingStr}${formattedHeaderEq}`;
-		headerHtml =
-			`<span class="text-muted-foreground">${escapeHtml(headerPrefix)}:</span> ` +
-			`${htmlPadding}<span class="text-cyan-400">${escapeHtml(formattedHeaderEq)}</span>`;
 	} else {
 		headerText = `${headerPrefix}: ${formattedHeaderEq}`;
-		headerHtml =
-			`<span class="text-muted-foreground">${escapeHtml(headerPrefix)}:</span> ` +
-			`<span class="text-cyan-400">${escapeHtml(formattedHeaderEq)}</span>`;
 	}
 
 	// Format step lines (→ description: result)
 	const textLines: string[] = [];
-	const htmlLines: string[] = [];
 
 	for (const step of steps) {
 		const eqIndexResult = getEqIndex(step.result);
@@ -307,10 +266,6 @@ function formatStepsSummarized(
 		if (eqIndexResult === -1) {
 			// No = in result, fallback
 			textLines.push(`${descPrefix}${step.result}`);
-			htmlLines.push(
-				`<br><span class="text-muted-foreground">→ ${escapeHtml(step.description)}:</span> ` +
-					`<span class="text-cyan-400">${escapeHtml(step.result)}</span>`
-			);
 			continue;
 		}
 
@@ -318,16 +273,11 @@ function formatStepsSummarized(
 		const currentEqPos = descPrefix.length + eqIndexResult;
 		const padding = maxEqPos - currentEqPos;
 		const paddingStr = ' '.repeat(Math.max(0, padding));
-		const htmlPadding = '&nbsp;'.repeat(Math.max(0, padding));
 
 		textLines.push(`${descPrefix}${paddingStr}${step.result}`);
-		htmlLines.push(
-			`<br><span class="text-muted-foreground">→ ${escapeHtml(step.description)}:</span> ` +
-				`${htmlPadding}<span class="text-cyan-400">${escapeHtml(step.result)}</span>`
-		);
 	}
 
-	return { headerText, headerHtml, textLines, htmlLines };
+	return { headerText, textLines };
 }
 
 // =============================================================================
@@ -1379,29 +1329,18 @@ export class SolveCommand extends BaseCommand {
 
 	/**
 	 * Ajouter l'indication de variable (`otherVariableHint`) à la fin de chaque
-	 * sortie du résultat — texte, HTML, exacte et décimale : la bascule de la
+	 * sortie du résultat — texte, exacte et décimale : la bascule de la
 	 * console ne doit pas la faire disparaître.
 	 */
 	private withHint(result: CommandResult, hint: string | null): CommandResult {
 		if (hint === null) return result;
 		const text = (output: string | undefined) =>
 			output === undefined ? undefined : output === '' ? hint : `${output}\n${hint}`;
-		const html = (output: string | undefined) =>
-			output === undefined
-				? undefined
-				: `${output}<br><span class="text-muted-foreground">${this.escapeHtml(hint)}</span>`;
 		return {
 			...result,
 			output: text(result.output) ?? hint,
-			...(result.outputHtml !== undefined && { outputHtml: html(result.outputHtml) }),
 			...(result.exactOutput !== undefined && { exactOutput: text(result.exactOutput) }),
-			...(result.exactOutputHtml !== undefined && {
-				exactOutputHtml: html(result.exactOutputHtml)
-			}),
-			...(result.decimalOutput !== undefined && { decimalOutput: text(result.decimalOutput) }),
-			...(result.decimalOutputHtml !== undefined && {
-				decimalOutputHtml: html(result.decimalOutputHtml)
-			})
+			...(result.decimalOutput !== undefined && { decimalOutput: text(result.decimalOutput) })
 		};
 	}
 
@@ -1437,7 +1376,6 @@ export class SolveCommand extends BaseCommand {
 
 		// Build header lines (for detailed/summarized verbosity)
 		const headerLines: string[] = [];
-		const headerHtmlLines: string[] = [];
 
 		// Generate pedagogical steps based on equation type
 		let pedagogicalSteps: PedagogicalStep[] = [];
@@ -1467,34 +1405,17 @@ export class SolveCommand extends BaseCommand {
 		// Format output based on verbosity
 		if (verbosity === 'detailed' && pedagogicalSteps.length > 0) {
 			// Detailed: full steps with transformations and aligned equations
-			const globalAligned = formatAllStepsGloballyAligned(
-				headerPrefix,
-				eqCustom,
-				pedagogicalSteps,
-				this.escapeHtml.bind(this)
-			);
+			const globalAligned = formatAllStepsGloballyAligned(headerPrefix, eqCustom, pedagogicalSteps);
 			headerLines.push(globalAligned.headerText);
-			headerHtmlLines.push(globalAligned.headerHtml);
 			headerLines.push(...globalAligned.textLines);
-			headerHtmlLines.push(...globalAligned.htmlLines);
 		} else if (verbosity === 'summarized' && pedagogicalSteps.length > 0) {
 			// Summarized: description + result only (no transformation), with aligned =
-			const summarized = formatStepsSummarized(
-				headerPrefix,
-				eqCustom,
-				pedagogicalSteps,
-				this.escapeHtml.bind(this)
-			);
+			const summarized = formatStepsSummarized(headerPrefix, eqCustom, pedagogicalSteps);
 			headerLines.push(summarized.headerText);
-			headerHtmlLines.push(summarized.headerHtml);
 			headerLines.push(...summarized.textLines);
-			headerHtmlLines.push(...summarized.htmlLines);
 		} else if (verbosity !== 'result') {
 			// Fallback: just header
 			headerLines.push(`${headerPrefix}: ${eqCustom}`);
-			headerHtmlLines.push(
-				`<span class="text-muted-foreground">${headerPrefix}:</span> <span class="text-cyan-400">${this.escapeHtml(eqCustom)}</span>`
-			);
 		}
 
 		// Handle different result statuses
@@ -1584,16 +1505,9 @@ export class SolveCommand extends BaseCommand {
 
 				// Build full output strings
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
-				const headerHtmlPrefix =
-					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
 
 				const exactOutput = headerPrefix + exactText;
 				const decimalOutput = headerPrefix + decimalText;
-
-				const exactOutputHtml =
-					headerHtmlPrefix + `<span class="text-green-400">${this.escapeHtml(exactText)}</span>`;
-				const decimalOutputHtml =
-					headerHtmlPrefix + `<span class="text-green-400">${this.escapeHtml(decimalText)}</span>`;
 
 				// Use current mode to determine initial display
 				const useDecimal = currentMode === 'decimal';
@@ -1601,12 +1515,9 @@ export class SolveCommand extends BaseCommand {
 				return {
 					success: true,
 					output: useDecimal ? decimalOutput : exactOutput,
-					outputHtml: useDecimal ? decimalOutputHtml : exactOutputHtml,
 					ast: result.solutions[0]?.value,
 					exactOutput,
-					exactOutputHtml,
 					decimalOutput,
-					decimalOutputHtml,
 					canToggle,
 					showDecimalInitially: useDecimal
 				};
@@ -1619,13 +1530,10 @@ export class SolveCommand extends BaseCommand {
 						? 'Solutions infinies: toute valeur est solution'
 						: `Solutions infinies: toute valeur du domaine est solution, S = ${formatInterval(withRealLineWritten(result.domain))}`;
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
-				const headerHtmlPrefix =
-					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
 
 				return {
 					success: true,
-					output: headerPrefix + msg,
-					outputHtml: headerHtmlPrefix + `<span class="text-blue-400">${msg}</span>`
+					output: headerPrefix + msg
 				};
 			}
 
@@ -1633,53 +1541,32 @@ export class SolveCommand extends BaseCommand {
 				// Check if this is an unsupported equation type vs truly contradictory
 				const msg = result.error ? result.error : "Pas de solution: l'equation est contradictoire";
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
-				const headerHtmlPrefix =
-					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
 
 				return {
 					success: true,
-					output: headerPrefix + msg,
-					outputHtml: headerHtmlPrefix + `<span class="text-red-400">${msg}</span>`
+					output: headerPrefix + msg
 				};
 			}
 
 			case 'no-real-solution': {
 				const msg = 'Pas de solution reelle';
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
-				const headerHtmlPrefix =
-					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
 
 				return {
 					success: true,
-					output: headerPrefix + msg,
-					outputHtml: headerHtmlPrefix + `<span class="text-red-400">${msg}</span>`
+					output: headerPrefix + msg
 				};
 			}
 
 			default: {
 				const msg = result.error ? `Erreur: ${result.error}` : 'Resolution non supportee';
 				const headerPrefix = headerLines.length > 0 ? headerLines.join('\n') + '\n\n' : '';
-				const headerHtmlPrefix =
-					headerHtmlLines.length > 0 ? headerHtmlLines.join('') + '<br><br>' : '';
 
 				return {
 					success: true,
-					output: headerPrefix + msg,
-					outputHtml: headerHtmlPrefix + `<span class="text-yellow-400">${msg}</span>`
+					output: headerPrefix + msg
 				};
 			}
 		}
-	}
-
-	/**
-	 * Escape HTML special characters.
-	 */
-	private escapeHtml(str: string): string {
-		return str
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/"/g, '&quot;')
-			.replace(/'/g, '&#039;');
 	}
 }

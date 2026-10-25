@@ -1,6 +1,6 @@
 /**
  * « Comment ? » d'une ligne de Calcul sans lettre, vu depuis l'écran (phase 0
- * de `docs/wip/retrait-calc-progress.md`, 2026-10-24).
+ * de `docs/archive/wip/retrait-calc-progress.md`, 2026-10-24).
  *
  * On asserte le RENDU : qu'un champ `steps` existe ne dit rien de ce que
  * l'élève voit.

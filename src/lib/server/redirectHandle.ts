@@ -157,7 +157,7 @@ export const redirectHandle: Handle = async ({ event, resolve }) => {
 	}
 
 	// `/calc` (calculatrice) retirée le 2026-10-25 : l'atelier fait tout ce qu'elle
-	// faisait, « Comment ? » d'un calcul compris (`docs/wip/retrait-calc-progress.md`).
+	// faisait, « Comment ? » d'un calcul compris (`docs/archive/wip/retrait-calc-progress.md`).
 	// Ses liens de partage (`?share=`) n'ont pas d'équivalent dans l'atelier : ils tombent.
 	if (pathname === '/calc' || pathname === '/calc/') {
 		throw redirect(308, '/atelier');

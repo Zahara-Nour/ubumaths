@@ -1,21 +1,19 @@
 ---
 title: Retrait de /calc — journal
 date: 2026-10-24
-status: #1709 et #1715 mergées — PR 4 (outputHtml) à faire
+status: CLOS le 2026-10-25 — #1705, #1709, #1715, #1718 mergées ; durable versé dans docs/systeme/ (atelier.md, grapheur.md, mathast/README.md)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1715._
+_Mis à jour le 2026-10-25, après #1718 : chantier CLOS._
 
-- **État** : #1709 (`/calc` retirée) et #1715 (code mort du grapheur) mergées, sur `main`, pas en
-  prod. Revue de #1715 : harnais `WithAtelier` sans grapheur, corrigé dans la PR.
-- **Prochaine action** : PR 4 — retirer `outputHtml` de `WebReplEngine` (HTML de chaque réponse,
-  `output-formatter-web.ts`, `htmlInFrench`, tests des messages à reporter sur `output`/`error`,
-  golden `statistics-commands.golden.json`). Puis fin de chantier : archiver ce journal.
-- **En attente de David** : rien (« supprime les », 2026-10-25).
-- **Pièges** : `docs:check-a-jour` réclame `statistiques.md` dès que `desk.svelte.ts` change.
-- **Worktree / branche** : PR 4 → `../ubumaths-wt-retrait-calc`, `chore/retrait-calc-4`.
+- **État** : `/calc` retirée (308 → `/atelier`, #1709), « Comment ? » d'un calcul dans l'atelier
+  (#1705), code mort du grapheur (#1715) et `outputHtml` du moteur (#1718) supprimés. Sur `main`,
+  pas en prod.
+- **Prochaine action** : aucune. Vérification manuelle de #1709 dans `verifications-manuelles.md`.
+- **Versé** : `atelier.md` (« Comment ? », règles de frappe, anciennes pages), `grapheur.md`,
+  `mathast/README.md`, `cli/web/README.md`.
 
 ---
 
@@ -143,3 +141,13 @@ le trouve lourd à l'usage.
 - Gardé : `chiphre-grapheur-state` dans `WORK_DATA_KEYS` (purge à la déconnexion).
 - `outputHtml` reporté en PR 4 : il traverse tout le moteur web (formateur HTML, messages en
   français, golden), pas un simple champ.
+
+### PR 4 — `outputHtml` retiré du moteur web (2026-10-25)
+
+- Supprimés : `cli/web/output-formatter-web.ts`, `htmlInFrench`, le champ `outputHtml` (et
+  `exactOutputHtml` / `decimalOutputHtml` de `CommandResult`), les branches HTML de `.solve` et
+  `.help` (le HTML de `.help` avait des rubriques absentes du texte, jamais affichées nulle part).
+- Tests des messages français reportés sur `output` / `error.message`. Perdu : la saisie recopiée
+  dans le HTML d'une erreur de lecture (`2+3)`), que le texte ne recopie pas.
+- Mesuré : 33 saisies (calculs, erreurs, `.solve` × 6, `.help`, modes, grandeurs, `.diff`,
+  `.simplify`…) → `output`, `error`, `latex`… identiques avant / après.

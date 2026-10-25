@@ -6,7 +6,7 @@
  */
 
 import type { MathNode, RelationNode } from '../../types';
-import type { CommandContext, ErrorCode } from '../types';
+import type { CommandContext } from '../types';
 import { CommandRegistry, parse, createEvalState, bindingsToRecord, setBinding } from '../core';
 import { hideIndexedNames } from '../../common/indexed-names';
 import { createFunctionBinding, getFunctionNames, getFunction } from '../core/eval-state';
@@ -14,7 +14,6 @@ import type { EvalState } from '../core';
 import type { PipelineOptions } from '../core/pipeline';
 import { createDefaultRegistry } from '../commands';
 import type { ReplExecutionResult, WebFunctionInfo } from './types';
-import { formatErrorHtml, formatInputErrorHtml, formatTreeHtml } from './output-formatter-web';
 import {
 	toCustom,
 	getVariables,
@@ -200,7 +199,7 @@ function keptValue(
  * - Expression parsing and display
  * - Equivalence checking (expr1 === expr2)
  *
- * Returns results with both plain text and HTML formatting.
+ * Returns results as plain text, with the AST and LaTeX for display.
  *
  * @example
  * ```typescript
@@ -209,7 +208,6 @@ function keptValue(
  * // Execute an expression
  * const result = engine.execute('x^2 + 1');
  * console.log(result.output); // Plain text
- * element.innerHTML = result.outputHtml; // HTML display
  *
  * // Execute a command
  * const treeResult = engine.execute('.tree');
@@ -386,16 +384,14 @@ export class WebReplEngine {
 			this.evalState.mode = 'exact';
 			return {
 				success: true,
-				output: 'Mode: exact',
-				outputHtml: 'Mode: <span class="text-green-400">exact</span>'
+				output: 'Mode: exact'
 			};
 		}
 		if (cmdName === 'decimal') {
 			this.evalState.mode = 'decimal';
 			return {
 				success: true,
-				output: 'Mode: decimal',
-				outputHtml: 'Mode: <span class="text-yellow-400">decimal</span>'
+				output: 'Mode: decimal'
 			};
 		}
 
@@ -420,11 +416,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: `Unknown command: ${cmdName}\nType .help for available commands`,
-				outputHtml: formatErrorHtml({
-					code: 'UNKNOWN_COMMAND',
-					message: `Unknown command: ${cmdName}`,
-					suggestion: 'Type .help for available commands'
-				}),
 				error: {
 					code: 'UNKNOWN_COMMAND',
 					message: `Unknown command: ${cmdName}`
@@ -471,7 +462,6 @@ export class WebReplEngine {
 					return {
 						success: false,
 						output: error.message,
-						outputHtml: formatErrorHtml(error),
 						error: {
 							code: error.code,
 							message: error.message,
@@ -509,20 +499,10 @@ export class WebReplEngine {
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
 			const error = parseResult.errors[0];
-			let outputHtml: string;
-
-			if (error?.position !== undefined) {
-				outputHtml = formatInputErrorHtml(valueExpr, error.position, error.message);
-			} else {
-				outputHtml = formatErrorHtml(
-					error || { code: 'PARSE_ERROR', message: 'Failed to parse expression' }
-				);
-			}
 
 			return {
 				success: false,
 				output: error?.message || 'Failed to parse expression',
-				outputHtml,
 				error: {
 					code: error?.code || 'PARSE_ERROR',
 					message: error?.message || 'Failed to parse expression',
@@ -538,12 +518,10 @@ export class WebReplEngine {
 		// Format output
 		const valueStr = toCustom(parseResult.ast);
 		const output = `${varName} = ${valueStr}`;
-		const outputHtml = `<strong>${this.escapeHtml(varName)}</strong> = <span class="text-cyan-400">${this.escapeHtml(valueStr)}</span>`;
 
 		return {
 			success: true,
 			output,
-			outputHtml,
 			ast: parseResult.ast
 		};
 	}
@@ -561,20 +539,10 @@ export class WebReplEngine {
 
 		if (parseResult.errors.length > 0 || !parseResult.ast) {
 			const error = parseResult.errors[0];
-			let outputHtml: string;
-
-			if (error?.position !== undefined) {
-				outputHtml = formatInputErrorHtml(bodyExpr, error.position, error.message);
-			} else {
-				outputHtml = formatErrorHtml(
-					error || { code: 'PARSE_ERROR', message: 'Failed to parse expression' }
-				);
-			}
 
 			return {
 				success: false,
 				output: error?.message || 'Failed to parse expression',
-				outputHtml,
 				error: {
 					code: error?.code || 'PARSE_ERROR',
 					message: error?.message || 'Failed to parse expression',
@@ -592,12 +560,10 @@ export class WebReplEngine {
 		const paramsStr = parameters.join(', ');
 		const bodyStr = toCustom(parseResult.ast);
 		const output = `${funcName}(${paramsStr}) = ${bodyStr}`;
-		const outputHtml = `<strong>${this.escapeHtml(funcName)}</strong>(${this.escapeHtml(paramsStr)}) = <span class="text-cyan-400">${this.escapeHtml(bodyStr)}</span>`;
 
 		return {
 			success: true,
 			output,
-			outputHtml,
 			ast: parseResult.ast
 		};
 	}
@@ -622,10 +588,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: 'Syntaxe invalide. Utilisez: expr1 = expr2',
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: 'Syntaxe invalide. Utilisez: expr1 = expr2'
-				}),
 				error: {
 					code: 'PARSE_ERROR',
 					message: 'Syntaxe invalide. Utilisez: expr1 = expr2'
@@ -640,10 +602,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: 'Les deux expressions sont requises',
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: 'Les deux expressions sont requises'
-				}),
 				error: {
 					code: 'PARSE_ERROR',
 					message: 'Les deux expressions sont requises'
@@ -660,10 +618,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: `Erreur dans l'expression 1: ${error?.message || 'parse error'}`,
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: `Erreur dans l'expression 1: ${error?.message || 'parse error'}`
-				}),
 				error: {
 					code: 'PARSE_ERROR',
 					message: error?.message || 'parse error'
@@ -676,10 +630,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: `Erreur dans l'expression 2: ${error?.message || 'parse error'}`,
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: `Erreur dans l'expression 2: ${error?.message || 'parse error'}`
-				}),
 				error: {
 					code: 'PARSE_ERROR',
 					message: error?.message || 'parse error'
@@ -724,7 +674,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: message,
-				outputHtml: formatErrorHtml({ code: 'PARSE_ERROR', message }),
 				error: { code: 'PARSE_ERROR', message }
 			};
 		}
@@ -769,7 +718,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: message,
-				outputHtml: formatErrorHtml({ code: 'PARSE_ERROR', message }),
 				error: { code: 'PARSE_ERROR', message }
 			};
 		}
@@ -780,12 +728,10 @@ export class WebReplEngine {
 	 */
 	private createEqualityResult(isEqual: boolean): ReplExecutionResult {
 		const resultStr = isEqual ? 'true' : 'false';
-		const colorClass = isEqual ? 'text-green-400' : 'text-red-400';
 
 		return {
 			success: true,
-			output: resultStr,
-			outputHtml: `<span class="${colorClass} font-bold">${resultStr}</span>`
+			output: resultStr
 		};
 	}
 
@@ -809,18 +755,10 @@ export class WebReplEngine {
 		// Display any errors
 		if (result.errors.length > 0) {
 			const error = result.errors[0];
-			let outputHtml: string;
-
-			if (error.position !== undefined) {
-				outputHtml = formatInputErrorHtml(input, error.position, error.message);
-			} else {
-				outputHtml = formatErrorHtml(error);
-			}
 
 			return {
 				success: false,
 				output: error.message,
-				outputHtml,
 				error: {
 					code: error.code,
 					message: error.message,
@@ -835,10 +773,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: errorMsg,
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: errorMsg
-				}),
 				error: {
 					code: 'PARSE_ERROR',
 					message: errorMsg
@@ -887,12 +821,10 @@ export class WebReplEngine {
 		const varList = [...unboundVars].sort().join(', ');
 
 		const output = `${exprStr}  (variables: ${varList})`;
-		const outputHtml = `<span class="text-cyan-400">${this.escapeHtml(exprStr)}</span> <span class="text-muted-foreground">(variables: ${this.escapeHtml(varList)})</span>`;
 
 		return {
 			success: true,
 			output,
-			outputHtml,
 			ast
 		};
 	}
@@ -917,7 +849,6 @@ export class WebReplEngine {
 	private createAutoEvaluationResult(ast: MathNode): ReplExecutionResult {
 		try {
 			const bindings = bindingsToRecord(this.evalState.bindings);
-			const variables = getVariables(ast);
 
 			// Substitute variables
 			const substituted = substitute(ast, bindings);
@@ -975,30 +906,14 @@ export class WebReplEngine {
 					? computed
 					: { status: 'value', value: expanded, node: expanded, exact: true };
 
-			// Boolean result: colored output, no exact/decimal toggle
+			// Boolean result: no exact/decimal toggle
 			if (exactResult.status === 'value' && exactResult.node.type === 'boolean') {
 				const boolValue = exactResult.value as boolean;
 				const resultStr = String(boolValue);
-				const colorClass = boolValue ? 'text-green-400' : 'text-red-400';
-				let outputHtml = `<span class="${colorClass} font-bold">${resultStr}</span>`;
-
-				// Add bindings info if variables were substituted
-				if (variables.size > 0) {
-					const bindingsList: string[] = [];
-					for (const varName of variables) {
-						const value = this.evalState.bindings.get(varName);
-						if (value) {
-							bindingsList.push(`${varName}=${toCustom(value)}`);
-						}
-					}
-					const bindingsStr = bindingsList.join(', ');
-					outputHtml += `<span class="text-muted-foreground text-xs ml-2">[${this.escapeHtml(bindingsStr)}]</span>`;
-				}
 
 				return {
 					success: true,
 					output: resultStr,
-					outputHtml,
 					ast: exactResult.node
 				};
 			}
@@ -1026,7 +941,6 @@ export class WebReplEngine {
 				tooLong === null ? readableExact(exactResult.node, expanded) : exactResult.node;
 			const exactStr = toCustom(tooLong === null ? exactShown : typedWriting(expanded));
 			const exactOutput = exactStr;
-			const exactOutputHtml = `<span class="text-cyan-400">${this.escapeHtml(exactStr)}</span>`;
 
 			// Format decimal result — la règle du bouton ≈ (décision Q3 de David) :
 			// 4 décimales, `≈` seulement si c'est arrondi (avant : 15 chiffres, `≈ 3`) ;
@@ -1063,12 +977,6 @@ export class WebReplEngine {
 			// `e^{-5000}+1` échouait en mode exact parce que le calcul décimal refusait)
 			const decimalOutput =
 				decimal === null ? undefined : `${decimal.exact ? '' : '≈ '}${decimal.str}`;
-			const decimalOutputHtml =
-				decimal === null
-					? undefined
-					: decimal.exact
-						? `<span class="text-cyan-400">${this.escapeHtml(decimal.str)}</span>`
-						: `<span class="text-muted-foreground">≈</span> <span class="text-cyan-400">${this.escapeHtml(decimal.str)}</span>`;
 
 			// Determine if toggle makes sense (results are different)
 			const canToggle = decimal !== null && exactStr !== decimal.str;
@@ -1077,28 +985,10 @@ export class WebReplEngine {
 			// écriture décimale : sinon il a levé plus haut)
 			const output =
 				currentMode === 'exact' || decimalOutput === undefined ? exactOutput : decimalOutput;
-			let outputHtml =
-				currentMode === 'exact' || decimalOutputHtml === undefined
-					? exactOutputHtml
-					: decimalOutputHtml;
-
-			// Add bindings info if variables were substituted
-			if (variables.size > 0) {
-				const bindingsList: string[] = [];
-				for (const varName of variables) {
-					const value = this.evalState.bindings.get(varName);
-					if (value) {
-						bindingsList.push(`${varName}=${toCustom(value)}`);
-					}
-				}
-				const bindingsStr = bindingsList.join(', ');
-				outputHtml += `<span class="text-muted-foreground text-xs ml-2">[${this.escapeHtml(bindingsStr)}]</span>`;
-			}
 
 			return {
 				success: true,
 				output,
-				outputHtml,
 				// En mode décimal, l'arbre affiché porte la valeur arrondie ; « Garder »
 				// range la valeur pleine précision (`quantityAst`)
 				ast:
@@ -1119,10 +1009,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: `Erreur de calcul : ${message}`,
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: `Erreur de calcul : ${message}`
-				}),
 				error: {
 					code: 'PARSE_ERROR',
 					message
@@ -1145,7 +1031,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: outcome.message,
-				outputHtml: formatErrorHtml({ code: 'QUANTITY_ERROR', message: outcome.message }),
 				error: { code: 'QUANTITY_ERROR', message: outcome.message }
 			};
 		}
@@ -1157,7 +1042,6 @@ export class WebReplEngine {
 		}
 		this.lastQuantity = outcome.quantity;
 		this.lastWritten = outcome.written;
-		const html = (text: string) => `<span class="text-cyan-400">${this.escapeHtml(text)}</span>`;
 		const approximate =
 			outcome.approximate === null
 				? undefined
@@ -1169,7 +1053,6 @@ export class WebReplEngine {
 		return {
 			success: true,
 			output: outcome.answer.text,
-			outputHtml: html(outcome.answer.text),
 			ast: outcome.answer.node,
 			...(outcome.quantity !== null &&
 				outcome.quantity !== outcome.answer.node && { quantityAst: outcome.quantity }),
@@ -1250,31 +1133,9 @@ export class WebReplEngine {
 
 		const output = lines.join('\n');
 
-		// Build HTML output
-		const htmlLines: string[] = [
-			`<span class="text-muted-foreground">Fonction:</span> <strong>${this.escapeHtml(signature)}</strong> = <span class="text-cyan-400">${this.escapeHtml(bodyStr)}</span>`
-		];
-
-		if (funcDef.derivative) {
-			const derivStr = toCustom(funcDef.derivative);
-			htmlLines.push(
-				`<span class="text-muted-foreground">Derivee:</span> ${this.escapeHtml(funcName)}'(${this.escapeHtml(paramsStr)}) = <span class="text-cyan-400">${this.escapeHtml(derivStr)}</span>`
-			);
-		}
-
-		if (funcDef.inverse) {
-			const invStr = toCustom(funcDef.inverse);
-			htmlLines.push(
-				`<span class="text-muted-foreground">Inverse:</span> ${this.escapeHtml(funcName)}⁻¹(${this.escapeHtml(paramsStr)}) = <span class="text-cyan-400">${this.escapeHtml(invStr)}</span>`
-			);
-		}
-
-		const outputHtml = htmlLines.join('<br>');
-
 		return {
 			success: true,
 			output,
-			outputHtml,
 			ast: funcDef.expression
 		};
 	}
@@ -1324,32 +1185,10 @@ export class WebReplEngine {
 	}
 
 	/**
-	 * Strip ANSI escape codes from text.
-	 * Handles color codes, styling codes, and cursor movement codes.
-	 */
-	private stripAnsi(text: string): string {
-		// eslint-disable-next-line no-control-regex
-		return text.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '');
-	}
-
-	/**
-	 * Escape HTML special characters to prevent XSS.
-	 */
-	private escapeHtml(text: string): string {
-		return text
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/"/g, '&quot;')
-			.replace(/'/g, '&#039;')
-			.replace(/`/g, '&#96;');
-	}
-
-	/**
 	 * Convert CommandResult to ReplExecutionResult.
 	 *
 	 * Adapts the CLI command result format to the web REPL format,
-	 * adding HTML formatting and preserving AST.
+	 * preserving AST.
 	 */
 	private commandResultToReplResult(
 		cmdResult: {
@@ -1358,7 +1197,6 @@ export class WebReplEngine {
 			error?: unknown;
 			ast?: MathNode;
 			latex?: string;
-			outputHtml?: string;
 			approximateLatex?: string;
 		},
 		ast?: MathNode
@@ -1372,7 +1210,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: cmdResult.output,
-				outputHtml: formatErrorHtml({ code: errorCode as ErrorCode, message: errorMessage }),
 				error: {
 					code: errorCode,
 					message: errorMessage
@@ -1380,37 +1217,9 @@ export class WebReplEngine {
 			};
 		}
 
-		// Use provided HTML output if available (e.g., from help command)
-		if (cmdResult.outputHtml) {
-			return {
-				success: true,
-				output: cmdResult.output,
-				outputHtml: cmdResult.outputHtml,
-				ast: cmdResult.ast || ast,
-				...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
-				...(cmdResult.approximateLatex !== undefined && {
-					approximateLatex: cmdResult.approximateLatex
-				})
-			};
-		}
-
-		// Strip ANSI codes from command output (chalk colors from CLI commands)
-		const cleanOutput = this.stripAnsi(cmdResult.output);
-
-		// For successful commands, check if output looks like a tree (has box-drawing chars)
-		let outputHtml: string;
-		if (cleanOutput.includes('├') || cleanOutput.includes('└')) {
-			outputHtml = formatTreeHtml(cleanOutput);
-		} else {
-			// Escape HTML and preserve line breaks
-			const lines = cleanOutput.split('\n');
-			outputHtml = lines.map((line) => this.escapeHtml(line)).join('<br>');
-		}
-
 		return {
 			success: true,
 			output: cmdResult.output,
-			outputHtml,
 			ast: cmdResult.ast || ast,
 			...(cmdResult.latex !== undefined && { latex: cmdResult.latex }),
 			...(cmdResult.approximateLatex !== undefined && {
@@ -1434,11 +1243,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: 'Usage : .stats 12 ; 15 ; 9 (valeurs : effectifs → .stats 1 ; 2 : 5 ; 8)',
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: 'Usage : .stats 12 ; 15 ; 9',
-					suggestion: 'Des effectifs après « : » : .stats 1 ; 2 : 5 ; 8'
-				}),
 				error: {
 					code: 'INVALID_OPTIONS',
 					message: 'No data provided'
@@ -1458,11 +1262,6 @@ export class WebReplEngine {
 				success: false,
 				output:
 					'Erreur: certaines valeurs ne sont pas des nombres valides (séparer par « ; » : .stats 12 ; 15 ; 9)',
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: 'Certaines valeurs ne sont pas des nombres valides',
-					suggestion: 'Séparer les valeurs par « ; » : .stats 12 ; 15 ; 9'
-				}),
 				error: { code: 'PARSE_ERROR', message: 'Invalid numbers in input' }
 			};
 		}
@@ -1474,11 +1273,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: `Erreur: trop de valeurs (max: ${MAX_STATS_VALUES})`,
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: `Limite de ${MAX_STATS_VALUES} valeurs depassee`,
-					suggestion: 'Reduisez le nombre de valeurs'
-				}),
 				error: {
 					code: 'INVALID_OPTIONS',
 					message: `Too many values (max: ${MAX_STATS_VALUES})`
@@ -1491,10 +1285,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: 'Erreur: certaines valeurs ne sont pas des nombres valides',
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: 'Certaines valeurs ne sont pas des nombres valides'
-				}),
 				error: {
 					code: 'PARSE_ERROR',
 					message: 'Invalid numbers in input'
@@ -1507,10 +1297,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: 'Erreur: aucune valeur fournie',
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: 'Aucune valeur fournie'
-				}),
 				error: {
 					code: 'INVALID_OPTIONS',
 					message: 'No values provided'
@@ -1539,8 +1325,7 @@ export class WebReplEngine {
 		const lines = formatSummary(summarized.value, 'fr');
 		return {
 			success: true,
-			output: lines.join('\n'),
-			outputHtml: lines.map((line) => this.escapeHtml(line)).join('<br>')
+			output: lines.join('\n')
 		};
 	}
 
@@ -1549,7 +1334,6 @@ export class WebReplEngine {
 		return {
 			success: false,
 			output: `Erreur: ${message}`,
-			outputHtml: formatErrorHtml({ code: 'INVALID_OPTIONS', message }),
 			error: { code: 'INVALID_OPTIONS', message }
 		};
 	}
@@ -1570,12 +1354,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: usage,
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: usage,
-					suggestion:
-						'Separez les valeurs X et Y par deux-points (:), les valeurs par « ; », puis la prévision : .ajustement 1 ; 2 ; 3 : 2 ; 4 ; 7 en x = 5'
-				}),
 				error: {
 					code: 'INVALID_OPTIONS',
 					message: 'Invalid syntax'
@@ -1593,11 +1371,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: `Erreur: trop de valeurs (max: ${MAX_LINREG_VALUES})`,
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: `Limite de ${MAX_LINREG_VALUES} valeurs depassee`,
-					suggestion: 'Reduisez le nombre de valeurs'
-				}),
 				error: {
 					code: 'INVALID_OPTIONS',
 					message: `Too many values (max: ${MAX_LINREG_VALUES})`
@@ -1613,11 +1386,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: `Erreur: certaines valeurs ne sont pas des nombres valides (${reason})`,
-				outputHtml: formatErrorHtml({
-					code: 'PARSE_ERROR',
-					message: 'Certaines valeurs ne sont pas des nombres valides',
-					suggestion: reason
-				}),
 				error: {
 					code: 'PARSE_ERROR',
 					message: 'Invalid numbers'
@@ -1629,10 +1397,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: `Erreur: nombre de valeurs X (${xRaw.length}) different de Y (${yRaw.length})`,
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: `Nombre de valeurs X (${xRaw.length}) different de Y (${yRaw.length})`
-				}),
 				error: {
 					code: 'INVALID_OPTIONS',
 					message: 'X and Y must have same length'
@@ -1644,10 +1408,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: 'Erreur: au moins 2 points sont necessaires',
-				outputHtml: formatErrorHtml({
-					code: 'INVALID_OPTIONS',
-					message: 'Au moins 2 points sont necessaires pour une regression'
-				}),
 				error: {
 					code: 'INVALID_OPTIONS',
 					message: 'Need at least 2 points'
@@ -1697,10 +1457,6 @@ export class WebReplEngine {
 			return {
 				success: false,
 				output: 'Erreur: les valeurs X sont toutes identiques (regression impossible)',
-				outputHtml: formatErrorHtml({
-					code: 'MATH_ERROR',
-					message: 'Les valeurs X sont toutes identiques'
-				}),
 				error: {
 					code: 'MATH_ERROR',
 					message: 'X values are constant'
@@ -1719,7 +1475,6 @@ export class WebReplEngine {
 		return {
 			success: true,
 			output: lines.join('\n'),
-			outputHtml: lines.map((line) => this.escapeHtml(line.trim())).join('<br>'),
 			latex: fitted.latex
 		};
 	}
