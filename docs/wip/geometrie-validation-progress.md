@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 1 (moteur) prête, avant revue._
+_Mis à jour le 2026-10-25, après #1768._
 
-- **État** : PR 1 codée et verte (parseur ` ```construction `, case, juge `droite_par`, registre des positions) ; revue en cours.
-- **Prochaine action** : merger la PR 1, puis PR 2 (écran élève : tracé dans `FillBlanksInput`, import de `positions-setup`).
-- **En attente de David** : statut de **CP-034** et de **CP-058** ; phase 0 de CP-060.
-- **Pièges en cours** : registre des positions à importer par l'écran élève (PR 2), sinon « positions non inscrites » ;
-  `validateAnswer` rend l'exception dans `message` ; `snapToPoint` existe (`geometry-core/interaction/snap.ts`) ;
-  fiche du catalogue (`block-catalog/types.ts`) seulement après le merge de `catalogue-blocs`.
-- **Worktree / branche** : `../ubumaths-wt-geometrie-validation` · `feat/geometrie-validation`.
+- **État** : PR 1 (moteur) MERGÉE (#1768) : bloc ` ```construction `, case, juge `droite_par`, registre des positions. Aucun écran, aucun modèle.
+- **Prochaine action** : PR 2 (écran élève : tracé dans `FillBlanksInput`, import de `positions-setup`, rendu après Valider), nouveau worktree.
+- **En attente de David** : **nom du bloc** (« construction » désigne déjà les constructions animées : table `constructions`, route
+  `/constructions`, ressource `construction`) ; statut de **CP-034** et de **CP-058** ; phase 0 de CP-060.
+- **Pièges en cours** : sans `positions-setup`, `validateAnswer` rend « positions non inscrites » dans `message` ; `snapToPoint`
+  existe (`geometry-core/interaction/snap.ts`) ; fiche du catalogue (`block-catalog/types.ts`) après le merge de `catalogue-blocs`.
+- **Worktree / branche** : aucun (retirés après #1768).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -171,3 +171,4 @@ plusieurs vérifications : « Il manque la droite qui passe par A et C. »
 - 2026-10-25 : § 2 bis / 2 ter sortis du journal questions vers ce journal.
 - 2026-10-25 : chantier ouvert sans attendre B1 → B3 (David) ; plan en 3 PR validé (§ 4).
 - 2026-10-25 : registre des positions décidé (David) ; PR 1 (moteur) codée, 46 tests neufs, suites voisines vertes.
+- 2026-10-25 : revues (code Opus, sécurité) : 5 correctifs (point inconnu refusé à la génération, bloc non fermé = parseur, tolérance par la figure, messages à deux vérifications, `orderIndependent` refusé) ; #1768 mergée.
