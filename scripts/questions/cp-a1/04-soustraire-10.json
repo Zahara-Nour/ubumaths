@@ -1,0 +1,95 @@
+{
+	"title": "Soustraire 10",
+	"description": "Retirer une dizaine à un nombre",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Soustraire",
+	"subdomain": "Différence",
+	"level": 13,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "n",
+					"expression": "10..100"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{n}}-10"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n-10}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Soustraire $10$, c'est retirer une dizaine : le chiffre des dizaines diminue de $1$, le chiffre des unités ne change pas.",
+					"$${{n}}-10={{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "34 − 10 = 24",
+			"variationIndex": 0,
+			"variables": {
+				"n": "34"
+			},
+			"answers": ["24"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 10 − 10 = 0",
+			"variationIndex": 0,
+			"variables": {
+				"n": "10"
+			},
+			"answers": ["0"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 100 − 10 = 90",
+			"variationIndex": 0,
+			"variables": {
+				"n": "100"
+			},
+			"answers": ["90"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : retire 1 (33)",
+			"variationIndex": 0,
+			"variables": {
+				"n": "34"
+			},
+			"answers": ["33"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zéro inutile 024",
+			"variationIndex": 0,
+			"variables": {
+				"n": "34"
+			},
+			"answers": ["024"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		}
+	]
+}

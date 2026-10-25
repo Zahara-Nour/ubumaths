@@ -22,9 +22,10 @@ mtexte(3, 0.6, "\\int_1^{+\\infty} \\frac{1}{x^2}\\, dx = {A:.4f}")`;
 A = integrale(f, 1, +inf, opacite_fond=0.35)
 mtexte(3, 0.7, "\\int_1^{+\\infty} \\frac{1}{x}\\, dx = {A:.3f} \\quad (divergent : NaN)")`;
 
-	const oscillating = `f = courbe("y = sin(x)")
+	const oscillating = `unite_angle("radians")
+f = courbe("y = sin(x)")
 A = integrale(f, 0, +inf, opacite_fond=0.35)
-mtexte(2, 1.4, "\\int_0^{+\\infty} \\sin(x)\\, dx = {A:.3f} \\quad (divergent : NaN)")`;
+mtexte(-5.5, 2.5, "\\int_0^{+\\infty} \\sin(x)\\, dx = {A:.3f} \\quad (divergent : NaN)")`;
 
 	const sliderDemo = `f = courbe("y = exp(-x)")
 a = slider(min=0, max=5, valeur=0, pas=0.1)

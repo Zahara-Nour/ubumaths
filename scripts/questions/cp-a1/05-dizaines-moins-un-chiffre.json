@@ -1,0 +1,116 @@
+{
+	"title": "Soustraire un nombre à un chiffre à des dizaines entières",
+	"description": "Exemple : 50 − 6",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Soustraire",
+	"subdomain": "Différence",
+	"level": 14,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..10"
+				},
+				{
+					"name": "u",
+					"expression": "1..9"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{eval:10*d}}-{{u}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*d-u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"{{if:d==1|C'est un complément à $10$.|On casse une dizaine : ${{eval:10*d}}={{eval:10*d-10}}+10$, et $10-{{u}}={{eval:10-u}}$.}}",
+					"$${{eval:10*d}}-{{u}}={{if:d==1||{{eval:10*d-10}}+{{eval:10-u}}=}}{{solution}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "50 − 6 = 44",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"u": "6"
+			},
+			"answers": ["44"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 10 − 3 = 7",
+			"variationIndex": 0,
+			"variables": {
+				"d": "1",
+				"u": "3"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "borne : 100 − 9 = 91",
+			"variationIndex": 0,
+			"variables": {
+				"d": "10",
+				"u": "9"
+			},
+			"answers": ["91"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : unités recopiées (56)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"u": "6"
+			},
+			"answers": ["56"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : dizaine non cassée (54)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"u": "6"
+			},
+			"answers": ["54"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Zéro inutile 044",
+			"variationIndex": 0,
+			"variables": {
+				"d": "5",
+				"u": "6"
+			},
+			"answers": ["044"],
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			}
+		}
+	]
+}

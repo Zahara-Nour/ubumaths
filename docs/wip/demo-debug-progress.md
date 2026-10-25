@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1711._
+_Mis à jour le 2026-10-25, après #1713._
 
 - **État** : PR 1 à 5 et 6a à 6g mergées, pas en prod ; 6g = #1711, `/demo/questions`. `/demo` ne relie plus que Mathémo et Trio jusqu'à la phase 7 ; anciennes adresses en 308 (`MOVED_PAGES`).
-- **Prochaine action** : PR « sin/cos en radians » de l'aide géométrie (décidée par David le 2026-10-25) : `unite_angle("radians")` dans `curves` (sin, cascade des dérivées, `sin(x) + cos(y) = 1`), `point-sur`, `sliders/integrale-improper` ; mesurer chaque figure au moteur avant / après. `trace` et `lieu` sont justes (θ = `angle_polaire`, même unité). Puis phase 6 suite : éditeur, diaporama.
+- **Prochaine action** : phase 6 suite, une PR par page : éditeur, puis diaporama. Nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main` ; phase 0 de la page à faire valider. (#1713 : sin/cos de l'aide géométrie en radians, mergée.)
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** (`calculateNewStability` ignore la note ; stabilité initiale `w[0] + w[1]·(note − 1)` au lieu d'un paramètre par note, à vérifier) ; `z` ≈ `2` → regarder en dernier, image `z`, `2`, `4z`, `z²`, `2z` à montrer d'abord, PR à part dans `tools/chiphre-math/`.
+- **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians (cos(3θ) faux si on combine) et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : degrés par défaut, **courbe() comprise**, le nom d'une variable s'affiche en étiquette (style en ligne ou `etiquette="aucune"`), `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : importer par chemin relatif, pas `$lib` ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; test de page qui lit le lexique : simuler `fetchDictionary` ; commitlint : lignes du corps ≤ 100 caractères.
-- **Worktree / branche** : aucun (PR 6g nettoyée). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **Worktree / branche** : aucun (#1713 nettoyée). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
@@ -307,3 +308,19 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
   `fetchDictionary`, sinon la vraie requête fait planter le serveur de vitest (`wrapDynamicImport`).
 - Vu sans compte sur 5177 (Playwright, 1280 et 390 px) : 200, 5 onglets, aucune erreur de console,
   aucune requête autre que GET, rien qui déborde ; « Facile » → « dans 9 jours ». Pas de revue.
+
+## PR « sin/cos en radians » de l'aide géométrie (David suit la recommandation, le 2026-10-25)
+
+- Mesuré au moteur, mode degrés par défaut : sin(π/2) = 0,027 sur `courbe("y = sin(x)")`, et la
+  cascade des dérivées est divisée par π/180 à chaque cran (cycle de 4 invisible). En radians : 1.
+- `unite_angle("radians")` ajouté à 5 scripts : `curves` (fonctions, cascade des dérivées,
+  implicite `sin(x) + cos(y) = 1`), `point-sur` (point sur sin), `sliders/integrale-improper`
+  (oscillation ; texte décalé, il sortait du cadre).
+- Pas touchés, mesurés justes : `polar` (θ d'une courbe `r = f(theta)` en radians dans les deux
+  modes) ; `trace` et `lieu` (`angle_polaire` rend des degrés en mode degrés, cos(3θ) = −1 en 60°).
+- Garde-fou : `__tests__/courbes-trigo-radians.test.ts` (toute `courbe()` trigonométrique non
+  polaire de l'aide déclare les radians), vu rouge sur les 5 scripts sans le correctif.
+- Vu (captures dans le navigateur de vitest, page montée sans compte) : sinusoïdes de période 2π,
+  cycle sin → cos → −sin → −cos, ovales périodiques de l'implicite.
+- Trouvé en route, signalé à David, pas corrigé : `angle_polaire` rend **60 aussi en mode radians**
+  (cos(3θ) faux dès qu'on combine les deux) ; `dsl-builtins.md` dit « en radians », faux en degrés.
