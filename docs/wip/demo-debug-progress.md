@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-25, après #1756 et #1757._
 
 - **État** : phases 1 à 8 mergées (#1750) ; retrait de l'admin sur les scripts de démo mergé (#1756 : API `DEMO_SCRIPT_AUTHOR_ROLES = ['teacher']`, RLS `is_teacher()`, transfert des 5 scripts de l'admin au prof ; #1757 : migration renommée `20261026120000`, l'horodatage `20261026020000` étant déjà pris en prod par `questions_cp_a6`). Rien en prod côté code avant le prochain `deploy:prod`.
-- **Prochaine action** : `pnpm db:migrate` (bloqué par le classifieur, **à lancer par David** : `! pnpm db:migrate`), puis vérifier en prod : les 5 scripts au prof, policy « Teacher can CRUD own demo scripts ». Avant le migrate, mesuré : 5 scripts à l'admin, 0 au prof. Ensuite fin de chantier = versement.
+- **Prochaine action** : fin de chantier = versement (durable → `docs/systeme/`, journal archivé). Migration `20261026120000` jouée en prod le 2026-10-25 (portée par le `db:migrate` d'une autre session) ; vérifié : 5 scripts au prof, seule policy « Teacher can CRUD own demo scripts ».
 - **Hors chantier, décidé par David le 2026-10-25** : cahier de texte → ubumark, **futur chantier `cahier-ubumark`** ; énigmes (HTML lu comme markdown) à mesurer ; bug FSRS → **chantier `fsrs`** ; `z` ≈ `2` → PR à part dans `tools/chiphre-math/`, en dernier.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
 - **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians (`dsl-builtins.md` dit « radians ») → `geometry-expert`, plus tard. Images des 4 cartes Mathémo à vérifier.
