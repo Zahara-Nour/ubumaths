@@ -1,0 +1,155 @@
+{
+	"title": "Combien de pièces ou de billets faut-il ajouter ?",
+	"description": "Compléter une somme d'argent avec des pièces de 2 € ou des billets de 10 €",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Pièces et billets",
+	"level": 4,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Léa a cet argent :\n\n```monnaie\nbillets: {{b}}×10 {{c}}×5\npièces: {{u}}×1\n```\n\nIl lui faut exactement ${{n}}~\\unit{€}$. Combien de pièces de $2~\\unit{€}$ doit-elle ajouter ?\n\nNombre de pièces à ajouter : [_]",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "u",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "s",
+					"expression": "eval:10*b+5*c+u"
+				},
+				{
+					"name": "n",
+					"expression": "eval:s+2*k"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Léa a ${{s}}~\\unit{€}$. Il lui manque ${{n}}-{{s}}={{eval:2*k}}~\\unit{€}$.",
+					"${{eval:2*k}}~\\unit{€}$, c'est ${{k}}$ {{if:k==1|pièce|pièces}} de $2~\\unit{€}$."
+				]
+			}
+		},
+		{
+			"statement": "Tom a cet argent :\n\n```monnaie\npièces: {{d}}×2 {{u}}×1\n```\n\nIl lui faut exactement ${{n}}~\\unit{€}$. Combien de billets de $10~\\unit{€}$ doit-il ajouter ?\n\nNombre de billets à ajouter : [_]",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "u",
+					"expression": "0..1"
+				},
+				{
+					"name": "k",
+					"expression": "1..4"
+				},
+				{
+					"name": "s",
+					"expression": "eval:2*d+u"
+				},
+				{
+					"name": "n",
+					"expression": "eval:s+10*k"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Tom a ${{s}}~\\unit{€}$. Il lui manque ${{n}}-{{s}}={{eval:10*k}}~\\unit{€}$.",
+					"${{eval:10*k}}~\\unit{€}$, c'est ${{k}}$ {{if:k==1|billet|billets}} de $10~\\unit{€}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Léa a 25 €, il lui faut 31 € : 3 pièces",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"c": "1",
+				"u": "0",
+				"k": "3",
+				"s": "25",
+				"n": "31"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "Erreur : répond en euros (6)",
+			"variationIndex": 0,
+			"variables": {
+				"b": "2",
+				"c": "1",
+				"u": "0",
+				"k": "3",
+				"s": "25",
+				"n": "31"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Tom a 7 €, il lui faut 27 € : 2 billets",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"u": "1",
+				"k": "2",
+				"s": "7",
+				"n": "27"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Erreur : répond en euros (20)",
+			"variationIndex": 1,
+			"variables": {
+				"d": "3",
+				"u": "1",
+				"k": "2",
+				"s": "7",
+				"n": "27"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["20"]
+		}
+	]
+}

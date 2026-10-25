@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-26, phase 0 du lot M validée._
 
 - **État** : 62 modèles CP publiés en prod (lots A1 à H, B1-B3). **Lot M (monnaie)** : phase 0 validée (§ 4 quattuordecies), 6 modèles à écrire (CP-042, 043, 044 ×2, 071, 045).
-- **Prochaine action** : écrire `docs/wip/questions/lot-m.py` → `scripts/questions/cp-m/`, specs vertes, rendu relu à 390 px ; brouillons en prod (go de David) ; migration nœud + tag et test.
+- **Prochaine action** : 6 modèles écrits et relus (local) ; brouillons en prod (go de David) ; migration nœud + tag et test.
 - **En attente de David** : vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; prénom dans le texte, jamais dans une variable ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (passer par une variable) ; jamais de variable `e` ; **numéroter les niveaux dès l'écriture** ; **migration qui change l'arbre ou les points → `LATER` + copies figées** ; bloc ```monnaie pas en prod → brouillons jusqu'au `deploy:prod`.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-monnaie`.
@@ -248,3 +248,4 @@ David suit mes recommandations (« je suis tes recos »).
 - 2026-10-25 : « Combien de formes dans le dessin ? » n'est pas une propriété (David) : option A, nouvelle sous-notion « reconnaître et nommer des formes » pour CP-054/055 ; question d'accès tranchée AVANT le SQL (personne) ; niveaux validés ; migration `20261026170000` et test, rouge (9/11) puis vert (11/11).
 - 2026-10-26 : #1785 — revue (Opus) et audit sécurité sans finding bloquant, mineurs corrigés ; CI rouge au premier passage (5 fichiers : la base de CI porte la migration, copies figées de l'arbre et des points, test B2) → chaînage par `LATER` et copies mises à jour, 102 tests verts en local migration jouée ; mergée, `db:migrate` (`--include-all`), vérifiée ; 19 modèles publiés (0 refus) : 62/62 CP publiés.
 - 2026-10-26 : lot M (monnaie), phase 0 validée (§ 4 quattuordecies), worktree `../ubumaths-wt-questions` (`feat/questions-monnaie`).
+- 2026-10-26 : M, 6 modèles écrits (`lot-m.py` → `scripts/questions/cp-m/`), 33 specs vertes ; 600 tirages sondés (blocs sans erreur, réponses = dessin, montants des leurres dans le corrigé) ; rendu relu à 390 px en base locale : montants en `$n~\unit{€}$` (« € » seul à la ligne avec une espace, même insécable), accords au singulier, case de M4 sans accord, **corrigé de M3 faux quand le bon porte-monnaie n'a pas de pièce de 1 € (n − 1 deux fois) corrigé**.

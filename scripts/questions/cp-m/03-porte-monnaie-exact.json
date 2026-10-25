@@ -1,0 +1,196 @@
+{
+	"title": "Quel porte-monnaie contient exactement… ?",
+	"description": "Reconnaître le porte-monnaie qui contient une somme donnée ; leurres : pièce oubliée, même nombre d'objets ; contrainte « sans pièce de 1 € »",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Pièces et billets",
+	"level": 3,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Quel porte-monnaie contient exactement ${{n}}~\\unit{€}$ ?",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "0..2"
+				},
+				{
+					"name": "b",
+					"expression": "0..1"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "0..2"
+				},
+				{
+					"name": "u",
+					"expression": "0..1"
+				},
+				{
+					"name": "n",
+					"expression": "eval:20*a+10*b+5*c+2*d+u"
+				},
+				{
+					"name": "do",
+					"expression": "eval:d-1+u"
+				},
+				{
+					"name": "ds",
+					"expression": "eval:d-1+2*u"
+				},
+				{
+					"name": "us",
+					"expression": "eval:1-u"
+				}
+			],
+			"conditions": ["a + b + c >= 1", "d + u >= 1"],
+			"choices": [
+				{
+					"content": "```monnaie\nbillets: {{a}}×20 {{b}}×10 {{c}}×5\npièces: {{d}}×2 {{u}}×1\n```"
+				},
+				{
+					"content": "```monnaie\nbillets: {{a}}×20 {{b}}×10 {{c}}×5\npièces: {{do}}×2\n```"
+				},
+				{
+					"content": "```monnaie\nbillets: {{a}}×20 {{b}}×10 {{c}}×5\npièces: {{ds}}×2 {{us}}×1\n```"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"On compte l'argent de chaque porte-monnaie, billets d'abord.",
+					"Le bon porte-monnaie : ${{eval:20*a+10*b+5*c}}~\\unit{€}$ de billets et ${{eval:2*d+u}}~\\unit{€}$ de pièces, ${{n}}~\\unit{€}$ en tout.",
+					"Les deux autres contiennent {{if:u==1|${{eval:n-1}}~\\unit{€}$ et ${{eval:n+1}}~\\unit{€}$|${{eval:n-2}}~\\unit{€}$ et ${{eval:n-1}}~\\unit{€}$}} : pas exactement ${{n}}~\\unit{€}$.",
+					"Attention : avoir autant de pièces et de billets ne veut pas dire avoir autant d'argent."
+				]
+			}
+		},
+		{
+			"statement": "Quel porte-monnaie contient exactement ${{n}}~\\unit{€}$, **sans pièce de $1~\\unit{€}$** ?",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..3"
+				},
+				{
+					"name": "d",
+					"expression": "1..3"
+				},
+				{
+					"name": "n",
+					"expression": "eval:10*b+5+2*d"
+				}
+			],
+			"conditions": [],
+			"choices": [
+				{
+					"content": "```monnaie\nbillets: {{b}}×10 1×5\npièces: {{d}}×2\n```"
+				},
+				{
+					"content": "```monnaie\nbillets: {{b}}×10 1×5\npièces: {{eval:d-1}}×2 2×1\n```"
+				},
+				{
+					"content": "```monnaie\nbillets: {{b}}×10\npièces: {{eval:d+2}}×2 1×1\n```"
+				}
+			],
+			"correctChoiceIndex": ["0"],
+			"correction": {
+				"steps": [
+					"Les trois porte-monnaie contiennent ${{n}}~\\unit{€}$.",
+					"Deux d'entre eux ont des pièces de $1~\\unit{€}$ : un seul n'en a aucune."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "48 € = 20 + 20 + 5 + 2 + 1",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "0",
+				"c": "1",
+				"d": "1",
+				"u": "1",
+				"n": "48",
+				"do": "1",
+				"ds": "2",
+				"us": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : la pièce de 1 € oubliée (47 €)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "0",
+				"c": "1",
+				"d": "1",
+				"u": "1",
+				"n": "48",
+				"do": "1",
+				"ds": "2",
+				"us": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : même nombre d'objets (49 €)",
+			"variationIndex": 0,
+			"variables": {
+				"a": "2",
+				"b": "0",
+				"c": "1",
+				"d": "1",
+				"u": "1",
+				"n": "48",
+				"do": "1",
+				"ds": "2",
+				"us": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [2]
+		},
+		{
+			"description": "Sans pièce de 1 € : 29 € = 10 + 10 + 5 + 2 + 2",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"d": "2",
+				"n": "29"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : 29 € mais avec deux pièces de 1 €",
+			"variationIndex": 1,
+			"variables": {
+				"b": "2",
+				"d": "2",
+				"n": "29"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		}
+	]
+}
