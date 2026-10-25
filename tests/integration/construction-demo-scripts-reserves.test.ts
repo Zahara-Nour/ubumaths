@@ -1,6 +1,6 @@
 /**
- * Scripts de démo des constructions : réservés au prof et à l'admin
- * =================================================================
+ * Scripts de démo des constructions : réservés au prof
+ * ===================================================
  *
  * Relevé le 2026-10-23 : tout compte connecté, élève compris, pouvait enregistrer des
  * scripts de démo (policy « Users can CRUD own demo scripts »). Un client Supabase
@@ -8,7 +8,8 @@
  * l'API.
  *
  * Décision de David (2026-10-23) : lire, créer, modifier, supprimer = prof et admin
- * seuls, chacun ses scripts.
+ * seuls, chacun ses scripts. Le 2026-10-25 : l'admin retiré, ses scripts passés au prof
+ * (migration 20261026020000).
  *
  * @vitest-environment node
  */
@@ -68,7 +69,7 @@ async function existe(id: string): Promise<boolean> {
 // TESTS
 // ============================================================================
 
-describe('scripts de démo : réservés au prof et à l’admin', () => {
+describe('scripts de démo : réservés au prof', () => {
 	let prof: { id: string; email: string };
 	let admin: { id: string; email: string };
 	let eleve: { id: string; email: string };
@@ -113,12 +114,32 @@ describe('scripts de démo : réservés au prof et à l’admin', () => {
 		expect(supprime).toHaveLength(1);
 	});
 
-	it('l’admin crée un script', async () => {
+	it('l’admin ne peut pas créer de script (42501)', async () => {
 		const client = await clientFor(admin.email);
 		const { error } = await client
 			.from('construction_demo_scripts')
 			.insert({ name: `${PREFIXE} admin`, dsl_script: 'A = point(0, 0)', author_id: admin.id });
-		expect(error).toBeNull();
+		expect(error?.code).toBe('42501');
+	});
+
+	it('l’admin ne lit, ne modifie ni ne supprime son ancien script', async () => {
+		const id = await scriptDe(admin.id, 'ancien de l’admin');
+		const client = await clientFor(admin.email);
+		const { data: lus } = await client.from('construction_demo_scripts').select('id').eq('id', id);
+		expect(lus).toEqual([]);
+		const { data: modifie } = await client
+			.from('construction_demo_scripts')
+			.update({ dsl_script: 'B = point(1, 1)' })
+			.eq('id', id)
+			.select('id');
+		expect(modifie).toEqual([]);
+		const { data: supprime } = await client
+			.from('construction_demo_scripts')
+			.delete()
+			.eq('id', id)
+			.select('id');
+		expect(supprime).toEqual([]);
+		expect(await existe(id)).toBe(true);
 	});
 
 	it('un prof ne lit ni ne supprime le script d’un autre', async () => {
