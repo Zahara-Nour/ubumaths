@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1726._
+_Mis à jour le 2026-10-25, après #1738._
 
-- **État** : lot 1 COMPLET sur `main`, pas en prod — PR 1a #1716 (affichage) et PR 1b #1726 (saisie + juge : `case: N`, réponse calculée par le bloc, grille saisissable, correction chiffre par chiffre).
-- **Prochaine action** : PR décimales de fin (`fix/operations-posees-decimales-fin`) ; puis lot 2 (multiplication) — phase 0 à écrire et faire valider.
-- **En attente de David** : vérifications #1716 et #1726 (`verifications-manuelles.md`), avant le prochain `deploy:prod`. Comportement 5 précisé et décimales de fin (comptées 0) : tranchés le 2026-10-25 (recommandations suivies).
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — republiée le 2026-10-25 avec la saisie jouable (7 cas, dont `0,5 + 0,5`).
+- **État** : lot 1 COMPLET sur `main`, pas en prod — PR 1a #1716 (affichage), PR 1b #1726 (saisie + juge), #1738 (décimales de fin laissées vides comptées 0, jamais surlignées).
+- **Prochaine action** : lot 2 (multiplication) — phase 0 à écrire et faire valider (go de David le 2026-10-25).
+- **En attente de David** : vérifications #1716, #1726 et #1738 (`verifications-manuelles.md`), avant le prochain `deploy:prod`. Comportement 5 précisé et décimales de fin (comptées 0) : tranchés le 2026-10-25 (recommandations suivies).
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — republiée le 2026-10-25 avec la saisie jouable (7 cas) et la règle des décimales de fin (#1738).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
-- **Worktree / branche** : `../ubumaths-wt-operations-posees` · `fix/operations-posees-decimales-fin`.
+- **Worktree / branche** : supprimés après #1738.
 
 ---
 
@@ -243,6 +243,10 @@ David a répondu « je te suis » aux quatre recommandations, une par question :
     case : « chiffre des unités », « chiffre des dizaines »…
 
 ## Journal
+
+### 2026-10-25 — #1738 décimales de fin
+
+- Décision de David (recommandation suivie) : décimales de fin laissées vides = 0 à la lecture ; revue Opus : même règle au surlignage (`wrongResultDigits`), corrigé ; retour sur la question : `1` remis en `1,0` (accepté, figé par un test).
 
 ### 2026-10-25 — PR 1b codée
 
