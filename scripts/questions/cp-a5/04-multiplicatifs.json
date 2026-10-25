@@ -1,0 +1,251 @@
+{
+	"title": "Problèmes multiplicatifs (jusqu'à 30)",
+	"description": "Valeur du tout, nombre de parts, valeur d'une part (sans reste, sans le signe ×)",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Problèmes",
+	"subdomain": "Multiplicatifs",
+	"level": 5,
+	"delay": 90,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Il y a ${{g}}$ paquets. Dans chaque paquet, il y a ${{n}}$ images.\n\nCombien y a-t-il d'images en tout ?\n\nIl y a $?$ images.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["g * n <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Chaque paquet contient ${{n}}$ images, et il y a ${{g}}$ paquets : on ajoute ${{n}}$ autant de fois qu'il y a de paquets, ${{g}}$ fois.",
+					"$${{if:g==2|{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}|{{if:g==5|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}}}={{eval:g*n}}$$",
+					"Il y a ${{eval:g*n}}$ images en tout."
+				]
+			}
+		},
+		{
+			"statement": "Il y a ${{eval:g*n}}$ élèves dans la cour. On fait des équipes de ${{n}}$ élèves.\n\nCombien d'équipes peut-on faire ?\n\nOn peut faire $?$ équipes.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["g * n <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On forme des équipes de ${{n}}$ élèves jusqu'à ce que tous les élèves soient dans une équipe : on ajoute ${{n}}$ jusqu'à arriver à ${{eval:g*n}}$.",
+					"$${{if:g==2|{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}|{{if:g==5|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}}}={{eval:g*n}}$$",
+					"Chaque ${{n}}$ de ce calcul est une équipe : il y en a ${{g}}$.",
+					"On peut faire ${{g}}$ équipes."
+				]
+			}
+		},
+		{
+			"statement": "On partage ${{eval:g*n}}$ images entre ${{g}}$ enfants. Chaque enfant reçoit le même nombre d'images.\n\nCombien d'images chaque enfant reçoit-il ?\n\nChaque enfant reçoit $?$ images.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..6"
+				},
+				{
+					"name": "n",
+					"expression": "2..10"
+				}
+			],
+			"conditions": ["g * n <= 30"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"Les ${{g}}$ enfants reçoivent le même nombre d'images : on cherche le nombre qui, ajouté ${{g}}$ fois, fait ${{eval:g*n}}$.",
+					"$${{if:g==2|{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}|{{if:g==5|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}}}={{eval:g*n}}$$",
+					"Chaque enfant reçoit ${{n}}$ images."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "valeur du tout : 3 paquets de 7 = 21",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "7"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["21"]
+		},
+		{
+			"description": "Erreur : valeur du tout, 3 + 7 (10)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["10"]
+		},
+		{
+			"description": "Erreur : valeur du tout, 37 juxtaposés",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "7"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["37"]
+		},
+		{
+			"description": "nombre de parts : 24 élèves en équipes de 4 = 6",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"n": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Erreur : nombre de parts, 24 − 4 (20)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["20"]
+		},
+		{
+			"description": "Erreur : nombre de parts, 24 + 4 (28)",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["28"]
+		},
+		{
+			"description": "valeur d'une part : 18 images pour 3 = 6",
+			"variationIndex": 2,
+			"variables": {
+				"g": "3",
+				"n": "6"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "Erreur : valeur d'une part, 18 − 3 (15)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "3",
+				"n": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["15"]
+		},
+		{
+			"description": "Erreur : valeur d'une part, le nombre d'enfants (3)",
+			"variationIndex": 2,
+			"variables": {
+				"g": "3",
+				"n": "6"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["3"]
+		},
+		{
+			"description": "borne : 3 paquets de 10 = 30",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "10"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["30"]
+		},
+		{
+			"description": "borne : 30 élèves en équipes de 5 = 6",
+			"variationIndex": 1,
+			"variables": {
+				"g": "6",
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "borne : 4 images pour 2 = 2",
+			"variationIndex": 2,
+			"variables": {
+				"g": "2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["2"]
+		},
+		{
+			"description": "Zéro inutile",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "7"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			},
+			"answers": ["021"]
+		}
+	]
+}
