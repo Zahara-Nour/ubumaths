@@ -56,6 +56,7 @@
 	import Horloge from './nodes/Horloge.svelte';
 	import Operation from './nodes/Operation.svelte';
 	import Collection from './nodes/Collection.svelte';
+	import Monnaie from './nodes/Monnaie.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -376,6 +377,8 @@
 					<Operation {node} />
 				{:else if node.type === 'collection'}
 					<Collection {node} />
+				{:else if node.type === 'monnaie'}
+					<Monnaie {node} />
 				{/if}
 			{/each}
 		{:else}

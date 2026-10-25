@@ -110,6 +110,12 @@ import {
 	isCollectionBlockStart
 } from './collection-parser';
 import {
+	findMonnaieBlocks,
+	parseMonnaie,
+	parseMonnaieContent,
+	isMonnaieBlockStart
+} from './monnaie-parser';
+import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
 	parseCourbe,
@@ -489,6 +495,7 @@ function parseBlocks(
 	const horlogeBlocks = findHorlogeBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
 	const collectionBlocks = findCollectionBlocks(lines);
+	const monnaieBlocks = findMonnaieBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -506,7 +513,8 @@ function parseBlocks(
 		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
 		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
-		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' }
+		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' },
+		{ ranges: monnaieBlocks, parse: parseMonnaie, language: 'monnaie' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -572,6 +580,7 @@ function parseBlocks(
 			...horlogeBlocks,
 			...operationBlocks,
 			...collectionBlocks,
+			...monnaieBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -587,6 +596,7 @@ function parseBlocks(
 			...findHorlogeBlocks(originalLines),
 			...findOperationBlocks(originalLines),
 			...findCollectionBlocks(originalLines),
+			...findMonnaieBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks
@@ -1671,6 +1681,12 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findCollectionBlocks,
 		parse: parseCollection,
 		language: 'collection'
+	},
+	{
+		is: isMonnaieBlockStart,
+		find: findMonnaieBlocks,
+		parse: parseMonnaie,
+		language: 'monnaie'
 	}
 ] as const;
 
@@ -1892,6 +1908,9 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'collection') {
 			// Collection dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCollectionContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'monnaie') {
+			// Monnaie dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseMonnaieContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));

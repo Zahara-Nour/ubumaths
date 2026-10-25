@@ -27,6 +27,7 @@ import { withDigitGrouping } from '$lib/utils/french-math';
 import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '$lib/mathAST/digit-grouping';
 import { withChoiceClockSize } from '$lib/ubumark/parser/horloge-parser';
 import { withChoiceCollectionSize } from '$lib/ubumark/parser/collection-parser';
+import { withChoiceMonnaieSize } from '$lib/ubumark/parser/monnaie-parser';
 
 export type SerieItem = { templateId: string; seed: number };
 /**
@@ -174,7 +175,9 @@ function figer(template: QuestionTemplate, instance: QuestionInstance): Serie {
 
 	const choix = (instance.choices ?? []).map((c) => ({
 		...c,
-		content: withChoiceCollectionSize(withChoiceClockSize(enLatex(c.content)))
+		content: withChoiceMonnaieSize(
+			withChoiceCollectionSize(withChoiceClockSize(enLatex(c.content)))
+		)
 	}));
 	if (choix.length > 0) {
 		// Lettre en gras, pas `a) …` : une ligne `a)` serait une sous-liste, que le PDF

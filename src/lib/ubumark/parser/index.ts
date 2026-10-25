@@ -154,6 +154,14 @@ export {
 	isCollectionBlockStart
 } from './collection-parser';
 
+// Bloc ```monnaie
+export {
+	parseMonnaie,
+	parseMonnaieContent,
+	findMonnaieBlocks,
+	isMonnaieBlockStart
+} from './monnaie-parser';
+
 // Bloc ```courbe
 export {
 	parseCourbe,

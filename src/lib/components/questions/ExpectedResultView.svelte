@@ -66,7 +66,7 @@
 	});
 
 	/** Libellé d'un choix de QCM, selon son statut et s'il est coché */
-	/** Choix qui est un bloc (```horloge, ```collection) : InlineMarkdown n'en garderait que le texte brut */
+	/** Choix qui est un bloc (```horloge, ```collection, ```monnaie) : InlineMarkdown n'en garderait que le texte brut */
 	function isBlockChoice(content: string): boolean {
 		return content.trimStart().startsWith('```');
 	}
@@ -173,8 +173,10 @@
 							<Circle class="choice-box h-4 w-4" aria-hidden="true" data-indicator="circle" />
 						{/if}
 						{#if isBlockChoice(choice.content)}
-							<!-- Choix en bloc (```horloge, ```collection) : dessiné, 3 cm comme dans le QCM -->
-							<div class="min-w-0 flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]">
+							<!-- Choix en bloc (```horloge, ```collection, ```monnaie) : dessiné, 3 cm comme dans le QCM -->
+							<div
+								class="min-w-0 flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:6cm]"
+							>
 								<MarkdownRenderer content={choice.content} />
 							</div>
 						{:else}

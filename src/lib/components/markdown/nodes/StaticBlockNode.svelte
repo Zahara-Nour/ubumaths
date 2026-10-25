@@ -32,6 +32,7 @@
 	import Horloge from './Horloge.svelte';
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
+	import Monnaie from './Monnaie.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -92,4 +93,6 @@
 	<Operation {node} />
 {:else if node.type === 'collection'}
 	<Collection {node} />
+{:else if node.type === 'monnaie'}
+	<Monnaie {node} />
 {/if}

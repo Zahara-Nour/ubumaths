@@ -122,9 +122,10 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
 - Saisie : `src/lib/components/question-inputs/FillBlanksInput.svelte` (cases MathLive, claviers),
   `MultipleChoiceInput.svelte`, `src/lib/components/markdown/nodes/BlankInput.svelte` (case de texte `[_]`).
 - Choix de QCM en bloc : un choix peut être un ` ```horloge ` (« Quelle horloge indique 3 h ? ») ou
-  une ` ```collection ` (« Quel dessin montre 42 ? ») ;
+  une ` ```collection ` (« Quel dessin montre 42 ? ») ou une ` ```monnaie ` (« Quel porte-monnaie
+  contient 48 € ? ») ;
   `MultipleChoiceInput` et les aperçus (`QuestionPreview`, `QuestionPreviewBaseCard`) posent
-  `--horloge-taille: 3cm` et `--collection-taille: 3cm` sur le contenu du choix (sauf `taille:` de
+  `--horloge-taille: 3cm`, `--collection-taille: 3cm` et `--monnaie-taille: 6cm` sur le contenu du choix (sauf `taille:` de
   l'auteur). La
   correction (`ExpectedResultView`) rend un tel choix par `MarkdownRenderer` : `InlineMarkdown`
   n'en garderait que le texte brut.

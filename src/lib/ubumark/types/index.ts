@@ -224,6 +224,12 @@ export type { OperationNode, OperationIssue, OperationSpec, OperationTerm } from
 export type { CollectionNode, CollectionIssue, CollectionSpec, CollectionSet } from './collection';
 
 // ============================================================================
+// MONNAIE (bloc ```monnaie)
+// ============================================================================
+
+export type { MonnaieNode, MonnaieIssue, MonnaieSpec, MonnaieSet } from './monnaie';
+
+// ============================================================================
 // PARSER TYPES
 // ============================================================================
 

@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 ; scène commune collection / monnaie le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -184,6 +184,7 @@ en retrait sous un item de liste.
 | `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`         | `horloge-typst.ts`               |
 | `operation`                                                                                                               | `operation`                 | `operation-parser.ts`               | `Operation.svelte`       | `operation-typst.ts`             |
 | `collection`                                                                                                              | `collection`                | `collection-parser.ts`              | `Collection.svelte`      | `collection-typst.ts`            |
+| `monnaie`                                                                                                                 | `monnaie`                   | `monnaie-parser.ts`                 | `Monnaie.svelte`         | `monnaie-typst.ts`               |
 
 La liste des genres statistiques est `STAT_CHART_KINDS` (`src/lib/ubumark/types/stat-chart.ts`).
 
@@ -448,7 +449,7 @@ de QCM). `centaines:` est réservée (« pas encore disponible »). Groupes de d
 isolés dessous ; groupement partiel (3 dizaines et 15 unités) accepté. Le vrac est tiré d'une graine
 faite du contenu du bloc et du rang de la collection : même bloc → même dessin, à l'écran comme au
 PDF ; deux objets restent à 1,5 objet l'un de l'autre au moins. Chaque objet de la scène
-(`utils/collection-scene.ts`) porte sa valeur (1 ou 10), pour la monnaie à venir ; hasard, vrac,
+(`utils/collection-scene.ts`) porte sa valeur (1 ou 10) ; hasard, vrac,
 décalage et toucher viennent de `utils/scene-commune.ts`, partagé avec la monnaie (instantanés
 `collection-scene-figee.test.ts` : un objet déplacé d'un centième les fait échouer). À l'écran,
 **toucher pour marquer** : un objet touché est barré (aide de comptage, non jugée, rien
@@ -456,6 +457,36 @@ d'enregistré, effacée à la collection suivante ; « Effacer les marques ») �
 de `nodes/scene-marks.svelte.ts`, commune aux deux blocs. Nom accessible
 « Collection d'objets », **jamais le nombre**. PDF en Typst natif, noir sur blanc. Dans un choix de
 QCM : `--collection-taille: 3cm` (comme l'horloge) ; série figée : `withChoiceCollectionSize`.
+
+**Pièces et billets** (chantier [monnaie](../wip/monnaie-progress.md), CP-043, CP-042 ; CP-044 et
+CP-071 en partie) — `src/lib/ubumark/__tests__/monnaie/` :
+
+````text
+```monnaie
+billets: ; 1×10
+pièces: 10×1 ;
+légendes: Léa ; Tom
+```
+````
+
+`billets:` (5, 10, 20, 50, 100) et `pièces:` (1, 2), en euros : au moins l'une des deux, en liste
+(`20 10 10`) ou comptée (`2×10`, `x` et `*` valent `×`, `0×10` admis), triées du plus grand au plus
+petit ; ou `montant:` (0 à 100, jamais mêlé aux deux autres) : le bloc choisit les coupures, « le
+moins d'objets » (`decomposeAmount`, glouton, exact pour l'euro). Un ensemble par valeur séparée par
+`;` (1 à 3, vide admis, ligne absente = aucun) ; 100 € et 30 objets au plus par ensemble. Messages
+situés : coupure inconnue (avec la liste de ce qui existe), pièce écrite en billet ou l'inverse.
+Réservés (« pas encore disponible ») : centimes (`50c`, `0,50`), billets de 200 et 500 €.
+Facultatives : `disposition: rangé | mélangé` (défaut `rangé` ; `mélangé` : billets dans un ordre
+tiré, pièces en vrac), `légendes:`, `taille:` (comme la collection : 8 cm pleine largeur, même
+échelle d'un ensemble à l'autre). Pas de `prix:` : le prix va dans l'énoncé. **Rendu stylisé**
+(aucun élément des vrais billets ni pièces, règles BCE : [journal § 6](../wip/monnaie-progress.md)) :
+plus la valeur est grande, plus la coupure est grande ; valeur écrite au centre, répétée en petit
+dans deux coins d'un billet ; la pièce de 2 € a un anneau. Billets en haut, pièces dessous ; scène
+`utils/monnaie-scene.ts` (hasard, vrac et toucher de `scene-commune.ts`, graine = ce qui se dessine),
+marquage au doigt `SceneMarks`. Nom accessible « Pièces et billets » : les valeurs sont écrites
+(l'enfant les lit), **jamais le total**. PDF en Typst natif, gris cernés de noir. Dans un choix de
+QCM : **6 cm**, pas 3 (à 3 cm les valeurs ne se lisent plus) — `--monnaie-taille: 6cm` ; série
+figée : `withChoiceMonnaieSize`.
 
 ### Cases à compléter
 
