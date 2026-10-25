@@ -24,7 +24,7 @@ _Mis à jour le 2026-10-25, après #1733 (phases 0 livrées archivées ; Q93 et 
 - **Déployé** : v0.47.0 (2026-10-25) livre le retrait de `/spreadsheet`, de `/calc` et le pont Python.
   Table `spreadsheets` supprimée le 2026-10-25 ([journal](../archive/wip/drop-spreadsheets-progress.md)).
 - **Sens inverse Python → atelier LIVRÉ** (#1746, 2026-10-25, sur `main`, pas en prod) : chantier
-  [python-vers-atelier](python-vers-atelier-progress.md). Plus tard, si l'usage le demande :
+  [python-vers-atelier](../archive/wip/python-vers-atelier-progress.md). Plus tard, si l'usage le demande :
   « Ouvrir dans Python » pour une carte `f′`.
 - **Restes des phases 0 archivées le 2026-10-25** (`docs/archive/wip/`) : Q93 et M1, crues ouvertes,
   étaient tranchées depuis le 2026-10-02 (décisions 92 et 93 d'`outils-statistiques-v2-progress.md`) et

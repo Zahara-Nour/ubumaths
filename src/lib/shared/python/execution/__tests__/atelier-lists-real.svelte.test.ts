@@ -1,6 +1,6 @@
 /**
  * « Ouvrir dans l'atelier » — les listes qu'un programme laisse, lues par le
- * vrai Pyodide (phase 0 `docs/wip/python-vers-atelier-phase0.md`).
+ * vrai Pyodide (phase 0 `docs/archive/wip/python-vers-atelier-phase0.md`).
  *
  * Le worker rapporte, après une exécution réussie, chaque liste AFFECTÉE au
  * niveau du module par le code exécuté : ses valeurs (200 au plus), ou ses

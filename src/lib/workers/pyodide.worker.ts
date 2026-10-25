@@ -408,7 +408,7 @@ async function loadPyodideModule(): Promise<LoadPyodideFunc> {
 }
 
 /**
- * « Ouvrir dans l'atelier » (phase 0 `docs/wip/python-vers-atelier-phase0.md`) :
+ * « Ouvrir dans l'atelier » (phase 0 `docs/archive/wip/python-vers-atelier-phase0.md`) :
  * les listes AFFECTÉES au niveau du module par le code exécuté — pas celles
  * d'une exécution précédente, que l'espace de noms du playground garde encore,
  * ni les variables locales d'une fonction, ni les noms en `_`.

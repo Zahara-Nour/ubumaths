@@ -2,7 +2,7 @@
 	/**
 	 * « Ouvrir dans l'atelier » : les listes du programme exécuté, copiées dans
 	 * un atelier éphémère ouvert dans un nouvel onglet (phase 0
-	 * `docs/wip/python-vers-atelier-phase0.md`). Le playground ne bouge pas.
+	 * `docs/archive/wip/python-vers-atelier-phase0.md`). Le playground ne bouge pas.
 	 */
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Button } from '$lib/components/ui/button';

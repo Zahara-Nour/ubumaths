@@ -2242,7 +2242,7 @@ La carte d'une liste de nombres passe à **13 actions au plus** (David, 2026-10-
 ### Ouvrir dans l'atelier, depuis Python (2026-10-25)
 
 Le sens inverse, à sens unique lui aussi (phase 0
-[python-vers-atelier-phase0.md](../wip/python-vers-atelier-phase0.md), Q1-Q6 validées par David).
+[python-vers-atelier-phase0.md](../archive/wip/python-vers-atelier-phase0.md), Q1-Q6 validées par David).
 Après une exécution réussie, `/python` propose « Ouvrir dans l'atelier » pour chaque **liste**
 affectée par le programme (détection : [worker.md](python/worker.md#les-listes-pour-latelier-_chiphre_atelier_lists)).
 `offerOf` (`from-python.ts`) applique les règles de l'atelier : au plus `MAX_LIST_VALUES` valeurs ;

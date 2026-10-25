@@ -1,6 +1,6 @@
 /**
  * « Ouvrir dans l'atelier » depuis Python — le sens inverse du pont
- * (phase 0 `docs/wip/python-vers-atelier-phase0.md`, validée par David le 2026-10-25).
+ * (phase 0 `docs/archive/wip/python-vers-atelier-phase0.md`, validée par David le 2026-10-25).
  *
  * Trois étages : ce que le menu propose pour une liste rapportée par Python
  * (`offerOf`), la boîte aux lettres à usage unique (`postToAtelier`,

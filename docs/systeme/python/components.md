@@ -154,7 +154,7 @@ Affichage 5-en-1 : stdout, stderr (+ message pédagogique français basé sur 13
 
 ### `PythonToAtelier.svelte`
 
-« Ouvrir dans l'atelier » (phase 0 [python-vers-atelier-phase0.md](../../wip/python-vers-atelier-phase0.md)),
+« Ouvrir dans l'atelier » (phase 0 [python-vers-atelier-phase0.md](../../archive/wip/python-vers-atelier-phase0.md)),
 rendu sous `PythonOutput` dans les deux mises en page du playground, avec `lists={pythonStore.atelierLists}`.
 Rien n'apparaît tant que la dernière exécution réussie n'a affecté aucune liste. Le menu montre une
 entrée par liste (`offerOf`, `$lib/atelier/from-python`) : « lancers (12 valeurs) », « lancers : ses
