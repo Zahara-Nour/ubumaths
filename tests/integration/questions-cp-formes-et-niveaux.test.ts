@@ -24,6 +24,7 @@ import { TestData } from '../helpers/database/test-data-factory';
 import { extractRollback } from '../helpers/database/migration-rollback';
 import { nodeIdByPath, readNodePaths } from '../helpers/database/classification-paths';
 import { insertProdCopies } from '../helpers/database/prod-copies';
+import { QUESTIONS_CP_FORMES } from '../helpers/database/later-migrations';
 
 // ============================================================================
 // TYPES
@@ -48,7 +49,7 @@ interface Etat {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261026170000_questions_cp_formes_et_niveaux.sql';
+const MIGRATION = QUESTIONS_CP_FORMES;
 const FIGURES = 'Géométrie > Figures planes';
 const PROPRIETES = `${FIGURES} > propriétés`;
 const FORMES = `${FIGURES} > reconnaître et nommer des formes`;
@@ -218,6 +219,8 @@ describe('Questions CP : sous-notion des formes et niveaux des 19 brouillons (mi
 		pg = await getPostgresClient();
 
 		await pg.query('begin');
+		// La base locale (et la CI) porte déjà cette migration : retrouver l'état d'avant
+		await pg.query(extractRollback(MIGRATION));
 		await poserEtatProd(pg, prof.id);
 		avant = await lireEtat(pg);
 		await pg.query(readFileSync(MIGRATION, 'utf-8'));
@@ -293,6 +296,7 @@ describe('Questions CP : les branches d’échec de la migration des formes', ()
 	async function enTransaction(corps: () => Promise<void>): Promise<void> {
 		await pg.query('begin');
 		try {
+			await pg.query(extractRollback(MIGRATION));
 			await corps();
 		} finally {
 			await pg.query('rollback');
