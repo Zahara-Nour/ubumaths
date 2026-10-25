@@ -1662,9 +1662,6 @@ Doublons qui restent, chacun pour un autre besoin :
   - `.intégrer` à bornes : une borne décimale dans une exponentielle mêle les registres
     (`∫₀^{0,5} 0,5eˣ = \dfrac{1}{2}e^{0,5} − \dfrac{1}{2}`) ; paramètre au dénominateur laissé en
     fraction (`0,5e^{ax}` de 0 à 1 → `(e^a − 1)/(2a)`) ; `0,5x²` de 0 à a → `\dfrac{1}{6}a³` ;
-  - `tidy` en ordre canonique trie à part les termes gardés par S3 (`3 − ln x + x + ln x →
-ln(x) + x + 3 − ln(x)`) ; le récit de `ln(x)+3−ln(x)` fait un aller-retour ; `cbrt(x) −
-cbrt(x)` reste écrit (prudent) ;
   - `.simplifier` : `x(−eˣ)e` non regroupé ; `\frac{e^{2x}x}{eˣx} → \frac{x eˣ}{x}` ;
   - `factoriser` sur `(a+b)(a−b)/((a−b)(a+b))` rend `(a+b)·1/(a+b)` ; facteurs opposés non
     reconnus (`(x²−1)/(1−x)` reste) ; `MAX_FRACTIONS = 8` coupe en silence ;

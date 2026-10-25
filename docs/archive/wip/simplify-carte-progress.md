@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-25, versement (chantier CLOS)._
 
 - **État** : **chantier clos et archivé.** Lots 1 → 7 mergés (#1610 → #1765) ; code pas encore en prod.
 - **Versé** : carte « Quelle fonction pour quel besoin » + table des formes cibles (`docs/systeme/mathast/README.md`) ; quatre tests de `tidy` (`tidy-spec.md` § 0.4) ; [ADR 0032](../../adr/0032-la-forme-affichee-se-choisit-par-le-but.md) ; statut de l'ADR 0007.
-- **Restes à trancher par David** : versés dans « Points ouverts connus » du README mathAST (Q49 points 1, 3, 4 ; § 64 ; § 87 ; § 89 ; M2 § 93). § 60 (texte LaTeX des étiquettes de figure) : futur chantier, noté en mémoire.
+- **Restes à trancher par David** : versés dans « Points ouverts connus » du README mathAST (Q49 points 1, 3, 4 ; § 87 ; § 89 ; M2 § 93 ; les mineurs de § 64 ont été réglés par Q41, #1703). § 60 (texte LaTeX des étiquettes de figure) : futur chantier, noté en mémoire.
 - **Vérifications manuelles** : dans `docs/wip/verifications-manuelles.md` (#1703 → #1749).
 - **Page de synthèse** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs (republiée « clos »).
 
