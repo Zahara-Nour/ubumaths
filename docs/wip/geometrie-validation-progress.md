@@ -2,16 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, journal séparé de [questions](questions-progress.md) (§ 2 bis / 2 ter d'origine)._
+_Mis à jour le 2026-10-25, ouverture du chantier (avant B1 → B3, décision de David)._
 
-- **État** : réflexion faite, verdict du conseil suivi par David (§ 2) ; **phase 0 de CP-059 validée** (§ 3, 8 décisions). Aucun code.
-- **Prochaine action** : rien avant la fin des lots B1 → B3 du chantier questions ([§ 4 nonies](questions-progress.md)) ; ensuite
-  ouvrir le worktree `../ubumaths-wt-geometrie-validation`, tests rouges du bloc ` ```construction ` et de `droite_par`.
-- **En attente de David** : statut de **CP-034** (« comparer », peut-être un QCM sur figure → lot B2) et de **CP-058** ; phase 0 de CP-060.
+- **État** : chantier ouvert ; plan technique validé (§ 4, 3 PR). PR 1 (moteur) en cours, tests rouges d'abord.
+- **Prochaine action** : PR 1 — parseur ` ```construction `, case unique par bloc, juge `droite_par` (`src/lib/questions/construction/`).
+- **En attente de David** : statut de **CP-034** et de **CP-058** ; phase 0 de CP-060.
 - **Pièges en cours** : les `check*` de `geometry-core/validation/checks.ts` prennent des identifiants → les faire porter sur
-  des positions ; `snapToPoint` existe (`geometry-core/interaction/snap.ts`) ; `deplacable:` / `rendu:` refusés dans un bloc d'exercice.
-- **Worktree / branche** : aucun.
-- **Session** : transcription locale `docs/session-transcripts/geometrie-validation-2026-10-25-15h33.md`.
+  des positions ; `snapToPoint` existe (`geometry-core/interaction/snap.ts`) ; `deplacable:` / `rendu:` refusés dans un bloc d'exercice ;
+  fiche du catalogue (`block-catalog/types.ts`) seulement après le merge de `catalogue-blocs`.
+- **Worktree / branche** : `../ubumaths-wt-geometrie-validation` · `feat/geometrie-validation`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -136,6 +135,23 @@ que rien n'est tracé ; (7) `delay` **60 s** ; (8) bloc ` ```construction ` (fig
 modèles CP-059 / 060 s'écrivent **dans le chantier figure** (ils dépendent du bloc neuf), pas dans le chantier questions.
 Le code attend toujours la fin de B1 → B3 ([questions](questions-progress.md) § 4 nonies).
 
+## 4. Plan technique (VALIDÉ par David le 2026-10-25)
+
+David ouvre le chantier tout de suite, sans attendre B1 → B3 (rien ne les lie, sauf CP-034 à trancher avant B2).
+Précédent suivi : le bloc ` ```operation ` (le bloc porte sa case, la réponse attendue vient du bloc).
+
+1. **PR 1 — moteur, sans écran** : bloc ` ```construction ` (en-tête comme ` ```figure ` + `outils:` / `verifier:`, `---`, DSL) ;
+   une case par bloc (`assign-blank-indices`), réponse attendue calculée par le bloc ; réponse élève = chaîne de
+   coordonnées (`droite(2;3;7;3)`), bornée par Zod ; juge pur `src/lib/questions/construction/` dans `validateSingleBlank`
+   (positions, tout-ou-rien, messages du § 3), aussi côté serveur (évaluations notées).
+2. **PR 2 — écran élève** : tracé dans `FillBlanksInput` (toucher A puis B, aimantation, Effacer, Valider grisé), résultat
+   (droite verte / bonne droite en pointillés) ; rendu statique hors saisie et **PDF : figure de départ seule** (corrigé : la bonne droite).
+3. **PR 3 — modèle CP-059** (3 variations, `delay` 60 s), fiche du catalogue des blocs, doc système.
+
+Revue : `code-reviewer` en Opus (correction des réponses).
+
+**Décisions** : trait en trop → « Tu as tracé une droite de trop. » ; PDF → figure de départ seule ; 3 PR.
+
 ## Journal
 
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 1), au journal questions.
@@ -143,3 +159,4 @@ Le code attend toujours la fin de B1 → B3 ([questions](questions-progress.md) 
 - 2026-10-25 : phase 0 de CP-059 écrite (§ 3) ; CP-034 à réexaminer (« comparer », pas « reporter »).
 - 2026-10-25 : phase 0 de CP-059 validée par David (8 décisions) ; modèles 059/060 dans ce chantier.
 - 2026-10-25 : § 2 bis / 2 ter sortis du journal questions vers ce journal.
+- 2026-10-25 : chantier ouvert sans attendre B1 → B3 (David) ; plan en 3 PR validé (§ 4).
