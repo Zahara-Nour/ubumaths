@@ -517,6 +517,14 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						]
 					};
 				}
+				if (node.spec.operator === '×') {
+					return {
+						success: false,
+						errors: [
+							`Case ${index + 1} (bloc operation) : multiplication à remplir dans une question : pas encore disponible (cases: aucune pour la montrer résolue)`
+						]
+					};
+				}
 				operationAnswers.set(index, operationExpectedAnswer(node.spec));
 			}
 

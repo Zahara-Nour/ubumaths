@@ -60,6 +60,39 @@ describe('Operation — grille', () => {
 		expect(widths.size).toBe(1);
 	});
 
+	it('multiplication à remplir : produits partiels en cases d’aide, rien de l’attendu (lot 2)', async () => {
+		const screen = await render(Operation, {
+			target: mainElement(),
+			props: { node: node('calcul: 16 × 548') }
+		});
+		const grid = screen.container.querySelector('[role="group"]')!;
+		expect(text(grid)).toBe('548×16+');
+		// 5 cases de résultat ; produits partiels 4 + 5 cases ; retenues 2 + 4
+		expect(screen.container.querySelectorAll('.operation-case')).toHaveLength(5);
+		expect(screen.container.querySelectorAll('.operation-case-aide')).toHaveLength(9);
+		expect(screen.container.querySelectorAll('.operation-case-petite')).toHaveLength(6);
+		expect(screen.container.querySelectorAll('.operation-trait')).not.toHaveLength(0);
+	});
+
+	it('multiplication résolue : produits partiels, retenue de l’addition, résultat', async () => {
+		const screen = await render(Operation, {
+			target: mainElement(),
+			props: { node: node('calcul: 548 × 16', 'cases: aucune') }
+		});
+		expect(text(screen.container)).toBe('548×1613288+54808768');
+	});
+
+	it('multiplication dans une question : pas de saisie avant la PR 2b', async () => {
+		const screen = await render(Operation, {
+			target: mainElement(),
+			props: {
+				node: { ...node('calcul: 548 × 16'), caseIndex: 0 },
+				answer: { value: '', isCorrect: null, disabled: false, onChange: () => {} }
+			}
+		});
+		expect(screen.container.querySelectorAll('input')).toHaveLength(0);
+	});
+
 	it('cassage : chiffres barrés', async () => {
 		const screen = await render(Operation, {
 			target: mainElement(),

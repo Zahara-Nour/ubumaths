@@ -10,8 +10,10 @@
  * ```
  *
  * - `calcul:` (obligatoire) : 2 ou 3 termes pour une addition, 2 pour une
- *   soustraction (`−`, `-` ou `–`) ; virgule ou point ; espaces de milliers
- *   acceptés. `×` et `÷` : lots 2 et 3.
+ *   soustraction (`−`, `-` ou `–`) ou une multiplication (`×`, `x` ou `*`) ;
+ *   virgule ou point ; espaces de milliers acceptés. `÷` : lot 3.
+ * - Multiplication : le facteur qui a le plus de chiffres est posé en haut
+ *   (égalité : ordre écrit), `spec.terms` est dans l'ordre de pose.
  * - Le reste est facultatif ; une clé inconnue ou une valeur hors liste est
  *   une erreur située, jamais un réglage ignoré.
  *
@@ -28,6 +30,7 @@ import { specialBlockEnd } from './unclosed-block';
 import {
 	OPERATION_CELLS,
 	OPERATION_MAX_DIGITS,
+	OPERATION_MAX_FACTOR_DIGITS,
 	OPERATION_MAX_TERMS,
 	OPERATION_METHODS,
 	type OperationBlockRange,
@@ -52,15 +55,15 @@ const KEY_LINE_REGEX = /^([A-Za-zÀ-ÿ]+)\s*:\s*(.*)$/;
 /** Un terme sans ses espaces : `1234`, `56,75`, `12.5` */
 const TERM_REGEX = /^(\d+)(?:[.,](\d+))?$/;
 
-/** Signes reconnus, rangés par opérateur ; `×` et `÷` sont lus pour être refusés */
+/** Signes reconnus, rangés par opérateur ; `÷` est lu pour être refusé */
 const SIGNS: Record<string, OperationOperator | 'later'> = {
 	'+': '+',
 	'-': '-',
 	'−': '-',
 	'–': '-',
-	'×': 'later',
-	x: 'later',
-	'*': 'later',
+	'×': '×',
+	x: '×',
+	'*': '×',
 	'÷': 'later',
 	':': 'later',
 	'/': 'later'
@@ -164,6 +167,29 @@ function isAtLeast(a: OperationTerm, b: OperationTerm): boolean {
 	return scaled(a) >= scaled(b);
 }
 
+/** Chiffres d'un facteur, zéros de tête non comptés : `0,05` en a 1, `208` 3 */
+const digitCount = (t: OperationTerm) => (t.integer + t.decimal).replace(/^0+/, '').length;
+
+/**
+ * Facteurs d'une multiplication dans l'ordre de pose : le plus de chiffres en
+ * haut (égalité : ordre écrit) ; bornes de chaque ligne vérifiées ensuite.
+ * Les zéros de tête ne comptent pas : `0,5 × 12` pose 12 en haut, comme `12 × 0,5`.
+ */
+function factorsInPlace([a, b]: OperationTerm[]): OperationTerm[] {
+	const [top, bottom] = digitCount(b) > digitCount(a) ? [b, a] : [a, b];
+	if (digitCount(top) > OPERATION_MAX_FACTOR_DIGITS.top) {
+		throw new LineError(
+			`multiplication : ${OPERATION_MAX_FACTOR_DIGITS.top} chiffres au plus pour le nombre du haut`
+		);
+	}
+	if (digitCount(bottom) > OPERATION_MAX_FACTOR_DIGITS.bottom) {
+		throw new LineError(
+			`multiplication : ${OPERATION_MAX_FACTOR_DIGITS.bottom} chiffres au plus pour le nombre du bas`
+		);
+	}
+	return [top, bottom];
+}
+
 function parseCalcul(value: string): { operator: OperationOperator; terms: OperationTerm[] } {
 	const parts = value.split(SIGN_SPLIT_REGEX).map((part) => part.trim());
 	const signs = parts.filter((_, i) => i % 2 === 1);
@@ -173,12 +199,12 @@ function parseCalcul(value: string): { operator: OperationOperator; terms: Opera
 	}
 	if (signs.some((sign) => SIGNS[sign] === 'later')) {
 		throw new LineError(
-			'multiplication et division posées : pas encore disponible (addition et soustraction seulement)'
+			'division posée : pas encore disponible (addition, soustraction et multiplication seulement)'
 		);
 	}
 	const operators = new Set(signs.map((sign) => SIGNS[sign]));
 	if (operators.size > 1) {
-		throw new LineError(`calcul « ${value} » : un seul signe par opération (+ ou −)`);
+		throw new LineError(`calcul « ${value} » : un seul signe par opération (+, − ou ×)`);
 	}
 	const operator = signs.map((sign) => SIGNS[sign])[0] as OperationOperator;
 	const empty = rawTerms.find((term) => term === '');
@@ -191,9 +217,12 @@ function parseCalcul(value: string): { operator: OperationOperator; terms: Opera
 		throw new LineError(
 			operator === '+'
 				? `${terms.length} termes : trois termes au plus`
-				: `${terms.length} termes : une soustraction a deux termes`
+				: operator === '-'
+					? `${terms.length} termes : une soustraction a deux termes`
+					: `${terms.length} facteurs : une multiplication posée a deux facteurs`
 		);
 	}
+	if (operator === '×') return { operator, terms: factorsInPlace(terms) };
 	if (operator === '-' && !isAtLeast(terms[0], terms[1])) {
 		throw new LineError(
 			`calcul « ${value} » : résultat négatif (le premier nombre doit être le plus grand)`
@@ -272,7 +301,7 @@ export function parseOperationContent(source: string): OperationNode {
 	const read = calcul as { operator: OperationOperator; terms: OperationTerm[] } | null;
 	if (read === null) {
 		if (!seen.has('calcul')) fail(1, 'il manque la ligne calcul: (ex. calcul: 45 + 37)');
-	} else if (read.operator === '+' && seen.has('méthode')) {
+	} else if (read.operator !== '-' && seen.has('méthode')) {
 		fail(seen.get('méthode')!, 'méthode: seulement pour une soustraction');
 	}
 	// `cells` est réaffectée dans le forEach : TS la croit encore à sa valeur initiale

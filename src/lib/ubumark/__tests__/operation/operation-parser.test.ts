@@ -114,7 +114,7 @@ describe('bloc ```operation — erreurs (comportements 13 à 17)', () => {
 		[['calcul: 1 + 2 + 3 + 4'], 'trois termes au plus'],
 		[['calcul: 12345678901 + 1'], '10 chiffres au plus avant la virgule'],
 		[['calcul: 1,2345 + 1'], '3 chiffres au plus après la virgule'],
-		[['calcul: 12 × 3'], 'pas encore disponible'],
+		[['calcul: 12 × 3 × 2'], 'deux facteurs'],
 		[['calcul: 12 ÷ 3'], 'pas encore disponible'],
 		[['calcul: 12 + 3', 'méthode: cassage'], 'seulement pour une soustraction'],
 		[['calcul: 12 + 3', 'couleur: rouge'], 'clé « couleur » inconnue'],

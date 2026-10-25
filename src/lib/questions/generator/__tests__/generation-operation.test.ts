@@ -105,6 +105,24 @@ describe('bloc ```operation : la case et sa réponse', () => {
 		expect(result.errors.join(' ')).toMatch(/case 1.*calcul.*bloc operation/i);
 	});
 
+	it('multiplication à remplir : refusée tant que sa saisie n’existe pas (PR 2b)', () => {
+		const result = generateInstance(template({ statement: op('calcul: 548 × 16') }), 42);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/case 1.*multiplication.*pas encore disponible/i);
+	});
+
+	it('multiplication résolue (cases: aucune) : acceptée, sans case', () => {
+		const instance = generate(
+			template({
+				statement: `${op('calcul: 548 × 16', 'cases: aucune')}\n\n$? = 8768$`,
+				blanks: [{ expectedAnswer: '8768' }]
+			})
+		);
+		expect(instance.blanks).toHaveLength(1);
+		expect(instance.blanks?.[0].operation).toBeUndefined();
+	});
+
 	it('cases: aucune : pas de case', () => {
 		const instance = generate(
 			template({

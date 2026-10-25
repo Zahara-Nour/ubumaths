@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1738._
+_Mis à jour le 2026-10-25, phase 0 du lot 2 validée._
 
-- **État** : lot 1 COMPLET sur `main`, pas en prod — PR 1a #1716 (affichage), PR 1b #1726 (saisie + juge), #1738 (décimales de fin laissées vides comptées 0, jamais surlignées).
-- **Prochaine action** : lot 2 (multiplication) — phase 0 à écrire et faire valider (go de David le 2026-10-25).
+- **État** : lot 1 COMPLET sur `main`, pas en prod (#1716, #1726, #1738). Lot 2 (multiplication) : phase 0 validée le 2026-10-25 (§ 10), PR 2a (affichage) en cours.
+- **Prochaine action** : PR 2a — tests rouges puis parseur, scène, écran, PDF, éditeur riche.
 - **En attente de David** : vérifications #1716, #1726 et #1738 (`verifications-manuelles.md`), avant le prochain `deploy:prod`. Comportement 5 précisé et décimales de fin (comptées 0) : tranchés le 2026-10-25 (recommandations suivies).
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — republiée le 2026-10-25 avec la saisie jouable (7 cas) et la règle des décimales de fin (#1738).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
-- **Worktree / branche** : supprimés après #1738.
+- **Worktree / branche** : `../ubumaths-wt-operations-posees`, `feat/operations-posees-multiplication`.
 
 ---
 
@@ -241,6 +241,55 @@ David a répondu « je te suis » aux quatre recommandations, une par question :
 15. Une touche autre qu'un chiffre est ignorée dans la case.
 16. Aucune valeur attendue dans le DOM (ni attribut, ni nom accessible) ; nom accessible de chaque
     case : « chiffre des unités », « chiffre des dizaines »…
+
+## 10. Lot 2 — multiplication (phase 0 validée par David le 2026-10-25)
+
+### Décisions (recommandations suivies)
+
+- Q1 : le facteur qui a le plus de chiffres est posé en haut, automatiquement ; égalité → ordre écrit.
+  **Précisé en codant (revue PR 2a)** : zéros de tête non comptés (`0,5 × 12` pose 12 en haut, comme
+  `12 × 0,5` ; `0,001 × 0,001` accepté). Signalé à David.
+- Q2 : un 0 dans le nombre du bas → ligne sautée, la suivante reçoit un zéro de décalage de plus.
+- Q3 : l'élève pose la virgule du résultat (« , » tapée dans une case : virgule à droite de son
+  chiffre ; une seule ; retapée → enlevée) ; à la correction, virgule absente ou mal placée surlignée.
+- Q4 : à remplir, les zéros de décalage sont des cases vides (l'oubli du zéro est l'erreur classique).
+- Q5 : à remplir, une rangée de retenues au-dessus du nombre du haut (réutilisée d'une ligne à
+  l'autre) et une rangée pour l'addition des produits partiels ; résolu : retenues de l'addition seules
+  quand il y a plusieurs lignes.
+- Q6 : `cases: résultat` montre les lignes de produits partiels (aide, vides) ; pas de `cases: tout`.
+- Q7 : décimal × décimal accepté.
+
+Découpage : **PR 2a** affichage (parseur, scène, écran, PDF, éditeur riche, `check:ubumark`) ;
+**PR 2b** saisie (virgule posée par l'élève, cases des lignes intermédiaires, surlignage de la virgule).
+
+### Nominal
+
+1. `calcul: 548 × 16` (`x`, `*` acceptés) : nombre du haut, nombre du bas, × à gauche, trait.
+2. Un chiffre en bas (`46 × 7`) : résultat directement sous le trait ; retenues au-dessus du haut.
+3. Plusieurs chiffres en bas : une ligne de produit partiel par chiffre non nul, décalée d'un rang à
+   chaque fois, zéros de décalage écrits ; + à gauche de la dernière ligne, second trait, résultat.
+4. Cases : résultat = chiffres des deux facteurs réunis ; produit partiel = chiffres du haut + 1, plus
+   son décalage. La largeur ne trahit rien.
+5. Décimaux (`7 × 46,55`, `876 × 20,8`) : alignés à droite sur le dernier chiffre (pas virgule sous
+   virgule), virgules des facteurs à leur place, produits partiels sans virgule, résultat avec autant
+   de décimales que les deux facteurs réunis (`325,85`).
+6. `cases: aucune` : posée et résolue ; zéro de fin gardé (`2,5 × 4` → `10,0`).
+7. Saisie et juge : ceux du lot 1 (une réponse, juge ordinaire, attendu = calcul du bloc) ; produits
+   partiels et retenues = aide, jamais jugés.
+8. Correction : chiffres faux surlignés, opération résolue à côté.
+9. PDF : grille vide avec les lignes de produits partiels.
+
+### Limites
+
+10. `548 × 0`, `548 × 1` acceptés (`0`, `548`).
+11. `0,5 × 4` : 0 de tête posé, résultat `2,0`.
+12. Téléphone : 6 × 3 chiffres ≈ 10 colonnes, la grille défile dans son cadre.
+
+### Erreurs (messages situés pour le prof ; l'élève voit « Opération indisponible »)
+
+13. Plus de deux facteurs (`3 × 4 × 5`) ; signes mélangés (`3 × 4 + 1`).
+14. Plus de 6 chiffres en haut ou plus de 3 en bas ; bornes de chiffres du lot 1.
+15. `méthode:` sur une multiplication ; `÷` « pas encore disponible (lot 3) ».
 
 ## Journal
 

@@ -7,7 +7,8 @@
  *
  * Sur papier, l'élève écrit ses retenues où il veut : les cases de retenue
  * à remplir ne sont pas dessinées, les cases du résultat sont des carreaux
- * vides. En mode résolu (`cases: aucune`), tout est écrit.
+ * vides. En mode résolu (`cases: aucune`), tout est écrit. Multiplication :
+ * produits partiels entre les deux traits, + devant le dernier.
  *
  * Seuls des chiffres entrent dans le Typst : rien n'y est lu comme du
  * balisage. Un bloc en erreur devient le cadre neutre « Opération
@@ -29,7 +30,7 @@ const UNAVAILABLE_TYPST = `#block(stroke: 0.5pt + luma(160), inset: 6pt, radius:
 /** Côté d'un carreau */
 const CELL = '0.7cm';
 
-const SIGN = { '+': '+', '-': '−' } as const;
+const SIGN = { '+': '+', '-': '−', '×': '×' } as const;
 
 // ============================================================================
 // FONCTIONS
@@ -58,11 +59,16 @@ export function generateOperationTypst(node: OperationNode): string {
 	if (node.errors.length > 0 || node.spec === null) return UNAVAILABLE_TYPST;
 	const scene = buildOperationScene(node.spec);
 
-	const cells: string[] = ['[]'];
-	for (const mark of scene.above) {
-		const text = small(mark);
-		cells.push(text === null ? '[]' : `align(center + bottom, ${text})`);
-	}
+	const cells: string[] = [];
+	/** Une rangée de petites écritures (retenues), chacune en bas de son carreau */
+	const marksRow = (marks: readonly (OperationMark | null)[]) => {
+		cells.push('[]');
+		for (const mark of marks) {
+			const text = small(mark);
+			cells.push(text === null ? '[]' : `align(center + bottom, ${text})`);
+		}
+	};
+	marksRow(scene.above);
 	scene.terms.forEach((row, r) => {
 		const last = r === scene.terms.length - 1;
 		cells.push(last ? `[${SIGN[scene.operator]}]` : '[]');
@@ -70,15 +76,26 @@ export function generateOperationTypst(node: OperationNode): string {
 			cells.push(cell(c.digit, { struck: c.struck, mark: small(c.mark), comma: c.comma }));
 		}
 	});
+	if (scene.partialCarries !== null) marksRow(scene.partialCarries);
+	scene.partials.forEach((row, r) => {
+		cells.push(r === scene.partials.length - 1 ? '[+]' : '[]');
+		for (const c of row) cells.push(cell(c.blank ? '' : c.digit));
+	});
 	cells.push('[]');
 	for (const c of scene.result) cells.push(cell(c.blank ? '' : c.digit, { comma: c.comma }));
 
 	const width = scene.columns + 1;
+	const firstLine = scene.terms.length + 1;
+	const lines = [`  table.hline(y: ${firstLine}, stroke: 1.2pt + black),`];
+	if (scene.partials.length > 0) {
+		const secondLine = firstLine + (scene.partialCarries === null ? 0 : 1) + scene.partials.length;
+		lines.push(`  table.hline(y: ${secondLine}, stroke: 1.2pt + black),`);
+	}
 	return [
 		'#align(center)[#block(breakable: false)[',
 		'#set text(size: 13pt)',
 		`#table(columns: (${CELL},) * ${width}, rows: ${CELL}, inset: 0pt, align: center + horizon, stroke: 0.4pt + luma(180),`,
-		`  table.hline(y: ${scene.terms.length + 1}, stroke: 1.2pt + black),`,
+		...lines,
 		`  ${cells.join(', ')}`,
 		')',
 		']]'

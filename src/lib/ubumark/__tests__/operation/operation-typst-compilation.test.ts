@@ -54,6 +54,15 @@ it('un document avec des blocs ```operation compile en PDF', async () => {
 				'```',
 				'',
 				'```operation',
+				'calcul: 876 × 20,8',
+				'cases: aucune',
+				'```',
+				'',
+				'```operation',
+				'calcul: 548 × 16',
+				'```',
+				'',
+				'```operation',
 				'calcul: 3 - 5',
 				'```'
 			].join('\n')
