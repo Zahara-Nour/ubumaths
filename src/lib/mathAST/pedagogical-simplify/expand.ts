@@ -31,6 +31,8 @@
 import type { MathNode } from '../types';
 import { add, divide, euler, multiply, number, parentheses, superscript } from '../factory';
 import { exactValueToShow } from '../eval/exact-value';
+import { computeDomain } from '../domain/compute';
+import { domainsAreEqual } from '../domain/validation/compare-domains';
 import { flattenProductShallow, flattenSumShallow, type Sign, type SignedTerm } from '../flatten';
 import { isEulerConstant, isFunction } from '../guards';
 import { findNodes, mapNode } from '../transforms';
@@ -424,10 +426,11 @@ function resolved(node: MathNode, domain: readonly MathNode[]): MathNode {
  * réponse.
  *
  * @param node - Une expression (pas une relation)
- * @param domain - Les expressions dont le domaine est acquis : par défaut `node`
+ * @param domain - Les expressions dont le domaine est acquis : par défaut aucune
+ *   (`x·1/x` reste `x/x`, S3) ; la réponse de `expand` en décide
  * @returns La forme écrite ; l'expression telle quelle si le budget est dépassé
  */
-export function expandedForm(node: MathNode, domain: readonly MathNode[] = [node]): MathNode {
+export function expandedForm(node: MathNode, domain: readonly MathNode[] = []): MathNode {
 	try {
 		const expansion = new Expansion(domain);
 		return resolved(written(expansion.reduced(expansion.terms(node)), domain), domain);
@@ -437,8 +440,57 @@ export function expandedForm(node: MathNode, domain: readonly MathNode[] = [node
 	}
 }
 
+/** Les lettres d'une expression (`x`, `y`, `α`). */
+function lettersOf(node: MathNode): readonly string[] {
+	const names = findNodes(node, (n) => n.type === 'variable' || n.type === 'greek').map((n) =>
+		n.type === 'variable' ? n.name : n.type === 'greek' ? n.letter : ''
+	);
+	return [...new Set(names)];
+}
+
+/**
+ * Le même domaine, lettre par lettre (`computeDomain`). Un domaine que le
+ * moteur ne sait pas calculer : pas le même (prudent).
+ */
+function sameDomain(left: MathNode, right: MathNode): boolean {
+	try {
+		return lettersOf(right).every((letter) => {
+			const a = computeDomain(left, letter);
+			const b = computeDomain(right, letter);
+			if ((a.unresolved?.length ?? 0) > 0 || (b.unresolved?.length ?? 0) > 0) return false;
+			return domainsAreEqual(a.domain, b.domain);
+		});
+	} catch {
+		return false;
+	}
+}
+
+/** Un développement, `domain` acquis ou non ; l'entrée s'il n'y a rien à développer. */
+function expandWithin(node: MathNode, domain: readonly MathNode[]): MathNode {
+	const expansion = new Expansion(domain);
+	const terms = expansion.reduced(expansion.terms(node));
+	if (expansion.developed) return resolved(written(terms, domain), domain);
+	// Rien à distribuer dans une puissance non entière, une fonction, un
+	// quotient à dénominateur littéral : rien à développer (`tidy` réécrirait
+	// `(x+1)^{-1}` en `1/(x+1)`). Sinon, on calcule (`(2x)² → 4x²`, `x + x → 2x`)
+	const top = unwrapGrouping(node);
+	const naturalPower = top.type === 'superscript' && integerExponent(top.superscript) !== null;
+	const atomic = top.type === 'superscript' ? !naturalPower : top.type === 'function';
+	if (atomic || isLiteralQuotient(top)) return node;
+	// Une somme dont aucun terme ne se regroupe : seul l'ordre changerait
+	const isSum = top.type === 'addition' || top.type === 'subtraction';
+	if (isSum && terms.length === flattenSumShallow(top).length) return node;
+	const result = resolved(written(terms, domain), domain);
+	return nodesEqual(result, node) ? node : result;
+}
+
 /**
  * Développer et réduire, sans rien faire d'autre.
+ *
+ * Le résultat garde le domaine de l'entrée (David, 2026-10-25, comme le § 64
+ * de simplify-carte pour `tidy`) : réduit sur le domaine de l'entrée quand la
+ * condition reste écrite (`(x + 1/x)² → x² + 2 + 1/x²`), sinon l'écriture
+ * gardée (`x(1/x − 1) → −x + x/x`, `(√x+1)(√x−1) → x − √x + √x − 1`).
  *
  * @param node - Une expression (pas une relation)
  * @returns La forme développée réduite ; l'expression telle quelle s'il n'y a
@@ -450,22 +502,10 @@ export function expand(node: MathNode): MathNode {
 		const byZero = (n: MathNode) =>
 			n.type === 'division' && isConstant(n.denominator) && isZeroValue(n.denominator);
 		if (findNodes(node, byZero).length > 0) return node;
-		const domain = [node];
-		const expansion = new Expansion(domain);
-		const terms = expansion.reduced(expansion.terms(node));
-		if (expansion.developed) return resolved(written(terms, domain), domain);
-		// Rien à distribuer dans une puissance non entière, une fonction, un
-		// quotient à dénominateur littéral : rien à développer (`tidy` réécrirait
-		// `(x+1)^{-1}` en `1/(x+1)`). Sinon, on calcule (`(2x)² → 4x²`, `x + x → 2x`)
-		const top = unwrapGrouping(node);
-		const naturalPower = top.type === 'superscript' && integerExponent(top.superscript) !== null;
-		const atomic = top.type === 'superscript' ? !naturalPower : top.type === 'function';
-		if (atomic || isLiteralQuotient(top)) return node;
-		// Une somme dont aucun terme ne se regroupe : seul l'ordre changerait
-		const isSum = top.type === 'addition' || top.type === 'subtraction';
-		if (isSum && terms.length === flattenSumShallow(top).length) return node;
-		const result = resolved(written(terms, domain), domain);
-		return nodesEqual(result, node) ? node : result;
+		const strict = expandWithin(node, []);
+		const acquired = expandWithin(node, [node]);
+		if (nodesEqual(acquired, strict)) return strict;
+		return sameDomain(acquired, node) ? acquired : strict;
 	} catch (error) {
 		if (error instanceof TooLarge) return node;
 		throw error;

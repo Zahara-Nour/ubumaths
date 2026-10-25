@@ -86,7 +86,6 @@ describe('revue : des réponses réduites jusqu’au bout', () => {
 		// Des termes opposés s'annulent, x/x vaut 1 : le domaine de l'entrée est acquis
 		['(x+\\frac{1}{x})^2', 'x^2 + 2 + \\dfrac{1}{x^2}'],
 		['(1+\\frac{1}{x})(1-\\frac{1}{x})', '1 - \\dfrac{1}{x^2}'],
-		['x(\\frac{1}{x}-1)', '-x + 1'],
 		// Une racine de nombre se calcule (pas de domaine en jeu)
 		['(\\sqrt{2}+\\sqrt{3})^2', '5 + 2 \\sqrt{6}'],
 		['\\sqrt{2}(\\sqrt{6}+1)', '2 \\sqrt{3} + \\sqrt{2}'],
@@ -106,5 +105,18 @@ describe('revue : des réponses réduites jusqu’au bout', () => {
 
 	it('une division par zéro ne se distribue pas', () => {
 		expect(explain('\\frac{x+1}{0}').kind).not.toBe('expanded');
+	});
+});
+
+describe('le résultat garde le domaine de l’entrée (David, 2026-10-25 ; comme § 64 de simplify-carte)', () => {
+	it.each([
+		// La condition reste écrite : on simplifie
+		['(x+\\frac{1}{x})^2', 'x^2 + 2 + \\dfrac{1}{x^2}'],
+		['\\sqrt{x}(\\sqrt{x}+1)', 'x + \\sqrt{x}'],
+		// Elle se perdrait : on garde l'écriture
+		['x(\\frac{1}{x}-1)', '-x + \\dfrac{x}{x}'],
+		['(\\sqrt{x}+1)(\\sqrt{x}-1)', 'x - \\sqrt{x} + \\sqrt{x} - 1']
+	])('%s → %s', (input, expected) => {
+		expect(answerOf(explain(input))).toBe(expected);
 	});
 });
