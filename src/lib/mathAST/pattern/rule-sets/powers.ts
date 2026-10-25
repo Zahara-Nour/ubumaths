@@ -15,11 +15,17 @@
  * ```
  */
 
-import { add, func, multiply, number, subtract, superscript } from '../../factory';
+import { add, fraction, func, multiply, number, subtract, superscript } from '../../factory';
 import { isEulerConstant, isFunction } from '../../guards';
 import { extractRational } from '../../common/numeric';
 import { nodesEqual } from '../../normal/hash';
-import { flattenSumShallow, unflattenSum } from '../../flatten';
+import {
+	flattenProductShallow,
+	flattenSumShallow,
+	unflattenProduct,
+	unflattenSum
+} from '../../flatten';
+import type { FlatProduct } from '../../flatten';
 import { tidy } from '../../tidy';
 import type { MathNode } from '../../types';
 import { P } from '../builder';
@@ -128,6 +134,70 @@ function exactlyOnePower(left: MathNode | null, right: MathNode | null): boolean
 	return powers.length === 1;
 }
 
+/**
+ * Deux facteurs de même base, non voisins, à regrouper (M2, journal § 93) :
+ * au moins une puissance ; un nombre seul ne rejoint pas une puissance de sa
+ * base (`2ˣ·3·2` reste `6 × 2ˣ`, les nombres se calculent d'abord).
+ */
+function isSpreadPair(left: MathNode, right: MathNode): boolean {
+	const powers = [left, right].filter((n) => unwrapDelimiters(n)?.type === 'superscript');
+	if (powers.length === 0 || !sameNonVanishingBase(left, right)) return false;
+	const base = unwrapDelimiters(asPower(left).base);
+	return powers.length === 2 || (base !== null && isEulerConstant(base));
+}
+
+/** Le facteur `i` remplacé par `node`, le facteur `j` retiré (j ≠ i). */
+function replaceAndDrop(factors: FlatProduct, i: number, node: MathNode, j = -1): FlatProduct {
+	return factors.map((f, k) => (k === i ? { ...f, factor: node } : f)).filter((_, k) => k !== j);
+}
+
+/** `aᵐ · … · aⁿ` → `aᵐ⁺ⁿ · …`, ou null sans paire non voisine. */
+function regroupProduct(left: MathNode, right: MathNode): MathNode | null {
+	const factors = [...flattenProductShallow(left), ...flattenProductShallow(right)];
+	// deux facteurs : `same-base-mul` et `same-base-mul-bare`
+	if (factors.length < 3) return null;
+	for (let i = 0; i < factors.length; i++) {
+		for (let j = i + 1; j < factors.length; j++) {
+			const a = factors[i].factor;
+			const b = factors[j].factor;
+			if (!isSpreadPair(a, b)) continue;
+			const exponent = reducedExponent(add(asPower(a).exponent, asPower(b).exponent));
+			// le regroupement prend la place de la puissance : `e·x·eˣ → x·e^{x+1}`
+			const [keep, drop] = unwrapDelimiters(a)?.type === 'superscript' ? [i, j] : [j, i];
+			const merged = unflattenProduct(
+				replaceAndDrop(factors, keep, superscript(writtenBase(a, b), exponent), drop)
+			);
+			// les `×` tapés restaient : `2·x·e^{x+1}` s'écrivait `2 × x × e^{x+1}`
+			return merged === null ? null : tidy(merged);
+		}
+	}
+	return null;
+}
+
+/** `k·aᵐ / (k'·aⁿ)` → `k·aᵐ⁻ⁿ / k'`, ou null sans paire. */
+function regroupQuotient(num: MathNode, den: MathNode): MathNode | null {
+	const numFactors = flattenProductShallow(num);
+	const denFactors = flattenProductShallow(den);
+	// un facteur de chaque côté : `same-base-div`
+	if (numFactors.length === 1 && denFactors.length === 1) return null;
+	for (let i = 0; i < numFactors.length; i++) {
+		for (let j = 0; j < denFactors.length; j++) {
+			const a = numFactors[i].factor;
+			const b = denFactors[j].factor;
+			// `6·2ˣ/2` : la fraction se réduit d'abord (`3 × 2ˣ`), revue de #1749
+			if (!isPowerQuotient(a, b) || !isSpreadPair(a, b)) continue;
+			const exponent = reducedExponent(subtract(asPower(a).exponent, asPower(b).exponent));
+			const newNum = unflattenProduct(
+				replaceAndDrop(numFactors, i, superscript(writtenBase(a, b), exponent))
+			);
+			const newDen = unflattenProduct(replaceAndDrop(denFactors, -1, b, j));
+			if (newNum === null) return null;
+			return tidy(newDen === null ? newNum : fraction(newNum, newDen));
+		}
+	}
+	return null;
+}
+
 // =============================================================================
 // Power Rules
 // =============================================================================
@@ -148,6 +218,7 @@ function exactlyOnePower(left: MathNode | null, right: MathNode | null): boolean
  * - (a^m)^n = a^(m*n) (power of power)
  * - a^m * a^n = a^(m+n) (same base product)
  * - a^m * a = a^(m+1), a^m / a^n = a^(m-n) (base e or positive rational)
+ * - the same, between non-adjacent factors (`x·eˣ·e`, `3e^{2x}/eˣ`)
  * - (a/b)^n = a^n / b^n (power of quotient)
  * - x^(-1) = 1/x (negative one exponent)
  */
@@ -330,6 +401,44 @@ export const powerRules: readonly Rule[] = [
 				const num = getBindingNode(bindings, 'num');
 				const den = getBindingNode(bindings, 'den');
 				return isPowerQuotient(num, den) && sameNonVanishingBase(num, den);
+			}
+		}
+	),
+
+	// M2 (journal § 93) : `x·eˣ·e → x·e^{x+1}` — deux facteurs de même base
+	// séparés par d'autres, formes fréquentes des dérivées
+	createRule(
+		P.mul(P._('l'), P._('r')),
+		(bindings) => {
+			const merged = regroupProduct(boundNode(bindings, 'l'), boundNode(bindings, 'r'));
+			if (merged === null) throw new Error('powers: condition de same-base-mul-spread non tenue');
+			return merged;
+		},
+		{
+			name: 'same-base-mul-spread',
+			condition: (bindings) => {
+				const l = getBindingNode(bindings, 'l');
+				const r = getBindingNode(bindings, 'r');
+				return l !== null && r !== null && regroupProduct(l, r) !== null;
+			}
+		}
+	),
+
+	// M2 : `3e^{2x}/eˣ → 3eˣ`, `e^{2x}/(3eˣ) → eˣ/3` — mêmes conditions que
+	// `same-base-div`, sur un facteur de chaque côté
+	createRule(
+		P.div(P._('num'), P._('den')),
+		(bindings) => {
+			const merged = regroupQuotient(boundNode(bindings, 'num'), boundNode(bindings, 'den'));
+			if (merged === null) throw new Error('powers: condition de same-base-div-spread non tenue');
+			return merged;
+		},
+		{
+			name: 'same-base-div-spread',
+			condition: (bindings) => {
+				const num = getBindingNode(bindings, 'num');
+				const den = getBindingNode(bindings, 'den');
+				return num !== null && den !== null && regroupQuotient(num, den) !== null;
 			}
 		}
 	),

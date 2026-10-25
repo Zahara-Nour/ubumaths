@@ -325,6 +325,8 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['same-base-mul', 'puissances'],
 	['same-base-mul-bare', 'puissances'],
 	['same-base-div', 'puissances'],
+	['same-base-mul-spread', 'puissances'],
+	['same-base-div-spread', 'puissances'],
 	['pow-of-quotient', 'puissances'],
 	['pow-neg-one', 'puissances'],
 	// normalize-side power steps
