@@ -1,5 +1,5 @@
 /**
- * Mathoux : lunettes et chapeaux (migration 20261025235500, lot D)
+ * Mathoux : lunettes et chapeaux (migration 20261026000100, lot D)
  * ================================================================
  *
  * Phase 0 du 2026-10-25 (docs/wip/mathoux-chapeaux-lunettes-progress.md) :
