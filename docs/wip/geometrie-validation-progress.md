@@ -2,17 +2,19 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 3 en cours._
+_Mis à jour le 2026-10-25, après #1782._
 
-- **État** : PR 1 (#1768), renommage (#1774), PR 2 (#1775) mergés ; PR 3 codée sur `feat/geometrie-validation-modele`
-  (modèle CP-059 en fichier, copie corrigée et verso en figure, garde de `CorrectionCard`, fiche du catalogue, doc).
-- **Prochaine action** : PR 3 → revue Opus, CI, merge ; brouillon CP-059 créé en prod (`010d81a5`, go de David,
-  sans nœud ni tag) → migration nœud « Géométrie > Figures planes > constructions » + tag CP-059 (PR suivante, gabarit du lot H).
-- **En attente de David** : question d'accès de la migration ; corrigé PDF des séries pour une case portée
-  par un bloc (§ 6) ; statut de **CP-034** et de **CP-058** ; phase 0 de CP-060 ; Q3/Q4 du § 5 prises « sans changement ».
-- **Pièges en cours** : les lettres ne peuvent pas être des valeurs de variables (une lettre seule est lue comme un
-  nom de variable) → positions par rôle, lettres en `{{if:}}` (§ 6) ; essai : `/dev/carte-question`.
-- **Worktree / branche** : `../ubumaths-wt-geometrie-validation` · `feat/geometrie-validation-modele`.
+- **État** : PR 1 (#1768), renommage (#1774), PR 2 (#1775), PR 3 (#1782 : modèle CP-059, copie corrigée et verso en
+  figure, garde de `CorrectionCard`, fiche du catalogue) mergés ; rien en prod. Brouillon CP-059 en prod
+  (`010d81a5-61dd-441d-a4d6-fdd0bd6c7af4`), sans nœud ni tag.
+- **Prochaine action** : migration nœud « Géométrie > Figures planes > constructions » + tag CP-059 (gabarit
+  `20261026130000_questions_cp_h_rangement_tags.sql` et son test d'intégration) ; puis phase 0 de CP-060.
+- **En attente de David** : question d'accès de cette migration (reco : personne ne gagne ni ne perd d'accès) ;
+  recos CP-034 (couvert par le QCM B2), CP-058 (figure + case oui / non), PDF des séries (tel quel) ; Q3/Q4 du § 5
+  (texte non gardé : clore ?).
+- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; case « figure » mêlée à une autre case :
+  prise en charge à l'affichage, jamais encore dans un modèle.
+- **Worktree / branche** : aucun (retirés après #1782).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -241,3 +243,4 @@ avec les fiches CP.
 - 2026-10-25 : PR 3 codée : modèle CP-059 (18 specs, 150 tirages), copie corrigée et verso en figure, garde de `CorrectionCard` (rouge sans elle), fiche du catalogue ; 9 tests neufs, rouges sans le code.
 - 2026-10-25 : carte CP-059 essayée par David sur `/dev/carte-question` (OK) ; brouillon créé en prod (`010d81a5-61dd-441d-a4d6-fdd0bd6c7af4`, `create-questions --publier`, go de David), vérifié : brouillon, 3 variations, 18 specs, sans nœud ni tag.
 - 2026-10-25 : revue Opus de #1782 : 2 à corriger + 3 mineurs, tous traités (garde en échec → bonne droite seule ; case « figure » mêlée à une autre case : bloc retiré de l'énoncé rempli ; consigne pendant le chargement ; libellé de la bonne droite seule ; écart vertical précisé dans le § 6) ; 3 tests neufs, rouges sans les correctifs.
+- 2026-10-25 : #1782 mergée (CI verte, revue Opus traitée).
