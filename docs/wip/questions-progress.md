@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 du lot A6 validée._
+_Mis à jour le 2026-10-25, après #1753._
 
-- **État** : A1 à A5 livrés (A3 : #1744, migration jouée). **A6 grandeurs et lexique** : phase 0 validée (§ 4 octies), 9 modèles écrits (`docs/wip/questions/lot-a6.py` → `scripts/questions/cp-a6/`), 87 specs vertes, rendu relu ; 9 brouillons en prod (`92c8e499`, `54ea05d7` CP-004 ; `192f52f3` CP-032 ; `9ee150a2` CP-036 ; `39dfd0cc` CP-037 ; `7e11b651` CP-038 ; `e9e9970b` CP-039 ; `35426707` CP-041 ; `fc63fdf0` CP-048) ; migration `20261026020000_questions_cp_a6_rangement_tags` + test (rouge puis vert, 8/8).
-- **Prochaine action** : PR A6 #1753 (CI), merge, puis question d'accès et `db:migrate`. Page à cocher A6 : https://claude.ai/artifact/Y9pL4cNshyjycC2wtbdtWG (collection `verdicts`). Audit sécurité : non bloquant.
-- **En attente de David** : question d'accès A6 ; relecture des 9 brouillons A6 ; relecture des 6 brouillons A3 (https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71) ; publication des brouillons A1 à A5 en un lot ; vérification manuelle #1702.
-- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; **le bon choix d'un QCM n'accepte qu'UN `{{if:…}}`, pas une chaîne imbriquée** → formule `{{eval:mod(…)}}` ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; script d'un tirage hors du dépôt → `.mts`.
-- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-a6`.
+- **État** : **groupe A (texte seul) COMPLET** — A1 (#1712), A2 (#1720), A4 (#1728), A5 (#1736), A3 (#1744), A6 (#1753) livrés, migrations jouées. A6 : 9 brouillons sur le nœud de leur point, 1 tag chacun (`db:migrate` joué et vérifié en prod le 2026-10-25, question d'accès tranchée : personne). Page à cocher A6 : https://claude.ai/artifact/Y9pL4cNshyjycC2wtbdtWG (collection `verdicts`) — 8/9 OK ; « Écrire un nombre en lettres » (`92c8e499`) refait (leurres d'orthographe, de forme, de numération), mis à jour en prod, à relire.
+- **Prochaine action** : choisir avec David la suite du chantier (groupe B : outils existants — droite graduée, `figure`, `tableau-croise`, images fixes ; § 2) ; l'ordre d'ensemble est au § 4 bis.
+- **En attente de David** : relecture de `92c8e499` (page A6) ; relecture des 6 brouillons A3 (https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71, aucun verdict encore) ; publication des brouillons A1 à A6 en un lot ; vérification manuelle #1702.
+- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; **le bon choix d'un QCM n'accepte qu'UN `{{if:…}}`, pas une chaîne imbriquée** ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau (dossier d'un seul fichier pour n'en toucher qu'un) ; leurres d'un QCM de mots : chacun vise une erreur (orthographe, forme, numération) ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; la base refuse un tag sur un modèle sans nœud.
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1753).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -183,3 +183,5 @@ David suit mes quatre recommandations (« je suis tes recos »).
 - 2026-10-25 : A6, 9 modèles écrits, 87 specs vertes, rendu relu (trait d'union au singulier, « qu'une », corrigé des moments retouchés).
 - 2026-10-25 : A6, 9 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; migration nœud + tag et test, rouge puis vert.
 - 2026-10-25 : A6, PR #1753 ; audit sécurité non bloquant (garde « déjà tagué » inatteignable seule : la base refuse un tag sans nœud, testé) ; page à cocher A6 publiée.
+- 2026-10-25 : page à cocher A6 relue par David, 8/9 OK ; « Écrire un nombre en lettres » à revoir (leurres sans enjeu) → leurres d'orthographe, de forme et de numération, brouillon mis à jour en prod (go de David), verdict remis à zéro.
+- 2026-10-25 : #1753 mergée ; question d'accès A6 tranchée par David (personne) ; `db:migrate` joué, vérifié en prod (9 modèles sur le nœud de leur point, 1 tag chacun, statut brouillon, trigger actif). Groupe A complet.
