@@ -82,17 +82,6 @@ describe('Operation — grille', () => {
 		expect(text(screen.container)).toBe('548×1613288+54808768');
 	});
 
-	it('multiplication dans une question : pas de saisie avant la PR 2b', async () => {
-		const screen = await render(Operation, {
-			target: mainElement(),
-			props: {
-				node: { ...node('calcul: 548 × 16'), caseIndex: 0 },
-				answer: { value: '', isCorrect: null, disabled: false, onChange: () => {} }
-			}
-		});
-		expect(screen.container.querySelectorAll('input')).toHaveLength(0);
-	});
-
 	it('cassage : chiffres barrés', async () => {
 		const screen = await render(Operation, {
 			target: mainElement(),
@@ -309,5 +298,217 @@ describe('Operation — saisie (case d’une question)', () => {
 		expect(
 			cell.closest('.operation-carreau')!.getBoundingClientRect().width
 		).toBeGreaterThanOrEqual(40);
+	});
+});
+
+describe('Operation — saisie d’une multiplication (PR 2b, § 11)', () => {
+	async function renderAnswer(
+		line: string,
+		answer: { value?: string; isCorrect?: boolean | null; disabled?: boolean } = {}
+	) {
+		const changes: string[] = [];
+		const screen = await render(Operation, {
+			target: mainElement(),
+			props: {
+				node: node('case: 0', line),
+				answer: {
+					value: '',
+					isCorrect: null,
+					disabled: false,
+					onChange: (value: string) => changes.push(value),
+					...answer
+				}
+			}
+		});
+		const inputs = (kind: string) => [
+			...screen.container.querySelectorAll<HTMLInputElement>(`input[data-operation-cell="${kind}"]`)
+		];
+		const byLabel = (label: string) =>
+			screen.container.querySelector<HTMLInputElement>(`input[aria-label="${label}"]`)!;
+		/** Virgules dessinées dans la rangée du résultat */
+		const resultCommas = () =>
+			inputs('résultat').filter(
+				(i) => i.closest('.operation-carreau')!.querySelector('.operation-virgule') !== null
+			);
+		return { screen, inputs, byLabel, changes, resultCommas };
+	}
+
+	it('saisissable : résultat, produits partiels, deux rangées de retenues (n° 1, 5, 6)', async () => {
+		const { inputs } = await renderAnswer('calcul: 548 × 16');
+		expect(inputs('résultat')).toHaveLength(5);
+		expect(inputs('produit')).toHaveLength(9);
+		expect(inputs('aide')).toHaveLength(6);
+		expect(inputs('résultat').every((i) => i.inputMode === 'decimal')).toBe(true);
+		expect(inputs('produit').every((i) => i.inputMode === 'numeric')).toBe(true);
+	});
+
+	it('virgule : posée à droite de la case, sans toucher au chiffre ; une seule (n° 3, 4)', async () => {
+		const { inputs, changes, resultCommas } = await renderAnswer('calcul: 7 × 46,55');
+		const cells = () => inputs('résultat');
+		await userEvent.click(cells()[4]);
+		await userEvent.keyboard('58523');
+		expect(changes.at(-1)).toBe('32\\,585');
+		await userEvent.click(cells()[2]);
+		await userEvent.keyboard(',');
+		expect(cells()[2].value).toBe('5');
+		expect(document.activeElement).toBe(cells()[2]);
+		expect(resultCommas()).toEqual([cells()[2]]);
+		expect(changes.at(-1)).toBe('325{,}85');
+		// Ailleurs : déplacée (le point vaut la virgule)
+		await userEvent.click(cells()[3]);
+		await userEvent.keyboard('.');
+		expect(resultCommas()).toEqual([cells()[3]]);
+		expect(changes.at(-1)).toBe('3258{,}5');
+		// Même case : enlevée
+		await userEvent.keyboard(',');
+		expect(resultCommas()).toEqual([]);
+		expect(changes.at(-1)).toBe('32\\,585');
+	});
+
+	it('virgule dans une case vide : posée, la case reste vide', async () => {
+		const { inputs, changes, resultCommas } = await renderAnswer('calcul: 0,5 × 0,3');
+		const cells = () => inputs('résultat');
+		await userEvent.click(cells()[3]);
+		await userEvent.keyboard('51');
+		await userEvent.click(cells()[1]);
+		await userEvent.keyboard(',');
+		expect(cells()[1].value).toBe('');
+		expect(resultCommas()).toEqual([cells()[1]]);
+		expect(changes.at(-1)).toBe('0{,}15');
+	});
+
+	it('produits partiels : chiffres de droite à gauche, jamais envoyés au juge (n° 5, 16)', async () => {
+		const { byLabel, changes } = await renderAnswer('calcul: 548 × 16');
+		const first = byLabel('Produit partiel 1, case 1 en partant de la droite');
+		await userEvent.click(first);
+		await userEvent.keyboard('8');
+		expect(first.value).toBe('8');
+		expect(document.activeElement).toBe(
+			byLabel('Produit partiel 1, case 2 en partant de la droite')
+		);
+		await userEvent.keyboard(',a');
+		expect(byLabel('Produit partiel 1, case 2 en partant de la droite').value).toBe('');
+		await userEvent.click(byLabel('Retenue de l’addition, case 2 en partant de la droite'));
+		await userEvent.keyboard('1,');
+		expect(byLabel('Retenue de l’addition, case 2 en partant de la droite').value).toBe('1');
+		expect(changes).toEqual([]);
+	});
+
+	it('flèches haut et bas : d’une rangée à l’autre (n° 7)', async () => {
+		const { byLabel } = await renderAnswer('calcul: 548 × 16');
+		await userEvent.click(byLabel('Résultat, case 2 sur 5 en partant de la droite'));
+		await userEvent.keyboard('{ArrowUp}');
+		expect(document.activeElement).toBe(
+			byLabel('Produit partiel 2, case 2 en partant de la droite')
+		);
+		await userEvent.keyboard('{ArrowUp}');
+		expect(document.activeElement).toBe(
+			byLabel('Produit partiel 1, case 2 en partant de la droite')
+		);
+		await userEvent.keyboard('{ArrowUp}');
+		expect(document.activeElement).toBe(
+			byLabel('Retenue de l’addition, case 2 en partant de la droite')
+		);
+		await userEvent.keyboard('{ArrowUp}');
+		expect(document.activeElement).toBe(byLabel('Retenue, case 2 en partant de la droite'));
+		await userEvent.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{ArrowDown}');
+		expect(document.activeElement).toBe(byLabel('Résultat, case 2 sur 5 en partant de la droite'));
+		// Colonne sans case au-dessus : on saute à la rangée suivante qui en a une
+		await userEvent.click(byLabel('Résultat, case 5 sur 5 en partant de la droite'));
+		await userEvent.keyboard('{ArrowUp}');
+		expect(document.activeElement).toBe(
+			byLabel('Produit partiel 2, case 5 en partant de la droite')
+		);
+		await userEvent.keyboard('{ArrowUp}');
+		expect(document.activeElement).toBe(
+			byLabel('Retenue de l’addition, case 5 en partant de la droite')
+		);
+	});
+
+	it('noms accessibles neutres, aucune valeur attendue dans le DOM (n° 9, 17)', async () => {
+		const { screen, inputs } = await renderAnswer('calcul: 548 × 16');
+		expect(screen.container.innerHTML).not.toMatch(/8768|3288|5480/);
+		expect(inputs('résultat').map((i) => i.getAttribute('aria-label'))).toEqual([
+			'Résultat, case 5 sur 5 en partant de la droite',
+			'Résultat, case 4 sur 5 en partant de la droite',
+			'Résultat, case 3 sur 5 en partant de la droite',
+			'Résultat, case 2 sur 5 en partant de la droite',
+			'Résultat, case 1 sur 5 en partant de la droite'
+		]);
+		expect(inputs('aide').map((i) => i.getAttribute('aria-label'))).toEqual([
+			'Retenue, case 3 en partant de la droite',
+			'Retenue, case 2 en partant de la droite',
+			'Retenue de l’addition, case 5 en partant de la droite',
+			'Retenue de l’addition, case 4 en partant de la droite',
+			'Retenue de l’addition, case 3 en partant de la droite',
+			'Retenue de l’addition, case 2 en partant de la droite'
+		]);
+	});
+
+	it('virgule annoncée dans le nom de la case', async () => {
+		const { inputs } = await renderAnswer('calcul: 7 × 46,55', { value: '325{,}85' });
+		expect(inputs('résultat')[2].getAttribute('aria-label')).toBe(
+			'Résultat, case 3 sur 5 en partant de la droite, virgule à sa droite'
+		);
+	});
+
+	it('réponse déjà saisie : chiffres et virgule remis (n° 14)', async () => {
+		const { inputs, resultCommas } = await renderAnswer('calcul: 7 × 46,55', {
+			value: '325{,}85'
+		});
+		expect(inputs('résultat').map((i) => i.value)).toEqual(['3', '2', '5', '8', '5']);
+		expect(resultCommas()).toEqual([inputs('résultat')[2]]);
+	});
+
+	it('correction : virgule absente → sa place surlignée (n° 8)', async () => {
+		const { screen, inputs } = await renderAnswer('calcul: 7 × 46,55', {
+			value: '32\\,585',
+			isCorrect: false,
+			disabled: true
+		});
+		expect(inputs('résultat').some((i) => i.getAttribute('aria-invalid'))).toBe(false);
+		const missing = screen.container.querySelectorAll('.operation-virgule-manquante');
+		expect(missing).toHaveLength(1);
+		expect(missing[0].closest('.operation-carreau')!.contains(inputs('résultat')[2])).toBe(true);
+		expect(screen.container.querySelector('.operation-correction')).not.toBeNull();
+	});
+
+	it('correction : virgule mal placée → la virgule de l’élève surlignée (n° 8, 11)', async () => {
+		const { screen, inputs } = await renderAnswer('calcul: 7 × 46,55', {
+			value: '3258{,}5',
+			isCorrect: false,
+			disabled: true
+		});
+		expect(inputs('résultat').some((i) => i.getAttribute('aria-invalid'))).toBe(false);
+		const wrongComma = screen.container.querySelectorAll('.operation-virgule-faux');
+		expect(wrongComma).toHaveLength(1);
+		expect(wrongComma[0].closest('.operation-carreau')!.contains(inputs('résultat')[3])).toBe(true);
+	});
+
+	it('correction : chiffres faux surlignés, produits partiels jamais (n° 8)', async () => {
+		const { screen, inputs } = await renderAnswer('calcul: 548 × 16', {
+			value: '8778',
+			isCorrect: false,
+			disabled: true
+		});
+		expect(inputs('résultat').map((i) => i.getAttribute('aria-invalid'))).toEqual([
+			null,
+			null,
+			null,
+			'true',
+			null
+		]);
+		expect(inputs('produit').some((i) => i.getAttribute('aria-invalid'))).toBe(false);
+		expect(screen.container.querySelector('.operation-virgule-manquante')).toBeNull();
+	});
+
+	it('réponse juste : aucun surlignage', async () => {
+		const { screen } = await renderAnswer('calcul: 2,5 × 4', {
+			value: '10',
+			isCorrect: true,
+			disabled: true
+		});
+		expect(screen.container.querySelector('.operation-virgule-manquante')).toBeNull();
+		expect(screen.container.querySelector('.operation-correction')).toBeNull();
 	});
 });

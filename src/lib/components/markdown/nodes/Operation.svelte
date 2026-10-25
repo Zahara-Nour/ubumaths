@@ -15,8 +15,13 @@
 	- `answer` (case d'une question, PR 1b) : cases du résultat saisies de
 	  droite à gauche, lues comme UN nombre (`operation-answer.ts`) ; retenues
 	  facultatives, jamais jugées ni gardées ; réponse fausse → chiffres faux
-	  surlignés, opération résolue à côté. Multiplication : affichage seul tant
-	  que sa saisie n'existe pas (PR 2b) ; produits partiels en cases d'aide.
+	  surlignés, opération résolue à côté.
+	- Multiplication (PR 2b, § 11) : l'élève pose la virgule du résultat (« , »
+	  ou « . » dans une case : à droite de cette case ; retapée : enlevée) ;
+	  produits partiels et retenues de leur addition saisissables, jamais
+	  jugés ; noms accessibles neutres (« chiffre des unités » dirait où est la
+	  virgule) ; correction : virgule absente ou mal placée surlignée.
+	- Flèches ↑/↓ : d'une rangée de cases à l'autre.
 
 	@module components/markdown/nodes/Operation
 -->
@@ -29,8 +34,10 @@
 	} from '$lib/ubumark/types/operation';
 	import { buildOperationScene, type OperationMark } from '$lib/ubumark/utils/operation-scene';
 	import {
+		commaFromAnswer,
 		digitsFromAnswer,
 		readOperationAnswer,
+		wrongComma,
 		wrongResultDigits
 	} from '$lib/ubumark/utils/operation-answer';
 	import { readAuthoringErrors } from '../authoring-errors';
@@ -93,25 +100,44 @@
 			: { ...node, spec: { ...node.spec, cells: 'aucune' }, caseIndex: undefined }
 	);
 
+	let multiplication = $derived(node.spec?.operator === '×');
+
 	// Saisie : chiffres du résultat (de gauche à droite) et petites cases d'aide
 	let digits = $state<string[]>(
 		untrack(() => (scene && answer ? digitsFromAnswer(scene, answer.value) : []))
 	);
+	/** Multiplication : case suivie de la virgule posée par l'élève, null sans virgule */
+	let comma = $state<number | null>(
+		untrack(() => (scene && answer && multiplication ? commaFromAnswer(scene, answer.value) : null))
+	);
 	/** Retenues, nouvelles valeurs (cassage), 1 de la compensation : par colonne, jamais gardées */
 	let helpers = $state<Record<number, string>>({});
+	/** Multiplication : retenues de l'addition des produits partiels, par colonne */
+	let partialHelpers = $state<Record<number, string>>({});
+	/** Multiplication : chiffres des produits partiels (`rangée:colonne`), jamais jugés ni gardés */
+	let partialDigits = $state<Record<string, string>>({});
 
-	let resultInputs = $state<HTMLInputElement[]>([]);
+	let grid = $state<HTMLElement>();
 
 	let interactive = $derived(
-		answer !== undefined &&
-			scene !== null &&
-			node.spec?.cells !== 'aucune' &&
-			node.spec?.operator !== '×'
+		answer !== undefined && scene !== null && node.spec?.cells !== 'aucune'
 	);
-	let wrong = $derived(
-		interactive && answer?.isCorrect === false && scene ? wrongResultDigits(scene, digits) : []
+	/** La virgule lue : celle de l'élève (multiplication), sinon celle de la grille */
+	let readComma = $derived(multiplication ? comma : undefined);
+	let corrected = $derived(interactive && answer?.isCorrect === false && scene !== null);
+	let wrong = $derived(corrected && scene ? wrongResultDigits(scene, digits, readComma) : []);
+	let commaMistake = $derived(
+		corrected && scene && multiplication ? wrongComma(scene, comma) : null
 	);
+	/** Case suivie de la virgule attendue (surlignée quand l'élève l'a oubliée) */
+	let expectedComma = $derived(scene ? scene.columns - scene.decimals - 1 : -1);
 	let compensation = $derived(node.spec?.operator === '-' && node.spec.method === 'compensation');
+
+	/** Rangées de cases, de haut en bas (flèches ↑/↓) : retenues, retenues de l'addition, produits partiels, résultat */
+	const ROW_ABOVE = 0;
+	const ROW_PARTIAL_CARRIES = 1;
+	const partialRow = (r: number) => 2 + r;
+	let resultRow = $derived(partialRow(scene?.partials.length ?? 0));
 
 	/** Texte visible d'une petite écriture : jamais l'attendu d'une case */
 	function markText(mark: OperationMark): string {
@@ -131,77 +157,160 @@
 		return scene.above[c]?.blank === true;
 	}
 
-	function helperLabel(c: number): string {
+	/** Multiplication : rang compté depuis la droite, sans dire où est la virgule */
+	function fromRight(c: number): string {
+		return `case ${(scene?.columns ?? 0) - c} en partant de la droite`;
+	}
+
+	function helperLabel(c: number, row: number): string {
+		if (multiplication) {
+			const kind = row === ROW_PARTIAL_CARRIES ? 'Retenue de l’addition' : 'Retenue';
+			return `${kind}, ${fromRight(c)}`;
+		}
 		const kind = node.spec?.operator === '-' && !compensation ? 'Nouvelle valeur' : 'Retenue';
 		return `${kind}, colonne des ${placeName(c)}`;
+	}
+
+	function resultLabel(c: number): string {
+		if (!multiplication) return `Chiffre des ${placeName(c)}`;
+		const after = comma === c ? ', virgule à sa droite' : '';
+		return `Résultat, case ${(scene?.columns ?? 0) - c} sur ${scene?.columns ?? 0} en partant de la droite${after}`;
 	}
 
 	function emit() {
 		if (!scene || !answer) return;
 		const options = answer.minDigits === undefined ? {} : { minDigits: answer.minDigits };
-		answer.onChange(readOperationAnswer(scene, digits, options));
+		answer.onChange(readOperationAnswer(scene, digits, options, readComma));
 	}
 
-	function focusResult(c: number) {
-		resultInputs[c]?.focus();
-		resultInputs[c]?.select();
+	/** La case de la rangée `row`, colonne `c` (null : pas de case là) */
+	function cellAt(row: number, c: number): HTMLInputElement | null {
+		return (
+			grid?.querySelector<HTMLInputElement>(`input[data-rangee="${row}"][data-colonne="${c}"]`) ??
+			null
+		);
+	}
+
+	function focusCell(row: number, c: number) {
+		const input = cellAt(row, c);
+		input?.focus();
+		input?.select();
+	}
+
+	/** ↑/↓ : la rangée suivante qui a une case dans cette colonne */
+	function focusVertical(row: number, c: number, step: -1 | 1): void {
+		for (let r = row + step; r >= ROW_ABOVE && r <= resultRow; r += step) {
+			if (cellAt(r, c)) {
+				focusCell(r, c);
+				return;
+			}
+		}
+	}
+
+	/** Flèches ↑/↓, communes à toutes les cases ; true si la touche est prise */
+	function onVerticalKeydown(event: KeyboardEvent, row: number, c: number): boolean {
+		if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return false;
+		event.preventDefault();
+		focusVertical(row, c, event.key === 'ArrowUp' ? -1 : 1);
+		return true;
+	}
+
+	// Grandes cases : le résultat (jugé) et les produits partiels (aide)
+	const partialKey = (row: number, c: number) => `${row}:${c}`;
+
+	function readCell(row: number, c: number): string {
+		return row === resultRow ? (digits[c] ?? '') : (partialDigits[partialKey(row, c)] ?? '');
+	}
+
+	function writeCell(row: number, c: number, digit: string) {
+		if (row === resultRow) digits[c] = digit;
+		else partialDigits[partialKey(row, c)] = digit;
+	}
+
+	/** Première case à remplir de la rangée (un produit partiel ne couvre pas toute la grille) */
+	function firstColumn(row: number): number {
+		if (!scene || row === resultRow) return 0;
+		return Math.max(
+			0,
+			scene.partials[row - partialRow(0)].findIndex((cell) => cell.blank)
+		);
+	}
+
+	function afterChange(row: number) {
+		if (row === resultRow) emit();
 	}
 
 	/**
 	 * Un chiffre tapé : il remplace celui de la case (où que soit le curseur), le curseur
-	 * passe à gauche ; tout autre caractère est ignoré
+	 * passe à gauche ; multiplication, résultat : « , » ou « . » pose ou enlève la
+	 * virgule à droite de la case ; tout autre caractère est ignoré
 	 */
-	function onResultInput(event: Event & { currentTarget: HTMLInputElement }, c: number) {
+	function onDigitInput(
+		event: Event & { currentTarget: HTMLInputElement },
+		row: number,
+		c: number
+	) {
 		const typed = event.currentTarget.value;
 		const data = event instanceof InputEvent ? (event.data ?? '') : '';
-		const digit = /^\d$/.test(data) ? data : typed.replace(/\D/g, '').slice(-1);
-		if (digit === '') {
-			// Case vidée (effacement natif) ou caractère refusé : la case garde son chiffre
-			if (typed === '') digits[c] = '';
-			event.currentTarget.value = digits[c] ?? '';
+		if (row === resultRow && multiplication && /^[,.]$/.test(data || typed.replace(/\d/g, ''))) {
+			comma = comma === c ? null : c;
+			event.currentTarget.value = readCell(row, c);
 			emit();
 			return;
 		}
-		digits[c] = digit;
+		const digit = /^\d$/.test(data) ? data : typed.replace(/\D/g, '').slice(-1);
+		if (digit === '') {
+			// Case vidée (effacement natif) ou caractère refusé : la case garde son chiffre
+			if (typed === '') writeCell(row, c, '');
+			event.currentTarget.value = readCell(row, c);
+			afterChange(row);
+			return;
+		}
+		writeCell(row, c, digit);
 		event.currentTarget.value = digit;
-		emit();
-		if (c > 0) focusResult(c - 1);
+		afterChange(row);
+		if (c > firstColumn(row)) focusCell(row, c - 1);
 	}
 
-	function onResultKeydown(event: KeyboardEvent, c: number) {
-		if (!scene) return;
+	function onDigitKeydown(event: KeyboardEvent, row: number, c: number) {
+		if (!scene || onVerticalKeydown(event, row, c)) return;
 		if (event.key === 'Enter') {
 			event.preventDefault();
 			answer?.onSubmit?.();
 		} else if (event.key === 'Backspace' || event.key === 'Delete') {
 			event.preventDefault();
 			// Case pleine : on l'efface ; case vide : on revient effacer celle de droite
-			if ((digits[c] ?? '') !== '') {
-				digits[c] = '';
+			if (readCell(row, c) !== '') {
+				writeCell(row, c, '');
 			} else if (c < scene.columns - 1) {
-				digits[c + 1] = '';
-				focusResult(c + 1);
+				writeCell(row, c + 1, '');
+				focusCell(row, c + 1);
 			}
-			emit();
-		} else if (event.key === 'ArrowLeft' && c > 0) {
+			afterChange(row);
+		} else if (event.key === 'ArrowLeft' && c > firstColumn(row)) {
 			event.preventDefault();
-			focusResult(c - 1);
+			focusCell(row, c - 1);
 		} else if (event.key === 'ArrowRight' && c < scene.columns - 1) {
 			event.preventDefault();
-			focusResult(c + 1);
+			focusCell(row, c + 1);
 		}
 	}
 
 	/** Petite case : un chiffre (cassage : deux, `12`), rien d'autre */
-	function onHelperInput(event: Event & { currentTarget: HTMLInputElement }, c: number) {
+	function onHelperInput(
+		event: Event & { currentTarget: HTMLInputElement },
+		c: number,
+		row: number
+	) {
 		const max = node.spec?.operator === '-' && !compensation ? 2 : 1;
 		const value = event.currentTarget.value.replace(/\D/g, '').slice(0, max);
-		helpers[c] = value;
+		if (row === ROW_PARTIAL_CARRIES) partialHelpers[c] = value;
+		else helpers[c] = value;
 		event.currentTarget.value = value;
 	}
 </script>
 
-{#snippet helperInput(c: number)}
+{#snippet helperInput(c: number, row: number)}
 	<input
 		class="operation-saisie-petite"
 		type="text"
@@ -209,10 +318,13 @@
 		autocomplete="off"
 		spellcheck="false"
 		data-operation-cell="aide"
-		aria-label={helperLabel(c)}
-		value={helpers[c] ?? ''}
+		data-rangee={row}
+		data-colonne={c}
+		aria-label={helperLabel(c, row)}
+		value={(row === ROW_PARTIAL_CARRIES ? partialHelpers[c] : helpers[c]) ?? ''}
 		disabled={answer?.disabled}
-		oninput={(e) => onHelperInput(e, c)}
+		oninput={(e) => onHelperInput(e, c, row)}
+		onkeydown={(e) => onVerticalKeydown(e, row, c)}
 	/>
 {/snippet}
 
@@ -242,6 +354,7 @@
 	>
 		<div class="operation-defile">
 			<div
+				bind:this={grid}
 				class="operation-grille"
 				class:operation-grille-saisie={interactive}
 				role="group"
@@ -253,7 +366,7 @@
 				{#each scene.above as mark, c (c)}
 					<span class="operation-carreau operation-dessus">
 						{#if interactive && helperAbove(c)}
-							{@render helperInput(c)}
+							{@render helperInput(c, ROW_ABOVE)}
 						{:else if mark}
 							<span class="operation-petit" class:operation-case-petite={mark.blank}
 								>{markText(mark)}</span
@@ -290,7 +403,9 @@
 					<span class="operation-carreau"></span>
 					{#each scene.partialCarries as mark, c (c)}
 						<span class="operation-carreau operation-dessus">
-							{#if mark}
+							{#if interactive && mark?.blank}
+								{@render helperInput(c, ROW_PARTIAL_CARRIES)}
+							{:else if mark}
 								<span class="operation-petit" class:operation-case-petite={mark.blank}
 									>{markText(mark)}</span
 								>
@@ -305,7 +420,26 @@
 					>
 					{#each row as cell, c (c)}
 						<span class="operation-carreau" class:operation-trait={last}>
-							{#if cell.blank}
+							{#if interactive && cell.blank}
+								<input
+									class="operation-saisie operation-saisie-aide"
+									type="text"
+									inputmode="numeric"
+									enterkeyhint="done"
+									autocomplete="off"
+									spellcheck="false"
+									data-operation-cell="produit"
+									data-rangee={partialRow(r)}
+									data-colonne={c}
+									aria-label="Produit partiel {r + 1}, {fromRight(c)}"
+									value={partialDigits[partialKey(partialRow(r), c)] ?? ''}
+									disabled={answer?.disabled}
+									onfocus={(e) => e.currentTarget.select()}
+									onpointerup={(e) => e.currentTarget.select()}
+									oninput={(e) => onDigitInput(e, partialRow(r), c)}
+									onkeydown={(e) => onDigitKeydown(e, partialRow(r), c)}
+								/>
+							{:else if cell.blank}
 								<span class="operation-case-aide"></span>
 							{:else}
 								{cell.digit}
@@ -319,31 +453,42 @@
 					<span class="operation-carreau">
 						{#if interactive}
 							<input
-								bind:this={resultInputs[c]}
 								class="operation-saisie"
 								class:operation-juste={answer?.isCorrect === true}
 								class:operation-faux={wrong[c] === true}
 								type="text"
-								inputmode="numeric"
+								inputmode={multiplication ? 'decimal' : 'numeric'}
 								enterkeyhint="done"
 								autocomplete="off"
 								spellcheck="false"
 								data-operation-cell="résultat"
-								aria-label="Chiffre des {placeName(c)}"
+								data-rangee={resultRow}
+								data-colonne={c}
+								aria-label={resultLabel(c)}
 								aria-invalid={wrong[c] === true ? 'true' : undefined}
 								value={digits[c] ?? ''}
 								disabled={answer?.disabled}
 								onfocus={(e) => e.currentTarget.select()}
 								onpointerup={(e) => e.currentTarget.select()}
-								oninput={(e) => onResultInput(e, c)}
-								onkeydown={(e) => onResultKeydown(e, c)}
+								oninput={(e) => onDigitInput(e, resultRow, c)}
+								onkeydown={(e) => onDigitKeydown(e, resultRow, c)}
 							/>
 						{:else if cell.blank}
 							<span class="operation-case"></span>
 						{:else}
 							{cell.digit}
 						{/if}
-						{#if cell.comma}<span class="operation-virgule">,</span>{/if}
+						{#if interactive && multiplication}
+							<!-- Virgule posée par l'élève ; à la correction, absente ou mal placée surlignée -->
+							{#if comma === c}
+								<span
+									class="operation-virgule"
+									class:operation-virgule-faux={commaMistake === 'mal placée'}>,</span
+								>
+							{:else if commaMistake === 'absente' && c === expectedComma}
+								<span class="operation-virgule-manquante" aria-hidden="true"></span>
+							{/if}
+						{:else if cell.comma}<span class="operation-virgule">,</span>{/if}
 					</span>
 				{/each}
 			</div>
@@ -446,6 +591,23 @@
 		font-weight: 700;
 	}
 
+	.operation-virgule-faux {
+		color: var(--color-destructive);
+	}
+
+	/* Virgule oubliée : sa place, entourée, à la correction */
+	.operation-virgule-manquante {
+		position: absolute;
+		z-index: 1;
+		right: -0.28em;
+		bottom: 0.05em;
+		width: 0.55em;
+		height: 0.55em;
+		border: 2px solid var(--color-destructive);
+		border-radius: 9999px;
+		background: var(--color-background);
+	}
+
 	/* La seule couleur d'accent : les cases du résultat */
 	.operation-case {
 		width: 78%;
@@ -477,6 +639,11 @@
 		width: 85%;
 		height: 85%;
 		border: 2px solid var(--color-primary);
+	}
+
+	/* Produits partiels : une aide, jamais jugée → pointillés, pas l'accent */
+	.operation-saisie-aide {
+		border: 1px dashed var(--color-muted-foreground);
 	}
 
 	/* Retenues : petites (≈ 28 px), en pointillés : une aide, jamais jugée */
