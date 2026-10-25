@@ -411,3 +411,18 @@ no position before the top-level node` dans les raccourcis Backspace de la droit
   taille) → `svgPoint`, test `TrigCircle-echelle`.
 - Pour 6i-c : fonds de couleur unie (thème déduit), blocs grossis par `taille:` si besoin ; un
   tableau large défile dans son cadre (`TableNode`), il n'est pas réduit.
+
+### 6i-c — vitrine `/demo/diaporama` (2026-10-25)
+
+- 13 diapositives comme prévu ; contenu dans `diaporama.ts`, minuteur = `autoSlide` des
+  diapositives d'une pile (titre, Q1, Q2, correction : le compte ne part qu'en descendant),
+  barre `ChronoBar` lue dans le contexte du Deck. Plein écran : bouton dans l'`overlay` ou F.
+- **Bug trouvé** : le marqueur `->` d'une `UbuMarkSlide` était ignoré après une formule (le
+  rendu met `->` dans un nœud de texte à part, sans espace devant) → `isTrailingMarker`, testé
+  par `UbuMarkSlide.fragments.svelte.test.ts`, vu rouge sans ; une flèche au milieu reste une flèche.
+- Piège : dans `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale` (`app.css`) ;
+  les classes `text-*` n'y font rien. La page règle `--font-scale` selon la largeur du cadre
+  (requêtes de conteneur : 1 ; 1,4 dès 640 px ; 1,8 dès 960 px), `td` et code compris.
+- Vu sur 5177 (Playwright, 1280 et 390 px, les 13 diapositives) : aucune erreur de console,
+  aucune requête autre que GET, rien qui déborde. Sur téléphone, les flèches du Deck chevauchent
+  parfois le bas du contenu (comportement du Deck, pas touché).
