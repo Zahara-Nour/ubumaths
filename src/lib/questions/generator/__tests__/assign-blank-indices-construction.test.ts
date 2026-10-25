@@ -43,4 +43,21 @@ describe('assignBlankIndices — bloc ```construction', () => {
 			'Un bloc construction doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)'
 		]);
 	});
+
+	it('bloc non fermé : s’arrête comme le parseur, la suite garde ses cases', () => {
+		const statement = [
+			'```construction',
+			...body,
+			'',
+			'Complète : $x = ?$',
+			'',
+			'```operation',
+			'calcul: 45 + 37',
+			'```'
+		].join('\n');
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(3);
+		expect(Object.keys(result.constructionBlanks ?? {})).toEqual(['0']);
+		expect(result.statement).toContain('\\placeholder[1]{}');
+	});
 });

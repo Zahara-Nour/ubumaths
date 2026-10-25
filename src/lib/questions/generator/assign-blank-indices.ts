@@ -20,6 +20,7 @@
  */
 
 import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 
 /**
@@ -85,7 +86,7 @@ interface ConstructionBlock {
 /**
  * Met à l'abri les blocs ```construction : chacun devient une marque d'une
  * ligne, numérotée ensuite avec les autres cases puis rendue avec `case: N`.
- * Fin du bloc : ``` ; sans clôture, la première ligne vide (comme le parseur).
+ * Étendue du bloc : celle du parseur (`findFigureBlocks`, bloc non fermé compris).
  */
 function markConstructionBlocks(statement: string): {
 	statement: string;
@@ -93,6 +94,9 @@ function markConstructionBlocks(statement: string): {
 	errors: string[];
 } {
 	const lines = statement.split('\n');
+	const ranges = findFigureBlocks(lines).filter((r) =>
+		CONSTRUCTION_FENCE_REGEX.test(lines[r.startIndex])
+	);
 	const out: string[] = [];
 	const blocks: ConstructionBlock[] = [];
 	const errors: string[] = [];
@@ -101,20 +105,18 @@ function markConstructionBlocks(statement: string): {
 		if (NESTED_CONSTRUCTION_FENCE_REGEX.test(line)) {
 			errors.push(CONSTRUCTION_NESTED_MESSAGE);
 		}
-		if (!CONSTRUCTION_FENCE_REGEX.test(line)) {
+		const range = ranges.find((r) => r.startIndex === i);
+		if (!range) {
 			out.push(line);
 			continue;
 		}
-		let end = i + 1;
-		while (end < lines.length && !/^```\s*$/.test(lines[end])) end++;
-		const closed = end < lines.length;
-		if (!closed) {
-			end = i + 1;
-			while (end < lines.length && lines[end].trim() !== '') end++;
-		}
+		const closed = range.closed !== false;
 		out.push(`${CONSTRUCTION_MARK_START}${blocks.length}${CONSTRUCTION_MARK_END}`);
-		blocks.push({ body: lines.slice(i + 1, end), closed });
-		i = closed ? end : end - 1;
+		blocks.push({
+			body: lines.slice(i + 1, closed ? range.endIndex : range.endIndex + 1),
+			closed
+		});
+		i = range.endIndex;
 	}
 	return { statement: out.join('\n'), blocks, errors };
 }

@@ -92,6 +92,11 @@ describe('droite_par A ; B — tableau de la phase 0', () => {
 		});
 	});
 
+	it('tolérance fixée par la figure, pas par les points tracés (réponse forgée)', () => {
+		// Pente 1e-4 depuis (1e6 ; 101.9999) : passe à 6e-4 de B
+		expect(judge('droite(1000000;101.9999;1;2)').status).toBe('incorrect');
+	});
+
 	it('rien tracé : vide (le bouton Valider est grisé, la réponse ne compte pas)', () => {
 		expect(judge('')).toEqual({ status: 'empty' });
 	});
@@ -120,6 +125,14 @@ describe('plusieurs vérifications', () => {
 	it('chaque vérification prend sa droite, dans n’importe quel ordre', () => {
 		expect(judgeConstruction(TWO, POINTS, 'droite(1;2;4;5)|droite(1;2;7;2)')).toEqual({
 			status: 'correct'
+		});
+	});
+
+	it('le message vise une droite libre, pas celle d’une autre vérification', () => {
+		// AC juste ; la seconde droite passe par B seulement
+		expect(judgeConstruction(TWO, POINTS, 'droite(1;2;4;5)|droite(7;2;7;0)')).toEqual({
+			status: 'incorrect',
+			feedback: 'Ta droite ne passe pas par le point A.'
 		});
 	});
 

@@ -29,7 +29,11 @@ export interface ConstructionVerdict {
 /** Erreur de l'AUTEUR (vérification impossible) : jamais un verdict pour l'élève */
 export class ConstructionAuthorError extends Error {}
 
-/** Tolérance relative : les points aimantés arrivent exacts, au calcul flottant près */
+/**
+ * Tolérance relative à la position du POINT de la figure (jamais aux points
+ * tracés, que l'élève choisit) : les points aimantés arrivent exacts, au calcul
+ * flottant près.
+ */
 const ON_LINE_EPSILON = 1e-9;
 
 export const EXTRA_LINE_FEEDBACK = 'Tu as tracé une droite de trop.';
@@ -38,7 +42,7 @@ function passesThrough(line: DrawnLine, p: Position): boolean {
 	const dx = line.x2 - line.x1;
 	const dy = line.y2 - line.y1;
 	const cross = dx * (p.y - line.y1) - dy * (p.x - line.x1);
-	const scale = Math.max(1, Math.abs(line.x1), Math.abs(line.y1), Math.abs(p.x), Math.abs(p.y));
+	const scale = Math.max(1, Math.abs(p.x), Math.abs(p.y));
 	return Math.abs(cross) / Math.hypot(dx, dy) <= ON_LINE_EPSILON * scale;
 }
 
@@ -50,13 +54,27 @@ function positionOf(points: ReadonlyMap<string, Position>, name: string): Positi
 	return position;
 }
 
+function satisfies(
+	line: DrawnLine,
+	check: ConstructionCheck,
+	points: ReadonlyMap<string, Position>
+): boolean {
+	return (
+		passesThrough(line, positionOf(points, check.points[0])) &&
+		passesThrough(line, positionOf(points, check.points[1]))
+	);
+}
+
 /** Pourquoi la droite la plus proche du but ne convient pas */
 function droiteParFeedback(
 	check: DroiteParCheck,
-	candidates: DrawnLine[],
+	unused: DrawnLine[],
+	others: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>
 ): string {
 	const [a, b] = check.points;
+	// Une droite qui satisfait une AUTRE vérification n'est pas celle que l'élève a ratée
+	const candidates = unused.filter((l) => !others.some((other) => satisfies(l, other, points)));
 	if (candidates.length === 0) return `Il manque la droite qui passe par ${a} et ${b}.`;
 	const pa = positionOf(points, a);
 	const pb = positionOf(points, b);
@@ -92,11 +110,10 @@ export function judgeConstruction(
 
 	const unused = [...lines];
 	for (const check of checks) {
-		const pa = positionOf(points, check.points[0]);
-		const pb = positionOf(points, check.points[1]);
-		const index = unused.findIndex((l) => passesThrough(l, pa) && passesThrough(l, pb));
+		const index = unused.findIndex((l) => satisfies(l, check, points));
 		if (index === -1) {
-			return { status: 'incorrect', feedback: droiteParFeedback(check, unused, points) };
+			const others = checks.filter((other) => other !== check);
+			return { status: 'incorrect', feedback: droiteParFeedback(check, unused, others, points) };
 		}
 		unused.splice(index, 1);
 	}

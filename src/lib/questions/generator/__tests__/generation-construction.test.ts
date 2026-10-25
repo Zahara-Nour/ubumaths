@@ -94,6 +94,30 @@ describe('bloc ```construction : la case', () => {
 		}
 	});
 
+	it('point de `verifier:` absent de la figure : génération refusée (faute de frappe)', () => {
+		const result = generateInstance(
+			template({
+				statement: block('verifier: droite_par A ; Z'),
+				variables: [{ name: 'xa', expression: '1' }]
+			}),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (!result.success) {
+			expect(result.errors.join(' ')).toContain('le point Z n’est pas nommé dans la figure');
+		}
+	});
+
+	it('`orderIndependent` avec une case figure : refusé', () => {
+		const t = template({
+			statement: `$? + 1 = 3$\n\n${block('verifier: droite_par A ; B')}`,
+			variables: [{ name: 'xa', expression: '1' }],
+			blanks: [{ expectedAnswer: '2' }]
+		});
+		const result = generateInstance({ ...t, options: { orderIndependent: true } }, 42);
+		expect(result.success).toBe(false);
+	});
+
 	it('évaluation notée : la case publique ne porte que sa nature (jugée au serveur)', () => {
 		const instance = generate(CP059);
 		const publicQuestion = toPublicQuestion(instance, { position: 0, delaySeconds: 60 });

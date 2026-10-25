@@ -231,7 +231,8 @@ erreur fait échouer la génération (message situé). Une ligne `case:` écrite
    sinon échec) compte aussi pour **une** case, `case: N` posé en tête du bloc ; son contenu est mis à
    l'abri (un `?` ou un `[_]` du bloc ne crée pas de case). `blanks[]` peut l'omettre ; une réponse
    écrite est refusée ; un bloc en erreur (vérification manquante, fenêtre…) fait échouer la
-   génération. La case est `type: 'graphical'`, `construction: { source, checks }` (texte du bloc,
+   génération, comme un point de `verifier:` que le script ne nomme pas (`Z = …`, lecture légère
+   `namesAssignedIn`) ou `options.orderIndependent` (l'appariement ne sait pas lire une figure). La case est `type: 'graphical'`, `construction: { source, checks }` (texte du bloc,
    variables résolues), réponse attendue symbolique `droite(A;B)`.
 6. Chaque case reçoit ses réglages fusionnés : **case ▸ `blankDefaults`** pour `precision`,
    `unit`, `answerKind`, `rulesSuffice`, `acceptDecimal`… ; `requiredForm` : case ▸

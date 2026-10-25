@@ -287,6 +287,15 @@ function resolveValidationRules(
 	});
 }
 
+/** Noms affectés dans le script d'une figure (`A = point(1, 2)`), sans l'interpréter */
+function namesAssignedIn(figureSource: string): Set<string> {
+	const names = new Set<string>();
+	for (const match of figureSource.matchAll(/^\s*([A-Za-z][A-Za-z0-9_']*)\s*=(?!=)/gm)) {
+		names.add(match[1]);
+	}
+	return names;
+}
+
 /**
  * Generate a question instance from a template
  *
@@ -514,6 +523,21 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					errors.unshift({
 						message: 'case: est posée automatiquement, retirer cette ligne du bloc'
 					});
+				}
+				// Faute de frappe dans `verifier:` : vue ici (lecture légère des noms affectés,
+				// `Z = …`), sinon l'élève aurait un « faux » pour une erreur de l'auteur
+				const named = namesAssignedIn(header.figureSource);
+				for (const check of header.spec.checks) {
+					for (const name of check.points) {
+						if (!named.has(name)) {
+							errors.push({
+								message: `Ligne ${check.line} : le point ${name} n’est pas nommé dans la figure (écrire « ${name} = … »)`
+							});
+						}
+					}
+				}
+				if (template.options?.orderIndependent) {
+					errors.push({ message: 'une case figure ne se combine pas avec « ordre indifférent »' });
 				}
 				if (errors.length > 0) {
 					return {
