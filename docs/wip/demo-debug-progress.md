@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-25, PR 6h en cours (`/demo/editeur`)._
 
-- **État** : PR 1 à 5 et 6a à 6g mergées, pas en prod. PR 6h `/demo/editeur` écrite (page + 5 tests), pas poussée ; 1 test rouge à cause d'un bug du cahier de texte (ci-dessous).
-- **Prochaine action** : selon la réponse de David, corriger `transformMathHtml` (formules vides au cahier de texte), puis finir 6h (doc `utilitaires-et-demos.md`, check, PR) ; ensuite diaporama.
-- **En attente de David** : correctif du bug du cahier dans une PR à part avant 6h, ou dans 6h ?
+- **État** : PR 1 à 5 et 6a à 6g mergées, pas en prod. PR 6h `/demo/editeur` finie, en route vers la PR.
+- **Prochaine action** : merger 6h, puis diaporama (phase 0 à faire valider).
+- **Hors chantier, décidé par David le 2026-10-25** : le cahier de texte passe à ubumark (voie 2), **futur chantier à part** `cahier-ubumark` ; énigmes (HTML lu comme markdown) à mesurer.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** ; `z` ≈ `2` → regarder en dernier, PR à part dans `tools/chiphre-math/`.
 - **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : degrés par défaut, **courbe() comprise**, `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : chemin relatif ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; test de page qui lit le lexique : simuler `fetchDictionary` ; commitlint : lignes du corps ≤ 100 caractères ; **`{@html}` n'est pas corrigé à l'hydratation** (calculer après `onMount`) ; dans un test, cliquer au milieu de l'éditeur tombe sur un champ MathLive.
@@ -339,7 +339,13 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
   `data-math-syntax` et `data-math-original` avant (depuis `6939fefb5`, 2025-12-14). Toute formule
   du cahier de texte arrive **vide** chez l'élève (`/dashboard/student/cahier-texte/[entryId]` et
   `/cahier/[token]`). Prod mesurée (MCP) : 2 séances, 2 travaux, aucune formule → personne touché.
-  Le test « formule au cahier » de la vitrine est rouge à cause de lui.
+  Le test « formule au cahier » de la vitrine était rouge à cause de lui.
+- David a demandé pourquoi le cahier n'utilise pas ubumark : aucune trace d'une décision (cahier
+  créé le 2026-01-04 sur `bind:htmlValue`, alors que la sortie markdown existait depuis le
+  2025-12-16). Il retient la **voie 2** : passer le cahier à ubumark, en chantier à part, plutôt
+  que réparer `transformMathHtml`. La vitrine part sans le test des formules du cahier (commentaire
+  dans le test) ; écart noté dans `docs/systeme/editeur-riche.md`, avec les énigmes (`RiddleForm`
+  enregistre du HTML, `RiddleCard` le lit comme du markdown ; pas mesuré).
 - Vu sur 5177 (Playwright, 1280 et 390 px) : 200, aucune erreur de console, aucune requête autre
   que GET, rien qui déborde ; le texte de la carte « cahier » manquait (`{@html}` gardé du serveur) →
   HTML calculé après `onMount`.
