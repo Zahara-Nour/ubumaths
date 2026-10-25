@@ -193,6 +193,14 @@ describe('soustraction par cassage', () => {
 	it('à remplir : une case au-dessus de chaque colonne', () => {
 		expect(grid(scene('calcul: 52 - 37', 'méthode: cassage')).above).toBe('[4] [12]');
 	});
+
+	it('à remplir : rien de barré (la colonne à casser est la réponse)', () => {
+		expect(grid(scene('calcul: 1000 - 1', 'méthode: cassage'))).toEqual({
+			above: '[0] [9] [9] [10]',
+			terms: ['1000', '___1'],
+			result: '[][9][9][9]'
+		});
+	});
 });
 
 describe('operationResult : le résultat en écriture française', () => {

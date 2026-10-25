@@ -210,7 +210,8 @@ export function buildOperationScene(spec: OperationSpec): OperationScene {
 		}
 		for (let c = 0; c < columns; c++) {
 			const changed = values[c] !== digitValue(top[c]);
-			if (changed && spec.carries) terms[0][c].struck = top[c] !== '';
+			// À remplir, rien n'est barré : savoir quelle colonne casser fait partie de la réponse
+			if (changed && spec.carries && !toFill) terms[0][c].struck = top[c] !== '';
 			if (spec.carries) above[c] = written(changed ? String(values[c]) : '');
 		}
 	}

@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-10-25, PR #1716 ouverte._
 
-- **État** : PR 1a #1716 (bloc ```operation d'affichage) ouverte, tests locaux verts ; CI et revue `code-reviewer` (Sonnet) lancées en fin de session.
-- **Prochaine action** : `gh pr checks 1716` ; si la revue n'a pas été lue, la relancer (Sonnet) sur `git diff origin/main...HEAD` ; corriger, merger si vert. Puis PR 1b : présenter à David les questions du § 8 avant de coder.
+- **État** : PR 1a #1716 (bloc ```operation d'affichage) ouverte, tests locaux verts ; revue `code-reviewer` faite (1 finding corrigé : chiffres barrés d'avance en cassage à remplir).
+- **Prochaine action** : `gh pr checks 1716`, merger si vert. Puis PR 1b : présenter à David les questions du § 8 avant de coder.
 - **En attente de David** : rien (réponses du § 8 au début de la PR 1b).
 - **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` ; sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write`.
 - **Worktree / branche** : `../ubumaths-wt-operations-posees`, `feat/operations-posees`.
@@ -103,7 +103,8 @@ multiplication (lot 2).
    devant le 2 du haut, petit 1 contre le 3 du bas (colonne suivante). Résultat 15. Cases de
    résultat : autant que le nombre du haut.
 6. `méthode: cassage` : le chiffre emprunté est barré, sa nouvelle valeur écrite au-dessus ; à
-   travers les zéros (`302 − 7` : 3 → 2, 0 → 9, 2 → 12).
+   travers les zéros (`302 − 7` : 3 → 2, 0 → 9, 2 → 12). À remplir, rien n'est barré : savoir
+   quelle colonne casser fait partie de la réponse (revue #1716).
 7. `−`, `-` acceptés pour la soustraction ; `,` ou `.` pour la virgule ; `1 234` (espaces de
    milliers) accepté.
 8. Variables résolues avant le bloc (`calcul: {{a}} + {{b}}`), comme l'horloge.
