@@ -170,13 +170,11 @@ export const DOMAINS: Domain[] = [
 		]
 	},
 	{
-		title:
-			'Outils du professeur (kanban, tableau blanc, tableur, constructions, figures, liens courts)',
+		title: 'Outils du professeur (kanban, tableau blanc, constructions, figures, liens courts)',
 		match: [
 			'kanban_',
 			'whiteboard_',
 			'user_whiteboard_template_favorites',
-			'spreadsheets',
 			'construction',
 			'geometry_figures',
 			'short_links'
