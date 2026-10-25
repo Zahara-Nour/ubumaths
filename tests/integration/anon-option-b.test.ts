@@ -300,7 +300,6 @@ const FONCTIONS_REVOQUEES = [
 	'public.update_shared_material_course_name()',
 	'public.update_shared_material_teacher_name()',
 	'public.update_shared_materials_updated_at()',
-	'public.update_spreadsheets_updated_at()',
 	'public.update_student_buddies_updated_at()',
 	'public.update_student_exercise_mastery_updated_at()',
 	'public.update_student_progress_after_attempt()',
@@ -373,11 +372,13 @@ describe('(a) anon n’a plus aucun droit sur les objets fermés', () => {
 	// 2026-10-22 (suppression de l'ancien programme, étape 4 de C5) : `curriculum_themes`,
 	// `curriculum_objectives` et 7 fonctions (reorder x3, place x3, assign) supprimées
 	// → 135 relations, 135 fonctions.
-	it('l’inventaire compte 135 relations et 135 fonctions', () => {
+	// 2026-10-25 (table du tableur V4 supprimée) : `update_spreadsheets_updated_at()`
+	// supprimée → 135 relations, 134 fonctions.
+	it('l’inventaire compte 135 relations et 134 fonctions', () => {
 		expect(RELATIONS_FERMEES).toHaveLength(135);
 		expect(new Set(RELATIONS_FERMEES).size).toBe(135);
-		expect(FONCTIONS_REVOQUEES).toHaveLength(135);
-		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(135);
+		expect(FONCTIONS_REVOQUEES).toHaveLength(134);
+		expect(new Set(FONCTIONS_REVOQUEES).size).toBe(134);
 	});
 
 	it.each(RELATIONS_FERMEES)('table/vue %s : aucun droit pour anon', async (rel) => {

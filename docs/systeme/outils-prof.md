@@ -35,7 +35,7 @@ couvre:
 | ----------------------- | -------------------------------------- | ------------------------------------------- | -------------------------------------------- | ---------------------------- |
 | Tableau blanc           | `/whiteboard`                          | « Whiteboard » (Header, Sidebar), prof      | 11 modèles ; documents hors base             | **vivant**                   |
 | Diaporamas (UbuSlides)  | aucune propre (bibliothèque)           | via le notebook Python et `ClassroomSeries` | aucune table                                 | **vivant** (bibliothèque)    |
-| Tableur (V4)            | `/spreadsheet` → `/atelier` (308)      | aucun                                       | 1 tableur, modifié le 2025-12-05             | **retiré** le 2026-10-24     |
+| Tableur (V4)            | `/spreadsheet` → `/atelier` (308)      | aucun                                       | table supprimée le 2026-10-25                | **retiré** le 2026-10-24     |
 | Kanban                  | `/organisation/kanban`                 | « Suivi du site », menu **admin** seul      | 2 tableaux, 3 cartes (mai 2026)              | vivant, usage interne        |
 | Anciennes constructions | `/constructions/conversion`            | bouton depuis `/constructions`              | 0 construction au format `json` (sur 9)      | **résiduel**                 |
 | Google Classroom        | `/dashboard/teacher/settings/google` … | masqués (`GOOGLE_CLASSROOM_ENABLED`)        | 1 intégration, 3 cours (derniers en 2025-12) | **éteint**, plomberie gardée |
@@ -182,9 +182,10 @@ l'atelier le remplace (formules calculées par mathAST, CSV, mise en forme ; voi
 (`src/lib/server/redirectHandle.ts`). Ce que l'atelier ne reprend pas (NON, SIERREUR, fonctions
 de texte, VAR, MODE…) : [atelier-tableur-progress.md](../archive/wip/atelier-tableur-progress.md).
 
-**Reste en base** : la table `spreadsheets` (1 ligne en prod, d'un seul compte, modifiée le
-2025-12-05), plus lue par aucun code. La supprimer est une migration destructive, à décider par
-David après le `deploy:prod` qui livre ce retrait. Le code retiré se relit dans l'historique git
+**Table supprimée** le 2026-10-25, après le `deploy:prod` v0.47.0 qui livre ce retrait, sur
+décision de David : migration `20261025230000_drop_spreadsheets.sql` (la table et sa fonction de
+trigger ; 1 ligne perdue, le tableur d'un élève modifié le 2025-12-05). Test :
+`tests/integration/drop-spreadsheets.test.ts`. Le code retiré se relit dans l'historique git
 (commit parent du retrait).
 
 ---
@@ -349,7 +350,7 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
 
 1. **Tableur V4** : retiré le 2026-10-24 (§ 3) ; ses deux écarts (accès du prof, alias sans
    fonction) sont sans objet.
-2. **Table `spreadsheets`** : orpheline depuis le retrait, à supprimer sur décision de David.
+2. **Table `spreadsheets`** : supprimée le 2026-10-25 (§ 3).
 3. **Tableau blanc** : réservé au prof et à l'admin depuis le 2026-10-11 (D5, décision de David :
    outil de projection mono-utilisateur ; test `src/routes/(protected)/whiteboard/__tests__/page.server.test.ts`).
    Le panneau de fichiers ne propose plus rien de Google quand le drapeau est éteint (V5, test
