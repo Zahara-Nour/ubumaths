@@ -33,8 +33,8 @@
 import type { MathNode } from '$lib/mathAST/types';
 import type { Domain } from '$lib/mathAST/domain/types';
 import { containsValue } from '$lib/mathAST/domain/algebra';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { computeNumericValue } from '$lib/mathAST/eval/numeric-value';
 
 // =============================================================================
 // Constantes
@@ -83,8 +83,8 @@ function criticalPoints(domain: Domain): (number | null)[] {
 		case 'condition_domain':
 			return [null];
 		case 'periodic_exclusion': {
-			const base = periodicValueOf(domain.basePoint);
-			const period = periodicValueOf(domain.period);
+			const base = computeNumericValue(domain.basePoint);
+			const period = computeNumericValue(domain.period);
 			if (base === null || period === null || period === 0) return [null];
 			const points: number[] = [];
 			for (let k = -PERIODS; k <= PERIODS; k++) points.push(base + k * period);
@@ -112,14 +112,4 @@ function boundOf(node: MathNode): number | null {
 function endpointOf(node: MathNode): number | null {
 	const value = endpointToNumber(node);
 	return Number.isFinite(value) ? value : null;
-}
-
-/** Une valeur d'exclusion périodique, lue comme la lit `containsValue`. */
-function periodicValueOf(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
 }

@@ -44,11 +44,11 @@ import {
 } from '../factory';
 import { denormalize, normalize } from '../normal';
 import { getVariables, substitute } from '../eval/substitute';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { flattenSumShallow, type SignedTerm } from '../flatten';
 import { readTrigTerm, type TrigTerm } from './sin-cos-ratio';
 import { mergePeriodicFamilies } from './periodic';
 import { createStepRecorder } from './step-recorder';
+import { computeNumericValue } from '../eval/numeric-value';
 
 type SolveFn = (equation: RelationNode, options?: SolveOptions) => SolveResult;
 type TrigName = 'sin' | 'cos' | 'tan';
@@ -68,15 +68,6 @@ const POLE_SCAN = 24;
 const MAX_MULTIPLE = 24;
 /** Ici seulement, la période réunie se divise aussi par 3 (cos 2x = cos x → 2kπ/3). */
 const MERGE = { divisors: [2, 3] } as const;
-
-function numeric(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
-}
 
 function simplified(node: MathNode): MathNode {
 	return denormalize(normalize(node));
@@ -129,8 +120,8 @@ function readEquality(
 	const first = readAny(terms[0], variable);
 	const second = readAny(terms[1], variable);
 	if (first === null || second === null) return null;
-	const k1 = numeric(first.read.coefficient);
-	const k2 = numeric(second.read.coefficient);
+	const k1 = computeNumericValue(first.read.coefficient);
+	const k2 = computeNumericValue(second.read.coefficient);
 	if (k1 === null || k2 === null || Math.abs(k1) < TOLERANCE) return null;
 	const scale = TOLERANCE * Math.max(1, Math.abs(k1));
 	const differenceForm = Math.abs(k1 + k2) <= scale;
@@ -164,11 +155,11 @@ function canonical(argument: MathNode, variable: string): MathNode {
 	const at = (x: number) => substitute(argument, { [variable]: x });
 	const offset = simplified(at(0));
 	const coefficient = simplified(subtract(at(1), at(0)));
-	const b = numeric(offset);
-	const slope = numeric(coefficient);
+	const b = computeNumericValue(offset);
+	const slope = computeNumericValue(coefficient);
 	if (b === null || slope === null || Math.abs(slope) < TOLERANCE) return argument;
 	const linear = [2, -3].every((x) => {
-		const value = numeric(at(x));
+		const value = computeNumericValue(at(x));
 		return (
 			value !== null && Math.abs(value - (slope * x + b)) < 1e-9 * Math.max(1, Math.abs(value))
 		);
@@ -224,7 +215,7 @@ export function tryTrigEquality(
 			kept.push(factor);
 			continue;
 		}
-		const value = numeric(factor);
+		const value = computeNumericValue(factor);
 		if (value === null || Math.abs(value) < TOLERANCE) return null;
 	}
 	if (kept.length === 0) return null;
@@ -285,7 +276,7 @@ function shortened(result: SolveResult): SolveResult {
 // =============================================================================
 
 function baseNumeric(solution: Solution): number | null {
-	return solution.approximate ?? numeric(solution.value);
+	return solution.approximate ?? computeNumericValue(solution.value);
 }
 
 /**
@@ -301,7 +292,7 @@ function withoutPoles(
 ): SolveResult | null {
 	const isPole = (x: number): boolean =>
 		tangentArguments.some((argument) => {
-			const at = numeric(substitute(argument, { [variable]: x }));
+			const at = computeNumericValue(substitute(argument, { [variable]: x }));
 			return at === null || Math.abs(Math.cos(at)) < 1e-9;
 		});
 

@@ -1181,3 +1181,12 @@ Banc jetable (chaque appel calcule ancien et nouveau, écarts dans un JSONL) sur
 ## 98. Lot 6a mergé (#1760, 2026-10-25)
 
 CI verte (16 checks). Suite serveur complète verte après rebase (deux rouges de migration venus de `main`, corrigés par #1757).
+
+## 99. Lot 6b codé (branche `feat/simplify-carte-6b`, 2026-10-25)
+
+- `computeNumericValue` déménage dans `eval/numeric-value.ts` (réexport depuis `solve/numeric-value.ts`) ; `computeNumericValueOrInfinity` (fini, ±∞, ou `null`) remplace `inequality/index.ts` `numericValue` et le corps de `reciprocal/image.ts` `approx`.
+- **Fonctions A remplacées (17)** : 12 alias supprimés (`periodicValueOf`, `numeric`, `tryNumeric` de `literal-parameter`, `numericValue` ×2, `tryEvaluateNumeric` ×3, `pointToNumber`, `constantValue` de `bounded`, `tryApproximate`, `approximateConstant` de `sign-tracking` — non listée au § 95) ; 5 gardées, au corps réduit (`numericOf`, `periodToNumeric`, `approximate` de `piecewise`, `evaluateAtPoint` d'`algebraic`, `evaluateAtValue`). A' : `symmetry`, `boundary-limits`, `substitution.dedupe`, sentinelles gardées.
+- **Blocs A≈ remplacés (11, pas ~40)** : seuls ceux dont le `try` n'entoure que l'évaluation et dont l'échec et le non-fini sortent pareil (`limits/evaluate` ×5, `solve.ts` dénominateur, `sin-cos-ratio.nonZero`, `substitution` ×2, `rational.ensureApproximate`, `one-sided` point d'approche, `preimage`). Laissés : les `try` qui protègent aussi `substitute`/`normalize`/`denormalize`, les raccourcis `sol.approximate ?? …`, B, L, X.
+- **Bug latent `algebraic.ts:663` (x < 0 → `null`) : non reproduit.** Le code construit `{ type: 'number', value: '-2' }` sans passer par `number()`, et `evaluateNodeToApproximatedNumber` le lit (−2, −0,01 sondés sur `x²+1`, `1/x`, `3x+2`, `√(x+5)`). Rien à corriger.
+- Mesures : suite serveur complète verte (61 402) ; `check:incremental` 0 ; cliquet tenu ; test `eval/__tests__/numeric-value.test.ts` (4). **Banc 1 102 modèles × 8 tirages (8 816) : 0 différence, mais aveugle** — témoin (`computeNumericValue` × 1,001) : 0 différence aussi, les modèles de la prod n'empruntent pas ces chemins. Script du banc réécrit (le précédent n'était pas gardé) : `generateInstance(modèle, graine 1..8)`, JSON entier, `generatedAt` retiré.
+- Doc : invariant 11 de `docs/systeme/mathast/README.md`.

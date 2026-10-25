@@ -69,6 +69,7 @@ import {
 	describePeriodicPattern,
 	summarizeContinuityResult
 } from './continuity-steps';
+import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
 // Default Options
@@ -559,7 +560,7 @@ function analyzeKnownJumpDiscontinuity(
 	point: MathNode,
 	source: DiscontinuitySource
 ): Discontinuity | null {
-	const pointValue = tryEvaluateNumeric(point);
+	const pointValue = computeNumericValue(point);
 	if (pointValue === null) return null;
 
 	// For floor(x): discontinuous at every integer
@@ -639,8 +640,8 @@ function enumeratePeriodicPoints(
 	const candidates: DiscontinuityCandidate[] = [];
 
 	// Try to evaluate base point and period numerically
-	const baseValue = tryEvaluateNumeric(periodic.basePoint);
-	const periodValue = tryEvaluateNumeric(periodic.period);
+	const baseValue = computeNumericValue(periodic.basePoint);
+	const periodValue = computeNumericValue(periodic.period);
 
 	if (baseValue === null || periodValue === null || periodValue <= 0) {
 		// Can't enumerate, just return the base point
@@ -890,7 +891,7 @@ function normalizeSolutionToNumber(node: MathNode): MathNode {
 	}
 
 	// Try to evaluate numerically
-	const numericValue = tryEvaluateNumeric(node);
+	const numericValue = computeNumericValue(node);
 	if (numericValue !== null) {
 		return { type: 'number', value: formatNumber(numericValue) };
 	}
@@ -980,7 +981,7 @@ function detectSourceFromExpression(
 		(node) =>
 			node.type === 'superscript' &&
 			findNodes(node.superscript, (n) => n.type === 'variable').length === 0 &&
-			!Number.isInteger(tryEvaluateNumeric(node.superscript) ?? 0)
+			!Number.isInteger(computeNumericValue(node.superscript) ?? 0)
 	);
 	if (fractionalPowers.length > 0) {
 		return 'sqrt';
@@ -1000,8 +1001,8 @@ function detectSourceFromExpression(
  */
 function detectSourceFromPeriodicExclusion(periodic: PeriodicExclusion): DiscontinuitySource {
 	// Heuristic based on base point and period
-	const baseValue = tryEvaluateNumeric(periodic.basePoint);
-	const periodValue = tryEvaluateNumeric(periodic.period);
+	const baseValue = computeNumericValue(periodic.basePoint);
+	const periodValue = computeNumericValue(periodic.period);
 
 	if (periodValue !== null && Math.abs(periodValue - Math.PI) < 0.01) {
 		// Period is π
@@ -1084,18 +1085,6 @@ function tryEvaluateAtPoint(expr: MathNode, variable: string, point: MathNode): 
 }
 
 /**
- * Try to evaluate a node to a number.
- */
-function tryEvaluateNumeric(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
-}
-
-/**
  * Get a unique key for a point (for deduplication).
  *
  * Uses exact evaluation when possible to handle symbolic values like π/2
@@ -1118,7 +1107,7 @@ function getPointKey(point: MathNode): string {
 	}
 
 	// Fallback to numeric evaluation
-	const value = tryEvaluateNumeric(point);
+	const value = computeNumericValue(point);
 	if (value !== null) {
 		// Round to avoid floating point comparison issues
 		return String(Math.round(value * 1e10) / 1e10);

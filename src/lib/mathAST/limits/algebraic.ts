@@ -45,7 +45,7 @@ import {
 	toPolynomial
 } from '../factor';
 import { substitute } from '../eval/substitute';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
 // Algebraic Manipulation Result
@@ -661,14 +661,8 @@ function replaceAbs(expr: MathNode, varName: string, testValue: number): MathNod
  * Evaluate an expression at a specific point using full substitution and evaluation.
  */
 function evaluateAtPoint(expr: MathNode, varName: string, value: number): number | null {
-	try {
-		const valueNode: MathNode = { type: 'number', value: String(value) };
-		const substituted = substitute(expr, { [varName]: valueNode });
-		const result = evaluateNodeToApproximatedNumber(substituted);
-		return Number.isFinite(result) ? result : null;
-	} catch {
-		return null;
-	}
+	const valueNode: MathNode = { type: 'number', value: String(value) };
+	return computeNumericValue(substitute(expr, { [varName]: valueNode }));
 }
 
 // =============================================================================

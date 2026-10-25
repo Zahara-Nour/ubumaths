@@ -19,7 +19,7 @@ import type { LimitResult, LimitDirection } from '../limits/types';
 // Direct import (bypassing the limits barrel) to avoid a Rollup chunk-cycle
 // warning between `limits/index.ts` and `limits/evaluate.ts`.
 import { evaluateLimit } from '../limits/evaluate';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 import { infinity } from '../factory';
 import { isNumber, isInfinity } from '../guards';
 import {
@@ -388,12 +388,7 @@ function getApproximateValue(result: LimitResult): number | undefined {
 
 	// Évalue le nœud : une limite exacte est une fraction (2/3) ou un
 	// opposé (−1/2), pas seulement un littéral
-	try {
-		const val = evaluateNodeToApproximatedNumber(result.value);
-		return Number.isFinite(val) ? val : undefined;
-	} catch {
-		return undefined;
-	}
+	return computeNumericValue(result.value) ?? undefined;
 }
 
 /**

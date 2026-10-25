@@ -1031,6 +1031,14 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
     de la fonction `f_1` (`indexedGenericFunctionName`) ; non déclaré, ou sans appel (`f_1`,
     `f_1^2`), il reste la variable indicée. `toLatex` écrit `f_{12}` (sans accolades, KaTeX
     afficherait f₁2). Les parseurs rd ne connaissent pas les fonctions génériques.
+11. **Une valeur approchée « ou rien » passe par `computeNumericValue`** (`eval/numeric-value.ts`,
+    lot 6b du chantier simplify-carte, 2026-10-25) : fini, ou `null` si le nœud contient une
+    variable, si l'évaluation lève ou si la valeur n'est pas finie. `computeNumericValueOrInfinity`
+    laisse passer ±∞ (bornes d'inéquations, images de la réciproque) et rend `null` pour NaN. Ne
+    plus écrire de `try { evaluateNodeToApproximatedNumber(…) } catch` + `isFinite` local. Restent
+    sur l'appel brut, à dessein : les sites qui laissent passer NaN ou ±∞, ceux où l'exception
+    remonte, `outOfDomainNear` (lit le message), `differentiability` (±∞/NaN = branches),
+    `transcendental` (repli 0), et les `try` qui protègent aussi `substitute`, `normalize`…
 
 ## Le moteur de réécriture et les étapes
 

@@ -38,7 +38,7 @@ import { fraction, mathConstant, number, subtract } from '../factory';
 import { substitute } from '../eval/substitute';
 import { containsVariable } from '../common/contains-variable';
 import { extractExactRational, numericNode, rationalToNode } from '../common/numeric';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 import { toLatex } from '../latex-generator';
 
 // =============================================================================
@@ -284,12 +284,7 @@ function probePoints(approach: MathNode, direction: LimitDirection): number[] | 
  * pour le parseur) vaut la constante. `null` si elle ne s'évalue pas.
  */
 function approximate(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(substitute(node, { π: mathConstant('pi') }));
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
+	return computeNumericValue(substitute(node, { π: mathConstant('pi') }));
 }
 
 // =============================================================================

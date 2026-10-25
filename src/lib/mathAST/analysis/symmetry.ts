@@ -19,6 +19,7 @@ import { normalFormsEquivalent } from '../normal';
 import { equivalenceForms } from '../normal/normalize';
 import { computeDomain } from '../domain/compute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
 // Domain Symmetry Checking
@@ -184,12 +185,7 @@ function getEndpointNumericValue(value: MathNode): number | undefined {
 		return undefined;
 	}
 
-	try {
-		const num = evaluateNodeToApproximatedNumber(value);
-		return isFinite(num) ? num : undefined;
-	} catch {
-		return undefined;
-	}
+	return computeNumericValue(value) ?? undefined;
 }
 
 // =============================================================================

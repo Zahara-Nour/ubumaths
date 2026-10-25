@@ -17,7 +17,7 @@
 import { reservedVariableRefusal } from '../../common/reserved-letters';
 import type { MathNode, RelationNode } from '../../types';
 import type { Domain, PeriodicExclusion } from '../../domain/types';
-import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
+import { computeNumericValueOrInfinity } from '../../eval/numeric-value';
 import type { SignAnalysisResult, SignedInterval } from '../../sign/types';
 import {
 	SolveInequalityError,
@@ -230,12 +230,12 @@ function isBoundedSet(domain: Domain): boolean {
 function periodicPoleInside(periodic: PeriodicExclusion, imposed: Domain): boolean {
 	if (imposed.kind === 'empty') return false;
 	if (imposed.kind !== 'interval_set') return true;
-	const base = numericValue(periodic.basePoint);
-	const period = numericValue(periodic.period);
+	const base = computeNumericValueOrInfinity(periodic.basePoint);
+	const period = computeNumericValueOrInfinity(periodic.period);
 	if (base === null || period === null || period <= 0) return true;
 	for (const piece of imposed.intervals) {
-		const lo = numericValue(piece.lower.value);
-		const hi = numericValue(piece.upper.value);
+		const lo = computeNumericValueOrInfinity(piece.lower.value);
+		const hi = computeNumericValueOrInfinity(piece.upper.value);
 		if (lo === null || hi === null) return true;
 		if (!Number.isFinite(lo) || !Number.isFinite(hi)) return true;
 		// Premier pôle ≥ lo, à une tolérance près (un pôle sur une borne compte)
@@ -243,16 +243,6 @@ function periodicPoleInside(periodic: PeriodicExclusion, imposed: Domain): boole
 		if (first <= hi + 1e-9) return true;
 	}
 	return false;
-}
-
-function numericValue(node: MathNode): number | null {
-	if (node.type === 'infinity') return node.sign === 'positive' ? Infinity : -Infinity;
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isNaN(value) ? null : value;
-	} catch {
-		return null;
-	}
 }
 
 /**
