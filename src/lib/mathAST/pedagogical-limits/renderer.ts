@@ -146,9 +146,12 @@ function formatExpressionLatex(step: PedagogicalLimitStep): string {
 	if (right === left) {
 		return `\\begin{aligned}\n  & \\textcolor{blue}{${left}}\n\\end{aligned}`;
 	}
+	// Les écritures intermédiaires, une ligne chacune (développé, factorisé : Q45)
+	const middle = (step.chain ?? []).map((node) => `  & = ${limitLatex(limitSub, node)} \\\\\n`);
 	return (
 		`\\begin{aligned}\n` +
 		`  & \\textcolor{blue}{${left}} \\\\\n` +
+		middle.join('') +
 		`  & = ${right}\n` +
 		`\\end{aligned}`
 	);

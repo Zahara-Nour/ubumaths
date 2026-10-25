@@ -241,6 +241,12 @@ export interface PedagogicalLimitStep extends BaseStep<PedagogicalLimitRule> {
 	readonly termLimits?: TermLimits;
 
 	/**
+	 * Les écritures intermédiaires entre `before` et `after`, une ligne chacune
+	 * (« Simplification du facteur commun » : développé, puis factorisé, Q45).
+	 */
+	readonly chain?: readonly MathNode[];
+
+	/**
 	 * Optional finer-grained sub-steps (e.g. the factor-numerator /
 	 * factor-denominator / simplify-common-factor triple under a top-level
 	 * factorisation parent step).

@@ -94,7 +94,10 @@ describe('factorisation : (x²−1)/(x−1) en 1', () => {
 		]);
 		// La fraction s'écrit en fraction, jamais `(x^2-1) / (x-1)`
 		expect(flat(list[0])).toBe('\\lim_{x\\to1}\\dfrac{x^2-1}{x-1}');
-		expect(flat(list[2])).toBe('\\lim_{x\\to1}\\dfrac{x^2-1}{x-1}|=\\lim_{x\\to1}(x+1)');
+		// La forme factorisée écrite avant la simplification (Q45, 2026-10-24)
+		expect(flat(list[2])).toBe(
+			'\\lim_{x\\to1}\\dfrac{x^2-1}{x-1}|=\\lim_{x\\to1}\\dfrac{(x-1)(x+1)}{x-1}|=\\lim_{x\\to1}(x+1)'
+		);
 		expect(flat(list[2].subSteps?.[0] ?? list[2])).toBe('x^2-1|=(x-1)(x+1)');
 		expect(flat(last(list))).toBe('\\lim_{x\\to1}(x+1)|=2');
 	});

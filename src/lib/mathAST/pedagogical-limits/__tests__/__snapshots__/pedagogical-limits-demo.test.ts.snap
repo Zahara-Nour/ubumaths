@@ -122,7 +122,7 @@ Expression: (x^2-4)/(x-2), x → 2 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\dfrac{\\left( x - 2 \\right) \\left( x + 2 \\right)}{x - 2} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace $x$ par $2$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 - [conclude] La limite vaut $4$
@@ -138,7 +138,7 @@ Status: exact, Value: 4
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\dfrac{\\left( x - 2 \\right) \\left( x + 2 \\right)}{x - 2} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Le numérateur s'annule en $2$, donc $x - 2$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - 4 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x + 2 \\right) \\end{aligned}
@@ -152,7 +152,7 @@ Status: exact, Value: 4
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\dfrac{\\left( x - 2 \\right) \\left( x + 2 \\right)}{x - 2} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x + 2 \\right)} \\\\ & = 4 \\end{aligned}
 Status: exact, Value: 4
@@ -163,7 +163,7 @@ Status: exact, Value: 4
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^2 - 4 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\dfrac{\\left( x - 2 \\right) \\left( x + 2 \\right)}{x - 2} \\\\ & = \\lim_{x \\to 2} \\left( x + 2 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Le numérateur s'annule en $2$, donc $x - 2$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - 4 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x + 2 \\right) \\end{aligned}
@@ -182,7 +182,7 @@ Expression: (x^2-x-6)/(x-3), x → 3 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\dfrac{\\left( x - 3 \\right) \\left( x + 2 \\right)}{x - 3} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace $x$ par $3$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 - [conclude] La limite vaut $5$
@@ -198,7 +198,7 @@ Status: exact, Value: 5
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\dfrac{\\left( x - 3 \\right) \\left( x + 2 \\right)}{x - 3} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Le numérateur s'annule en $3$, donc $x - 3$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - x - 6 \\right)} \\\\ & = \\left( x - 3 \\right) \\left( x + 2 \\right) \\end{aligned}
@@ -212,7 +212,7 @@ Status: exact, Value: 5
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\dfrac{\\left( x - 3 \\right) \\left( x + 2 \\right)}{x - 3} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\left( x + 2 \\right)} \\\\ & = 5 \\end{aligned}
 Status: exact, Value: 5
@@ -223,7 +223,7 @@ Status: exact, Value: 5
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 3} \\dfrac{\\left( x^2 - x - 6 \\right)}{\\left( x - 3 \\right)}} \\\\ & = \\lim_{x \\to 3} \\dfrac{\\left( x - 3 \\right) \\left( x + 2 \\right)}{x - 3} \\\\ & = \\lim_{x \\to 3} \\left( x + 2 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Le numérateur s'annule en $3$, donc $x - 3$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^2 - x - 6 \\right)} \\\\ & = \\left( x - 3 \\right) \\left( x + 2 \\right) \\end{aligned}
@@ -242,7 +242,7 @@ Expression: (x^3-1)/(x-1), x → 1 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\dfrac{\\left( x - 1 \\right) \\left( x^2 + x + 1 \\right)}{x - 1} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace $x$ par $1$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 - [conclude] La limite vaut $3$
@@ -258,7 +258,7 @@ Status: exact, Value: 3
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\dfrac{\\left( x - 1 \\right) \\left( x^2 + x + 1 \\right)}{x - 1} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Le numérateur s'annule en $1$, donc $x - 1$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 1 \\right)} \\\\ & = \\left( x - 1 \\right) \\left( x^2 + x + 1 \\right) \\end{aligned}
@@ -272,7 +272,7 @@ Status: exact, Value: 3
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\dfrac{\\left( x - 1 \\right) \\left( x^2 + x + 1 \\right)}{x - 1} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\left( x^2 + x + 1 \\right)} \\\\ & = 3 \\end{aligned}
 Status: exact, Value: 3
@@ -283,7 +283,7 @@ Status: exact, Value: 3
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 1} \\dfrac{\\left( x^3 - 1 \\right)}{\\left( x - 1 \\right)}} \\\\ & = \\lim_{x \\to 1} \\dfrac{\\left( x - 1 \\right) \\left( x^2 + x + 1 \\right)}{x - 1} \\\\ & = \\lim_{x \\to 1} \\left( x^2 + x + 1 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Le numérateur s'annule en $1$, donc $x - 1$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 1 \\right)} \\\\ & = \\left( x - 1 \\right) \\left( x^2 + x + 1 \\right) \\end{aligned}
@@ -302,7 +302,7 @@ Expression: (x^3-8)/(x-2), x → 2 (variable: x)
 
 ========== LYCEE (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\dfrac{\\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right)}{x - 2} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
 - [apply-direct-substitution] Substitution directe : on remplace $x$ par $2$
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 - [conclude] La limite vaut $12$
@@ -318,7 +318,7 @@ Status: exact, Value: 12
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\dfrac{\\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right)}{x - 2} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Le numérateur s'annule en $2$, donc $x - 2$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 8 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
@@ -332,7 +332,7 @@ Status: exact, Value: 12
 
 ========== SUPERIEUR (summarized) ==========
 - [simplify-common-factor] Simplification du facteur commun
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\dfrac{\\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right)}{x - 2} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
 - [apply-direct-substitution] Continuité : substitution directe
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right)} \\\\ & = 12 \\end{aligned}
 Status: exact, Value: 12
@@ -343,7 +343,7 @@ Status: exact, Value: 12
   \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\end{aligned}
 - [simplify-common-factor] Simplification du facteur commun
   · Numérateur et dénominateur partagent un facteur commun. On le simplifie pour lever la forme indéterminée.
-  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
+  \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 2} \\dfrac{\\left( x^3 - 8 \\right)}{\\left( x - 2 \\right)}} \\\\ & = \\lim_{x \\to 2} \\dfrac{\\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right)}{x - 2} \\\\ & = \\lim_{x \\to 2} \\left( x^2 + 2 x + 4 \\right) \\end{aligned}
   - [factor-numerator] Factorisation du numérateur
     · Le numérateur s'annule en $2$, donc $x - 2$ en est un facteur. On factorise pour préparer la simplification.
     \\begin{aligned} & \\textcolor{blue}{\\left( x^3 - 8 \\right)} \\\\ & = \\left( x - 2 \\right) \\left( x^2 + 2 x + 4 \\right) \\end{aligned}

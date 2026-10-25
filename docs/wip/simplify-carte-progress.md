@@ -2,15 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1703 (5f-1)._
+_Mis à jour le 2026-10-25, 5f-3 codé (PR ouverte)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691) mergés ; ~~5e D4~~ (#1696, § 70), ~~5f-1 `tidy`~~ (#1703, § 73) mergés. Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691), ~~5e D4~~ (#1696), ~~5f-1 `tidy`~~ (#1703), ~~5f-2 primitives~~ (#1708, § 75-76) mergés ; **5f-3 limites codé, PR ouverte** (§ 78). Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (… → ~~Q33~~ → ~~5e D4~~ → 5f restes : ~~5f-1~~ → **5f-2** → 5f-3 → 5f-4 → 5f-5) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5f-2 primitives, phase de code (Q tranchées § 72) : R1 primitive `simplify` → `tidy` (`atelier/calcul.ts`), R4/Q43 `(x+1)eˣ − eˣ → xeˣ` avec étape, R5/Q42 b décimaux d'une primitive (tous décimaux si chacun tombe juste, sinon fractions), R6/Q44 a + bis coefficient décimal de tête sorti (aussi dans D2). Tests rouges d'abord ; mesurer suite, oracle, banc (`zz-tirages.mts`, scratchpad de la session `1d182aed…/banc`, `main.txt` = référence). Atelier-python prévenue du merge de #1703.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer) .
-- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` (à brancher sur l'Atelier, futur chantier) ; banc des modèles : script `zz-tirages.mts` copié à la racine, `pnpm exec tsx`, base = dépôt principal sur `origin/main`, TABLEAU zsh et copie vérifiée (§ 64, § 73) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-2` (partie d'`origin/main` après #1703).
+- **Ordre des lots** : … → **5** (… → 5f restes : ~~5f-1~~ → ~~5f-2~~ → **5f-3** (PR) → Q49 → 5f-4 → 5f-5) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : merger la PR de 5f-3 si CI verte (§ 78), puis Q49 (§ 77).
+- **Après 5f-3** : Q49 (§ 77), petite PR : valeur d'une intégrale bornée à décimaux en décimal si elle tombe juste.
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 et #1708) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
+- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc : `zz-tirages.mts` copié à la racine, `pnpm exec tsx`, `main.txt` = référence, TABLEAU zsh ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **PR sans CI = conflit avec `main`** (`mergeStateStatus` DIRTY) : fusionner `origin/main` dans la branche ; « Task killed: prettier » au pre-commit = une AUTRE tâche a échoué (lire la sortie entière) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-3` (partie d'`origin/main` après #1708).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1011,3 +1012,19 @@ CI verte, mergée. Session `atelier-python` prévenue pour son rebase. Page de s
 - Mesures : suite serveur `src/lib` 57 922 verts, 2 rouges = changements voulus (ci-dessus), corrigés ; banc 1 102 modèles × 8 tirages : identique à `main.txt` (`cmp`) — **mais aucun modèle de prod n'a de correction automatique** (corrections toutes rédigées) : le banc ne mesure pas R4-R6 ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre ; doc `mathast/README.md`, `atelier.md`.
 - **Revue `code-reviewer` (opus), corrigé, tests rouges d'abord** : (1, régression) `withDecimalCoefficients` descendait dans les exposants (`e^{x/2}` → `e^{0,5x}`, factorisation rejetée par `exponentialKeys`) — il ne lit plus que les coefficients (ni exposant, ni argument, ni constante : `π/4` reste) ; (2) un premier coefficient opposé (`opposite(3/10)·x²`, moteur de l'Atelier) n'était pas lu : `.intégrer -0,6x+1,2` → `-0,3x² + 1,2x + C` ; (3) la somme facteur d'une exponentielle suit le registre (`∫0,5xeˣ = (0,5x − 0,5)eˣ`). 5 rouges avant. **Laissés (mineurs)** : `0,5x² + x/3` factorisée → `x(3x+2)/6` (fraction ET décimal tapés) ; factoriser deux fois `2,5x² − 5` réordonne `(√2 + x)` (une seule passe en pratique).
 - Mesures finales : suite serveur `src/lib` 57 928 verts ; `check:incremental` 0 ; cliquet tenu ; `docs:check-a-jour` propre.
+
+## 76. 5f-2 mergé (#1708, 2026-10-24)
+
+CI verte (après fusion d'`origin/main` : la PR, en conflit sur `verifications-manuelles.md`, ne lançait pas `quality`), mergée. Vérifications manuelles notées (#1708). Session `atelier-python` à prévenir (`atelier/calcul.ts` touché).
+
+## 77. Q49 tranchée (David, 2026-10-25 : « ok pour ta question »)
+
+**Q49** — la VALEUR d'une intégrale bornée dont l'intégrande tape un décimal suit S1 : décimal si l'écriture est finie (`∫₀¹ 0,5x dx = 0,25`), sinon fraction (`∫₀¹ 0,5x² dx = 1/6`) ; corrections et `.intégrer`. Petite PR à part, après 5f-3 (ma recommandation).
+
+## 78. Lot 5f-3 (limites, R7, Q45 « les deux ») codé (branche `feat/simplify-carte-5f-3`, 2026-10-25)
+
+- **Décimaux gardés** : `stepsInRegister` (`pedagogical-limits/decimal-register.ts`), appliqué à la sortie de `generatePedagogicalLimitSteps` quand l'expression tape un décimal : nombres et coefficients à écriture finie en décimal (`x²(0,5 + 1/x²)`, « La limite vaut 0,5 », `(x+1)/2 → 0,5(x + 1)`), sinon fraction (`1/3`) ; ni exposant, ni argument de fonction, ni constante ; l'expression tapée (même référence) reste ; `value` inchangée. Couvre l'Atelier ET `dispatch` (corrections).
+- **Calcul montré** : champ `chain` de l'étape (`types.ts`), une ligne `= \lim …` par écriture (renderer) ; `factorisationChain` (`pipeline.ts`) : développé si l'écriture tapée ne l'est pas, puis factorisé ; ligne répétée retirée (comparée à l'affichage : `sameShown`).
+- Tests : `atelier/__tests__/limite-etapes-5f3.test.ts` (7 rouges sur 10 avant ; +4 de la revue, rouges avant) ; 2 tests mis à jour (`limite-etapes`, `renderer` : dernière ligne `& =`), instantané démo (ligne factorisée ajoutée, voulu).
+- **Revue `code-reviewer` (opus), corrigé, tests rouges d'abord** : (1) sous-étape « Factorisation du dénominateur » `0,5x = 0,5x` (test d'égalité avant le registre → `sameShown`) ; (2) `0,5(-x - 1)` → `-0,5(x + 1)` (`leadingNegative`) ; (3) `x/1 → 1x` → `x`.
+- Mesures : suite serveur `src/lib` 58 050 verts (avant la revue), suites limites/atelier/questions 10 995 verts après ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre ; doc `mathast/README.md`, `atelier.md`. Banc non relancé : aucun modèle de prod n'a d'étapes de limite automatiques (§ 75).
