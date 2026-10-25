@@ -323,6 +323,8 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['neg-base-pow-odd', 'puissances'],
 	['pow-of-pow', 'puissances'],
 	['same-base-mul', 'puissances'],
+	['same-base-mul-bare', 'puissances'],
+	['same-base-div', 'puissances'],
 	['pow-of-quotient', 'puissances'],
 	['pow-neg-one', 'puissances'],
 	// normalize-side power steps
@@ -383,6 +385,7 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['tidy-number-first', 'combinaison-termes-semblables'],
 	['tidy-merge-factors', 'puissances'],
 	['tidy-extract-radicals', 'radicaux'],
+	['tidy-power-to-root', 'radicaux'],
 	['tidy-add-fractions', 'fractions'],
 	['tidy-choose-unit', 'autre'],
 

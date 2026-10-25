@@ -37,6 +37,7 @@ export type TidyRule =
 	| 'tidy-terms'
 	| 'tidy-fold-numbers'
 	| 'tidy-extract-radicals'
+	| 'tidy-power-to-root'
 	| 'tidy-merge-factors'
 	| 'tidy-simplify-signs'
 	| 'tidy-add-fractions'
@@ -57,6 +58,7 @@ export const TIDY_RULE_DESCRIPTIONS: Readonly<Record<TidyRule, string>> = {
 	'tidy-terms': 'On met chaque terme au propre',
 	'tidy-fold-numbers': 'On calcule les nombres',
 	'tidy-extract-radicals': 'On extrait du radical les facteurs qui sont des carrés parfaits',
+	'tidy-power-to-root': 'On écrit la puissance avec une racine carrée',
 	'tidy-merge-factors': 'On regroupe les facteurs de même base',
 	'tidy-simplify-signs': 'On simplifie les signes',
 	'tidy-add-fractions': 'On met au même dénominateur et on calcule',

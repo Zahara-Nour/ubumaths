@@ -28,7 +28,7 @@ import { flattenProductShallow, flattenSumShallow } from '../flatten';
 import { findNodes, getChildren } from '../transforms';
 import { extractRational } from '../common/numeric';
 import { hashMathNode, hashUnit, nodesEqual } from '../normal/hash';
-import { extractPerfectPower } from '../normal/radical';
+import { extractPerfectPower, integerNthRoot } from '../normal/radical';
 import {
 	ONE,
 	ZERO,
@@ -190,7 +190,7 @@ type Accumulator = {
  * `tidy-terms`. Une étiquette qui ment à l'élève est pire qu'une étiquette
  * grossière.
  */
-export type TidyFamily = 'numbers' | 'radicals' | 'factors' | 'signs' | 'other';
+export type TidyFamily = 'numbers' | 'radicals' | 'factors' | 'signs' | 'powers' | 'other';
 
 /** Le carnet des familles qui ont travaillé, ou `undefined` si nul n'écoute. */
 type FamilyWatch = Set<TidyFamily> | undefined;
@@ -201,6 +201,9 @@ type FamilyWatch = Set<TidyFamily> | undefined;
 
 /** Au-delà, la recherche du plus grand carré diviseur coûterait trop cher. */
 const MAX_RADICAND_FOR_FACTORING = 1_000_000_000_000n;
+
+/** Au-delà, l'indice d'une racine exacte (`27^{2/3}`) n'est pas cherché. */
+const MAX_ROOT_INDEX = 64n;
 
 /**
  * Plafond d'évaluation d'une puissance numérique (finding R2).
@@ -654,6 +657,38 @@ function absorbSquareRoot(radicand: Rational, exponent: Rational, acc: Accumulat
 	return true;
 }
 
+/**
+ * Étape 7 bis — puissance d'un rationnel positif d'exposant non entier (Q47,
+ * lot 5f-5 de simplify-carte, David 2026-10-24) : un exposant de dénominateur
+ * 2 s'écrit avec une racine carrée (`2^{0,5} → √2`, `8^{1/2} → 2√2`,
+ * `2^{3/2} → 2√2`) — `b^{n/2} = (√b)ⁿ`, que l'étape 7 sait écrire ; un autre
+ * dénominateur seulement sur un entier dont la racine est exacte
+ * (`27^{2/3} → 9`, `2^{1/3}` reste).
+ */
+function absorbFractionalPower(base: MathNode, exponent: Rational, acc: Accumulator): boolean {
+	if (isIntegerRational(exponent)) return false;
+	const value = rationalValue(base);
+	if (value === null || !isPositiveRational(value)) return false;
+	const times = rational(exponent.n, 1n);
+
+	if (exponent.d === 2n) {
+		if (!absorbSquareRoot(value, times, acc)) return false;
+		acc.watch?.add('powers');
+		// Registre du radicande, comme `√0,25 → 0,5` (Q8)
+		if (hasDecimalLiteral(base)) acc.decimalRoot = true;
+		if (findNodes(base, (n) => n.type === 'division').length > 0) acc.fraction = true;
+		return true;
+	}
+
+	// Q47 dit « valeur exacte entière » : une base entière seulement
+	if (value.d !== 1n || exponent.d > MAX_ROOT_INDEX) return false;
+	const root = integerNthRoot(value.n, exponent.d);
+	if (root === null || !absorbRational(fromInteger(root), times, acc)) return false;
+	// `8^{1/3} → 2` calcule, même si l'exposant restant vaut 1
+	acc.watch?.add('numbers');
+	return true;
+}
+
 /** Le radicande rationnel positif d'un `sqrt(...)`, ou `null`. */
 function squareRootRadicand(node: MathNode): Rational | null {
 	if (!isFunction(node)) return null;
@@ -793,6 +828,14 @@ function absorbFactor(
 			return;
 
 		case 'superscript': {
+			// `2^{1/2}` : l'exposant est une division, que `extractRational` ne lit pas
+			const fractional = rationalValue(node.superscript);
+			if (
+				fractional !== null &&
+				absorbFractionalPower(node.base, mulRational(exponent, fractional), acc)
+			) {
+				return;
+			}
 			const innerExponent = extractRational(node.superscript);
 			if (innerExponent !== null) {
 				const total = mulRational(exponent, innerExponent);
@@ -1819,7 +1862,8 @@ const FAMILY_RULE: Readonly<Partial<Record<TidyFamily, TidyRule>>> = {
 	numbers: 'tidy-fold-numbers',
 	radicals: 'tidy-extract-radicals',
 	factors: 'tidy-merge-factors',
-	signs: 'tidy-simplify-signs'
+	signs: 'tidy-simplify-signs',
+	powers: 'tidy-power-to-root'
 };
 
 /**

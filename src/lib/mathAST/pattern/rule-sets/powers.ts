@@ -15,8 +15,10 @@
  * ```
  */
 
-import { func, multiply } from '../../factory';
-import { isFunction } from '../../guards';
+import { add, func, multiply, number, subtract, superscript } from '../../factory';
+import { isEulerConstant, isFunction } from '../../guards';
+import { extractRational } from '../../common/numeric';
+import { nodesEqual } from '../../normal/hash';
 import { tidy } from '../../tidy';
 import type { MathNode } from '../../types';
 import { P } from '../builder';
@@ -51,6 +53,47 @@ function squaredRadicandBase(root: MathNode | null): MathNode | null {
 	return bindings === undefined ? null : getBindingNode(bindings, 'a');
 }
 
+/**
+ * Une base qui ne s'annule jamais : `e`, un rationnel positif. Diviser par
+ * `xⁿ` supposerait x ≠ 0 — `x³/x² → x` passe par la réduction de fraction, qui
+ * le dit (Q4) ; même restriction que le regroupement de `tidy` (Q29).
+ */
+function isNonVanishingBase(node: MathNode): boolean {
+	if (isEulerConstant(node)) return true;
+	const value = extractRational(node);
+	return value !== null && value.n > 0n;
+}
+
+/** La base et l'exposant d'un facteur : `aⁿ` → (a, n), `a` → (a, 1). */
+function asPower(node: MathNode): { readonly base: MathNode; readonly exponent: MathNode } {
+	const bare = unwrapDelimiters(node) ?? node;
+	return bare.type === 'superscript'
+		? { base: bare.base, exponent: bare.superscript }
+		: { base: bare, exponent: number(1) };
+}
+
+/** `aᵐ` et `aⁿ` (ou `a`) de même base qui ne s'annule pas. */
+function sameNonVanishingBase(left: MathNode | null, right: MathNode | null): boolean {
+	if (left === null || right === null) return false;
+	const l = asPower(left);
+	const r = asPower(right);
+	return isNonVanishingBase(l.base) && nodesEqual(l.base, r.base);
+}
+
+/** Le nœud lié à `name` ; inatteignable sans lui, `condition` l'a déjà lu. */
+function boundNode(bindings: MatchBindings, name: string): MathNode {
+	const node = getBindingNode(bindings, name);
+	if (node === null) throw new Error(`powers: liaison « ${name} » absente`);
+	return node;
+}
+
+/** Exactement un des deux facteurs est une puissance (les deux : `same-base-mul`). */
+function exactlyOnePower(left: MathNode | null, right: MathNode | null): boolean {
+	if (left === null || right === null) return false;
+	const powers = [left, right].filter((n) => unwrapDelimiters(n)?.type === 'superscript');
+	return powers.length === 1;
+}
+
 // =============================================================================
 // Power Rules
 // =============================================================================
@@ -70,6 +113,7 @@ function squaredRadicandBase(root: MathNode | null): MathNode | null {
  * - (sqrt(x))^2 = x
  * - (a^m)^n = a^(m*n) (power of power)
  * - a^m * a^n = a^(m+n) (same base product)
+ * - a^m * a = a^(m+1), a^m / a^n = a^(m-n) (base e or positive rational)
  * - (a/b)^n = a^n / b^n (power of quotient)
  * - x^(-1) = 1/x (negative one exponent)
  */
@@ -214,6 +258,41 @@ export const powerRules: readonly Rule[] = [
 		P.mul(P.pow(P._('a'), P._('m')), P.pow(P._('a'), P._('n'))),
 		(bindings) => tidyExponent(P.pow(P._('a'), P.add(P._('m'), P._('n'))), bindings),
 		{ name: 'same-base-mul' }
+	),
+
+	// aᵐ · a = aᵐ⁺¹ (Q48, lot 5f-5 de simplify-carte : `eˣ·e → e^{x+1}`) — base
+	// qui ne s'annule pas, comme le quotient
+	createRule(
+		P.mul(P._('l'), P._('r')),
+		(bindings) => {
+			const l = asPower(boundNode(bindings, 'l'));
+			const r = asPower(boundNode(bindings, 'r'));
+			return superscript(l.base, tidy(add(l.exponent, r.exponent)));
+		},
+		{
+			name: 'same-base-mul-bare',
+			condition: (bindings) => {
+				const l = getBindingNode(bindings, 'l');
+				const r = getBindingNode(bindings, 'r');
+				return exactlyOnePower(l, r) && sameNonVanishingBase(l, r);
+			}
+		}
+	),
+
+	// aᵐ / aⁿ = aᵐ⁻ⁿ (Q48 : `e^{2x}/eˣ → eˣ`, `e/eˣ → e^{1−x}`) — base qui ne
+	// s'annule pas
+	createRule(
+		P.div(P._('num'), P._('den')),
+		(bindings) => {
+			const num = asPower(boundNode(bindings, 'num'));
+			const den = asPower(boundNode(bindings, 'den'));
+			return superscript(num.base, tidy(subtract(num.exponent, den.exponent)));
+		},
+		{
+			name: 'same-base-div',
+			condition: (bindings) =>
+				sameNonVanishingBase(getBindingNode(bindings, 'num'), getBindingNode(bindings, 'den'))
+		}
 	),
 
 	// (a/b)^n = a^n / b^n (power distributes over quotient)
