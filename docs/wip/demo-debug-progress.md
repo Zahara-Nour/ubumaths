@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1737 (6i-c)._
+_Mis à jour le 2026-10-25, après #1742 (phase 7)._
 
-- **État** : phases 1 à 6 terminées (PR 1 à 5, 6a à 6i) ; dernière : #1737, vitrine `/demo/diaporama` (13 diapositives) + marqueur `->` d'une `UbuMarkSlide` reconnu après une formule. Rien de tout cela en prod. Vérification manuelle notée (`verifications-manuelles.md`).
-- **Prochaine action** : **phase 7**, accueil `/demo` + robots/sitemap ouverts sur `/demo/…` + liens depuis `/professeurs`, `/parents`, `/eleves` et le pied de page (« Plan en phases »). **Phase 0 à faire** : comportements en français, à valider par David avant de coder.
-- **Hors chantier, décidé par David le 2026-10-25** : le cahier de texte passe à ubumark (voie 2), **futur chantier à part** `cahier-ubumark` ; énigmes (HTML lu comme markdown) à mesurer.
-- **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** ; `z` ≈ `2` → regarder en dernier, PR à part dans `tools/chiphre-math/`.
-- **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
-- **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `await render(…)` exigé par `lint:fast` ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; commitlint : lignes du corps ≤ 100 caractères ; **`{@html}` n'est pas corrigé à l'hydratation** ; **dans `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale`** (les classes `text-*` n'y font rien) ; `gh pr checks --watch` peut sortir avant que « Code Quality » soit inscrit → suivre le run.
-- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/demo-accueil` (phase 7, partie d'`origin/main`). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **État** : phases 1 à 7 terminées ; dernière : #1742, accueil `/demo` (9 cartes, liste `DEMO_PAGES`), vitrine ouverte aux robots (sitemap, `SeoHead`, plus de `noindex` ni `Disallow: /demo`), liens depuis `/professeurs`, `/parents`, `/eleves` et l'`InfoPanel`. Rien en prod : l'ouverture aux robots prend effet au prochain `deploy:prod`. Vérification manuelle notée.
+- **Prochaine action** : **phase 8**, constructions (`/constructions/essais`, `/demo/constructions`), **seulement après les merges du chantier constructions** — vérifier son état avant de lancer. Puis PR à part : retrait de l'accès admin sur `construction-demo-scripts`. Ensuite, fin de chantier = versement.
+- **Hors chantier, décidé par David le 2026-10-25** : cahier de texte → ubumark, **futur chantier `cahier-ubumark`** ; énigmes (HTML lu comme markdown) à mesurer ; bug FSRS → **chantier `fsrs`** ; `z` ≈ `2` → PR à part dans `tools/chiphre-math/`, en dernier.
+- **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
+- **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians (`dsl-builtins.md` dit « radians ») → `geometry-expert`, plus tard. Images des 4 cartes Mathémo à vérifier.
+- **Pièges en cours** : nouvelle vitrine → une entrée dans `DEMO_PAGES` + `<SeoHead {...demoSeo(…)} />` (le test l'exige) ; sous `/dev`, ni `+layout@` ni donnée sensible par un load universel ; dans `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale` ; `wrapDynamicImport` dans la sortie des tests client = bruit, déjà sur `main` ; 1er test de `page-demo-lexique` lent à froid en CI (1 échec, vert à la relance).
+- **Worktree / branche** : aucun (celui de la phase 7 est supprimé) ; la phase 8 partira d'un nouveau worktree depuis `origin/main`.
 
 ## Décisions de David (2026-10-24)
 
@@ -440,3 +440,8 @@ no position before the top-level node` dans les raccourcis Backspace de la droit
 - Ouverture aux robots dans cette PR (recommandation suivie) : effective au prochain `deploy:prod`.
 - Une seule liste `DEMO_PAGES` (`$lib/seo/demo-pages.ts`) nourrit l'accueil, le sitemap et les
   descriptions ; un test exige qu'elle colle aux dossiers de `/demo`. Revue : `code-reviewer` (Sonnet).
+- **Livrée : #1742, mergée le 2026-10-25.** En plus du plan : vitrines par `SeoHead` (canonique,
+  Open Graph ; suite de la revue `code-reviewer`, 0 bloquant) via `demoSeo()`. Vu sur 5178
+  (1280 et 390 px) : aucune erreur de console, rien ne déborde. CI : 1er test de `/demo/lexique`
+  trop lent à froid (769 ms sur `main`, délai de 1 s dépassé), vert à la relance ; 25 runs
+  précédents sans cet échec.
