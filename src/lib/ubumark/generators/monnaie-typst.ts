@@ -155,7 +155,9 @@ export function generateMonnaieTypst(node: MonnaieNode): string {
 		].join('\n');
 		const caption = captions?.[i];
 		if (caption === undefined || caption === '') return `[${frame}]`;
-		return `[#stack(dir: ttb, spacing: 4pt, align(center, text(size: 9pt, weight: "bold", ${typstString(caption)})), [${frame}])]`;
+		// Légende pas plus large que son dessin : une longue légende passe à la ligne au lieu de
+		// sortir de la page (la réduction `k` ne compte que les dessins)
+		return `[#stack(dir: ttb, spacing: 4pt, box(width: ${cm(scene.width * k)}, align(center, text(size: 9pt, weight: "bold", ${typstString(caption)}))), [${frame}])]`;
 	});
 
 	return [

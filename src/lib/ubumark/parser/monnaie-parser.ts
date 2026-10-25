@@ -173,10 +173,14 @@ function readDenomination(raw: string, kind: 'billets' | 'pièces'): number {
 		throw new LineError(`billet de ${value} € : pas encore disponible (${EXISTING})`);
 	}
 	if (kind === 'billets' && isCoin) {
-		throw new LineError(`${value} € est une pièce : écris-la dans pièces:`);
+		throw new LineError(
+			`${value} € est une pièce : écris-la dans pièces: (forme comptée : quantité d'abord, ex. 3×2)`
+		);
 	}
 	if (kind === 'pièces' && isNote) {
-		throw new LineError(`${value} € est un billet : écris-le dans billets:`);
+		throw new LineError(
+			`${value} € est un billet : écris-le dans billets: (forme comptée : quantité d'abord, ex. 2×10)`
+		);
 	}
 	if (!isNote && !isCoin) throw new LineError(`${value} € n'existe pas (${EXISTING})`);
 	return value;

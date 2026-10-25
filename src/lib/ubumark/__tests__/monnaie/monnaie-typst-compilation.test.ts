@@ -52,6 +52,12 @@ it('un document avec des blocs ```monnaie compile en PDF', async () => {
 				'   ```',
 				'',
 				'```monnaie',
+				'pièces: 1 ; 2 ; 2 1',
+				`légendes: ${'a'.repeat(40)} ; ${'b'.repeat(40)} ; ${'c'.repeat(40)}`,
+				'billets: 50 ; 50 ; 50',
+				'```',
+				'',
+				'```monnaie',
 				'pièces: 3',
 				'```'
 			].join('\n')

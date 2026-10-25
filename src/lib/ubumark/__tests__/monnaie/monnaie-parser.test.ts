@@ -140,6 +140,8 @@ describe('bloc ```monnaie — erreurs (le nœud reste, avec son message)', () =>
 
 	it('pièce écrite en billet, et l’inverse', () => {
 		expect(messages(parse('billets: 2'))).toEqual([expect.stringContaining('2 € est une pièce')]);
+		// `10 x 2` lu « dix pièces de 2 € » : le message rappelle l'ordre de la forme comptée
+		expect(messages(parse('billets: 10 x 2'))).toEqual([expect.stringContaining('quantité d')]);
 		expect(messages(parse('pièces: 5'))).toEqual([expect.stringContaining('5 € est un billet')]);
 	});
 

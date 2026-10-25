@@ -72,7 +72,7 @@ export const MONNAIE_VIEW = {
  * deux coins ; la pièce de 2 € a un cœur et un anneau
  */
 export const MONNAIE_LABEL = {
-	note: { size: 10, radius: 3, cornerSize: 5.5, cornerBox: 8, cornerInset: 2 },
+	note: { size: 10, radius: 3, cornerSize: 5.5, cornerBox: 11, cornerInset: 1 },
 	coin: { size: 7, innerRatio: 0.72 }
 } as const;
 

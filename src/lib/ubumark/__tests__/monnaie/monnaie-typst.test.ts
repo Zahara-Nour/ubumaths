@@ -61,6 +61,12 @@ describe('bloc ```monnaie au PDF', () => {
 		expect(named).toContain('"#x [y]"');
 	});
 
+	it('une légende ne dépasse pas la largeur de son dessin (elle passe à la ligne)', () => {
+		const long = 'a'.repeat(40);
+		const out = typst('pièces: 1 ; 2 ; 1', `légendes: ${long} ; ${long} ; ${long}`);
+		expect(count(out, /box\(width: [\d.]+cm, align\(center, text\(size: 9pt/g)).toBe(3);
+	});
+
 	it('ensemble vide : un cadre vide', () => {
 		const out = typst('billets: ; 10');
 		expect(count(out, FRAME)).toBe(2);
