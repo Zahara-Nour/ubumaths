@@ -78,6 +78,7 @@ import {
 } from './linear-inequality';
 import { solveInequality } from '../solve/inequality';
 import { InequalityNotSolvable } from '../solve/inequality/types';
+import { hasDecimalLiteral } from '../tidy/decimal';
 
 // Re-export for convenience (consumers throw + catch through these from a
 // single import).
@@ -135,7 +136,9 @@ function buildConcludeFromIsolatedSquareStep(
 	idGen: () => number
 ): EquationStep {
 	const result = solveInequality(originalIneq);
-	const solutionDescription = describeDomain(result.solution);
+	const solutionDescription = describeDomain(result.solution, {
+		decimal: hasDecimalLiteral(originalIneq)
+	});
 	return makeStep({
 		id: idGen(),
 		rule: 'inequality-conclude-from-isolated-square',
@@ -345,7 +348,9 @@ function buildConcludeStep(
 	idGen: () => number
 ): EquationStep {
 	const result = solveInequality(originalIneq);
-	const solutionDescription = describeDomain(result.solution);
+	const solutionDescription = describeDomain(result.solution, {
+		decimal: hasDecimalLiteral(originalIneq)
+	});
 	return makeStep({
 		id: idGen(),
 		rule: 'inequality-conclude-quadratic',
@@ -361,7 +366,7 @@ function buildConcludeStep(
 	});
 }
 
-// `describeDomain` (and helpers `isInfinite`, `latexBound`, `formatInterval`)
+// `describeDomain` (and helpers `isInfinite`, `boundLatex`, `formatInterval`)
 // moved to `_helpers.ts` (V1.1 polish — shared with rational-inequality.ts).
 
 // =============================================================================

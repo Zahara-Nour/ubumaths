@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23 ; f′ factorisée de l'étude des variations, 2026-10-23 ; valeur exacte à afficher commune, 2026-10-24 ; une fonction en un nombre rangée comme un coefficient, Q30, 2026-10-24 ; `eˣ·eˣ → e^{2x}`, Q29, 2026-10-24 ; des termes à domaine restreint ne s'annulent pas, S3, 2026-10-24 ; forme demandée par l'énoncé, D4, 2026-10-24 ; sommes sous-entendues de f′ ouvertes, lot 5f-1, 2026-10-24 ; étapes de limite : décimaux gardés, développé et factorisé montrés, lot 5f-3, 2026-10-25 ; valeur d'une intégrale bornée à décimaux, Q49, 2026-10-25 ; étapes du solveur écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25).
 
 ## À quoi ça sert
 
@@ -1114,7 +1114,8 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   (`primaire` → `college` pour le 1er degré, jusqu'à `lycee` pour le 2nd).
   **Les étapes d'une équation s'écrivent comme sa réponse** (lot 5f-4 de `simplify-carte`, Q46,
   2026-10-25) : `stepsAsShown` (`pedagogical-solve/shown-steps.ts`), appelée avant le rendu par
-  `.résoudre` et par `generateCorrection` (`linear-equation`, `quadratic-equation`). Quand
+  `.résoudre` et par `generateCorrection` (`linear-equation`, `quadratic-equation`,
+  `quadratic-inequality`, `rational-inequality`). Quand
   l'équation tape un décimal, chaque nœud des étapes (membres, opérandes, coefficients, branches)
   passe par `inDecimalRegister` (`pedagogical-limits/decimal-register.ts`) : `x = 0,3`,
   `0,5x = 1`, « On divise les deux membres par 0,5 », `a = 0,5`, `2 × 0,5`, et la racine d'un
@@ -1123,9 +1124,15 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   (`\dfrac{x}{2} − 0,5 = 1` ; réglage `keep` : les nœuds de l'équation tapée). Les
   valeurs lues (`read-solution`, `read-solutions`, `simplify-solutions`, `solve-each-factor`)
   passent par `exactValueToShow` : `S = {−√2/2 ; √2/2}`, `x₁ = (1 − √5)/2` ; les solutions
-  brutes de la formule restent non calculées. Les inéquations ne passent pas par là (leur
-  conclusion est une chaîne écrite par le pipeline). Tests :
-  `atelier/__tests__/resoudre-etapes-5f4.test.ts`,
+  brutes de la formule restent non calculées. **Inéquations comprises** (Q50, 2026-10-25) : mêmes
+  règles pour les étapes (`x² − 0,5 < 0`, `x < 0,3`), et les racines des tableaux de signes
+  (`quadratic-sign-table`, `rational-domain-restriction`, `rational-locate-roots`,
+  `rational-sign-table`) passent par `exactValueToShow`, comme la borne de la forme résolue
+  d'une inéquation du 1er degré, qui ne conclut pas (`2x < √2` → `x < √2/2`). L'ensemble solution, chaîne écrite par
+  le pipeline (`describeDomain`, `_helpers.ts`), écrit ses bornes par `exactValueToShow`, en
+  décimal si l'inéquation tape un décimal : `]−√2/2 ; √2/2[`, `](1 − √5)/2 ; (1 + √5)/2[`,
+  `]1/2 ; +∞[` en vraie fraction (avant : `1 / 2` en texte), `[−0,5 ; 0,5]`. Tests :
+  `atelier/__tests__/resoudre-etapes-5f4.test.ts`, `resoudre-inequations-q50.test.ts`,
   `questions/generator/__tests__/correction-solveur-5f4.test.ts`.
   **Une inéquation du 2nd degré garde son opérateur à chaque ligne** (2026-10-13) : la forme
   standard s'écrit `2x^2 - 2 < 0`, pas `= 0` (`buildStandardizeStep` reprend l'opérateur de

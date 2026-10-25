@@ -531,7 +531,8 @@ function renderQuadraticInequality({
 		schoolLevel: quadraticLevel,
 		verbosity
 	};
-	return renderer.renderAll(steps, renderOptions);
+	// Les étapes écrites comme la conclusion : décimaux tapés gardés (Q50)
+	return renderer.renderAll(stepsAsShown(steps, relationNode), renderOptions);
 }
 
 interface RationalInequalityDispatch {
@@ -582,7 +583,8 @@ function renderRationalInequality({
 		schoolLevel: rationalLevel,
 		verbosity
 	};
-	return renderer.renderAll(steps, renderOptions);
+	// Les étapes écrites comme la conclusion : décimaux tapés gardés (Q50)
+	return renderer.renderAll(stepsAsShown(steps, relationNode), renderOptions);
 }
 
 /** Les étapes d'une dérivée ou d'une primitive, et la réponse sur laquelle elles finissent. */
