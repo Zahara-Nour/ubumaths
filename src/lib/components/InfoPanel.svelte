@@ -18,7 +18,8 @@
 	// Types
 
 	interface InfoLink {
-		path: '/a-propos' | '/legal/confidentialite' | '/legal/cgu' | '/legal/mentions-legales';
+		path:
+			'/a-propos' | '/demo' | '/legal/confidentialite' | '/legal/cgu' | '/legal/mentions-legales';
 		label: string;
 		hint?: string;
 	}
@@ -27,6 +28,7 @@
 
 	const LINKS: InfoLink[] = [
 		{ path: '/a-propos', label: 'Chiphre, c’est quoi ?' },
+		{ path: '/demo', label: 'Démonstrations', hint: 'Chiphre en action, sans compte' },
 		{
 			path: '/legal/confidentialite',
 			label: 'Données personnelles',

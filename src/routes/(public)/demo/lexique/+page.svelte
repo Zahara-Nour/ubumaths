@@ -8,6 +8,7 @@
 	`/dev/mots-cliquables` (chantier demo-debug, PR 6d).
 -->
 <script lang="ts">
+	import { demoPage } from '$lib/seo/demo-pages';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -77,7 +78,7 @@
 
 <svelte:head>
 	<title>Le lexique — Chiphre</title>
-	<meta name="robots" content="noindex" />
+	<meta name="description" content={demoPage('/demo/lexique').description} />
 </svelte:head>
 
 <div class="container mx-auto max-w-3xl space-y-6 px-4 py-8">

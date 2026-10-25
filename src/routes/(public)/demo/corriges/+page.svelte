@@ -9,13 +9,14 @@
 	(chantier demo-debug, PR 6e).
 -->
 <script lang="ts">
+	import { demoPage } from '$lib/seo/demo-pages';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import { CORRIGE_IMAGE } from './corriges';
 </script>
 
 <svelte:head>
 	<title>Les corrigés des fiches — Chiphre</title>
-	<meta name="robots" content="noindex" />
+	<meta name="description" content={demoPage('/demo/corriges').description} />
 </svelte:head>
 
 <div class="mx-auto max-w-4xl space-y-6 px-4 py-8">

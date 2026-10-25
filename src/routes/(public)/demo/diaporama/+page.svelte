@@ -12,6 +12,7 @@
 	page, dans un cadre ; F ou le bouton le passent en plein écran.
 -->
 <script lang="ts">
+	import { demoPage } from '$lib/seo/demo-pages';
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { Maximize, Minimize } from '@lucide/svelte';
@@ -85,7 +86,7 @@
 
 <svelte:head>
 	<title>Le diaporama — Chiphre</title>
-	<meta name="robots" content="noindex" />
+	<meta name="description" content={demoPage('/demo/diaporama').description} />
 </svelte:head>
 
 <div class="mx-auto max-w-6xl space-y-6 px-4 py-8">

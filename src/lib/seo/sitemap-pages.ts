@@ -9,6 +9,8 @@
  * @module lib/seo/sitemap-pages
  */
 
+import { DEMO_HUB, DEMO_PAGES } from './demo-pages';
+
 export interface SitemapPage {
 	/** Chemin absolu, tel qu'il apparaîtra dans le plan. */
 	path: string;
@@ -122,7 +124,15 @@ export const SITEMAP_PAGES: SitemapPage[] = [
 		changefreq: 'yearly'
 	},
 	{ path: '/legal/confidentialite', title: 'Confidentialité', priority: 0.3, changefreq: 'yearly' },
-	{ path: '/legal/cgu', title: 'Conditions d’utilisation', priority: 0.3, changefreq: 'yearly' }
+	{ path: '/legal/cgu', title: 'Conditions d’utilisation', priority: 0.3, changefreq: 'yearly' },
+	// La vitrine, une seule liste pour l'accueil et le plan (`demo-pages.ts`)
+	{ path: DEMO_HUB.path, title: DEMO_HUB.title, priority: 0.6, changefreq: 'monthly' },
+	...DEMO_PAGES.map(({ path, title }): SitemapPage => ({
+		path,
+		title,
+		priority: 0.5,
+		changefreq: 'monthly'
+	}))
 ];
 
 /**
@@ -153,7 +163,6 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 	// « Ne pas mettre en avant » (docs/systeme/carte-des-fonctionnalites.md)
 	{ pattern: '/games/evoland', reason: 'jeu en sommeil, sans lien depuis /games' },
 	// Démos et mise au point
-	{ pattern: '/demo/**', reason: DEMO },
 	{ pattern: '/construction-demo', reason: DEMO },
 
 	// Parcours d'authentification et de consentement

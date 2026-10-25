@@ -24,6 +24,7 @@ function mainElement(): HTMLElement {
 
 const LIENS: [RegExp, string][] = [
 	[/Chiphre, c[’']est quoi ?/, '/a-propos'],
+	[/Démonstrations/, '/demo'],
 	[/Données personnelles/, '/legal/confidentialite'],
 	[/Conditions d’utilisation \(CGU\)/, '/legal/cgu'],
 	[/Qui édite Chiphre/, '/legal/mentions-legales']
@@ -39,7 +40,7 @@ describe('InfoPanel', () => {
 		expect(page.getByText(/Tous droits/).query()).toBeNull();
 	});
 
-	it('un clic ouvre le panneau avec les quatre liens et leurs cibles', async () => {
+	it('un clic ouvre le panneau avec les cinq liens et leurs cibles', async () => {
 		await render(InfoPanel, { target: mainElement() });
 		await page.getByRole('button', { name: 'Infos et confidentialité' }).click();
 		const dialog = page.getByRole('dialog');
@@ -47,6 +48,7 @@ describe('InfoPanel', () => {
 		for (const [nom, cible] of LIENS) {
 			await expect.element(dialog.getByRole('link', { name: nom })).toHaveAttribute('href', cible);
 		}
+		await expect.element(dialog.getByText('Chiphre en action, sans compte')).toBeVisible();
 		await expect
 			.element(dialog.getByText('Ce que Chiphre collecte, pourquoi, et vos droits (RGPD)'))
 			.toBeVisible();

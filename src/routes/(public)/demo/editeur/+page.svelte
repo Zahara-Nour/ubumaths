@@ -13,6 +13,7 @@
 	messagerie) reste sur `/dev/editeur-riche` (chantier demo-debug, PR 6h).
 -->
 <script lang="ts">
+	import { demoPage } from '$lib/seo/demo-pages';
 	import { onMount } from 'svelte';
 	import { generateHTML, type JSONContent } from '@tiptap/core';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
@@ -66,7 +67,7 @@
 
 <svelte:head>
 	<title>L’éditeur de texte — Chiphre</title>
-	<meta name="robots" content="noindex" />
+	<meta name="description" content={demoPage('/demo/editeur').description} />
 </svelte:head>
 
 <div class="container mx-auto max-w-3xl space-y-6 px-4 py-8">

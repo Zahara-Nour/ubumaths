@@ -7,6 +7,7 @@
 	enregistré ; les révisions espacées sont simulées (chantier demo-debug, PR 6g).
 -->
 <script lang="ts">
+	import { demoPage } from '$lib/seo/demo-pages';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
@@ -98,7 +99,7 @@
 
 <svelte:head>
 	<title>Les questions — Chiphre</title>
-	<meta name="robots" content="noindex" />
+	<meta name="description" content={demoPage('/demo/questions').description} />
 </svelte:head>
 
 <div class="mx-auto max-w-5xl space-y-8 px-4 py-8">

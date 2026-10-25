@@ -1,75 +1,45 @@
 <!--
-	Carrefour des démonstrations publiques (`/demo`)
-	================================================
+	Accueil de la vitrine (`/demo`)
+	===============================
 
-	Ne relie que des pages ouvertes à tous. Les bancs d'essai et les pages de
-	test sont partis sous `/dev`, le catalogue du cercle trigonométrique sous
-	`/aide-ecriture` (chantier demo-debug) ; l'accueil de la vitrine
-	remplacera cette page (phase 7).
+	Une carte par vitrine, dans l'ordre de `DEMO_PAGES` (chantier demo-debug,
+	PR 7). Page carrefour : pas de lien de retour. Les jeux vivent dans `/games`.
 -->
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import * as Card from '$lib/components/ui/card';
-	import { Gamepad2, Presentation } from '@lucide/svelte';
-
-	const demoPages = [
-		{
-			title: 'Mathémo',
-			description: 'Wordle mathématique avec termes français par niveau (6ème-Tale)',
-			href: '/games/mathemo',
-			icon: Gamepad2,
-			color: 'from-rose-500 to-pink-500'
-		},
-		{
-			title: 'Trio',
-			description: "Jeu mathématique: alignez 3 nombres pour résoudre l'équation",
-			href: '/games/trio',
-			icon: Gamepad2,
-			color: 'from-indigo-500 to-purple-500'
-		}
-	];
+	import { DEMO_HUB, DEMO_PAGES } from '$lib/seo/demo-pages';
+	import { resolve } from '$app/paths';
+	import { ArrowRight } from '@lucide/svelte';
 </script>
 
-<div class="container mx-auto max-w-7xl px-4 py-8">
-	<!-- Hero Section -->
-	<div class="mb-12 text-center">
-		<div class="mb-4 inline-flex items-center justify-center">
-			<Presentation class="mr-3 h-12 w-12 text-primary" />
-			<h1 class="text-4xl font-bold text-foreground">Démonstrations</h1>
-		</div>
-		<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
-			Explorez quelques fonctionnalités de l'application Chiphre
-		</p>
-	</div>
+<svelte:head>
+	<title>Démonstrations — Chiphre</title>
+	<meta name="description" content={DEMO_HUB.description} />
+</svelte:head>
 
-	<!-- Demo Pages Grid -->
-	<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-		{#each demoPages as demo (demo.href)}
-			<a href={demo.href} data-sveltekit-preload-data="hover" class="group block">
-				<Card.Root
-					class="h-full border-2 transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-lg"
+<div class="container mx-auto max-w-5xl space-y-8 px-4 py-8">
+	<header class="space-y-2">
+		<h1 class="text-3xl font-bold">{DEMO_HUB.title}</h1>
+		<p class="text-muted-foreground">
+			Voyez Chiphre en action, sans compte : chaque page montre un outil tel que le trouvent les
+			élèves et les professeurs.
+		</p>
+	</header>
+
+	<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		{#each DEMO_PAGES as demo (demo.path)}
+			<li>
+				<a
+					href={resolve(demo.path)}
+					data-sveltekit-preload-data="hover"
+					class="group flex h-full flex-col gap-2 rounded-lg border bg-card p-5 transition-colors hover:border-primary"
 				>
-					<Card.Header>
-						<div class="mb-2 flex items-start justify-between">
-							<div
-								class="rounded-lg bg-gradient-to-br p-3 {demo.color} text-white shadow-md transition-shadow group-hover:shadow-lg"
-							>
-								<!-- Svelte 5: Components are dynamic by default -->
-								<demo.icon class="h-6 w-6" />
-							</div>
-						</div>
-						<Card.Title class="text-xl transition-colors group-hover:text-primary">
-							{demo.title}
-						</Card.Title>
-					</Card.Header>
-					<Card.Content>
-						<p class="text-muted-foreground">{demo.description}</p>
-					</Card.Content>
-					<Card.Footer>
-						<Button variant="ghost" class="w-full group-hover:bg-primary/10">Voir la démo →</Button>
-					</Card.Footer>
-				</Card.Root>
-			</a>
+					<h2 class="font-semibold group-hover:text-primary">{demo.title}</h2>
+					<p class="flex-1 text-muted-foreground">{demo.description}</p>
+					<span class="inline-flex items-center gap-1 text-sm text-primary" aria-hidden="true">
+						Voir <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+					</span>
+				</a>
+			</li>
 		{/each}
-	</div>
+	</ul>
 </div>

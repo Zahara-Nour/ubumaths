@@ -7,6 +7,7 @@
 	`/aide-ecriture/geometrie` (chantier demo-debug, PR 6f).
 -->
 <script lang="ts">
+	import { demoPage } from '$lib/seo/demo-pages';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import DemoFigureCard from './DemoFigureCard.svelte';
 	import { DEMO_FIGURES, DEMO_SECTIONS } from './figures';
@@ -14,7 +15,7 @@
 
 <svelte:head>
 	<title>Figures de géométrie — Chiphre</title>
-	<meta name="robots" content="noindex" />
+	<meta name="description" content={demoPage('/demo/geometrie').description} />
 </svelte:head>
 
 <div class="mx-auto max-w-6xl space-y-8 px-4 py-8">
