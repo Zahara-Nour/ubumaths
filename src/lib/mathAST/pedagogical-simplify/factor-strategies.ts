@@ -141,9 +141,10 @@ interface ProductView {
 /**
  * Met au propre **sans réordonner** un produit déjà factorisé.
  *
- * `tidy` range les facteurs dans son ordre canonique (Q13) : `(y+1)x` y devient
- * `x(y+1)`. Les deux écritures sont justes, mais l'ordre vient ici d'une
- * factorisation que l'élève vient de suivre — le moteur n'a pas à la rebattre.
+ * `tidy` range les facteurs dans son ordre canonique (nombre, lettres,
+ * parenthèses, fonctions) : `(y+1)x` y devient `x(y+1)`. Les deux écritures
+ * sont justes, mais l'ordre vient ici d'une factorisation que l'élève vient de
+ * suivre — le moteur n'a pas à la rebattre.
  *
  * On met donc chaque facteur au propre séparément, en gardant l'ordre. Tout ce
  * qui n'est pas un produit passe par `tidy` entier : `√8` devient `2√2`,
@@ -151,8 +152,8 @@ interface ProductView {
  *
  * Les facteurs ne sont pas non plus multipliés entre eux : `x²·x³`, `√2·√8`,
  * `1·x` restent écrits (`factoriser` ne calcule pas le produit), sauf deux
- * nombres côte à côte (voir plus bas). `tidy` seul ne convient donc pas
- * (sonde du lot 7, simplify-carte § 102).
+ * nombres côte à côte (voir plus bas). `tidy` seul ne convient donc pas : il
+ * rendrait `x⁵`, `4`, `x` (mesuré, 10 tests du panel de référence rouges).
  */
 export function tidyKeepingFactorOrder(node: MathNode): MathNode {
 	// Un produit factorisé peut être sous un signe ou dans une fonction :
