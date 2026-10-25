@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-25, lot A3 en cours (branche `feat/questions-a3`)._
 
-- **État** : A1 (#1712), A2 (#1720), A4 (#1728), A5 (#1736) livrés et relus. **A3 ordinaux** : phase 0 validée (§ 4 septies) ; 6 modèles écrits (`docs/wip/questions/lot-a3.py` → `scripts/questions/cp-a3/`), 59 specs vertes en simulation, rendu relu.
-- **Prochaine action** : go de David → `create-questions --publier` (6 brouillons) ; puis migration nœud + tag (sous-notion « ordinaux et rangs ») et son test d'intégration, rouge puis vert ; PR.
-- **En attente de David** : go pour créer les 6 brouillons en prod ; publication des 24 brouillons A1 + A2 + A4 + A5 (tous relus OK) ; vérification manuelle #1702.
+- **État** : A1 (#1712), A2 (#1720), A4 (#1728), A5 (#1736) livrés et relus. **A3 ordinaux** : phase 0 validée (§ 4 septies) ; 6 brouillons créés en prod (go de David) : `d437959a`, `c3b236fc` CP-009 ; `7dc1629e` CP-010 ; `10226cae` CP-011 ; `0559204d` CP-012 ; `62ae6847` CP-013, sans nœud ni tag (vérifié). Migration `20261026010000_questions_cp_a3_rangement_tags` et son test (rouge sans elle, 8/8 vert avec).
+- **Prochaine action** : PR, CI, merge ; page à cocher A3 ; `db:migrate` quand les 4 conditions sont réunies.
+- **En attente de David** : question d'accès de la migration A3 (« personne ne gagne ni ne perd d'accès ») ; relecture des 6 brouillons ; publication des 24 brouillons A1 + A2 + A4 + A5 (tous relus OK) ; vérification manuelle #1702.
 - **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; **le bon choix d'un QCM n'accepte qu'UN `{{if:…}}`, pas une chaîne imbriquée** → formule `{{eval:mod(…)}}` ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; script d'un tirage hors du dépôt → `.mts`.
 - **Worktree / branche** : `../ubumaths-wt-questions`, `feat/questions-a3`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -164,3 +164,4 @@ David suit mes cinq recommandations (« je te suis », après les avoir demandé
 - 2026-10-25 : #1736 mergée ; page à cocher A5 publiée, relue 4/4 OK par David ; `db:migrate` en attente de la question d'accès.
 - 2026-10-25 : question d'accès A5 tranchée par David ; `db:migrate`, vérifié en prod (4 modèles sur leur sous-notion, 1 tag chacun).
 - 2026-10-25 : lot A3, phase 0 validée (§ 4 septies), worktree `../ubumaths-wt-questions` (`feat/questions-a3`) ; 6 modèles écrits, 59 specs vertes, rendu relu (accords et corrigés retouchés).
+- 2026-10-25 : A3, 6 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; migration nœud + tag et test, rouge puis vert.
