@@ -5,15 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, avant la première PR._
+_Mis à jour le 2026-10-25, PR 1 (migration) ouverte._
 
-- **État** : phase 0 en cours. Règles du lot validées (voir ci-dessous) ; planche des colliers
-  publiée : https://claude.ai/artifact/NTfGjcg3yE9cC4gq35RWoj (choix lus dans sa base, `choix/david`).
-- **Prochaine action** : lire les choix de David sur la planche, les noter ici, puis PR 1
-  (migration : emplacement `panse` / `cou` dans le catalogue des décorations + intégration).
-- **En attente de David** : choix sur la planche (version A/B ou « pas au catalogue », prix).
+- **État** : catalogue choisi (4 colliers) ; PR 1 = migration `20261025160000_mathoux_colliers.sql`
+  - `tests/integration/mathoux-colliers.test.ts` (21/21 rouges sans, verts avec ; suites Mathoux
+    125 vertes ; garde DEFINER verte).
+- **Prochaine action** : revue (`code-reviewer` + `security-auditor`), CI, merge, `db:migrate`,
+  `db:types` sur la branche de la PR 2 (code : catalogue TS, dessins, routes, « Décorer », vitrine,
+  vue prof, export RGPD).
+- **En attente de David** : rien.
 - **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ;
-  la base locale n'a pas d'élève de démo.
+  la base locale n'a pas d'élève de démo ; un seul compte prof autorisé dans les tests.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-colliers` · `feat/mathoux-colliers`.
 
 ## Phase 0 — décisions (2026-10-25)
@@ -31,11 +33,19 @@ acceptées :
   « Il te manque N gidouilles », double clic = un débit, consentement exigé à l'achat. Rangée
   « Cou » dans « Décorer » de la Chatterie, colliers dans la vitrine du Marché (sans achat). Sieste :
   le garde ; silhouette : rien ; vue prof : visible. Deux PR : migration, puis code.
-- **Catalogue et prix** : pas tranchés, à choisir sur la planche (6 colliers × 2 versions, prix
-  proposés 10 / 20 / 40).
+- **Catalogue (choix de David sur la planche, 2026-10-25)** : ruban à grelot A (rouge) 10 ·
+  nœud papillon A (rouge) 10 · collier de cuir A (médaille d'or) 20 · collier de l'Ordre B
+  (plaques rouge et or, médaille de la Grande Passoire) 40. Foulard et perles : pas au catalogue.
+  Clés : `bell`, `bow_tie`, `leather`, `order_chain`.
 
 ## Historique
 
 - 2026-10-25 — planche des colliers : `scripts/mathoux-planches/colliers.test.ts` (`PLANCHE=1`,
   sauté sinon), rendus tirés du vrai `MathouAvatar` (chaton, matou, grand matou à la fraise, grand
   matou en sieste) + les 19 races en matou avec le collier de cuir. Page publiée.
+- 2026-10-25 — PR 1 : migration. Achats dans la même table (contrainte élargie), catalogue et
+  emplacement (`mathou_decoration_slot` : belly / neck) ; colonne `student_mathoux.collar` (clé vers
+  les achats de l'élève, index unique partiel, CHECK par emplacement, y compris sur `decoration`) ;
+  `buy_mathou_decoration` pose à l'emplacement ; `set_mathou_decoration` refuse un collier ;
+  `set_mathou_collar` neuve. Preuve rouge : 21/21 échouent sans la migration (le test RGPD
+  passait à vide : resserré pour exiger l'achat d'abord).
