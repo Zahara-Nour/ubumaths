@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1770._
+_Mis à jour le 2026-10-25, après #1770 : chantier **EN PAUSE** (David), le chantier `monnaie` prend la suite._
 
-- **État** : bloc ```collection livré sur `main` (#1766 ; PDF à 8 cm par défaut #1770 ; pas en prod) : parseur, scène, écran avec marquage au doigt, PDF, QCM, série figée, éditeur riche, doc `ubumark.md`.
-- **Prochaine action** : recette de David (captures 390 px clair/sombre + PDF) ; modèles CP-001/004/070 par la session « questions » ; plus tard « construire » (CP-002), puis ` ```monnaie ` sur la même scène.
+- **État** : EN PAUSE. Bloc ```collection livré sur `main` (#1766 ; PDF à 8 cm par défaut #1770 ; pas en prod) : parseur, scène, écran avec marquage au doigt, PDF, QCM, série figée, éditeur riche, doc `ubumark.md`.
+- **Prochaine action (à la reprise)** : recette de David (captures 390 px clair/sombre + PDF) ; modèles CP-001/004/070 par la session « questions » ; puis « construire » (CP-002). ` ```monnaie ` : chantier à part, `docs/wip/monnaie-progress.md`.
 - **En attente de David** : recette (vérification manuelle notée, en prod après `deploy:prod`).
-- **Pièges en cours** : marques gardées si deux questions de suite ont exactement le même bloc (constat 2 de la revue, accepté) ; marquage au doigt seulement (assumé).
+- **Pièges en cours** : marques gardées si deux questions de suite ont exactement le même bloc (constat 2 de la revue, accepté) ; marquage au doigt seulement (assumé) ; la monnaie partage `utils/collection-scene.ts` : toute retouche de la scène doit garder les tests de la collection verts.
 - **Worktree / branche** : aucun (`../ubumaths-wt-collection` retiré après #1770).
 
 ---
@@ -203,3 +203,4 @@ Voir le message de la session du 2026-10-25 (Q1 à Q9).
 - 2026-10-25 : CI verte, #1766 mergée ; ligne de vérification manuelle ajoutée.
 - 2026-10-25 : David tranche la taille au PDF : **8 cm** par défaut (cubes ≈ 3,6 mm au lieu de 2,7 mm), comme à l'écran.
 - 2026-10-25 : #1770 mergée (CI verte) ; worktree retiré.
+- 2026-10-25 : chantier mis EN PAUSE par David ; lancement du chantier `monnaie` (bloc ` ```monnaie `, scène partagée).
