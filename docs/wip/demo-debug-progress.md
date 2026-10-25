@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-10-25, phase 8 en PR._
 
-- **État** : phases 1 à 7 mergées (dernière #1742) ; **phase 8** (`/constructions/essais` prof seul, vitrine `/demo/constructions`) sur `feat/demo-constructions`, PR à ouvrir/suivre. Rien en prod : l'ouverture de `/demo` aux robots prend effet au prochain `deploy:prod`.
+- **État** : phases 1 à 7 mergées (dernière #1742) ; **phase 8** (`/constructions/essais` prof seul, vitrine `/demo/constructions`) sur `feat/demo-constructions`, **PR #1750** ouverte (revues : 0 bloquant). Rien en prod : l'ouverture de `/demo` aux robots prend effet au prochain `deploy:prod`.
 - **Prochaine action** : merger la phase 8, puis **PR à part** : retrait de l'accès admin sur `construction-demo-scripts` (API `DEMO_SCRIPT_AUTHOR_ROLES` + RLS `20261023150000` → migration, question d'accès à poser à David). Ensuite fin de chantier = versement.
 - **Hors chantier, décidé par David le 2026-10-25** : cahier de texte → ubumark, **futur chantier `cahier-ubumark`** ; énigmes (HTML lu comme markdown) à mesurer ; bug FSRS → **chantier `fsrs`** ; `z` ≈ `2` → PR à part dans `tools/chiphre-math/`, en dernier.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24.
