@@ -10,7 +10,7 @@ import { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import { isScatter } from '$lib/grapheur/types';
 
 /** Un grapheur qui ne range rien : les tests ne doivent pas écrire de stockage. */
-const graph = () => new GrapheurStore(null);
+const graph = () => new GrapheurStore();
 
 describe('poser un nuage', () => {
 	it('l’ajoute aux traçables', () => {

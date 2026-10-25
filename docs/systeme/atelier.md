@@ -205,7 +205,7 @@ Ceux du code et de l'interface :
 | `ShareBar.svelte`            | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier »                                     |
 
 La vue **Graphe** n'a pas de composant à elle : `AtelierContainer.svelte` monte
-`src/lib/components/grapheur/GrapheurContainer.svelte` avec `panel={false}` sur un
+`src/lib/components/grapheur/GrapheurContainer.svelte` (sans panneau de saisie) sur un
 `GrapheurStore` propre, fourni par contexte (`provideGrapheurStore`). Tout réglage passe par les
 cartes (décision G3).
 
@@ -1664,11 +1664,11 @@ emporte son panneau : un homonyme recréé ne le rouvre pas.
 
 ### Vues
 
-| Vue       | Composant                             | Ce qu'elle projette                                                                                                                    |
-| --------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Graphe    | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                                    |
-| Géométrie | `FigureView.svelte`                   | points, courbes et 𝒞f affichées dans un repère orthonormé (`GeometryCanvas`), via `syncFigure` ; les points se glissent (lot 3, M1-M2) |
-| Données   | `DataView.svelte`                     | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                                 |
+| Vue       | Composant           | Ce qu'elle projette                                                                                                                    |
+| --------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Graphe    | `GrapheurContainer` | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                                    |
+| Géométrie | `FigureView.svelte` | points, courbes et 𝒞f affichées dans un repère orthonormé (`GeometryCanvas`), via `syncFigure` ; les points se glissent (lot 3, M1-M2) |
+| Données   | `DataView.svelte`   | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                                 |
 
 Trois ponts à **sens unique**, tous idempotents (une empreinte évite de refaire le travail) :
 

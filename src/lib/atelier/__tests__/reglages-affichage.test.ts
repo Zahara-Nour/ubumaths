@@ -285,7 +285,7 @@ describe('réglages d’affichage — reportés sur la courbe', () => {
 	it('la courbe prend la couleur, le style et l’épaisseur de l’objet', () => {
 		const atelier = withPlotted();
 		atelier.setDisplay('f', { color: 'curve-3', lineStyle: 'dotted', lineWidth: 4 });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		syncPlots(atelier, graph);
 
@@ -294,7 +294,7 @@ describe('réglages d’affichage — reportés sur la courbe', () => {
 
 	it('suit un réglage modifié après le tracé', () => {
 		const atelier = withPlotted();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 
 		atelier.setDisplay('f', {
@@ -317,7 +317,7 @@ describe('réglages d’affichage — reportés sur la courbe', () => {
 
 	it('la couleur de la carte est celle de la courbe', () => {
 		const atelier = withPlotted();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		syncPlots(atelier, graph);
 
@@ -328,7 +328,7 @@ describe('réglages d’affichage — reportés sur la courbe', () => {
 	// Phase 0 Q1 : la case « f′ » est supprimée, « Dériver » la remplace
 	it('ne trace jamais la dérivée par la case du grapheur', () => {
 		const atelier = withPlotted();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		syncPlots(atelier, graph);
 
@@ -340,7 +340,7 @@ describe('réglages d’affichage — reportés sur la courbe', () => {
 	it('n’écrit rien quand aucun réglage n’a changé', () => {
 		const atelier = withPlotted();
 		atelier.setDisplay('f', { tangentAt: 1, integral: { from: 0, to: 1 } });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 
 		const update = vi.spyOn(graph, 'updateFunction');
@@ -352,7 +352,7 @@ describe('réglages d’affichage — reportés sur la courbe', () => {
 	// Un seul sens : un réglage fait dans le grapheur ne remonte pas
 	it('ne relit jamais un réglage fait dans le grapheur', () => {
 		const atelier = withPlotted();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 		const color = displayOf(atelier, 'f')!.color;
 
@@ -431,7 +431,7 @@ describe('réglages d’affichage — revue du lot 1', () => {
 		atelier.create({ kind: 'list', name: 'L', definition: '1 ; 2 ; 3' });
 		atelier.create({ kind: 'list', name: 'M', definition: '4 ; 5 ; 6' });
 		atelier.setPlotted('L', true, 'M');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 		expect(graph.functions.some((f) => f.type === 'scatter')).toBe(true);
 
@@ -488,7 +488,7 @@ describe('réglages d’affichage — rangement compact', () => {
 describe('la courbe d’un objet', () => {
 	it('retrouve la courbe que la synchronisation a posée', () => {
 		const atelier = withPlotted('x^2');
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 
 		const curve = curveOf(atelier, graph, 'f');
@@ -499,7 +499,7 @@ describe('la courbe d’un objet', () => {
 	it('ne rend rien pour un objet non tracé', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x' });
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 
 		expect(curveOf(atelier, graph, 'f')).toBeUndefined();
@@ -508,6 +508,6 @@ describe('la courbe d’un objet', () => {
 	it('ne rend rien pour un grapheur que l’atelier n’a jamais synchronisé', () => {
 		const atelier = withPlotted();
 
-		expect(curveOf(atelier, new GrapheurStore(null), 'f')).toBeUndefined();
+		expect(curveOf(atelier, new GrapheurStore(), 'f')).toBeUndefined();
 	});
 });

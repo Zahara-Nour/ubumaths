@@ -29,13 +29,15 @@ intersections), asymptotes, tangente, aire sous la courbe, cercle osculateur et 
 Le grapheur n'est **plus une page autonome** : c'est la vue **Graphe** de l'atelier
 ([atelier.md](atelier.md)). Il ne reste qu'un hôte :
 
-| Hôte                      | Instance                                                | Panneau de saisie                             |
-| ------------------------- | ------------------------------------------------------- | --------------------------------------------- |
-| `/atelier` et `/grapheur` | `new GrapheurStore(null)` par atelier, sans persistance | « Mes objets » de l'atelier (`panel={false}`) |
+| Hôte                      | Instance                                           | Panneau de saisie           |
+| ------------------------- | -------------------------------------------------- | --------------------------- |
+| `/atelier` et `/grapheur` | `new GrapheurStore()` par atelier, sans sauvegarde | « Mes objets » de l'atelier |
 
-`/calc` (calculatrice), qui montait le singleton `grapheurStore` (persisté en localStorage) avec le
-`FunctionPanel` du grapheur, est **retirée** depuis le 2026-10-25 : aucune page ne monte plus ni
-l'un ni l'autre (voir « Écarts connus »).
+`/calc` (calculatrice) montait un singleton `grapheurStore`, sauvegardé dans le navigateur
+(`chiphre-grapheur-state`), avec un panneau de saisie propre au grapheur (`FunctionPanel`). Elle
+est retirée depuis le 2026-10-25 ; le singleton, sa sauvegarde et ce panneau l'ont suivie le même
+jour. La clé `chiphre-grapheur-state` reste dans `WORK_DATA_KEYS` (`work-data.ts`) : les anciennes
+données sont effacées à la déconnexion.
 
 `/grapheur` (`src/routes/(public)/grapheur/+page.svelte`) **ouvre l'atelier** sur la vue Graphe ;
 ce qu'elle fait des liens `?f=` et `?a=` est décrit dans [atelier.md](atelier.md), pas ici.
@@ -52,7 +54,7 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 
 | Fichier                                                                                    | Rôle                                                                                                                                     |
 | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/grapheur/types.ts`                                                                | Union `Plottable`, `Parameter`, types d'analyse, schémas Zod de l'état (`graphStateSchema`), `COORDINATE_LIMIT`                          |
+| `src/lib/grapheur/types.ts`                                                                | Union `Plottable`, `Parameter`, types d'analyse, `COORDINATE_LIMIT`                                                                      |
 | `src/lib/grapheur/evaluator.ts`                                                            | Saisie LaTeX → AST mathAST (`parseFunction`), évaluation (`evaluateAt`, `createEvaluator`), variables libres                             |
 | `src/lib/grapheur/analysis.ts`                                                             | Zéros, extremums, asymptotes (`analyzeFunction`, `analyzeAllFunctions`), dérivée, tangente, intégrale, courbure, caches (`sampleCached`) |
 | `src/lib/grapheur/asymptotes-exactes.ts`                                                   | Asymptotes d'une fraction rationnelle par division euclidienne (`exactAsymptotes`)                                                       |
@@ -70,10 +72,10 @@ couleur + style de trait ; la **fenêtre** (`Viewport`) est le rectangle `xMin�
 
 ### État — `src/lib/stores/`
 
-| Fichier                              | Rôle                                                                                                                              |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/stores/grapheur.svelte.ts`  | Classe `GrapheurStore` (runes) : traçables, paramètres, fenêtre, curseur, sérialisation, localStorage ; singleton `grapheurStore` |
-| `src/lib/stores/grapheur-context.ts` | `provideGrapheurStore` / `useGrapheurStore` : l'instance passée par contexte, repli sur le singleton                              |
+| Fichier                              | Rôle                                                                                                                                     |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/stores/grapheur.svelte.ts`  | Classe `GrapheurStore` (runes) : traçables, paramètres, fenêtre, curseur ; en mémoire seulement                                          |
+| `src/lib/stores/grapheur-context.ts` | `provideGrapheurStore` / `useGrapheurStore` : l'instance passée par contexte, erreur sans fournisseur ; `grapheurContext` pour les tests |
 
 ### Composants — `src/lib/components/grapheur/`
 
@@ -97,7 +99,7 @@ Branchement avec l'atelier : `src/lib/atelier/plot-sync.ts` (`syncPlots`) et
 le grapheur parse du LaTeX, et `\pi x` collé en `\pix` lui était illisible.
 Il pose aussi une courbe qui n'est pas un objet : la droite y = x (`latex: 'x'`, couleur
 `var(--color-muted-foreground)` hors palette, pointillés, épaisseur 1) quand f et sa carte `f⁻¹`
-sont tracées — le grapheur de l'atelier n'est pas sauvegardé (`GrapheurStore(null)`).
+sont tracées — le grapheur de l'atelier n'est pas sauvegardé (`GrapheurStore` ne range rien).
 Un nuage de deux listes reçoit les points des lignes où les deux colonnes de la grille ont un
 nombre (`commonRows`, `src/lib/atelier/pairs.ts`, décision P1 du tableur intégré) : par rang, une
 case vide décalait toutes les paires suivantes.
@@ -252,17 +254,14 @@ garantie dans un attribut de présentation SVG).
 couleurs ne restent plus distinctes pour un élève daltonien sous la contrainte de contraste
 ≥ 4,5. La dérivée est en `dotted` (en `dashed`, elle imitait la 5ᵉ courbe). Les points et les
 courbes de la vue Géométrie de l'atelier n'y puisent pas : leur premier réglage garde la couleur
-de la figure (`newPointDisplay`, `newStrokeDisplay` sans couleur). Les anciennes
-sauvegardes en hex sont traduites **par rang** (`migrateLegacyColor`). Règles générales des
+de la figure (`newPointDisplay`, `newStrokeDisplay` sans couleur). Règles générales des
 tokens : [css-color-tokens.md](../pratiques/css-color-tokens.md).
 
 ### Persistance
 
-`serialize()` produit un `GraphState` (version `GRAPH_STATE_VERSION = 2`, la v1 se relit) ; la
-relecture passe par `graphStateSchema` (Zod : 20 traçables, 20 paramètres, LaTeX ≤ 1000, nuages
-≤ 200 points, coordonnées ≤ `COORDINATE_LIMIT`). Sauvegarde différée de 500 ms sous la clé
-`chiphre-grapheur-state`. Le constructeur prend la clé : `null` = aucune persistance (cas de
-l'atelier, qui persiste ses objets lui-même).
+Aucune : `GrapheurStore` vit en mémoire. L'atelier persiste ses objets lui-même et les reporte
+dans le grapheur par `syncPlots` (sauvegarde, schéma et migration des couleurs du grapheur
+retirés avec `/calc`, le 2026-10-25).
 
 ### Export
 
@@ -280,10 +279,11 @@ fichier — une `var()` laissée dedans se peindrait en noir chez celui qui l'ou
 L'atelier **détient l'état**, le grapheur le **reflète** : `syncPlots` reporte les objets tracés
 vers un `GrapheurStore` propre à l'atelier, à sens unique (option B, 2026-09-16). Rien de ce qui
 se passe dans le graphique ne remonte. Tout réglage passe par les cartes ; le grapheur n'y monte
-ni `FunctionPanel` ni ses propres saisies. Détail : [atelier.md](atelier.md).
+aucune saisie propre. Détail : [atelier.md](atelier.md).
 
-Le passage du singleton à l'instance par contexte (`useGrapheurStore`) est le prérequis de cette
-séparation ; le repli sur le singleton existe parce que des tests montent les composants seuls.
+Chaque composant lit son instance par contexte (`useGrapheurStore`) ; sans fournisseur, il lève
+une erreur. Un test monte un composant seul avec
+`render(Comp, { props, context: grapheurContext(store) })`.
 
 ### Avec `geometry-core`
 
@@ -313,33 +313,31 @@ un seul axe en le tirant), celui de `GeometryCanvas` isotrope.
   (`loadFromStorage` abandonne en bloc).
 - **Symbolique d'abord, numérique en repli, en silence** — jamais une valeur approchée affichée
   comme exacte (`exact.ts` rejette ce qui n'est pas `exact`).
-- **Étiquettes figées hors sérialisation** ; elles sont recalculées au rendu (un curseur qui
+- **Étiquettes figées** : seuls les clics sont gardés ; elles sont recalculées au rendu (un curseur qui
   bouge les met à jour).
 - **Export toujours en clair**, couleurs calculées figées.
 - **Ajouter un membre à `Plottable` casse les `else` implicites** : tester chaque type
-  explicitement (cf. le commentaire de `serialize()`).
+  explicitement.
 
 ## Comment étendre
 
-- **Nouveau type de traçable** : membre de l'union et garde dans `types.ts`, schéma dans
-  `plottableStateSchema`, méthode `add…` et branche de `serialize()` dans le store, rendu dans
+- **Nouveau type de traçable** : membre de l'union et garde dans `types.ts`, méthode `add…`
+  dans le store, rendu dans
   `GraphSVG.svelte` ; si l'atelier doit le tracer, `plot-sync.ts`.
 - **Nouvelle analyse sur une fonction** : `analysis.ts`, en passant par le cache
   (`analyzeAllFunctions`) ; préférer un calcul symbolique mathAST avec repli numérique.
 - **Changer l'échantillonnage, les splines, la grille ou les couleurs** : c'est `geometry-core`,
   donc aussi la géométrie et le bloc ` ```courbe ` — lancer les deux suites de tests.
-- **Nouveau champ d'état** : `.default(…)` dans le schéma Zod, pour que les anciennes sauvegardes
-  se relisent.
 
 ## Tests
 
-| Où                                                                                                               | Quoi                                                                                                                                                    |
-| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/grapheur/__tests__/`                                                                                    | Modèle : analyse, asymptotes, intersections, suites, exact, export, schéma, palette (`curve-palette.test.ts` lit `src/app.css` et vérifie le contraste) |
-| `src/lib/components/grapheur/__tests__/`                                                                         | Composants (`*.svelte.test.ts`), harnais `harness/ProvideStore.svelte`, contexte                                                                        |
-| `src/lib/stores/__tests__/grapheur-*.svelte.test.ts`                                                             | Store : migration des couleurs, nuages, places                                                                                                          |
-| `src/lib/atelier/__tests__/plot-sync.test.ts`, `src/lib/atelier/__tests__/lien-grapheur.test.ts`                 | Branchement atelier, liens `/grapheur`                                                                                                                  |
-| `src/lib/geometry-core/viewport/__tests__/`, `src/lib/geometry-core/rendering/__tests__/bezier-monotone.test.ts` | Sampler, grille, spline partagés                                                                                                                        |
+| Où                                                                                                               | Quoi                                                                                                                                            |
+| ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/grapheur/__tests__/`                                                                                    | Modèle : analyse, asymptotes, intersections, suites, exact, export, palette (`curve-palette.test.ts` lit `src/app.css` et vérifie le contraste) |
+| `src/lib/components/grapheur/__tests__/`                                                                         | Composants (`*.svelte.test.ts`), montés seuls par `grapheurContext(store)` ; contexte (`store-context.svelte.test.ts`)                          |
+| `src/lib/stores/__tests__/grapheur-*.svelte.test.ts`                                                             | Store : nuages, places                                                                                                                          |
+| `src/lib/atelier/__tests__/plot-sync.test.ts`, `src/lib/atelier/__tests__/lien-grapheur.test.ts`                 | Branchement atelier, liens `/grapheur`                                                                                                          |
+| `src/lib/geometry-core/viewport/__tests__/`, `src/lib/geometry-core/rendering/__tests__/bezier-monotone.test.ts` | Sampler, grille, spline partagés                                                                                                                |
 
 Commandes : `pnpm test:server src/lib/grapheur` pour les `.test.ts`, `pnpm test:client
 src/lib/components/grapheur` pour les `.svelte.test.ts`.
@@ -366,11 +364,6 @@ Aucun ADR. Les décisions de David sont dans les journaux archivés :
 
 ## Écarts connus
 
-- **Code que plus aucune page ne monte** depuis le retrait de `/calc` (2026-10-25) : le singleton
-  `grapheurStore` (et sa persistance `chiphre-grapheur-state`), le `FunctionPanel` et les champs
-  qu'il monte (`FunctionInput`, `SequenceInput`, `SequenceTable`, `ParameterInput`), la prop
-  `panel` de `GrapheurContainer.svelte` (l'atelier passe toujours `panel={false}`). Seuls des tests
-  les lisent encore.
 - **`src/lib/components/grapheur/index.ts`** (barillet) n'a aucun importeur.
 - Les ré-exports `viewport.ts`, `bezier.ts`, `colors.ts` de `src/lib/grapheur/` sont des
   survivances « rétrocompatibilité » ; le code importe tantôt eux, tantôt `geometry-core`.

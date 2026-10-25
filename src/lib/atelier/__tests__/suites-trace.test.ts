@@ -130,7 +130,7 @@ describe('la suite sur le graphique', () => {
 	it('le grapheur reçoit une suite qu’il sait lire', () => {
 		const atelier = recurrence('0,5u(n) + 3', '2');
 		atelier.setPlotted('u', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		syncPlots(atelier, graph);
 
@@ -152,7 +152,7 @@ describe('la suite sur le graphique', () => {
 		atelier.create({ kind: 'sequence', name: 'u', definition: 'u_n + 1' }, 'text');
 		atelier.setSequence('u', { firstTerm: 'a' });
 		atelier.setPlotted('u', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 
 		atelier.slideTo('a', 1);
@@ -164,7 +164,7 @@ describe('la suite sur le graphique', () => {
 	it('suit l’escalier et le nombre de marches', () => {
 		const atelier = recurrence();
 		atelier.setPlotted('u', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 
 		atelier.setSequenceDisplay('u', { representation: 'cobweb', cobwebSteps: 3 });
@@ -178,7 +178,7 @@ describe('la suite sur le graphique', () => {
 		atelier.create({ kind: 'value', name: 'q', definition: '3' }, 'text');
 		atelier.create({ kind: 'sequence', name: 'u', definition: 'q*n' }, 'text');
 		atelier.setPlotted('u', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		syncPlots(atelier, graph);
 
@@ -188,7 +188,7 @@ describe('la suite sur le graphique', () => {
 	it('n’écrit rien quand rien n’a changé', () => {
 		const atelier = recurrence();
 		atelier.setPlotted('u', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 
 		const update = vi.spyOn(graph, 'updateSequence');
@@ -200,7 +200,7 @@ describe('la suite sur le graphique', () => {
 	it('masque une suite qui ne peut rien produire, sans la retirer', () => {
 		const atelier = recurrence();
 		atelier.setPlotted('u', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 
 		atelier.setSequence('u', { firstTerm: 'b' });
@@ -212,7 +212,7 @@ describe('la suite sur le graphique', () => {
 	it('retirer la suite la retire du graphique', () => {
 		const atelier = recurrence();
 		atelier.setPlotted('u', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(atelier, graph);
 
 		atelier.setPlotted('u', false);
@@ -311,7 +311,7 @@ describe('revue du lot 5b', () => {
 		atelier.create({ kind: 'sequence', name: 'v', definition: 'u_n + v_n' }, 'text');
 		atelier.setSequence('v', { firstTerm: '1' });
 		atelier.setPlotted('v', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		syncPlots(atelier, graph);
 
@@ -326,7 +326,7 @@ describe('revue du lot 5b', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'sequence', name: 'u', definition: 'e^(-n)' }, 'text');
 		atelier.setPlotted('u', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		syncPlots(atelier, graph);
 

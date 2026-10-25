@@ -1,17 +1,19 @@
 /**
  * Grapheur — quelle instance un composant doit lire
  *
- * Les composants du grapheur importaient jusqu'ici le singleton `grapheurStore`
- * en dur, ce qui rendait une seconde instance impossible : `/calc` et
- * `/grapheur` partageaient donc le même état sans l'avoir décidé, et l'atelier
- * de recherche ne pouvait pas posséder le sien (décision figée n° 1 du cadrage,
+ * Chaque atelier possède SON grapheur (`new GrapheurStore()`) et le donne aux
+ * composants descendants par le contexte Svelte : plusieurs ateliers peuvent
+ * coexister sans partager d'état (décision figée n° 1 du cadrage,
  * `docs/archive/wip/atelier-recherche-eleve.md`).
+ *
+ * Il n'y a aucun repli : un composant du grapheur monté sans fournisseur lève
+ * une erreur explicite. Les tests le montent seul avec `grapheurContext(store)` :
+ * `render(Comp, { props, context: grapheurContext(store) })`.
  *
  * @module stores/grapheur-context
  */
 
 import { getContext, hasContext, setContext } from 'svelte';
-import { grapheurStore } from './grapheur.svelte';
 import type { GrapheurStore } from './grapheur.svelte';
 
 const GRAPHEUR_KEY = Symbol('grapheur-store');
@@ -29,15 +31,22 @@ export function provideGrapheurStore(store: GrapheurStore): GrapheurStore {
 /**
  * L'instance qu'un composant doit lire.
  *
- * ⚠️ **Repli sur le singleton** quand aucun fournisseur n'est monté au-dessus.
- * Ce n'est pas une facilité : les composants du grapheur sont montés seuls dans
- * sept fichiers de tests (`render(ParameterInput, …)`), sans parent donc sans
- * contexte. Sans ce repli, le refactor les casserait tous — et un composant
- * monté hors de son conteneur cesserait de fonctionner sans rien dire.
- *
- * Le singleton reste donc l'instance par défaut. Depuis le retrait de `/calc`
- * (2026-10-25), aucune page ne le monte : il ne sert plus qu'à ces tests.
+ * @throws Error si aucun fournisseur n'est monté au-dessus du composant.
  */
 export function useGrapheurStore(): GrapheurStore {
-	return hasContext(GRAPHEUR_KEY) ? getContext<GrapheurStore>(GRAPHEUR_KEY) : grapheurStore;
+	if (!hasContext(GRAPHEUR_KEY)) {
+		throw new Error(
+			'Aucun grapheur fourni : monter ce composant sous un fournisseur (provideGrapheurStore), ' +
+				'ou, dans un test, avec l’option context: grapheurContext(store).'
+		);
+	}
+	return getContext<GrapheurStore>(GRAPHEUR_KEY);
+}
+
+/**
+ * Le contexte à passer à `mount` / `render` (option `context`) pour monter un
+ * composant seul avec une instance donnée.
+ */
+export function grapheurContext(store: GrapheurStore): Map<symbol, GrapheurStore> {
+	return new Map([[GRAPHEUR_KEY, store]]);
 }

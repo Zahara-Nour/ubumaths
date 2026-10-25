@@ -1,9 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import CurveHover from '../CurveHover.svelte';
-import { grapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { grapheurContext } from '$lib/stores/grapheur-context';
 import { createTransformer } from '$lib/grapheur/viewport';
 import type { Viewport } from '$lib/grapheur/types';
+
+// Une instance neuve par test, fournie aux composants par le contexte.
+let grapheurStore = new GrapheurStore();
 
 const viewport: Viewport = { xMin: -1, xMax: 6, yMin: -4, yMax: 4 };
 const WIDTH = 800;
@@ -14,9 +18,12 @@ async function hoverAt(x: number, y: number) {
 	grapheurStore.setCursor({ x, y });
 
 	return await render(CurveHover, {
-		transformer: createTransformer(viewport, WIDTH, HEIGHT),
-		width: WIDTH,
-		height: HEIGHT
+		context: grapheurContext(grapheurStore),
+		props: {
+			transformer: createTransformer(viewport, WIDTH, HEIGHT),
+			width: WIDTH,
+			height: HEIGHT
+		}
 	});
 }
 
@@ -27,7 +34,7 @@ async function hoverAt(x: number, y: number) {
  */
 describe('CurveHover — termes de suite', () => {
 	beforeEach(() => {
-		grapheurStore.fullReset();
+		grapheurStore = new GrapheurStore();
 		grapheurStore.setInteracting(false);
 	});
 

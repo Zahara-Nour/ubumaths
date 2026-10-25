@@ -20,7 +20,7 @@ function drawn(graph: GrapheurStore): string[] {
 describe('report des objets vers le grapheur', () => {
 	it('ne trace rien tant que rien n’est demandé', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 
 		syncPlots(atelier, graph);
@@ -29,7 +29,7 @@ describe('report des objets vers le grapheur', () => {
 
 	it('trace un objet marqué', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		atelier.setPlotted('f', true);
 
@@ -40,7 +40,7 @@ describe('report des objets vers le grapheur', () => {
 	// LE point de l'option B : modifier l'objet redessine la courbe
 	it('suit la définition quand elle change', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		atelier.setPlotted('f', true);
 		syncPlots(atelier, graph);
@@ -53,7 +53,7 @@ describe('report des objets vers le grapheur', () => {
 
 	it('retire la courbe quand l’objet n’est plus tracé', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		atelier.setPlotted('f', true);
 		syncPlots(atelier, graph);
@@ -66,7 +66,7 @@ describe('report des objets vers le grapheur', () => {
 
 	it('retire la courbe quand l’objet est supprimé', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		atelier.setPlotted('f', true);
 		syncPlots(atelier, graph);
@@ -82,7 +82,7 @@ describe('report des objets vers le grapheur', () => {
 	// bas « la courbe garde son identité »).
 	it('n’affiche pas un objet en attente ou en erreur', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' });
 		atelier.create({ kind: 'function', name: 'g', definition: 'x^^2' });
 		atelier.setPlotted('f', true);
@@ -94,7 +94,7 @@ describe('report des objets vers le grapheur', () => {
 
 	it('affiche dès que l’objet en attente est complété', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' });
 		atelier.setPlotted('f', true);
 		syncPlots(atelier, graph);
@@ -119,7 +119,7 @@ describe('report des objets vers le grapheur', () => {
 	// chaque frappe recréerait les courbes et ferait clignoter le graphe.
 	it('ne refait rien quand rien n’a changé', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		atelier.setPlotted('f', true);
 
@@ -133,7 +133,7 @@ describe('report des objets vers le grapheur', () => {
 
 	it('ne touche pas aux courbes que l’atelier n’a pas posées', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		graph.addFunction('\\sin(x)'); // ajoutée à la main dans le grapheur
 
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
@@ -155,7 +155,7 @@ describe('la courbe garde son identité', () => {
 	// changer la courbe de couleur — le clignotement que l'idempotence évite.
 	it('ne change ni d’identité ni de couleur en traversant une erreur', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		atelier.setPlotted('f', true);
 		syncPlots(atelier, graph);
@@ -176,7 +176,7 @@ describe('la courbe garde son identité', () => {
 
 	it('masque la courbe tant que l’objet ne peut rien produire', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		atelier.setPlotted('f', true);
 		syncPlots(atelier, graph);
@@ -190,7 +190,7 @@ describe('la courbe garde son identité', () => {
 
 	it('la remontre dès que l’objet redevient utilisable', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'a*x' });
 		atelier.setPlotted('f', true);
 		syncPlots(atelier, graph);
@@ -204,7 +204,7 @@ describe('la courbe garde son identité', () => {
 	// Retirer volontairement, en revanche, retire bien la courbe
 	it('retire vraiment la courbe quand l’élève la retire', () => {
 		const atelier = new Atelier();
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
 		atelier.setPlotted('f', true);
 		syncPlots(atelier, graph);

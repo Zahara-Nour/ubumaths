@@ -156,7 +156,7 @@ describe('le problème de l’aire, de bout en bout', () => {
 
 	it('la ligne propose le nuage, et le nuage se trace dans Graphe', () => {
 		const desk = new CalcDesk(session(...AREA_PROBLEM).atelier);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 
 		desk.submit('.relever AM ; S quand M va de 0 à 1 pas 0,05');
 

@@ -2,39 +2,31 @@
  * Grapheur Store
  *
  * Svelte 5 reactive store for the graphing calculator (Grapheur).
- * Manages functions, viewport state, cursor position, and localStorage persistence.
+ * Manages functions, viewport state and cursor position. Rien n'est conservé :
+ * chaque instance vit en mémoire, possédée par l'atelier qui la crée.
  *
  * @module stores/grapheur
  */
 
-import { browser } from '$app/environment';
 import { parseFunction } from '$lib/grapheur/evaluator';
 import { DEFAULT_VIEWPORT, panViewport, zoomViewport } from '$lib/grapheur/viewport';
-import { getNextSlot, migrateLegacyColor } from '$lib/grapheur/colors';
+import { getNextSlot } from '$lib/grapheur/colors';
 import type {
 	Plottable,
 	ExplicitFunction,
 	SequencePlottable,
 	SequenceMode,
 	Viewport,
-	GraphState,
 	Point,
 	ViewportMetrics,
-	ExplicitFunctionState,
-	PlottableState,
-	SequenceState,
 	SnappedPoint,
 	Parameter,
-	ScatterPlottable,
-	ScatterState
+	ScatterPlottable
 } from '$lib/grapheur/types';
 import {
 	DEFAULT_PARAMETER_MAX,
 	DEFAULT_PARAMETER_MIN,
-	GRAPH_STATE_VERSION,
-	graphStateSchema,
 	isSequence,
-	isScatter,
 	nextParameterName,
 	RESERVED_PARAMETER_NAMES
 } from '$lib/grapheur/types';
@@ -53,20 +45,6 @@ import {
 } from '$lib/grapheur/pinned-labels';
 
 // =============================================================================
-// Constants
-// =============================================================================
-
-const STORAGE_KEY = 'chiphre-grapheur-state';
-
-/**
- * Où une instance range son état.
- *
- * `null` = aucune persistance : l'instance vit en mémoire et ne touche à rien.
- */
-export type GrapheurStorageKey = string | null;
-const DEBOUNCE_MS = 500;
-
-// =============================================================================
 // Grapheur Store Class
 // =============================================================================
 
@@ -75,26 +53,12 @@ const DEBOUNCE_MS = 500;
  *
  * Features:
  * - Function management (add, update, remove)
- * - Viewport control (pan, zoom, reset)
+ * - Viewport control (pan, zoom)
  * - Cursor tracking for coordinate display
  * - Interaction state for rendering optimization
- * - localStorage persistence with debounce
- * - Zod validation on load
  *
- * @example
- * ```svelte
- * <script>
- * import { grapheurStore } from '$lib/stores/grapheur.svelte';
- *
- * // Add a function
- * grapheurStore.addFunction('x^2');
- *
- * // Access visible functions
- * {#each grapheurStore.visibleFunctions as func}
- *   <FunctionPlot {func} viewport={grapheurStore.viewport} />
- * {/each}
- * </script>
- * ```
+ * Une instance par atelier (`new GrapheurStore()`), fournie aux composants par
+ * `provideGrapheurStore` et lue par `useGrapheurStore`.
  */
 class GrapheurStore {
 	// ===========================================================================
@@ -116,8 +80,7 @@ class GrapheurStore {
 	/**
 	 * Labels a click left on the graph.
 	 *
-	 * Deliberately absent from `serialize()`: they are what you point at during
-	 * a lesson, not what you save. Each holds only what was clicked, so its
+	 * What you point at during a lesson. Each holds only what was clicked, so its
 	 * value follows the parameters instead of going stale.
 	 */
 	pinnedLabels = $state<PinnedLabel[]>([]);
@@ -130,13 +93,6 @@ class GrapheurStore {
 
 	/** Currently snapped special point (set by CurveHover, used by SpecialPoints/IntersectionPoints) */
 	snappedPoint = $state<SnappedPoint | null>(null);
-
-	// ===========================================================================
-	// Private State
-	// ===========================================================================
-
-	/** Timeout handle for debounced save */
-	private saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	// ===========================================================================
 	// Derived State
@@ -195,27 +151,6 @@ class GrapheurStore {
 	// Initialization
 	// ===========================================================================
 
-	/**
-	 * Clé de rangement de CETTE instance.
-	 *
-	 * ⚠️ Deux instances qui partagent une clé se marchent dessus : la seconde
-	 * charge l'état de la première, puis l'écrase à sa première modification.
-	 * Un atelier qui veut son propre grapheur passe donc sa propre clé — ou
-	 * `null` pour ne rien conserver.
-	 */
-	private readonly storageKey: GrapheurStorageKey;
-
-	constructor(storageKey: GrapheurStorageKey = STORAGE_KEY) {
-		this.storageKey = storageKey;
-		if (browser && this.storageKey !== null) {
-			this.loadFromStorage();
-
-			// Note: $effect cannot be used in constructor (outside component context)
-			// Timeout cleanup is handled in scheduleSave by clearing previous timeout
-			// and the timeout naturally completes or is cleared before new saves
-		}
-	}
-
 	// ===========================================================================
 	// Function Management
 	// ===========================================================================
@@ -228,8 +163,8 @@ class GrapheurStore {
 	 *
 	 * @example
 	 * ```typescript
-	 * const id = grapheurStore.addFunction('x^2');
-	 * grapheurStore.addFunction('\\sin(x)');
+	 * const id = graph.addFunction('x^2');
+	 * graph.addFunction('\\sin(x)');
 	 * ```
 	 */
 	// ===========================================================================
@@ -255,14 +190,12 @@ class GrapheurStore {
 			}
 		];
 		this.reparseSequences();
-		this.scheduleSave();
 		return id;
 	}
 
 	/** Update a parameter's value or slider bounds. */
 	updateParameter(id: string, updates: Partial<Pick<Parameter, 'value' | 'min' | 'max'>>): void {
 		this.parameters = this.parameters.map((p) => (p.id === id ? { ...p, ...updates } : p));
-		this.scheduleSave();
 	}
 
 	/**
@@ -289,7 +222,6 @@ class GrapheurStore {
 
 		this.parameters = this.parameters.map((p) => (p.id === id ? { ...p, name: trimmed } : p));
 		this.reparseSequences();
-		this.scheduleSave();
 		return null;
 	}
 
@@ -297,7 +229,6 @@ class GrapheurStore {
 	removeParameter(id: string): void {
 		this.parameters = this.parameters.filter((p) => p.id !== id);
 		this.reparseSequences();
-		this.scheduleSave();
 	}
 
 	/**
@@ -349,7 +280,6 @@ class GrapheurStore {
 		};
 
 		this.functions = [...this.functions, func];
-		this.scheduleSave();
 		return id;
 	}
 
@@ -362,13 +292,13 @@ class GrapheurStore {
 	 * @example
 	 * ```typescript
 	 * // Update expression
-	 * grapheurStore.updateFunction(id, { latex: 'x^3' });
+	 * graph.updateFunction(id, { latex: 'x^3' });
 	 *
 	 * // Update appearance
-	 * grapheurStore.updateFunction(id, { color: '#ff0000', lineWidth: 3 });
+	 * graph.updateFunction(id, { color: '#ff0000', lineWidth: 3 });
 	 *
 	 * // Toggle visibility
-	 * grapheurStore.updateFunction(id, { visible: false });
+	 * graph.updateFunction(id, { visible: false });
 	 * ```
 	 */
 	updateFunction(
@@ -408,7 +338,6 @@ class GrapheurStore {
 
 			return { ...f, ...updates };
 		});
-		this.scheduleSave();
 	}
 
 	// ===========================================================================
@@ -424,7 +353,7 @@ class GrapheurStore {
 	 *
 	 * @example
 	 * ```typescript
-	 * grapheurStore.addSequence('recurrence', '0.5u_n+3');
+	 * graph.addSequence('recurrence', '0.5u_n+3');
 	 * ```
 	 */
 	addSequence(mode: SequenceMode = 'explicit', latex: string = ''): string {
@@ -459,7 +388,6 @@ class GrapheurStore {
 		};
 
 		this.functions = [...this.functions, sequence];
-		this.scheduleSave();
 		return id;
 	}
 
@@ -493,7 +421,6 @@ class GrapheurStore {
 		};
 
 		this.functions = [...this.functions, scatter];
-		this.scheduleSave();
 		return id;
 	}
 
@@ -520,7 +447,6 @@ class GrapheurStore {
 		};
 
 		this.functions = [...this.functions.slice(0, index), next, ...this.functions.slice(index + 1)];
-		this.scheduleSave();
 	}
 
 	/**
@@ -579,7 +505,6 @@ class GrapheurStore {
 				usesIndex: parseResult.usesIndex
 			};
 		});
-		this.scheduleSave();
 	}
 
 	/**
@@ -590,7 +515,6 @@ class GrapheurStore {
 	removeFunction(id: string): void {
 		this.functions = this.functions.filter((f) => f.id !== id);
 		this.pinnedLabels = clearLabelsOf(this.pinnedLabels, id);
-		this.scheduleSave();
 	}
 
 	/**
@@ -614,7 +538,6 @@ class GrapheurStore {
 	clearFunctions(): void {
 		this.functions = [];
 		this.pinnedLabels = [];
-		this.scheduleSave();
 	}
 
 	/**
@@ -647,7 +570,6 @@ class GrapheurStore {
 		const [removed] = newFunctions.splice(fromIndex, 1);
 		newFunctions.splice(toIndex, 0, removed);
 		this.functions = newFunctions;
-		this.scheduleSave();
 	}
 
 	// ===========================================================================
@@ -662,7 +584,6 @@ class GrapheurStore {
 	 */
 	pan(dx: number, dy: number): void {
 		this.viewport = panViewport(this.viewport, dx, dy);
-		this.scheduleSave();
 	}
 
 	/**
@@ -674,7 +595,6 @@ class GrapheurStore {
 	 */
 	zoom(factor: number, centerX?: number, centerY?: number): void {
 		this.viewport = zoomViewport(this.viewport, factor, centerX, centerY);
-		this.scheduleSave();
 	}
 
 	/**
@@ -682,7 +602,6 @@ class GrapheurStore {
 	 */
 	resetViewport(): void {
 		this.viewport = { ...DEFAULT_VIEWPORT };
-		this.scheduleSave();
 	}
 
 	/**
@@ -692,7 +611,6 @@ class GrapheurStore {
 	 */
 	setViewport(viewport: Viewport): void {
 		this.viewport = viewport;
-		this.scheduleSave();
 	}
 
 	// ===========================================================================
@@ -737,310 +655,7 @@ class GrapheurStore {
 	 */
 	toggleGrid(): void {
 		this.showGrid = !this.showGrid;
-		this.scheduleSave();
-	}
-
-	// ===========================================================================
-	// Serialization
-	// ===========================================================================
-
-	/**
-	 * Serialize state for storage
-	 *
-	 * Excludes AST (will be re-parsed on load) since MathNode
-	 * is not JSON-serializable.
-	 *
-	 * @returns GraphState object ready for JSON serialization
-	 */
-	serialize(): GraphState {
-		return {
-			version: GRAPH_STATE_VERSION,
-			viewport: this.viewport,
-			showGrid: this.showGrid,
-			parameters: this.parameters,
-			functions: this.functions.map((p): PlottableState => {
-				if (isSequence(p)) {
-					const sequenceState: SequenceState = {
-						id: p.id,
-						type: p.type,
-						name: p.name,
-						mode: p.mode,
-						latex: p.latex,
-						firstIndex: p.firstIndex,
-						firstTerm: p.firstTerm,
-						firstTermParameter: p.firstTermParameter,
-						firstTermMin: p.firstTermMin,
-						firstTermMax: p.firstTermMax,
-						representation: p.representation,
-						cobwebSteps: p.cobwebSteps,
-						color: p.color,
-						visible: p.visible,
-						lineWidth: p.lineWidth,
-						lineStyle: p.lineStyle
-					};
-					return sequenceState;
-				}
-
-				// ⚠️ Le nuage AVANT le repli sur « fonction » : avec trois membres dans
-				// l'union, le `else` implicite ne veut plus dire « explicit ».
-				if (isScatter(p)) {
-					const scatterState: ScatterState = {
-						id: p.id,
-						type: p.type,
-						label: p.label,
-						xs: [...p.xs],
-						ys: [...p.ys],
-						color: p.color,
-						visible: p.visible,
-						lineWidth: p.lineWidth,
-						lineStyle: p.lineStyle
-					};
-					return scatterState;
-				}
-
-				const functionState: ExplicitFunctionState = {
-					id: p.id,
-					type: p.type,
-					latex: p.latex,
-					showDerivative: p.showDerivative,
-					tangentAt: p.tangentAt,
-					integral: p.integral,
-					showOsculating: p.showOsculating,
-					showArcLength: p.showArcLength,
-					color: p.color,
-					visible: p.visible,
-					lineWidth: p.lineWidth,
-					lineStyle: p.lineStyle,
-					variable: p.variable
-				};
-				return functionState;
-			})
-		};
-	}
-
-	// ===========================================================================
-	// localStorage Persistence
-	// ===========================================================================
-
-	/**
-	 * Load state from localStorage
-	 *
-	 * Validates with Zod and re-parses all function expressions.
-	 * Gracefully handles corrupted or incompatible data.
-	 */
-	private loadFromStorage(): void {
-		try {
-			if (this.storageKey === null) return;
-			const stored = localStorage.getItem(this.storageKey);
-			if (!stored) return;
-
-			const parsed = JSON.parse(stored);
-			const validated = graphStateSchema.safeParse(parsed);
-
-			if (!validated.success) {
-				console.warn('Invalid grapheur state in localStorage:', validated.error.issues);
-				return;
-			}
-
-			const state = validated.data;
-
-			// Restore viewport and grid visibility (schema ensures showGrid exists)
-			this.viewport = state.viewport;
-			this.showGrid = state.showGrid;
-			// Parameters first: the expressions below are parsed against their names.
-			this.parameters = state.parameters;
-
-			// Re-parse everything (AST is not stored). Les couleurs de l'ancienne
-			// palette sont traduites au passage vers les places actuelles.
-			this.functions = state.functions.map((stored): Plottable => {
-				const p = { ...stored, ...migrateLegacyColor(stored.color, stored.lineStyle ?? 'solid') };
-				// Un nuage n'a rien à reparser : ses deux séries sont la donnée.
-				if (p.type === 'scatter') {
-					const scatter: ScatterPlottable = {
-						id: p.id,
-						type: p.type,
-						label: p.label,
-						xs: p.xs,
-						ys: p.ys,
-						color: p.color,
-						visible: p.visible,
-						lineWidth: p.lineWidth,
-						lineStyle: p.lineStyle ?? 'solid'
-					};
-					return scatter;
-				}
-				if (p.type === 'sequence') {
-					const parseResult = parseSequence(
-						p.latex,
-						p.mode,
-						p.name,
-						state.parameters.map((q) => q.name)
-					);
-					const sequence: SequencePlottable = {
-						id: p.id,
-						type: p.type,
-						name: p.name,
-						mode: p.mode,
-						latex: p.latex,
-						ast: parseResult.ast ?? undefined,
-						parseError: parseResult.error ?? undefined,
-						usesIndex: parseResult.usesIndex,
-						firstIndex: p.firstIndex,
-						firstTerm: p.firstTerm,
-						firstTermParameter: p.firstTermParameter,
-						firstTermMin: p.firstTermMin,
-						firstTermMax: p.firstTermMax,
-						representation: p.representation,
-						cobwebSteps: p.cobwebSteps,
-						color: p.color,
-						visible: p.visible,
-						lineWidth: p.lineWidth,
-						lineStyle: p.lineStyle ?? 'solid'
-					};
-					return sequence;
-				}
-
-				const parseResult = parseFunction(p.latex);
-				const func: ExplicitFunction = {
-					id: p.id,
-					type: p.type,
-					latex: p.latex,
-					showDerivative: p.showDerivative,
-					tangentAt: p.tangentAt,
-					integral: p.integral,
-					showOsculating: p.showOsculating,
-					showArcLength: p.showArcLength,
-					ast: parseResult.ast ?? undefined,
-					parseError: parseResult.error ?? undefined,
-					variable: p.variable,
-					color: p.color,
-					visible: p.visible,
-					lineWidth: p.lineWidth,
-					lineStyle: p.lineStyle ?? 'solid' // Default for backward compatibility
-				};
-				return func;
-			});
-		} catch (error) {
-			console.warn('Failed to load grapheur state from localStorage:', error);
-		}
-	}
-
-	/**
-	 * Save state to localStorage with debounce
-	 *
-	 * Called after every state mutation. Uses debouncing to avoid
-	 * excessive writes during rapid updates (like dragging).
-	 */
-	private scheduleSave(): void {
-		if (!browser) return;
-
-		// Clear any pending save
-		if (this.saveTimeout !== null) {
-			clearTimeout(this.saveTimeout);
-		}
-
-		// Schedule new save
-		this.saveTimeout = setTimeout(() => {
-			this.saveToStorage();
-			this.saveTimeout = null;
-		}, DEBOUNCE_MS);
-	}
-
-	/**
-	 * Save state to localStorage immediately
-	 */
-	private saveToStorage(): void {
-		if (!browser) return;
-		// Une instance sans clé ne range rien : inutile de sérialiser pour rien,
-		// et le garde doit être HORS du `try` pour valoir aussi dans le `catch`.
-		const key = this.storageKey;
-		if (key === null) return;
-
-		try {
-			const state = this.serialize();
-			localStorage.setItem(key, JSON.stringify(state));
-		} catch (error) {
-			console.warn('Failed to save grapheur state to localStorage:', error);
-
-			// Handle quota exceeded
-			if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-				// Try to save with fewer functions
-				try {
-					const reducedState: GraphState = {
-						...this.serialize(),
-						functions: this.serialize().functions.slice(0, 10)
-					};
-					localStorage.setItem(key, JSON.stringify(reducedState));
-				} catch {
-					// If still failing, just clear storage
-					this.clearStorage();
-				}
-			}
-		}
-	}
-
-	/**
-	 * Clear stored state from localStorage
-	 */
-	clearStorage(): void {
-		if (!browser) return;
-		if (this.storageKey === null) return;
-		localStorage.removeItem(this.storageKey);
-	}
-
-	/**
-	 * Reset to initial state
-	 *
-	 * Clears all functions, resets viewport, and clears cursor/interaction state.
-	 * Does NOT clear localStorage - use clearStorage() for that.
-	 */
-	reset(): void {
-		this.functions = [];
-		this.parameters = [];
-		this.viewport = { ...DEFAULT_VIEWPORT };
-		this.showGrid = true;
-		this.cursor = null;
-		this.isInteracting = false;
-		this.pinnedLabels = [];
-		this.scheduleSave();
-	}
-
-	/**
-	 * Full reset including localStorage
-	 */
-	fullReset(): void {
-		this.reset();
-		this.clearStorage();
 	}
 }
 
-// =============================================================================
-// Export Singleton
-// =============================================================================
-
-/**
- * Singleton instance of the Grapheur store.
- *
- * Use this in components to access graphing calculator state and methods.
- *
- * @example
- * ```svelte
- * <script>
- * import { grapheurStore } from '$lib/stores/grapheur.svelte';
- *
- * // Add a new function
- * function handleAdd() {
- *   grapheurStore.addFunction('x^2');
- * }
- *
- * // Access reactive state
- * $: console.log('Functions:', grapheurStore.functions);
- * </script>
- * ```
- */
-export const grapheurStore = new GrapheurStore();
-
-/**
- * Export the class for testing purposes
- */
 export { GrapheurStore };

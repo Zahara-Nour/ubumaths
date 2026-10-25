@@ -24,7 +24,7 @@ import {
 import { CURVE_SLOTS } from '../colors';
 import { createEvaluator, parseFunction } from '../evaluator';
 import { computeSequenceTerms, parseSequence, toComputeSpec } from '../sequence';
-import { graphStateSchema, nextParameterName, RESERVED_PARAMETER_NAMES } from '../types';
+import { nextParameterName, RESERVED_PARAMETER_NAMES } from '../types';
 import type { ExplicitFunction, Viewport } from '../types';
 
 const viewport: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
@@ -155,51 +155,6 @@ describe('une suite accepte les paramètres déclarés', () => {
 		const terms = computeSequenceTerms(spec!, 4).map((t) => t.value);
 
 		expect(terms).toEqual([1, 2, 4, 8, 16]);
-	});
-});
-
-describe('persistance', () => {
-	const BASE = {
-		version: 2,
-		viewport,
-		showGrid: true,
-		functions: []
-	};
-
-	it('rétablit une liste vide quand la clé manque', () => {
-		const result = graphStateSchema.safeParse(BASE);
-
-		expect(result.success).toBe(true);
-		expect(result.data?.parameters).toEqual([]);
-	});
-
-	it('conserve les paramètres enregistrés', () => {
-		const result = graphStateSchema.safeParse({
-			...BASE,
-			parameters: [
-				{
-					id: '11111111-1111-4111-8111-111111111111',
-					name: 'a',
-					value: 3,
-					min: -5,
-					max: 5
-				}
-			]
-		});
-
-		expect(result.data?.parameters[0].name).toBe('a');
-		expect(result.data?.parameters[0].value).toBe(3);
-	});
-
-	it('rejette un nom réservé', () => {
-		const result = graphStateSchema.safeParse({
-			...BASE,
-			parameters: [
-				{ id: '11111111-1111-4111-8111-111111111111', name: 'x', value: 1, min: 0, max: 2 }
-			]
-		});
-
-		expect(result.success).toBe(false);
 	});
 });
 

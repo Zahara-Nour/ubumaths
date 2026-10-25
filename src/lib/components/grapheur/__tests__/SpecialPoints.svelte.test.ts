@@ -1,9 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import SpecialPoints from '../SpecialPoints.svelte';
-import { grapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { grapheurContext } from '$lib/stores/grapheur-context';
 import { createTransformer } from '$lib/grapheur/viewport';
 import type { Viewport } from '$lib/grapheur/types';
+
+// Une instance neuve par test, fournie aux composants par le contexte.
+let grapheurStore = new GrapheurStore();
 
 const viewport: Viewport = { xMin: -10, xMax: 10, yMin: -10, yMax: 10 };
 
@@ -11,7 +15,10 @@ async function renderPoints() {
 	grapheurStore.setViewport(viewport);
 
 	return await render(SpecialPoints, {
-		transformer: createTransformer(viewport, 800, 800)
+		context: grapheurContext(grapheurStore),
+		props: {
+			transformer: createTransformer(viewport, 800, 800)
+		}
 	});
 }
 
@@ -28,7 +35,7 @@ function titles(container: Element, selector: string): string[] {
  */
 describe('SpecialPoints', () => {
 	beforeEach(() => {
-		grapheurStore.fullReset();
+		grapheurStore = new GrapheurStore();
 	});
 
 	it('affiche le sommet d’une parabole', async () => {

@@ -1,73 +1,50 @@
 /**
  * Le grapheur doit pouvoir servir plusieurs ateliers à la fois.
  *
- * Tant que ses composants importaient un singleton, une seconde instance était
- * impossible : ils auraient lu l'état de la première. C'est ce qui bloquait
- * l'atelier (décision figée n° 1 : l'atelier possède l'état).
+ * Chaque atelier possède son instance et la donne aux composants par le
+ * contexte : deux instances ne doivent jamais se marcher dessus, et un
+ * composant monté sans fournisseur doit échouer clairement.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render } from 'vitest-browser-svelte';
-import ProvideStore from './harness/ProvideStore.svelte';
-import { GrapheurStore, grapheurStore } from '$lib/stores/grapheur.svelte';
-
-beforeEach(() => {
-	grapheurStore.fullReset();
-});
+import ViewportControls from '../ViewportControls.svelte';
+import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { grapheurContext } from '$lib/stores/grapheur-context';
 
 describe('instance fournie par contexte', () => {
-	it('agit sur l’instance fournie, pas sur le singleton', async () => {
+	it('agit sur l’instance fournie, pas sur une autre', async () => {
 		const own = new GrapheurStore();
-		const { container } = await render(ProvideStore, { store: own });
+		const other = new GrapheurStore();
+		const { container } = await render(ViewportControls, {
+			context: grapheurContext(own),
+			props: { svgRef: undefined, svgWidth: 0, svgHeight: 0 }
+		});
 
-		const add = container.querySelector('button');
-		expect(add).toBeTruthy();
-		add?.click();
+		const grid = container.querySelector('button[aria-pressed]') as HTMLButtonElement | null;
+		expect(grid).toBeTruthy();
+		grid?.click();
 		await new Promise((r) => setTimeout(r, 0));
 
-		expect(own.functions.length).toBe(1);
-		expect(grapheurStore.functions.length).toBe(0);
+		expect(own.showGrid).toBe(false);
+		expect(other.showGrid).toBe(true);
 	});
 
-	// ⚠️ L'isolation en mémoire ne suffit pas : sans clé propre, une seconde
-	// instance chargerait l'état rangé par `/grapheur` puis l'écraserait à sa
-	// première modification. L'élève perdrait ses courbes sans un mot.
-	//
-	// Les marqueurs sont volontairement improbables : chercher « 42 » dans le
-	// stockage passait en local sur un fichier isolé, et échouait en CI où
-	// soixante-neuf fichiers de tests ont déjà écrit des identifiants et des
-	// horodatages qui contiennent n'importe quel petit nombre.
-	const MARKER_OWN = '{909091}';
-	const MARKER_VOLATILE = '{909092}';
+	it('deux instances n’interfèrent pas', () => {
+		const a = new GrapheurStore();
+		const b = new GrapheurStore();
 
-	it('range son état sous SA clé, sans contaminer celle du grapheur', async () => {
-		const own = new GrapheurStore('atelier-test');
-		own.addFunction(`x^${MARKER_OWN}`);
-		await new Promise((r) => setTimeout(r, 700)); // debounce de sauvegarde
+		a.addFunction('x^2');
 
-		expect(localStorage.getItem('atelier-test') ?? '').toContain('909091');
-		expect(localStorage.getItem('chiphre-grapheur-state') ?? '').not.toContain('909091');
-
-		localStorage.removeItem('atelier-test');
+		expect(a.functions.length).toBe(1);
+		expect(b.functions.length).toBe(0);
 	});
 
-	it('ne range rien du tout quand la clé est nulle', async () => {
-		// Le `fullReset()` du beforeEach programme une sauvegarde différée du
-		// singleton : sans cette attente, SA clé apparaît pendant le test et se
-		// fait prendre pour une écriture de l'instance à clé nulle.
-		await new Promise((r) => setTimeout(r, 700));
-		const before = new Set(Object.keys(localStorage));
+	it('lève une erreur claire sans fournisseur', async () => {
+		const monter = async () => {
+			await render(ViewportControls, { props: { svgRef: undefined, svgWidth: 0, svgHeight: 0 } });
+		};
 
-		const volatile = new GrapheurStore(null);
-		volatile.addFunction(`x^${MARKER_VOLATILE}`);
-		await new Promise((r) => setTimeout(r, 700));
-
-		expect(volatile.functions.length).toBe(1);
-		// Aucune clé neuve, et le marqueur nulle part.
-		expect(Object.keys(localStorage).filter((k) => !before.has(k))).toEqual([]);
-		const everything = Object.keys(localStorage)
-			.map((k) => localStorage.getItem(k) ?? '')
-			.join('');
-		expect(everything).not.toContain('909092');
+		await expect(monter()).rejects.toThrow(/Aucun grapheur fourni/);
 	});
 });

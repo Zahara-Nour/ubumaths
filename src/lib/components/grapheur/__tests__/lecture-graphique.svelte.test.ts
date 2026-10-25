@@ -7,7 +7,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import GraphSVG from '../GraphSVG.svelte';
-import { grapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '$lib/stores/grapheur.svelte';
+import { grapheurContext } from '$lib/stores/grapheur-context';
+
+// Une instance neuve par test, fournie aux composants par le contexte.
+let grapheurStore = new GrapheurStore();
 
 async function settle() {
 	await new Promise((resolve) => setTimeout(resolve, 0));
@@ -26,14 +30,14 @@ function attr(element: Element, name: string): number {
 
 describe('lecture graphique — les calculs de la console', () => {
 	beforeEach(() => {
-		grapheurStore.fullReset();
+		grapheurStore = new GrapheurStore();
 		grapheurStore.setInteracting(false);
 		grapheurStore.setViewport({ xMin: -5, xMax: 5, yMin: -5, yMax: 5 });
 	});
 
 	it('f(2) sur x² : pointillés de l’axe des abscisses au point, puis à l’axe des ordonnées', async () => {
 		plotted('x^2', [2]);
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await settle();
 
 		const reading = container.querySelector('g.image-readings [data-source="console"]');
@@ -56,7 +60,7 @@ describe('lecture graphique — les calculs de la console', () => {
 
 	it('hors de l’ensemble de définition : rien de dessiné', async () => {
 		plotted('\\sqrt{x}', [-1]);
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await settle();
 
 		expect(container.querySelector('[data-source="console"]')).toBeNull();
@@ -64,7 +68,7 @@ describe('lecture graphique — les calculs de la console', () => {
 
 	it('une courbe sans lecture : ni pointillés ni point glissant', async () => {
 		grapheurStore.addFunction('x^2');
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await settle();
 
 		expect(container.querySelector('g.image-readings')?.children.length ?? 0).toBe(0);
@@ -74,14 +78,14 @@ describe('lecture graphique — les calculs de la console', () => {
 
 describe('lecture graphique — le point glissant', () => {
 	beforeEach(() => {
-		grapheurStore.fullReset();
+		grapheurStore = new GrapheurStore();
 		grapheurStore.setInteracting(false);
 		grapheurStore.setViewport({ xMin: -5, xMax: 5, yMin: -5, yMax: 5 });
 	});
 
 	it('un curseur par courbe lue, hors de l’image décorative, qui dit sa lecture', async () => {
 		plotted('x^2', []);
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await settle();
 
 		const slider = container.querySelector('[role="slider"]') as HTMLElement;
@@ -97,7 +101,7 @@ describe('lecture graphique — le point glissant', () => {
 
 	it('les flèches le déplacent, la lecture suit, la touche ne remonte pas au graphe', async () => {
 		plotted('x^2', []);
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await settle();
 
 		const slider = container.querySelector('[role="slider"]') as HTMLElement;
@@ -118,7 +122,7 @@ describe('lecture graphique — le point glissant', () => {
 	it('Début et Fin : les bornes de la fenêtre, aimantées vers l’intérieur', async () => {
 		grapheurStore.setViewport({ xMin: -4.3, xMax: 4.8, yMin: -5, yMax: 5 });
 		plotted('x^2', []);
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await settle();
 
 		const slider = container.querySelector('[role="slider"]') as HTMLElement;
@@ -133,7 +137,7 @@ describe('lecture graphique — le point glissant', () => {
 
 	it('fenêtre déplacée : la vraie abscisse reste dans les bornes annoncées', async () => {
 		plotted('x^2', []);
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await settle();
 		const slider = container.querySelector('[role="slider"]') as HTMLElement;
 		slider.focus();
@@ -150,7 +154,7 @@ describe('lecture graphique — le point glissant', () => {
 
 describe('lecture graphique — le point glissant au pointeur', () => {
 	beforeEach(() => {
-		grapheurStore.fullReset();
+		grapheurStore = new GrapheurStore();
 		grapheurStore.setInteracting(false);
 		grapheurStore.setViewport({ xMin: -5, xMax: 5, yMin: -5, yMax: 5 });
 	});
@@ -174,7 +178,7 @@ describe('lecture graphique — le point glissant au pointeur', () => {
 
 	it('glisser puis relâcher : le point suit, la lecture est annoncée', async () => {
 		plotted('x^2', []);
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await sized(container);
 		const slider = container.querySelector('[role="slider"]') as HTMLElement;
 
@@ -192,7 +196,7 @@ describe('lecture graphique — le point glissant au pointeur', () => {
 
 	it('un geste annulé arrête le glissé : un simple survol ne déplace plus le point', async () => {
 		plotted('x^2', []);
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await sized(container);
 		const slider = container.querySelector('[role="slider"]') as HTMLElement;
 
@@ -207,7 +211,7 @@ describe('lecture graphique — le point glissant au pointeur', () => {
 
 	it('la même lecture annoncée deux fois est relue', async () => {
 		plotted('x^2', []);
-		const { container } = await render(GraphSVG, {});
+		const { container } = await render(GraphSVG, { context: grapheurContext(grapheurStore) });
 		await sized(container);
 		const slider = container.querySelector('[role="slider"]') as HTMLElement;
 		const live = () => container.querySelector('.reading-sliders [aria-live]')?.textContent;

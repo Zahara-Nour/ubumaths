@@ -22,7 +22,7 @@ function withReciprocal(definition = '2x+3'): { desk: CalcDesk; graph: GrapheurS
 	desk.submit(`f(x) = ${definition}`);
 	desk.atelier.setPlotted('f', true);
 	desk.submit('.réciproque f');
-	const graph = new GrapheurStore(null);
+	const graph = new GrapheurStore();
 	syncPlots(desk.atelier, graph);
 	return { desk, graph };
 }
@@ -86,7 +86,7 @@ describe('la droite y = x', () => {
 		const desk = new CalcDesk(new Atelier());
 		desk.submit('f(x) = 2x+3');
 		desk.atelier.setPlotted('f', true);
-		const graph = new GrapheurStore(null);
+		const graph = new GrapheurStore();
 		syncPlots(desk.atelier, graph);
 		expect(identityLines(graph)).toHaveLength(0);
 	});

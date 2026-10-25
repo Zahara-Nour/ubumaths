@@ -1,22 +1,21 @@
 ---
 title: Retrait de /calc — journal
 date: 2026-10-24
-status: PR 2 mergée (#1709) — /calc retirée ; nettoyage du grapheur en attente de David
+status: PR 2 mergée (#1709) — PR 3 (grapheur) puis PR 4 (outputHtml) en cours
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1709._
+_Mis à jour le 2026-10-25, PR 3 en cours._
 
-- **État** : PR 2 mergée (#1709) — `/calc` retirée (308 vers `/atelier`), sur `main`, pas en prod.
-  Vérification manuelle notée dans `verifications-manuelles.md`.
-- **Prochaine action** : selon la réponse de David — PR 3 de nettoyage, ou fin de chantier
-  (archiver ce journal dans `docs/archive/wip/`).
-- **En attente de David** : supprimer le code que plus aucune page ne monte (singleton
-  `grapheurStore` + `chiphre-grapheur-state`, `FunctionPanel` et ses champs, prop `panel` de
-  `GrapheurContainer`, `outputHtml` de `WebReplEngine`) ? Listé dans `grapheur.md` § Écarts connus.
+- **État** : #1709 mergée (`/calc` retirée). PR 3 (code mort du grapheur) écrite, vérifications
+  locales vertes ; PR à ouvrir, revue `code-reviewer` (Sonnet), CI, merge.
+- **Prochaine action** : PR 4 — retirer `outputHtml` de `WebReplEngine` (HTML de chaque réponse,
+  `output-formatter-web.ts`, `htmlInFrench`, tests des messages à reporter sur `output`/`error`,
+  golden `statistics-commands.golden.json`). Puis fin de chantier : archiver ce journal.
+- **En attente de David** : rien (« supprime les », 2026-10-25).
 - **Pièges** : `docs:check-a-jour` réclame `statistiques.md` dès que `desk.svelte.ts` change.
-- **Worktree / branche** : aucun (`../ubumaths-wt-retrait-calc` supprimé après #1709).
+- **Worktree / branche** : `../ubumaths-wt-retrait-calc`, `chore/retrait-calc-3`.
 
 ---
 
@@ -130,3 +129,17 @@ le trouve lourd à l'usage.
   `grapheurStore`, `FunctionPanel` (+ `FunctionInput`, `SequenceInput`, `SequenceTable`,
   `ParameterInput`) ni la prop `panel` de `GrapheurContainer` ; `outputHtml` de `WebReplEngine` n'a
   plus de lecteur. Gardés, question posée à David.
+
+### PR 3 — code mort du grapheur (2026-10-25, « supprime les »)
+
+- Supprimés : `FunctionPanel`, `FunctionInput`, `SequenceInput`, `SequenceTable`, `ParameterInput`
+  (+ tests), le harnais `ProvideStore.svelte`, la prop `panel` de `GrapheurContainer` (`store`
+  obligatoire).
+- `GrapheurStore` : plus de singleton ni de sauvegarde (`loadFromStorage`, `scheduleSave`,
+  `clearStorage`, `fullReset`, `reset`, `serialize`) ; en cascade `graphStateSchema`, types
+  `*State`, `GRAPH_STATE_VERSION`, `migrateLegacyColor` (geometry-core) et leurs tests.
+- `useGrapheurStore()` lève une erreur sans fournisseur ; tests montés par
+  `render(Comp, { props, context: grapheurContext(store) })`.
+- Gardé : `chiphre-grapheur-state` dans `WORK_DATA_KEYS` (purge à la déconnexion).
+- `outputHtml` reporté en PR 4 : il traverse tout le moteur web (formateur HTML, messages en
+  français, golden), pas un simple champ.

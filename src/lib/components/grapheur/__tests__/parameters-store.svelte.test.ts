@@ -1,8 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { grapheurStore } from '$lib/stores/grapheur.svelte';
+import { GrapheurStore } from '$lib/stores/grapheur.svelte';
 import { isSequence } from '$lib/grapheur/types';
 import { computeSequenceTerms, toComputeSpec } from '$lib/grapheur/sequence';
 import type { SequencePlottable } from '$lib/grapheur/types';
+
+// Une instance neuve par test, fournie aux composants par le contexte.
+let grapheurStore = new GrapheurStore();
 
 function sequenceById(id: string): SequencePlottable {
 	const found = grapheurStore.functions.find((p) => p.id === id);
@@ -11,7 +14,9 @@ function sequenceById(id: string): SequencePlottable {
 }
 
 describe('paramètres — renommage', () => {
-	beforeEach(() => grapheurStore.fullReset());
+	beforeEach(() => {
+		grapheurStore = new GrapheurStore();
+	});
 
 	it('renomme et rend null', () => {
 		const id = grapheurStore.addParameter();
@@ -55,7 +60,9 @@ describe('paramètres — renommage', () => {
  * compte comme un nom connu.
  */
 describe('paramètres — les suites sont réanalysées', () => {
-	beforeEach(() => grapheurStore.fullReset());
+	beforeEach(() => {
+		grapheurStore = new GrapheurStore();
+	});
 
 	it('lève l’erreur d’une suite écrite avant la déclaration du paramètre', () => {
 		const id = grapheurStore.addSequence('recurrence', 'a*u_n');
@@ -88,7 +95,9 @@ describe('paramètres — les suites sont réanalysées', () => {
 });
 
 describe('paramètres — premier terme piloté', () => {
-	beforeEach(() => grapheurStore.fullReset());
+	beforeEach(() => {
+		grapheurStore = new GrapheurStore();
+	});
 
 	it('prend la valeur du paramètre plutôt que le nombre saisi', () => {
 		const seq = grapheurStore.addSequence('recurrence', '2u_n');
@@ -126,7 +135,9 @@ describe('paramètres — premier terme piloté', () => {
 });
 
 describe('courbe dérivée — persistance et bascule', () => {
-	beforeEach(() => grapheurStore.fullReset());
+	beforeEach(() => {
+		grapheurStore = new GrapheurStore();
+	});
 
 	it('naît masquée', () => {
 		const id = grapheurStore.addFunction('x^2');
@@ -142,20 +153,12 @@ describe('courbe dérivée — persistance et bascule', () => {
 		const func = grapheurStore.functions.find((f) => f.id === id);
 		expect(func?.type === 'explicit' && func.showDerivative).toBe(true);
 	});
-
-	it('survit à la sérialisation', () => {
-		const id = grapheurStore.addFunction('x^2');
-		grapheurStore.updateFunction(id, { showDerivative: true });
-
-		const state = grapheurStore.serialize();
-		const saved = state.functions.find((f) => f.id === id);
-
-		expect(saved?.type === 'explicit' && saved.showDerivative).toBe(true);
-	});
 });
 
 describe('tangente — bascule et persistance', () => {
-	beforeEach(() => grapheurStore.fullReset());
+	beforeEach(() => {
+		grapheurStore = new GrapheurStore();
+	});
 
 	it('naît absente', () => {
 		const id = grapheurStore.addFunction('x^2');
@@ -173,14 +176,5 @@ describe('tangente — bascule et persistance', () => {
 		grapheurStore.updateFunction(id, { tangentAt: -3 });
 		const func = grapheurStore.functions.find((f) => f.id === id);
 		expect(func?.type === 'explicit' && func.tangentAt).toBe(-3);
-	});
-
-	it('survit à la sérialisation', () => {
-		const id = grapheurStore.addFunction('x^2');
-		grapheurStore.updateFunction(id, { tangentAt: 1.5 });
-
-		const saved = grapheurStore.serialize().functions.find((f) => f.id === id);
-
-		expect(saved?.type === 'explicit' && saved.tangentAt).toBe(1.5);
 	});
 });

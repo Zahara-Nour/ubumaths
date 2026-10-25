@@ -7,7 +7,6 @@ export {
 	curveColorValue,
 	getNextSlot,
 	isCurveColor,
-	migrateLegacyColor,
 	isValidColor,
 	normalizeColor
 } from './colors';

@@ -19,7 +19,7 @@ describe('FunctionCurve — couleur et thème', () => {
 
 	/** Les courbes telles que le grapheur les pose : place attribuée, AST parsé */
 	function curves(count: number): ExplicitFunction[] {
-		const g = new GrapheurStore(null);
+		const g = new GrapheurStore();
 		for (let i = 0; i < count; i++) g.addFunction(`x+${i}`);
 		return g.functions.filter(isExplicitFunction);
 	}

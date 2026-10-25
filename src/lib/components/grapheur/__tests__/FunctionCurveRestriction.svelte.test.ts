@@ -18,7 +18,7 @@ describe('FunctionCurve — restreinte à un ensemble', () => {
 	const transformer = createTransformer(viewport, 600, 600);
 
 	function curve(latex: string, restriction?: Restriction): ExplicitFunction {
-		const g = new GrapheurStore(null);
+		const g = new GrapheurStore();
 		g.addFunction(latex);
 		const func = g.functions.filter(isExplicitFunction)[0];
 		return restriction === undefined ? func : { ...func, restriction };
