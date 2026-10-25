@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, écarts tranchés (PR en cours)._
+_Mis à jour le 2026-10-26, après #1792._
 
-- **État** : lots 1-4 mergés (#1773, #1780, #1783, #1789) ; les 5 écarts tranchés par David le 2026-10-26 (branche `test/verifs-auto-ecarts`) : l'Atelier a raison, lignes et tests réécrits. Seuls rouges : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307).
-- **Prochaine action** : merger la PR des écarts, puis lot 5 dans un worktree neuf (`git worktree add -b test/verifs-auto-5 ../ubumaths-wt-verifs-auto origin/main`) : lignes Atelier restantes (Graphe, Données, Géométrie). La sonde d'abord, les écarts à David.
+- **État** : lots 1-4 mergés (#1773, #1780, #1783, #1789) ; les 5 écarts tranchés par David le 2026-10-26 et repris (#1792) : l'Atelier a raison, lignes et tests réécrits. Seuls rouges : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307).
+- **Prochaine action** : lot 5 dans un worktree neuf (`git worktree add -b test/verifs-auto-5 ../ubumaths-wt-verifs-auto origin/main`) : lignes Atelier restantes (Graphe, Données, Géométrie). La sonde d'abord, les écarts à David.
 - **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
 - **Pièges en cours** : ports 5175-5178 pris → `lsof` (5179) ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; suite complète à froid avec 4 workers → délais dépassés, relancer à chaud ; `each_key_duplicate` casse « Comment ? » ; champ d'une carte : 1er clic après un calcul = focus rendu à la console (`typeInCard` reclique) ; Graphe = SVG (`path.function-curve[aria-label]`, `circle.endpoint-open/closed`) : relire un tracé par `expect.poll` ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `../ubumaths-wt-verifs-auto` · `test/verifs-auto-ecarts`.
+- **Worktree / branche** : aucun (retirés après #1792).
 
 ## Phase 0 (validée le 2026-10-25)
 
