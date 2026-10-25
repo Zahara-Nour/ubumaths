@@ -17,13 +17,22 @@
  * contenu du bloc : même bloc → même dessin, à l'écran comme au PDF.
  *
  * Chaque objet porte sa VALEUR (1 pour un jeton ou un cube, 10 pour une barre
- * ou un paquet) : la monnaie, bâtie sur cette scène, comparera des valeurs, pas
- * des nombres d'objets.
+ * ou un paquet). Hasard, vrac, décalage et toucher viennent de
+ * `scene-commune.ts`, partagés avec ```monnaie.
  *
  * @module ubumark/utils/collection-scene
  */
 
 import type { CollectionSpec } from '../types/collection';
+import {
+	findBoxAt,
+	hashText,
+	roundScene,
+	scatterCenters,
+	shiftBox,
+	type SceneBox,
+	type ScenePoint
+} from './scene-commune';
 
 // ============================================================================
 // CONSTANTES
@@ -75,21 +84,11 @@ const SCATTER_SPREAD = 1.6;
 
 export type CollectionItemKind = 'jeton' | 'cube' | 'barre' | 'paquet';
 
-export interface CollectionPoint {
-	x: number;
-	y: number;
-}
+export type CollectionPoint = ScenePoint;
 
-export interface CollectionItem {
+/** Boîte englobante et centre (cible du toucher, trait de la marque) : `SceneBox` */
+export interface CollectionItem extends SceneBox {
 	kind: CollectionItemKind;
-	/** Boîte englobante (coin haut gauche, taille) */
-	x: number;
-	y: number;
-	width: number;
-	height: number;
-	/** Centre (cible du toucher, trait de la marque) */
-	cx: number;
-	cy: number;
 	/** Valeur de l'objet : 1 (jeton, cube), 10 (barre, paquet) */
 	value: number;
 	/** Paquet : les centres de ses 10 jetons */
@@ -105,35 +104,6 @@ export interface CollectionScene {
 }
 
 // ============================================================================
-// HASARD DÉTERMINISTE
-// ============================================================================
-
-/** FNV-1a 32 bits d'une chaîne */
-function hash(text: string): number {
-	let h = 0x811c9dc5;
-	for (let i = 0; i < text.length; i++) {
-		h ^= text.charCodeAt(i);
-		h = Math.imul(h, 0x01000193);
-	}
-	return h >>> 0;
-}
-
-/** mulberry32 : suite de nombres dans [0, 1) tirée d'une graine */
-function random(seed: number): () => number {
-	let a = seed;
-	return () => {
-		a = (a + 0x6d2b79f5) >>> 0;
-		let t = a;
-		t = Math.imul(t ^ (t >>> 15), t | 1);
-		t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-		return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-	};
-}
-
-/** Au centième : coordonnées lisibles, identiques à l'écran et au PDF */
-const round = (v: number) => Math.round(v * 100) / 100;
-
-// ============================================================================
 // FONCTIONS
 // ============================================================================
 
@@ -142,12 +112,12 @@ function unitItem(kind: 'jeton' | 'cube', cx: number, cy: number): CollectionIte
 	const half = COLLECTION_VIEW.object / 2;
 	return {
 		kind,
-		x: round(cx - half),
-		y: round(cy - half),
+		x: roundScene(cx - half),
+		y: roundScene(cy - half),
 		width: COLLECTION_VIEW.object,
 		height: COLLECTION_VIEW.object,
-		cx: round(cx),
-		cy: round(cy),
+		cx: roundScene(cx),
+		cy: roundScene(cy),
 		value: 1
 	};
 }
@@ -231,9 +201,8 @@ function rowItems(
 }
 
 /**
- * Vrac : chaque objet dans sa case d'une grille plus grande que nécessaire,
- * cases tirées au hasard, objet décalé de ± `jitter` dans sa case. Deux centres
- * restent à au moins `cell - 2 jitter` (= 1,5 objet) : rien ne se touche.
+ * Vrac (`scatterCenters`) : deux centres restent à au moins `cell - 2 jitter`
+ * (= 1,5 objet) : rien ne se touche.
  */
 function scatterItems(
 	kind: 'jeton' | 'cube',
@@ -241,39 +210,22 @@ function scatterItems(
 	seed: number
 ): { items: CollectionItem[]; width: number; height: number } {
 	const v = COLLECTION_VIEW;
-	const next = random(seed);
-	const cells = Math.ceil(count * SCATTER_SPREAD);
-	const columns = Math.min(v.maxColumns, Math.max(3, Math.ceil(Math.sqrt(cells))));
-	const rows = Math.ceil(cells / columns);
-
-	// Tirage de `count` cases parmi rows × columns (Fisher-Yates partiel)
-	const all = Array.from({ length: rows * columns }, (_, i) => i);
-	for (let i = 0; i < count; i++) {
-		const j = i + Math.floor(next() * (all.length - i));
-		[all[i], all[j]] = [all[j], all[i]];
-	}
-	const chosen = all.slice(0, count).sort((a, b) => a - b);
-
-	const items = chosen.map((cellIndex) => {
-		const column = cellIndex % columns;
-		const row = Math.floor(cellIndex / columns);
-		const dx = (next() * 2 - 1) * v.jitter;
-		const dy = (next() * 2 - 1) * v.jitter;
-		return unitItem(kind, (column + 0.5) * v.cell + dx, (row + 0.5) * v.cell + dy);
+	const { centers, width, height } = scatterCenters(count, seed, {
+		cell: v.cell,
+		jitter: v.jitter,
+		spread: SCATTER_SPREAD,
+		minColumns: 3,
+		maxColumns: v.maxColumns
 	});
-	return { items, width: columns * v.cell, height: rows * v.cell };
+	return { items: centers.map(({ cx, cy }) => unitItem(kind, cx, cy)), width, height };
 }
 
 /** Décaler des objets de (dx, dy) */
 function shift(items: CollectionItem[], dx: number, dy: number): CollectionItem[] {
 	return items.map((item) => ({
-		...item,
-		x: round(item.x + dx),
-		y: round(item.y + dy),
-		cx: round(item.cx + dx),
-		cy: round(item.cy + dy),
+		...shiftBox(item, dx, dy),
 		...(item.jetons && {
-			jetons: item.jetons.map((j) => ({ cx: round(j.cx + dx), cy: round(j.cy + dy) }))
+			jetons: item.jetons.map((j) => ({ cx: roundScene(j.cx + dx), cy: roundScene(j.cy + dy) }))
 		})
 	}));
 }
@@ -288,7 +240,7 @@ export function buildCollectionScene(spec: CollectionSpec, setIndex: number): Co
 	// Graine : ce qui se DESSINE, ni la taille ni les légendes (un choix de QCM
 	// imprimé reçoit `taille: 3cm`, il doit garder le dessin de l'écran)
 	const { sets, drawing, unitLayout } = spec;
-	const seed = hash(JSON.stringify({ sets, drawing, unitLayout, setIndex }));
+	const seed = hashText(JSON.stringify({ sets, drawing, unitLayout, setIndex }));
 	const units =
 		set.units === 0
 			? { items: [], width: 0, height: 0 }
@@ -320,21 +272,5 @@ export function findCollectionItemAt(
 	scene: CollectionScene,
 	point: CollectionPoint
 ): number | null {
-	const slop = COLLECTION_VIEW.hitSlop;
-	let best: number | null = null;
-	let bestDistance = Infinity;
-	scene.items.forEach((item, i) => {
-		const inside =
-			point.x >= item.x - slop &&
-			point.x <= item.x + item.width + slop &&
-			point.y >= item.y - slop &&
-			point.y <= item.y + item.height + slop;
-		if (!inside) return;
-		const distance = Math.hypot(point.x - item.cx, point.y - item.cy);
-		if (distance < bestDistance) {
-			best = i;
-			bestDistance = distance;
-		}
-	});
-	return best;
+	return findBoxAt(scene.items, point, COLLECTION_VIEW.hitSlop);
 }
