@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1779._
+_Mis à jour le 2026-10-25, après #1779 et la relecture B3._
 
-- **État** : A1 à H, B1, B2 relus et OK. **Lot B3** (§ 4 terdecies) : 7 brouillons en prod : `12482155` CP-049, `b556f617` 049, `7e7e2968` 050, `3e9a610e` 051, `8e207417` 052, `74d6b4f3` 052, `5592a129` 040. #1777 mergée ; accès tranché par David (personne, #1779) ; migration `20261026160000` jouée et vérifiée en prod (7 modèles sur leur sous-notion, 1 tag chacun, toujours en brouillon). Page à cocher B3 : https://claude.ai/artifact/45anoM4BzonDJuUC2Tw13D (collection `verdicts`), générée par `page-b3.mts` (scratchpad, gabarit = page B2).
-- **Prochaine action** : relecture de la page B3 par David ; ensuite : case « figure » (CP-059, chantier geometrie-validation) ou 058 à réexaminer.
+- **État** : A1 à H, B1, B2, **B3** relus et OK (B3 : 7/7 « ok » sur la page à cocher, 2026-10-25). **Lot B3** (§ 4 terdecies) : 7 brouillons en prod : `12482155` CP-049, `b556f617` 049, `7e7e2968` 050, `3e9a610e` 051, `8e207417` 052, `74d6b4f3` 052, `5592a129` 040. #1777 mergée ; accès tranché par David (personne, #1779) ; migration `20261026160000` jouée et vérifiée en prod (7 modèles sur leur sous-notion, 1 tag chacun, toujours en brouillon). Page à cocher B3 : https://claude.ai/artifact/45anoM4BzonDJuUC2Tw13D (collection `verdicts`), générée par `page-b3.mts` (scratchpad, gabarit = page B2).
+- **Prochaine action** : publication A1 à H, B1, B2, B3 en un lot (go de David) ; ensuite : case « figure » (CP-059, chantier geometrie-validation) ou 058 à réexaminer.
 - **Case « figure »** : phase 0 de CP-059 **validée** ([geometrie-validation](geometrie-validation-progress.md)) ; code après B3, chantier à part. 058 à réexaminer.
-- **En attente de David** : relecture de la page B3 ; publication A1 à H, B1, B2 (et B3) en un lot ; vérification manuelle #1702.
+- **En attente de David** : go de publication A1 à H, B1, B2 (et B3) en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (la bonne réponse = une variable) ; **virgule décimale = figure cassée** (coordonnées tirées : chaînes de `{{if:…}}` sur des valeurs écrites) ; **points et segments numérotés, pas lettrés** (les choix du QCM portent A, B, C) ; texte sur fond coloré illisible ; jamais de variable `e`.
 - **Worktree / branche** : aucun (retiré après #1777).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -235,3 +235,4 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 2026-10-25 : B3, 7 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; migration `20261026160000` nœud + tag et test, rouge (5/9) puis vert ; question d'accès posée APRÈS l'écriture du SQL (écart à `CLAUDE.md`, signalé à David).
 - 2026-10-25 : #1777 mergée (CI verte ; audit sécurité sans finding bloquant) ; `db:migrate` en attente de la question d'accès ; page à cocher B3 publiée.
 - 2026-10-25 : question d'accès B3 tranchée par David (personne) ; #1779 (ligne « Accès » de la migration) mergée ; `db:migrate` joué depuis le dépôt principal, vérifié en prod : 7 modèles B3 sur leur sous-notion, 1 tag chacun, en brouillon.
+- 2026-10-25 : page à cocher B3 relue par David : 7/7 « ok », aucun commentaire.
