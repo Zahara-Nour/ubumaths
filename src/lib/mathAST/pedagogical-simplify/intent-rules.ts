@@ -4,10 +4,10 @@
  * Pure helpers (no side effects, no IO) used by the Phase 2 pipeline:
  *
  *  - `selectRulesForIntent(intent, flags)` — returns the active pattern rules
- *    for a given intent + which capability flags are on, plus a boolean that
- *    tells the pipeline whether to run a normalize pass after the pattern
- *    passes (`developper` only : `reduire` and `auto` finish with `tidy`,
- *    chantier simplify-carte § 33).
+ *    for a given intent + which capability flags are on. No intent runs a
+ *    normalize pass any more : `reduire` and `auto` finish with `tidy`
+ *    (chantier simplify-carte § 33), `developper` is `expand.ts` (chantier
+ *    normalize-usages).
  *
  *  - `categorizeRule(name)` — maps both pattern rule names (from
  *    `pattern/rule-sets/*`) and normalize step names (recorded by
@@ -35,11 +35,8 @@ import {
 	trigSimplifyRules
 } from '../pattern/rule-sets';
 // Direct import (bypassing the rule-sets barrel) to avoid a Rollup chunk-cycle
-// warning between `rule-sets/index.ts` and `algebraic-identities.ts`.
-import { algebraicExpandingRules } from '../pattern/rule-sets/algebraic-identities';
-// Import direct lui aussi, pour la même raison de cycle de chunk.
+// warning between `rule-sets/index.ts` and the rule set.
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
-import { distributeBinomialProduct } from './pedagogical-rules';
 import { factoriserIdentityRules } from './pedagogical-rules/polynomial-identities';
 import type { PedagogicalSimplifyCategory, SimplifyIntent } from './types';
 
@@ -61,14 +58,6 @@ export interface IntentRuleFlags {
 export interface SelectedRules {
 	/** Pattern rules active for the intent + flags. No duplicates. */
 	readonly rules: readonly Rule[];
-
-	/**
-	 * Whether the pipeline should run a normalize pass after pattern rules.
-	 * `true` for `'developper'` only. `false` for `'factoriser'` (normalize
-	 * would undo the factoring), and for `'reduire'` / `'auto'` : normalize
-	 * develops everything (`2(x+3) → 2x+6`), they finish with `tidy`.
-	 */
-	readonly useNormalize: boolean;
 }
 
 /**
@@ -95,23 +84,22 @@ export function dedupeByName(rules: readonly Rule[]): readonly Rule[] {
  *  - `factoriser`  : `commonFactorRules` + `factoriserIdentityRules` (les
  *                    identités de `algebraicFactoringRules`, les numériques
  *                    lues par coefficients) + identities (trig / log-exp /
- *                    abs / hyperbolic) gated by flags. No expansion rules.
- *                    `useNormalize: false` (would undo the factoring). Le
+ *                    abs / hyperbolic) gated by flags. No expansion rules. Le
  *                    pipeline ajoute le contenu des sommes maximales et les
  *                    stratégies de `factor-strategies.ts` (ADR 0024).
  *
- *  - `developper`  : `algebraicExpandingRules` + identities. No factoring.
- *                    `useNormalize: true` (combine-like-terms after expand).
+ *  - `developper`  : none — the pipeline answers with `expand` (`expand.ts`)
+ *                    before any rule loop (chantier normalize-usages).
  *
  *  - `reduire`     : identities + powers + sqrt rules. Neither factoring nor
- *                    expansion. `useNormalize: false` : the pipeline finishes
+ *                    expansion. The pipeline finishes
  *                    with `tidy`, told in steps (`reduce-steps.ts`).
  *
  *  - `auto`        : the same rules as `reduire`, never factoring (ADR 0007 :
  *                    the symbolic factoring rules made `x²+2x+1` go to
  *                    `(x+1)²` and back on screen). The pipeline adds the
  *                    polynomial fractions and « expand only if shorter »
- *                    (`reduce-steps.ts`). `useNormalize: false`.
+ *                    (`reduce-steps.ts`).
  */
 export function selectRulesForIntent(
 	intent: SimplifyIntent,
@@ -135,16 +123,11 @@ export function selectRulesForIntent(
 				...factoriserIdentityRules,
 				...identitiesAndUtilities
 			]);
-			return { rules, useNormalize: false };
+			return { rules };
 		}
-		case 'developper': {
-			const rules = dedupeByName([
-				...algebraicExpandingRules,
-				distributeBinomialProduct,
-				...identitiesAndUtilities
-			]);
-			return { rules, useNormalize: true };
-		}
+		case 'developper':
+			// Aucune règle : le pipeline répond par `expand` avant la phase A
+			return { rules: [] };
 		case 'reduire':
 		case 'auto': {
 			// Ce que `normalize` faisait en silence : parité et période (`cos(−x) → cos(x)`),
@@ -164,7 +147,7 @@ export function selectRulesForIntent(
 				...powerRules,
 				...sqrtRules
 			]);
-			return { rules, useNormalize: false };
+			return { rules };
 		}
 	}
 }
