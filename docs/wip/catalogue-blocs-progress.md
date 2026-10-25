@@ -2,17 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 validée, rien de codé._
+_Mis à jour le 2026-10-25, PR 1 ouverte (aide à l'écriture, 10 fiches)._
 
-- **État** : phase 0 validée par David le 2026-10-25 (4 choix tranchés, ci-dessous). Aucun code.
-- **Prochaine action** : PR 1, l'accueil `/aide-ecriture/blocs` et une page par bloc, avec les
-  fichiers d'exemples et la zone « Essayer ». Lire d'abord `/aide-ecriture/cercle-trigo` (modèle et
-  son test) et `docs/systeme/ubumark.md` § Blocs spéciaux (syntaxe de chaque bloc).
-- **En attente de David** : rien.
-- **Pièges connus** (chantier demo-debug, `docs/systeme/utilitaires-et-demos.md` § 1) : nouvelle
-  vitrine → entrée dans `DEMO_PAGES` + `<SeoHead {...demoSeo(…)} />` ; sous `/aide-ecriture`, ni
-  `+layout@` ni donnée sensible par un load universel ; dans `<main>`, `h2`/`p`/`li` ont une
-  taille `!important` × `--font-scale` ; nouvelle page d'aide → entrée dans `AIDE_PAGES`.
+- **État** : PR 1 écrite et vérifiée (tests catalogue 112 verts, pages 13 verts, check 0 erreur).
+  Serveur de la branche : `http://localhost:5177/aide-ecriture/blocs` (compte prof).
+- **Prochaine action** : CI verte → merge ; puis PR 2, la vitrine `/demo/blocs` (mêmes fichiers
+  `src/lib/block-catalog/*.ts`, sélection par niveau, « Voir ce qu'écrit le prof » replié,
+  entrée `DEMO_PAGES` + `SeoHead`).
+- **En attente de David** : regard sur les pages ; dire s'il veut corriger les erreurs muettes des
+  parseurs (§ PR 1, « Ce que les fiches ont révélé »), hors de ce chantier.
+- **Pièges connus** : nouvelle vitrine → `DEMO_PAGES` + `<SeoHead {...demoSeo(…)} />` ; dans
+  `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale`.
 - **Worktree / branche** : `../ubumaths-wt-catalogue-blocs` · `feat/catalogue-blocs`.
 
 ## Origine
@@ -60,3 +60,28 @@ renvoi vers `/aide-ecriture/geometrie` pour le langage des figures.
 2. PR 2 : vitrine `/demo/blocs`, avec les mêmes exemples.
 
 Pas de revue de code (pages qui assemblent des composants existants).
+
+## PR 1 — aide à l'écriture (2026-10-25)
+
+- Fiches : `src/lib/block-catalog/<bloc>.ts` (`BlockCatalogEntry`, `fence()`), liste `BLOCK_CATALOG`
+  dans l'ordre de la phase 0. Écrites par 5 agents Sonnet en parallèle, horloge comme modèle.
+- Page commune `src/lib/components/block-catalog/BlockHelpPage.svelte` (réglages, exemples avec
+  « Copier », erreurs fréquentes, « Essayer »), rendus avec `showAuthoringErrors`.
+- Routes : `/aide-ecriture/blocs` (`PageIndex`), `/aide-ecriture/blocs/[bloc]` (`+page.ts`
+  statique, 404 sinon) ; `/aide-ecriture/cercle-trigo` garde son adresse (`href` de la fiche, pas
+  de double sous `/blocs`), son test compte maintenant les cadres d'erreur des erreurs fréquentes.
+- Tests : `src/lib/block-catalog/__tests__/catalogue.test.ts` (chaque exemple accepté, bon type de
+  nœud ; message de chaque erreur fréquente), `BlockHelpPage.svelte.test.ts` (rendu de chaque
+  fiche, zone « Essayer » en direct).
+
+### Ce que les fiches ont révélé (erreurs muettes, non corrigées ici)
+
+- **variation** : `5,5` (et un signe ou une position inconnus) → case supprimée en silence, tableau
+  faux sans message ; sans `domain:` ou `variable:` → texte brut. La notation
+  `domain: ]-inf, 1[, ]1, +inf[` annoncée dans l'en-tête du parseur donne des points faux.
+- **probtree** : `0,5` lu comme probabilité 0, issue « 5 » ; somme ≠ 1 : avertissement calculé
+  mais jamais montré ; mauvais retrait → texte brut.
+- **line** : toute erreur → texte brut sans message ; clé inconnue ignorée ; point hors bornes =
+  erreur, segment hors bornes = avertissement.
+- **trig** : `color` sans contrôle ; `projections`/`grid` vrais seulement pour `true`, `axes`/
+  `labels`/`values` vrais sauf `false` (une faute de frappe agit dans les deux sens).

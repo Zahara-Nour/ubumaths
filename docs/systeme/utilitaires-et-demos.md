@@ -13,6 +13,9 @@ couvre:
   - 'src/routes/(protected)/dev/bancs-essai/+page.svelte'
   - 'src/routes/(protected)/dev/theme/+page.svelte'
   - 'src/routes/(protected)/aide-ecriture/cercle-trigo/+page.svelte'
+  - 'src/routes/(protected)/aide-ecriture/blocs/**'
+  - 'src/lib/block-catalog/**'
+  - 'src/lib/components/block-catalog/**'
   - 'src/routes/(protected)/dev/cadres/+page.svelte'
   - 'src/routes/(protected)/dev/structure/+page.svelte'
   - 'src/routes/(protected)/dev/structure/*.svelte'
@@ -145,8 +148,8 @@ Pages fusionnées : `/dev/carte-question` (ex-`/dashboard/admin/debug/question-d
 [jeux-et-economie.md](jeux-et-economie.md)), `/dev/mots-cliquables` (ex-`/demo/mots-cliquables`,
 voir [dictionnaire.md](dictionnaire.md)), `/dev/bancs-essai` (bancs d'essai sortis du carrefour
 `/demo`). Aide à l'écriture : `/aide-ecriture/geometrie/…` (ex-`/geometry-demo/…`, 30 pages, voir
-[geometrie/README.md](geometrie/README.md)) et `/aide-ecriture/cercle-trigo`
-(ex-`/demo/trig-circle-demo`).
+[geometrie/README.md](geometrie/README.md)), `/aide-ecriture/cercle-trigo`
+(ex-`/demo/trig-circle-demo`) et le catalogue des blocs `/aide-ecriture/blocs/…` (voir plus bas).
 
 **La vitrine** : 10 pages (`/demo/structure`, `cercle-trigo`, `cartes`, `lexique`, `corriges`,
 `geometrie`, `constructions`, `questions`, `editeur`, `diaporama`), chacune écrite pour un
@@ -172,7 +175,9 @@ sont de vraies pages.
 | `/dev/carte-question`         | admin (`/dev`)                             | `/dev`                                                 | `FlashCard` sur 8 questions d'exemple : réglages (`MySelect`, `MyCheckbox`), journaux des événements, instance en JSON                                               | Mise au point         |
 | `/dev/editeur-riche`          | admin (`/dev`)                             | `/dev`                                                 | `RichTextEditor` : modes chat et form, import et export Markdown, onglet « Messagerie » (`Messagerie.svelte`)                                                        | Mise au point         |
 | `/dev/theme`                  | admin (`/dev`)                             | `/dev`                                                 | « Référence des composants Shadcn » dans les deux thèmes (1 094 lignes) ; ex-`/demo/theme-test`, carte retirée de `/demo`                                            | Démo                  |
-| `/aide-ecriture/cercle-trigo` | prof (`/aide-ecriture`)                    | `/aide-ecriture`                                       | Bloc markdown `trig` (cercle trigonométrique) avec ses réglages                                                                                                      | Aide à l'écriture     |
+| `/aide-ecriture/cercle-trigo` | prof (`/aide-ecriture`)                    | `/aide-ecriture`, `/aide-ecriture/blocs`               | Fiche du bloc `trig` (cercle trigonométrique) du catalogue des blocs, à son adresse d'origine                                                                        | Aide à l'écriture     |
+| `/aide-ecriture/blocs`        | prof (`/aide-ecriture`)                    | `/aide-ecriture`                                       | Catalogue des blocs spéciaux d'ubumark : une carte par bloc (`BLOCK_CATALOG`)                                                                                        | Aide à l'écriture     |
+| `/aide-ecriture/blocs/<bloc>` | prof (`/aide-ecriture`)                    | `/aide-ecriture/blocs`                                 | Fiche d'un bloc : réglages, exemples à copier, erreurs fréquentes, zone « Essayer »                                                                                  | Aide à l'écriture     |
 | `/dev/cadres`                 | admin (`/dev`)                             | `/dev`                                                 | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                     | Mise au point, gardée |
 | `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée |
 | `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**   |
@@ -211,6 +216,20 @@ Précisions :
   cocher (réglages par défaut : `AB` lu comme une longueur, terme soulevé pendant un déplacement),
   6 exemples (priorités, somme algébrique, différence, puissance, fractions, équation) ; à
   l'ouverture, l'expression de l'article Sésamath.
+- **Catalogue des blocs** (`/aide-ecriture/blocs`, chantier
+  [catalogue-blocs](../wip/catalogue-blocs-progress.md)) : une fiche par bloc spécial d'ubumark
+  (variations, arbre, droite graduée, courbe, figure — en-tête seulement, renvoi vers
+  `/aide-ecriture/geometrie` —, statistiques — 9 genres sur une page —, QR code, horloge, opération
+  posée, cercle trigo). Contenu écrit une fois dans `src/lib/block-catalog/<bloc>.ts`
+  (`BlockCatalogEntry` : réglages avec clé, valeurs, défaut ; exemples ; erreurs fréquentes ; texte
+  de la zone « Essayer »), liste ordonnée `BLOCK_CATALOG`. Page commune
+  `src/lib/components/block-catalog/BlockHelpPage.svelte`, rendus avec `showAuthoringErrors` (le prof
+  voit les messages situés). La route `/aide-ecriture/blocs/[bloc]` sert chaque fiche ; le cercle
+  trigo garde son adresse (`href` de la fiche) et n'a pas de double sous `/blocs` (404). Garde :
+  `src/lib/block-catalog/__tests__/catalogue.test.ts` passe chaque exemple par `parseMarkdown`
+  (aucune erreur, bon type de nœud) et vérifie le message de chaque erreur fréquente. Les blocs
+  variation, arbre et droite graduée n'ont pas de message : un bloc invalide s'y affiche en texte
+  brut, ce que dit l'explication de l'erreur.
 - **`/demo/cercle-trigo`** (vitrine, PR 6b) : 4 exemples du bloc `trig` rendus par
   `MarkdownRenderer`, sans leur texte : mode interactif (angle de départ π/4, le parseur refuse
   `preset: custom` sans angle), π/6 seul avec projections et tableau, cos x = 1/2, cos x > 1/2 en

@@ -13,6 +13,12 @@
 			description: 'Figures interactives du langage de figures, thème par thème, script compris.'
 		},
 		{
+			href: '/aide-ecriture/blocs',
+			title: 'Blocs spéciaux',
+			description:
+				'Tableaux de variations, arbres, courbes, statistiques, horloges, opérations posées : réglages, exemples à copier, zone pour essayer.'
+		},
+		{
 			href: '/aide-ecriture/cercle-trigo',
 			title: 'Cercle trigonométrique',
 			description:
