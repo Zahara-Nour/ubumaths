@@ -81,7 +81,8 @@ test('#1305 — intervalle d’une carte : tapé au clavier, gardé au rechargem
 	// Au vrai clavier, dans une carte
 	await calc(page, 'f(x) = x');
 	await typeInCard(page, 'f', 'x^2', ' sur [0;+infty[');
-	// Le champ garde la frappe ; « sur » devient du texte une fois la carte relue
+	// La ligne dit seulement « affiche x² sur [0 ; +∞[ » : la forme exacte du champ est celle
+	// de l'appli. Il garde la frappe ; « sur » devient du texte une fois la carte relue
 	await expectCardLatex(page, 'f', 'x^2sur[0;+\\infty[');
 	expect((await calc(page, 'f(-1)')).text).toContain(
 		"n'est pas dans l'ensemble de définition de f, [0 ; +∞["
@@ -163,6 +164,10 @@ test('#1315 — Graphe : bornes pleines et creuses, morceaux', async ({ page }) 
 	const openX = Number(await page.locator('circle.endpoint-open').getAttribute('cx'));
 	const closedX = Number(await page.locator('circle.endpoint-closed').getAttribute('cx'));
 	expect(openX).toBeLessThan(closedX);
+	// (0 ; 1) plus bas que (5 ; 6) : y SVG plus grand
+	const openY = Number(await page.locator('circle.endpoint-open').getAttribute('cy'));
+	const closedY = Number(await page.locator('circle.endpoint-closed').getAttribute('cy'));
+	expect(openY).toBeGreaterThan(closedY);
 	// L'intérieur du creux est la couleur du fond, pas le noir d'un cercle SVG
 	const fill = await page
 		.locator('circle.endpoint-open')
@@ -170,16 +175,24 @@ test('#1315 — Graphe : bornes pleines et creuses, morceaux', async ({ page }) 
 	expect(fill).not.toBe('rgb(0, 0, 0)');
 	expect(fill).not.toBe('none');
 
-	// 1/x sur ]0;5] : aucun point en 0, le plein en 5 seulement
+	// 1/x sur ]0;5] : aucun point en 0, le plein en 5 seulement (le creux à 0 prouve le
+	// nouveau tracé avant de compter les pleins)
 	await calc(page, 'f(x) = 1/x sur ]0;5]');
-	await expect(page.locator('circle.endpoint-closed')).toHaveCount(1);
 	await expect(page.locator('circle.endpoint-open')).toHaveCount(0);
+	await expect(page.locator('circle.endpoint-closed')).toHaveCount(1);
 
-	// Deux morceaux
+	// Deux morceaux : le chemin est relu jusqu'à ce que le nouveau tracé soit là
 	await calc(page, 'f(x) = x sur [-1;1] \\cup [2;3]');
 	await expect(curves(page)).toHaveCount(1);
-	const path = (await curves(page).getAttribute('d')) ?? '';
-	expect(path.match(/M/g)?.length).toBe(2);
+	await expect
+		.poll(async () => ((await curves(page).getAttribute('d')) ?? '').match(/M/g)?.length)
+		.toBe(2);
+
+	// Sans « sur » : une courbe, aucun point de borne
+	await calc(page, 'f(x) = x+1');
+	await expect(page.locator('circle.endpoint-closed')).toHaveCount(0);
+	await expect(page.locator('circle.endpoint-open')).toHaveCount(0);
+	await expect(curves(page)).toHaveCount(1);
 });
 
 test('#1328 — bouton « Réciproque », refus de .réciproque', async ({ page }) => {
@@ -187,8 +200,20 @@ test('#1328 — bouton « Réciproque », refus de .réciproque', async ({ page 
 	await cardAction(page, 'f', 'Réciproque');
 	await expectCardLatex(page, 'f⁻¹', 'x^2 - 2');
 	expect((await card(page, 'f⁻¹')).interval).toBe('[0 ; +∞[');
-	// Tracée avec f
+	// Tracée avec f : f, f⁻¹ et la droite y = x
 	await expect(curves(page)).toHaveCount(3);
+	const inverse = page.locator('path.function-curve[aria-label="Courbe de la fonction x^2 - 2"]');
+	await expect(inverse).toHaveCount(1);
+	// Demi-parabole : un seul point de borne, plein, là où commence le tracé (x = 0)
+	const start = page.locator('circle.endpoint-closed');
+	await expect(start).toHaveCount(1);
+	await expect(page.locator('circle.endpoint-open')).toHaveCount(0);
+	const startX = Number(await start.getAttribute('cx'));
+	const xs = ((await inverse.getAttribute('d')) ?? '')
+		.split(/[MCL ]/)
+		.filter((pair) => pair.includes(','))
+		.map((pair) => Number(pair.split(',')[0]));
+	expect(Math.min(...xs)).toBeCloseTo(startX, 0);
 
 	await calc(page, 'g(x) = x^2');
 	const twoWays = await calc(page, '.réciproque g');
@@ -207,10 +232,13 @@ test('#1328 — bouton « Réciproque », refus de .réciproque', async ({ page 
 	await slideUntil(slider, 'ArrowLeft', valueIs('0'));
 	await expect(cardLocator(page, 'f⁻¹').locator('.message')).toContainText('f est constante');
 	await slideUntil(slider, 'ArrowRight', valueIs('1'));
+	await expect(cardLocator(page, 'f⁻¹')).toBeVisible();
 	await expect(cardLocator(page, 'f⁻¹').locator('.message')).toHaveCount(0);
 
 	await calc(page, 'f(x) = x^2 sur [0;+\\infty[');
-	expect((await calc(page, '.réciproque f sur [-4;-1]')).refused).toBe(true);
+	const outside = await calc(page, '.réciproque f sur [-4;-1]');
+	expect(outside.refused).toBe(true);
+	expect(outside.text).toContain("f n'est définie que sur [0 ; +∞[");
 });
 
 test('#1337 — domaine choisi : .domaine, héritage, intégrale, tangente, lien', async ({ page }) => {
@@ -223,7 +251,9 @@ test('#1337 — domaine choisi : .domaine, héritage, intégrale, tangente, lien
 
 	await calc(page, 'f(x) = x^2 sur ]0;2]');
 	expectLatex(await calc(page, '.intégrer f de 0 à 2'), '\\dfrac{8}{3}');
-	expect((await calc(page, '.intégrer f de -1 à 2')).refused).toBe(true);
+	const outside = await calc(page, '.intégrer f de -1 à 2');
+	expect(outside.refused).toBe(true);
+	expect(outside.text).toContain("-1 n'est pas dans l'ensemble de définition de f, ]0 ; 2]");
 
 	// Graphe : tangente en −1 refusée, message sous le réglage
 	await cardLocator(page, 'f').getByRole('button', { name: 'Options de f' }).click();
