@@ -154,6 +154,33 @@ describe('case « figure » : tracer', () => {
 		expect(container.querySelector('.droite-juste')).toBeNull();
 	});
 
+	it('verso après « faux » : la figure, sa droite et la bonne en pointillés, la consigne', async () => {
+		const { container } = await render(FlashCard, {
+			target: mainElement(),
+			props: { instance: instance(), interactive: true }
+		});
+		const rect = await zone(container);
+		tap(rect, 1, 2);
+		tap(rect, 4, 5);
+		await expect.poll(() => validateButton(container).disabled).toBe(false);
+		validateButton(container).click();
+		await expect
+			.poll(() => container.querySelector('button[aria-label="Voir la correction"]'))
+			.not.toBeNull();
+		(
+			container.querySelector('button[aria-label="Voir la correction"]') as HTMLButtonElement
+		).click();
+		// Verso : le résultat attendu (la ligne « figure » n'existe qu'au verso)
+		const figure = '[data-kind="figure"] [data-testid="bonne-droite"]';
+		await expect.poll(() => container.querySelector(figure), { timeout: 5000 }).not.toBeNull();
+		const verso = container.querySelector('[data-kind="figure"]')?.closest('.face') as HTMLElement;
+		expect(verso.querySelectorAll('[data-testid="droite-eleve"]')).toHaveLength(1);
+		expect(verso.querySelector('[data-testid="instruction"]')?.textContent).toContain(
+			'Trace la droite qui passe par les points A et B.'
+		);
+		expect(verso.textContent).not.toContain('droite(');
+	});
+
 	it('loin de B : le trait part de l’endroit touché, faux', async () => {
 		const { container } = await render(FlashCard, {
 			target: mainElement(),

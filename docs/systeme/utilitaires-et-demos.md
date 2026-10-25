@@ -221,8 +221,9 @@ Précisions :
 - **Catalogue des blocs** (`/aide-ecriture/blocs`, chantier
   [catalogue-blocs](../archive/wip/catalogue-blocs-progress.md)) : une fiche par bloc spécial d'ubumark
   (variations, arbre, droite graduée, courbe, figure — en-tête seulement, renvoi vers
-  `/aide-ecriture/geometrie` —, statistiques — 9 genres sur une page —, QR code, horloge, opération
-  posée, cercle trigo). Contenu écrit une fois dans `src/lib/block-catalog/<bloc>.ts`
+  `/aide-ecriture/geometrie` —, figure à compléter — case « figure » d'une question, rendue ici en
+  figure de départ —, statistiques — 9 genres sur une page —, QR code, horloge, opération posée,
+  cercle trigo). Contenu écrit une fois dans `src/lib/block-catalog/<bloc>.ts`
   (`BlockCatalogEntry` : réglages avec clé, valeurs, défaut ; exemples ; erreurs fréquentes ; texte
   de la zone « Essayer »), liste ordonnée `BLOCK_CATALOG`. Page commune
   `src/lib/components/block-catalog/BlockHelpPage.svelte`, rendus avec `showAuthoringErrors` (le prof

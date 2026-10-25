@@ -270,7 +270,8 @@ par le générateur de questions. Le nœud est un nœud **`figure`** qui porte `
 (`ConstructionSpec`, `types/construction.ts`) : partout où une figure s'affiche (écran, PDF, listes),
 le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```figure `
 (`isFigureBlockStart` reconnaît les deux mots ; ` ```construction ` n'ouvre rien : le mot désigne les constructions animées, voir [CONTEXT.md](../../CONTEXT.md) « Figure à compléter ») ; l'éditeur riche rend le bloc à son mot
-(`figureFence`, `markdown-import.ts`). Jugement : [questions](questions.md) (case « figure »).
+(`figureFence`, `markdown-import.ts`). Jugement : [questions](questions.md) (case « figure »). Fiche
+de l'aide à l'écriture : `block-catalog/figure-a-completer.ts` (`/aide-ecriture/blocs/figure-a-completer`).
 
 **Statistiques** — `src/lib/ubumark/__tests__/stat-chart/markdown.test.ts` sauf mention :
 

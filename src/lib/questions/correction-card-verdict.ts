@@ -14,6 +14,7 @@ import { getQuestionType, type QuestionInstance, type ValidationStatus } from '.
 import { gradeQuestion } from './grading';
 import type { StudentAnswer } from '$lib/utils/answer-validator';
 import type { AnswerData } from '$lib/types/question-display';
+import { withoutFigureCases } from './expected-result';
 
 // Types
 export type GlobalVerdictKind = 'correct' | 'half' | 'incorrect';
@@ -83,10 +84,11 @@ const HAS_BLANK = /\\placeholder\[\d+\]|<<expr:/;
 
 /**
  * Consigne d'un énoncé R1 (Q104) : l'énoncé sans la formule qui contient la
- * case ; chaîne vide s'il ne reste ni lettre ni chiffre.
+ * case, ni le bloc d'une case « figure » ; chaîne vide s'il ne reste ni lettre
+ * ni chiffre.
  */
 export function instructionOf(statement: string): string {
-	const rest = statement
+	const rest = withoutFigureCases(statement)
 		.replace(MATH_WITH_BLANK, (zone) => (HAS_BLANK.test(zone) ? '' : zone))
 		.replace(/[ \t]+/g, ' ')
 		.replace(/\n{3,}/g, '\n\n')

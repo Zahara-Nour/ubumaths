@@ -8,7 +8,7 @@
 	- comparaison `3 + 5 ≠ 9` (rouge) / `3 + 5 = 8` encadré vert / forme ambre ;
 	- solution `= 8` encadrée, énoncé rempli (solutions en vert), « Ta réponse : »
 	  (chaque case colorée selon son statut), QCM, remarques, attendu seul,
-	  « Tu n'as rien répondu. ».
+	  « Tu n'as rien répondu. » ; case « figure » : la figure (`FigureAnswer`).
 
 	Le statut n'est jamais porté par la couleur seule : chaque ligne colorée a son
 	libellé en toutes lettres (« juste », « forme à améliorer », « faux »).
@@ -32,6 +32,7 @@
 	} from '@lucide/svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import FigureAnswer from './FigureAnswer.svelte';
 	import { choiceLetter } from '$lib/questions/choices';
 	import type {
 		ExpectedChoice,
@@ -218,6 +219,12 @@
 			</div>
 		{:else if line.kind === 'empty'}
 			<p class="text-muted-foreground italic" data-kind="empty">{line.text}</p>
+		{:else if line.kind === 'figure'}
+			<!-- Case « figure » : la figure dit tout (tracés de l'élève, bonne droite en pointillés) -->
+			<div class="space-y-1" data-kind="figure" data-status={line.status}>
+				<FigureAnswer source={line.source} answer={line.answer} status={line.status} />
+				<p class="flex justify-center">{@render statusTag(line.status)}</p>
+			</div>
 		{/if}
 	{/each}
 </div>

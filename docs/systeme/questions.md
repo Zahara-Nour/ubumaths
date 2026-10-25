@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -321,8 +321,13 @@ Statuts (`ValidationStatus`) : `correct` (1), `unoptimal_form` (½), `bad_form` 
    geometry-core ajoutait ~430 Ko minifiés à toutes les pages qui génèrent une question). Il est
    inscrit par `construction/positions-setup.ts`, importé par `test-spec-runner.ts`,
    `server/grading-budget.ts` et `server/corrected-detail.ts` (garde :
-   `server/__tests__/construction-correction-serveur.test.ts`) ; l'écran de l'élève l'importera
-   (PR 2). Sans inscription : exception, que `validateAnswer` rend dans `message`.
+   `server/__tests__/construction-correction-serveur.test.ts`) et par la vue de saisie
+   (`FigureACompleterView.svelte`). Sans inscription : exception, que `validateAnswer` rend dans
+   `message` — et que `validateAnswerDetailed` rend en `incorrect`. Une page qui juge sans avoir
+   monté la vue (copie corrigée rechargée, `CorrectionCard`) charge d'abord le calcul à la demande
+   (`loadConstructionPositions`) : pendant le chargement, la consigne et un cadre `aria-busy` ;
+   chargement impossible → la bonne droite seule, sans verdict (gardes :
+   `figure-a-completer-correction.svelte.test.ts`, `…-correction-echec.svelte.test.ts`).
 1. **`validationRules`** (précondition) : `divisor`, `multiple`, `range`, `equation_root`,
    `equivalent`, `predicate` (`isPrime`, `isEven`…), `custom`. Une règle violée → faux, avec son
    message français. `rulesSuffice` : les règles **décident seules**, `expectedAnswer` n'est plus
@@ -386,6 +391,15 @@ d'un QCM (bon / coché à tort / oublié), les remarques de forme. Spécificatio
 [resultat-attendu-progress](../archive/wip/resultat-attendu-progress.md). Pur et sans exception
 (R10). Rendu par `ExpectedResultView.svelte` ; la réponse de l'élève passe par
 `student-answer-safety.ts` dès qu'elle s'affiche chez un autre (copie lue par le prof).
+
+Case « figure » : une ligne `figure` (texte du bloc, réponse brute `droite(…)`, jamais rendue en
+markdown, lue par le juge borné) au lieu de « Réponse attendue : `droite(A;B)` ». `FigureAnswer.svelte`
+la dessine en lecture seule : droites de l'élève (vertes si juste ; sinon la bonne droite en
+pointillés par-dessus), ou la bonne droite seule sans réponse (R9) ; suivent le message du juge
+(remarque) ou « Tu n'as rien répondu. ». Le bloc est retiré de l'énoncé rempli (`withoutFigureCases`) ;
+s'il n'y a pas d'énoncé rempli (la figure est la seule case), la consigne seule au-dessus
+(`showsInstructionOnly`, `instructionOf`) : la figure n'apparaît qu'une fois, au verso de la `FlashCard`
+comme dans la copie corrigée, case « figure » mêlée à d'autres cases comprise.
 
 ### 7. Correction (concise / détaillée, étapes)
 

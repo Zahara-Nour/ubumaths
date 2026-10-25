@@ -32,6 +32,15 @@ export function hasConstructionPositions(): boolean {
 	return resolver !== null;
 }
 
+/**
+ * Inscrire le calcul réel À LA DEMANDE : une page qui juge sans avoir monté la
+ * vue de saisie (copie corrigée rechargée) ; chunk séparé, rien n'alourdit
+ * les pages sans figure.
+ */
+export function loadConstructionPositions(): Promise<unknown> {
+	return import('./positions-setup');
+}
+
 export function constructionPositions(source: string): Map<string, Position> {
 	if (!resolver) {
 		throw new Error(

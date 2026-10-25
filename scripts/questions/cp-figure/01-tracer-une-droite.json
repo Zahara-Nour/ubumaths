@@ -1,0 +1,655 @@
+{
+	"title": "Trace la droite qui passe par deux points",
+	"description": "Tracer à la règle la droite par deux points nommés (horizontale, verticale, oblique) ; un troisième point à ne pas prendre",
+	"grades": ["CP"],
+	"theme": "Géométrie",
+	"domain": "Tracés",
+	"subdomain": "Droites",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Trace la droite qui passe par les points ${{if:k==3|B|A}}$ et ${{if:k==1|B|C}}$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 6\noutils: droite\nverifier: droite_par {{if:k==3|B|A}} ; {{if:k==1|B|C}}\n---\nA = point({{xa}}, {{ya}})\nB = point({{xb}}, {{yb}})\nC = point({{xc}}, {{yc}})\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "x1",
+					"expression": "1..3"
+				},
+				{
+					"name": "x2",
+					"expression": "7..9"
+				},
+				{
+					"name": "y1",
+					"expression": "1..5"
+				},
+				{
+					"name": "y2",
+					"expression": "eval:y1"
+				},
+				{
+					"name": "x3",
+					"expression": "2..8"
+				},
+				{
+					"name": "y3",
+					"expression": "1..5"
+				},
+				{
+					"name": "xa",
+					"expression": "{{if:k==3|{{x3}}|{{x1}}}}"
+				},
+				{
+					"name": "ya",
+					"expression": "{{if:k==3|{{y3}}|{{y1}}}}"
+				},
+				{
+					"name": "xb",
+					"expression": "{{if:k==1|{{x2}}|{{if:k==2|{{x3}}|{{x1}}}}}}"
+				},
+				{
+					"name": "yb",
+					"expression": "{{if:k==1|{{y2}}|{{if:k==2|{{y3}}|{{y1}}}}}}"
+				},
+				{
+					"name": "xc",
+					"expression": "{{if:k==1|{{x3}}|{{x2}}}}"
+				},
+				{
+					"name": "yc",
+					"expression": "{{if:k==1|{{y3}}|{{y2}}}}"
+				}
+			],
+			"conditions": ["abs(y3 - y1) >= 2"],
+			"correction": {
+				"steps": [
+					"On pose la règle sur les points ${{if:k==3|B|A}}$ et ${{if:k==1|B|C}}$, puis on trace le trait d'un bord à l'autre : une droite ne s'arrête pas aux points.",
+					"Le point ${{if:k==1|C|{{if:k==2|B|A}}}}$ n'est pas sur cette droite : il ne faut pas le prendre."
+				]
+			}
+		},
+		{
+			"statement": "Trace la droite qui passe par les points ${{if:k==3|B|A}}$ et ${{if:k==1|B|C}}$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 6\noutils: droite\nverifier: droite_par {{if:k==3|B|A}} ; {{if:k==1|B|C}}\n---\nA = point({{xa}}, {{ya}})\nB = point({{xb}}, {{yb}})\nC = point({{xc}}, {{yc}})\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "x1",
+					"expression": "2..8"
+				},
+				{
+					"name": "x2",
+					"expression": "eval:x1"
+				},
+				{
+					"name": "y1",
+					"expression": "1..2"
+				},
+				{
+					"name": "y2",
+					"expression": "4..5"
+				},
+				{
+					"name": "x3",
+					"expression": "1..9"
+				},
+				{
+					"name": "y3",
+					"expression": "1..5"
+				},
+				{
+					"name": "xa",
+					"expression": "{{if:k==3|{{x3}}|{{x1}}}}"
+				},
+				{
+					"name": "ya",
+					"expression": "{{if:k==3|{{y3}}|{{y1}}}}"
+				},
+				{
+					"name": "xb",
+					"expression": "{{if:k==1|{{x2}}|{{if:k==2|{{x3}}|{{x1}}}}}}"
+				},
+				{
+					"name": "yb",
+					"expression": "{{if:k==1|{{y2}}|{{if:k==2|{{y3}}|{{y1}}}}}}"
+				},
+				{
+					"name": "xc",
+					"expression": "{{if:k==1|{{x3}}|{{x2}}}}"
+				},
+				{
+					"name": "yc",
+					"expression": "{{if:k==1|{{y3}}|{{y2}}}}"
+				}
+			],
+			"conditions": ["abs(x3 - x1) >= 2"],
+			"correction": {
+				"steps": [
+					"On pose la règle sur les points ${{if:k==3|B|A}}$ et ${{if:k==1|B|C}}$, puis on trace le trait d'un bord à l'autre : une droite ne s'arrête pas aux points.",
+					"Le point ${{if:k==1|C|{{if:k==2|B|A}}}}$ n'est pas sur cette droite : il ne faut pas le prendre."
+				]
+			}
+		},
+		{
+			"statement": "Trace la droite qui passe par les points ${{if:k==3|B|A}}$ et ${{if:k==1|B|C}}$.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 6\noutils: droite\nverifier: droite_par {{if:k==3|B|A}} ; {{if:k==1|B|C}}\n---\nA = point({{xa}}, {{ya}})\nB = point({{xb}}, {{yb}})\nC = point({{xc}}, {{yc}})\n```",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..3"
+				},
+				{
+					"name": "s",
+					"expression": "0..1"
+				},
+				{
+					"name": "x1",
+					"expression": "1..3"
+				},
+				{
+					"name": "x2",
+					"expression": "7..9"
+				},
+				{
+					"name": "yb1",
+					"expression": "1..2"
+				},
+				{
+					"name": "yh1",
+					"expression": "4..5"
+				},
+				{
+					"name": "y1",
+					"expression": "{{if:s==0|{{yb1}}|{{yh1}}}}"
+				},
+				{
+					"name": "y2",
+					"expression": "{{if:s==0|{{yh1}}|{{yb1}}}}"
+				},
+				{
+					"name": "x3",
+					"expression": "1..9"
+				},
+				{
+					"name": "y3",
+					"expression": "1..5"
+				},
+				{
+					"name": "xa",
+					"expression": "{{if:k==3|{{x3}}|{{x1}}}}"
+				},
+				{
+					"name": "ya",
+					"expression": "{{if:k==3|{{y3}}|{{y1}}}}"
+				},
+				{
+					"name": "xb",
+					"expression": "{{if:k==1|{{x2}}|{{if:k==2|{{x3}}|{{x1}}}}}}"
+				},
+				{
+					"name": "yb",
+					"expression": "{{if:k==1|{{y2}}|{{if:k==2|{{y3}}|{{y1}}}}}}"
+				},
+				{
+					"name": "xc",
+					"expression": "{{if:k==1|{{x3}}|{{x2}}}}"
+				},
+				{
+					"name": "yc",
+					"expression": "{{if:k==1|{{y3}}|{{y2}}}}"
+				}
+			],
+			"conditions": [
+				"abs((x2 - x1)*(y3 - y1) - (y2 - y1)*(x3 - x1)) >= 9",
+				"abs(x3 - x1) + abs(y3 - y1) >= 3",
+				"abs(x3 - x2) + abs(y3 - y2) >= 3"
+			],
+			"correction": {
+				"steps": [
+					"On pose la règle sur les points ${{if:k==3|B|A}}$ et ${{if:k==1|B|C}}$, puis on trace le trait d'un bord à l'autre : une droite ne s'arrête pas aux points.",
+					"Le point ${{if:k==1|C|{{if:k==2|B|A}}}}$ n'est pas sur cette droite : il ne faut pas le prendre."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "droite par A et B",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"x1": "2",
+				"y1": "3",
+				"x2": "8",
+				"y2": "3",
+				"x3": "5",
+				"y3": "5",
+				"xa": "2",
+				"ya": "3",
+				"xb": "8",
+				"yb": "3",
+				"xc": "5",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["droite(2;3;8;3)"]
+		},
+		{
+			"description": "droite par B et A (sens inverse)",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"x1": "2",
+				"y1": "3",
+				"x2": "8",
+				"y2": "3",
+				"x3": "5",
+				"y3": "5",
+				"xa": "2",
+				"ya": "3",
+				"xb": "8",
+				"yb": "3",
+				"xc": "5",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["droite(8;3;2;3)"]
+		},
+		{
+			"description": "droite par deux autres points de la même droite",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"x1": "2",
+				"y1": "3",
+				"x2": "8",
+				"y2": "3",
+				"x3": "5",
+				"y3": "5",
+				"xa": "2",
+				"ya": "3",
+				"xb": "8",
+				"yb": "3",
+				"xc": "5",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["droite(-4;3;2;3)"]
+		},
+		{
+			"description": "Erreur : droite par A et le piège C",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"x1": "2",
+				"y1": "3",
+				"x2": "8",
+				"y2": "3",
+				"x3": "5",
+				"y3": "5",
+				"xa": "2",
+				"ya": "3",
+				"xb": "8",
+				"yb": "3",
+				"xc": "5",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["droite(2;3;5;5)"]
+		},
+		{
+			"description": "Erreur : droite par A et un point voisin de B",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"x1": "2",
+				"y1": "3",
+				"x2": "8",
+				"y2": "3",
+				"x3": "5",
+				"y3": "5",
+				"xa": "2",
+				"ya": "3",
+				"xb": "8",
+				"yb": "3",
+				"xc": "5",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["droite(2;3;8;4)"]
+		},
+		{
+			"description": "Erreur : la bonne droite et un trait en trop",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1",
+				"x1": "2",
+				"y1": "3",
+				"x2": "8",
+				"y2": "3",
+				"x3": "5",
+				"y3": "5",
+				"xa": "2",
+				"ya": "3",
+				"xb": "8",
+				"yb": "3",
+				"xc": "5",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["droite(2;3;8;3)|droite(8;3;5;5)"]
+		},
+		{
+			"description": "droite par A et C",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"x1": "4",
+				"y1": "1",
+				"x2": "4",
+				"y2": "5",
+				"x3": "7",
+				"y3": "3",
+				"xa": "4",
+				"ya": "1",
+				"xb": "7",
+				"yb": "3",
+				"xc": "4",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["droite(4;1;4;5)"]
+		},
+		{
+			"description": "droite par C et A (sens inverse)",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"x1": "4",
+				"y1": "1",
+				"x2": "4",
+				"y2": "5",
+				"x3": "7",
+				"y3": "3",
+				"xa": "4",
+				"ya": "1",
+				"xb": "7",
+				"yb": "3",
+				"xc": "4",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["droite(4;5;4;1)"]
+		},
+		{
+			"description": "droite par deux autres points de la même droite",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"x1": "4",
+				"y1": "1",
+				"x2": "4",
+				"y2": "5",
+				"x3": "7",
+				"y3": "3",
+				"xa": "4",
+				"ya": "1",
+				"xb": "7",
+				"yb": "3",
+				"xc": "4",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["droite(4;-3;4;1)"]
+		},
+		{
+			"description": "Erreur : droite par A et le piège B",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"x1": "4",
+				"y1": "1",
+				"x2": "4",
+				"y2": "5",
+				"x3": "7",
+				"y3": "3",
+				"xa": "4",
+				"ya": "1",
+				"xb": "7",
+				"yb": "3",
+				"xc": "4",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["droite(4;1;7;3)"]
+		},
+		{
+			"description": "Erreur : droite par A et un point voisin de C",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"x1": "4",
+				"y1": "1",
+				"x2": "4",
+				"y2": "5",
+				"x3": "7",
+				"y3": "3",
+				"xa": "4",
+				"ya": "1",
+				"xb": "7",
+				"yb": "3",
+				"xc": "4",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["droite(4;1;5;5)"]
+		},
+		{
+			"description": "Erreur : la bonne droite et un trait en trop",
+			"variationIndex": 1,
+			"variables": {
+				"k": "2",
+				"x1": "4",
+				"y1": "1",
+				"x2": "4",
+				"y2": "5",
+				"x3": "7",
+				"y3": "3",
+				"xa": "4",
+				"ya": "1",
+				"xb": "7",
+				"yb": "3",
+				"xc": "4",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["droite(4;1;4;5)|droite(4;5;7;3)"]
+		},
+		{
+			"description": "droite par B et C",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"x1": "1",
+				"y1": "1",
+				"x2": "9",
+				"y2": "5",
+				"x3": "3",
+				"y3": "5",
+				"s": "0",
+				"yb1": "1",
+				"yh1": "5",
+				"xa": "3",
+				"ya": "5",
+				"xb": "1",
+				"yb": "1",
+				"xc": "9",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["droite(1;1;9;5)"]
+		},
+		{
+			"description": "droite par C et B (sens inverse)",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"x1": "1",
+				"y1": "1",
+				"x2": "9",
+				"y2": "5",
+				"x3": "3",
+				"y3": "5",
+				"s": "0",
+				"yb1": "1",
+				"yh1": "5",
+				"xa": "3",
+				"ya": "5",
+				"xb": "1",
+				"yb": "1",
+				"xc": "9",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["droite(9;5;1;1)"]
+		},
+		{
+			"description": "droite par deux autres points de la même droite",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"x1": "1",
+				"y1": "1",
+				"x2": "9",
+				"y2": "5",
+				"x3": "3",
+				"y3": "5",
+				"s": "0",
+				"yb1": "1",
+				"yh1": "5",
+				"xa": "3",
+				"ya": "5",
+				"xb": "1",
+				"yb": "1",
+				"xc": "9",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["droite(-7;-3;1;1)"]
+		},
+		{
+			"description": "Erreur : droite par B et le piège A",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"x1": "1",
+				"y1": "1",
+				"x2": "9",
+				"y2": "5",
+				"x3": "3",
+				"y3": "5",
+				"s": "0",
+				"yb1": "1",
+				"yh1": "5",
+				"xa": "3",
+				"ya": "5",
+				"xb": "1",
+				"yb": "1",
+				"xc": "9",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["droite(1;1;3;5)"]
+		},
+		{
+			"description": "Erreur : droite par B et un point voisin de C",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"x1": "1",
+				"y1": "1",
+				"x2": "9",
+				"y2": "5",
+				"x3": "3",
+				"y3": "5",
+				"s": "0",
+				"yb1": "1",
+				"yh1": "5",
+				"xa": "3",
+				"ya": "5",
+				"xb": "1",
+				"yb": "1",
+				"xc": "9",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["droite(1;1;9;6)"]
+		},
+		{
+			"description": "Erreur : la bonne droite et un trait en trop",
+			"variationIndex": 2,
+			"variables": {
+				"k": "3",
+				"x1": "1",
+				"y1": "1",
+				"x2": "9",
+				"y2": "5",
+				"x3": "3",
+				"y3": "5",
+				"s": "0",
+				"yb1": "1",
+				"yh1": "5",
+				"xa": "3",
+				"ya": "5",
+				"xb": "1",
+				"yb": "1",
+				"xc": "9",
+				"yc": "5"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["droite(1;1;9;5)|droite(9;5;3;5)"]
+		}
+	]
+}
