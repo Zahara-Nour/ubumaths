@@ -24,11 +24,10 @@ import type {
 } from '../types';
 import { getPolynomialDegree } from '../classify';
 import { realQuarticRoots } from '../../common/quartic-roots';
-import { flattenSumShallow } from '../../flatten';
 import { number, opposite, equals, variable as varNode, fraction } from '../../factory';
 import { numericNode } from '../../common/numeric';
 import { denormalize, normalize } from '../../normal';
-import { termDegree, coefficientOfDegree } from '../../normal/canonical-form';
+import { canonicalForm, coefficientsByDegree } from '../../normal/canonical-form';
 import {
 	describeSolution,
 	describeIdentifyQuartic,
@@ -65,49 +64,17 @@ interface QuarticCoefficients {
 // =============================================================================
 
 /**
- * Extract coefficients a, b, c, d, e from quartic expression ax⁴ + bx³ + cx² + dx + e.
+ * Extract coefficients a, b, c, d, e from quartic expression ax⁴ + bx³ + cx² + dx + e,
+ * read as written, then on the canonical form if a coefficient still depends on x
+ * (`(x² − 3)² + x` must be expanded first). `null` without an x⁴ term.
  */
 function extractQuarticCoefficients(expr: MathNode, variable: string): QuarticCoefficients | null {
-	const flatSum = flattenSumShallow(expr);
-
-	const aTerms: MathNode[] = []; // degree 4
-	const bTerms: MathNode[] = []; // degree 3
-	const cTerms: MathNode[] = []; // degree 2
-	const dTerms: MathNode[] = []; // degree 1
-	const eTerms: MathNode[] = []; // degree 0
-
-	for (const { sign, term } of flatSum) {
-		const signedTerm = sign === '-' ? opposite(term) : term;
-		const degree = termDegree(signedTerm, variable);
-
-		if (degree === 4) {
-			aTerms.push(signedTerm);
-		} else if (degree === 3) {
-			bTerms.push(signedTerm);
-		} else if (degree === 2) {
-			cTerms.push(signedTerm);
-		} else if (degree === 1) {
-			dTerms.push(signedTerm);
-		} else if (degree === 0) {
-			eTerms.push(signedTerm);
-		} else {
-			// Unexpected degree (>4 or transcendental)
-			return null;
-		}
-	}
-
-	// Must have x⁴ term
-	if (aTerms.length === 0) return null;
-
-	const a = coefficientOfDegree(aTerms, variable, 4);
-	const b = coefficientOfDegree(bTerms, variable, 3);
-	const c = coefficientOfDegree(cTerms, variable, 2);
-	const d = coefficientOfDegree(dTerms, variable, 1);
-	const e = coefficientOfDegree(eTerms, variable, 0);
-
-	// Verify a != 0
+	const coefficients =
+		coefficientsByDegree(expr, variable, 4) ??
+		coefficientsByDegree(canonicalForm(expr), variable, 4);
+	if (coefficients === null) return null;
+	const [e, d, c, b, a] = coefficients;
 	if (isZeroNode(a)) return null;
-
 	return { a, b, c, d, e };
 }
 

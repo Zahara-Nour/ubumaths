@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1790._
+_Mis à jour le 2026-10-26, lot (c) en cours._
 
-- **État** : lots (a) #1784 et (b) #1790 MERGÉS, pas encore en prod. Les deux lots prévus sont faits.
-- **Prochaine action** : à trancher par David : clore le chantier (versement : le durable est déjà dans `docs/systeme/mathast/README.md`, archiver ce journal) ou ajouter un lot (garde « coefficient sans x » de `extractQuarticCoefficients`).
-- **En attente de David** : la clôture ci-dessus ; écarts plus justes de la lecture des coefficients (§ 7-8) ; à lui montrer : `√x√x → (√x)²`, ordre d'une primitive, mineurs du § 4.
+- **État** : lots (a) #1784 et (b) #1790 MERGÉS, pas encore en prod. Lot (c) « clôture » codé en partie (§ 10) : garde quartique (BUG réel corrigé), code mort de `requested-form.ts`.
+- **Prochaine action** : `√x√x` selon la réponse de David, mesures, PR, CI, merge ; puis clôture (points ouverts du README mathAST, journal archivé).
+- **En attente de David** : `√x√x` → « rien à développer » (reco, cohérent avec `√x√x + 1`) ou `\sqrt{x}^2` (actuel) ?
 - **Pièges connus** : banc des modèles aveugle pour `developper` ; verrous `typecheck` partagés (exit 2 = attendre).
-- **Worktree / branche** : aucun (retiré après #1790).
+- **Worktree / branche** : `ubumaths-wt-normalize-usages`, `fix/normalize-usages-cloture`.
 
 ## Contexte
 
@@ -125,3 +125,10 @@ Comportements : **nominal** — mêmes réponses et mêmes étapes partout (suit
 ## 9. Lot (b) mergé (#1790, 2026-10-26)
 
 CI verte (16 jobs, 1 sauté), mergée. Worktree retiré.
+
+## 10. Lot (c), clôture (2026-10-26, David : « je te suis » sur les recos)
+
+- **Recos sur les 5 points en attente** : (1) écarts de lecture des coefficients gardés ; (2) `√x√x` à trancher (sonde ci-dessous) ; (3) ordre de la primitive : RIEN à faire — `∫(x² cos x + x)` donne le bloc de l'IPP puis `x²/2`, l'ordre de l'intégrande (avant : `x²/2` au milieu de l'IPP) ; (4) mineurs du § 4 versés aux points ouverts, sauf le code mort ; (5) garde quartique faite.
+- **Sonde `√x√x`** (« développer ») : `√x√x → \sqrt{x}^2`, `2√x·3√x → 6\sqrt{x}^2`, mais `√x√x + 1` et `(√x)²` → rien à développer ; `√x(√x+1) → x + √x`. Incohérent : rien n'y est à distribuer.
+- **Garde quartique = BUG réel** (sonde de 8 équations non développées) : `(x²−3)² + x = 0` rendait `x = 0` et une solution sans valeur, `x⁴ + (x−1)³ = 0` rendait `x = 0` (le coefficient de x⁴ gardait x). `extractQuarticCoefficients` = `coefficientsByDegree` sur l'écriture, repli sur `canonicalForm` (comme le cubique). Tests rouges d'abord (2), puis `solve/` : 814 verts.
+- **Code mort** : `timeoutMs` / `aborted` / `DEVELOP_TIMEOUT_MS` de `requested-form.ts` retirés (le budget de `expand` se compte en termes ; dépassé, l'expression telle quelle — le même effet que le `catch`).

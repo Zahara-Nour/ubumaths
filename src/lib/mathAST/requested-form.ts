@@ -34,9 +34,6 @@ import { factoredForm, withDecimalCoefficients, withTypedDecimals } from './vari
 /** La forme demandée (`FinalForm` des modèles de question). */
 export type RequestedForm = 'developpee' | 'factorisee';
 
-/** Le budget de la politique `developper`, comme celui d'`auto` dans final-form. */
-const DEVELOP_TIMEOUT_MS = 1000;
-
 /**
  * `node` sous la forme demandée.
  *
@@ -110,15 +107,13 @@ function developedTerm(term: MathNode): MathNode {
 	return develop(term);
 }
 
-/** La politique `developper` (lycée) ; lève si le budget est dépassé. */
+/**
+ * La politique `developper` (lycée). Son budget se compte en termes, pas en
+ * temps : dépassé, `expand` rend l'expression telle quelle.
+ */
 function develop(node: MathNode): MathNode {
-	const result = generatePedagogicalSimplifySteps(node, {
-		intent: 'developper',
-		schoolLevel: 'lycee',
-		timeoutMs: DEVELOP_TIMEOUT_MS
-	});
-	if (result.aborted === true) throw new Error('developper : budget dépassé');
-	return result.result;
+	return generatePedagogicalSimplifySteps(node, { intent: 'developper', schoolLevel: 'lycee' })
+		.result;
 }
 
 function isSum(node: MathNode): boolean {

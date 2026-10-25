@@ -363,3 +363,23 @@ function sameRoots(found: readonly number[], expected: readonly number[]): boole
 		found.every((r, i) => Math.abs(r - expected[i]) <= 1e-6 * Math.max(1, Math.abs(expected[i])))
 	);
 }
+
+// =============================================================================
+// Coefficients lus sur une écriture non développée (chantier normalize-usages)
+// =============================================================================
+
+describe('quartique écrite sans être développée : aucun coefficient ne garde x', () => {
+	// f(x) développé à la main, et ses racines réelles (relevées numériquement)
+	it.each([
+		['(x^2-3)^2+x=0', (x: number) => (x * x - 3) ** 2 + x, 2],
+		['x^4+(x-1)^3=0', (x: number) => x ** 4 + (x - 1) ** 3, 2]
+	])('%s : les solutions annulent f', (latex, f, count) => {
+		const result = solve(parseEquation(latex));
+		const values = result.solutions.map((s) => s.approximate);
+		expect(values).toHaveLength(count);
+		for (const x of values) {
+			expect(x).toBeDefined();
+			expect(Math.abs(f(x!))).toBeLessThan(1e-6);
+		}
+	});
+});
