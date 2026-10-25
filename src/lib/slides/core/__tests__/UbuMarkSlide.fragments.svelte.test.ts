@@ -32,6 +32,14 @@ describe('UbuMarkSlide, marqueur de fragment', () => {
 		expect(fragments.every((f) => !f.textContent?.includes('->'))).toBe(true);
 	});
 
+	it('un élément de liste terminé par une formule puis « -> » devient un fragment, sous-liste comprise', async () => {
+		const container = await renderFragments('- $x = 2$ ->\n  - détail');
+
+		const fragments = [...container.querySelectorAll('.fragment')];
+		expect(fragments.map((f) => f.tagName)).toEqual(['LI']);
+		expect(fragments[0].textContent).not.toContain('->');
+	});
+
 	it('une flèche au milieu d’une ligne reste une flèche', async () => {
 		const container = await renderFragments('$a$ -> $b$');
 

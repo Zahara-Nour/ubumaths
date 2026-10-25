@@ -122,8 +122,8 @@ describe('/demo/diaporama', () => {
 		flushSync();
 		const correction = activeSlide(screen.container)?.textContent ?? '';
 		expect(correction).toMatch(/Correction/);
-		expect(correction).toMatch(/56/);
-		expect(correction).toMatch(/20/);
+		expect(correction).toMatch(/8 = 56/);
+		expect(correction).toMatch(/div 4 = 20/);
 	});
 
 	it('finit sur les liens vers les démonstrations et l’Atelier', async () => {
