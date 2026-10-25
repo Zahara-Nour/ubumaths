@@ -4,8 +4,8 @@
 
 _Mis à jour le 2026-10-25, phase 0 du lot A6 validée._
 
-- **État** : A1 à A5 livrés (A3 : #1744, migration jouée). **A6 grandeurs et lexique** : phase 0 validée (§ 4 octies), 9 modèles écrits (`docs/wip/questions/lot-a6.py` → `scripts/questions/cp-a6/`), 87 specs vertes, rendu relu.
-- **Prochaine action** : brouillons en prod (`create-questions --publier`, go de David), puis migration nœud + tag et son test.
+- **État** : A1 à A5 livrés (A3 : #1744, migration jouée). **A6 grandeurs et lexique** : phase 0 validée (§ 4 octies), 9 modèles écrits (`docs/wip/questions/lot-a6.py` → `scripts/questions/cp-a6/`), 87 specs vertes, rendu relu ; 9 brouillons en prod (`92c8e499`, `54ea05d7` CP-004 ; `192f52f3` CP-032 ; `9ee150a2` CP-036 ; `39dfd0cc` CP-037 ; `7e11b651` CP-038 ; `e9e9970b` CP-039 ; `35426707` CP-041 ; `fc63fdf0` CP-048) ; migration `20261026020000_questions_cp_a6_rangement_tags` + test (rouge puis vert, 8/8).
+- **Prochaine action** : PR A6 (CI, revue), merge, puis question d'accès et `db:migrate` ; page à cocher A6.
 - **En attente de David** : relecture des 6 brouillons A3 (https://claude.ai/artifact/JSqtDxwT1zXk5NUs2iSt71) ; publication des brouillons A1 à A5 en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; **le bon choix d'un QCM n'accepte qu'UN `{{if:…}}`, pas une chaîne imbriquée** → formule `{{eval:mod(…)}}` ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; script d'un tirage hors du dépôt → `.mts`.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-a6`.
@@ -181,3 +181,4 @@ David suit mes quatre recommandations (« je suis tes recos »).
 - 2026-10-25 : question d'accès A3 tranchée par David (personne) ; `db:migrate` joué, vérifié en prod (6 modèles sur « ordinaux et rangs », 1 tag chacun, `updated_at` inchangé, triggers actifs).
 - 2026-10-25 : lot A6, phase 0 validée (§ 4 octies), worktree `../ubumaths-wt-questions` (`feat/questions-a6`).
 - 2026-10-25 : A6, 9 modèles écrits, 87 specs vertes, rendu relu (trait d'union au singulier, « qu'une », corrigé des moments retouchés).
+- 2026-10-25 : A6, 9 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; migration nœud + tag et test, rouge puis vert.
