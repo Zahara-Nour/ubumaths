@@ -80,3 +80,31 @@ describe('Q2 — l’étape de la division par un nombre', () => {
 		expect(steps?.detailed[0].expressionLatex).toContain('= \\dfrac{1}{2} x + \\dfrac{1}{2}');
 	});
 });
+
+describe('revue : des réponses réduites jusqu’au bout', () => {
+	it.each([
+		// Des termes opposés s'annulent, x/x vaut 1 : le domaine de l'entrée est acquis
+		['(x+\\frac{1}{x})^2', 'x^2 + 2 + \\dfrac{1}{x^2}'],
+		['(1+\\frac{1}{x})(1-\\frac{1}{x})', '1 - \\dfrac{1}{x^2}'],
+		['x(\\frac{1}{x}-1)', '-x + 1'],
+		// Une racine de nombre se calcule (pas de domaine en jeu)
+		['(\\sqrt{2}+\\sqrt{3})^2', '5 + 2 \\sqrt{6}'],
+		['\\sqrt{2}(\\sqrt{6}+1)', '2 \\sqrt{3} + \\sqrt{2}'],
+		// i² = −1
+		['(1+2i)(3-i)', '5 + 5 \\imaginaryI'],
+		['(x+i)^2', 'x^2 + 2 \\imaginaryI x - 1'],
+		// Une puissance négative d'une base littérale est un quotient (Q1)
+		['x^{-1}(x+1)', '\\dfrac{x + 1}{x}'],
+		['(x+1)^{2}(x+1)^{-1}', '\\dfrac{x^2 + 2 x + 1}{x + 1}'],
+		// (√x)³ = x√x : √x reste écrit
+		['(\\sqrt{x}+1)^3', 'x \\sqrt{x} + 3 x + 3 \\sqrt{x} + 1'],
+		// L'argument d'une fonction en puissance se développe aussi
+		['\\cos(2(x+1))^2', '\\cos\\left( 2 x + 2 \\right)^2']
+	])('%s → %s', (input, expected) => {
+		expect(answerOf(explain(input))).toBe(expected);
+	});
+
+	it('une division par zéro ne se distribue pas', () => {
+		expect(explain('\\frac{x+1}{0}').kind).not.toBe('expanded');
+	});
+});

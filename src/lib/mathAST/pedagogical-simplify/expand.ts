@@ -30,6 +30,7 @@
 
 import type { MathNode } from '../types';
 import { add, divide, euler, multiply, number, parentheses, superscript } from '../factory';
+import { exactValueToShow } from '../eval/exact-value';
 import { flattenProductShallow, flattenSumShallow, type Sign, type SignedTerm } from '../flatten';
 import { isEulerConstant, isFunction } from '../guards';
 import { findNodes, mapNode } from '../transforms';
@@ -41,8 +42,8 @@ import { orderExpanded, sumOf } from './expand-order';
 // Constantes
 // =============================================================================
 
-/** Au-delà, la puissance d'une somme n'est pas développée. */
-const MAX_EXPONENT = 1000;
+/** Au-delà, la puissance d'une somme n'est pas développée (`(x+1)^{300}` : 0,5 s). */
+const MAX_EXPONENT = 200;
 
 /** Au-delà, on renonce : la somme développée serait illisible. */
 const MAX_TERMS = 2000;
@@ -80,6 +81,12 @@ function isConstant(node: MathNode): boolean {
 	return findNodes(node, (n) => n.type === 'variable' || n.type === 'greek').length === 0;
 }
 
+/** Un nombre qui vaut 0 (`0`, `1 − 1`). */
+function isZeroValue(node: MathNode): boolean {
+	const value = tidy(node);
+	return value.type === 'number' && Number(value.value) === 0;
+}
+
 /** `−u` → `u`, sinon le nœud. */
 function magnitudeOrSelf(node: MathNode): MathNode {
 	return node.type === 'opposite' ? unwrapGrouping(node.operand) : node;
@@ -96,10 +103,29 @@ function squareRootArgument(node: MathNode): MathNode | null {
 	return node.args.length === 1 ? node.args[0] : null;
 }
 
-/** `(√u)²`, son `u`, sinon `null`. */
-function squaredRootArgument(node: MathNode): MathNode | null {
-	if (node.type !== 'superscript' || integerExponent(node.superscript) !== 2) return null;
-	return squareRootArgument(unwrapGrouping(node.base));
+/** `(√u)ⁿ`, n ≥ 2 : son `u` et son `n`, sinon `null`. */
+function rootPower(node: MathNode): { readonly u: MathNode; readonly n: number } | null {
+	if (node.type !== 'superscript') return null;
+	const n = integerExponent(node.superscript);
+	if (n === null || n < 2) return null;
+	const u = squareRootArgument(unwrapGrouping(node.base));
+	return u === null ? null : { u, n };
+}
+
+/** `u^k` écrit, `u` entre parenthèses (`(x+1)²`, `x`). */
+function powerOf(u: MathNode, k: number): MathNode {
+	return k === 1 ? parentheses(u) : superscript(parentheses(u), number(String(k)));
+}
+
+/** `u^{−n}` d'une base littérale → `1/uⁿ` : un quotient, sa barre reste (Q1). */
+function asQuotient(factor: MathNode): MathNode {
+	if (factor.type !== 'superscript' || isConstant(factor.base)) return factor;
+	const exponent = factor.superscript;
+	if (exponent.type !== 'opposite') return factor;
+	const n = integerExponent(unwrapGrouping(exponent.operand));
+	if (n === null || n < 1) return factor;
+	const power = n === 1 ? factor.base : superscript(factor.base, number(String(n)));
+	return divide(number('1'), power, 'fraction');
 }
 
 // =============================================================================
@@ -107,26 +133,48 @@ function squaredRootArgument(node: MathNode): MathNode | null {
 // =============================================================================
 
 /**
- * `(√u)² → u` quand un `√u` reste ailleurs dans le résultat : la condition
- * u ≥ 0 y reste écrite (`√x(√x + 1) → x + √x`). Sinon `(√u)²` reste (Q3 :
- * `(√x)²(x + 1)` ne devient pas `x² + x`, qui perdrait x ≥ 0).
+ * `(√u)ⁿ` levé quand la condition u ≥ 0 reste écrite (Q3) : une puissance
+ * impaire garde un `√u` (`(√x)³ → x√x`) ; une puissance paire seulement si un
+ * `√u` reste ailleurs dans le résultat (`√x(√x + 1) → x + √x`). Sinon `(√u)ⁿ`
+ * reste : `(√x)²(x + 1)` ne devient pas `x² + x`, qui perdrait x ≥ 0.
  */
-function withSquaredRootsResolved(node: MathNode): MathNode {
-	const squared = findNodes(node, (n) => squaredRootArgument(n) !== null);
-	if (squared.length === 0) return node;
+function withRootPowersResolved(node: MathNode): MathNode {
+	const powers = findNodes(node, (n) => rootPower(n) !== null);
+	if (powers.length === 0) return node;
 	const roots = findNodes(node, (n) => squareRootArgument(n) !== null);
 	const count = (nodes: readonly MathNode[], read: (n: MathNode) => MathNode | null, u: MathNode) =>
 		nodes.filter((n) => {
 			const argument = read(n);
 			return argument !== null && nodesEqual(argument, u);
 		}).length;
-	const stays = (u: MathNode) =>
-		count(roots, squareRootArgument, u) > count(squared, squaredRootArgument, u);
-	if (!squared.some((n) => stays(squaredRootArgument(n) ?? n))) return node;
+	const powerArgument = (n: MathNode) => rootPower(n)?.u ?? null;
+	const lifts = ({ u, n }: { readonly u: MathNode; readonly n: number }) =>
+		n % 2 === 1 || count(roots, squareRootArgument, u) > count(powers, powerArgument, u);
+	if (!powers.some((n) => lifts(rootPower(n) ?? { u: n, n: 0 }))) return node;
 	return mapNode(node, (n) => {
-		const u = squaredRootArgument(n);
-		return u !== null && stays(u) ? parentheses(u) : n;
+		const power = rootPower(n);
+		if (power === null || !lifts(power)) return n;
+		const even = powerOf(power.u, Math.floor(power.n / 2));
+		if (power.n % 2 === 0) return even;
+		const root = n.type === 'superscript' ? unwrapGrouping(n.base) : n;
+		return multiply(even, root, 'implicit');
 	});
+}
+
+/**
+ * Les valeurs d'un terme calculées : `√2·√3 → √6`, `i² → −1`, `π·π → π²`.
+ * Sans lettre, `normalize` calcule (décision § 23 de simplify-carte), écrit
+ * par `exactValueToShow` ; les nombres seuls restent à `tidy`.
+ */
+function withValuesComputed(term: MathNode): MathNode {
+	const factors = flattenProductShallow(term).map(({ factor }) => factor);
+	const isValue = (f: MathNode) => isConstant(f) && f.type !== 'number';
+	const values = factors.filter(isValue);
+	const others = factors.filter((f) => !isValue(f));
+	if (values.length < 2 && !values.some((f) => f.type === 'superscript')) return term;
+	const product = values.reduce((left, right) => multiply(left, right, 'cross'));
+	const value = exactValueToShow(product, { source: product });
+	return [value, ...others].reduce((left, right) => multiply(left, right, 'cross'));
 }
 
 /** L'exposant d'une puissance de e (`e` seul : 1), sinon `null`. */
@@ -197,10 +245,11 @@ function coefficientFirst(term: MathNode): MathNode {
  * Une somme écrite au propre : `tidy` dans l'ordre du développement, les
  * nombres après les autres termes (`2eˣ + 2`) mais avant les quotients à
  * dénominateur littéral (`x² − x − 2 + 1/(x+1)`), chaque coefficient devant ; des monômes, dans
- * l'ordre du manuel.
+ * l'ordre du manuel. `domain` : celui de l'entrée, acquis (S3) — `x·1/x → 1`,
+ * `−√x + √x → 0`.
  */
-function written(terms: readonly SignedTerm[]): MathNode {
-	const tidied = flattenSumShallow(tidy(sumOf(terms), { order: 'kept' }));
+function written(terms: readonly SignedTerm[], domain: readonly MathNode[]): MathNode {
+	const tidied = flattenSumShallow(tidy(sumOf(terms), { order: 'kept', domain }));
 	const quotient = ({ term }: SignedTerm) => isLiteralQuotient(magnitudeOrSelf(term));
 	const constant = ({ term }: SignedTerm) => isConstant(term);
 	const ordered = [
@@ -222,17 +271,21 @@ function written(terms: readonly SignedTerm[]): MathNode {
 class Expansion {
 	developed = false;
 
+	/** @param domain - L'entrée : son domaine est acquis, `tidy` peut y simplifier (S3) */
+	constructor(private readonly domain: readonly MathNode[]) {}
+
 	/** Les termes réduits, relus comme une somme. */
 	reduced(terms: readonly SignedTerm[]): readonly SignedTerm[] {
 		if (terms.length === 0) return [{ sign: '+', term: number('0') }];
 		if (terms.length > MAX_TERMS) throw new TooLarge();
 		// Chaque terme calculé dans l'ordre canonique des facteurs (`2 × x × 1 → 2x`),
 		// puis la somme réduite dans l'ordre du développement
+		const { domain } = this;
 		const merged = terms.map(({ sign, term }) => ({
 			sign,
-			term: tidy(withExponentialsMerged(term))
+			term: tidy(withValuesComputed(tidy(withExponentialsMerged(term), { domain })), { domain })
 		}));
-		return flattenSumShallow(tidy(sumOf(merged), { order: 'kept' }));
+		return flattenSumShallow(tidy(sumOf(merged), { order: 'kept', domain }));
 	}
 
 	/** (a + b)(c + d) → ac + ad + bc + bd, réduit. */
@@ -250,7 +303,9 @@ class Expansion {
 
 	/** Un produit : un quotient à dénominateur littéral prend tout le produit au numérateur. */
 	multiplication(node: MathNode): readonly SignedTerm[] {
-		const factors = flattenProductShallow(node).map(({ factor }) => unwrapGrouping(factor));
+		const factors = flattenProductShallow(node).map(({ factor }) =>
+			asQuotient(unwrapGrouping(factor))
+		);
 		const quotients = factors.filter(isLiteralQuotient);
 		if (quotients.length > 0) {
 			const numerators = factors.map((f) => (isLiteralQuotient(f) ? f.numerator : f));
@@ -291,7 +346,7 @@ class Expansion {
 			case 'superscript': {
 				const exponent = integerExponent(node.superscript);
 				// La base lue à part : sa parenthèse ne compte que si la puissance se développe
-				const base = new Expansion().terms(node.base);
+				const base = new Expansion(this.domain).terms(node.base);
 				if (exponent !== null && exponent >= 2 && base.length >= 2) {
 					if (exponent > MAX_EXPONENT) throw new TooLarge();
 					this.developed = true;
@@ -299,16 +354,27 @@ class Expansion {
 					for (let k = 1; k < exponent; k++) power = this.product(power, base);
 					return power;
 				}
-				// Une puissance d'un seul terme reste à `tidy` (`(2x)² → 4x²`) ; un
-				// exposant qui n'est pas un entier se développe sur place
+				// Une puissance d'un seul terme reste à `tidy` (`(2x)² → 4x²`), sa base
+				// développée sur place (`cos(2(x+1))²`) ; un exposant qui n'est pas un
+				// entier aussi
+				const developedBase = base.length === 1 ? this.inside(node.base) : null;
 				const developed = this.inside(node.superscript);
+				if (developedBase === null && developed === null) return [{ sign: '+', term: node }];
 				return [
-					{ sign: '+', term: developed === null ? node : { ...node, superscript: developed } }
+					{
+						sign: '+',
+						term: {
+							...node,
+							base: developedBase === null ? node.base : parentheses(developedBase),
+							superscript: developed ?? node.superscript
+						}
+					}
 				];
 			}
 			case 'division': {
-				// Diviser par un nombre se distribue (Q2)
+				// Diviser par un nombre se distribue (Q2) ; par zéro, rien
 				if (isConstant(node.denominator)) {
+					if (isZeroValue(node.denominator)) return [{ sign: '+', term: node }];
 					const numerator = this.terms(node.numerator);
 					if (numerator.length > 1) this.developed = true;
 					return numerator.map(({ sign, term }) => ({
@@ -337,18 +403,18 @@ class Expansion {
 
 	/** Une sous-expression développée à part, ou `null` s'il n'y a rien à y distribuer. */
 	inside(node: MathNode): MathNode | null {
-		const nested = new Expansion();
+		const nested = new Expansion(this.domain);
 		const terms = nested.reduced(nested.terms(node));
 		if (!nested.developed) return null;
 		this.developed = true;
-		return written(terms);
+		return written(terms, this.domain);
 	}
 }
 
-/** Les `(√u)²` levés, puis ce qu'ils libèrent développé (`4(√(x+1))² → 4x + 4`). */
-function resolved(node: MathNode): MathNode {
-	const next = withSquaredRootsResolved(node);
-	return next === node ? node : expandedForm(next);
+/** Les `(√u)ⁿ` levés, puis ce qu'ils libèrent développé (`4(√(x+1))² → 4x + 4`). */
+function resolved(node: MathNode, domain: readonly MathNode[]): MathNode {
+	const next = withRootPowersResolved(node);
+	return next === node ? node : expandedForm(next, domain);
 }
 
 /**
@@ -358,12 +424,13 @@ function resolved(node: MathNode): MathNode {
  * réponse.
  *
  * @param node - Une expression (pas une relation)
+ * @param domain - Les expressions dont le domaine est acquis : par défaut `node`
  * @returns La forme écrite ; l'expression telle quelle si le budget est dépassé
  */
-export function expandedForm(node: MathNode): MathNode {
+export function expandedForm(node: MathNode, domain: readonly MathNode[] = [node]): MathNode {
 	try {
-		const expansion = new Expansion();
-		return resolved(written(expansion.reduced(expansion.terms(node))));
+		const expansion = new Expansion(domain);
+		return resolved(written(expansion.reduced(expansion.terms(node)), domain), domain);
 	} catch (error) {
 		if (error instanceof TooLarge) return node;
 		throw error;
@@ -379,9 +446,14 @@ export function expandedForm(node: MathNode): MathNode {
  */
 export function expand(node: MathNode): MathNode {
 	try {
-		const expansion = new Expansion();
+		// Une division par zéro : rien à développer (l'ancien `normalize` levait)
+		const byZero = (n: MathNode) =>
+			n.type === 'division' && isConstant(n.denominator) && isZeroValue(n.denominator);
+		if (findNodes(node, byZero).length > 0) return node;
+		const domain = [node];
+		const expansion = new Expansion(domain);
 		const terms = expansion.reduced(expansion.terms(node));
-		if (expansion.developed) return resolved(written(terms));
+		if (expansion.developed) return resolved(written(terms, domain), domain);
 		// Rien à distribuer dans une puissance non entière, une fonction, un
 		// quotient à dénominateur littéral : rien à développer (`tidy` réécrirait
 		// `(x+1)^{-1}` en `1/(x+1)`). Sinon, on calcule (`(2x)² → 4x²`, `x + x → 2x`)
@@ -392,7 +464,7 @@ export function expand(node: MathNode): MathNode {
 		// Une somme dont aucun terme ne se regroupe : seul l'ordre changerait
 		const isSum = top.type === 'addition' || top.type === 'subtraction';
 		if (isSum && terms.length === flattenSumShallow(top).length) return node;
-		const result = resolved(written(terms));
+		const result = resolved(written(terms, domain), domain);
 		return nodesEqual(result, node) ? node : result;
 	} catch (error) {
 		if (error instanceof TooLarge) return node;
