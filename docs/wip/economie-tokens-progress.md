@@ -1,18 +1,18 @@
 ---
 title: Économie de tokens — journal
 date: 2026-10-19
-status: premier passage de menage-contexte en cours ; propositions 7-11 et projets clos attendent David
+status: premier passage de menage-contexte fait ; projets clos attendent David
 ---
 
 # Économie de tokens
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-19, pendant le premier passage de `/menage-contexte`._
+_Mis à jour le 2026-10-25, après les propositions 7-11 du premier passage de `/menage-contexte`._
 
-- **État** : passage en cours. Faits : Générateur PDF et Core Web Vitals archivés ; issue #1529 (`template_id`) ; relevé CWV en commentaire de #1078 ; plancher du retour arrière Vercel (v0.39.0) dans `git-workflow.md` § 9 ; propositions 1-6 et 12-14 appliquées.
-- **Prochaine action** : appliquer ce que David valide parmi 7-11 (raccourcir Atelier et KaTeX ; archiver Publication progressive, Dev-env OOM, État des lieux péda).
-- **En attente de David** : son choix sur 7-11 ; quels projets sont clos parmi Mode décimal, Lexique, SEO, Cabinet Noir, Consentement parental, Refonte référentiel, Fiches 1re SPE, vitest 5, Monétisation, navadra.
+- **État** : propositions 1-14 du premier passage appliquées. `MEMORY.md` est remonté à 16,5 Ko entre-temps (sessions des 19-25 octobre).
+- **Prochaine action** : trier les projets dont la clôture attend David, puis relancer `/menage-contexte` sur l'index qui a grossi.
+- **En attente de David** : quels projets sont clos parmi Mode décimal, Lexique, SEO, Cabinet Noir, Consentement parental, Refonte référentiel, Fiches 1re SPE, vitest 5, Monétisation, navadra.
 - **Worktree / branche** : aucun — commits de doc directs sur `main`.
 
 ## Journal (2026-10-19)
@@ -28,3 +28,4 @@ _Mis à jour le 2026-10-19, pendant le premier passage de `/menage-contexte`._
 - Sessions actives prévenues : atelier-geometry, modifs-fixes, mathoux, ubumaths-31, fiche-exercices.
 - Propositions 1-6 : index allégé des doublons de `CLAUDE.md` (check-a-jour, workflow git, Prettier, RLS) ; `feedback_git-workflow` (périmé : « ≤ 2 `.md` », `--no-verify`), `reference_rls-echecs-silencieux` et `feedback_prettier-cible-precise` supprimés (contenu dans `CLAUDE.md` et `docs/pratiques/`, piège Prettier versé dans `git-workflow.md` § 1) ; `feedback_typecheck-et-gros-process` 20 → 2,3 Ko ; Refonte des modèles de chapitre archivée.
 - Propositions 12-14 : `feedback_migrations-pas-un-frein` et `reference_horodatage-migration-collision` indexés ; « 27 oubliés » sorti de `CLAUDE.md` vers `claude-md-pourquoi.md` § Worktrees.
+- 2026-10-25, propositions 7-11 : Atelier archivé (clos d'après David), ligne KaTeX réduite à la règle ; Publication progressive, Dev-env OOM, État des lieux péda archivés. Points ouverts de Publication progressive → issue #1788 (le point de safeguarding `is_class_student` était déjà corrigé le 2026-09-15).
