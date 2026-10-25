@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 validée._
+_Mis à jour le 2026-10-25, PR #1766 ouverte._
 
-- **État** : phase 0 validée (§ 8 bis, toutes les recos suivies) ; implémentation de la PR 1 en cours.
-- **Prochaine action** : tests rouges → parseur, scène, écran (marquage), PDF, QCM → PR.
-- **En attente de David** : rien.
-- **Pièges en cours** : ne pas toucher au chantier « questions » (`../ubumaths-wt-questions`) ; les modèles CP-001/004/070 sont écrits par la session « questions » ; un modèle porte au plus UN point par programme (ADR 0020).
+- **État** : bloc ```collection codé (PR #1766) : parseur, scène, écran (marquage au doigt), PDF, QCM, série figée, éditeur riche, doc. Revue `code-reviewer` : rien de bloquant ; graine du vrac corrigée (constat 1).
+- **Prochaine action** : CI verte → merge ; puis recette de David (captures, PDF) ; modèles CP-001/004/070 par la session « questions » ; plus tard « construire » (CP-002) et ` ```monnaie `.
+- **En attente de David** : recette ; taille des objets au PDF (~2,7 mm à 6 cm pleine largeur, 8-9 cm si trop petit ?).
+- **Pièges en cours** : marques gardées si deux questions de suite ont exactement le même bloc (composant réutilisé, constat 2 de la revue, accepté) ; marquage au doigt seulement (pas de clavier, assumé).
 - **Worktree / branche** : `../ubumaths-wt-collection`, `feat/bloc-collection`.
 
 ---
@@ -195,3 +195,8 @@ Voir le message de la session du 2026-10-25 (Q1 à Q9).
 
 - 2026-10-25 : worktree créé ; lecture de questions-progress (§ 2, 3, 4 bis), horloge, opérations
   posées, `ubumark.md` (Comment étendre), bornes CP-001/002/004/070/042/071 ; phase 0 écrite.
+- 2026-10-25 : phase 0 validée (« je suis tes recos »). Tests rouges puis verts ; captures 390 px clair/sombre et PDF relus
+  (traits des objets passés en teinte foncée de l'accent : clairs, ils s'effaçaient sur le jaune du thème sombre).
+  Écran : 8 cm pleine largeur par défaut (choix de session, le PDF garde 6 cm). PR #1766.
+- 2026-10-25 : revue `code-reviewer` : graine du vrac limitée à ce qui se dessine (sinon `taille: 3cm` d'un QCM imprimé
+  changeait le désordre) ; marques réutilisées entre deux questions au bloc identique : accepté, noté.

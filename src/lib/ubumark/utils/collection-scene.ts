@@ -285,7 +285,10 @@ export function buildCollectionScene(spec: CollectionSpec, setIndex: number): Co
 	const unitKind = spec.drawing === 'barres' ? 'cube' : 'jeton';
 
 	const groups = groupItems(spec, set.tens);
-	const seed = hash(JSON.stringify({ spec, setIndex }));
+	// Graine : ce qui se DESSINE, ni la taille ni les légendes (un choix de QCM
+	// imprimé reçoit `taille: 3cm`, il doit garder le dessin de l'écran)
+	const { sets, drawing, unitLayout } = spec;
+	const seed = hash(JSON.stringify({ sets, drawing, unitLayout, setIndex }));
 	const units =
 		set.units === 0
 			? { items: [], width: 0, height: 0 }

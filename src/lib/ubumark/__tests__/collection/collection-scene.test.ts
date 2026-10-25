@@ -148,6 +148,13 @@ describe('collection-scene — vrac déterministe, pas rangé (comportement 8, d
 		expect(scene('dizaines: 2', 'unités: 14')).toEqual(scene('dizaines: 2', 'unités: 14'));
 	});
 
+	it('la taille et les légendes ne changent pas le désordre (QCM imprimé = écran)', () => {
+		const positions = (...lines: string[]) =>
+			scene(...lines).items.map((item) => [item.cx, item.cy]);
+		expect(positions('unités: 23', 'taille: 3cm')).toEqual(positions('unités: 23'));
+		expect(positions('unités: 23', 'légendes: Léa')).toEqual(positions('unités: 23'));
+	});
+
 	it('deux collections identiques d’un même bloc ne sont pas dessinées pareil', () => {
 		const s = spec('unités: 12 ; 12');
 		const a = buildCollectionScene(s, 0).items.map((item) => [item.cx, item.cy]);
