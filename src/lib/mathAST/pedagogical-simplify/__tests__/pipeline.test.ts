@@ -24,56 +24,32 @@ const tex = (n: Parameters<typeof toLatex>[0]) =>
 // =============================================================================
 
 describe('pipeline — developper intent', () => {
-	it('(x+1)(x-1) → x²-1 via product-to-diff-squares + normalize', () => {
-		const node = parseLatex('(x+1)(x-1)');
+	// Chantier normalize-usages (2026-10-25) : le résultat vient de `expand`, plus
+	// de `normalize` ; une seule étape `expand` dit qu'il s'est passé quelque
+	// chose — la rédaction montrée est celle de `writeExpandSteps`
+	it.each([
+		['(x+1)(x-1)', 'x^2-1'],
+		['(x+1)^2', 'x^2+2x+1'],
+		['(x-1)^2', 'x^2-2x+1'],
+		['(2x+3)(x-1)', '2x^2+x-3'],
+		['2x + 3x', '5x']
+	])('%s → %s, une étape expand', (input, expected) => {
+		const { result, steps } = generatePedagogicalSimplifySteps(parseLatex(input), {
+			intent: 'developper',
+			schoolLevel: 'college'
+		});
+		expect(tex(result)).toBe(expected);
+		expect(steps.map((s) => [s.rule, s.category])).toEqual([['expand', 'distribution']]);
+	});
+
+	it('rien à développer : aucune étape, l’entrée rendue', () => {
+		const node = parseLatex('x^2+2x+1');
 		const { result, steps } = generatePedagogicalSimplifySteps(node, {
 			intent: 'developper',
 			schoolLevel: 'college'
 		});
-		expect(tex(result)).toBe('x^2-1');
-		const ruleNames = steps.map((s) => s.rule);
-		expect(ruleNames).toContain('product-to-diff-squares');
-	});
-
-	it('(x+1)² → x²+2x+1 via expand-sum-squared + normalize', () => {
-		const node = parseLatex('(x+1)^2');
-		const { result, steps } = generatePedagogicalSimplifySteps(node, {
-			intent: 'developper',
-			schoolLevel: 'college'
-		});
-		expect(tex(result)).toBe('x^2+2x+1');
-		const ruleNames = steps.map((s) => s.rule);
-		expect(ruleNames).toContain('expand-sum-squared');
-	});
-
-	it('(x-1)² → x²-2x+1 via expand-diff-squared', () => {
-		const node = parseLatex('(x-1)^2');
-		const { result, steps } = generatePedagogicalSimplifySteps(node, {
-			intent: 'developper',
-			schoolLevel: 'college'
-		});
-		expect(tex(result)).toBe('x^2-2x+1');
-		expect(steps.map((s) => s.rule)).toContain('expand-diff-squared');
-	});
-
-	it('(2x+3)(x-1) → 2x²+x-3 via distribute-binomial-product + normalize', () => {
-		const node = parseLatex('(2x+3)(x-1)');
-		const { result, steps } = generatePedagogicalSimplifySteps(node, {
-			intent: 'developper',
-			schoolLevel: 'college'
-		});
-		expect(tex(result)).toBe('2x^2+x-3');
-		expect(steps.map((s) => s.rule)).toContain('distribute-binomial-product');
-	});
-
-	it('developper produces at least one distribution-categorised step', () => {
-		const node = parseLatex('(x+1)(x-1)');
-		const { steps } = generatePedagogicalSimplifySteps(node, {
-			intent: 'developper',
-			schoolLevel: 'college'
-		});
-		const categories = steps.map((s) => s.category);
-		expect(categories).toContain('distribution');
+		expect(result).toBe(node);
+		expect(steps).toEqual([]);
 	});
 });
 
@@ -445,28 +421,22 @@ describe('pipeline — abort', () => {
 
 describe('pipeline — step descriptions', () => {
 	it('pattern rule steps get a French pedagogical description (not the generic fallback)', () => {
-		const node = parseLatex('(x+1)^2');
+		const node = parseLatex('x^2+2x+1');
 		const { steps } = generatePedagogicalSimplifySteps(node, {
-			intent: 'developper',
+			intent: 'factoriser',
 			schoolLevel: 'college'
 		});
-		const expand = steps.find((s) => s.rule === 'expand-sum-squared');
-		expect(expand).toBeDefined();
-		expect(expand!.description).toContain('Identité remarquable');
-		expect(expand!.description).not.toMatch(/^Règle\s*:/i);
+		const step = steps.find((s) => s.rule === 'perfect-square-trinomial');
+		expect(step).toBeDefined();
+		expect(step!.description).not.toMatch(/^Règle\s*:/i);
 	});
 
-	it('normalize-side rule steps fall through to normal/rule-descriptions-fr', () => {
-		// `developper` est la seule intention qui passe encore par normalize
-		const node = parseLatex('2x + 3x');
-		const { steps } = generatePedagogicalSimplifySteps(node, {
+	it('developper : l’étape expand a sa description', () => {
+		const { steps } = generatePedagogicalSimplifySteps(parseLatex('2(x+3)'), {
 			intent: 'developper',
 			schoolLevel: 'lycee'
 		});
-		const combine = steps.find((s) => s.rule === 'combine-like-terms');
-		expect(combine).toBeDefined();
-		expect(combine!.description).toBeTruthy();
-		expect(combine!.description).not.toMatch(/^Règle\s*:/i);
+		expect(steps.map((s) => s.description)).toEqual(['Développement et réduction']);
 	});
 
 	it('tidy-side rule steps carry the tidy descriptions', () => {
@@ -476,16 +446,5 @@ describe('pipeline — step descriptions', () => {
 			schoolLevel: 'lycee'
 		});
 		expect(steps.map((s) => s.description)).toEqual(['On regroupe les termes semblables']);
-	});
-
-	it('distribute-binomial-product description mentions distribution', () => {
-		const node = parseLatex('(2x+3)(x-1)');
-		const { steps } = generatePedagogicalSimplifySteps(node, {
-			intent: 'developper',
-			schoolLevel: 'college'
-		});
-		const dist = steps.find((s) => s.rule === 'distribute-binomial-product');
-		expect(dist).toBeDefined();
-		expect(dist!.description.toLowerCase()).toContain('distribution');
 	});
 });

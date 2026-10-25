@@ -230,6 +230,7 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['product-to-diff-squares', 'distribution'],
 	['distribute-binomial-product', 'distribution'],
 	['develop-to-factor', 'distribution'],
+	['expand', 'distribution'],
 
 	// ---- identites-trig -------------------------------------------------------
 	['pythagorean', 'identites-trig'],

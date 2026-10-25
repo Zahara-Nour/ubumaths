@@ -45,6 +45,7 @@ import { getPedagogicalSimplifyRuleDescription } from './descriptions-fr';
 import { commonContentFactorRules } from '../pattern/rule-sets/common-factor';
 import { categorizeRule, selectRulesForIntent } from './intent-rules';
 import { expandIfShorter, simplifyPolynomialFractions, tidyAsSteps } from './reduce-steps';
+import { expand } from './expand';
 import {
 	flattenGroupedProducts,
 	runFactoriserStrategies,
@@ -420,6 +421,15 @@ export function generatePedagogicalSimplifySteps(
 			id: index + 1
 		}));
 		return { ...rest, steps };
+	}
+
+	// Développer, et rien d'autre (chantier normalize-usages) : la rédaction
+	// montrée est celle de `writeExpandSteps`, cette étape ne sert qu'à dire
+	// qu'il s'est passé quelque chose
+	if (options.intent === 'developper') {
+		const result = expand(node);
+		if (nodesEqual(result, node)) return { result: node, steps: [] };
+		return { result, steps: [createStepFactory()('expand', node, result, node, result)] };
 	}
 
 	const flags = resolveFlags(options.schoolLevel, options);

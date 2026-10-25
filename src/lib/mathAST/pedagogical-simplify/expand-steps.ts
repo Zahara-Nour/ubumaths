@@ -12,7 +12,7 @@
  * résultat de l'intention `developper`, que l'intégration et la stratégie 6 de
  * `factoriser` emploient tel quel — et la rédige : la dernière image EST la
  * réponse. Les images intermédiaires s'écrivent ici, chaque terme calculé par
- * `normalize` (le moteur du résultat), et chacune est vérifiée égale à l'entrée
+ * `expandedForm` (le moteur du résultat, chantier normalize-usages), et chacune est vérifiée égale à l'entrée
  * (`areEquivalent`) : une étape fausse ne s'affiche jamais. La trace de
  * `generatePedagogicalSimplifySteps` n'est pas touchée, mais elle n'est plus
  * montrée nulle part : l'atelier, les corrections d'exercices et la démo
@@ -50,7 +50,7 @@ import type { Verbosity } from '../common/verbosity';
 import { multiply, number, opposite, parentheses, superscript } from '../factory';
 import { flattenProductShallow, flattenSumShallow, type Sign, type SignedTerm } from '../flatten';
 import { findNodes } from '../transforms';
-import { denormalize, normalize } from '../normal';
+import { expandedForm } from './expand';
 import { nodesEqual } from '../pattern/match';
 import { toLatex } from '../latex-generator';
 import { areEquivalent } from '../equivalence';
@@ -347,14 +347,14 @@ function twiceProduct(a: MathNode, b: MathNode): MathNode {
 
 /** Un produit écrit avec × (`2 × x × 1`), calculé (`2x`), son signe à part. */
 function computeTerm({ sign, term }: SignedTerm): SignedTerm {
-	const value = orderExpanded(denormalize(normalize(term)));
+	const value = orderExpanded(expandedForm(term));
 	if (containsSum(value)) fail();
 	return withOwnSign({ sign, term: value });
 }
 
 /** Un facteur qui vaut 0 (`0`, `0x`, `x − x` réduit). */
 function isZero(node: MathNode): boolean {
-	const value = denormalize(normalize(node));
+	const value = expandedForm(node);
 	return value.type === 'number' && Number(value.value) === 0;
 }
 
@@ -470,7 +470,7 @@ const reduceInside: Phase = (chunk) => {
 	const sums: SumFactor[] = [];
 	let changed = false;
 	for (const sum of chunk.sums) {
-		const reduced = orderExpanded(denormalize(normalize(sumOf(sum.terms))));
+		const reduced = orderExpanded(expandedForm(sumOf(sum.terms)));
 		if (isSum(reduced)) {
 			const terms = flattenSumShallow(reduced).map(withOwnSign);
 			if (terms.length !== sum.terms.length) changed = true;
