@@ -6,7 +6,8 @@ _Mis à jour le 2026-10-25, lot 6a en cours (pas de PR)._
 
 - **État** : M2 mergé (#1749). Lot 6 : phase 0 validée (§ 95, « je te suis »). 6a en cours, branche `feat/simplify-carte-6` : tests rouges commités ; code NON commité (évaluateur unique dans `common/numeric.ts`, banc jetable `common/bench-6a.ts`).
 - **Écart au plan validé (§ 96)** : `compile` ne convient pas (π/e changent les chemins du moteur des limites, tolérance des flottants perdue) → un évaluateur maison corrigé, 2 modes de pôle. **À dire à David** avant la PR.
-- **Prochaine action** : lire le banc complet (`scratchpad/bench-6a.jsonl` de la session, sinon relancer) ; retirer le banc et `legacy*` ; `evaluateAtPoint` = `evaluateNumeric(…, 'undefined')` ; remplacer le test π/e par un test `∛` ; PR 6a (revue opus). Puis 6b.
+- **Banc complet lu** (§ 96) : 61 288 verts, seuls rouges = tests π/e à remplacer ; écarts = `∛`, `sin²`, `cos⁻¹` + `log(0)` → −∞ (1 appel).
+- **Prochaine action** : après l'accord de David sur le § 96, retirer le banc et `legacy*` ; `evaluateAtPoint` = `evaluateNumeric(…, 'undefined')` ; remplacer le test π/e par un test `∛` ; PR 6a (revue opus). Puis 6b.
 - **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93) ; Q2 du § 95 (signe d'un pôle) seulement si le banc le montre.
 - **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; `algebraic.ts:663` (`evaluateAtPoint`, `number(String(value))`) rend `null` pour tout x < 0 (bug latent, à noter pour 6b) ; relire les décisions du lot 4a avant `tidy` ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
 - **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-6`.
@@ -1168,3 +1169,5 @@ Banc jetable (chaque appel calcule ancien et nouveau, écarts dans un JSONL) sur
 - **`compile` écarté** : évaluer π et e change le chemin du moteur (`lim (x+1)/(πx)` → `0,3183…` au lieu de `1/π`, 2 tests rouges) ; et propage les infinis intermédiaires (`e^{−1/x}` en 0 → 0, faux pour la substitution directe).
 - **Valeur sûre exacte (substitution + rationnels) écartée pour `evaluateAtPoint`** : x = −2/3 en flottant → `3x+2` = 2e-16 ≠ 0, la factorisation disparaît.
 - **Retenu (essai)** : un seul évaluateur maison, mode `'infinity'` (`evaluateNumeric`) ou `'undefined'` (`evaluateAtPoint`), qui corrige `sin²`, `cos⁻¹` et l'indice des racines ; π et e restent `null` (connu, les évaluer changerait des limites). Sur `common`, `limits`, `pedagogical-limits` : 1 737 tests verts, seuls écarts du banc = les trois bugs.
+
+- **Banc sur la suite serveur complète** : 61 288 tests verts ; 2 rouges = les tests π/e (à remplacer par `∛`). Écarts : `∛` (≈ 13 500 appels), `sin²`, `cos⁻¹`, et `log(x)` en 0 → −∞ au lieu de `null` (1 appel, `log` désormais lu comme `ln`). Aucun écart de signe de pôle → Q2 du § 95 sans objet. `sign`/`sgn` ajoutés à `compile` : à retirer (inutile).
