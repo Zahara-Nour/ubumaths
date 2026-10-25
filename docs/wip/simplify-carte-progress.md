@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, 5f-5 codé (§ 91), pas encore de PR._
+_Mis à jour le 2026-10-25, après #1743 (5f-5)._
 
-- **État** : lot 5. ~~Q19~~ → … → ~~Q51+Q52~~ (#1741) mergés ; **5f-5 codé et commité** sur `feat/simplify-carte-5f-5` (§ 91 : puissances n/2 → racine dans `tidy`, `same-base-div`/`same-base-mul-bare`). Suite verte, banc identique (aveugle), check 0, lint propre. Code pas en prod.
+- **État** : lot 5 CLOS — 5f restes : ~~5f-1~~ → … → ~~Q51+Q52~~ (#1741) → ~~5f-5~~ (#1743, § 91 : puissances n/2 → racine dans `tidy`, aᵐ/aⁿ et aᵐ·a dans `.simplifier`) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (5f restes : ~~5f-1~~ → … → ~~Q50~~ → ~~Q51+Q52~~ → **5f-5**) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : PR #1743 — CI verte → merge ; revue faite et corrigée (§ 91).
+- **Ordre des lots** : … → ~~5~~ → **6 valeurs approchées** → 7 renommages.
+- **Prochaine action** : lot 6 (valeurs approchées) — relire son périmètre dans le journal, phase 0 (comportements, à valider par David).
 - **En attente de David** : § 91 : M2 (regrouper au-delà de deux facteurs voisins : `x·eˣ·e`, `3e^{2x}/eˣ`) ; `2^{−1/2} → √2/2` et `(8/27)^{1/3}` laissé écrit (« entière » à la lettre) ; vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1741) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64) ; § 87 : pipeline rationnel qui multiplie la fraction tapée, `(x − 1)/(x² − 1) ≥ 0`, `x² < −1` sans étapes ; **§ 89** : `\frac{2}{3}x = 0,5` → « × 1,5 » (3/2 ?), x à droite (`4 < 2(x−1)` : échanger les membres ?), termes mixtes `0,5x = x/3 + 1` → ÷ 1/6, correction de question d'une inéquation sans `stepsAsShown` (`-0,25(x−2) ≥ 1` → « ÷ −1/4 »).
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; l'Atelier écrit `0{,}25`, le moteur `0.25` ; sonde vitest : `console.log` muet, faire échouer un `expect` ; zsh ne découpe pas `$F` (`${=F}`) ; `number(-1)` interdit (`opposite(number(1))`) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; client CI : `wrapDynamicImport` = navigateur fermé, relancer le job ; **PR sans CI = conflit avec `main`** : fusionner `origin/main` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-5` (partie d'`origin/main` après #1741).
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-6` (partie d'`origin/main` après #1743).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1109,3 +1109,7 @@ CI verte (un shard client relancé : navigateur de test fermé, `wrapDynamicImpo
 - Mesures : suite serveur `src/lib` 58 361 verts (+ les 2 attentes ci-dessus) ; **banc 1 102 modèles × 8 tirages (25 672) identique à `origin/main` (`cmp`), mais aveugle** : les seuls exposants n/2 des modèles sont dans du texte rédigé (`√2 = 2^{1/2}`), inchangé ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre ; doc `tidy-spec.md`, `pattern-matching.md`, `panel-simplifications.md`, `mathast/README.md`.
 - **Revue `code-reviewer` (opus)** — contrat de `tidy` sondé sur 37 entrées (bases rationnelles, décimales, négatives, nulle, `e`, `i` ; plafonds ; registre) : sans défaut ; aucune boucle entre règles ; aucune base qui s'annule. **Corrigés, tests rouges d'abord (7 rouges)** : (B1, bloquant) l'exposant soustrait gardait sa parenthèse (`e^x/e^{x+1} → e^{x−(x+1)}`) — `reducedExponent` ouvre la somme avant `tidy` : `→ 1/e`, `e^{2x}/e^{x−1} → e^{x+1}`, `e^x/e^{2x+1} → e^{−x−1}` ; (M1) `2/2`, `2/2²` passaient par aᵐ/aⁿ — `isPowerQuotient` : une puissance, et base `e` ou exposant non numérique ; (M3) `(1/2)^x·(1/2)` se regroupe (base fraction, parenthèses mises à part) ; (M4) `(1/8)^{1/3}` reste quand `8^{−1/3} → 1/2` : noté dans `tidy-spec.md`. **Non traité, à poser à David (M2, périmètre de Q48)** : les règles ne voient que deux facteurs voisins — `x·eˣ·e` non regroupé, `3e^{2x}/eˣ` et `e^{2x}/(2eˣ)` (formes de dérivées) inchangés. Hors lot, déjà sur `main` : `eˣ·e^{−(x+1)} → e^{x−(x+1)}` (`same-base-mul`).
 - Mesures après la revue : suite serveur `src/lib` 58 370 verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre.
+
+## 92. 5f-5 mergé (#1743, 2026-10-25)
+
+CI verte du premier coup sur le commit des correctifs de revue, mergée. Vérification manuelle notée (5f-5). Lot 5 clos.
