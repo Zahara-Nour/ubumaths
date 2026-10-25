@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR #1766 ouverte._
+_Mis à jour le 2026-10-25, après #1766._
 
-- **État** : bloc ```collection codé (PR #1766) : parseur, scène, écran (marquage au doigt), PDF, QCM, série figée, éditeur riche, doc. Revue `code-reviewer` : rien de bloquant ; graine du vrac corrigée (constat 1).
-- **Prochaine action** : CI verte → merge ; puis recette de David (captures, PDF) ; modèles CP-001/004/070 par la session « questions » ; plus tard « construire » (CP-002) et ` ```monnaie `.
-- **En attente de David** : recette ; taille des objets au PDF (~2,7 mm à 6 cm pleine largeur, 8-9 cm si trop petit ?).
-- **Pièges en cours** : marques gardées si deux questions de suite ont exactement le même bloc (composant réutilisé, constat 2 de la revue, accepté) ; marquage au doigt seulement (pas de clavier, assumé).
-- **Worktree / branche** : `../ubumaths-wt-collection`, `feat/bloc-collection`.
+- **État** : bloc ```collection livré sur `main` (#1766, pas en prod) : parseur, scène, écran avec marquage au doigt, PDF, QCM, série figée, éditeur riche, doc `ubumark.md`.
+- **Prochaine action** : recette de David (captures 390 px clair/sombre + PDF) ; modèles CP-001/004/070 par la session « questions » ; plus tard « construire » (CP-002), puis ` ```monnaie ` sur la même scène.
+- **En attente de David** : recette ; taille des objets au PDF (~2,7 mm à 6 cm pleine largeur : passer à 8-9 cm ?).
+- **Pièges en cours** : marques gardées si deux questions de suite ont exactement le même bloc (constat 2 de la revue, accepté) ; marquage au doigt seulement (assumé).
+- **Worktree / branche** : aucun (`../ubumaths-wt-collection` retiré après #1766).
 
 ---
 
@@ -200,3 +200,4 @@ Voir le message de la session du 2026-10-25 (Q1 à Q9).
   Écran : 8 cm pleine largeur par défaut (choix de session, le PDF garde 6 cm). PR #1766.
 - 2026-10-25 : revue `code-reviewer` : graine du vrac limitée à ce qui se dessine (sinon `taille: 3cm` d'un QCM imprimé
   changeait le désordre) ; marques réutilisées entre deux questions au bloc identique : accepté, noté.
+- 2026-10-25 : CI verte, #1766 mergée ; ligne de vérification manuelle ajoutée.
