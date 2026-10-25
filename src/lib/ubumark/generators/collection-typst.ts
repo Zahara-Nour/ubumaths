@@ -6,7 +6,7 @@
  * `place`) depuis la MÊME scène que l'écran (`buildCollectionScene`) : mêmes
  * objets, mêmes positions. Ni paquet, ni image.
  *
- * Échelle : `taille:` (6 cm par défaut) est la largeur d'une collection pleine
+ * Échelle : `taille:` (8 cm par défaut) est la largeur d'une collection pleine
  * largeur ; une collection plus étroite garde la même échelle. Plusieurs
  * collections côte à côte, réduites ensemble si elles dépassent la page.
  *

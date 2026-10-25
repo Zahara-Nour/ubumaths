@@ -443,7 +443,7 @@ Facultatives : `dessin: barres | paquets` (barres de dix cubes et cubes, ou 10 j
 jetons ; défaut `barres`), `unités en: vrac | rangées` (rangées de 5 + 5 ; défaut `vrac`),
 `légendes:` (une par collection, 40 caractères ; A, B, C d'office s'il y en a plusieurs), `taille:`
 (2 à 12 cm, largeur d'une collection **pleine largeur** : une plus étroite garde la même échelle,
-objets de même taille d'une collection à l'autre ; 8 cm à l'écran, 6 cm au PDF, 3 cm dans un choix
+objets de même taille d'une collection à l'autre ; 8 cm à l'écran comme au PDF, 3 cm dans un choix
 de QCM). `centaines:` est réservée (« pas encore disponible »). Groupes de dix en haut, objets
 isolés dessous ; groupement partiel (3 dizaines et 15 unités) accepté. Le vrac est tiré d'une graine
 faite du contenu du bloc et du rang de la collection : même bloc → même dessin, à l'écran comme au

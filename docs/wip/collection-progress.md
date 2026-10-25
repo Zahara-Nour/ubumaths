@@ -6,9 +6,9 @@ _Mis à jour le 2026-10-25, après #1766._
 
 - **État** : bloc ```collection livré sur `main` (#1766, pas en prod) : parseur, scène, écran avec marquage au doigt, PDF, QCM, série figée, éditeur riche, doc `ubumark.md`.
 - **Prochaine action** : recette de David (captures 390 px clair/sombre + PDF) ; modèles CP-001/004/070 par la session « questions » ; plus tard « construire » (CP-002), puis ` ```monnaie ` sur la même scène.
-- **En attente de David** : recette ; taille des objets au PDF (~2,7 mm à 6 cm pleine largeur : passer à 8-9 cm ?).
+- **En attente de David** : recette (vérification manuelle notée, en prod après `deploy:prod`).
 - **Pièges en cours** : marques gardées si deux questions de suite ont exactement le même bloc (constat 2 de la revue, accepté) ; marquage au doigt seulement (assumé).
-- **Worktree / branche** : aucun (`../ubumaths-wt-collection` retiré après #1766).
+- **Worktree / branche** : `../ubumaths-wt-collection` · `fix/collection-pdf-8cm` (PDF : 8 cm par défaut).
 
 ---
 
@@ -189,7 +189,7 @@ Voir le message de la session du 2026-10-25 (Q1 à Q9).
 6. **Graine du vrac** : le contenu du bloc (aucune clé en plus).
 7. **1 à 3 collections**, légendes A, B, C par défaut.
 8. **Monnaie** : bloc ` ```monnaie ` séparé, qui partage la scène.
-9. **Tailles** : 6 cm par défaut au PDF, 3 cm dans un choix de QCM.
+9. **Tailles** : 8 cm par défaut au PDF (relevé de 6 cm le 2026-10-25, choix de David), 3 cm dans un choix de QCM.
 
 ## Journal
 
@@ -201,3 +201,4 @@ Voir le message de la session du 2026-10-25 (Q1 à Q9).
 - 2026-10-25 : revue `code-reviewer` : graine du vrac limitée à ce qui se dessine (sinon `taille: 3cm` d'un QCM imprimé
   changeait le désordre) ; marques réutilisées entre deux questions au bloc identique : accepté, noté.
 - 2026-10-25 : CI verte, #1766 mergée ; ligne de vérification manuelle ajoutée.
+- 2026-10-25 : David tranche la taille au PDF : **8 cm** par défaut (cubes ≈ 3,6 mm au lieu de 2,7 mm), comme à l'écran.
