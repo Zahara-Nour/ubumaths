@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1785._
+_Mis à jour le 2026-10-26, phase 0 du lot M validée._
 
-- **État** : lots A1 à H, B1, B2, B3 relus par David et **les 62 modèles CP PUBLIÉS en prod** (43 le 2026-10-25, puis 19 après #1785). #1785 : sous-notion « Figures planes > reconnaître et nommer des formes » (CP-054, CP-055 et leurs 2 modèles), niveaux 1, 2, 3… des 19 qui partageaient une catégorie ; `db:migrate` joué (`--include-all` : `20261026183000` de geometrie-validation était passée avant), vérifié en prod.
-- **Prochaine action** : choisir avec David le lot suivant — modèles **monnaie** CP-042/043/044/071 (bloc ```monnaie livré sur main, pas encore en prod : docs/systeme/ubumark.md, § 9 de docs/archive/wip/monnaie-progress.md) ; « Construire » (CP-002 + monnaie) reste commun avec la collection, en pause ; 058 à réexaminer. CP-059 (case « figure ») : fait par geometrie-validation.
-- **En attente de David** : choix du lot suivant ; vérification manuelle #1702.
-- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** ; **virgule décimale = figure cassée** ; **points et segments numérotés, pas lettrés** ; texte sur fond coloré illisible ; jamais de variable `e` ; **un seul modèle publié par place dans le classement et par niveau : numéroter les niveaux dès l'écriture** ; **migration qui change l'arbre ou les points → l'inscrire dans `LATER` (`tests/helpers/database/later-migrations.ts`), mettre à jour les copies figées (`arbre-notions-seed.json`, `seed-cycle2-points.json`) et tester sur une base qui PORTE la migration (la CI la joue avant les tests)**.
-- **Worktree / branche** : aucun (retiré après #1785).
+- **État** : 62 modèles CP publiés en prod (lots A1 à H, B1-B3). **Lot M (monnaie)** : phase 0 validée (§ 4 quattuordecies), 6 modèles à écrire (CP-042, 043, 044 ×2, 071, 045).
+- **Prochaine action** : écrire `docs/wip/questions/lot-m.py` → `scripts/questions/cp-m/`, specs vertes, rendu relu à 390 px ; brouillons en prod (go de David) ; migration nœud + tag et test.
+- **En attente de David** : vérification manuelle #1702.
+- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; prénom dans le texte, jamais dans une variable ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (passer par une variable) ; jamais de variable `e` ; **numéroter les niveaux dès l'écriture** ; **migration qui change l'arbre ou les points → `LATER` + copies figées** ; bloc ```monnaie pas en prod → brouillons jusqu'au `deploy:prod`.
+- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-monnaie`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -170,6 +170,15 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 7 modèles, chacun sur le nœud de son point, un tag : CP-049 « Trouve le solide » (les 5 solides numérotés, 4 rangements, case nombre) et « À quel solide ressemble cet objet ? » (objets de tous les jours, QCM texte) ; CP-050 « Comment s'appelle ce solide ? » (cube, petit cube, pavé couché, pavé debout, boule ; les 5 noms au choix) ; CP-051 « Comment s'appelle la partie coloriée ? » (face, côté, sommet — **pas « arête »**, hors CP ; face en bleu translucide : le jaune du thème clair sort moutarde) ; CP-052 « Combien de faces ? » (6 ; leurre 3, les faces vues) et « De quelle forme sont les faces ? » (cube → carrés ; **pavé sans face carrée** → rectangles) ; CP-040 « Lequel est le plus lourd ? » (balance à plateaux suspendus, penchée ou à l'équilibre, plus lourd ou plus léger ; **formes de même taille** ● ■ ▲ appelées disque, carré, triangle comme en B2 ; deux balances à enchaîner laissées au CE1).
 - **CP-058** hors de B3 (geste de la règle : case « figure » ou réponses à placer).
 
+## 4 quattuordecies. Lot M (monnaie) : décisions (David, 2026-10-26)
+
+David suit mes recommandations (« je suis tes recos »).
+
+- 6 modèles, affichage seul (bloc ```monnaie, aucun geste : « construire » attend), entiers ≤ 100, prénoms écrits dans le texte ; sous-notion de chaque point (« pièces et billets » ou « rendre la monnaie »), un tag, **niveaux numérotés** sur « pièces et billets ».
+- M1 CP-043 « Combien d'argent ? » (case ; pièces seules ≤ 10 €, billets de 10 € + pièces, billets 5/10/20 + pièces, puis `mélangé`) ; M2 CP-042 « Qui a le plus d'argent ? » (QCM Léa / Tom / Autant ; piège 10 × 1 € = un billet de 10 € ; moins d'objets mais plus d'argent) ; M3 CP-044 « Quel porte-monnaie contient exactement N € ? » (QCM de **3** ensembles à 6 cm ; leurres pièce oubliée, chiffres inversés, même nombre d'objets ; variation « sans pièce de 1 € ») ; M4 CP-044 « Combien de pièces de 2 € faut-il ajouter ? » (case) ; M5 CP-071 « Combien le marchand rend-il ? » (case ; prix dans l'énoncé, billet de 10, 20 puis 50 € ; rendu ≤ 20 € ; corrigé `montant:`) ; M6 **CP-045** « Peut-il acheter ? » (QCM Oui / Non ; une variation pile au prix).
+- Bloc ```monnaie pas en prod : brouillons jusqu'au `deploy:prod`.
+- Question d'accès : tranchée AVANT le SQL (personne ne gagne ni ne perd d'accès).
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -238,3 +247,4 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 2026-10-25 : publication des 62 brouillons CP (go de David) par `publishTemplates` (script du scratchpad, même contrôle que l'admin) : 43 publiés, 19 refusés pour collision de catégorie (même sous-notion, niveau 1 partout), restés en brouillon.
 - 2026-10-25 : « Combien de formes dans le dessin ? » n'est pas une propriété (David) : option A, nouvelle sous-notion « reconnaître et nommer des formes » pour CP-054/055 ; question d'accès tranchée AVANT le SQL (personne) ; niveaux validés ; migration `20261026170000` et test, rouge (9/11) puis vert (11/11).
 - 2026-10-26 : #1785 — revue (Opus) et audit sécurité sans finding bloquant, mineurs corrigés ; CI rouge au premier passage (5 fichiers : la base de CI porte la migration, copies figées de l'arbre et des points, test B2) → chaînage par `LATER` et copies mises à jour, 102 tests verts en local migration jouée ; mergée, `db:migrate` (`--include-all`), vérifiée ; 19 modèles publiés (0 refus) : 62/62 CP publiés.
+- 2026-10-26 : lot M (monnaie), phase 0 validée (§ 4 quattuordecies), worktree `../ubumaths-wt-questions` (`feat/questions-monnaie`).
