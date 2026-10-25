@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot A4 en cours (après #1720)._
+_Mis à jour le 2026-10-25, après #1728._
 
-- **État** : lot A4 (sens des opérations), 7 brouillons en prod sans nœud ni tag (§ 4 quinquies) : `a59fba89` Addition ou soustraction ? (CP-014), `3bde8d25` Soustraction ou addition ? (CP-077), `c342f32e` Les signes + et − (CP-015), `c4644788` Les signes − et + (CP-078), `f7463b7d` Le signe = (CP-079), `6e712e78` fois : quel calcul ? et `b873739e` fois : combien ? (CP-017). Migration nœud + tag `20261025210000_questions_cp_a4_rangement_tags` et son test : rouges sans elle, 24/24 verts (A1 + A2 + A4).
-- **Prochaine action** : PR (`security-auditor` : aucun finding bloquant ; `check:incremental` 0 erreur, `lint:fast`, `types:cliquet` OK), CI verte → merge → `db:migrate` depuis le dépôt principal → vérifier en prod → page à cocher A4.
-- **En attente de David** : descriptions périmées de `a59fba89` et `c342f32e` (`create-questions` ne les met pas à jour) ; publication des brouillons A1 + A2 (+ A4 après relecture) ; vérification manuelle #1702.
-- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020, règle en base) — lire les ADR avant de proposer un tag double ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau et ne touche pas la description ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` ; dater les migrations après la prod ; **jamais de variable `e`** ; relire le rendu (`question:specs --apercu`).
-- **Worktree / branche** : `../ubumaths-wt-questions`, `feat/questions-cp-a4`.
+- **État** : lots A1 (#1712), A2 (#1720) et A4 (#1728) livrés. A4 = 7 brouillons en prod (`a59fba89` CP-014, `3bde8d25` CP-077, `c342f32e` CP-015, `c4644788` CP-078, `f7463b7d` CP-079, `6e712e78` et `b873739e` CP-017), rangés sur leur notion et tagués (`db:migrate` fait, vérifié en prod : nœud, 1 tag chacun, `updated_at` inchangé, trigger `tgenabled = O`). Page à cocher A4 : https://claude.ai/artifact/LZBCHvdLMKCJhjRQH1VGBx (collection `verdicts`, vide au 2026-10-25). Pages A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb · A2 : https://claude.ai/artifact/BKgtf3Wv2EYsJJBHc4wwp4.
+- **Prochaine action** : lire les verdicts A4 et corriger les « À revoir » (`create-questions --publier --mettre-a-jour`, brouillons seulement) ; puis lot A5 problèmes (029-031, § 4 ter), phase 0, nouveau worktree `../ubumaths-wt-questions`.
+- **En attente de David** : relecture A4 (page à cocher) ; publication des brouillons A1 + A2 (relus OK) puis A4 ; vérification manuelle #1702.
+- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020, règle en base) — lire les ADR avant de proposer un tag ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » (`domain`/`subdomain` = anciennes colonnes) ; `--mettre-a-jour` retrouve un brouillon par titre + niveau (et réécrit la description depuis #1728) ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu (`question:specs --apercu`) ; script d'un tirage hors du dépôt → extension `.mts`.
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1728).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -138,3 +138,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : lot A4, phase 0 validée (§ 4 quinquies) ; 5 modèles écrits, specs vertes, rendu relu (accord « 1 bille » corrigé).
 - 2026-10-25 : A4, 5 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés.
 - 2026-10-25 : A4, tag double refusé par la base (ADR 0020) ; option A : 2 brouillons mis à jour, 2 créés (7 modèles) ; migration nœud + tag et test, rouge puis vert.
+- 2026-10-25 : #1728 mergée, `db:migrate`, vérifié en prod ; descriptions de `a59fba89` et `c342f32e` corrigées (`--mettre-a-jour` réécrit désormais la description) ; page à cocher A4 publiée.
