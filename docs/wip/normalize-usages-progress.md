@@ -2,13 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 validée (§ 2), lot (a) lancé._
+_Mis à jour le 2026-10-25, lot (a) codé (§ 3), revue en cours, PR pas ouverte._
 
-- **État** : phase 0 validée par David (Q1-Q5 selon les recos, Q2 = a). Lot (a) en cours sur `feat/normalize-usages-developper`.
-- **But** : (a) le RÉSULTAT de « développer » vient d'un développeur du moteur pédagogique, plus de `normalize` (`runNormalizePass`, `pedagogical-simplify/pipeline.ts:534`, + `expand-steps.ts:350, 357, 473`) ; (b) ensuite, petite PR : une fonction partagée au lieu des ~12 copies locales, `polynomialCoefficients`.
-- **Prochaine action** : tests de non-régression (polynomial identique) + tests rouges des comportements du § 2, puis le développeur.
-- **En attente de David** : rien.
-- **Pièges connus** : les règles `developper` seules ne distribuent PAS (`2(x+3)` reste, § 1.2) ; le résultat sert aussi à l'intégration, `factoriser` (stratégie 6), `auto`, `requested-form` ; pas de `pnpm math` ; décimaux déjà gardés par `explainExpansion` (`decimalFraction`).
+- **État** : lot (a) codé sur `feat/normalize-usages-developper` (6 commits) : `expand.ts` remplace `normalize` pour `developper` ; suite serveur 58 985 verts (2 attendus mis à jour) ; check 0 ; cliquet tenu ; lint propre ; doc README + panel à jour.
+- **Prochaine action** : traiter la revue `code-reviewer` (opus), fusionner `origin/main`, ouvrir la PR, CI, merge ; puis lot (b).
+- **En attente de David** : rien de bloquant ; à lui montrer : `√x√x → (√x)²` (rien à distribuer, `tidy` réécrit), ordre d'une primitive (`… − 2 sin x + x²/2`).
+- **Pièges connus** : banc des modèles de la prod AVEUGLE pour `developper` (aucun modèle n'a de `generatedSteps`, témoin à 0) : l'effet est dans l'Atelier ; `nodesEqual` ignore le style du × (d'où `expandedForm` pour les termes des étapes) ; `tidy({ order: 'kept' })` garde le × écrit ; `distributeBinomialProduct` et `algebraicExpandingRules` n'ont plus d'appelant en prod.
 - **Worktree / branche** : `ubumaths-wt-normalize-usages` · `feat/normalize-usages-developper`.
 
 ## Contexte
@@ -72,3 +71,11 @@ Une douzaine de ces appels sont déjà enveloppés dans des fonctions locales qu
 - **Q4** : un développeur dans le moteur pédagogique remplace la phase B `normalize` de l'intention `developper` ; tous les appelants changent avec lui ; le polynomial reste identique (tests de non-régression d'abord).
 - **Q5** : lot (b) après (a), petite PR, rien ne change à l'écran.
 - Question de David : « on avait pas déjà réécrit développer ? » — non : le 2026-10-14 (atelier-developper) a réécrit la RÉDACTION des étapes, la réponse venait toujours de `normalize` ; simplify-carte lot 3 a retiré le développement de `réduire`/`auto` (« `développer` inchangé », § 33) ; la décision § 23 n'avait jamais été codée.
+
+## 3. Lot (a) codé (branche `feat/normalize-usages-developper`, 2026-10-25)
+
+- **`expand.ts`** : `expand` (le résultat de `developper`) et `expandedForm` (toujours réécrit : les termes des étapes). Distribuer, multiplier les parenthèses, puissance entière d'une somme (≤ 1 000, ≤ 2 000 termes), division par un nombre distribuée (Q2), quotient à dénominateur littéral : barre gardée, numérateur développé (Q1), argument de fonction et exposant développés sur place (`cos(2(x+1)) → cos(2x+2)`, `e^{(x+1)²} → e^{x²+2x+1}`). Termes calculés par `tidy` (ordre canonique des facteurs), somme réduite par `tidy({ order: 'kept' })`, coefficient devant (`½x²`), nombres après les termes en x mais avant les quotients littéraux, ordre du manuel pour des monômes. Puissances de e regroupées (`eˣ·e^{−x} = 1`, `(eˣ)³ = e^{3x}`). Q3 : `e^{ln x}` reste ; `(√u)² → u` seulement si un `√u` reste écrit. Rien à distribuer : puissance non entière, fonction, quotient littéral, somme sans termes semblables → l'entrée telle quelle.
+- **Pipeline** : `developper` sort avant la phase A, une étape `expand` (catégorie `distribution`) ; `runNormalizePass` et `useNormalize` retirés ; `selectRulesForIntent('developper')` → aucune règle.
+- **`expand-steps.ts`** : termes par `expandedForm` ; division par un nombre lue comme facteur `1/n` (« On distribue ½ », Q2).
+- **Tests** : `developper-sans-normalize.test.ts` (19 ; 5 rouges sur l'ancien code — Q1, Q3 ; Q2 : la réponse était déjà `½x + ½`, l'étape est nouvelle). Mis à jour (comportement voulu) : panel (`developper` : 15 lignes, identités, racines, fractions rationnelles), `pipeline.test` (noms d'étapes de `normalize`), `ln-exp-lettre-e` (developper garde l'entrée), `expand-explained` / atelier (somme dans un exposant : développée, sans étapes), `renderer`, `intent-rules`, `segment-length-positivite` (`√(x²)` gardé), `primitive-ecriture` (ordre `… − 2 sin x + x²/2`, venu de l'ordre du développement : `tidyTerms` le garde).
+- **Mesures** : suite serveur `src/lib` 58 985 verts + 2 mis à jour ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre. **Banc 1 164 modèles de la prod × 8 tirages (9 312) : 0 différence, mais aveugle** — témoin (`developper` neutralisé) : 0 aussi ; aucun modèle n'a de `generatedSteps` : `developper` n'atteint l'élève que par l'Atelier.
