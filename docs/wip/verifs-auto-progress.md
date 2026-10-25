@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot 4 en PR._
+_Mis à jour le 2026-10-26, après #1789._
 
-- **État** : lot 4 sur `test/verifs-auto-4` (PR à ouvrir/ouverte) — 8 tests cartes dans `e2e/verifs/atelier-cartes.spec.ts` (#1305, #1307, #1309, #1315, #1328, #1337, #1338, carte f′ de #1703) ; `data-latex` posé sur les cartes calculées (`FunctionCard`) et les formules d'un refus (`FormulaText`) ; la sonde lit les cartes et joue `@Action carte`. 4 rouges : 3 écarts à trancher + `each_key_duplicate` au bout de #1307.
-- **Prochaine action** : merger le lot 4, puis lot 5 (lignes Atelier restantes : Graphe, Données, Géométrie).
-- **En attente de David** : écarts du lot 4 — #1309 `f(1)` 2,5 au lieu de 5/2 ; #1337 carte g sans « sur [0 ; +∞[ » ; #1338 `.réciproque sin` → « écris sin(…) » (arcsin seulement avec `sin(x)`) ; #1305 `a = 3 sur 4` refusé (« reste accepté » ?). Du lot 3 : #1620 `.dériver x^x`, ordre des facteurs. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : ports 5175-5178 pris → `lsof` (5179) ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord (un `vite` orphelin du lot 3 a recréé le dossier, kill refusé au classifieur) ; suite complète à froid avec 4 workers → délais dépassés, relancer à chaud ; `each_key_duplicate` casse « Comment ? » (dérivées produit/quotient/composée, `.résoudre` sur intervalle) ; champ d'une carte : le 1er clic après un calcul rend le focus à la console (`typeInCard` reclique) ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul ; `verifications-manuelles.md` : repérer une ligne par sa colonne PR.
-- **Worktree / branche** : `../ubumaths-wt-verifs-auto` · `test/verifs-auto-4`.
+- **État** : lot 4 MERGÉ (#1789) — 8 tests cartes dans `e2e/verifs/atelier-cartes.spec.ts` (#1305, #1307, #1309, #1315, #1328, #1337, #1338, carte f′ de #1703) ; `data-latex` sur les cartes calculées et les formules d'un refus ; sonde : `CARTES` + `@Action carte`. Rouges : 3 écarts à trancher + `each_key_duplicate` au bout de #1307 ; console : #1674, #1703, #1620 comme avant.
+- **Prochaine action** : lot 5 dans un worktree neuf (`git worktree add -b test/verifs-auto-5 ../ubumaths-wt-verifs-auto origin/main`) : lignes Atelier restantes (Graphe, Données, Géométrie). La sonde d'abord, les écarts à David.
+- **En attente de David** : #1309 `f(1)` 2,5 au lieu de 5/2 ; #1337 carte g sans « sur [0 ; +∞[ » ; #1338 `.réciproque sin` → « écris sin(…) » ; #1305 `a = 3 sur 4` refusé (« reste accepté » ?) ; #1620 `.dériver x^x`, ordre des facteurs. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : ports 5175-5178 pris → `lsof` (5179) ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; suite complète à froid avec 4 workers → délais dépassés, relancer à chaud ; `each_key_duplicate` casse « Comment ? » ; champ d'une carte : 1er clic après un calcul = focus rendu à la console (`typeInCard` reclique) ; Graphe = SVG (`path.function-curve[aria-label]`, `circle.endpoint-open/closed`) : relire un tracé par `expect.poll` ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retirés après #1789).
 
 ## Phase 0 (validée le 2026-10-25)
 
