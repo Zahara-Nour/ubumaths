@@ -88,6 +88,20 @@ describe('helpers — evaluateAtPoint', () => {
 			evaluateAtPoint({ type: 'function', name: 'sqrt', args: [opposite(number('1'))] }, 'x', 0)
 		).toBeNull();
 	});
+
+	// Lot 6a (simplify-carte § 25, § 96) : la puissance et la réciproque d'une
+	// fonction, l'indice d'une racine étaient ignorés
+	it('évalue la puissance d’une fonction : sin²(x) en 1', () => {
+		expect(evaluateAtPoint(parseLatex('\\sin^2(x)'), 'x', 1)).toBeCloseTo(Math.sin(1) ** 2);
+	});
+
+	it('évalue la réciproque : cos⁻¹(x) en 0,5 = arccos(0,5)', () => {
+		expect(evaluateAtPoint(parseLatex('\\cos^{-1}(x)'), 'x', 0.5)).toBeCloseTo(Math.acos(0.5));
+	});
+
+	it('évalue une racine n-ième réelle : ∛x en −8', () => {
+		expect(evaluateAtPoint(parseLatex('\\sqrt[3]{x}'), 'x', -8)).toBeCloseTo(-2);
+	});
 });
 
 describe('helpers — divideByCommonRoot', () => {

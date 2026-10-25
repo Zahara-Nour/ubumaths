@@ -6,9 +6,11 @@
  * @module mathAST/common/numeric
  */
 
-import type { MathNode } from '../types';
+import type { FunctionNode, MathNode } from '../types';
 import type { Rational } from '../normal/types';
 import { isNumber } from '../guards';
+import { inverseNotationAsFunction } from './function-power';
+import { realNthRoot } from '../eval/real-root';
 import { number, opposite, fraction } from '../factory';
 import {
 	rational,
@@ -17,6 +19,39 @@ import {
 	floatToRational,
 	divRational
 } from '../normal/rational';
+
+/**
+ * Pôles : `'infinity'` rend ±∞ (signe du numérateur) sur une division par 0 et
+ * laisse passer les débordements ; `'undefined'` rend `null` dès qu'une valeur
+ * intermédiaire n'est pas finie (dénominateur < 1e-15 compris).
+ */
+export type PoleMode = 'infinity' | 'undefined';
+
+/**
+ * Fonctions lues par chaque réglage : celles de l'évaluateur d'origine, sans
+ * plus (simplify-carte lot 6a). La partie entière ou le signe en `'undefined'`
+ * ferait conclure une « substitution directe » sur un saut (⌊x⌋ en 1) ; `log`
+ * en `'infinity'` changerait les limites du moteur.
+ */
+const FUNCTIONS_BY_POLE_MODE: Record<PoleMode, ReadonlySet<string>> = {
+	infinity: new Set([
+		'sin',
+		'cos',
+		'tan',
+		'exp',
+		'ln',
+		'sqrt',
+		'abs',
+		'arcsin',
+		'arccos',
+		'arctan',
+		'floor',
+		'ceil',
+		'sign',
+		'sgn'
+	]),
+	undefined: new Set(['sin', 'cos', 'tan', 'exp', 'ln', 'log', 'sqrt', 'abs'])
+};
 
 /**
  * Get numeric value from a MathNode if it's a number or opposite(number).
@@ -233,20 +268,54 @@ export function rationalToNode(r: Rational): MathNode {
 /**
  * Recursively evaluate an expression numerically with variable substitution.
  *
- * Supports basic arithmetic operations, powers, and common mathematical functions.
+ * Supports basic arithmetic operations, powers, and common mathematical functions
+ * (`\sin^2`, `\cos^{-1}` = arccos, `\sqrt[n]{}` réelle compris).
  * Returns null for expressions that cannot be evaluated (e.g., unknown variables,
  * unsupported functions, or undefined operations).
+ *
+ * Évaluateur flottant de `limits/sign-tracking` et `limits/indeterminate`, et
+ * d'`evaluateAtPoint` des limites pédagogiques (réglage `'undefined'`).
+ * ⚠️ π et e ne sont PAS évalués (`null`) : le moteur des limites prend alors le
+ * chemin exact, et les évaluer ferait de `lim (x+1)/(πx)` un décimal
+ * (simplify-carte § 96, écart connu, `docs/systeme/mathast/README.md`).
  *
  * @param expr - The expression to evaluate
  * @param varName - The variable name to substitute
  * @param varValue - The value to substitute for the variable
+ * @param poles - Ce que rend une division par 0 (voir `PoleMode`)
  * @returns The numeric result or null if evaluation fails
  *
  * @example
  * // Evaluate x^2 + 1 at x = 3
  * evaluateNumeric(parseExpression('x^2 + 1'), 'x', 3) // 10
  */
-export function evaluateNumeric(expr: MathNode, varName: string, varValue: number): number | null {
+export function evaluateNumeric(
+	expr: MathNode,
+	varName: string,
+	varValue: number,
+	poles: PoleMode = 'infinity'
+): number | null {
+	return evaluateAt(expr, varName, varValue, poles);
+}
+
+function evaluateAt(
+	expr: MathNode,
+	varName: string,
+	varValue: number,
+	poles: PoleMode
+): number | null {
+	const value = evaluateAtRaw(expr, varName, varValue, poles);
+	if (poles === 'undefined' && value !== null && !Number.isFinite(value)) return null;
+	return value;
+}
+
+function evaluateAtRaw(
+	expr: MathNode,
+	varName: string,
+	varValue: number,
+	poles: PoleMode
+): number | null {
+	const at = (node: MathNode) => evaluateAt(node, varName, varValue, poles);
 	switch (expr.type) {
 		case 'number': {
 			const val = parseFloat(expr.value);
@@ -257,96 +326,135 @@ export function evaluateNumeric(expr: MathNode, varName: string, varValue: numbe
 			return expr.name === varName ? varValue : null;
 
 		case 'addition': {
-			const left = evaluateNumeric(expr.left, varName, varValue);
-			const right = evaluateNumeric(expr.right, varName, varValue);
-			if (left === null || right === null) return null;
-			return left + right;
+			const left = at(expr.left);
+			const right = at(expr.right);
+			return left === null || right === null ? null : left + right;
 		}
 
 		case 'subtraction': {
-			const left = evaluateNumeric(expr.left, varName, varValue);
-			const right = evaluateNumeric(expr.right, varName, varValue);
-			if (left === null || right === null) return null;
-			return left - right;
+			const left = at(expr.left);
+			const right = at(expr.right);
+			return left === null || right === null ? null : left - right;
 		}
 
 		case 'multiplication': {
-			const left = evaluateNumeric(expr.left, varName, varValue);
-			const right = evaluateNumeric(expr.right, varName, varValue);
-			if (left === null || right === null) return null;
-			return left * right;
+			const left = at(expr.left);
+			const right = at(expr.right);
+			return left === null || right === null ? null : left * right;
 		}
 
 		case 'division': {
-			const num = evaluateNumeric(expr.numerator, varName, varValue);
-			const den = evaluateNumeric(expr.denominator, varName, varValue);
+			const num = at(expr.numerator);
+			const den = at(expr.denominator);
 			if (num === null || den === null) return null;
-			if (den === 0) {
-				// Return signed infinity based on numerator sign
-				return num > 0 ? Infinity : num < 0 ? -Infinity : null;
-			}
+			if (poles === 'undefined') return Math.abs(den) < 1e-15 ? null : num / den;
+			if (den === 0) return num > 0 ? Infinity : num < 0 ? -Infinity : null;
 			return num / den;
 		}
 
 		case 'opposite': {
-			const operand = evaluateNumeric(expr.operand, varName, varValue);
-			return operand !== null ? -operand : null;
+			const operand = at(expr.operand);
+			return operand === null ? null : -operand;
 		}
 
 		case 'positive':
-			return evaluateNumeric(expr.operand, varName, varValue);
-
-		case 'superscript': {
-			const base = evaluateNumeric(expr.base, varName, varValue);
-			const exp = evaluateNumeric(expr.superscript, varName, varValue);
-			if (base === null || exp === null) return null;
-			const result = Math.pow(base, exp);
-			return Number.isFinite(result) || result === Infinity || result === -Infinity ? result : null;
-		}
-
-		case 'function': {
-			if (expr.args.length === 1) {
-				const arg = evaluateNumeric(expr.args[0], varName, varValue);
-				if (arg === null) return null;
-
-				switch (expr.name.toLowerCase()) {
-					case 'sin':
-						return Math.sin(arg);
-					case 'cos':
-						return Math.cos(arg);
-					case 'tan':
-						return Math.tan(arg);
-					case 'exp':
-						return Math.exp(arg);
-					case 'ln':
-						return arg > 0 ? Math.log(arg) : arg === 0 ? -Infinity : null;
-					case 'sqrt':
-						return arg >= 0 ? Math.sqrt(arg) : null;
-					case 'abs':
-						return Math.abs(arg);
-					case 'arcsin':
-						return arg >= -1 && arg <= 1 ? Math.asin(arg) : null;
-					case 'arccos':
-						return arg >= -1 && arg <= 1 ? Math.acos(arg) : null;
-					case 'arctan':
-						return Math.atan(arg);
-					case 'floor':
-						return Math.floor(arg);
-					case 'ceil':
-						return Math.ceil(arg);
-					case 'sign':
-					case 'sgn':
-						return Math.sign(arg);
-					default:
-						return null;
-				}
-			}
-			return null;
-		}
+			return at(expr.operand);
 
 		case 'delimiter':
-			return evaluateNumeric(expr.content, varName, varValue);
+			return at(expr.content);
 
+		case 'superscript': {
+			const base = at(expr.base);
+			const exp = at(expr.superscript);
+			if (base === null || exp === null) return null;
+			return powerOrNull(base, exp);
+		}
+
+		case 'function':
+			return evaluateFunctionAt(expr, varName, varValue, poles);
+
+		default:
+			return null;
+	}
+}
+
+/** `Math.pow`, `null` quand le résultat n'est pas réel (NaN) */
+function powerOrNull(base: number, exponent: number): number | null {
+	const result = Math.pow(base, exponent);
+	return Number.isNaN(result) ? null : result;
+}
+
+function evaluateFunctionAt(
+	expr: FunctionNode,
+	varName: string,
+	varValue: number,
+	poles: PoleMode
+): number | null {
+	// Liste du réglage lue sur le nom ÉCRIT : `\cos^{-1}` est lu là où `cos` l'est
+	if (!FUNCTIONS_BY_POLE_MODE[poles].has(expr.name.toLowerCase())) return null;
+	// `\cos^{-1}(x)` = arccos(x), pas 1/cos(x) ; réciproque inconnue : refus
+	const reciprocal = inverseNotationAsFunction(expr);
+	if (reciprocal?.isInverse || (!reciprocal && expr.isInverse)) return null;
+	const target = reciprocal ?? expr;
+	if (target.args.length !== 1) return null;
+	const at = (node: MathNode) => evaluateAt(node, varName, varValue, poles);
+	const arg = at(target.args[0]);
+	if (arg === null) return null;
+	const value = functionValue(target.name.toLowerCase(), target, arg, at);
+	if (value === null || target.power === undefined) return value;
+	// `\sin^2(x)` = (sin x)²
+	const power = at(target.power);
+	return power === null ? null : powerOrNull(value, power);
+}
+
+function functionValue(
+	name: string,
+	expr: FunctionNode,
+	arg: number,
+	at: (node: MathNode) => number | null
+): number | null {
+	switch (name) {
+		case 'sin':
+			return Math.sin(arg);
+		case 'cos':
+			return Math.cos(arg);
+		case 'tan':
+			return Math.tan(arg);
+		case 'exp':
+			return Math.exp(arg);
+		case 'ln':
+		case 'log': {
+			// ln(0) = −∞ : divisé par ln(b) < 0, log_b(0) = +∞ pour 0 < b < 1
+			if (arg < 0) return null;
+			// Base explicite : log_b(a) = ln(a)/ln(b) ; `\log` sans base est décimal
+			if (expr.base !== undefined) {
+				const base = at(expr.base);
+				if (base === null || base <= 0 || base === 1) return null;
+				return Math.log(arg) / Math.log(base);
+			}
+			return name === 'ln' ? Math.log(arg) : Math.log10(arg);
+		}
+		case 'sqrt': {
+			// `\sqrt[n]{x}` : racine n-ième réelle (indice impair : définie pour x < 0)
+			if (expr.base === undefined) return arg >= 0 ? Math.sqrt(arg) : null;
+			const index = at(expr.base);
+			return index === null ? null : realNthRoot(arg, index);
+		}
+		case 'abs':
+			return Math.abs(arg);
+		case 'arcsin':
+			return arg >= -1 && arg <= 1 ? Math.asin(arg) : null;
+		case 'arccos':
+			return arg >= -1 && arg <= 1 ? Math.acos(arg) : null;
+		case 'arctan':
+			return Math.atan(arg);
+		case 'floor':
+			return Math.floor(arg);
+		case 'ceil':
+			return Math.ceil(arg);
+		case 'sign':
+		case 'sgn':
+			return Math.sign(arg);
 		default:
 			return null;
 	}

@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1749 (M2)._
+_Mis à jour le 2026-10-25, lot 6a prêt pour la PR._
 
-- **État** : lot 5 CLOS (#1743), et M2 (puissances de même base non voisines, § 93) mergé en #1749 ; les questions de 5f-5 sont closes (§ 93). Code pas en prod.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → ~~5~~ → **6 valeurs approchées** → 7 renommages.
-- **Prochaine action** : lot 6 (valeurs approchées) — relire son périmètre dans le journal, phase 0 (comportements, à valider par David).
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64) ; § 87 : pipeline rationnel qui multiplie la fraction tapée, `(x − 1)/(x² − 1) ≥ 0`, `x² < −1` sans étapes ; **§ 89** : `\frac{2}{3}x = 0,5` → « × 1,5 », x à droite (échanger les membres ?), termes mixtes → ÷ 1/6, inéquation sans `stepsAsShown` (« ÷ −1/4 ») ; mineurs de M2 (§ 93) : `x(−eˣ)e`, `x/x` visible.
-- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; l'Atelier écrit `0{,}25`, le moteur `0.25` ; sonde vitest : `console.log` muet, faire échouer un `expect` ; `number(-1)` interdit ; `check:incremental` : erreurs fantômes → `FRESH=1` ; client CI : `wrapDynamicImport` = relancer le job ; **PR sans CI = conflit avec `main`** ; commitlint : corps ≤ 100 caractères par ligne ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** (PR comprise).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-6` (repartie d'`origin/main` après #1749).
+- **État** : M2 mergé (#1749). Lot 6a codé et relu sur `feat/simplify-carte-6` (§ 96-97) : évaluateur flottant unique des limites, `sin²`/`cos⁻¹`/`∛` justes ; David a validé l'évaluateur maison (« ok, continue ») et l'écart π/e noté pour plus tard (doc mathAST, Points ouverts).
+- **Prochaine action** : suite serveur complète verte → push, PR 6a, CI, merge ; puis page de synthèse ; puis 6b (enveloppes → `computeNumericValue`, § 95).
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93).
+- **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; `algebraic.ts:663` (`evaluateAtPoint`, `number(String(value))`) rend `null` pour tout x < 0 (bug latent, pour 6b) ; relire les décisions du lot 4a avant `tidy` ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-6`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1125,3 +1123,55 @@ CI verte du premier coup sur le commit des correctifs de revue, mergée. Vérifi
 ## 94. M2 mergé (#1749, 2026-10-25)
 
 CI verte sur le commit du correctif de revue, mergée. Vérification manuelle notée (M2). Les trois questions de 5f-5 sont closes.
+
+## 95. Lot 6 (valeurs approchées, Q6) : phase 0 (2026-10-25, à valider)
+
+Inventaire refait sur `origin/main` (agent Sonnet en lecture seule, points clés relus à la main) : 118 appels à `evaluateNodeToApproximatedNumber` hors tests.
+
+- **Déjà sur `computeNumericValue`** : solveurs polynomiaux, `pedagogical-solve`, `constant-sign`, `absolute-value`, `calculus-reading`.
+- **A — fini ou `null`, identiques à `computeNumericValue`** : 16 fonctions locales (`tryNumeric`, `numericOf`, `numeric`, `numericValue` ×2, `pointToNumber`, `tryEvaluateNumeric` ×3, `constantValue`, `tryApproximate`, `approximate`, `evaluateAtValue`, `evaluateAtPoint` d'`algebraic.ts`, `periodicValueOf`, `periodToNumeric`) + 3 qui rendent `undefined`/NaN à la place de `null` (`symmetry.ts:188`, `boundary-limits.ts:392`, `substitution.ts:553`) + ~40 blocs `try/catch + isFinite` inline dont le test aval rend le même résultat.
+- **B — laissent passer ±∞ (et souvent NaN)** : ~20 sites ; seuls `inequality/index.ts:251` et `reciprocal/image.ts:55` veulent ±∞ et rien d'autre.
+- **L — l'exception remonte** : ~27 sites (ubumark, Taylor, REPL, `solve.ts:1133/1817`, `periodicity`, `algebra`, `monotonicity`…). **X** : `outOfDomainNear` (message lu), `differentiability.ts:914` (±∞/NaN = branches), `evaluate.ts:1580` (`precision`), `transcendental.ts` (repli 0).
+- **Évaluateurs maison** : `evaluateNumeric` (`common/numeric.ts:249`, 9 appels dans `limits/sign-tracking.ts` et `limits/indeterminate.ts`) et `evaluateAtPoint` (`pedagogical-limits/helpers.ts:92`, 32 appels) ignorent `power`/`isInverse` (`sin²`, `cos⁻¹`) **et π, e** (→ `null`). `compile` gère déjà les trois.
+- Écarts mesurés à la lecture entre `evaluateNumeric` et `compile` : pôle `x/0` → signe du numérateur seulement (`1/(−0)` → +∞ là où `compile` rend −∞) ; `(−8)^{1/3}` → `null` (compile : −2) ; `sign`/`sgn` absents de `compile`.
+
+### Comportements proposés
+
+**6a — limites (une PR, revue `code-reviewer` opus).** Test rouge d'abord : `sin²(1)`, `cos⁻¹(0,5)`, `π·x` évalués juste.
+
+- `evaluateNumeric` et `evaluateAtPoint` (limites pédagogiques) deviennent deux minces enveloppes de `compile` (même signature, mêmes conventions : `evaluateNumeric` garde ±∞ et rend `null` pour NaN ; `evaluateAtPoint` rend fini ou `null`, dénominateur < 1e-15 → `null`).
+- `sign`/`sgn` ajoutés à `compile` (le grapheur y gagne, rien n'y perd).
+- **Banc d'écart** avant/après : pendant la suite serveur complète, chaque appel calcule les deux et note les divergences (instrumentation jetable). Attendu : divergences seulement sur `sin²`/`cos⁻¹`/π/e/racines impaires ; toute autre divergence (signe d'un pôle…) est montrée à David avant le merge.
+
+**6b — enveloppes (une PR, revue `code-reviewer` Sonnet).** Sans changer aucun résultat :
+
+- `computeNumericValue` déménage dans `eval/numeric-value.ts` (même nom ; renommages = lot 7), réexport depuis l'ancien chemin le temps du lot.
+- (a) remplace les 16 fonctions A et les blocs A≈ ; les 3 A' gardent leur sentinelle (`?? undefined`, `?? NaN`) ; les raccourcis `sol.approximate ?? …` restent tels quels.
+- (b) `computeNumericValueOrInfinity` (fini, ±∞, ou `null`) remplace `inequality/index.ts:251` et `reciprocal/image.ts:55`.
+- **Laissés tels quels** : les autres B (NaN qui passe = comportement à changer, pas à unifier), tous les L (l'exception sert ou personne ne l'a vue — hors périmètre « sans changer de résultat »), les X, `evaluateAtPoint` d'`extrema.ts` et de `sign/helpers/sampling.ts` (moteur `evaluate` décimal, pas le même), `forbidden-value.numericValue` (déjà `compile`).
+- Preuve : suite serveur complète + banc des 1 008 modèles × 8 tirages (4b) : 0 différence.
+
+### Questions pour David
+
+1. Deux PR (6a limites puis 6b enveloppes) ?
+2. 6a : si le banc montre une divergence de **signe d'un pôle** (`1/(−x)` en 0), on garde l'ancienne règle « signe du numérateur » ou celle de `compile` (signe de −0) ?
+3. Les B qui laissent passer NaN et les L qui lèvent : hors lot 6 (proposé), ou un lot 6c « conventions d'échec » avec test rouge par site ?
+
+**Réponse de David (2026-10-25) : « je te suis ».** Q1 : deux PR, 6a puis 6b. Q3 : NaN qui passe et exceptions qui remontent restent hors du lot 6. Q2 (signe d'un pôle) : sans recommandation de ma part, **non tranchée** ; défaut = l'ancienne règle (rien ne change), reposée à David seulement si le banc montre l'écart.
+
+## 96. Lot 6a : banc d'écart, le plan change (2026-10-25)
+
+Banc jetable (chaque appel calcule ancien et nouveau, écarts dans un JSONL) sur la suite serveur complète (61 357 tests).
+
+- **Ce que l'ancien `evaluateNumeric` ignorait aussi** : la constante e (`euler`), π, et **l'indice des racines** (`∛(x²)` calculée comme `√(x²)`). Rend NaN (∞·0, sin ∞) : tous ses appelants traitent NaN comme `null` → sans effet.
+- **`compile` écarté** : évaluer π et e change le chemin du moteur (`lim (x+1)/(πx)` → `0,3183…` au lieu de `1/π`, 2 tests rouges) ; et propage les infinis intermédiaires (`e^{−1/x}` en 0 → 0, faux pour la substitution directe).
+- **Valeur sûre exacte (substitution + rationnels) écartée pour `evaluateAtPoint`** : x = −2/3 en flottant → `3x+2` = 2e-16 ≠ 0, la factorisation disparaît.
+- **Retenu (essai)** : un seul évaluateur maison, mode `'infinity'` (`evaluateNumeric`) ou `'undefined'` (`evaluateAtPoint`), qui corrige `sin²`, `cos⁻¹` et l'indice des racines ; π et e restent `null` (connu, les évaluer changerait des limites). Sur `common`, `limits`, `pedagogical-limits` : 1 737 tests verts, seuls écarts du banc = les trois bugs.
+
+- **Banc sur la suite serveur complète** : 61 288 tests verts ; 2 rouges = les tests π/e (à remplacer par `∛`). Écarts : `∛` (≈ 13 500 appels), `sin²`, `cos⁻¹`, et `log(x)` en 0 → −∞ au lieu de `null` (1 appel, `log` désormais lu comme `ln`). Aucun écart de signe de pôle → Q2 du § 95 sans objet. `sign`/`sgn` ajoutés à `compile` : à retirer (inutile).
+
+## 97. Lot 6a : décision et revue (2026-10-25)
+
+- David : « ok, continue avec l'évaluateur maison et note l'écart pour plus tard ». `compile` inchangé (le grapheur ne décide rien d'un `null`, le moteur des limites si). Écart π/e : `docs/systeme/mathast/README.md`, Points ouverts connus.
+- Code : `evaluateNumeric(expr, x, v, poles = 'infinity')` ; `evaluateAtPoint` (limites pédagogiques) = réglage `'undefined'`. Tests π/e remplacés par `∛`.
+- Revue `code-reviewer` opus, corrigée avec test rouge d'abord : (1) le réglage `'undefined'` lisait `floor`/`ceil`/`sign`/`arc*` → `⌊x⌋` en 1 conclu « 1 par substitution directe » (atteignait les corrections de questions) ; (2) `log` lu en `'infinity'` → `log_{0,5}(x)` en 0 rendu −∞ ; (3) puissance de fonction → NaN. Correctif : chaque réglage garde la liste de fonctions de son évaluateur d'origine (`FUNCTIONS_BY_POLE_MODE`, lue sur le nom écrit : `\cos^{-1}` suit `cos`) ; `ln(0)` sans cas particulier. Corrections assumées : `\ln^{-1}` → `null`, `\ln_2` respecte sa base, réciproque sans définition refusée.

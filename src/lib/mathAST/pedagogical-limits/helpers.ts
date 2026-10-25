@@ -11,6 +11,7 @@
 import type { MathNode } from '../types';
 import type { IndeterminateForm, LimitDirection } from '../limits/types';
 import { toLatex } from '../latex-generator';
+import { evaluateNumeric } from '../common/numeric';
 import { mapNode } from '../transforms';
 import {
 	isAddition,
@@ -85,105 +86,11 @@ export function isAtInfinity(approach: MathNode): boolean {
  * to check whether direct substitution yields a finite result, and to
  * estimate the value of complex sub-expressions.
  *
- * Walks the AST recursively. (L'ancien jumeau `evaluateSimple` de
- * `limits/algebraic.ts` a été supprimé au lot 3a de l'ADR 0024 : ce module
- * est le seul à évaluer ainsi.)
+ * Même évaluateur que `evaluateNumeric` (`common/numeric`), réglage
+ * `'undefined'` : son jumeau maison a été fondu dedans (simplify-carte, lot 6a).
  */
 export function evaluateAtPoint(expr: MathNode, varName: string, value: number): number | null {
-	// Transparent unwrap of delimiter nodes (parens emitted by the custom parser).
-	if (expr.type === 'delimiter') return evaluateAtPoint(expr.content, varName, value);
-
-	switch (expr.type) {
-		case 'number': {
-			const v = parseFloat(expr.value);
-			return Number.isFinite(v) ? v : null;
-		}
-		case 'variable':
-			return expr.name === varName ? value : null;
-		case 'addition': {
-			const l = evaluateAtPoint(expr.left, varName, value);
-			const r = evaluateAtPoint(expr.right, varName, value);
-			return l !== null && r !== null ? l + r : null;
-		}
-		case 'subtraction': {
-			const l = evaluateAtPoint(expr.left, varName, value);
-			const r = evaluateAtPoint(expr.right, varName, value);
-			return l !== null && r !== null ? l - r : null;
-		}
-		case 'multiplication': {
-			const l = evaluateAtPoint(expr.left, varName, value);
-			const r = evaluateAtPoint(expr.right, varName, value);
-			return l !== null && r !== null ? l * r : null;
-		}
-		case 'division': {
-			const n = evaluateAtPoint(expr.numerator, varName, value);
-			const d = evaluateAtPoint(expr.denominator, varName, value);
-			if (n === null || d === null) return null;
-			if (Math.abs(d) < 1e-15) return null;
-			const q = n / d;
-			return Number.isFinite(q) ? q : null;
-		}
-		case 'superscript': {
-			const b = evaluateAtPoint(expr.base, varName, value);
-			const e = evaluateAtPoint(expr.superscript, varName, value);
-			if (b === null || e === null) return null;
-			const v = Math.pow(b, e);
-			return Number.isFinite(v) ? v : null;
-		}
-		case 'opposite': {
-			const v = evaluateAtPoint(expr.operand, varName, value);
-			return v === null ? null : -v;
-		}
-		case 'positive': {
-			return evaluateAtPoint(expr.operand, varName, value);
-		}
-		case 'function': {
-			if (expr.args.length !== 1) return null;
-			const arg = evaluateAtPoint(expr.args[0], varName, value);
-			if (arg === null) return null;
-			const name = expr.name.toLowerCase();
-			let v: number;
-			switch (name) {
-				case 'sin':
-					v = Math.sin(arg);
-					break;
-				case 'cos':
-					v = Math.cos(arg);
-					break;
-				case 'tan':
-					v = Math.tan(arg);
-					break;
-				case 'exp':
-					v = Math.exp(arg);
-					break;
-				case 'ln':
-				case 'log': {
-					if (arg <= 0) return null;
-					// Base explicite : log_b(a) = ln(a)/ln(b) ; `\log` sans base est décimal
-					if (expr.base !== undefined) {
-						const base = evaluateAtPoint(expr.base, varName, value);
-						if (base === null || base <= 0 || base === 1) return null;
-						v = Math.log(arg) / Math.log(base);
-					} else {
-						v = name === 'ln' ? Math.log(arg) : Math.log10(arg);
-					}
-					break;
-				}
-				case 'sqrt':
-					if (arg < 0) return null;
-					v = Math.sqrt(arg);
-					break;
-				case 'abs':
-					v = Math.abs(arg);
-					break;
-				default:
-					return null;
-			}
-			return Number.isFinite(v) ? v : null;
-		}
-		default:
-			return null;
-	}
+	return evaluateNumeric(expr, varName, value, 'undefined');
 }
 
 // =============================================================================
