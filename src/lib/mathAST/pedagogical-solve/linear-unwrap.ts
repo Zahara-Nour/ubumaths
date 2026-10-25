@@ -19,7 +19,7 @@
  *
  * Le sens d'une inéquation se retourne pour un facteur négatif. Le membre
  * obtenu reprend les nœuds tapés (`x + 1` de `0,5(x+1)`) : il n'est pas
- * récrit par `canon`, qui le développerait. On recommence jusqu'à ce que tous
+ * récrit par `canonicalForm`, qui le développerait. On recommence jusqu'à ce que tous
  * les termes en x soient `a·x` ; une forme qu'on ne sait pas défaire lève
  * `UndevelopedLinearForm` (repli sur la réponse du moteur).
  *
@@ -36,7 +36,6 @@ import { unwrapGrouping } from '../solve/classify';
 import { toLatex } from '../latex-generator';
 import {
 	UndevelopedLinearForm,
-	canon,
 	chooseAddOrSubtract,
 	flipRelation,
 	flipsOrdering,
@@ -47,6 +46,7 @@ import {
 	negativeTermMagnitude,
 	undevelopedTerm
 } from './_helpers';
+import { canonicalForm } from '../normal';
 
 // =============================================================================
 // Constantes
@@ -79,7 +79,7 @@ export function unwrapLinearRelation(
 	// n'a pas de garde-fou de conclusion (revue de Q52) → repli, comme avant
 	if (
 		undeveloped !== null &&
-		!containsVariable(canon(subtract(start.left, start.right)), variable)
+		!containsVariable(canonicalForm(subtract(start.left, start.right)), variable)
 	) {
 		throw new UndevelopedLinearForm(undeveloped);
 	}
@@ -128,7 +128,7 @@ function expandStep(current: RelationNode, variable: string, stepId: number): Eq
 		const expanded = terms.flatMap((signed) =>
 			isLinearTerm(signed.term, variable)
 				? [signed]
-				: flattenSumShallow(canon(signedNode(signed))).map(signLifted)
+				: flattenSumShallow(canonicalForm(signedNode(signed))).map(signLifted)
 		);
 		return unflattenSum(expanded) ?? number(0);
 	};
@@ -197,7 +197,7 @@ function moveConstantStep(
 				? `On ajoute ${pretty(choice.displayOperand)} aux deux membres`
 				: `On soustrait ${pretty(choice.displayOperand)} aux deux membres`,
 		before: current,
-		after: withSide(current, side, xOnly, canon(add(other, moved))),
+		after: withSide(current, side, xOnly, canonicalForm(add(other, moved))),
 		operation: { kind: choice.kind, operand: choice.displayOperand }
 	});
 }
@@ -220,7 +220,8 @@ function isolateFactorStep(
 		negative = !negative;
 		term = term.operand;
 	}
-	const signed = (factor: MathNode): MathNode => (negative ? canon(opposite(factor)) : factor);
+	const signed = (factor: MathNode): MathNode =>
+		negative ? canonicalForm(opposite(factor)) : factor;
 
 	// `−(x − 3)` : on multiplie par −1
 	if (unwrapGrouping(term) !== term) {
@@ -231,7 +232,7 @@ function isolateFactorStep(
 			unwrapGrouping(term),
 			other,
 			'multiply',
-			canon(opposite(number(1))),
+			canonicalForm(opposite(number(1))),
 			stepId
 		);
 	}
@@ -251,10 +252,10 @@ function isolateFactorStep(
 						inner,
 						other,
 						'multiply',
-						canon(divide(number(1), k, 'fraction')),
+						canonicalForm(divide(number(1), k, 'fraction')),
 						stepId
 					)
-				: factorStep(current, side, inner, other, 'divide', canon(k), stepId);
+				: factorStep(current, side, inner, other, 'divide', canonicalForm(k), stepId);
 		}
 	}
 	// `(x + 1)/2` : on multiplie par 2
@@ -270,7 +271,7 @@ function isolateFactorStep(
 			unwrapGrouping(term.numerator),
 			other,
 			'multiply',
-			canon(d),
+			canonicalForm(d),
 			stepId
 		);
 	}
@@ -288,7 +289,7 @@ function factorStep(
 	stepId: number
 ): EquationStep {
 	const flipped = flipsOrdering(current.relation, factor);
-	const otherAfter = canon(
+	const otherAfter = canonicalForm(
 		how === 'multiply' ? multiply(factor, other, 'cross') : divide(other, factor, 'fraction')
 	);
 	const after = withSide(current, side, inner, otherAfter);

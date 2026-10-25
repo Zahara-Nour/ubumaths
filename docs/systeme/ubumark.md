@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -142,6 +142,18 @@ Option `keepEndWithNext` : le dernier bloc du document (dernier élément d'une 
 à ce qui suit (cadre unique). Aucun nœud d'AST
 ajouté : le parseur ne peut pas produire de cadre depuis le texte d'un prof. Détail :
 [fiches-et-pdf](fiches-et-pdf.md) § Cadres de réponse.
+
+**Paragraphe collé au bloc qui le suit** (décision de David, 2026-10-26) : au PDF, un paragraphe
+ne reste pas seul en bas de page quand le bloc qui le suit part sur la suivante (« 30 pièces en
+vrac : » puis son ` ```monnaie `). Il est `sticky` devant tout bloc **sauf** un autre paragraphe, un
+titre ou un trait (dessins, formules centrées, tableaux, listes, citations), au niveau du document
+comme dans un élément de liste (`keepsWithNext`). Premier paragraphe d'un élément : porté par
+`ubu-item` (`tete:`), dans le même bloc collé que le numéro, sinon le numéro resterait seul sur sa
+ligne. Effet de bord voulu : le bloc qui suit ce premier paragraphe est centré, comme partout (il
+restait à gauche). Tests : `generators/__tests__/paragraphe-colle-typst.test.ts` (rendu réel
+compilé, texte des pages lu par pdfjs). Le texte d'auteur échappe ses crochets (`escapeTypstBrackets`) : posé dans un
+contenu `[…]`, un intervalle écrit en texte (`]2 ; 3[`) le fermait trop tôt et le PDF ne compilait
+plus (déjà vrai avant, selon la place du crochet).
 
 ### Marques en ligne propres à ubumark
 

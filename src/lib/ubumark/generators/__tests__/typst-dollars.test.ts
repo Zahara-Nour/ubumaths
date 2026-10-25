@@ -23,7 +23,9 @@ describe('formules du PDF : `\\$` et `$` dans un `\\text{…}`', () => {
 	});
 
 	it('`\\$` dans une formule de bloc', async () => {
-		expect(await body('Bloc :\n\n$$5\\$$$\n')).toBe('Bloc :\n\n$ 5\\$ $');
+		expect(await body('Bloc :\n\n$$5\\$$$\n')).toBe(
+			'#block(width: 100%, sticky: true)[\nBloc :\n]\n\n$ 5\\$ $'
+		);
 	});
 
 	it('formule dans le `\\text{…}` d’une formule en ligne', async () => {

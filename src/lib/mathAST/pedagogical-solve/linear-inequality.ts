@@ -39,7 +39,6 @@ import { constantSign } from '../common/constant-sign';
 import { detectVariable, getPolynomialDegree, unwrapGroupingMembers } from '../solve/classify';
 import { getVariables } from '../eval/substitute';
 import {
-	canon,
 	addToBothSides,
 	chooseAddOrSubtract,
 	movedTerm,
@@ -52,6 +51,7 @@ import {
 	renumberSteps,
 	rejectForbiddenValues
 } from './_helpers';
+import { canonicalForm } from '../normal';
 import { unwrapLinearRelation } from './linear-unwrap';
 import { toLatex } from '../latex-generator';
 import { InequalityNotSolvable } from '../solve/inequality/types';
@@ -119,7 +119,7 @@ function splitSide(
 
 function extractCoefficientOfX(node: MathNode, variable: string): MathNode | null {
 	if (!containsVariable(node, variable)) return null;
-	return canon(divide(node, varNode(variable), 'fraction'));
+	return canonicalForm(divide(node, varNode(variable), 'fraction'));
 }
 
 /** Un opérande dans la prose (titres de repli) : en LaTeX entre `$…$` (V25) */
@@ -171,7 +171,7 @@ export function generateLinearInequalitySteps(
 	//    (no variable detected), the standard form is also a constant — degree
 	//    is 0 or null depending on `getPolynomialDegree`'s behaviour. We only
 	//    block degree ≥ 2.
-	const standardForm = canon(add(inequality.left, opposite(inequality.right)));
+	const standardForm = canonicalForm(add(inequality.left, opposite(inequality.right)));
 	if (variable !== null) {
 		const degree = getPolynomialDegree(standardForm, variable);
 		if (degree !== null && degree >= 2) {
@@ -429,7 +429,7 @@ function buildConcludeStep(constantIneq: RelationNode, id: number): EquationStep
  *   `divideBothSidesWithFlip`.
  */
 function evaluateConstantInequality(rel: RelationNode): boolean {
-	const difference = canon(add(rel.left, opposite(rel.right)));
+	const difference = canonicalForm(add(rel.left, opposite(rel.right)));
 	const sign = constantSign(difference);
 	if (sign === null) {
 		throw new InequalityNotSolvable(

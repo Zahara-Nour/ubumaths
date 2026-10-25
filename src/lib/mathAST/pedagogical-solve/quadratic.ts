@@ -51,7 +51,8 @@ import { nodesEqual } from '../normal/hash';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { extractQuadraticCoefficients } from '../solve/solvers/quadratic';
 import { computeNumericValue } from '../eval/numeric-value';
-import { canon, isConstantCoefficient, isZero, makeStep, renumberSteps } from './_helpers';
+import { isConstantCoefficient, isZero, makeStep, renumberSteps } from './_helpers';
+import { canonicalForm } from '../normal';
 
 // =============================================================================
 // Errors
@@ -131,7 +132,7 @@ function tryDetectFactored(left: MathNode, variable: string): readonly MathNode[
  * `apply-quadratic-formula` so the rawSolutions display
  * `(5 − √Δ) / 2a` instead of `(--5 − √Δ) / 2a` when `b = -5`.
  *
- * Distinct from `canon(opposite(node))` which would over-simplify the
+ * Distinct from `canonicalForm(opposite(node))` which would over-simplify the
  * surrounding fraction structure. We only collapse the unary chain.
  */
 function smartNegate(node: MathNode): MathNode {
@@ -164,7 +165,7 @@ function gcdInteger(a: number, b: number): number {
 /**
  * V1.1-C — Detect a non-trivial GCD across integer coefficients `(a, b, c)`.
  * Returns the simplified coefficients and the simplified standard-form
- * polynomial (computed via `canon(standardForm / gcd)`), or `null` when
+ * polynomial (computed via `canonicalForm(standardForm / gcd)`), or `null` when
  * the GCD is 1 or the coefficients are not all integers.
  */
 function tryExtractGcd(
@@ -194,7 +195,7 @@ function tryExtractGcd(
 		aSimp: intToNode(aN / g),
 		bSimp: intToNode(bN / g),
 		cSimp: intToNode(cN / g),
-		simplifiedLeft: canon(divide(standardForm, gcdNode, 'fraction'))
+		simplifiedLeft: canonicalForm(divide(standardForm, gcdNode, 'fraction'))
 	};
 }
 
@@ -248,8 +249,8 @@ function detectCase(equation: RelationNode, variable: string): DetectedCase {
 
 	const needsStandardize = !isZero(equation.right);
 	const standardForm = needsStandardize
-		? canon(subtract(equation.left, equation.right))
-		: canon(equation.left);
+		? canonicalForm(subtract(equation.left, equation.right))
+		: canonicalForm(equation.left);
 
 	const degree = getPolynomialDegree(standardForm, variable);
 	if (degree !== 2) {
@@ -393,7 +394,7 @@ function computeDiscriminantValue(
 	const bSquared = power(b, number('2'));
 	const fourAC = implicitMultiply(number('4'), implicitMultiply(a, c));
 	const raw = subtract(bSquared, fourAC);
-	const discriminant = canon(raw);
+	const discriminant = canonicalForm(raw);
 	const numericValue = computeNumericValue(discriminant);
 	return { discriminant, numericValue };
 }
@@ -533,7 +534,7 @@ function buildSimplifySolutionsStep(
 	rawSolutions: readonly MathNode[],
 	idGen: () => number
 ): { step: EquationStep | null; simplified: readonly MathNode[] } {
-	const simplified = rawSolutions.map(canon);
+	const simplified = rawSolutions.map((s) => canonicalForm(s));
 	// V1.1-B : structural equality via `nodesEqual` instead of `JSON.stringify`
 	// (which is fragile to property-order changes in factory output).
 	const allSame = rawSolutions.every((raw, i) => nodesEqual(raw, simplified[i]));
@@ -706,7 +707,7 @@ function buildBZeroCaseSteps(
 	);
 
 	// Isolate the square: x² = -c/a
-	const rhs = canon(fraction(opposite(c), a));
+	const rhs = canonicalForm(fraction(opposite(c), a));
 	const isolatedEq = relation('=', power(varNode(variable), number('2')), rhs);
 	steps.push(
 		makeStep({
@@ -767,8 +768,8 @@ function buildBZeroCaseSteps(
 		})
 	);
 
-	const sqrtRhs = canon(sqrtNode(rhs));
-	const negSqrtRhs = canon(opposite(sqrtRhs));
+	const sqrtRhs = canonicalForm(sqrtNode(rhs));
+	const negSqrtRhs = canonicalForm(opposite(sqrtRhs));
 	steps.push(buildReadSolutionsStep(current, variable, [negSqrtRhs, sqrtRhs], idGen));
 	return steps;
 }
@@ -811,7 +812,7 @@ function buildCZeroCaseSteps(
 	);
 
 	// Factor common x: ax + b
-	const remainder = canon(add(implicitMultiply(a, varNode(variable)), b));
+	const remainder = canonicalForm(add(implicitMultiply(a, varNode(variable)), b));
 	const factoredLeft = implicitMultiply(varNode(variable), parentheses(remainder));
 	const factoredEq = relation('=', factoredLeft, number('0'));
 	steps.push(
@@ -840,7 +841,7 @@ function buildCZeroCaseSteps(
 
 	// solve-each-factor
 	const xZero = number('0');
-	const otherSolution = canon(fraction(opposite(b), a));
+	const otherSolution = canonicalForm(fraction(opposite(b), a));
 	const pairs = [
 		{ factor: varNode(variable), value: xZero },
 		{ factor: remainder, value: otherSolution }
@@ -900,7 +901,7 @@ function solveLinearFactor(factor: MathNode, variable: string): MathNode {
 			`solveLinearFactor: zero leading coefficient — caller passed a constant factor`
 		);
 	}
-	return canon(fraction(opposite(linear.beta), linear.alpha));
+	return canonicalForm(fraction(opposite(linear.beta), linear.alpha));
 }
 
 function buildFactoredCaseSteps(

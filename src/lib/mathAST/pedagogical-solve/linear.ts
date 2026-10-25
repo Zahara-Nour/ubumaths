@@ -33,7 +33,6 @@ import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
 import { detectVariable, getPolynomialDegree, unwrapGroupingMembers } from '../solve/classify';
 import {
-	canon,
 	addToBothSides,
 	chooseAddOrSubtract,
 	movedTerm,
@@ -45,6 +44,7 @@ import {
 	prepareLinearRelation,
 	renumberSteps
 } from './_helpers';
+import { canonicalForm } from '../normal';
 import { unwrapLinearRelation } from './linear-unwrap';
 
 // =============================================================================
@@ -82,7 +82,7 @@ export function splitSide(
  */
 function extractCoefficientOfX(node: MathNode, variable: string): MathNode | null {
 	if (!containsVariable(node, variable)) return null;
-	return canon(divide(node, varNode(variable), 'fraction'));
+	return canonicalForm(divide(node, varNode(variable), 'fraction'));
 }
 
 // =============================================================================
@@ -110,7 +110,7 @@ export function generateLinearEquationSteps(
 
 	// Sanity check: must be linear in the chosen variable
 	// Use the standard form to compute degree (matches solver's classify.ts)
-	const standardForm = canon(add(typed.left, opposite(typed.right))); // f(x) − g(x) for degree probe
+	const standardForm = canonicalForm(add(typed.left, opposite(typed.right))); // f(x) − g(x) for degree probe
 	const degree = getPolynomialDegree(standardForm, variable);
 	if (degree !== 1 && degree !== 0) {
 		// degree 0 happens for `x = 5` after standardize (x − 5), still linear-equivalent

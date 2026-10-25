@@ -26,7 +26,7 @@ import type { MathNode } from '../../types';
 import type { Rational } from '../../normal/types';
 import { isNumber } from '../../guards';
 import { containsVariable } from '../rules';
-import { normalize, denormalize } from '../../normal';
+import { exactRational } from '../../normal';
 import {
 	number,
 	variable as variableNode,
@@ -225,15 +225,6 @@ export function residueAntiderivative(
 // Discriminant négatif : ln + arctan
 // =============================================================================
 
-/** Valeur rationnelle exacte de `node` (après normalisation), ou null */
-function exactValue(node: MathNode): Rational | null {
-	try {
-		return extractExactRational(denormalize(normalize(node)));
-	} catch {
-		return null;
-	}
-}
-
 /** c · node, sans facteur 1 ni 0 (null pour c = 0) */
 function scaled(coefficient: Rational, node: MathNode): MathNode | null {
 	if (coefficient.n === 0n) return null;
@@ -261,8 +252,10 @@ export function negativeDiscriminantAntiderivative(
 		return null;
 	}
 	if (containsVariable(slope, variable)) return null;
-	const alpha = exactValue(slope);
-	const beta = exactValue(substitute(numerator, { [variable]: number('0') }, { maxIterations: 1 }));
+	const alpha = exactRational(slope);
+	const beta = exactRational(
+		substitute(numerator, { [variable]: number('0') }, { maxIterations: 1 })
+	);
 	if (alpha === null || beta === null) return null;
 
 	const { a, b, minusDelta } = factorization;

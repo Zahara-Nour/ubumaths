@@ -42,7 +42,7 @@ import {
 	subtract,
 	variable as variableNode
 } from '../factory';
-import { denormalize, normalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { getVariables, substitute } from '../eval/substitute';
 import { flattenSumShallow, type SignedTerm } from '../flatten';
 import { readTrigTerm, type TrigTerm } from './sin-cos-ratio';
@@ -69,10 +69,6 @@ const MAX_MULTIPLE = 24;
 /** Ici seulement, la période réunie se divise aussi par 3 (cos 2x = cos x → 2kπ/3). */
 const MERGE = { divisors: [2, 3] } as const;
 
-function simplified(node: MathNode): MathNode {
-	return denormalize(normalize(node));
-}
-
 function congruent(a: number, b: number, period: number): boolean {
 	const r = (((a - b) % period) + period) % period;
 	return r < POINT_TOLERANCE || period - r < POINT_TOLERANCE;
@@ -93,8 +89,8 @@ function readAny(term: SignedTerm, variable: string): { name: TrigName; read: Tr
 /** −f(v) écrit f(v') : −cos v = cos(π − v), −sin v = sin(−v), −tan v = tan(−v) */
 function negated(side: Side): Side {
 	return side.name === 'cos'
-		? { name: 'cos', argument: simplified(subtract(PI, side.argument)) }
-		: { name: side.name, argument: simplified(opposite(side.argument)) };
+		? { name: 'cos', argument: canonicalForm(subtract(PI, side.argument)) }
+		: { name: side.name, argument: canonicalForm(opposite(side.argument)) };
 }
 
 /** sin u = cos(π/2 − u) */
@@ -102,7 +98,7 @@ function asCosine(side: Side): Side {
 	return side.name === 'sin'
 		? {
 				name: 'cos',
-				argument: simplified(subtract(divide(PI, number('2'), 'fraction'), side.argument))
+				argument: canonicalForm(subtract(divide(PI, number('2'), 'fraction'), side.argument))
 			}
 		: side;
 }
@@ -153,8 +149,8 @@ function canonical(argument: MathNode, variable: string): MathNode {
 	// a·x + b lu par ses valeurs en 0 et 1 (la forme réduite place π devant,
 	// où `extractLinearForm` ne le lit pas), linéarité vérifiée en 2 et −3
 	const at = (x: number) => substitute(argument, { [variable]: x });
-	const offset = simplified(at(0));
-	const coefficient = simplified(subtract(at(1), at(0)));
+	const offset = canonicalForm(at(0));
+	const coefficient = canonicalForm(subtract(at(1), at(0)));
 	const b = computeNumericValue(offset);
 	const slope = computeNumericValue(coefficient);
 	if (b === null || slope === null || Math.abs(slope) < TOLERANCE) return argument;
@@ -168,7 +164,7 @@ function canonical(argument: MathNode, variable: string): MathNode {
 	// L'inconnue d'abord, coefficient positif
 	const negative = slope < 0;
 	const term = multiply(
-		negative ? simplified(opposite(coefficient)) : coefficient,
+		negative ? canonicalForm(opposite(coefficient)) : coefficient,
 		variableNode(variable),
 		'implicit'
 	);
@@ -195,13 +191,13 @@ export function tryTrigEquality(
 	if (equality === null) return null;
 	const { name, a, b } = equality;
 
-	const half = (node: MathNode) => simplified(divide(node, number('2'), 'fraction'));
+	const half = (node: MathNode) => canonicalForm(divide(node, number('2'), 'fraction'));
 	const sum = half(add(a, b));
 	const difference = half(subtract(a, b));
 	// cos : sin((a+b)/2)·sin((a−b)/2) ; sin : cos((a+b)/2)·sin((a−b)/2) ; tan : sin(a − b)
 	const factors: MathNode[] =
 		name === 'tan'
-			? [func('sin', [canonical(simplified(subtract(a, b)), variable)])]
+			? [func('sin', [canonical(canonicalForm(subtract(a, b)), variable)])]
 			: [
 					func(name === 'cos' ? 'sin' : 'cos', [canonical(sum, variable)]),
 					func('sin', [canonical(difference, variable)])
@@ -328,13 +324,15 @@ function withoutPoles(
 		if (kept.length === 0) return null;
 		if (kept.length === candidates.length) return shortened(result);
 
-		const period = simplified(multiply(number(String(m)), family.period, 'implicit'));
+		const period = canonicalForm(multiply(number(String(m)), family.period, 'implicit'));
 		const baseSolutions: Solution[] = kept.map(({ solution, k, x }) => ({
 			...solution,
 			value:
 				k === 0
 					? solution.value
-					: simplified(add(solution.value, multiply(number(String(k)), family.period, 'implicit'))),
+					: canonicalForm(
+							add(solution.value, multiply(number(String(k)), family.period, 'implicit'))
+						),
 			approximate: x
 		}));
 		const raw: PeriodicSolutionFamily = { baseSolutions, period, periodNumeric: M };

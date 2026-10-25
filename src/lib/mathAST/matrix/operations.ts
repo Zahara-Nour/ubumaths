@@ -17,6 +17,7 @@
  * @module mathAST/matrix/operations
  */
 
+import { canonicalForm } from '../normal/canonical-form';
 import type { MathNode, MatrixNode } from '../types';
 import type { MatrixOperationOptions, MatrixOperationResult } from './types';
 import type { Verbosity } from '../common/verbosity';
@@ -24,7 +25,6 @@ import type { NormalForm } from '../normal/types';
 import { matrix, number, add, subtract, multiply, divide, opposite } from '../factory';
 import { MatrixDimensionError, MatrixOperationError } from './types';
 import { normalize } from '../normal/normalize';
-import { denormalize } from '../normal/denormalize';
 import { isZeroPolynomial, isOnePolynomial } from '../normal/polynomial';
 import { toLatex } from '../latex-generator';
 import { MatrixStepRecorderImpl, createMatrixStepRecorder } from './step-recorder';
@@ -88,14 +88,6 @@ function isSquare(m: MatrixNode): boolean {
 // =============================================================================
 
 /**
- * Simplify a MathNode by normalizing and denormalizing.
- * This performs exact arithmetic on numeric expressions.
- */
-function simplify(node: MathNode): MathNode {
-	return denormalize(normalize(node));
-}
-
-/**
  * Check if a NormalForm represents zero (exact detection)
  */
 function isZeroForm(form: NormalForm): boolean {
@@ -146,7 +138,7 @@ export function matrixAdd(a: MatrixNode, b: MatrixNode): MatrixNode {
 		for (let j = 0; j < a.rows[i].length; j++) {
 			// Create symbolic addition and simplify with exact arithmetic
 			const sum = add(a.rows[i][j], b.rows[i][j]);
-			row.push(simplify(sum));
+			row.push(canonicalForm(sum));
 		}
 		resultRows.push(row);
 	}
@@ -180,7 +172,7 @@ export function matrixSubtract(a: MatrixNode, b: MatrixNode): MatrixNode {
 		for (let j = 0; j < a.rows[i].length; j++) {
 			// Create symbolic subtraction and simplify with exact arithmetic
 			const diff = subtract(a.rows[i][j], b.rows[i][j]);
-			row.push(simplify(diff));
+			row.push(canonicalForm(diff));
 		}
 		resultRows.push(row);
 	}
@@ -200,7 +192,7 @@ export function scalarMultiply(scalar: MathNode, m: MatrixNode): MatrixNode {
 		for (let j = 0; j < m.rows[i].length; j++) {
 			// Create symbolic multiplication and simplify with exact arithmetic
 			const prod = multiply(scalar, m.rows[i][j], 'implicit');
-			row.push(simplify(prod));
+			row.push(canonicalForm(prod));
 		}
 		resultRows.push(row);
 	}
@@ -239,7 +231,7 @@ export function matrixMultiply(a: MatrixNode, b: MatrixNode): MatrixNode {
 				element = element === null ? term : add(element, term);
 			}
 			// Simplify with exact arithmetic
-			row.push(simplify(element!));
+			row.push(canonicalForm(element!));
 		}
 		resultRows.push(row);
 	}
@@ -289,7 +281,7 @@ export function trace(m: MatrixNode): MathNode {
 	}
 
 	// Simplify with exact arithmetic
-	return simplify(sum!);
+	return canonicalForm(sum!);
 }
 
 // =============================================================================
@@ -383,7 +375,7 @@ function computeDeterminant(m: MatrixNode): MathNode {
 		const ad = multiply(m.rows[0][0], m.rows[1][1], 'implicit');
 		const bc = multiply(m.rows[0][1], m.rows[1][0], 'implicit');
 		const det = subtract(ad, bc);
-		return simplify(det);
+		return canonicalForm(det);
 	}
 
 	// General case: cofactor expansion along first row
@@ -397,7 +389,7 @@ function computeDeterminant(m: MatrixNode): MathNode {
 		result = result === null ? signedTerm : add(result, signedTerm);
 	}
 
-	return simplify(result!);
+	return canonicalForm(result!);
 }
 
 /**
@@ -440,7 +432,7 @@ function computeDeterminantWithSteps(
 		const ad = multiply(a, d, 'implicit');
 		const bc = multiply(b, c, 'implicit');
 		const det = subtract(ad, bc);
-		const result = simplify(det);
+		const result = canonicalForm(det);
 
 		// Step: apply 2x2 formula (summarized)
 		recorder.recordStep(
@@ -453,8 +445,8 @@ function computeDeterminantWithSteps(
 
 		// Step: detailed computation (detailed only)
 		if (verbosity === 'detailed') {
-			const adSimplified = simplify(ad);
-			const bcSimplified = simplify(bc);
+			const adSimplified = canonicalForm(ad);
+			const bcSimplified = canonicalForm(bc);
 			recorder.recordStep(
 				'det-result',
 				`det = ${formatNode(a)} \\times ${formatNode(d)} - ${formatNode(b)} \\times ${formatNode(c)} = ${formatNode(adSimplified)} - ${formatNode(bcSimplified)} = ${formatNode(result)}`,
@@ -495,7 +487,7 @@ function computeDeterminantCofactorWithSteps(
 		const element = m.rows[0][j];
 		const minorMatrix = getMinorMatrix(m, 0, j);
 		const minorDet = computeDeterminant(minorMatrix);
-		const minorDetSimplified = simplify(minorDet);
+		const minorDetSimplified = canonicalForm(minorDet);
 
 		// Build term: element * minorDet (with sign)
 		const term = multiply(element, minorDetSimplified, 'implicit');
@@ -518,8 +510,8 @@ function computeDeterminantCofactorWithSteps(
 			);
 
 			const cofactorValue =
-				j % 2 === 0 ? minorDetSimplified : simplify(opposite(minorDetSimplified));
-			const termValue = simplify(signedTerm);
+				j % 2 === 0 ? minorDetSimplified : canonicalForm(opposite(minorDetSimplified));
+			const termValue = canonicalForm(signedTerm);
 			recorder.recordStep(
 				'compute-cofactor',
 				describeCofactor(0, j, formatNode(cofactorValue)) +
@@ -531,7 +523,7 @@ function computeDeterminantCofactorWithSteps(
 		}
 	}
 
-	const result = simplify(detExpr!);
+	const result = canonicalForm(detExpr!);
 
 	// Step: sum cofactors (summarized)
 	recorder.recordStep(
@@ -632,8 +624,14 @@ function computeInverse(m: MatrixNode): MatrixNode {
 		const d = m.rows[1][1];
 
 		const resultRows: MathNode[][] = [
-			[simplify(divide(d, det, 'fraction')), simplify(divide(opposite(b), det, 'fraction'))],
-			[simplify(divide(opposite(c), det, 'fraction')), simplify(divide(a, det, 'fraction'))]
+			[
+				canonicalForm(divide(d, det, 'fraction')),
+				canonicalForm(divide(opposite(b), det, 'fraction'))
+			],
+			[
+				canonicalForm(divide(opposite(c), det, 'fraction')),
+				canonicalForm(divide(a, det, 'fraction'))
+			]
 		];
 
 		return matrix(resultRows, { matrixType: m.matrixType });
@@ -706,8 +704,11 @@ function computeInverse2x2WithSteps(
 
 	// A^{-1} = (1/det) * [[d, -b], [-c, a]]
 	const resultRows: MathNode[][] = [
-		[simplify(divide(d, det, 'fraction')), simplify(divide(opposite(b), det, 'fraction'))],
-		[simplify(divide(opposite(c), det, 'fraction')), simplify(divide(a, det, 'fraction'))]
+		[
+			canonicalForm(divide(d, det, 'fraction')),
+			canonicalForm(divide(opposite(b), det, 'fraction'))
+		],
+		[canonicalForm(divide(opposite(c), det, 'fraction')), canonicalForm(divide(a, det, 'fraction'))]
 	];
 
 	const result = matrix(resultRows, { matrixType: m.matrixType });
@@ -810,11 +811,11 @@ function computeInverseGaussJordanWithSteps(
 		if (!isOneForm(pivotForm)) {
 			// scaleFactor = 1/pivot
 			for (let j = 0; j < 2 * n; j++) {
-				augmented[col][j] = simplify(divide(augmented[col][j], pivot, 'fraction'));
+				augmented[col][j] = canonicalForm(divide(augmented[col][j], pivot, 'fraction'));
 			}
 
 			// Step: row scale (summarized)
-			const scaleFactorDisplay = formatNode(simplify(divide(number('1'), pivot, 'fraction')));
+			const scaleFactorDisplay = formatNode(canonicalForm(divide(number('1'), pivot, 'fraction')));
 			recorder.recordStep(
 				'row-scale',
 				describeRowScale(col, scaleFactorDisplay),
@@ -846,11 +847,11 @@ function computeInverseGaussJordanWithSteps(
 					// row = row - factor * pivotRow
 					for (let j = 0; j < 2 * n; j++) {
 						const term = multiply(factor, augmented[col][j], 'implicit');
-						augmented[row][j] = simplify(subtract(augmented[row][j], term));
+						augmented[row][j] = canonicalForm(subtract(augmented[row][j], term));
 					}
 
 					// Step: row add (summarized)
-					const negFactor = simplify(opposite(factor));
+					const negFactor = canonicalForm(opposite(factor));
 					recorder.recordStep(
 						'row-add',
 						describeRowAdd(row, col, formatNode(negFactor)),
@@ -956,7 +957,7 @@ function gaussJordanInverseSymbolic(m: MatrixNode): MatrixNode {
 		// Scale pivot row if pivot is not 1
 		if (!isOneForm(pivotForm)) {
 			for (let j = 0; j < 2 * n; j++) {
-				augmented[col][j] = simplify(divide(augmented[col][j], pivot, 'fraction'));
+				augmented[col][j] = canonicalForm(divide(augmented[col][j], pivot, 'fraction'));
 			}
 		}
 
@@ -970,7 +971,7 @@ function gaussJordanInverseSymbolic(m: MatrixNode): MatrixNode {
 					// row = row - factor * pivotRow
 					for (let j = 0; j < 2 * n; j++) {
 						const term = multiply(factor, augmented[col][j], 'implicit');
-						augmented[row][j] = simplify(subtract(augmented[row][j], term));
+						augmented[row][j] = canonicalForm(subtract(augmented[row][j], term));
 					}
 				}
 			}

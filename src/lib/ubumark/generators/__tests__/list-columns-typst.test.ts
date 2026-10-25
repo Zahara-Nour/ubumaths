@@ -56,7 +56,7 @@ describe('Typst — liste numérotée en colonnes', () => {
 
 	it('sous-liste en colonnes : style de sa profondeur (a)), liste principale normale', () => {
 		const code = typst('1. Calculer :\n   :colonnes 3\n   a. x\n   b. y\n   c. z\n2. Fin.');
-		expect(code).toContain('#ubu-item(numbering("1)", 1), w: "1)")[Calculer');
+		expect(code).toContain('#ubu-item(numbering("1)", 1), w: "1)", tete: [Calculer :])');
 		expect(cellules(code)).toEqual([
 			{ start: 1, numbering: 'a)' },
 			{ start: 2, numbering: 'a)' },

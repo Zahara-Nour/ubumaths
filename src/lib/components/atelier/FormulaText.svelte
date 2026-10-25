@@ -37,7 +37,7 @@
 </script>
 
 {#each parts as part, index (index)}{#if part.markup !== null}<span class="formule"
-			><span aria-hidden="true"
+			><span aria-hidden="true" data-latex={part.text}
 				><!-- eslint-disable-next-line svelte/no-at-html-tags -- toLatex ou liste blanche, voir l'en-tête -->{@html part.markup}</span
 			><span class="sr-only">{part.spoken}</span></span
 		>{:else}{part.text}{/if}{/each}

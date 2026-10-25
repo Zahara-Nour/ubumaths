@@ -69,8 +69,7 @@ import {
 	toStandardForm,
 	detectVariable,
 	unwrapGrouping,
-	unwrapGroupingMembers,
-	getPolynomialDegree
+	unwrapGroupingMembers
 } from './classify';
 import { createStepRecorder } from './step-recorder';
 import { linearSolver } from './solvers/linear';
@@ -90,7 +89,14 @@ import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeNumericValue } from '../eval/numeric-value';
 import { compile } from '../eval/compile';
 import { findFirst } from '../transforms';
-import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM, denormalize } from '../normal';
+import {
+	normalize,
+	normalFormsEquivalent,
+	ZERO_NORMAL_FORM,
+	denormalize,
+	canonicalForm,
+	polynomialCoefficients
+} from '../normal';
 import {
 	number,
 	equals,
@@ -142,7 +148,6 @@ import {
 } from '../common/segment-names';
 import { greaterThanInterval, intervalDomain } from '../domain/factory';
 import { isNegativeType, isZeroType } from '../numtype';
-import { extractQuadraticCoefficients } from './solvers/quadratic';
 import { toLatex } from '../latex-generator';
 import { segmentLengthOracle } from '../assumptions';
 // Import direct, pas le baril `rule-sets/index.ts` (cycle de chunk documenté
@@ -1948,14 +1953,11 @@ function positiveSquareRoot(
 	variable: string,
 	segments: ReadonlyMap<string, SegmentLengthNode>
 ): { readonly square: MathNode; readonly root: MathNode } | null {
-	const expanded = denormalize(normalize(toStandardForm(equation)));
-	if (getPolynomialDegree(expanded, variable) !== 2) return null;
-	const coefficients = extractQuadraticCoefficients(expanded, variable);
-	if (coefficients === null || !isZeroNode(denormalize(normalize(coefficients.b)))) return null;
-	const square = variablesAsSegments(
-		denormalize(normalize(divide(opposite(coefficients.c), coefficients.a, 'fraction'))),
-		segments
-	);
+	const coefficients = polynomialCoefficients(toStandardForm(equation), variable, 2);
+	if (coefficients === null) return null;
+	const [c, b, a] = coefficients;
+	if (isZeroNode(a) || !isZeroNode(b)) return null;
+	const square = variablesAsSegments(canonicalForm(divide(opposite(c), a, 'fraction')), segments);
 	const radical = func('sqrt', [square]);
 	const assumptions = segmentLengthOracle(undefined, [radical]);
 	const root = denormalize(normalize(radical, assumptions && { assumptions }));

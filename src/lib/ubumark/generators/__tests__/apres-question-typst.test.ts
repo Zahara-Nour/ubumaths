@@ -43,12 +43,13 @@ describe('afterQuestion', () => {
 	});
 
 	// Empreintes figées, produites par le générateur d'avant les cadres (origin/main,
-	// 2026-10-15) : sans option, une liste se rend exactement comme avant
+	// 2026-10-15) : sans option, une liste se rend exactement comme avant ; seule
+	// différence voulue depuis : l'énoncé collé à ses sous-questions (`tete`, 2026-10-26)
 	it.each([
 		[
 			'liste imbriquée',
 			'1. UN\n   1. UNA\n   2. UNB\n2. DEUX',
-			'\n#ubu-item(numbering("1)", 1), w: "1)")[UN\n\n#ubu-item(numbering("a)", 1), w: "a)")[UNA]\n#ubu-item(numbering("a)", 2), w: "a)")[UNB]]\n#ubu-item(numbering("1)", 2), w: "1)")[DEUX]'
+			'\n#ubu-item(numbering("1)", 1), w: "1)", tete: [UN])[#ubu-item(numbering("a)", 1), w: "a)")[UNA]\n#ubu-item(numbering("a)", 2), w: "a)")[UNB]]\n#ubu-item(numbering("1)", 2), w: "1)")[DEUX]'
 		],
 		[
 			'liste en colonnes',
@@ -74,6 +75,9 @@ describe('afterQuestion', () => {
  * insécable tout un énoncé long.
  */
 describe('le cadre emmène ce qui le précède', () => {
+	/** Le corps, sans l'en-tête (dont `ubu-item` contient un bloc `sticky`) */
+	const corps = (out: string) => out.split('// ubumark: fin de l’en-tête')[1];
+
 	/** Le bloc Typst qui contient `marker`, depuis l'ouverture `#block(` la plus proche */
 	function enclosingBlock(out: string, marker: string): string {
 		return out.slice(out.lastIndexOf('#block(', out.indexOf(marker)), out.indexOf(marker));
@@ -88,7 +92,7 @@ describe('le cadre emmène ce qui le précède', () => {
 	it('question à sous-questions : seule la dernière sous-question est collée au cadre', () => {
 		const out = typst((i) => `MARQUE${i}`);
 		expect(enclosingBlock(out, 'UNB')).toContain('sticky: true');
-		expect(enclosingBlock(out, 'UNA')).not.toContain('sticky: true');
+		expect(out).toContain('tete: [UN])[#ubu-item(numbering("a)", 1), w: "a)")[UNA]');
 		// La question entière reste sécable
 		expect(out.slice(0, out.indexOf('UNA'))).not.toContain('breakable: false');
 	});
@@ -99,7 +103,7 @@ describe('le cadre emmène ce qui le précède', () => {
 			keepEndWithNext: true
 		});
 		expect(enclosingBlock(paragraphs, 'FIN')).toContain('sticky: true');
-		expect(paragraphs.slice(0, paragraphs.indexOf('DEBUT'))).not.toContain('sticky');
+		expect(corps(paragraphs).slice(0, corps(paragraphs).indexOf('DEBUT'))).not.toContain('sticky');
 
 		// Liste finale : son dernier élément seulement
 		const list = generateTypst(parseMarkdown('1. PREMIER\n2. DERNIER'), {
@@ -107,6 +111,6 @@ describe('le cadre emmène ce qui le précède', () => {
 			keepEndWithNext: true
 		});
 		expect(enclosingBlock(list, 'DERNIER')).toContain('sticky: true');
-		expect(list.slice(0, list.indexOf('PREMIER'))).not.toContain('sticky');
+		expect(corps(list).slice(0, corps(list).indexOf('PREMIER'))).not.toContain('sticky');
 	});
 });
