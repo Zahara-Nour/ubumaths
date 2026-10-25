@@ -84,7 +84,8 @@ T4 = point_sur(a, 1, couleur="orange")`;
 	// ==========================================================================
 	// point_sur(courbe) — point glissant sur fonction y=f(x)
 	// ==========================================================================
-	const curveDsl = `f = courbe("y = x^2 - 2", couleur="bleu")
+	const curveDsl = `unite_angle("radians")
+f = courbe("y = x^2 - 2", couleur="bleu")
 P = point_sur(f, -1.5, couleur="rouge")
 g = courbe("y = sin(x)", couleur="vert")
 Q = point_sur(g, 1, couleur="rouge")

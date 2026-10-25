@@ -9,7 +9,8 @@ d4 = courbe("x = 3", couleur="violet")
 d5 = courbe("3*x + y - 6", couleur="orange")
 d6 = courbe("y = -x", couleur="cyan")`;
 
-	const functionDsl = `f1 = courbe("y = x^2", couleur="bleu")
+	const functionDsl = `unite_angle("radians")
+f1 = courbe("y = x^2", couleur="bleu")
 f2 = courbe("y = sin(x)", couleur="rouge")
 f3 = courbe("y = 1/x", couleur="vert")
 f4 = courbe("y = sqrt(x)", couleur="violet")
@@ -33,7 +34,8 @@ Z = zeros(g, couleur="vert")`;
 	const deriveeExpDsl = `f = courbe("y = exp(x)", couleur="bleu")
 g = derivee(f, couleur="rouge", trait="tirets")`;
 
-	const deriveeSinCascadeDsl = `f = courbe("y = sin(x)", couleur="bleu")
+	const deriveeSinCascadeDsl = `unite_angle("radians")
+f = courbe("y = sin(x)", couleur="bleu")
 g1 = derivee(f, couleur="rouge")
 g2 = derivee(g1, couleur="vert")
 g3 = derivee(g2, couleur="violet")`;
@@ -59,7 +61,8 @@ Z3 = zeros(c3, couleur="vert")
 Z4 = zeros(c4, couleur="violet")
 Z5 = zeros(c5, couleur="orange")`;
 
-	const implicitDsl = `c1 = courbe("x^3 + y^3 - 3*x*y = 0", couleur="bleu")
+	const implicitDsl = `unite_angle("radians")
+c1 = courbe("x^3 + y^3 - 3*x*y = 0", couleur="bleu")
 c2 = courbe("x^4 + y^4 - 1 = 0", couleur="rouge")
 c3 = courbe("sin(x) + cos(y) - 1 = 0", couleur="vert")
 c4 = courbe("x^2*y - y^3 - x^2 + y = 0", couleur="violet")`;
