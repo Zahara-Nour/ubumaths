@@ -33,6 +33,8 @@ export interface MathouDecorationInfo<Id extends MathouCatalogId = MathouDecorat
 	price: number;
 	/** Fin du libellé du journal des récompenses (« Chatterie : cocarde achetée ») */
 	purchaseLabel: string;
+	/** Nom au féminin pluriel (« Portées ») : les lunettes, pas le monocle */
+	plural?: true;
 }
 
 // Constantes
@@ -111,13 +113,15 @@ export const MATHOU_GLASSES: readonly MathouGlassesInfo[] = [
 		id: 'round_glasses',
 		name: 'Lunettes rondes',
 		price: 10,
-		purchaseLabel: 'lunettes rondes achetées'
+		purchaseLabel: 'lunettes rondes achetées',
+		plural: true
 	},
 	{
 		id: 'sunglasses',
 		name: 'Lunettes de soleil',
 		price: 10,
-		purchaseLabel: 'lunettes de soleil achetées'
+		purchaseLabel: 'lunettes de soleil achetées',
+		plural: true
 	},
 	{ id: 'monocle', name: 'Monocle', price: 20, purchaseLabel: 'monocle acheté' },
 	{ id: 'pince_nez', name: 'Pince-nez', price: 20, purchaseLabel: 'pince-nez acheté' },
@@ -125,7 +129,8 @@ export const MATHOU_GLASSES: readonly MathouGlassesInfo[] = [
 		id: 'spiral_glasses',
 		name: 'Lunettes à gidouille',
 		price: 40,
-		purchaseLabel: 'lunettes à gidouille achetées'
+		purchaseLabel: 'lunettes à gidouille achetées',
+		plural: true
 	}
 ];
 

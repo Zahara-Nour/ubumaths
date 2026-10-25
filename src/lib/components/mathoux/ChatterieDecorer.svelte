@@ -106,9 +106,8 @@
 			items: MATHOU_GLASSES,
 			wearPath: '/api/student/mathoux/decorations/wear-glasses',
 			// Les lunettes, mais le monocle et le pince-nez
-			agreement: (info) => (info.name.startsWith('Lunettes') ? 'fp' : 'm'),
-			removed: (info) =>
-				info.name.startsWith('Lunettes') ? 'Lunettes retirées' : `${info.name} retiré`,
+			agreement: (info) => (info.plural ? 'fp' : 'm'),
+			removed: (info) => (info.plural ? 'Lunettes retirées' : `${info.name} retiré`),
 			awake: true
 		},
 		{

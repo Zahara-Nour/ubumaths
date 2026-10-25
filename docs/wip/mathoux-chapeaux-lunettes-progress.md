@@ -12,8 +12,8 @@ _Mis à jour le 2026-10-25, PR 2 (code) en cours._
   avec la base en intégration), dessins `mathou-chapeaux-lunettes.ts`, rendu `MathouAvatar`, routes
   `wear-glasses` / `wear-hat`, mémoire, nouveautés, export RGPD, Chatterie (4 rangées), Marché, vue
   prof, doc. Tests verts (unitaires, client, intégration 72/72), typecheck 0.
-- **Prochaine action** : revues (`code-reviewer` + `security-auditor`, routes API et export RGPD) →
-  CI verte → merge. Puis recette par David (Chatterie, réveil en fondu, grand matou).
+- **Prochaine action** : revues faites (aucun bloquant, mineurs corrigés) → CI verte de #1747 →
+  merge. Puis recette par David (Chatterie, réveil en fondu, grand matou).
 - **En attente de David** : rien.
 - **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; en
   sieste, lunettes et chapeau ne se dessinent pas : les rangées « Yeux » et « Tête » de « Décorer »
@@ -73,3 +73,6 @@ Bicorne : pas au catalogue.
   de la planche, rendus en `DecorationShape` : `fillOpacity` et `dash` ajoutés), rendu (lunettes
   après les moustaches, chapeau à la place de la couronne, fondu `remis` au réveil), routes,
   mémoire, nouveautés, export, Chatterie, Marché, vue prof, doc.
+- 2026-10-25 — PR 2 #1747 ouverte. Audit sécurité (Opus) : rien. Revue (Sonnet) : dessins fidèles
+  à la planche, 3 mineurs → accord par `plural` dans le catalogue (plus par le nom), instantané des
+  dix dessins ; le cast `null as string` (comme `wearMathouCollar`) laissé.
