@@ -5,16 +5,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 2 codée, en revue._
+_Mis à jour le 2026-10-25, après #1725._
 
-- **État** : PR 1 (#1714) en prod. PR 2 (code) sur `feat/mathoux-colliers-code` : tout codé,
-  tests verts (unitaires, client, intégration), doc système à jour ; revue + audit en cours.
-- **Prochaine action** : corriger les findings, ouvrir la PR, CI, merge.
-- **En attente de David** : son œil sur le choix « le pendentif passe devant la décoration de
-  panse » (chaton chargé quand les deux sont portés).
-- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; base
-  locale sans élève de démo ; un seul compte prof autorisé dans les tests.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-colliers`, `feat/mathoux-colliers-code`.
+- **État** : CLOS. Migration (#1714) en prod ; code (#1725) mergé sur `main`, pas encore en prod
+  (part au prochain `deploy:prod`, demandé par David). Doc durable versée dans
+  `docs/systeme/mathoux.md` § Colliers.
+- **Prochaine action** : aucune pour ce chantier. Vérification à l'œil notée dans
+  `docs/wip/verifications-manuelles.md` (#1725). Archiver ce journal au prochain passage dans le
+  code Mathoux (quatre commentaires de code et de test y renvoient : les corriger dans la même PR).
+- **En attente de David** : rien (choix du pendentif devant la panse et du message « décoration »
+  validés le 2026-10-25).
+- **Pièges en cours** : —
+- **Worktree / branche** : supprimés après #1725.
 
 ## Phase 0 — décisions (2026-10-25)
 
@@ -62,3 +64,6 @@ acceptées :
   dessin montrant aussi l'autre emplacement ; vitrine « Sur la panse » / « Au cou » ; vue prof.
   Rendu réel vérifié (4 colliers × stades × sieste × cumul) : chez le chaton, le pendentif touchait
   la décoration de panse qui le recouvrait → dessiné après elle (il passe devant).
+- 2026-10-25 — revue (Sonnet) et audit (Opus) de #1725 : aucun bloquant ; test de transformation
+  de stade ajouté. David valide : pendentif devant la décoration de panse, message « Tu n'as pas
+  encore cette décoration » gardé pour un collier. #1725 mergée (CI verte sur b7c0e4e41).
