@@ -20,7 +20,7 @@ import { isSolverFailure } from './types';
 import { divide, equals, func, number, opposite } from '../factory';
 import { denormalize, normalize } from '../normal';
 import { getVariables } from '../eval/substitute';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 import { flattenSumShallow, type SignedTerm } from '../flatten';
 import { nodesEqual } from '../normal/hash';
 import { P } from '../pattern/builder';
@@ -66,12 +66,8 @@ export function readTrigTerm(
 }
 
 function nonZero(node: MathNode): boolean {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) && Math.abs(value) > 1e-12;
-	} catch {
-		return false;
-	}
+	const value = computeNumericValue(node);
+	return value !== null && Math.abs(value) > 1e-12;
 }
 
 /**

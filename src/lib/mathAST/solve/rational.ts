@@ -27,6 +27,7 @@ import { denormalize, normalize } from '../normal';
 import { equals, number } from '../factory';
 import { hasVariable } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 import { substitute } from '../eval/substitute';
 import { mapNode } from '../transforms';
 import { computeDomain } from '../domain/compute';
@@ -337,15 +338,8 @@ export function collectDenominators(expr: MathNode, variable: string): MathNode[
  */
 function ensureApproximate(s: Solution): Solution {
 	if (s.approximate !== undefined) return s;
-	try {
-		const approx = evaluateNodeToApproximatedNumber(s.value);
-		if (Number.isFinite(approx)) {
-			return { ...s, approximate: approx };
-		}
-	} catch {
-		// fall through
-	}
-	return s;
+	const approx = computeNumericValue(s.value);
+	return approx !== null ? { ...s, approximate: approx } : s;
 }
 
 /**

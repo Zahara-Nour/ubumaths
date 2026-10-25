@@ -87,6 +87,7 @@ import { expandOddRootPowers } from '../common/odd-root-power';
 import { solveByPowerSubstitution } from './power-substitution';
 import { containsDecimal, solveConstantBaseExponential } from './constant-base-exponential';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 import { compile } from '../eval/compile';
 import { findFirst } from '../transforms';
 import { normalize, normalFormsEquivalent, ZERO_NORMAL_FORM, denormalize } from '../normal';
@@ -1671,13 +1672,8 @@ function tryConstantDenominator(
 	const core = isOpposite(expr) ? expr.operand : expr;
 	if (!isDivision(core)) return null;
 	if (getVariables(core.denominator).size > 0) return null;
-	let denominator: number;
-	try {
-		denominator = evaluateNodeToApproximatedNumber(core.denominator);
-	} catch {
-		return null;
-	}
-	if (!Number.isFinite(denominator) || Math.abs(denominator) < 1e-12) return null;
+	const denominator = computeNumericValue(core.denominator);
+	if (denominator === null || Math.abs(denominator) < 1e-12) return null;
 	const result = solve(equals(core.numerator, number('0')), {
 		variable,
 		verbosity: opts.verbosity

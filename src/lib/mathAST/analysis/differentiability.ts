@@ -63,6 +63,7 @@ import {
 	describePeriodicNonDifferentiability,
 	summarizeDifferentiabilityResult
 } from './differentiability-steps';
+import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
 // Default Options
@@ -420,7 +421,7 @@ function findAbsPatterns(
 
 		for (const zero of zeros) {
 			// Check if zero is in the standard interval
-			const zeroValue = tryEvaluateNumeric(zero);
+			const zeroValue = computeNumericValue(zero);
 			if (zeroValue !== null) {
 				if (zeroValue < opts.standardInterval.min || zeroValue > opts.standardInterval.max) {
 					continue;
@@ -490,7 +491,7 @@ function findFractionalPowerPatterns(
 
 		for (const zero of zeros) {
 			// Check if zero is in the standard interval
-			const zeroValue = tryEvaluateNumeric(zero);
+			const zeroValue = computeNumericValue(zero);
 			if (zeroValue !== null) {
 				if (zeroValue < opts.standardInterval.min || zeroValue > opts.standardInterval.max) {
 					continue;
@@ -517,7 +518,7 @@ function findFractionalPowerPatterns(
 		const zeros = findArgumentZeros(arg, variable);
 
 		for (const zero of zeros) {
-			const zeroValue = tryEvaluateNumeric(zero);
+			const zeroValue = computeNumericValue(zero);
 			if (zeroValue !== null) {
 				if (zeroValue < opts.standardInterval.min || zeroValue > opts.standardInterval.max) {
 					continue;
@@ -597,7 +598,7 @@ function analyzePointDifferentiability(
 	if (!inDomain) {
 		// Double-check: if containsNode returned false, it might be due to
 		// inconclusive symbolic comparison. Try numeric as validation.
-		const pointValue = tryEvaluateNumeric(point);
+		const pointValue = computeNumericValue(point);
 		if (pointValue !== null) {
 			isOnBoundary = !containsValue(domain, pointValue);
 		}
@@ -707,7 +708,7 @@ function computeAbsDerivativesAtZero(
 			// Determine sign of f(x) on each side of the zero
 			// to know which side gives positive vs negative derivative
 			const epsilon = 1e-6;
-			const pointValue = tryEvaluateNumeric(point) ?? 0;
+			const pointValue = computeNumericValue(point) ?? 0;
 
 			const leftX = pointValue - epsilon;
 			const rightX = pointValue + epsilon;
@@ -853,7 +854,7 @@ function evaluateOneSidedDerivativeLimit(
 				return result.value.sign === 'positive' ? 'infinite' : '-infinite';
 			}
 			// Check if it's a very large number
-			const numValue = tryEvaluateNumeric(result.value);
+			const numValue = computeNumericValue(result.value);
 			if (numValue !== null && Math.abs(numValue) > 1e10) {
 				return numValue > 0 ? 'infinite' : '-infinite';
 			}
@@ -898,7 +899,7 @@ function approximateDerivativeLimitFromDerivative(
 	point: MathNode,
 	direction: 'left' | 'right'
 ): DerivativeLimit {
-	const pointValue = tryEvaluateNumeric(point);
+	const pointValue = computeNumericValue(point);
 	if (pointValue === null) return 'undefined';
 
 	// Use progressively smaller epsilon values to detect behavior
@@ -1164,8 +1165,8 @@ function enumeratePeriodicPoints(
 ): NonDifferentiabilityCandidate[] {
 	const candidates: NonDifferentiabilityCandidate[] = [];
 
-	const baseValue = tryEvaluateNumeric(basePoint);
-	const periodValue = tryEvaluateNumeric(period);
+	const baseValue = computeNumericValue(basePoint);
+	const periodValue = computeNumericValue(period);
 
 	if (baseValue === null || periodValue === null || periodValue <= 0) {
 		return candidates;
@@ -1214,8 +1215,8 @@ function extractFractionFromExponent(
 
 	// Handle direct division node: 2/3
 	if (node.type === 'division') {
-		const numValue = tryEvaluateNumeric(node.numerator);
-		const denValue = tryEvaluateNumeric(node.denominator);
+		const numValue = computeNumericValue(node.numerator);
+		const denValue = computeNumericValue(node.denominator);
 
 		if (numValue !== null && denValue !== null && denValue !== 0) {
 			const p = Math.round(numValue);
@@ -1228,7 +1229,7 @@ function extractFractionFromExponent(
 	}
 
 	// Handle numeric value (evaluate and extract fraction)
-	const numericValue = tryEvaluateNumeric(node);
+	const numericValue = computeNumericValue(node);
 	if (numericValue !== null) {
 		const frac = extractFraction(numericValue);
 		return { p: frac.p, q: frac.q, value: numericValue };
@@ -1276,7 +1277,7 @@ function normalizeSolutionToNumber(node: MathNode): MathNode {
 		return numericNode(formatNumber(val));
 	}
 
-	const numericValue = tryEvaluateNumeric(node);
+	const numericValue = computeNumericValue(node);
 	if (numericValue !== null) {
 		return numericNode(formatNumber(numericValue));
 	}
@@ -1310,7 +1311,7 @@ function detectSourceFromExpression(
 	// Check for fractional powers
 	const powers = findNodes(expr, (node) => node.type === 'superscript') as SuperscriptNode[];
 	for (const power of powers) {
-		const expValue = tryEvaluateNumeric(power.superscript);
+		const expValue = computeNumericValue(power.superscript);
 		if (expValue !== null && expValue > 0 && expValue < 1) {
 			const { p } = extractFraction(expValue);
 			return p % 2 === 0 ? 'fractional_power_cusp' : 'fractional_power_vertical';
@@ -1336,7 +1337,7 @@ function getNumericDerivativeValue(limit: DerivativeLimit): number | null {
 	if (limit === 'infinite' || limit === '-infinite' || limit === 'undefined') {
 		return null;
 	}
-	return tryEvaluateNumeric(limit);
+	return computeNumericValue(limit);
 }
 
 /**
@@ -1358,22 +1359,10 @@ function tryEvaluateAtPoint(expr: MathNode, variable: string, point: MathNode): 
 }
 
 /**
- * Try to evaluate a node to a number.
- */
-function tryEvaluateNumeric(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
-}
-
-/**
  * Get a unique key for a point (for deduplication).
  */
 function getPointKey(point: MathNode): string {
-	const value = tryEvaluateNumeric(point);
+	const value = computeNumericValue(point);
 	if (value !== null) {
 		return String(Math.round(value * 1e10) / 1e10);
 	}

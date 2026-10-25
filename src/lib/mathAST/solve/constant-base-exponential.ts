@@ -24,7 +24,6 @@ import { divide, equals, func, number, opposite, subtract } from '../factory';
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { denormalize, normalize } from '../normal';
 import { getVariables } from '../eval/substitute';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
@@ -32,6 +31,7 @@ import { getBindingNode, isProductSequenceBinding } from '../pattern/types';
 import { findNodes } from '../transforms';
 import { createStepRecorder } from './step-recorder';
 import { isSolverFailure } from './types';
+import { computeNumericValue } from '../eval/numeric-value';
 
 /** Les dénominateurs d'un exposant écrit en fraction exacte (4ⁿ = 2 → 1/2). */
 const EXACT_DENOMINATORS = [1, 2, 3, 4, 5, 6] as const;
@@ -42,21 +42,11 @@ const EXACT_TOLERANCE = 1e-9;
 /** Au-delà, un décimal n'est plus « tapé par l'élève » : la fraction reste. */
 const MAX_DECIMAL_PLACES = 6;
 
-/** Une valeur numérique, ou `null` si le nœud ne s'évalue pas. */
-function numericValue(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
-}
-
 /** Une base utilisable : sans lettre, > 0, ≠ 1 ; e seulement si `euler`. */
 function isConstantBase(node: MathNode, euler: boolean): boolean {
 	if (isEulerConstant(node)) return euler;
 	if (getVariables(node).size > 0) return false;
-	const value = numericValue(node);
+	const value = computeNumericValue(node);
 	return value !== null && value > 0 && Math.abs(value - 1) > EXACT_TOLERANCE;
 }
 
@@ -149,8 +139,8 @@ function linearValue(
 ): { node: MathNode; approximate: number } | null {
 	const form = affineForm(exponent, variable);
 	if (form === null) return null;
-	const alpha = numericValue(form.coefficient);
-	const beta = form.offset === null ? 0 : numericValue(form.offset);
+	const alpha = computeNumericValue(form.coefficient);
+	const beta = form.offset === null ? 0 : computeNumericValue(form.offset);
 	if (alpha === null || beta === null || Math.abs(alpha) < EXACT_TOLERANCE) return null;
 	const approximate = (approximateValue - beta) / alpha;
 	if (form.offset === null && Math.abs(alpha - 1) < EXACT_TOLERANCE) {
@@ -224,8 +214,8 @@ export function solveConstantBaseExponential(
 						expr,
 						denormalize(normalize(divide(opposite(rest), signedCoefficient, 'fraction')))
 					);
-		const targetValue = numericValue(target);
-		const baseValue = numericValue(base);
+		const targetValue = computeNumericValue(target);
+		const baseValue = computeNumericValue(base);
 		if (targetValue === null || baseValue === null) return null;
 
 		const recorder = createStepRecorder();

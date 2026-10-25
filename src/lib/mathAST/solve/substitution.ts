@@ -46,6 +46,7 @@ import {
 import { findNodes, mapNode } from '../transforms';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 import { normalize, denormalize } from '../normal';
 import { nodesEqual } from '../normal/hash';
 import { isPolynomialIn } from './classify';
@@ -122,12 +123,8 @@ function dependsOn(node: MathNode, name: string): boolean {
 /** Une base constante utilisable : sans lettre, > 0, ≠ 1 (`2`, `4`, `0.5`). */
 function isConstantBase(node: MathNode): boolean {
 	if (getVariables(node).size > 0) return false;
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) && value > 0 && Math.abs(value - 1) > 1e-12;
-	} catch {
-		return false;
-	}
+	const value = computeNumericValue(node);
+	return value !== null && value > 0 && Math.abs(value - 1) > 1e-12;
 }
 
 /** `(kind, argument[, base])` si le nœud est un atome candidat dépendant de l'inconnue. */
@@ -301,13 +298,8 @@ const MAX_CONSTANT_DENOMINATOR = 1000;
 
 /** Une constante positive écrite `p` ou `p/q` si c'en est une, sinon `null`. */
 function smallFraction(node: MathNode): MathNode | null {
-	let value: number;
-	try {
-		value = evaluateNodeToApproximatedNumber(node);
-	} catch {
-		return null;
-	}
-	if (!Number.isFinite(value) || value <= 0) return null;
+	const value = computeNumericValue(node);
+	if (value === null || value <= 0) return null;
 	for (let q = 1; q <= MAX_CONSTANT_DENOMINATOR; q++) {
 		const p = Math.round(value * q);
 		if (p >= 1 && Math.abs(value * q - p) < 1e-9 * q) {
@@ -548,12 +540,7 @@ function nonZeroDenominators(inU: MathNode, fresh: string, root: MathNode): Math
 /** Dédoublonnage numérique, ordre croissant. */
 function dedupe(solutions: readonly Solution[]): Solution[] {
 	const withValues = solutions.map((s) => {
-		let numeric: number;
-		try {
-			numeric = s.approximate ?? evaluateNodeToApproximatedNumber(s.value);
-		} catch {
-			numeric = Number.NaN;
-		}
+		const numeric = s.approximate ?? computeNumericValue(s.value) ?? Number.NaN;
 		// Racine paramétrée : pas de valeur approchée (NaN s'affichait « ≈ NaN »)
 		return { solution: Number.isFinite(numeric) ? { ...s, approximate: numeric } : s, numeric };
 	});

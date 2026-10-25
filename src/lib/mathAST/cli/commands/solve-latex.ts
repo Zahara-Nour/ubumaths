@@ -33,9 +33,9 @@ import {
 import { toLatex } from '../../latex-generator';
 import { toCustom } from '../../custom-generator';
 import { findNodes } from '../../transforms';
-import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { exactValueToShow } from '../../eval/exact-value';
 import { approximateSolutionsLatex } from '../approximation';
+import { computeNumericValue } from '../../eval/numeric-value';
 
 /** Plus grand coefficient de période écrit (`1000k\pi`) : au-delà, la famille n’est pas écrite. */
 const MAX_PERIOD_INTEGER = 1000;
@@ -75,16 +75,6 @@ function hasLogarithm(node: MathNode): boolean {
 	);
 }
 
-/** Une valeur numérique, ou `null`. */
-function numericValue(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
-}
-
 /** Les décimaux d'une écriture LaTeX, à la française : `0.8` → `0{,}8`. */
 function frenchDecimals(latex: string): string {
 	return latex.replace(/(\d)\.(\d)/g, '$1{,}$2');
@@ -105,7 +95,7 @@ export function logarithmicValueLatex(value: MathNode, approximate?: number): st
 	const tidied = tidyValue(value);
 	if (!hasLogarithm(tidied)) return null;
 	const written = frenchDecimals(toLatex(tidied));
-	const approximation = approximate ?? numericValue(value);
+	const approximation = approximate ?? computeNumericValue(value);
 	return approximation === null
 		? written
 		: `${written} \\approx ${frenchDecimals(rounded(approximation))}`;
@@ -119,7 +109,7 @@ export function logarithmicValueText(value: MathNode, approximate?: number): str
 	// Mis au propre comme le LaTeX : ln(3)/2, pas {1/2}ln(3)
 	const tidied = tidyValue(value);
 	if (!hasLogarithm(tidied)) return null;
-	const approximation = approximate ?? numericValue(value);
+	const approximation = approximate ?? computeNumericValue(value);
 	const written = toCustom(tidied);
 	return approximation === null ? written : `${written} ≈ ${rounded(approximation)}`;
 }
@@ -188,7 +178,7 @@ function gcd(a: number, b: number): number {
  * `solvers/transcendental.ts`) : 6π, 2·3π ou 18π/3 s'écrivent tous `6k\pi`.
  */
 function periodTerm(period: MathNode): PeriodTerm | null {
-	const value = numericValue(period);
+	const value = computeNumericValue(period);
 	if (value === null || value <= 0) return null;
 	const withPi = findNodes(period, isPiConstant).length > 0;
 	const ratio = withPi ? value / Math.PI : value;

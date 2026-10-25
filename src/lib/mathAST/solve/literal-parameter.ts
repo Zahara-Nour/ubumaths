@@ -53,7 +53,6 @@ import { mapNode } from '../transforms';
 import { flattenSumShallow, unflattenSum, flattenRelationChain } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { getVariables } from '../eval/substitute';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { denormalize, normalize } from '../normal';
 import { computeDomain } from '../domain/compute';
 import { intersect, isEmpty, isUniversal } from '../domain/algebra';
@@ -64,6 +63,7 @@ import { P } from '../pattern/builder';
 import { tryMatch } from '../pattern/match';
 import { getBindingNode, isProductSequenceBinding } from '../pattern/types';
 import { createStepRecorder } from './step-recorder';
+import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
 // Types
@@ -208,15 +208,6 @@ export function parameterCondition(
 // Une couche
 // =============================================================================
 
-function tryNumeric(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
-}
-
 function tidy(node: MathNode): MathNode {
 	return denormalize(normalize(node));
 }
@@ -245,7 +236,7 @@ function peel(core: MathNode, target: MathNode, variable: string): Layer | null 
 	}
 	const power = tryMatch(P.pow(P._('base', P.isFreeOf(variable)), u), core);
 	const base = power && getBindingNode(power, 'base');
-	const baseValue = base ? tryNumeric(base) : null;
+	const baseValue = base ? computeNumericValue(base) : null;
 	if (power && base && baseValue !== null && baseValue > 0 && baseValue !== 1) {
 		return {
 			argument: getBindingNode(power, 'u') ?? core,
@@ -300,7 +291,7 @@ function peel(core: MathNode, target: MathNode, variable: string): Layer | null 
 /** L'indice n d'une racine (2 sans indice), entier ≥ 2 ; `null` sinon. */
 function rootIndex(node: FunctionNode): number | null {
 	if (node.base === undefined) return 2;
-	const value = tryNumeric(node.base);
+	const value = computeNumericValue(node.base);
 	return value !== null && Number.isInteger(value) && value >= 2 ? value : null;
 }
 
@@ -359,7 +350,7 @@ export function tryLiteralParameter(
 	let target = isolated.target;
 	if (coeffFactors.length > 0) {
 		const coefficient = coeffFactors.reduce((all, f) => multiply(all, f, 'implicit'));
-		const value = tryNumeric(coefficient);
+		const value = computeNumericValue(coefficient);
 		if (value === null || value === 0) return null;
 		target = divide(target, coefficient, 'fraction');
 	}
