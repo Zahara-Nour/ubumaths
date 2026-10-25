@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1722 (Q49, point 2)._
+_Mis à jour le 2026-10-25, après #1727 (5f-4 solveur)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691), ~~5e D4~~ (#1696), ~~5f-1 `tidy`~~ (#1703), ~~5f-2 primitives~~ (#1708), ~~5f-3 limites~~ (#1710), ~~Q49 valeur d'intégrale~~ (#1717, #1722, § 80-82) mergés. Code pas en prod.
+- **État** : lot 5. ~~Q19~~ → … → ~~5f-3 limites~~ (#1710), ~~Q49~~ (#1717, #1722), ~~5f-4 solveur~~ (#1727, § 84) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (… → 5f restes : ~~5f-1~~ → ~~5f-2~~ → ~~5f-3~~ → ~~Q49~~ → **5f-4** → 5f-5) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5f-4 solveur (R8, Q46) — relire leur section du journal avant de coder.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703, #1708, #1710, #1717, #1722) ; 3 points d'écriture de Q49 laissés (§ 80 : exposant décimal, paramètre au dénominateur, `\dfrac{1}{6}a³` ; le point 2 corrigé, § 82) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
-- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc : `zz-tirages.mts` copié à la racine, `pnpm exec tsx`, `main.txt` = référence, TABLEAU zsh ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **PR sans CI = conflit avec `main`** (`mergeStateStatus` DIRTY) : fusionner `origin/main` dans la branche ; « Task killed: prettier » au pre-commit = une AUTRE tâche a échoué (lire la sortie entière) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** ; `git diff origin/main` (deux points) montre les commits de `main` en suppressions : fusionner `origin/main` avant de juger le diff.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-4` (à jour sur `origin/main` après #1722).
+- **Ordre des lots** : … → **5** (5f restes : ~~5f-1~~ → ~~5f-2~~ → ~~5f-3~~ → ~~Q49~~ → ~~5f-4~~ → **Q50 inéquations** → **Q51+Q52 solveur** → 5f-5) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : Q50 (§ 85) — conclusion et réponse d'une inéquation écrites comme une équation : bornes du `Domain` par `exactValueToShow` avant `describeDomain` (`quadratic-inequality.ts`, `rational-inequality.ts`, `_helpers.ts` ; `]1 / 2 ; +∞[` en texte), registre décimal des étapes (`stepsAsShown` étendu), ligne `x < 0,3` (`answerFor`, `solve-steps.ts`). Puis Q51+Q52 (§ 85-86), validés.
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1722, 5f-4) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64, à confirmer).
+- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; l'Atelier écrit `0{,}25` (assertion sur la virgule), le moteur `0.25` ; une sonde vitest : `console.log` muet, faire échouer un `expect` pour lire ; zsh ne découpe pas `$F` (tableau `F=(…)`) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **PR sans CI = conflit avec `main`** : fusionner `origin/main` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-q50` (partie d'`origin/main` après #1727).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1068,3 +1068,7 @@ CI verte, mergée. Vérification manuelle de #1717 mise à jour (π²/4, (e − 
 
 - **Q50 : oui** — inéquations : ligne de réponse et conclusion écrites comme les équations (`]−√2/2 ; √2/2[`, `x < 0,3`, vraie fraction au lieu de `1 / 2`). Petite PR après 5f-4.
 - **Q51 (x/4 = 0,5 → multiplier par 4)** et **Q52 (`0,5(x+1) = 2` : diviser par 0,5, puis soustraire 1)** : demandés par David ; comportements détaillés proposés (multiplier quand l'inconnue est divisée, inverse d'un coefficient fraction ; membre factorisé `k(…) = c` divisé par k, `−(…)` multiplié par −1, terme constant ôté d'abord, développer si x des deux côtés, parenthèses ôtées après un +, inéquations avec retournement) — **validation de ces comportements et de l'ordre (5f-4 → Q50 → Q51+Q52) en attente**. Cause du « pas d'étape » : refus `UndevelopedLinearForm` posé le 2026-10-08 (`membres-non-developpes.test.ts`) pour ne plus montrer d'étapes fausses ; la vraie résolution n'a jamais été écrite.
+
+## 86. 5f-4 mergé (#1727, 2026-10-25) ; Q51-Q52 validés (David : « je valide »)
+
+CI verte du premier coup, mergée. Vérification manuelle notée (5f-4). **Q51-Q52 validés tels que proposés** (§ 85) : multiplier quand l'inconnue est divisée (`x/4 = 0,5` → « On multiplie les deux membres par 4 »), inverse d'un coefficient fraction (`(2/3)x = 1` → × 3/2) ; `k(…) = c` divisé par k (`0,5(x+1) = 2` → `x + 1 = 4` → `x = 3`), `−(…)` multiplié par −1, terme constant ôté d'abord (`2(x+1) + 3 = 7`), développer si x des deux côtés (`3(x−1) = 2x + 1`), parenthèses ôtées après un + (`3 + (x−1) = 5`), mêmes règles pour les inéquations (sens retourné si négatif). Ordre validé : Q50 → Q51+Q52 (une PR « solveur »).
