@@ -766,8 +766,8 @@ test('#1620 — facteur commun simplifié avec sa condition', async ({ page }) =
 	expectStepsContaining(await steps(factored), 'On simplifie par le facteur commun, pour x ≠ −1');
 
 	expectLatex(await calc(page, '.dériver \\ln(3x)'), '\\dfrac{1}{x}');
-	// Ordre de la ligne ; l'Atelier répond x^x(ln(x) + 1) — à trancher par David
-	expectLatex(await calc(page, '.dériver x^x'), '(\\ln(x) + 1)x^x');
+	// Ordre de l'Atelier, retenu par David (2026-10-26)
+	expectLatex(await calc(page, '.dériver x^x'), 'x^x(\\ln(x) + 1)');
 
 	// En dernier : « Comment ? » de ce produit tombe sur le bug de #1674
 	const product = await calc(page, '.dériver x\\ln(x)');

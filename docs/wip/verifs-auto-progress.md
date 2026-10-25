@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1789._
+_Mis à jour le 2026-10-26, écarts tranchés (PR en cours)._
 
-- **État** : lot 4 MERGÉ (#1789) — 8 tests cartes dans `e2e/verifs/atelier-cartes.spec.ts` (#1305, #1307, #1309, #1315, #1328, #1337, #1338, carte f′ de #1703) ; `data-latex` sur les cartes calculées et les formules d'un refus ; sonde : `CARTES` + `@Action carte`. Rouges : 3 écarts à trancher + `each_key_duplicate` au bout de #1307 ; console : #1674, #1703, #1620 comme avant.
-- **Prochaine action** : lot 5 dans un worktree neuf (`git worktree add -b test/verifs-auto-5 ../ubumaths-wt-verifs-auto origin/main`) : lignes Atelier restantes (Graphe, Données, Géométrie). La sonde d'abord, les écarts à David.
-- **En attente de David** : #1309 `f(1)` 2,5 au lieu de 5/2 ; #1337 carte g sans « sur [0 ; +∞[ » ; #1338 `.réciproque sin` → « écris sin(…) » ; #1305 `a = 3 sur 4` refusé (« reste accepté » ?) ; #1620 `.dériver x^x`, ordre des facteurs. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **État** : lots 1-4 mergés (#1773, #1780, #1783, #1789) ; les 5 écarts tranchés par David le 2026-10-26 (branche `test/verifs-auto-ecarts`) : l'Atelier a raison, lignes et tests réécrits. Seuls rouges : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307).
+- **Prochaine action** : merger la PR des écarts, puis lot 5 dans un worktree neuf (`git worktree add -b test/verifs-auto-5 ../ubumaths-wt-verifs-auto origin/main`) : lignes Atelier restantes (Graphe, Données, Géométrie). La sonde d'abord, les écarts à David.
+- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
 - **Pièges en cours** : ports 5175-5178 pris → `lsof` (5179) ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; suite complète à froid avec 4 workers → délais dépassés, relancer à chaud ; `each_key_duplicate` casse « Comment ? » ; champ d'une carte : 1er clic après un calcul = focus rendu à la console (`typeInCard` reclique) ; Graphe = SVG (`path.function-curve[aria-label]`, `circle.endpoint-open/closed`) : relire un tracé par `expect.poll` ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retirés après #1789).
+- **Worktree / branche** : `../ubumaths-wt-verifs-auto` · `test/verifs-auto-ecarts`.
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -38,6 +38,10 @@ Vu en passant, hors des lignes (à montrer à David, rien changé) : `.intégrer
 Cartes : #1305 (sans `a = 3 sur 4`, à trancher), #1307, #1309, #1315 (thème clair ; sombre et /grapheur restent), #1328 (sans le dessin ni les 3 étapes dans Calcul), #1337, #1338 (sans le gris de y = x), carte f′ et bouton « Dériver » de #1703. Sonde étendue : `CARTES` après chaque ligne, `@Réciproque f` pour un clic de menu.
 
 Écarts vus (rien changé, à David) : `f(1)` de `max(2,5 ; x)` → 2,5 (la ligne : 5/2) ; carte `g(x) = f(x)+1` sans intervalle affiché (le Graphe l'applique) ; `.réciproque sin` demande des parenthèses ; `a = 3 sur 4` en erreur. Nouveau cas `each_key_duplicate` : « Comment ? » de `.résoudre f(x)=4` avec f sur `[0;+∞[`. Vu en passant : la légende du tableau de variations dit « Tableau de variations de la fonction x » (au lieu de f).
+
+## Écarts tranchés par David (2026-10-26)
+
+L'Atelier a raison, les lignes étaient périmées ou imprécises : #1305 `a = 3 sur 4` → carte rangée en erreur, sans refus d'intervalle ; #1309 `f(1)` → 2,5 (décimal tapé → décimal) ; #1337 l'héritage se lit par `.domaine g` (« ensemble hérité »), le champ ne montre que l'ensemble propre (décision d) ; #1338 `.réciproque sin(x)` (`sin` seul refusé depuis le 2026-10-06) ; #1620 `.dériver x^x` → `x^x(ln(x)+1)`, ordre de l'Atelier. #1305, #1309, #1337 sortent de la liste.
 
 ## Plan d'ensemble
 
