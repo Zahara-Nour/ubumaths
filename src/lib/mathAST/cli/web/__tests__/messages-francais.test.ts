@@ -48,10 +48,10 @@ describe('les erreurs de lecture courantes, en français', () => {
 		expect(line.error?.message ?? '').not.toMatch(ENGLISH);
 	});
 
-	it('le HTML du moteur aussi', () => {
-		const html = run('2+3)').outputHtml ?? '';
+	it('2+3) : ni la sortie ni le message n’ont d’en-tête anglais', () => {
+		const line = run('2+3)');
 
-		expect(html).not.toMatch(ENGLISH);
+		expect(`${line.output}\n${line.error?.message ?? ''}`).not.toMatch(ENGLISH);
 	});
 
 	it('un message inconnu de la table : une formule française, jamais l’anglais', () => {
@@ -70,20 +70,18 @@ describe('les erreurs de lecture courantes, en français', () => {
 // Revue : la traduction passait sur le HTML final (balises avalées, saisie recopiée réécrite)
 // et la formule générique écrasait des messages déjà français ou leur consigne
 describe('la traduction ne touche que le message', () => {
-	it('2+3) : le HTML garde ses balises et la saisie recopiée', () => {
-		const html = run('2+3)').outputHtml ?? '';
-
-		expect(html).toContain('« ) » inattendu ici</span>');
-		expect(html).toContain('2+3)');
-		expect(html).not.toMatch(/« \)<\/span>/);
+	it('2+3) : le message traduit', () => {
+		expect(run('2+3)').output).toContain('« ) » inattendu ici');
 	});
 
-	it('x + Unknown) : la saisie recopiée n’est pas réécrite', () => {
-		expect(run('x + Unknown)').outputHtml ?? '').toContain('x + Unknown)');
+	// La sortie texte ne recopie pas la saisie (seul l'ancien HTML le faisait, retiré le
+	// 2026-10-25) : on vérifie que les mots tapés ne changent pas la traduction
+	it('x + Unknown) : les mots tapés ne changent pas la traduction', () => {
+		expect(run('x + Unknown)').output).toBe('« ) » inattendu ici');
 	});
 
-	it('(2+3 : le HTML traduit aussi, malgré les guillemets échappés', () => {
-		expect(run('(2+3').outputHtml ?? '').toMatch(/Il manque « \) »/);
+	it('(2+3 : traduit aussi, avec ses guillemets', () => {
+		expect(run('(2+3').output).toMatch(/Il manque « \) »/);
 	});
 
 	it('f(x : il manque « ) »', () => {
@@ -113,7 +111,7 @@ describe('la traduction ne touche que le message', () => {
 
 		expect(line.output).toMatch(/Commande inconnue : \.unknown/);
 		expect(line.error?.message).toMatch(/Commande inconnue : \.unknown/);
-		expect(line.outputHtml ?? '').not.toMatch(/Hint|Type \.help/);
+		expect(line.output).not.toMatch(/Hint|Type \.help/);
 	});
 });
 
@@ -139,9 +137,10 @@ describe('les commandes sans argument et les consignes', () => {
 	);
 });
 
-describe('la saisie recopiée garde ses mots', () => {
+// Même remarque : la sortie texte ne recopie pas la saisie
+describe('des mots tapés qui ressemblent à un en-tête', () => {
 	it.each(['Hint: 2)', 'Parse error: 2)'])('%s', (input) => {
-		expect(run(input).outputHtml ?? '').toContain(input.replace(':', ':'));
+		expect(run(input).output).toBe('« ) » inattendu ici');
 	});
 });
 

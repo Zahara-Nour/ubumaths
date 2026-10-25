@@ -134,9 +134,8 @@ de tête retirés, tabulations et retours à la ligne supprimés partout (`java\
 - **`containsDangerousHtml` existe deux fois** : `src/lib/utils/sanitize.ts` (sans appelant) et
   `src/lib/server/sanitization.ts` (celle qu'on utilise). De même, `src/lib/utils/errorMonitoring.ts`
   a sa propre `sanitizeUrl` locale, sans rapport avec celle de `sanitize.ts`.
-- **`escapeHtml` existe en six exemplaires** : `src/lib/utils/html-escape.ts`,
+- **`escapeHtml` existe en cinq exemplaires** : `src/lib/utils/html-escape.ts`,
   `src/lib/components/markdown/utils.ts`, `src/lib/email-templates/parental-consent.ts`,
-  `src/lib/components/geometry/GeometryCanvas.svelte`,
-  `src/lib/mathAST/cli/web/output-formatter-web.ts`, `src/lib/whiteboard/core/pdf-export.ts`.
+  `src/lib/components/geometry/GeometryCanvas.svelte`, `src/lib/whiteboard/core/pdf-export.ts`.
 - `config.ts` et `RichTextEditor.svelte` citent encore `FormRichTextEditor.svelte`, fusionné
   dans `RichTextEditor` et absent du dépôt.

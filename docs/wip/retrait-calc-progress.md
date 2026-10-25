@@ -1,18 +1,17 @@
 ---
 title: Retrait de /calc — journal
 date: 2026-10-24
-status: #1709 et #1715 mergées — PR 4 (outputHtml) à faire
+status: #1709 et #1715 mergées — PR 4 (outputHtml) en cours
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1715._
+_Mis à jour le 2026-10-25, PR 4 en cours._
 
 - **État** : #1709 (`/calc` retirée) et #1715 (code mort du grapheur) mergées, sur `main`, pas en
   prod. Revue de #1715 : harnais `WithAtelier` sans grapheur, corrigé dans la PR.
-- **Prochaine action** : PR 4 — retirer `outputHtml` de `WebReplEngine` (HTML de chaque réponse,
-  `output-formatter-web.ts`, `htmlInFrench`, tests des messages à reporter sur `output`/`error`,
-  golden `statistics-commands.golden.json`). Puis fin de chantier : archiver ce journal.
+- **Prochaine action** : PR 4 (`outputHtml` retiré) écrite, vérifs vertes → revue, CI, merge.
+  Puis fin de chantier : archiver ce journal dans `docs/archive/wip/`.
 - **En attente de David** : rien (« supprime les », 2026-10-25).
 - **Pièges** : `docs:check-a-jour` réclame `statistiques.md` dès que `desk.svelte.ts` change.
 - **Worktree / branche** : PR 4 → `../ubumaths-wt-retrait-calc`, `chore/retrait-calc-4`.
@@ -143,3 +142,13 @@ le trouve lourd à l'usage.
 - Gardé : `chiphre-grapheur-state` dans `WORK_DATA_KEYS` (purge à la déconnexion).
 - `outputHtml` reporté en PR 4 : il traverse tout le moteur web (formateur HTML, messages en
   français, golden), pas un simple champ.
+
+### PR 4 — `outputHtml` retiré du moteur web (2026-10-25)
+
+- Supprimés : `cli/web/output-formatter-web.ts`, `htmlInFrench`, le champ `outputHtml` (et
+  `exactOutputHtml` / `decimalOutputHtml` de `CommandResult`), les branches HTML de `.solve` et
+  `.help` (le HTML de `.help` avait des rubriques absentes du texte, jamais affichées nulle part).
+- Tests des messages français reportés sur `output` / `error.message`. Perdu : la saisie recopiée
+  dans le HTML d'une erreur de lecture (`2+3)`), que le texte ne recopie pas.
+- Mesuré : 33 saisies (calculs, erreurs, `.solve` × 6, `.help`, modes, grandeurs, `.diff`,
+  `.simplify`…) → `output`, `error`, `latex`… identiques avant / après.
