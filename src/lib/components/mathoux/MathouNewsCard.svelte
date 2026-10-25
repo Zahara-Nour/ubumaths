@@ -64,6 +64,7 @@
 					raceIndex={news.items[0].raceIndex}
 					stage={news.items[0].stage}
 					decoration={news.items[0].decoration}
+					collar={news.items[0].collar}
 					size={40}
 					label="Un Mathou de la Chatterie"
 				/>
@@ -77,6 +78,7 @@
 							raceIndex={item.raceIndex}
 							stage={item.stage}
 							decoration={item.decoration}
+							collar={item.collar}
 							size={40}
 							label={item.name}
 							reaction={REACTION[item.kind]}

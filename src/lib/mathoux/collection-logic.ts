@@ -38,7 +38,7 @@
 import { GRADE_CODES, GRADES, isGradeCode } from '$lib/types/grades';
 import { buildSeriesLink, cartItemSchema, type SeriesCategories } from '$lib/validation/series';
 import { MATHOU_NAMES } from './mathou-noms';
-import type { MathouDecorationId } from './decorations';
+import type { MathouCollarId, MathouDecorationId } from './decorations';
 
 // ============================================================================
 // Types
@@ -62,6 +62,8 @@ export interface MathouMemory {
 	 * mémoire ne l'écrit jamais (achat et pose : `$lib/server/mathoux/decorations.ts`).
 	 */
 	decoration?: MathouDecorationId | null;
+	/** Collier porté (`student_mathoux.collar`), lu seulement comme la décoration. */
+	collar?: MathouCollarId | null;
 }
 
 /** Ce que la mémoire doit apprendre d'un Mathou : sa ligne complète, jamais en baisse. */
@@ -165,6 +167,8 @@ export interface Mathou {
 	stars: string[];
 	/** Décoration de panse portée (lue dans la mémoire), `null` sinon. */
 	decoration: MathouDecorationId | null;
+	/** Collier porté (lu dans la mémoire), `null` sinon. */
+	collar: MathouCollarId | null;
 	/** Totaux sur tout le parcours. */
 	workablePoints: number;
 	acquiredPoints: number;
@@ -460,6 +464,7 @@ export function buildMathouCollection(input: BuildCollectionInput): MathouCollec
 			trainingCategories: trainingCategories(trainingTemplates),
 			stars,
 			decoration: remembered?.decoration ?? null,
+			collar: remembered?.collar ?? null,
 			workablePoints: workableTotal,
 			acquiredPoints: acquiredTotal,
 			byGrade

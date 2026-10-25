@@ -7,7 +7,8 @@
 	dans une gloire rayonnante). En sieste : yeux fermés, bonnet de nuit, lune et « Zzz » dessinés
 	(pas de texte ni de police). En silhouette (pas encore découvert) : une forme unie, sans aucun
 	détail de race. Une décoration de panse achetée dans la Chatterie (`mathou-decorations.ts`) se
-	pose sur la panse, sieste comprise. Le dessin porte son propre fond (la pastille jaune) : il
+	pose sur la panse, un collier (`mathou-colliers.ts`) au cou — sous la fraise du grand matou —,
+	sieste comprise. Le dessin porte son propre fond (la pastille jaune) : il
 	tient en clair et en sombre.
 -->
 <script lang="ts">
@@ -40,8 +41,13 @@
 		zzz,
 		type FaceMode
 	} from './mathou-dessin';
-	import { DECORATION_SHAPES, decorationPlacement } from './mathou-decorations';
-	import type { MathouDecorationId } from '$lib/mathoux/decorations';
+	import {
+		DECORATION_SHAPES,
+		decorationPlacement,
+		type DecorationShape
+	} from './mathou-decorations';
+	import { collarDrawing, collarNeck } from './mathou-colliers';
+	import type { MathouCollarId, MathouDecorationId } from '$lib/mathoux/decorations';
 
 	// Types
 	interface Props {
@@ -65,6 +71,8 @@
 		growFrom?: MathouStage;
 		/** Décoration de panse portée (rien en silhouette) */
 		decoration?: MathouDecorationId | null;
+		/** Collier porté (rien en silhouette) */
+		collar?: MathouCollarId | null;
 	}
 
 	// Constantes
@@ -86,7 +94,8 @@
 		reaction,
 		reactionKey = 0,
 		growFrom,
-		decoration = null
+		decoration = null,
+		collar = null
 	}: Props = $props();
 
 	const uid = $props.id();
@@ -109,6 +118,11 @@
 	);
 	const dr = $derived(dressing(race, geo));
 	const decorationAt = $derived(decorationPlacement(geo, race.pattern));
+	// Fraise du grand matou, après la transformation : le collier passe dessous
+	const ruffed = $derived(stage === 'grand_matou' && eased === 1);
+	const neck = $derived(collarNeck(stage, ruffed, morphing ? growFrom : undefined, eased));
+	const collarParts = $derived(collar ? collarDrawing(collar, neck) : null);
+	const pendantTransform = $derived(`translate(100 ${neck.hang}) scale(${neck.s})`);
 	const sleeping = $derived(asleep && !silhouette);
 	// Réveil : le dessin éveillé, avec ce qui reste de la sieste (lune, bonnet, « Zzz », yeux
 	// fermés) qui s'en va
@@ -172,6 +186,29 @@
 		return () => cancelAnimationFrame(frame);
 	});
 </script>
+
+{#snippet shapes(list: readonly DecorationShape[])}
+	{#each list as shape, i (i)}
+		{#if shape.kind === 'circle'}
+			<circle
+				cx={shape.cx}
+				cy={shape.cy}
+				r={shape.r}
+				fill={shape.fill}
+				stroke={shape.stroke}
+				stroke-width={shape.width}
+			/>
+		{:else}
+			<path
+				d={shape.d}
+				fill={shape.fill}
+				stroke={shape.stroke}
+				stroke-width={shape.width}
+				stroke-linecap={shape.round ? 'round' : undefined}
+			/>
+		{/if}
+	{/each}
+{/snippet}
 
 <svg
 	role="img"
@@ -384,6 +421,16 @@
 						</g>
 						<path d={geo.body} fill="none" stroke={INK} stroke-width={STROKE} />
 
+						{#if collarParts}
+							<!-- Collier : la bande au cou ; ce qui pend, ici, sauf sous la fraise (plus bas) -->
+							<g data-part="collier" data-collar={collar} stroke-linejoin="round">
+								{@render shapes(collarParts.band)}
+								{#if !ruffed}
+									<g transform={pendantTransform}>{@render shapes(collarParts.pendant)}</g>
+								{/if}
+							</g>
+						{/if}
+
 						{#if decoration}
 							<!-- Décoration de panse, par-dessus le motif (dans le creux du croissant du Lunaire) -->
 							<g
@@ -392,26 +439,7 @@
 								transform={`translate(${decorationAt.x} ${decorationAt.y}) scale(${decorationAt.k})`}
 								stroke-linejoin="round"
 							>
-								{#each DECORATION_SHAPES[decoration] as shape, i (i)}
-									{#if shape.kind === 'circle'}
-										<circle
-											cx={shape.cx}
-											cy={shape.cy}
-											r={shape.r}
-											fill={shape.fill}
-											stroke={shape.stroke}
-											stroke-width={shape.width}
-										/>
-									{:else}
-										<path
-											d={shape.d}
-											fill={shape.fill}
-											stroke={shape.stroke}
-											stroke-width={shape.width}
-											stroke-linecap={shape.round ? 'round' : undefined}
-										/>
-									{/if}
-								{/each}
+								{@render shapes(DECORATION_SHAPES[decoration])}
 							</g>
 						{/if}
 
@@ -507,7 +535,7 @@
 							/>
 						{/if}
 
-						{#if stage === 'grand_matou' && eased === 1}
+						{#if ruffed}
 							<!-- Attribut du grand matou : la fraise (après la transformation) -->
 							<g
 								data-part="collerette"
@@ -520,6 +548,17 @@
 									<circle cx={puff.cx} cy={puff.cy} r="6" />
 								{/each}
 							</g>
+							{#if collarParts}
+								<!-- Ce qui pend du collier dépasse sous la fraise -->
+								<g
+									data-part="collier-pendentif"
+									transform={pendantTransform}
+									stroke-linejoin="round"
+									class:apparait={crowning}
+								>
+									{@render shapes(collarParts.pendant)}
+								</g>
+							{/if}
 						{/if}
 
 						{#if majesty}

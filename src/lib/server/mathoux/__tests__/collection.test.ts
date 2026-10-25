@@ -446,6 +446,7 @@ describe('loadMathouCollection', () => {
 					raceIndex: 0,
 					stage: 'matou',
 					decoration: null,
+					collar: null,
 					newStars: []
 				}
 			]

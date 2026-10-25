@@ -12,7 +12,7 @@ import {
 	normalizeRaceIndex
 } from '../mathou-races';
 import { pearGeometry } from '../mathou-dessin';
-import { MATHOU_DECORATION_IDS } from '$lib/mathoux/decorations';
+import { MATHOU_COLLAR_IDS, MATHOU_DECORATION_IDS } from '$lib/mathoux/decorations';
 
 function svgOf(container: HTMLElement): SVGSVGElement {
 	const svg = container.querySelector('svg');
@@ -312,6 +312,125 @@ describe('MathouAvatar — décoration de panse', () => {
 		const [, , plainK] = parse(plain);
 		const [, , lunarK] = parse(await transformOf('plastron'));
 		expect(lunarK).toBeLessThan(plainK);
+	});
+});
+
+describe('MathouAvatar — collier', () => {
+	const collarOf = (container: HTMLElement): SVGGElement | null =>
+		container.querySelector('[data-part="collier"]');
+	const hangingOf = (container: HTMLElement): SVGGElement | null =>
+		container.querySelector('[data-part="collier-pendentif"]');
+	const hangY = (g: Element | null | undefined): number =>
+		Number(/translate\(100 ([\d.]+)\)/.exec(g?.getAttribute('transform') ?? '')?.[1]);
+
+	it('aucun collier par défaut', async () => {
+		const { container } = await render(MathouAvatar, { raceIndex: 0, stage: 'matou', label: 'M' });
+		expect(collarOf(container)).toBeNull();
+		expect(hangingOf(container)).toBeNull();
+	});
+
+	it('chacun des quatre se dessine au cou, à chaque stade, avec ce qui pend', async () => {
+		for (const id of MATHOU_COLLAR_IDS) {
+			for (const stage of MATHOU_STAGES) {
+				const { container } = await render(MathouAvatar, {
+					raceIndex: 0,
+					stage,
+					label: 'M',
+					collar: id
+				});
+				const collar = collarOf(container);
+				expect(collar?.getAttribute('data-collar')).toBe(id);
+				// Grand matou : ce qui pend est dessiné à part, sous la fraise
+				const pendant =
+					stage === 'grand_matou' ? hangingOf(container) : collar?.querySelector('g[transform]');
+				expect(pendant?.children.length).toBeGreaterThan(0);
+				// Au cou : sous la tête, bien au-dessus du bas de la panse
+				const geo = pearGeometry(stage);
+				expect(hangY(pendant)).toBeGreaterThan(geo.shoulderY);
+				expect(hangY(pendant)).toBeLessThan(geo.waistY);
+			}
+		}
+	});
+
+	it('posé sur le corps, après son contour et avant les yeux', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'matou',
+			label: 'M',
+			collar: 'leather'
+		});
+		const collar = collarOf(container);
+		expect(collar?.closest('[data-part="mathou"]')).toBe(
+			container.querySelector('[data-part="mathou"]')
+		);
+		const eyes = container.querySelector('[data-part="yeux"]');
+		expect(eyes && collar && collar.compareDocumentPosition(eyes)).toBe(
+			Node.DOCUMENT_POSITION_FOLLOWING
+		);
+	});
+
+	it('règle de la fraise : la bande passe dessous, ce qui pend dépasse sous elle', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'grand_matou',
+			label: 'M',
+			collar: 'bell'
+		});
+		const collar = collarOf(container);
+		const ruff = container.querySelector('[data-part="collerette"]');
+		const pendant = hangingOf(container);
+		// La bande avant la fraise (dessous), le pendentif après (dessus)
+		expect(collar && ruff && collar.compareDocumentPosition(ruff)).toBe(
+			Node.DOCUMENT_POSITION_FOLLOWING
+		);
+		expect(ruff && pendant && ruff.compareDocumentPosition(pendant)).toBe(
+			Node.DOCUMENT_POSITION_FOLLOWING
+		);
+		// Rien ne pend dans la bande elle-même
+		expect(collar?.querySelector('g[transform]')).toBeNull();
+		// Accroché au bas des godrons
+		const puffs = [...(ruff?.querySelectorAll('circle') ?? [])];
+		const ruffBottom = Math.max(
+			...puffs.map((c) => Number(c.getAttribute('cy')) + Number(c.getAttribute('r')))
+		);
+		expect(hangY(pendant)).toBeGreaterThan(ruffBottom - 2);
+	});
+
+	it('se cumule avec la décoration de panse', async () => {
+		const { container } = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'matou',
+			label: 'M',
+			decoration: 'heart',
+			collar: 'bow_tie'
+		});
+		expect(collarOf(container)?.getAttribute('data-collar')).toBe('bow_tie');
+		expect(
+			container.querySelector('[data-part="decoration"]')?.getAttribute('data-decoration')
+		).toBe('heart');
+	});
+
+	it('la sieste le garde, la silhouette n’en a pas', async () => {
+		for (const stage of MATHOU_STAGES) {
+			const asleep = await render(MathouAvatar, {
+				raceIndex: 0,
+				stage,
+				asleep: true,
+				label: 'M',
+				collar: 'order_chain'
+			});
+			expect(collarOf(asleep.container)?.getAttribute('data-collar')).toBe('order_chain');
+		}
+
+		const shadow = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'grand_matou',
+			silhouette: true,
+			label: 'M',
+			collar: 'order_chain'
+		});
+		expect(collarOf(shadow.container)).toBeNull();
+		expect(hangingOf(shadow.container)).toBeNull();
 	});
 });
 

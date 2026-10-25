@@ -96,6 +96,7 @@
 								asleep={mathou.asleep}
 								silhouette={toDiscover}
 								decoration={mathou.decoration}
+								collar={mathou.collar}
 								size={64}
 								label={avatarLabel(mathou)}
 							/>

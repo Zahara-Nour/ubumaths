@@ -77,7 +77,8 @@ describe('readMathouMemory', () => {
 					updated_at: T0,
 					rewarded_stage: 'matou',
 					rewarded_grades: ['2'],
-					decoration: 'cockade'
+					decoration: 'cockade',
+					collar: 'order_chain'
 				},
 				{
 					notion_id: 'n3',
@@ -87,8 +88,10 @@ describe('readMathouMemory', () => {
 					updated_at: T0,
 					rewarded_stage: 'grand_matou',
 					rewarded_grades: ['2'],
-					// Clé inconnue (la base l'interdit) : écartée
-					decoration: 'croissant'
+					// Clés inconnues (la base les interdit) : écartées ; un collier n'est pas
+					// une décoration de panse, ni l'inverse
+					decoration: 'leather',
+					collar: 'heart'
 				},
 				{
 					// Stade corrigé à la main sous le payé : rien à redemander
@@ -126,7 +129,7 @@ describe('readMathouMemory', () => {
 		expect(callOf(queries[0], 'eq')).toEqual(['student_id', STUDENT]);
 		// Un stade inconnu est écarté (la base l'interdit : défense en profondeur).
 		// Payé = stade payé égal au meilleur stade ET toutes les étoiles payées.
-		// Décoration : lue telle quelle, une clé inconnue ou absente → aucune.
+		// Décoration et collier : lus tels quels, une clé inconnue ou absente → aucun.
 		expect([...memory.entries()]).toEqual([
 			[
 				'n1',
@@ -136,7 +139,8 @@ describe('readMathouMemory', () => {
 					asleep: true,
 					updatedAt: T0,
 					paid: true,
-					decoration: 'cockade'
+					decoration: 'cockade',
+					collar: 'order_chain'
 				}
 			],
 			[
@@ -147,7 +151,8 @@ describe('readMathouMemory', () => {
 					asleep: false,
 					updatedAt: T0,
 					paid: false,
-					decoration: null
+					decoration: null,
+					collar: null
 				}
 			],
 			[
@@ -158,7 +163,8 @@ describe('readMathouMemory', () => {
 					asleep: false,
 					updatedAt: T0,
 					paid: true,
-					decoration: null
+					decoration: null,
+					collar: null
 				}
 			],
 			[
@@ -169,7 +175,8 @@ describe('readMathouMemory', () => {
 					asleep: false,
 					updatedAt: T0,
 					paid: false,
-					decoration: null
+					decoration: null,
+					collar: null
 				}
 			]
 		]);

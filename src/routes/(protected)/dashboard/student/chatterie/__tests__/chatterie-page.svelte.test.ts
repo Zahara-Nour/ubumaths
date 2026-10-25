@@ -11,7 +11,7 @@ import { page } from 'vitest/browser';
 import type { Mathou, MathouCollection } from '$lib/mathoux/collection-logic';
 import { buildSeriesLink, type SeriesCategories } from '$lib/validation/series';
 import { consent } from '$lib/stores/consent.svelte';
-import type { MathouDecorationId } from '$lib/mathoux/decorations';
+import type { MathouCatalogId } from '$lib/mathoux/decorations';
 import ChatteriePage from '../+page.svelte';
 
 vi.mock('$app/navigation', () => ({ invalidateAll: vi.fn(async () => {}) }));
@@ -54,6 +54,7 @@ const COLLECTION: MathouCollection = {
 					asleep: true,
 					dueForRevision: true,
 					decoration: null,
+					collar: null,
 					trainingCategories: CAT_FRAC,
 					stars: [],
 					workablePoints: 4,
@@ -69,6 +70,7 @@ const COLLECTION: MathouCollection = {
 					asleep: false,
 					dueForRevision: false,
 					decoration: null,
+					collar: null,
 					// La logique n'en donne pas à une silhouette : la page ne doit pas le montrer non plus
 					trainingCategories: CAT_ENT,
 					stars: [],
@@ -92,6 +94,7 @@ const COLLECTION: MathouCollection = {
 					asleep: false,
 					dueForRevision: false,
 					decoration: null,
+					collar: null,
 					trainingCategories: CAT_VEC,
 					stars: ['2', '1_SPE'],
 					workablePoints: 3,
@@ -268,12 +271,12 @@ describe('La Chatterie de Faustroll', () => {
 	});
 });
 
-describe('Décorer un Mathou (décorations de panse)', () => {
+describe('Décorer un Mathou (décorations de panse et colliers)', () => {
 	const fetchMock = vi.fn();
 
 	async function renderDecor(
 		collection: MathouCollection,
-		ownedDecorations: MathouDecorationId[] | null,
+		ownedDecorations: MathouCatalogId[] | null,
 		balance = 0
 	) {
 		return await render(ChatteriePage, {
@@ -282,7 +285,7 @@ describe('Décorer un Mathou (décorations de panse)', () => {
 	}
 
 	/** La carte d'une décoration dans la fenêtre « Décorer ». */
-	function card(id: MathouDecorationId): HTMLElement {
+	function card(id: MathouCatalogId): HTMLElement {
 		const el = document.querySelector<HTMLElement>(`[role="dialog"] li[data-decoration="${id}"]`);
 		if (!el) throw new Error(`carte ${id} absente`);
 		return el;
@@ -335,7 +338,9 @@ describe('Décorer un Mathou (décorations de panse)', () => {
 			.element(page.getByRole('heading', { name: 'Décorer le Mathou des Fractions' }))
 			.toBeVisible();
 
-		const cards = document.querySelectorAll('[role="dialog"] li[data-decoration]');
+		const cards = document.querySelectorAll(
+			'[role="dialog"] [data-row="panse"] li[data-decoration]'
+		);
 		expect([...cards].map((c) => c.getAttribute('data-decoration'))).toEqual([
 			'heart',
 			'star',
@@ -426,6 +431,103 @@ describe('Décorer un Mathou (décorations de panse)', () => {
 		expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
 			notionId: 'n-frac',
 			decoration: 'star'
+		});
+	});
+
+	it('le collier porté se voit sur le Mathou de la Chatterie, avec la décoration de panse', async () => {
+		const { container } = await renderDecor(single({ decoration: 'heart', collar: 'bell' }), [
+			'heart',
+			'bell'
+		]);
+		expect(container.querySelector('[data-part="collier"]')?.getAttribute('data-collar')).toBe(
+			'bell'
+		);
+		expect(
+			container.querySelector('[data-part="decoration"]')?.getAttribute('data-decoration')
+		).toBe('heart');
+	});
+
+	it('rangée « Cou » : les quatre colliers sur CE Mathou, avec sa décoration de panse', async () => {
+		const collection: MathouCollection = {
+			...COLLECTION,
+			races: COLLECTION.races.map((race) => ({
+				...race,
+				mathoux: race.mathoux.map((m) =>
+					m.notionId === 'n-vec'
+						? { ...m, collar: 'leather' as const }
+						: m.notionId === 'n-frac'
+							? { ...m, decoration: 'star' as const }
+							: m
+				)
+			}))
+		};
+		await renderDecor(collection, ['star', 'leather', 'bell'], 15);
+		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
+		await expect.element(page.getByRole('heading', { name: 'Panse' })).toBeVisible();
+		await expect.element(page.getByRole('heading', { name: 'Cou' })).toBeVisible();
+
+		const cards = document.querySelectorAll('[role="dialog"] [data-row="cou"] li[data-decoration]');
+		expect([...cards].map((c) => c.getAttribute('data-decoration'))).toEqual([
+			'bell',
+			'bow_tie',
+			'leather',
+			'order_chain'
+		]);
+		for (const c of cards) {
+			expect(c.querySelector('[data-part="collier"]')?.getAttribute('data-collar')).toBe(
+				c.getAttribute('data-decoration')
+			);
+			// Les deux se cumulent : l'étoile qu'il porte reste sur la panse
+			expect(c.querySelector('[data-part="decoration"]')?.getAttribute('data-decoration')).toBe(
+				'star'
+			);
+		}
+		// Et la rangée « Panse » montre le collier qu'il porte : aucun ici
+		const belly = document.querySelector('[role="dialog"] [data-row="panse"] li');
+		expect(belly?.querySelector('[data-part="collier"]')).toBeNull();
+
+		expect(card('bell').textContent).toContain('Acheté');
+		expect(card('bell').textContent).not.toContain('Achetée');
+		expect(card('leather').textContent).toContain('Porté par le Mathou des Vecteurs');
+		expect(card('bow_tie').textContent).toContain('10');
+		expect(card('order_chain').textContent).toContain('Il te manque 25 gidouilles');
+	});
+
+	it('acheter un collier : la même route d’achat, pour CE Mathou', async () => {
+		await renderDecor(single({}), [], 30);
+		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
+		await page
+			.getByRole('button', { name: 'Acheter Collier de cuir pour le Mathou des Fractions' })
+			.click();
+		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+		expect(fetchMock.mock.calls[0][0]).toBe('/api/student/mathoux/decorations/buy');
+		expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+			decoration: 'leather',
+			notionId: 'n-frac'
+		});
+	});
+
+	it('poser un collier, ou retirer celui de ce Mathou : la route des colliers, gratuit', async () => {
+		await renderDecor(single({ collar: 'bell' }), ['bell', 'bow_tie'], 0);
+		await page.getByRole('button', { name: 'Décorer le Mathou des Fractions' }).click();
+		await page
+			.getByRole('button', { name: 'Retirer Ruban à grelot, porté par le Mathou des Fractions' })
+			.click();
+		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+		expect(fetchMock.mock.calls[0][0]).toBe('/api/student/mathoux/decorations/wear-collar');
+		expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+			notionId: 'n-frac',
+			collar: null
+		});
+
+		await page
+			.getByRole('button', { name: 'Poser Nœud papillon sur le Mathou des Fractions' })
+			.click();
+		await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+		expect(fetchMock.mock.calls[1][0]).toBe('/api/student/mathoux/decorations/wear-collar');
+		expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
+			notionId: 'n-frac',
+			collar: 'bow_tie'
 		});
 	});
 

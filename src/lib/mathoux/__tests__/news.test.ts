@@ -34,6 +34,7 @@ function mathou(notionId: string, growth: Mathou['growth'], stars: string[] = []
 		asleep: false,
 		dueForRevision: false,
 		decoration: null,
+		collar: null,
 		trainingCategories: null,
 		stars,
 		workablePoints: 2,
@@ -86,6 +87,7 @@ describe('mathouNews', () => {
 					raceIndex: 2,
 					stage: 'chaton',
 					decoration: null,
+					collar: null,
 					newStars: []
 				}
 			]
@@ -97,6 +99,17 @@ describe('mathouNews', () => {
 		const news = newsAll(collection, memoryOf({ n1: { bestStage: 'chaton', starredGrades: [] } }));
 		expect(news.items[0]).toMatchObject({ kind: 'growth', decoration: 'medal' });
 		expect(mathouNewsSchema.parse(news).items[0].decoration).toBe('medal');
+	});
+
+	it('le collier porté suit aussi la nouveauté', () => {
+		const collection = collectionOf({
+			...mathou('n1', 'matou'),
+			decoration: 'heart',
+			collar: 'order_chain'
+		});
+		const news = newsAll(collection, memoryOf({ n1: { bestStage: 'chaton', starredGrades: [] } }));
+		expect(news.items[0]).toMatchObject({ decoration: 'heart', collar: 'order_chain' });
+		expect(mathouNewsSchema.parse(news).items[0].collar).toBe('order_chain');
 	});
 
 	it('croissance : stade au-dessus de la mémoire', () => {
@@ -234,6 +247,7 @@ describe('mathouNews', () => {
 				raceIndex: 2,
 				stage: 'matou',
 				decoration: null,
+				collar: null,
 				newStars: []
 			}
 		]);

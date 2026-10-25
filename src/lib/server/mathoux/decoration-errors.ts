@@ -1,5 +1,5 @@
 /**
- * Refus d'achat ou de pose d'une décoration de panse → statut HTTP et phrase
+ * Refus d’achat ou de pose d’une décoration (panse ou collier) → statut HTTP et phrase
  * pour l'élève. Partagé par les deux routes `api/student/mathoux/decorations/*`.
  */
 

@@ -8,8 +8,8 @@
  * Une lecture en échec ne se montre pas comme une Chatterie vide : la page
  * reçoit `unavailable` et le dit.
  *
- * Décorations de panse (lot B des accessoires) : les décorations achetées et le
- * solde, pour la fenêtre « Décorer ». Une lecture des décorations en échec
+ * Décorations (lots B et C des accessoires) : les décorations de panse et les
+ * colliers achetés, et le solde, pour la fenêtre « Décorer ». Une lecture des décorations en échec
  * n'empêche pas la Chatterie : `ownedDecorations` vaut `null` et « Décorer »
  * ne s'affiche pas (sinon tout paraîtrait « à acheter »).
  *
@@ -20,7 +20,7 @@ import type { PageServerLoad } from './$types';
 import { requireRole } from '$lib/server/middleware/auth';
 import { loadMathouCollection } from '$lib/server/mathoux/collection';
 import { readOwnedDecorations } from '$lib/server/mathoux/decorations';
-import type { MathouDecorationId } from '$lib/mathoux/decorations';
+import type { MathouCatalogId } from '$lib/mathoux/decorations';
 import type { MathouCollection } from '$lib/mathoux/collection-logic';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		readOwnedDecorations(locals.supabase, user.id)
 	]);
 
-	let ownedDecorations: MathouDecorationId[] | null = null;
+	let ownedDecorations: MathouCatalogId[] | null = null;
 	if (ownedResult.status === 'fulfilled') ownedDecorations = ownedResult.value;
 	else logger.error('Décorations illisibles :', ownedResult.reason);
 
