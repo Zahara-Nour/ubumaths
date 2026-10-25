@@ -5,7 +5,7 @@
  * - un visiteur voit le titre, le retour vers `/demo` et 3 constructions, chacune avec son lecteur ;
  * - lecteur seul : ni éditeur ni bouton d'enregistrement ;
  * - chaque script est replié sous « Voir le script » ;
- * - sur un écran étroit, le lecteur se réduit à la largeur disponible.
+ * - sur un écran étroit, la toile se réduit à la largeur disponible et rien ne déborde.
  */
 import { describe, it, expect } from 'vitest';
 import { page } from 'vitest/browser';
@@ -58,8 +58,13 @@ describe('/demo/constructions', () => {
 		await expect
 			.poll(() => screen.container.querySelectorAll('.construction-player').length)
 			.toBe(3);
-		for (const player of screen.container.querySelectorAll('.construction-player')) {
-			expect(player.getBoundingClientRect().width).toBeLessThanOrEqual(390);
+		for (const player of screen.container.querySelectorAll('.demo-player')) {
+			const available = player.parentElement?.clientWidth ?? 0;
+			const canvas = player.querySelector('.construction-canvas');
+			expect(available).toBeLessThan(390);
+			expect(canvas?.getBoundingClientRect().width).toBeLessThanOrEqual(available);
+			expect(player.scrollWidth).toBeLessThanOrEqual(available);
 		}
+		expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(390);
 	});
 });
