@@ -10615,58 +10615,6 @@ export type Database = {
         }
         Relationships: []
       }
-      spreadsheets: {
-        Row: {
-          created_at: string
-          data: Json
-          description: string | null
-          id: string
-          name: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          data?: Json
-          description?: string | null
-          id?: string
-          name?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          data?: Json
-          description?: string | null
-          id?: string
-          name?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "spreadsheets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "minesweeper_student_achievement_progress"
-            referencedColumns: ["student_id"]
-          },
-          {
-            foreignKeyName: "spreadsheets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "spreadsheets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "riddle_progress"
-            referencedColumns: ["student_id"]
-          },
-        ]
-      }
       srs_anti_fraud_flags: {
         Row: {
           capacity_point_id: string | null

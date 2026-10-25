@@ -20,7 +20,7 @@ _Mis à jour le 2026-10-25, après le deploy:prod v0.47.0._
   `docs/archive/wip/` ; restent ses vérifications manuelles (David).
 - **Ensuite** : rien de lancé ; prochain sujet à choisir par David.
 - **Déployé** : v0.47.0 (2026-10-25) livre le retrait de `/spreadsheet`, de `/calc` et le pont Python.
-  Suppression de la table `spreadsheets` : chantier [drop-spreadsheets](drop-spreadsheets-progress.md).
+  Table `spreadsheets` supprimée le 2026-10-25 ([journal](../archive/wip/drop-spreadsheets-progress.md)).
 - **Plus tard, si l'usage le demande** : sens inverse Python → atelier ; « Ouvrir dans Python » pour
   une carte `f′`.
 

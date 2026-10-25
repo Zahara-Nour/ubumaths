@@ -1,21 +1,18 @@
 ---
 title: Suppression de la table `spreadsheets` (tableur V4)
 date: 2026-10-25
-status: PR 1 (#1730) mergée, db:migrate en attente de David
+status: CLOS le 2026-10-25 (#1730 + PR 2, db:migrate joué)
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1730._
+_Mis à jour le 2026-10-25, chantier clos._
 
-- **État** : PR 1 = migration `20261025230000_drop_spreadsheets.sql` (table + fonction de trigger),
-  test d'intégration (rouge sans, vert avec), inventaire anon 135 → 134 fonctions, doc.
-- **Fait** : #1730 mergée (CI verte, `security-auditor` sans finding bloquant, rollback complété).
-- **Prochaine action** : `db:migrate` **avec l'accord de David** (destructif) →
-  PR 2 : `pnpm db:types` (database.ts depuis la prod) + retrait de `spreadsheets` dans
-  `scripts/generate-db-doc.ts` (sinon sa garde rougit tant que database.ts a la table).
-- **En attente de David** : son accord pour `db:migrate` (1 ligne perdue, voir plus bas).
-- **Worktree / branche** : `../ubumaths-wt-drop-spreadsheets` · `chore/drop-spreadsheets`.
+- **État** : CLOS. #1730 (migration, test d'intégration, doc) mergée ; `db:migrate` joué le
+  2026-10-25 avec l'accord de David (table et fonction absentes de la prod, vérifié) ; PR 2 :
+  `database.ts` régénéré depuis la prod, `spreadsheets` retirée de `scripts/generate-db-doc.ts`.
+- **Doc durable** : [outils-prof.md § 3](../../systeme/outils-prof.md).
+- **Prochaine action** : aucune.
 
 ## Ce qui est perdu
 
