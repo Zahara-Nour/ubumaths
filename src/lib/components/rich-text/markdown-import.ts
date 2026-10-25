@@ -35,6 +35,7 @@ import type {
 	VariationTableNode,
 	ProbabilityTreeNode
 } from '$lib/ubumark/types';
+import type { FigureNode } from '$lib/ubumark/types/figure';
 
 // ============================================================================
 // TEMPLATE DETECTION REGEX (same as template-extensions.ts)
@@ -237,7 +238,11 @@ function convertBlock(block: BlockNode): JSONContent | null {
 		case 'courbe':
 			return convertCodeBlock({ type: 'code-block', language: 'courbe', code: block.source });
 		case 'figure':
-			return convertCodeBlock({ type: 'code-block', language: 'figure', code: block.source });
+			return convertCodeBlock({
+				type: 'code-block',
+				language: figureFence(block),
+				code: block.source
+			});
 		case 'stat-chart':
 			return convertCodeBlock({ type: 'code-block', language: block.kind, code: block.source });
 		case 'qr':
@@ -379,7 +384,7 @@ function convertListItem(item: ListItemNode): JSONContent {
 			);
 		} else if (child.type === 'figure') {
 			content.push(
-				convertCodeBlock({ type: 'code-block', language: 'figure', code: child.source })
+				convertCodeBlock({ type: 'code-block', language: figureFence(child), code: child.source })
 			);
 		} else if (child.type === 'stat-chart') {
 			content.push(
@@ -467,6 +472,11 @@ function convertBlockquote(quote: BlockquoteNode): JSONContent {
 		type: 'blockquote',
 		content
 	};
+}
+
+/** Mot d'ouverture d'un nœud figure : ```construction garde le sien */
+function figureFence(node: FigureNode): 'figure' | 'construction' {
+	return node.construction ? 'construction' : 'figure';
 }
 
 /**

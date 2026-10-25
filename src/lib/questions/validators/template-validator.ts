@@ -183,10 +183,14 @@ function validateVariation(
 	// Type-specific validation (per-variation)
 	switch (questionType) {
 		case 'fill_in_blanks':
-			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul)
+			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul),
+			// un bloc ```construction aussi (la figure de l'élève)
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
-				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? ''))
+				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
+				!/^\s*>?\s*```construction\s*$/m.test(
+					String(variation.statement ?? shared?.statement ?? '')
+				)
 			) {
 				errors.push(`${prefix} fill_in_blanks requires blanks[]`);
 			}

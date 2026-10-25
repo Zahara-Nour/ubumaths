@@ -12,6 +12,9 @@ import type { QuestionTemplate, TestSpec, ValidationStatus, ConstraintId } from 
 import type { ValidationResult } from '$lib/types/question-display';
 import { generateInstanceWithFixedVariables } from './generator/test-instance-builder';
 import { validateAnswer } from '$lib/utils/answer-validator';
+// Case « figure » : positions des points (registre, cf. construction/positions) — éditeur,
+// relecture de migration et publication côté serveur
+import './construction/positions-setup';
 import { getQuestionType, isCourseCard } from './types';
 import { readExpectedSet } from './intervals/interval-answer';
 import { readExpectedEquation } from './equations/equation-answer';

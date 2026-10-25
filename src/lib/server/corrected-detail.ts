@@ -27,6 +27,8 @@ import {
 	type ValidationStatus
 } from '$lib/questions/types';
 import { statusFromBlankStatuses } from '$lib/questions/grading';
+// Case « figure » : le juge lit les positions des points dans ce registre (cf. questions/construction/positions)
+import '$lib/questions/construction/positions-setup';
 import type {
 	CorrectedAnswer,
 	CorrectedDetail,

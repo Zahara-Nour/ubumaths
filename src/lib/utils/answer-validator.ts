@@ -75,6 +75,8 @@ import { judgeRounding, roundingFeedback, roundToPrecision } from '$lib/question
 import { ANSWER_TOO_COMPLEX_FEEDBACK, isAnswerTooComplex } from '$lib/questions/answer-complexity';
 import { expectsValue, withoutVariablePrefix } from '$lib/questions/answer-variable-prefix';
 import { expectsUnitlessValue, withoutDegreeSuffix } from '$lib/questions/answer-degree-suffix';
+import { judgeConstruction } from '$lib/questions/construction/judge';
+import { constructionPositions } from '$lib/questions/construction/positions';
 
 // ============================================================================
 // CONSTRAINT CHECKING
@@ -1215,6 +1217,22 @@ function calculusBlankResult(
 	return form.status === 'bad_form' || form.status === 'unoptimal_form' ? form : correct;
 }
 
+/**
+ * Case « figure » : verdict de `questions/construction/` dans la forme de
+ * `validateSingleBlank`. Positions des points lues dans le registre (inscrit
+ * par l'écran de l'élève et la correction serveur) ; sans lui, une erreur.
+ */
+function constructionBlankResult(
+	answer: string,
+	construction: NonNullable<InstanceBlank['construction']>
+): ReturnType<typeof validateSingleBlank> {
+	const points = constructionPositions(construction.source);
+	const { status, feedback } = judgeConstruction(construction.checks, points, answer);
+	if (status === 'empty') return { isCorrect: false, status: 'empty' };
+	if (status === 'correct') return { isCorrect: true, status: 'correct' };
+	return feedback ? { isCorrect: false, feedback } : { isCorrect: false };
+}
+
 /** Garde Q58 sur la réponse ET sur son LaTeX (celui qui juge la forme) */
 function isBlankAnswerTooComplex(answer: string, latex: string | undefined): boolean {
 	return isAnswerTooComplex(answer) || (latex !== undefined && isAnswerTooComplex(latex));
@@ -1237,6 +1255,11 @@ function validateSingleBlank(
 	// 0. Empty answer — skip all checks
 	if (!userAnswer.trim()) {
 		return { isCorrect: false, status: 'empty' };
+	}
+
+	// Case « figure » (bloc ```construction) : chaîne à part, cf. questions/construction/
+	if (blank.construction) {
+		return constructionBlankResult(userAnswer, blank.construction);
 	}
 
 	// Ensemble en notation intervalle (inéquation) : chaîne à part, cf. interval-answer.ts

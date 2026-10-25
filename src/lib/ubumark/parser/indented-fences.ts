@@ -64,6 +64,7 @@ const SPECIAL_LANGUAGES: ReadonlySet<string> = new Set([
 	'operation',
 	'courbe',
 	'figure',
+	'construction',
 	...STAT_CHART_KINDS
 ]);
 

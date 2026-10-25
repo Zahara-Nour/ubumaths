@@ -49,6 +49,8 @@ import { assignBlankIndices } from './assign-blank-indices';
 import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
 import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
+import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
 import { toFrenchDecimal } from '$lib/utils/french-math';
 import { normalizeExpression, detectExpressionType } from '$lib/ubumark/parameterization';
 import {
@@ -455,10 +457,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let expressionsArray: QuestionInstance['expressions'] = undefined;
 		let finalStatement: ResolvedMarkdown = resolvedStatement;
 
-		// Un bloc ```operation à remplir porte sa case, même sans `blanks` dans le modèle —
-		// dans une question à trous seulement (un QCM, une carte de cours n'ont pas de case)
+		// Un bloc ```operation à remplir ou ```construction porte sa case, même sans `blanks`
+		// dans le modèle — dans une question à trous seulement (un QCM, une carte de cours
+		// n'ont pas de case)
 		const hasOperationBlock =
-			/^\s*>?\s*```operation\s*$/m.test(String(resolvedStatement)) &&
+			/^\s*>?\s*```(?:operation|construction)\s*$/m.test(String(resolvedStatement)) &&
 			getQuestionType({
 				choices: resolvedVariation.choices,
 				shared: template.shared,
@@ -496,6 +499,32 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			if (blankResult.operationErrors) {
 				return { success: false, errors: blankResult.operationErrors };
 			}
+			if (blankResult.constructionErrors) {
+				return { success: false, errors: blankResult.constructionErrors };
+			}
+
+			// Cases des blocs ```construction : la figure de l'élève, jugée par les
+			// vérifications du bloc (positions lues au jugement, cf. questions/construction)
+			const constructionCases = new Map<number, NonNullable<InstanceBlank['construction']>>();
+			for (const [key, source] of Object.entries(blankResult.constructionBlanks ?? {})) {
+				const index = Number(key);
+				const header = readConstructionHeader(source);
+				const errors = [...header.errors, ...parseFigureContent(header.figureSource).errors];
+				if (header.spec.caseIndex !== undefined) {
+					errors.unshift({
+						message: 'case: est posée automatiquement, retirer cette ligne du bloc'
+					});
+				}
+				if (errors.length > 0) {
+					return {
+						success: false,
+						errors: [
+							`Case ${index + 1} (bloc construction) : ${errors.map((e) => e.message).join(' ; ')}`
+						]
+					};
+				}
+				constructionCases.set(index, { source, checks: header.spec.checks });
+			}
 
 			// Cases des blocs ```operation : réponse calculée par le bloc, jamais écrite
 			const operationAnswers = new Map<number, string>();
@@ -530,6 +559,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			// Coherence check: totalBlanks must match blanks[] length. Les cases des blocs
 			// ```operation peuvent manquer à blanks[] (insérées à leur rang) ; présentes,
 			// elles ne donnent que des réglages.
+			// Les cases des blocs ```construction aussi.
+			const isBlockCase = (index: number) =>
+				operationAnswers.has(index) || constructionCases.has(index);
+			const blockCaseCount = operationAnswers.size + constructionCases.size;
 			let alignedBlanks: TemplateBlank[];
 			if (templateBlanks.length === blankResult.totalBlanks) {
 				for (const index of operationAnswers.keys()) {
@@ -542,11 +575,21 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						};
 					}
 				}
+				for (const index of constructionCases.keys()) {
+					if ((templateBlanks[index].expectedAnswer ?? '').trim() !== '') {
+						return {
+							success: false,
+							errors: [
+								`Case ${index + 1} : sa réponse est la figure de l’élève (bloc construction) ; laisser expectedAnswer vide`
+							]
+						};
+					}
+				}
 				alignedBlanks = templateBlanks;
-			} else if (templateBlanks.length === blankResult.totalBlanks - operationAnswers.size) {
+			} else if (templateBlanks.length === blankResult.totalBlanks - blockCaseCount) {
 				const others = [...templateBlanks];
 				alignedBlanks = Array.from({ length: blankResult.totalBlanks }, (_, index) =>
-					operationAnswers.has(index) ? { expectedAnswer: '' } : others.shift()!
+					isBlockCase(index) ? { expectedAnswer: '' } : others.shift()!
 				);
 			} else {
 				return {
@@ -562,6 +605,17 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 
 			// Build instance.blanks[] with inferred types and merged validation
 			resolvedBlanks = alignedBlanks.map((templateBlank, i) => {
+				const construction = constructionCases.get(i);
+				if (construction) {
+					// Réponse attendue symbolique (`droite(A;B)`) : affichage du corrigé
+					return {
+						expectedAnswer: construction.checks
+							.map((check) => `droite(${check.points[0]};${check.points[1]})`)
+							.join('|'),
+						type: 'graphical',
+						construction
+					};
+				}
 				const operationAnswer = operationAnswers.get(i);
 				const blank =
 					operationAnswer === undefined
