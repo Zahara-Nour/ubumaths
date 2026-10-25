@@ -18,6 +18,7 @@ import { findQrBlocks } from './qr-parser';
 import { findHorlogeBlocks } from './horloge-parser';
 import { findOperationBlocks } from './operation-parser';
 import { findCollectionBlocks } from './collection-parser';
+import { findMonnaieBlocks } from './monnaie-parser';
 import { findCourbeBlocks } from './courbe-parser';
 import { findFigureBlocks } from './figure-parser';
 import { findStatChartBlocks } from './stat-chart-parser';
@@ -44,6 +45,7 @@ export function blockLineRanges(lines: string[]): [number, number][] {
 		...findHorlogeBlocks(lines),
 		...findOperationBlocks(lines),
 		...findCollectionBlocks(lines),
+		...findMonnaieBlocks(lines),
 		...findCourbeBlocks(lines),
 		...findFigureBlocks(lines),
 		...findStatChartBlocks(lines)

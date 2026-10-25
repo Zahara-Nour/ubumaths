@@ -136,6 +136,7 @@ function nodeLines(node: ASTNode): number {
 		case 'horloge':
 		case 'operation':
 		case 'collection':
+		case 'monnaie':
 			return FIGURE_LINES;
 		default:
 			// Nœud en ligne isolé : une ligne de texte

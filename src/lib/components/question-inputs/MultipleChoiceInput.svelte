@@ -307,6 +307,8 @@
 		--horloge-taille: 3cm;
 		/* Collection d'un choix (bloc ```collection sans taille:) : 3 cm pleine largeur */
 		--collection-taille: 3cm;
+		/* Monnaie d'un choix (bloc ```monnaie sans taille:) : 3 cm pleine largeur */
+		--monnaie-taille: 3cm;
 	}
 
 	/* Images within choice content (rendered by MarkdownRenderer) */

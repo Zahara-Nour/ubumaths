@@ -123,8 +123,28 @@ const collections = {
 	]
 } as unknown as QuestionTemplate;
 
+/** QCM de porte-monnaie (CP-044) : chaque choix est un bloc ```monnaie */
+const porteMonnaies = {
+	...base,
+	id: 'porte-monnaies',
+	variations: [
+		{
+			statement: 'Quel porte-monnaie contient exactement 48 € ?',
+			variables: [],
+			choices: [
+				{ content: '```monnaie\nbillets: 20 20 5\npièces: 2 1\n```', isCorrect: true },
+				{ content: '```monnaie\nbillets: 20 20 5\npièces: 2\ntaille: 5cm\n```', isCorrect: false }
+			],
+			correctChoiceIndex: '0'
+		}
+	]
+} as unknown as QuestionTemplate;
+
 const modeles = new Map(
-	[coefficient, parite, deuxCases, carte, horloges, collections].map((t) => [t.id, t])
+	[coefficient, parite, deuxCases, carte, horloges, collections, porteMonnaies].map((t) => [
+		t.id,
+		t
+	])
 );
 
 describe('buildSerie — cas nominaux', () => {
@@ -213,6 +233,20 @@ describe('buildSerie — cas nominaux', () => {
 		visit(parseMarkdown(serie.statement));
 		expect(found.map((n) => n.spec?.sizeCm).sort()).toEqual([3, 5]);
 		expect(serie.solution).toMatch(/Réponse : \*\*[ab]\)\*\*\s*$/m);
+	});
+
+	it('QCM de porte-monnaie : chaque choix reste un bloc, 3 cm sauf taille donnée', () => {
+		const serie = buildSerie(modeles, [{ templateId: 'porte-monnaies', seed: 1 }]);
+		const found: { spec: { sizeCm: number | null } | null }[] = [];
+		const visit = (node: unknown): void => {
+			if (Array.isArray(node)) return node.forEach(visit);
+			if (node === null || typeof node !== 'object') return;
+			const record = node as Record<string, unknown>;
+			if (record.type === 'monnaie') found.push(record as never);
+			Object.values(record).forEach(visit);
+		};
+		visit(parseMarkdown(serie.statement));
+		expect(found.map((n) => n.spec?.sizeCm).sort()).toEqual([3, 5]);
 	});
 
 	it('plusieurs cases (texte et formule) : toutes à trous, toutes remplies au corrigé', () => {

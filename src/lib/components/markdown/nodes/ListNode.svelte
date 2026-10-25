@@ -40,6 +40,7 @@
 	import Horloge from './Horloge.svelte';
 	import Operation from './Operation.svelte';
 	import Collection from './Collection.svelte';
+	import Monnaie from './Monnaie.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
 	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
@@ -52,6 +53,7 @@
 	import type { HorlogeNode } from '$lib/ubumark/types/horloge';
 	import type { OperationNode } from '$lib/ubumark/types/operation';
 	import type { CollectionNode } from '$lib/ubumark/types/collection';
+	import type { MonnaieNode } from '$lib/ubumark/types/monnaie';
 
 	interface Props {
 		ordered: boolean;
@@ -275,6 +277,13 @@
 	}
 
 	/**
+	 * Bloc ```monnaie en retrait dans un item de liste
+	 */
+	function isMonnaieNode(node: ASTNode): node is MonnaieNode {
+		return node.type === 'monnaie';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
@@ -294,7 +303,8 @@
 			'qr',
 			'horloge',
 			'operation',
-			'collection'
+			'collection',
+			'monnaie'
 		].includes(node.type);
 	}
 
@@ -427,6 +437,8 @@
 						<Operation node={child} />
 					{:else if isCollectionNode(child)}
 						<Collection node={child} />
+					{:else if isMonnaieNode(child)}
+						<Monnaie node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -517,6 +529,8 @@
 						<Operation node={child} />
 					{:else if isCollectionNode(child)}
 						<Collection node={child} />
+					{:else if isMonnaieNode(child)}
+						<Monnaie node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

@@ -445,8 +445,10 @@
 							<Badge variant={isCorrect ? 'default' : 'outline'}>
 								{String.fromCharCode(65 + i)}
 							</Badge>
-							<!-- Horloge ou collection d'un choix : 3 cm, comme chez l'élève -->
-							<div class="flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]">
+							<!-- Horloge, collection ou monnaie d'un choix : 3 cm, comme chez l'élève -->
+							<div
+								class="flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:3cm]"
+							>
 								<MarkdownRenderer content={choice.content} {genericFunctions} />
 							</div>
 							{#if isCorrect}
