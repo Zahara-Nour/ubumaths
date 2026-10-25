@@ -1,14 +1,13 @@
 # Chantier « pdf-paragraphe-colle » — un paragraphe ne reste pas seul en bas de page
 
-## Reprendre ici
+## Clôture
 
-_Mis à jour le 2026-10-26, PR #1791 ouverte._
+_Chantier CLOS le 2026-10-26 (journal archivé)._
 
-- **État** : PR #1791 ouverte ; revue faite, son point (crochets du texte) corrigé.
-- **Prochaine action** : CI verte → merge ; puis clôture (journal archivé, durable déjà dans `docs/systeme/ubumark.md`).
-- **En attente de David** : rien.
-- **Pièges en cours** : le premier paragraphe d'un élément de liste passe par `ubu-item(…, tete: […])`, pas par un `#block` (le numéro resterait seul sur sa ligne) ; pas de `%` dans l'en-tête (garde de `percent-typst.test.ts`).
-- **Worktree / branche** : `../ubumaths-wt-pdf-paragraphe-colle` · `fix/pdf-paragraphe-colle`.
+- **Livré** (sur `main`, pas encore en prod) : #1791 — paragraphe `sticky` devant tout bloc sauf paragraphe / titre / trait ; premier paragraphe d'un élément de liste porté par `ubu-item(…, tete: […])` ; crochets du texte d'auteur échappés (un `]2 ; 3[` faisait échouer tout le PDF, déjà sur `main`).
+- **Doc durable** : `docs/systeme/ubumark.md` (§ options du générateur, « Paragraphe collé au bloc qui le suit »).
+- **Effet visible** : dans une liste, le bloc qui suit le premier paragraphe d'un élément est centré (il restait à gauche).
+- **Non couvert au rendu** (texte généré seulement) : `tete` avec cadre de réponse (`afterQuestion`) et en colonnes.
 
 ## Origine
 
