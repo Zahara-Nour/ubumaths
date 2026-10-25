@@ -28,7 +28,7 @@
 --
 -- Données d'élèves : aucune (modèles neufs, en brouillon).
 --
--- Accès : personne ne gagne ni ne perd d'accès (question posée à David le 2026-10-25, en attente).
+-- Accès : personne ne gagne ni ne perd d'accès (question posée à David le 2026-10-25, tranchée par lui le 2026-10-25 : personne).
 -- Aucune règle ne change. Effet visible : les 7 brouillons apparaissent sous leur nœud et sous leur point
 -- dans l'admin ; les élèves ne les voient qu'une fois publiés par David.
 --

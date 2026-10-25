@@ -83,7 +83,7 @@ une couleur d'accent :
 10. 100 € : un billet de 100 €, ou 50 + 20 + 20 + 10 ; 30 objets au plus par ensemble (Q5).
 11. Un seul billet sans pièce, des pièces sans billet : acceptés.
 12. `montant: 48` (Q4) : décomposition déterministe « le moins d'objets » (20 20 5 2 1), vérifiée égale au montant.
-13. Trois ensembles (« Qui a le plus ? » entre trois enfants) : l'un sous l'autre à 390 px, côte à côte sur tablette.
+13. Trois ensembles (« Qui a le plus ? » entre trois enfants) : côte à côte s'ils tiennent, sinon l'un sous l'autre (décision 13).
 
 ### Erreurs
 
@@ -182,7 +182,7 @@ la collection : une PR de ~600-900 lignes, revue Opus.
   ni les légendes (leçon de la revue de #1766).
 - **390 px** (repère de la collection : objet de 12 unités de scène, 268 unités pour 8 cm) : pièce de
   1 € ≈ 18 unités, 2 € ≈ 21 ; billets de 5 € ≈ 44 × 24 à 100 € ≈ 64 × 24 ; chiffres ≥ 9 unités.
-  Ensembles l'un sous l'autre, côte à côte sur tablette et au PDF. À vérifier sur capture.
+  Ensembles côte à côte s'ils tiennent, sinon l'un sous l'autre (décision 13) ; côte à côte au PDF.
 - **Couleurs** : `var(--color-*)` ; remplissage en accent, traits en teinte foncée de l'accent (leçon
   du thème sombre de la collection) ; anneau de 2 € en `color-mix`. Au PDF : gris cernés de noir.
 - **PDF** (Typst) : `monnaie-typst.ts`, valeurs écrites en Typst, cadre neutre « Monnaie
@@ -324,6 +324,8 @@ CP-045 (« peut-il acheter ? » seulement).
 10. **Disposition par défaut** : `rangé`.
 11. **Prix dans l'énoncé**, pas de clé `prix:` en v1.
 12. **Choix de QCM à 6 cm**, pas 3 (David, 2026-10-25, sur capture) : à 3 cm le chiffre d'un billet fait ≈ 3 pt, illisible ; l'enfant doit lire chaque valeur. Remplace le « 3 cm » du nominal 6 (§ 2) et du § 5.
+13. **Ensembles côte à côte s'ils tiennent, sinon l'un sous l'autre** (David, 2026-10-25, recette sur capture) : à 390 px, trois petits ensembles tiennent côte à côte, à la même échelle — plus parlant pour comparer. Remplace « l'un sous l'autre à 390 px » de l'exemple 13 (§ 2) et du § 5. Aucun code : c'est déjà le passage à la ligne du bloc.
+14. **Légende au PDF** (recette) : colonne d'au moins 3 cm au-dessus d'un petit dessin, si la rangée la tient encore ; texte centré, non justifié (une longue légende se coupait mot à mot).
 
 ## Journal
 
@@ -353,3 +355,11 @@ CP-045 (« peut-il acheter ? » seulement).
 - 2026-10-25 : revue `code-reviewer` (Sonnet) : aucun bloquant ; corrigés le coin du billet de 100 € au PDF, les
   longues légendes qui sortaient de la page, le message de `10 x 2` ; laissé `0×10` sans message (voulu). CI verte,
   #1778 mergée.
+- 2026-10-25 : recette sur captures refaites sur `main` (390 px clair / sombre, PDF ; les précédentes
+  dataient d'avant la revue). Trouvés : (1) bord droit du cadre rogné par Chrome sur un dessin de largeur
+  fractionnaire — monnaie ET collection (`StatChart` non touché) → `overflow: visible` ; (2) trois
+  ensembles côte à côte à 390 px → décision 13 amendée ; (3) longue légende coupée mot à mot au PDF →
+  décision 14 ; (4) au PDF, une phrase peut finir en bas de page et son bloc partir sur la suivante :
+  commun à tous les blocs, **hors chantier** (point ouvert). PR `fix/monnaie-recette`.
+- 2026-10-25 : revue `code-reviewer` (Sonnet) de #1781 : aucun bloquant ; ajouté le test du repli (rangée
+  pleine : pas de colonne élargie, vu rouge en forçant 3 cm) ; phrase de `ubumark.md` allégée.

@@ -113,6 +113,17 @@ describe('Monnaie — dessin', () => {
 		expect(width).toBeLessThanOrEqual(100);
 	});
 
+	it('cadre entier : le trait au bord du dessin n’est pas rogné (recette, 390 px)', async () => {
+		// Chrome rogne au pixel la boîte du SVG : le bord droit du cadre, à un demi-trait du
+		// bord, disparaissait sur un dessin de largeur fractionnaire (« mélangé », choix de QCM)
+		const screen = await render(Monnaie, {
+			target: mainElement(),
+			props: { node: node('billets: 20 10 10 5', 'pièces: 3×2 4×1', 'disposition: mélangé') }
+		});
+		const svg = screen.container.querySelector('svg')!;
+		expect(getComputedStyle(svg).overflow).toBe('visible');
+	});
+
 	it('plusieurs ensembles : légendes A, B d’office, ou celles de l’auteur', async () => {
 		const screen = await render(Monnaie, {
 			target: mainElement(),

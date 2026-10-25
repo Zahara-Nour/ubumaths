@@ -105,6 +105,17 @@ describe('Collection — dessin', () => {
 		expect(width).toBeLessThanOrEqual(100);
 	});
 
+	it('cadre entier : le trait au bord du dessin n’est pas rogné (recette monnaie, 390 px)', async () => {
+		// Chrome rogne au pixel la boîte du SVG : le bord droit du cadre, à un demi-trait du
+		// bord, disparaissait sur un dessin de largeur fractionnaire
+		const screen = await render(Collection, {
+			target: mainElement(),
+			props: { node: node('unités: 3') }
+		});
+		const svg = screen.container.querySelector('svg')!;
+		expect(getComputedStyle(svg).overflow).toBe('visible');
+	});
+
 	it('plusieurs collections : légendes A, B d’office', async () => {
 		const screen = await render(Collection, {
 			target: mainElement(),

@@ -45,6 +45,9 @@ const ROW_MAX_CM = 16;
 /** Espace entre deux ensembles (cm) */
 const GAP_CM = 0.6;
 
+/** Colonne d'une légende au-dessus d'un petit dessin (un billet de 5 €) : au moins 3 cm */
+const CAPTION_MIN_CM = 3;
+
 const NOTE_FILL = 'luma(240)';
 const COIN_FILL = 'luma(215)';
 const RING_FILL = 'luma(165)';
@@ -147,6 +150,10 @@ export function generateMonnaieTypst(node: MonnaieNode): string {
 	const captions =
 		spec.captions ?? (spec.sets.length > 1 ? MONNAIE_DEFAULT_CAPTIONS.slice() : null);
 
+	// Largeur minimale d'une colonne légendée, si la rangée la tient encore
+	const widened = scenes.reduce((sum, s) => sum + Math.max(s.width * k, CAPTION_MIN_CM), 0);
+	const captionMin = captions !== null && widened <= available ? CAPTION_MIN_CM : 0;
+
 	const cells = scenes.map((scene, i) => {
 		const frame = [
 			`#box(width: ${cm(scene.width * k)}, height: ${cm(scene.height * k)}, stroke: 0.5pt + luma(120), radius: 3pt)[`,
@@ -155,9 +162,11 @@ export function generateMonnaieTypst(node: MonnaieNode): string {
 		].join('\n');
 		const caption = captions?.[i];
 		if (caption === undefined || caption === '') return `[${frame}]`;
-		// Légende pas plus large que son dessin : une longue légende passe à la ligne au lieu de
-		// sortir de la page (la réduction `k` ne compte que les dessins)
-		return `[#stack(dir: ttb, spacing: 4pt, box(width: ${cm(scene.width * k)}, align(center, text(size: 9pt, weight: "bold", ${typstString(caption)}))), [${frame}])]`;
+		// Colonne de la largeur du dessin, au moins `captionMin` : une longue légende passe à la
+		// ligne au lieu de sortir de la page (la réduction `k` ne compte que les dessins), sans
+		// la justification du document qui l'étirait mot à mot
+		const column = Math.max(scene.width * k, captionMin);
+		return `[#stack(dir: ttb, spacing: 4pt, box(width: ${cm(column)}, { set par(justify: false); align(center, text(size: 9pt, weight: "bold", ${typstString(caption)})) }), align(center, [${frame}]))]`;
 	});
 
 	return [

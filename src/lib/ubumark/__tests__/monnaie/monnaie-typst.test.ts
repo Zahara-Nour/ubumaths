@@ -14,6 +14,10 @@ import { MONNAIE_UNAVAILABLE } from '$lib/ubumark/types/monnaie';
 const node = (...lines: string[]) => parseMonnaieContent(lines.join('\n'));
 const typst = (...lines: string[]) => generateMonnaieTypst(node(...lines));
 const count = (text: string, pattern: RegExp) => (text.match(pattern) ?? []).length;
+const CAPTION =
+	/box\(width: [\d.]+cm, \{ set par\(justify: false\); align\(center, text\(size: 9pt/g;
+const captionWidths = (text: string) =>
+	[...text.matchAll(/box\(width: ([\d.]+)cm, \{ set par/g)].map((m) => Number(m[1]));
 const FRAME = /#box\(width: [\d.]+cm, height: [\d.]+cm, stroke:/g;
 
 describe('bloc ```monnaie au PDF', () => {
@@ -61,10 +65,38 @@ describe('bloc ```monnaie au PDF', () => {
 		expect(named).toContain('"#x [y]"');
 	});
 
-	it('une légende ne dépasse pas la largeur de son dessin (elle passe à la ligne)', () => {
+	it('une légende ne sort pas de la page (elle passe à la ligne dans sa colonne)', () => {
 		const long = 'a'.repeat(40);
 		const out = typst('pièces: 1 ; 2 ; 1', `légendes: ${long} ; ${long} ; ${long}`);
-		expect(count(out, /box\(width: [\d.]+cm, align\(center, text\(size: 9pt/g)).toBe(3);
+		expect(count(out, CAPTION)).toBe(3);
+		const row = captionWidths(out).reduce((sum, w) => sum + w, 0) + 2 * 0.6;
+		expect(row).toBeLessThanOrEqual(16);
+	});
+
+	it('légende plus large qu’un petit dessin : au moins 3 cm, non justifiée (recette)', () => {
+		// « Le porte-monnaie de la grand-mère de Léa » au-dessus d'un billet de 5 € se coupait
+		// mot à mot, avec de grands blancs (justification du document)
+		const out = typst(
+			'billets: 5 ; 10',
+			'légendes: Le porte-monnaie de la grand-mère de Léa ; Tom'
+		);
+		for (const w of captionWidths(out)) expect(w).toBeGreaterThanOrEqual(3);
+		expect(count(out, /par\(justify: false\)/g)).toBe(2);
+	});
+
+	it('rangée pleine : pas de colonne élargie, la légende reste à la largeur de son dessin', () => {
+		// Deux grands ensembles remplissent déjà les 16 cm : élargir le petit sortirait de la page
+		const out = typst('billets: 50 20 20 10 ; 50 20 20 10 ; 5', 'légendes: Léa ; Tom ; Zoé');
+		const widths = captionWidths(out);
+		expect(widths[2]).toBeLessThan(3);
+		expect(widths.reduce((sum, w) => sum + w, 0) + 2 * 0.6).toBeLessThanOrEqual(16.001);
+	});
+
+	it('légende d’un grand dessin : aussi large que lui', () => {
+		const out = typst('billets: 50 20 20 10 ; 5', 'légendes: Léa ; Tom');
+		const k = 8 / MONNAIE_VIEW.fullWidth;
+		const scene = buildMonnaieScene(node('billets: 50 20 20 10 ; 5').spec!, 0);
+		expect(captionWidths(out)[0]).toBeCloseTo(scene.width * k, 2);
 	});
 
 	it('ensemble vide : un cadre vide', () => {
