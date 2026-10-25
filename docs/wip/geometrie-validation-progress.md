@@ -2,16 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, renommage du bloc (PR en cours, après #1768)._
+_Mis à jour le 2026-10-25, après #1774._
 
-- **État** : PR 1 (moteur) mergée (#1768) ; bloc renommé ` ```figure-a-completer ` (décision de David), PR de renommage en cours.
-- **Prochaine action** : merger le renommage, puis PR 2 (écran élève : tracé dans `FillBlanksInput` sur `GeometryCanvas`,
-  import de `positions-setup`, rendu après Valider).
+- **État** : PR 1 (moteur) mergée (#1768) ; bloc renommé ` ```figure-a-completer ` (#1774). Aucun écran, aucun modèle.
+- **Prochaine action** : PR 2 (écran élève : tracé dans `FillBlanksInput` sur `GeometryCanvas`, import de `positions-setup`,
+  Valider grisé, rendu après Valider), nouveau worktree `../ubumaths-wt-geometrie-validation`.
 - **En attente de David** : statut de **CP-034** et de **CP-058** ; phase 0 de CP-060.
 - **Pièges en cours** : sans `positions-setup`, `validateAnswer` rend « positions non inscrites » dans `message` ; `snapToPoint`
   existe (`geometry-core/interaction/snap.ts`) ; fiche du catalogue (`block-catalog/types.ts`) après le merge de `catalogue-blocs` ;
-  noms internes restés `construction` (code anglais), le bloc et les messages disent `figure-a-completer`.
-- **Worktree / branche** : `../ubumaths-wt-geometrie-validation` · `refactor/figure-a-completer`.
+  noms internes `construction` (code anglais), le bloc et les messages disent `figure-a-completer`.
+- **Worktree / branche** : aucun (retirés après #1774).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
