@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1736._
+_Mis à jour le 2026-10-25, après #1736 et son `db:migrate`._
 
-- **État** : A1 (#1712), A2 (#1720), A4 (#1728) livrés et relus. **A5 problèmes** : #1736 mergée ; 4 brouillons en prod (`da6e20cd`, `a1c5da8b` CP-029 ; `5c6999c6` CP-030 ; `87460358` CP-031), **relus par David 4/4 OK** (page à cocher : https://claude.ai/artifact/7X9xCEmgzKAijPJTsfaHvZ, collection `verdicts`). Migration `20261026000000_questions_cp_a5_rangement_tags` **pas encore jouée** (audit sécurité : aucun finding bloquant).
-- **Prochaine action** : `db:migrate` depuis le dépôt principal, dès que David a tranché la question d'accès ; puis vérification prod (nœud = sous-notion, 1 tag chacun, `updated_at` inchangé, trigger `tgenabled = O`). Ensuite : lot A3 ordinaux (009-013), phase 0, nouveau worktree.
-- **En attente de David** : question d'accès A5 (« personne ne gagne ni ne perd d'accès » ?) ; publication des 24 brouillons A1 + A2 + A4 + A5 (tous relus OK) ; vérification manuelle #1702.
+- **État** : A1 (#1712), A2 (#1720), A4 (#1728) livrés et relus. **A5 problèmes** : #1736 mergée ; 4 brouillons en prod (`da6e20cd`, `a1c5da8b` CP-029 ; `5c6999c6` CP-030 ; `87460358` CP-031), **relus par David 4/4 OK** (page à cocher : https://claude.ai/artifact/7X9xCEmgzKAijPJTsfaHvZ, collection `verdicts`). Migration `20261026000000_questions_cp_a5_rangement_tags` jouée (`db:migrate`, question d'accès tranchée par David), vérifiée en prod : sous-notion du point, 1 tag chacun, `updated_at` inchangé, trigger `tgenabled = O`.
+- **Prochaine action** : lot A3 ordinaux (009-013, § 4 ter : réponses en mots en QCM, un rang reste une case nombre), phase 0, nouveau worktree `../ubumaths-wt-questions`.
+- **En attente de David** : publication des 24 brouillons A1 + A2 + A4 + A5 (tous relus OK) ; vérification manuelle #1702.
 - **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau ; accords au singulier (données ≥ 2 dans les problèmes) ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; script d'un tirage hors du dépôt → `.mts`.
 - **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1736).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -151,3 +151,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : lot A5, phase 0 validée (§ 4 sexies), worktree `../ubumaths-wt-questions` (`feat/questions-a5`).
 - 2026-10-25 : A5, 4 modèles écrits (specs vertes, rendu relu), 4 brouillons créés en prod (go de David) ; migration nœud + tag et test, rouge puis vert.
 - 2026-10-25 : #1736 mergée ; page à cocher A5 publiée, relue 4/4 OK par David ; `db:migrate` en attente de la question d'accès.
+- 2026-10-25 : question d'accès A5 tranchée par David ; `db:migrate`, vérifié en prod (4 modèles sur leur sous-notion, 1 tag chacun).

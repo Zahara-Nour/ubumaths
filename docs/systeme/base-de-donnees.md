@@ -488,6 +488,14 @@ décoration par emplacement : `student_mathoux.decoration` (panse) et `student_m
 portée par un seul Mathou (index unique partiel). `buy_mathou_decoration` pose à l'emplacement de
 la clé ; `set_mathou_decoration` refuse un collier ; `set_mathou_collar` pose, déplace, remplace
 ou retire le collier (mêmes gardes). Test : `tests/integration/mathoux-colliers.test.ts`.
+Lunettes et chapeaux (migration `20261025235500`) : même catalogue, même table d'achats, deux
+emplacements de plus, « yeux » (`eyes` : `round_glasses`, `sunglasses`, `monocle`, `pince_nez`,
+`spiral_glasses`) et « tête » (`head` : `bowler`, `beret`, `boater`, `top_hat`, `pointed_hat`),
+portés dans `student_mathoux.glasses` et `student_mathoux.hat` avec les mêmes garanties que
+`collar` (CHECK par emplacement, clé composée en SET NULL, index unique partiel).
+`buy_mathou_decoration` pose aux quatre emplacements ; `set_mathou_glasses` et `set_mathou_hat`
+posent, déplacent, remplacent ou retirent (mêmes gardes) ; les autres poses refusent ces clés. Test :
+`tests/integration/mathoux-lunettes-chapeaux.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
 jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible
