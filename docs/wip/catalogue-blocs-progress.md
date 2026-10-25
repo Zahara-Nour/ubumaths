@@ -2,16 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 2 ouverte._
+_Mis à jour le 2026-10-25, après #1767._
 
-- **État** : PR 1 mergée (#1764). PR 2 (vitrine `/demo/blocs`) ouverte, CI en cours ; à son
-  merge, les deux PR attendent `deploy:prod`. Serveur de test : `http://localhost:5177/demo/blocs`.
-- **Prochaine action** : merger la PR 2 (CI verte), puis clore le chantier (versement : la doc
-  durable est déjà dans `docs/systeme/utilitaires-et-demos.md`, archiver ce journal).
-- **En attente de David** : regard sur les pages (aide et vitrine). Erreurs muettes des
-  parseurs : chantier à part `erreurs-blocs`.
+- **État** : les deux PR du chantier sont mergées (#1764 aide à l'écriture, #1767 vitrine
+  `/demo/blocs`), en attente de `deploy:prod`. Serveur de test : `http://localhost:5177`
+  (`/aide-ecriture/blocs` en prof, `/demo/blocs` sans compte).
+- **Prochaine action** : clore le chantier après le regard de David (journal archivé, la doc
+  durable est déjà dans `docs/systeme/utilitaires-et-demos.md`), puis retirer le worktree.
+- **En attente de David** : regard sur les pages (ligne #1764, #1767 de
+  `docs/wip/verifications-manuelles.md`). Erreurs muettes des parseurs : chantier `erreurs-blocs`.
 - **Pièges connus** : la division posée est une grille, pas un svg (test de rendu de la vitrine).
-- **Worktree / branche** : `../ubumaths-wt-catalogue-blocs` · `feat/catalogue-blocs-vitrine`.
+- **Worktree / branche** : `../ubumaths-wt-catalogue-blocs` · `feat/catalogue-blocs-vitrine`
+  (mergée, gardée pour le serveur de test).
 
 ## Origine
 
