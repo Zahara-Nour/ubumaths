@@ -15,10 +15,16 @@
  * @module atelier/from-python
  */
 
-import { MAX_CATEGORIES, MAX_DEFINITION_LENGTH, MAX_LIST_VALUES } from './types';
+import {
+	MAX_CATEGORIES,
+	MAX_CATEGORY_LENGTH,
+	MAX_DEFINITION_LENGTH,
+	MAX_LIST_VALUES
+} from './types';
 import { MAX_TITLE_LENGTH } from './grid';
 import { validateName } from './names';
 import { groupNumberText } from '$lib/mathAST/digit-grouping';
+import { readListValue } from '$lib/statistics/read-value';
 
 // =============================================================================
 // Types
@@ -32,7 +38,11 @@ export type PythonListProblem =
 	| { readonly kind: 'bool' }
 	| { readonly kind: 'big-int' }
 	| { readonly kind: 'not-finite' }
-	| { readonly kind: 'other'; readonly type: string };
+	| { readonly kind: 'other'; readonly type: string }
+	/** Un texte de plus de `MAX_CATEGORY_LENGTH` caractères : jamais une modalité. */
+	| { readonly kind: 'long-text' }
+	/** Plus de `MAX_PYTHON_LIST_LENGTH` éléments : le worker ne les parcourt pas. */
+	| { readonly kind: 'too-long' };
 
 /**
  * Une liste affectée par le programme, telle que le worker la rapporte : ses
@@ -77,6 +87,15 @@ const NUMBERS_AND_WORDS = 'l’atelier ne lit que des nombres et des mots.';
 /** Ce que l'atelier lit comme séparateur de valeurs, ou de lignes de la grille. */
 const SEPARATOR = /[;\n\r]/;
 
+/** Un mot, comme l'atelier le lit (`parse.ts`, Q84) : au moins une lettre. */
+const WORD = /\p{L}/u;
+
+/** Au-delà, le worker ne parcourt pas la liste (une exécution ne doit pas attendre). */
+export const MAX_PYTHON_LIST_LENGTH = 1_000_000;
+
+/** Un nom de variable plus long n'est pas proposé (le message du worker est borné). */
+export const MAX_PYTHON_NAME_LENGTH = 200;
+
 // =============================================================================
 // Fonctions
 // =============================================================================
@@ -96,6 +115,16 @@ export function offerOf(report: PythonListReport): AtelierOffer {
 	if (report.items !== undefined) {
 		const definition = definitionOf(report.items);
 		if (typeof definition !== 'string') return refused(definition.message);
+		// Un seul mot rend toute la liste qualitative (Q84) : ses modalités se
+		// comptent alors comme l'atelier les compte, sans la casse ni les espaces
+		const modalities = report.items.some((entry) => typeof entry === 'string')
+			? new Set(report.items.map((entry) => categoryKey(String(entry)))).size
+			: 0;
+		if (modalities > MAX_CATEGORIES) {
+			return refused(
+				`a ${modalities} modalités : une liste de mots en a au plus ${MAX_CATEGORIES} dans l’atelier.`
+			);
+		}
 		const plural = report.length > 1 ? 'valeurs' : 'valeur';
 		return {
 			kind: 'list',
@@ -108,9 +137,10 @@ export function offerOf(report: PythonListReport): AtelierOffer {
 	if (report.counts !== undefined) {
 		// Des nombres en ordre croissant (un tableau d'effectifs se lit ainsi) ;
 		// des mots dans l'ordre où le programme les a rencontrés
-		const counts = report.counts.every(([value]) => typeof value === 'number')
-			? [...report.counts].sort(([a], [b]) => (a as number) - (b as number))
-			: report.counts;
+		const merged = mergedCounts(report.counts);
+		const counts = merged.every(([value]) => typeof value === 'number')
+			? [...merged].sort(([a], [b]) => (a as number) - (b as number))
+			: merged;
 		const values = definitionOf(counts.map(([value]) => value));
 		if (typeof values !== 'string') return refused(values.message);
 		return {
@@ -139,16 +169,61 @@ function problemMessage(problem: PythonListProblem): string {
 			return 'contient nan ou inf : ce ne sont pas des nombres pour l’atelier.';
 		case 'other':
 			return `contient un élément de type ${problem.type} : ${NUMBERS_AND_WORDS}`;
+		case 'long-text':
+			return LONG_WORD;
+		case 'too-long':
+			return 'a plus d’un million de valeurs : trop pour l’atelier.';
 	}
+}
+
+const LONG_WORD = `contient un mot de plus de ${MAX_CATEGORY_LENGTH} caractères : l’atelier ne le garde pas comme modalité.`;
+
+/** Ce qu'un texte deviendrait dans l'atelier, s'il n'y reste pas un mot (revue) ; `null` s'il en est un. */
+function textProblem(text: string): string | null {
+	if (SEPARATOR.test(text)) {
+		return 'contient un texte avec « ; » ou un retour à la ligne : l’atelier y verrait deux valeurs.';
+	}
+	if (text.trim() === '') return 'contient un texte vide : l’atelier y verrait une case vide.';
+	if (text.includes(',')) {
+		return 'contient un texte avec une virgule : l’atelier la lirait comme un séparateur.';
+	}
+	// Q92 : ce qui se lit comme un nombre n'est jamais un mot (`'12'`, `'0x10'`, `'1e3'`)
+	if (readListValue(text) !== null) {
+		return `contient le texte « ${text} », que l’atelier lirait comme un nombre : écris-le sans guillemets.`;
+	}
+	if (!WORD.test(text)) return `contient le texte « ${text} », qui n’est ni un nombre ni un mot.`;
+	if (text.trim().length > MAX_CATEGORY_LENGTH) return LONG_WORD;
+	return null;
+}
+
+/** La clé d'une modalité, comme l'atelier la compte (`parse.ts`, Q85). */
+function categoryKey(entry: string): string {
+	return entry.trim().toLocaleLowerCase('fr');
+}
+
+/**
+ * Les effectifs réunis par modalité, comme l'atelier les lira : `P` et `p ` sont
+ * une même modalité, écrite comme sa première occurrence (revue — sinon les
+ * valeurs se confondent à l'arrivée et les effectifs ne s'alignent plus).
+ */
+function mergedCounts(
+	counts: readonly (readonly [PythonEntry, number])[]
+): (readonly [PythonEntry, number])[] {
+	const merged = new Map<string, [PythonEntry, number]>();
+	for (const [value, count] of counts) {
+		const key = typeof value === 'string' ? categoryKey(value) : `#${value}`;
+		const seen = merged.get(key);
+		if (seen === undefined) merged.set(key, [value, count]);
+		else seen[1] += count;
+	}
+	return [...merged.values()];
 }
 
 /** La définition d'atelier d'une liste (`3 ; 5 ; 1`), ou ce qui l'empêche. */
 function definitionOf(entries: readonly PythonEntry[]): string | { message: string } {
-	if (entries.some((entry) => typeof entry === 'string' && SEPARATOR.test(entry))) {
-		return {
-			message:
-				'contient un texte avec « ; » ou un retour à la ligne : l’atelier y verrait deux valeurs.'
-		};
+	for (const entry of entries) {
+		const problem = typeof entry === 'string' ? textProblem(entry) : null;
+		if (problem !== null) return { message: problem };
 	}
 	const definition = join(entries);
 	if (definition.length > MAX_DEFINITION_LENGTH) {

@@ -109,6 +109,7 @@ describe('offerOf — une liste du programme', () => {
 	it('des mots passent tels quels', () => {
 		const offer = offerOf(report('tirages', ['P', 'F', 'P']));
 		expect(offer.kind === 'list' && offer.lists[0].definition).toBe('P ; F ; P');
+		expect(offer.kind === 'list' && offer.label).toBe('tirages (3 valeurs)');
 	});
 });
 
@@ -199,6 +200,72 @@ describe('offerOf — refus, avec leur raison', () => {
 		expect(refusalOf(report('L', floats))).toBe(
 			'« L » s’écrit en plus de 4000 caractères (ses nombres ont beaucoup de décimales) : arrondis-les en Python, par exemple round(x, 3).'
 		);
+	});
+});
+
+describe('offerOf — revue : ce que l’atelier refuserait ou lirait autrement à l’arrivée', () => {
+	it('plus de 20 modalités : refusée au menu, pas à l’arrivée', () => {
+		const mots = Array.from({ length: 30 }, (_, i) => `a${i}`);
+		expect(refusalOf(report('mots', mots))).toBe(
+			'« mots » a 30 modalités : une liste de mots en a au plus 20 dans l’atelier.'
+		);
+	});
+
+	it('les modalités se comptent comme l’atelier : sans la casse ni les espaces', () => {
+		const mots = Array.from({ length: 20 }, (_, i) => `m${i}`);
+		const offer = offerOf(report('L', [...mots, 'M0', ' m1 ']));
+		expect(offer.kind).toBe('list');
+	});
+
+	it('un mot de plus de 40 caractères', () => {
+		expect(refusalOf(report('L', ['x'.repeat(41)]))).toBe(
+			'« L » contient un mot de plus de 40 caractères : l’atelier ne le garde pas comme modalité.'
+		);
+		expect(
+			refusalOf({ name: 'L', length: 1, distinct: 0, problem: { kind: 'long-text' } })
+		).toContain('plus de 40 caractères');
+	});
+
+	it('un texte qui se lit comme un nombre : écrire le nombre sans guillemets', () => {
+		expect(refusalOf(report('L', ['12', 'a']))).toBe(
+			'« L » contient le texte « 12 », que l’atelier lirait comme un nombre : écris-le sans guillemets.'
+		);
+		expect(refusalOf(report('L', ['0x10']))).toContain('« 0x10 »');
+	});
+
+	it('un texte vide, ou sans lettre', () => {
+		expect(refusalOf(report('L', ['a', ' ']))).toBe(
+			'« L » contient un texte vide : l’atelier y verrait une case vide.'
+		);
+		expect(refusalOf(report('L', ['?']))).toBe(
+			'« L » contient le texte « ? », qui n’est ni un nombre ni un mot.'
+		);
+	});
+
+	it('un texte avec une virgule', () => {
+		expect(refusalOf(report('L', ['rouge, vert']))).toBe(
+			'« L » contient un texte avec une virgule : l’atelier la lirait comme un séparateur.'
+		);
+	});
+
+	it('effectifs de mots : P et p sont une même modalité, comptée une fois', () => {
+		const offer = offerOf(
+			counted('L', [
+				['P', 150],
+				['F', 50],
+				['p ', 100]
+			])
+		);
+		expect(offer.kind === 'counts' && offer.lists).toEqual([
+			{ title: 'L (valeurs)', definition: 'P ; F' },
+			{ title: 'L (effectifs)', definition: '250 ; 50' }
+		]);
+	});
+
+	it('plus d’un million de valeurs : refus', () => {
+		expect(
+			refusalOf({ name: 'L', length: 2_000_000, distinct: 0, problem: { kind: 'too-long' } })
+		).toBe('« L » a plus d’un million de valeurs : trop pour l’atelier.');
 	});
 });
 

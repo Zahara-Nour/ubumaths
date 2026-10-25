@@ -30,8 +30,12 @@ import {
 	MAX_ATELIER_LISTS,
 	toWorkerMessageSchema
 } from '$lib/shared/python';
-import { MAX_CATEGORIES, MAX_LIST_VALUES } from '$lib/atelier/types';
-import type { PythonListReport } from '$lib/atelier/from-python';
+import { MAX_CATEGORIES, MAX_CATEGORY_LENGTH, MAX_LIST_VALUES } from '$lib/atelier/types';
+import {
+	MAX_PYTHON_LIST_LENGTH,
+	MAX_PYTHON_NAME_LENGTH,
+	type PythonListReport
+} from '$lib/atelier/from-python';
 import { runExerciseValidation } from '$lib/shared/python/validation-core';
 
 // =============================================================================
@@ -404,21 +408,22 @@ async function loadPyodideModule(): Promise<LoadPyodideFunc> {
 }
 
 /**
- * Initialize Pyodide (lazy loading mode - no packages loaded at init)
- */
-/**
  * « Ouvrir dans l'atelier » (phase 0 `docs/wip/python-vers-atelier-phase0.md`) :
  * les listes AFFECTÉES au niveau du module par le code exécuté — pas celles
  * d'une exécution précédente, que l'espace de noms du playground garde encore,
  * ni les variables locales d'une fonction, ni les noms en `_`.
  *
  * Rapporte ce que le JSON ne dirait pas (booléen, grand entier, `nan`, autre
- * type), puis les valeurs (au plus `max_values`) ou, au-delà, les effectifs
+ * type, texte trop long, liste trop longue pour être parcourue), puis les valeurs (au plus `max_values`) ou, au-delà, les effectifs
  * (au plus `max_distinct` valeurs différentes). Les règles de l'atelier sont
  * appliquées ensuite, côté page (`$lib/atelier/from-python`, `offerOf`).
+ *
+ * ⚠️ Limites assumées : l'opérateur morse (`(L := […])`) et `global L` dans une
+ * fonction ne sont pas vus ; une affectation dans une branche NON exécutée
+ * propose la valeur restée d'une exécution précédente.
  */
 const ATELIER_LISTS_HELPER = `
-def _chiphre_atelier_lists(code, ns, max_values, max_distinct, max_lists):
+def _chiphre_atelier_lists(code, ns, max_values, max_distinct, max_lists, max_text, max_length, max_name):
     import ast, json, math
     try:
         tree = ast.parse(code)
@@ -456,12 +461,15 @@ def _chiphre_atelier_lists(code, ns, max_values, max_distinct, max_lists):
                     if item.optional_vars is not None:
                         add(item.optional_vars)
                 walk(node.body)
-            elif isinstance(node, ast.Try):
+            elif isinstance(node, (ast.Try, getattr(ast, 'TryStar', ast.Try))):
                 walk(node.body)
                 for handler in node.handlers:
                     walk(handler.body)
                 walk(node.orelse)
                 walk(node.finalbody)
+            elif isinstance(node, ast.Match):
+                for case in node.cases:
+                    walk(case.body)
 
     walk(tree.body)
     reports = []
@@ -469,9 +477,13 @@ def _chiphre_atelier_lists(code, ns, max_values, max_distinct, max_lists):
         if len(reports) >= max_lists:
             break
         value = ns.get(name)
-        if name.startswith('_') or not isinstance(value, list):
+        if name.startswith('_') or len(name) > max_name or not isinstance(value, list):
             continue
         report = {'name': name, 'length': len(value), 'distinct': 0}
+        if len(value) > max_length:
+            report['problem'] = {'kind': 'too-long'}
+            reports.append(report)
+            continue
         problem = None
         for item in value:
             if isinstance(item, bool):
@@ -482,8 +494,12 @@ def _chiphre_atelier_lists(code, ns, max_values, max_distinct, max_lists):
             elif isinstance(item, float):
                 if not math.isfinite(item):
                     problem = {'kind': 'not-finite'}
-            elif not isinstance(item, str):
-                problem = {'kind': 'other', 'type': type(item).__name__}
+            elif isinstance(item, str):
+                # Jamais une modalité, et le message resterait sous son plafond (revue)
+                if len(item) > max_text:
+                    problem = {'kind': 'long-text'}
+            else:
+                problem = {'kind': 'other', 'type': type(item).__name__[:100]}
             if problem is not None:
                 break
         if problem is not None:
@@ -503,6 +519,9 @@ def _chiphre_atelier_lists(code, ns, max_values, max_distinct, max_lists):
     return json.dumps(reports)
 `;
 
+/**
+ * Initialize Pyodide (lazy loading mode - no packages loaded at init)
+ */
 async function initializePyodide(): Promise<void> {
 	try {
 		// Stage 0: Initializing
@@ -1552,7 +1571,7 @@ _stderr_value
 		// « Ouvrir dans l'atelier » : le playground seulement (exécution isolée)
 		if (!useNamespace) {
 			const json = pyodide.runPython(
-				`_chiphre_atelier_lists(_chiphre_user_code, globals(), ${MAX_LIST_VALUES}, ${MAX_CATEGORIES}, ${MAX_ATELIER_LISTS})`
+				`_chiphre_atelier_lists(_chiphre_user_code, globals(), ${MAX_LIST_VALUES}, ${MAX_CATEGORIES}, ${MAX_ATELIER_LISTS}, ${MAX_CATEGORY_LENGTH}, ${MAX_PYTHON_LIST_LENGTH}, ${MAX_PYTHON_NAME_LENGTH})`
 			) as string;
 			const lists = JSON.parse(json) as PythonListReport[];
 			if (lists.length > 0) postMessage({ type: 'atelier-lists', lists, id });

@@ -2247,9 +2247,12 @@ Après une exécution réussie, `/python` propose « Ouvrir dans l'atelier » po
 affectée par le programme (détection : [worker.md](python/worker.md#les-listes-pour-latelier-_chiphre_atelier_lists)).
 `offerOf` (`from-python.ts`) applique les règles de l'atelier : au plus `MAX_LIST_VALUES` valeurs ;
 au-delà, **ses effectifs** (deux listes, valeurs croissantes ou mots dans l'ordre d'apparition) s'il
-y a au plus `MAX_CATEGORIES` valeurs différentes ; sinon refus. Refus nommés aussi : liste vide,
-booléens, entier au-delà de 2⁵³, `nan`/`inf`, autre type (nommé), texte avec « ; » ou retour à la
-ligne, définition de plus de `MAX_DEFINITION_LENGTH` caractères (« arrondis-les en Python »). Les
+y a au plus `MAX_CATEGORIES` valeurs différentes (des mots réunis par modalité : `P` et `p` comptent
+ensemble) ; sinon refus. Refus nommés aussi : liste vide,
+booléens, entier au-delà de 2⁵³, `nan`/`inf`, autre type (nommé), texte que l'atelier ne lirait pas
+comme un mot (vide, sans lettre, avec « ; », une virgule ou un retour à la ligne, qui se lit comme un
+nombre — `'12'`, `'0x10'` —, plus de `MAX_CATEGORY_LENGTH` caractères), plus de `MAX_CATEGORIES`
+modalités (comptées sans la casse ni les espaces, comme l'atelier), plus d'un million d'éléments, définition de plus de `MAX_DEFINITION_LENGTH` caractères (« arrondis-les en Python »). Les
 nombres passent par `String(x)`, qui écrit comme le `repr` de Python : `0.30000000000000004`
 revient exact, sans arrondi caché.
 

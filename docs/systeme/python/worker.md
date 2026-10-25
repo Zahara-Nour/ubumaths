@@ -172,11 +172,14 @@ dans une `def` ou une `class`, ni en `_`. Seuls ces noms comptent : l'espace glo
 variables des exécutions précédentes (voir plus bas), qui ne doivent pas réapparaître.
 
 Pour chaque nom dont la valeur est une `list` (au plus `MAX_ATELIER_LISTS`, 50) : `name`, `length`,
-`distinct`, puis **soit** `problem` (`bool`, `big-int` au-delà de 2⁵³, `not-finite`, `other` + nom du
-type), **soit** `items` (au plus `MAX_LIST_VALUES`, 200), **soit** `counts` (valeur, effectif, dans
+`distinct`, puis **soit** `problem` (`bool`, `big-int` au-delà de 2⁵³, `not-finite`, `other` + nom du type, `long-text` pour un texte de plus de `MAX_CATEGORY_LENGTH` caractères, `too-long` au-delà de `MAX_PYTHON_LIST_LENGTH` éléments, jamais parcourus), **soit** `items` (au plus `MAX_LIST_VALUES`, 200), **soit** `counts` (valeur, effectif, dans
 l'ordre de première apparition, au plus `MAX_CATEGORIES`, 20 valeurs différentes), soit rien de plus.
 Le main thread valide le message par Zod (`atelierListsMessageSchema`, mêmes bornes) ; les règles de
 l'atelier s'appliquent ensuite côté page (`$lib/atelier/from-python`, `offerOf`).
+
+Limites assumées (revue de la PR) : `match` et `except*` sont parcourus, mais ni l'opérateur morse
+(`(L := […])`) ni `global L` dans une fonction ; une affectation dans une branche **non exécutée**
+propose la valeur restée d'une exécution précédente.
 
 ### Détection de l'expression finale (SymPy / Plotly)
 

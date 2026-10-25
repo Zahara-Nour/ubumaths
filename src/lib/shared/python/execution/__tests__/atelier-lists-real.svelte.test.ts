@@ -154,6 +154,29 @@ describe('les listes d’un programme, pour l’atelier (vrai Pyodide)', () => {
 	);
 
 	it(
+		'revue : un texte trop long ne fait pas perdre les autres listes',
+		async () => {
+			const lists = await run("L = [1, 2]\nbig = ['x' * 20000]");
+			expect(lists).toEqual([
+				{ name: 'L', length: 2, distinct: 2, items: [1, 2] },
+				{ name: 'big', length: 1, distinct: 0, problem: { kind: 'long-text' } }
+			]);
+		},
+		TEST_TIMEOUT_MS
+	);
+
+	it(
+		'revue : match et except* sont parcourus',
+		async () => {
+			const lists = await run(
+				'match 1:\n    case 1:\n        m = [1]\ntry:\n    pass\nexcept* ValueError:\n    e2 = [2]\nelse:\n    t = [3]'
+			);
+			expect(lists.map((l) => l.name)).toEqual(['m', 't']);
+		},
+		TEST_TIMEOUT_MS
+	);
+
+	it(
 		'une exécution en erreur ne propose rien',
 		async () => {
 			const lists = await run('L = [1]\n1 / 0');
