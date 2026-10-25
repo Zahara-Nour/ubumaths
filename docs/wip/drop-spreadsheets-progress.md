@@ -1,16 +1,17 @@
 ---
 title: Suppression de la table `spreadsheets` (tableur V4)
 date: 2026-10-25
-status: PR 1 (migration) ouverte
+status: PR 1 (#1730) mergée, db:migrate en attente de David
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, à l'ouverture de la PR 1._
+_Mis à jour le 2026-10-25, après #1730._
 
 - **État** : PR 1 = migration `20261025230000_drop_spreadsheets.sql` (table + fonction de trigger),
   test d'intégration (rouge sans, vert avec), inventaire anon 135 → 134 fonctions, doc.
-- **Prochaine action** : CI verte → merge → `db:migrate` **avec l'accord de David** (destructif) →
+- **Fait** : #1730 mergée (CI verte, `security-auditor` sans finding bloquant, rollback complété).
+- **Prochaine action** : `db:migrate` **avec l'accord de David** (destructif) →
   PR 2 : `pnpm db:types` (database.ts depuis la prod) + retrait de `spreadsheets` dans
   `scripts/generate-db-doc.ts` (sinon sa garde rougit tant que database.ts a la table).
 - **En attente de David** : son accord pour `db:migrate` (1 ligne perdue, voir plus bas).
