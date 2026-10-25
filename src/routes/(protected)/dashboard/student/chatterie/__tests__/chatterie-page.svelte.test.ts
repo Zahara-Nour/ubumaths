@@ -153,17 +153,17 @@ describe('La Chatterie de Faustroll', () => {
 		await expect.element(page.getByText('Grand matou', { exact: true })).toBeVisible();
 	});
 
-	it('un Mathou né se présente « Nom, Race », sa notion dessous ; une silhouette, sans race', async () => {
+	it('la race se lit une fois, à côté du titre de sa section ; la carte : nom, puis notion', async () => {
 		await renderPage(COLLECTION);
-		const fractions = page.getByText('le Mathou des Fractions').element();
-		expect(fractions.textContent?.replace(/\s+/g, ' ').trim()).toBe(
-			'le Mathou des Fractions, le Noir de Nombrilie'
-		);
+		const fractions = page.getByText('le Mathou des Fractions', { exact: true }).element();
+		expect(fractions.textContent?.trim()).toBe('le Mathou des Fractions');
 		await expect.element(page.getByText('Fractions', { exact: true })).toBeVisible();
+		// Une fois par section, même avec deux Mathoux (Fractions et sa silhouette) ;
 		// race de l'index 8, celle de la section Géométrie du décor
-		await expect.element(page.getByText(', le Discret Bigarré')).toBeVisible();
-		// la silhouette (même race que Fractions) ne montre pas la race
 		expect(page.getByText('le Noir de Nombrilie').elements()).toHaveLength(1);
+		expect(page.getByText('le Discret Bigarré').elements()).toHaveLength(1);
+		const section = page.getByRole('region', { name: 'Nombres et calculs' }).element();
+		expect(section.querySelector('header')?.textContent).toContain('le Noir de Nombrilie');
 	});
 
 	it('un Mathou en sieste porte un lien « Réveiller » vers la révision', async () => {

@@ -80,16 +80,21 @@
 <div class="space-y-8">
 	{#each races as race (race.branchId)}
 		<section aria-labelledby="race-{race.branchId}">
-			<h2 id="race-{race.branchId}" class="mb-3 text-xl font-semibold">{race.branchName}</h2>
+			<!-- Une race par branche : elle se lit ici, une fois, pas sur chaque carte -->
+			<header class="mb-3 flex flex-wrap items-baseline gap-x-2">
+				<h2 id="race-{race.branchId}" class="text-xl font-semibold">{race.branchName}</h2>
+				<p class="text-muted-foreground italic">{getMathouRace(race.raceIndex).name}</p>
+			</header>
 			<ul class="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 md:grid-cols-3">
 				{#each race.mathoux as mathou (mathou.notionId)}
 					{@const toDiscover = mathou.growth === 'a_decouvrir'}
 					<li
-						class="flex items-center gap-3 rounded-lg border border-border bg-card p-3 {toDiscover
+						class="flex items-start gap-3 rounded-lg border border-border bg-card p-3 {toDiscover
 							? 'opacity-75'
 							: ''}"
 					>
-						<div class="shrink-0">
+						<!-- Le stade sous le dessin -->
+						<div class="flex shrink-0 flex-col items-center gap-1">
 							<MathouAvatar
 								raceIndex={mathou.raceIndex}
 								stage={mathou.growth === 'a_decouvrir' ? 'chaton' : mathou.growth}
@@ -99,23 +104,23 @@
 								collar={mathou.collar}
 								glasses={mathou.glasses}
 								hat={mathou.hat}
-								size={64}
+								size={80}
 								label={avatarLabel(mathou)}
 							/>
+							<p class="text-sm text-muted-foreground">{GROWTH_LABEL[mathou.growth]}</p>
 						</div>
 						<div class="min-w-0 flex-1">
 							{#if toDiscover}
 								<p class="font-medium break-words">{mathou.notionName}</p>
 							{:else}
-								<!-- « Tangentin, le Chartreux de Yoyolande », puis la notion qu'il incarne -->
-								<p class="font-medium break-words">
-									{mathou.name}<span class="font-normal text-muted-foreground"
-										>, {getMathouRace(mathou.raceIndex).name}</span
-									>
+								<!-- « Tangentin », puis la notion qu'il incarne, en petites capitales -->
+								<p class="font-medium break-words">{mathou.name}</p>
+								<p
+									class="text-xs font-semibold tracking-wide break-words text-muted-foreground uppercase"
+								>
+									{mathou.notionName}
 								</p>
-								<p class="text-sm break-words text-muted-foreground">{mathou.notionName}</p>
 							{/if}
-							<p class="text-sm text-muted-foreground">{GROWTH_LABEL[mathou.growth]}</p>
 							{#if mathou.stars.length > 0}
 								<!-- Une étoile par classe où la notion a été entièrement acquise (mémoire) -->
 								<ul class="flex flex-wrap gap-x-2 text-sm" aria-label="Étoiles">
