@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1723._
+_Mis à jour le 2026-10-25, après #1723 (phase 0 de 6i validée)._
 
-- **État** : PR 1 à 5 et 6a à 6h mergées, pas en prod ; 6h = #1723, `/demo/editeur` (+ retour arrière après Ctrl+A corrigé).
-- **Prochaine action** : phase 6, dernière page : diaporama (plan validé plus bas, « Diaporama `/demo/diaporama` ») ; nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main`, phase 0 à faire valider.
+- **État** : PR 1 à 5 et 6a à 6h mergées, pas en prod. Phase 0 du diaporama faite et validée le 2026-10-25 (section « PR 6i » plus bas) : elle se découpe en 3 PR, **6i-a** coloration de ` ```python ` (`CodeBlock`), **6i-b** thème d'après le fond + réduction automatique des diapositives, **6i-c** la vitrine.
+- **Prochaine action** : 6i-a en cours sur `feat/code-coloration` ; puis 6i-b (même session si possible, lot de petites PR), puis 6i-c.
 - **Hors chantier, décidé par David le 2026-10-25** : le cahier de texte passe à ubumark (voie 2), **futur chantier à part** `cahier-ubumark` ; énigmes (HTML lu comme markdown) à mesurer.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** ; `z` ≈ `2` → regarder en dernier, PR à part dans `tools/chiphre-math/`.
 - **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : degrés par défaut, **courbe() comprise**, `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : chemin relatif ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; test de page qui lit le lexique : simuler `fetchDictionary` ; commitlint : lignes du corps ≤ 100 caractères ; **`{@html}` n'est pas corrigé à l'hydratation** (calculer après `onMount`) ; dans un test, cliquer au milieu de l'éditeur tombe sur un champ MathLive.
-- **Worktree / branche** : aucun (#1723 nettoyée). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/code-coloration` (6i-a). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
@@ -354,3 +354,40 @@ no position before the top-level node` dans les raccourcis Backspace de la droit
 - Vu sur 5177 (Playwright, 1280 et 390 px) : 200, aucune erreur de console, aucune requête autre
   que GET, rien qui déborde ; le texte de la carte « cahier » manquait (`{@html}` gardé du serveur) →
   HTML calculé après `onMount`.
+
+## PR 6i — vitrine `/demo/diaporama` (phase 0 validée par David le 2026-10-25)
+
+**Vérifié avant de coder** (page d'essai non commitée, Chromium piloté) :
+
+- `trig` dans une `UbuMarkSlide` : ✅ statique et interactif.
+- Figure manipulable : le bloc ubumark ` ```figure ` est **statique** (le déplacement n'est permis
+  qu'aux figures stockées) ; `GeometryCanvas` posé dans une `Slide` se manipule (A suit la souris,
+  la diapositive ne bouge pas, console propre).
+- Question « En classe » sans compte : les questions de la démo marchent ; mais `ClassroomSeries`
+  imbriquée dans un `Deck` est elle-même un `Deck` → ouverte sur la question 2/4, flèches inertes,
+  titre et compte à rebours blancs sur fond clair. Pas d'imbrication.
+- L'« auto-animate » de reveal.js **n'existe pas** chez nous (`Slide` ne pose que l'attribut) ; le
+  défilement automatique par diapositive (`autoSlide`) existe.
+- Les 18 sortes de contenu ubumark s'affichent dans une diapositive, sans erreur console. **Deux défauts** :
+  1. la couleur du texte suit le **thème du site**, pas le fond de la diapositive : fond sombre +
+     site en thème clair → texte, tableaux, `trig`, `variation`, `operation`… invisibles ;
+  2. pas d'ajustement de taille : `courbe`, `line`, `figure`, `qr` minuscules ; contenu long coupé
+     en haut et en bas, sans défilement.
+- ` ```python ` s'affiche en **texte brut** : `CodeBlock.svelte` (2025-11-24, jamais retouché)
+  échappe le code sans coloration, alors que `highlight.js` sert déjà dans `slides/components/Code.svelte`
+  et `server/markdown-parser.ts`. Un oubli, aucune ADR ni doc ne l'écarte.
+
+**Décisions (David suit les recommandations, le 2026-10-25)** :
+
+- **6i-a** : coloration branchée sur `CodeBlock` (tous les blocs de code ubumark), `highlight.js`
+  chargé à la demande ; langage inconnu ou absent → texte brut.
+- **6i-b** : la diapositive pose `color-scheme` d'après son fond (couleur unie → luminosité ;
+  dégradé, image, vidéo → comme aujourd'hui, prop `theme="clair" | "sombre"` pour forcer) — les
+  tokens du site sont en `light-dark()`, ils basculent seuls ; `UbuMarkSlide` réduit son contenu
+  trop long pour qu'il tienne (jamais d'agrandissement). Blocs trop petits : réglage `taille:`
+  dans la vitrine, rien de plus pour l'instant.
+- **6i-c**, 13 diapositives : celles du plan + une diapositive Python (bloc ubumark ` ```python `
+  coloré, bouton « Ouvrir dans Python » via `pythonPageOf`) après les formules ubumark.
+  Diapositive 5 : $(x+1)^2$ développé **ligne par ligne, tout seul** (`autoSlide` + fragments, ~2 s) ;
+  diapositive 8 : `GeometryCanvas` (droite d'Euler de `/demo/geometrie`) ; diapositive 9 : **minuteur
+  du diaporama** (2 questions de la démo, 10 s chacune, barre qui se vide, puis la correction).
