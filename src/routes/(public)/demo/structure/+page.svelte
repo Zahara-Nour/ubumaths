@@ -11,7 +11,8 @@
 	l'élève connecté, au niveau 5e pour un visiteur.
 -->
 <script lang="ts">
-	import { demoPage } from '$lib/seo/demo-pages';
+	import { demoSeo } from '$lib/seo/demo-pages';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import '$lib/utils/mathlive-styles';
 	import 'mathlive';
 	import { Button } from '$lib/components/ui/button';
@@ -49,10 +50,7 @@
 	}
 </script>
 
-<svelte:head>
-	<title>La structure d'une expression — Chiphre</title>
-	<meta name="description" content={demoPage('/demo/structure').description} />
-</svelte:head>
+<SeoHead {...demoSeo('/demo/structure')} />
 
 <div class="mx-auto max-w-4xl space-y-6 px-4 py-8">
 	<BackLink href="/demo" label="Retour aux démonstrations" />

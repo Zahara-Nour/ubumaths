@@ -17,6 +17,7 @@ describe('/demo', () => {
 	it('montre le titre et une carte par vitrine, dans l’ordre, avec sa description', async () => {
 		await render(Page);
 
+		await expect.poll(() => document.title).toBe('Démonstrations — Chiphre');
 		await expect
 			.element(page.getByRole('heading', { level: 1, name: 'Démonstrations' }))
 			.toBeVisible();

@@ -5,12 +5,13 @@
  * - `DEMO_PAGES` colle aux dossiers de `/demo` : une vitrine ajoutée sans carte échoue ici ;
  * - l'accueil et les 9 vitrines sont dans le sitemap, plus aucune exclusion ne les couvre ;
  * - `robots.txt` ne ferme plus `/demo`, mais garde fermées les autres démos de mise au point ;
- * - chaque vitrine n'a plus de `noindex` et pose sa `meta description` tirée de `DEMO_PAGES`.
+ * - chaque vitrine n'a plus de `noindex` et passe par `SeoHead` (canonique, Open Graph), titre et
+ *   description tirés de `DEMO_PAGES`.
  */
 import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { DEMO_HUB, DEMO_PAGES } from '../demo-pages';
+import { DEMO_HUB, DEMO_PAGES, demoPage, demoSeo } from '../demo-pages';
 import { SITEMAP_EXCLUSIONS, SITEMAP_PAGES, matchesExclusion } from '../sitemap-pages';
 
 // Constantes
@@ -91,14 +92,19 @@ describe('robots.txt', () => {
 
 describe('les vitrines', () => {
 	it.each(DEMO_PAGES.map((p) => [slug(p.path)]))(
-		'%s : sans noindex, avec sa meta description tirée de DEMO_PAGES',
+		'%s : sans noindex, titre et description tirés de DEMO_PAGES par SeoHead',
 		(name) => {
 			const source = readFileSync(join(DEMO_DIR, name, '+page.svelte'), 'utf8');
 			expect(source).not.toMatch(/noindex/);
-			expect(source).toMatch(
-				/<meta name="description" content=\{demoPage\('\/demo\/[a-z-]+'\)\.description\} \/>/
-			);
-			expect(source).toContain(`demoPage('/demo/${name}')`);
+			expect(source).not.toMatch(/<title>/);
+			expect(source).toContain(`<SeoHead {...demoSeo('/demo/${name}')} />`);
 		}
 	);
+
+	it('demoSeo : le titre de la carte, suivi du nom du site', () => {
+		expect(demoSeo('/demo/lexique')).toEqual({
+			title: 'Le lexique — Chiphre',
+			description: demoPage('/demo/lexique').description
+		});
+	});
 });

@@ -2,7 +2,7 @@
  * Pages de la vitrine publique `/demo` (chantier demo-debug, PR 7).
  *
  * Une seule liste nourrit l'accueil `/demo` (ses cartes, dans cet ordre), le sitemap et la
- * `meta description` de chaque vitrine. Le test `demo-pages.test.ts` exige une entrée par
+ * `<title>` et la `meta description` de chaque vitrine (`demoSeo`, passé à `SeoHead`). Le test `demo-pages.test.ts` exige une entrée par
  * dossier de `src/routes/(public)/demo/`.
  *
  * @module lib/seo/demo-pages
@@ -23,7 +23,7 @@ export type DemoPath =
 
 export interface DemoPage {
 	path: DemoPath;
-	/** Titre de la carte, repris du `<h1>` de la vitrine */
+	/** Titre de la carte, et du `<title>` de la vitrine (`demoSeo`) */
 	title: string;
 	/** Ce qu'on y voit, en une phrase : carte de l'accueil et `meta description` */
 	description: string;
@@ -103,4 +103,10 @@ export function demoPage(path: DemoPath): DemoPage {
 	const found = DEMO_PAGES.find((p) => p.path === path);
 	if (!found) throw new Error(`Vitrine inconnue : ${path}`);
 	return found;
+}
+
+/** Les props de `SeoHead` d'une vitrine : `<SeoHead {...demoSeo('/demo/…')} />` */
+export function demoSeo(path: DemoPath): { title: string; description: string } {
+	const { title, description } = demoPage(path);
+	return { title: `${title} — Chiphre`, description };
 }

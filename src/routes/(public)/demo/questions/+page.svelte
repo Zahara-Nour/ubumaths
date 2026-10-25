@@ -7,7 +7,8 @@
 	enregistré ; les révisions espacées sont simulées (chantier demo-debug, PR 6g).
 -->
 <script lang="ts">
-	import { demoPage } from '$lib/seo/demo-pages';
+	import { demoSeo } from '$lib/seo/demo-pages';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
@@ -97,10 +98,7 @@
 	function ignoreResult() {}
 </script>
 
-<svelte:head>
-	<title>Les questions — Chiphre</title>
-	<meta name="description" content={demoPage('/demo/questions').description} />
-</svelte:head>
+<SeoHead {...demoSeo('/demo/questions')} />
 
 <div class="mx-auto max-w-5xl space-y-8 px-4 py-8">
 	<BackLink href="/demo" label="Retour aux démonstrations" />

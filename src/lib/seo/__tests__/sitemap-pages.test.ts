@@ -150,9 +150,9 @@ describe('matchesExclusion', () => {
 	});
 
 	it('`/**` couvre la route et ses descendantes, pas ses voisines', () => {
-		expect(matchesExclusion('/demo', '/demo/**')).toBe(true);
-		expect(matchesExclusion('/demo/cercle-trigo', '/demo/**')).toBe(true);
-		expect(matchesExclusion('/demonstration', '/demo/**')).toBe(false);
+		expect(matchesExclusion('/auth', '/auth/**')).toBe(true);
+		expect(matchesExclusion('/auth/login', '/auth/**')).toBe(true);
+		expect(matchesExclusion('/authentique', '/auth/**')).toBe(false);
 	});
 
 	it('`*` reste dans un segment', () => {

@@ -8,7 +8,8 @@
 	`/dev/mots-cliquables` (chantier demo-debug, PR 6d).
 -->
 <script lang="ts">
-	import { demoPage } from '$lib/seo/demo-pages';
+	import { demoSeo } from '$lib/seo/demo-pages';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MySelect from '$lib/components/MySelect.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -76,10 +77,7 @@
 	provideReaderGrade(() => grade);
 </script>
 
-<svelte:head>
-	<title>Le lexique — Chiphre</title>
-	<meta name="description" content={demoPage('/demo/lexique').description} />
-</svelte:head>
+<SeoHead {...demoSeo('/demo/lexique')} />
 
 <div class="container mx-auto max-w-3xl space-y-6 px-4 py-8">
 	<BackLink href="/demo" label="Retour aux démonstrations" />

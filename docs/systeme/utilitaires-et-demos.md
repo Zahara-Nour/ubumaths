@@ -141,8 +141,8 @@ chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cart
 
 **La vitrine est ouverte** (phase 7) : une seule liste, `DEMO_PAGES` de `src/lib/seo/demo-pages.ts`,
 nourrit les cartes de l'accueil `/demo`, le sitemap (`/demo` en 0,6, les vitrines en 0,5) et la
-`meta description` de chaque vitrine (`demoPage('/demo/…')`) ; le test `demo-pages.test.ts` exige
-une entrée par dossier de `/demo`, l'absence de `noindex` et de `Disallow: /demo`. L'accueil est
+`<title>` et la `meta description` de chaque vitrine (`<SeoHead {...demoSeo('/demo/…')} />`) ; le test `demo-pages.test.ts` exige
+une entrée par dossier de `/demo`, le passage par `SeoHead` (canonique, Open Graph), l'absence de `noindex` et de `Disallow: /demo`. L'accueil est
 relié depuis les trois vues des publics (`DEMO` de `src/lib/kingdom-tour/views.ts`) et l'`InfoPanel`.
 
 Les pages de mise au point restent hors du sitemap (`/dev` est protégé, donc absent) et interdites

@@ -7,14 +7,12 @@
 -->
 <script lang="ts">
 	import { DEMO_HUB, DEMO_PAGES } from '$lib/seo/demo-pages';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { resolve } from '$app/paths';
 	import { ArrowRight } from '@lucide/svelte';
 </script>
 
-<svelte:head>
-	<title>Démonstrations — Chiphre</title>
-	<meta name="description" content={DEMO_HUB.description} />
-</svelte:head>
+<SeoHead title="Démonstrations — Chiphre" description={DEMO_HUB.description} />
 
 <div class="container mx-auto max-w-5xl space-y-8 px-4 py-8">
 	<header class="space-y-2">

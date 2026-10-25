@@ -8,7 +8,8 @@
 	(chantier demo-debug, PR 6b).
 -->
 <script lang="ts">
-	import { demoPage } from '$lib/seo/demo-pages';
+	import { demoSeo } from '$lib/seo/demo-pages';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -70,10 +71,7 @@ color: green
 	];
 </script>
 
-<svelte:head>
-	<title>Le cercle trigonométrique — Chiphre</title>
-	<meta name="description" content={demoPage('/demo/cercle-trigo').description} />
-</svelte:head>
+<SeoHead {...demoSeo('/demo/cercle-trigo')} />
 
 <div class="mx-auto max-w-5xl space-y-6 px-4 py-8">
 	<BackLink href="/demo" label="Retour aux démonstrations" />
