@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 du lot 3 écrite._
+_Mis à jour le 2026-10-25, phase 0 du lot 3 validée._
 
-- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740, #1745, #1748 : 0 des dixièmes non écrit → incomplète), sur `main`, pas en prod. Lot 3 : phase 0 écrite (§ 12).
-- **Prochaine action** : réponses de David à Q1-Q8 du § 12 (et la question du 0 au quotient, nominal 2), puis worktree neuf pour la PR 3a.
-- **En attente de David** : Q1-Q8 du § 12 ; vérifications #1716, #1726, #1738, #1740, #1745, #1748 avant `deploy:prod`. Précision Q1 (§ 10).
+- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740, #1745, #1748 : 0 des dixièmes non écrit → incomplète), sur `main`, pas en prod. Lot 3 : phase 0 validée (§ 12), PR 3a commencée.
+- **Prochaine action** : PR 3a (affichage de la division) dans `ubumaths-wt-operations-posees-division` : tests rouges (parseur, scène) puis code.
+- **En attente de David** : vérifications #1716, #1726, #1738, #1740, #1745, #1748 avant `deploy:prod`. Précision Q1 (§ 10).
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie de la multiplication).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
-- **Worktree / branche** : `ubumaths-wt-operations-posees` gardé tant que le serveur de test (5179) sert à David ; branche mergée.
+- **Worktree / branche** : `ubumaths-wt-operations-posees-division` · `feat/operations-posees-division-affichage` ; l'ancien `ubumaths-wt-operations-posees` reste figé tant que le serveur de test (5179) sert à David.
 
 ---
 
@@ -338,13 +338,13 @@ multiplication seulement.
 18. QCM / carte de cours avec multiplication à remplir : comme au lot 1.
 19. PDF inchangé.
 
-## 12. Lot 3 — division posée (phase 0, EN ATTENTE de David)
+## 12. Lot 3 — division posée (phase 0 validée par David le 2026-10-25)
 
 Points visés : CM1-053 (euclidienne, diviseur 1 chiffre, dividende ≤ 5 chiffres), CM2-056
 (décimale, dividende entier, arrêt au centième, reste nul), CM2-057 (dividende décimal, idem),
 6-123 (euclidienne, diviseur < 100).
 
-### Questions (recommandation en premier)
+### Décisions (« je te suis » : la recommandation de chaque question, en premier)
 
 - **Q1 — Soustractions écrites** : réglage `étapes: soustractions | restes`, défaut `soustractions`
   (le produit soustrait écrit sous chaque dividende partiel, signe −, trait ; c'est la forme du CM1).
@@ -380,7 +380,7 @@ Découpage pressenti : **PR 3a** affichage (parseur, scène, potence écran et P
 2. Résolu (`cases: aucune`), `étapes: soustractions` : sous chaque dividende partiel, le produit
    soustrait (−, trait), puis le reste avec le chiffre abaissé à sa droite ; dernier reste en bas.
    `9 456 ÷ 7` → quotient `1 350`, reste `6`. Un 0 au quotient (dividende partiel < diviseur) :
-   ligne écrite `0` soustrait ou sautée ? → **sautée**, le chiffre suivant abaissé (usage courant).
+   pas de ligne « − 0 », le chiffre suivant est abaissé (usage des manuels).
 3. `étapes: restes` : seuls les restes successifs, chiffre abaissé compris.
 4. À remplir, euclidienne : cases du quotient sous le trait, **autant que de chiffres du dividende**
    (la largeur ne trahit rien) ; case(s) du reste en bas à gauche, autant que de chiffres du
