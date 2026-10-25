@@ -118,6 +118,8 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'same-base-mul': 'Produit de puissances : aᵐ · aⁿ = aᵐ⁺ⁿ',
 	'same-base-mul-bare': 'Produit de puissances : aᵐ · aⁿ = aᵐ⁺ⁿ',
 	'same-base-div': 'Quotient de puissances : aᵐ / aⁿ = aᵐ⁻ⁿ',
+	'same-base-mul-spread': 'Produit de puissances : aᵐ · aⁿ = aᵐ⁺ⁿ',
+	'same-base-div-spread': 'Quotient de puissances : aᵐ / aⁿ = aᵐ⁻ⁿ',
 	'pow-of-quotient': "Puissance d'un quotient : (a/b)ⁿ = aⁿ/bⁿ",
 
 	// ---- radicaux (rules pattern) ---------------------------------------------
@@ -320,6 +322,8 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'same-base-mul': () => 'aᵐ · aⁿ = aᵐ⁺ⁿ',
 	'same-base-mul-bare': () => 'aᵐ · aⁿ = aᵐ⁺ⁿ',
 	'same-base-div': () => 'aᵐ / aⁿ = aᵐ⁻ⁿ',
+	'same-base-mul-spread': () => 'aᵐ · aⁿ = aᵐ⁺ⁿ',
+	'same-base-div-spread': () => 'aᵐ / aⁿ = aᵐ⁻ⁿ',
 	'pow-of-pow': () => '(aᵐ)ⁿ = aᵐⁿ',
 	// radicaux
 	'sqrt-product': () => '√(a·b) = √a · √b',

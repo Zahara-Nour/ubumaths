@@ -193,8 +193,10 @@ travail, et le panel le rend visible.
 4. ⚠️ Reste aussi : `simplify((e^x)^3)` garde `\left( e^x \right)^3`
    (barrière de coût). ~~Le **quotient** `e^{2x}/e^x` n'est réduit par aucune
    colonne~~ : `auto` et `reduire` le réduisent depuis le lot 5f-5 de
-   simplify-carte (Q48, règle `same-base-div`, base `e` ou rationnel positive) ;
-   `simplify`, `developper` et `factoriser` le gardent.
+   simplify-carte (Q48, règle `same-base-div`, base `e` ou rationnel positive),
+   et `3e^{2x}/e^x → 3e^x`, `x·e^x·e → x·e^{x+1}` depuis M2 (journal § 93,
+   règles `same-base-div-spread` et `same-base-mul-spread`) ; `simplify`,
+   `developper` et `factoriser` le gardent.
 
 ## Longueurs de segments (mode `capitalPairs: 'length'`)
 

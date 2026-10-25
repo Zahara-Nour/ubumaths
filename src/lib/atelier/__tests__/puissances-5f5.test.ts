@@ -130,3 +130,40 @@ describe('R10 (Q48) : .simplifier, quotient et produit de puissances de même ba
 		expect(lineOf('e^x*e^{2x}')).toBe('\\exponentialE^x \\exponentialE^{2 x}');
 	});
 });
+
+// M2 (revue de #1743, tranché par David le 2026-10-25, journal § 93) : deux
+// facteurs de même base se regroupent même s'ils ne sont pas voisins — formes
+// fréquentes des dérivées (`x·eˣ·e`, `3e^{2x}/eˣ`)
+describe('M2 : facteurs de même base non voisins', () => {
+	it.each([
+		['.simplifier x*e^x*e', 'x \\exponentialE^{x + 1}'],
+		['.simplifier e^x*x*e', 'x \\exponentialE^{x + 1}'],
+		// les `×` tapés ne restent pas dans le produit regroupé
+		['.simplifier 2*x*e^x*e', '2 x \\exponentialE^{x + 1}'],
+		['.simplifier e^x(x+1)e^{2x}', '\\left( x + 1 \\right) \\exponentialE^{3 x}'],
+		['.simplifier 3e^{2x}/e^x', '3 \\exponentialE^x'],
+		['.simplifier \\frac{xe^{2x}}{e^x}', 'x \\exponentialE^x'],
+		['.simplifier \\frac{e^{2x}}{3e^x}', '\\dfrac{\\exponentialE^x}{3}'],
+		['.simplifier \\frac{3xe^{x}}{e^{x}}', '3 x'],
+		// exposant négatif gardé, comme `e^x/e^{2x+1} → e^{-x-1}` (5f-5)
+		['.simplifier \\frac{2e^x}{4e^{3x}}', '\\dfrac{\\exponentialE^{-2 x}}{2}']
+	])('%s → %s', (input, expected) => {
+		expect(lineOf(input)).toBe(expected);
+	});
+
+	it('x·eˣ·e : l’étape aᵐ · aⁿ = aᵐ⁺ⁿ', () => {
+		expect(titlesOf('.simplifier x*e^x*e')).toContain('aᵐ · aⁿ = aᵐ⁺ⁿ');
+	});
+
+	it('3e^{2x}/eˣ : l’étape aᵐ / aⁿ = aᵐ⁻ⁿ', () => {
+		expect(titlesOf('.simplifier 3e^{2x}/e^x')).toContain('aᵐ / aⁿ = aᵐ⁻ⁿ');
+	});
+
+	it('un nombre seul ne rejoint pas une puissance de même base (6 × 2ˣ reste)', () => {
+		expect(lineOf('.simplifier 2^x*3*2')).toBe('6 \\times 2^x');
+	});
+
+	it('une base qui peut s’annuler ne passe pas par aᵐ/aⁿ (domaine)', () => {
+		expect(titlesOf('.simplifier \\frac{3x^3}{x^2}')).not.toContain('aᵐ / aⁿ = aᵐ⁻ⁿ');
+	});
+});
