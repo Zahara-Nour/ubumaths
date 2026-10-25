@@ -41,7 +41,7 @@ import {
 	type MathouMemory,
 	type MathouMemoryUpdate
 } from '$lib/mathoux/collection-logic';
-import { isMathouDecoration } from '$lib/mathoux/decorations';
+import { isMathouCollar, isMathouDecoration } from '$lib/mathoux/decorations';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('server/mathoux/memory');
@@ -78,7 +78,7 @@ export class MathouMemoryWriteError extends Error {
 
 const TABLE = 'student_mathoux';
 const COLUMNS =
-	'notion_id, best_stage, starred_grades, asleep, updated_at, rewarded_stage, rewarded_grades, decoration';
+	'notion_id, best_stage, starred_grades, asleep, updated_at, rewarded_stage, rewarded_grades, decoration, collar';
 
 /** Essais d'une mise à jour conditionnelle avant d'abandonner (journalisé). */
 const MAX_ATTEMPTS = 3;
@@ -92,6 +92,7 @@ type MemoryRow = {
 	rewarded_stage: string | null;
 	rewarded_grades: string[];
 	decoration: string | null;
+	collar: string | null;
 };
 
 /** Ligne → mémoire ; un stade inconnu (interdit par la base) est écarté. */
@@ -107,6 +108,8 @@ function toStored(row: MemoryRow): StoredMathouMemory | null {
 		updatedAt: row.updated_at,
 		// Lue seulement : posée par `set_mathou_decoration`, jamais écrite ici
 		decoration: isMathouDecoration(row.decoration) ? row.decoration : null,
+		// Lu seulement : posé par `set_mathou_collar`, jamais écrit ici
+		collar: isMathouCollar(row.collar) ? row.collar : null,
 		// Payé au moins jusqu'au meilleur stade (un stade corrigé à la main sous le payé ne
 		// redemande rien) et toutes les étoiles payées
 		paid:

@@ -243,6 +243,9 @@ Les RPC de classement unifié sont dans `supabase/migrations/20260616230000_fix_
   « Chatterie : cocarde achetée » au journal, sous verrou) ; consentement exigé comme pour la
   boutique VIP. L'onglet Boutique du Marché les montre (`MathouDecorationsShowcase`) sans les
   vendre. Voir [mathoux.md § Décorations de panse](mathoux.md#décorations-de-panse).
+- **Colliers des Mathoux** (lot C, 2026-10-25) : quatre, de 10 à 40, achetés de la même façon
+  (même fonction, même journal : « Chatterie : collier de cuir acheté ») et montrés dans la même
+  vitrine. Voir [mathoux.md § Colliers](mathoux.md#colliers).
 - **Cartes réservées au serveur** : personne ne modifie directement `profiles.vip_cards` (garde
   `guard_profile_reserved_fields`, migration `20261003150000_vip_cartes_verrou.sql`) ; seules les
   fonctions SECURITY DEFINER le font.

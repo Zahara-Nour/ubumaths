@@ -125,6 +125,9 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > ➕ **2026-10-24.** `gaming` exporte aussi les décorations de panse des Mathoux : la décoration
 > portée (`student_mathoux.decoration`) et les achats (`student_mathou_decorations`, sous
 > `mathou_decorations` : décoration, prix payé, date). Une lecture en échec rend 500.
+>
+> ➕ **2026-10-25.** Les colliers des Mathoux suivent : le collier porté
+> (`student_mathoux.collar`) et les colliers achetés (mêmes `mathou_decorations`).
 
 ### 4. Consentement parental (Art. 8)
 

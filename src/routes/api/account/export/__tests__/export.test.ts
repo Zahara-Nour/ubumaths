@@ -117,14 +117,16 @@ const mockMathoux = [
 		starred_grades: ['2', '1_SPE'],
 		asleep: false,
 		decoration: 'cockade',
+		collar: 'leather',
 		first_seen_at: '2026-10-01T10:00:00Z',
 		updated_at: '2026-10-18T10:00:00Z'
 	}
 ];
 
-// Décorations de panse achetées (lot B des accessoires, 2026-10-24)
+// Décorations achetées : panse (lot B, 2026-10-24) et colliers (lot C, 2026-10-25)
 const mockMathouDecorations = [
-	{ decoration: 'cockade', price_paid: 20, purchased_at: '2026-10-24T10:00:00Z' }
+	{ decoration: 'cockade', price_paid: 20, purchased_at: '2026-10-24T10:00:00Z' },
+	{ decoration: 'leather', price_paid: 20, purchased_at: '2026-10-25T10:00:00Z' }
 ];
 
 // Palotin de l'élève (une ligne par élève)
@@ -424,7 +426,7 @@ describe('GET /api/account/export', () => {
 			expect(appel).toBeGreaterThanOrEqual(0);
 			const chaine = mockSupabase.from.mock.results[appel].value;
 			expect(chaine.select.mock.calls[0][0]).toBe(
-				'notion_id, best_stage, starred_grades, asleep, decoration, first_seen_at, updated_at'
+				'notion_id, best_stage, starred_grades, asleep, decoration, collar, first_seen_at, updated_at'
 			);
 			const eq = chaine.select.mock.results[0].value.eq;
 			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);

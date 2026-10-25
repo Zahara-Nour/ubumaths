@@ -11,7 +11,7 @@ couvre:
 
 # Mathoux — la Chatterie de Faustroll
 
-> Vérifié contre le code le 2026-10-24 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1, noms propres, annonce des nouveautés v1.2, vue du professeur, animations, gidouilles des étapes, décorations de panse). Spécification validée par David :
+> Vérifié contre le code le 2026-10-25 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1, noms propres, annonce des nouveautés v1.2, vue du professeur, animations, gidouilles des étapes, décorations de panse, colliers). Spécification validée par David :
 > [mathoux-conception.md § 9](../wip/mathoux-conception.md).
 
 ## À quoi ça sert
@@ -152,8 +152,8 @@ Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou),
   Une panne est journalisée ; le versement est repris au calcul suivant.
   Preuve : `tests/integration/mathoux-gidouilles-etapes.test.ts`.
 - **Export RGPD** : catégorie `gaming` de `/api/account/export`
-  ([rgpd.md § 7.3](conformite/rgpd.md)) : `mathoux` (la mémoire, décoration portée comprise) et
-  `mathou_decorations` (les décorations achetées). Effacement : cascade depuis `profiles`.
+  ([rgpd.md § 7.3](conformite/rgpd.md)) : `mathoux` (la mémoire, décoration et collier portés compris)
+  et `mathou_decorations` (les décorations et colliers achetés). Effacement : cascade depuis `profiles`.
 
 Réveil d'un Mathou endormi par un point perdu **sans carte due** : le paquet Programme ne propose
 que les cartes dues, donc « Réveiller » mène alors à l'**Entraînement** de la notion (« Faire
@@ -163,24 +163,24 @@ prochaine révision due). Sans Entraînement possible (aucun modèle publié lis
 
 ## Code
 
-| Fichier                                                | Rôle                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, Entraînement « Faire grandir », phrases (importable au client)                                                                                                                                                                                                                                                                                              |
-| `src/lib/mathoux/mathou-noms.ts`                       | les noms propres des Mathoux, par nom de notion                                                                                                                                                                                                                                                                                                                                                        |
-| `src/lib/mathoux/summary.ts`                           | schéma Zod du résumé `{ born, napping, toDiscover, news }`                                                                                                                                                                                                                                                                                                                                             |
-| `src/lib/mathoux/news.ts`                              | logique pure des nouveautés (naissance, croissance, étoile) et leurs phrases                                                                                                                                                                                                                                                                                                                           |
-| `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection(WithNews)` : les lectures, la logique pure, la mémoire, puis les nouveautés ; `readMathouCollection` : le même calcul en lecture seule (vue du professeur)                                                                                                                                                                                                                       |
-| `src/lib/server/mathoux/teacher.ts`                    | `loadMathouxCountsByStudent` : Mathoux nés et grands matous par élève, d'après la mémoire (liste du professeur)                                                                                                                                                                                                                                                                                        |
-| `src/lib/server/mathoux/memory.ts`                     | lecture (élève) et écriture (service) de `student_mathoux` ; rend les notions que l'appel a écrites                                                                                                                                                                                                                                                                                                    |
-| `src/lib/server/mathoux/gidouilles.ts`                 | `payMathouMilestones` : gidouilles des étapes (`pay_mathou_milestones`, client service)                                                                                                                                                                                                                                                                                                                |
-| `src/lib/mathoux/decorations.ts`                       | catalogue des décorations de panse (clés, noms, prix recopiés de la base)                                                                                                                                                                                                                                                                                                                              |
-| `src/lib/server/mathoux/decorations.ts`                | `readOwnedDecorations` (RLS), `buyMathouDecoration` et `wearMathouDecoration` (client service) ; `decoration-errors.ts` : refus → statut et phrase                                                                                                                                                                                                                                                     |
-| `api/student/mathoux/decorations/{buy,wear}`           | `POST` élève : acheter (consentement exigé) et poser ou retirer une décoration                                                                                                                                                                                                                                                                                                                         |
-| `src/lib/components/mathoux/`                          | `ChatterieRaces` (les Mathoux par race, `readOnly` pour le prof), `MathouAvatar` (SVG paramétré : race, stade, sieste, silhouette, décoration), le dessin `mathou-dessin.ts`, les races `mathou-races.ts`, les décorations `mathou-decorations.ts` ; `ChatterieDecorer` (fenêtre « Décorer »), `MathouDecorationsShowcase` (vitrine du Marché) ; `MathouNewsCard` et `fetchMathouNews` (fin de séance) |
-| `dashboard/student/chatterie/+page.{server.ts,svelte}` | la page ; `unavailable` si une lecture échoue                                                                                                                                                                                                                                                                                                                                                          |
-| `api/student/mathoux/+server.ts`                       | `GET` élève : les compteurs et les nouveautés, pour le Palotin et la fin de séance                                                                                                                                                                                                                                                                                                                     |
-| `dashboard/teacher/gamification/mathoux/`              | onglet « Mathoux » du prof : élèves par classe, compteurs de la mémoire                                                                                                                                                                                                                                                                                                                                |
-| `dashboard/teacher/students/[studentId]/chatterie/`    | la Chatterie d'un élève vue par le prof, en lecture seule                                                                                                                                                                                                                                                                                                                                              |
+| Fichier                                                  | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/mathoux/collection-logic.ts`                    | logique pure : stades, noms, regroupement, Entraînement « Faire grandir », phrases (importable au client)                                                                                                                                                                                                                                                                                                                                          |
+| `src/lib/mathoux/mathou-noms.ts`                         | les noms propres des Mathoux, par nom de notion                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `src/lib/mathoux/summary.ts`                             | schéma Zod du résumé `{ born, napping, toDiscover, news }`                                                                                                                                                                                                                                                                                                                                                                                         |
+| `src/lib/mathoux/news.ts`                                | logique pure des nouveautés (naissance, croissance, étoile) et leurs phrases                                                                                                                                                                                                                                                                                                                                                                       |
+| `src/lib/server/mathoux/collection.ts`                   | `loadMathouCollection(WithNews)` : les lectures, la logique pure, la mémoire, puis les nouveautés ; `readMathouCollection` : le même calcul en lecture seule (vue du professeur)                                                                                                                                                                                                                                                                   |
+| `src/lib/server/mathoux/teacher.ts`                      | `loadMathouxCountsByStudent` : Mathoux nés et grands matous par élève, d'après la mémoire (liste du professeur)                                                                                                                                                                                                                                                                                                                                    |
+| `src/lib/server/mathoux/memory.ts`                       | lecture (élève) et écriture (service) de `student_mathoux` ; rend les notions que l'appel a écrites                                                                                                                                                                                                                                                                                                                                                |
+| `src/lib/server/mathoux/gidouilles.ts`                   | `payMathouMilestones` : gidouilles des étapes (`pay_mathou_milestones`, client service)                                                                                                                                                                                                                                                                                                                                                            |
+| `src/lib/mathoux/decorations.ts`                         | catalogue des décorations de panse et des colliers (clés, noms, prix recopiés de la base)                                                                                                                                                                                                                                                                                                                                                          |
+| `src/lib/server/mathoux/decorations.ts`                  | `readOwnedDecorations` (RLS), `buyMathouDecoration`, `wearMathouDecoration` et `wearMathouCollar` (client service) ; `decoration-errors.ts` : refus → statut et phrase                                                                                                                                                                                                                                                                             |
+| `api/student/mathoux/decorations/{buy,wear,wear-collar}` | `POST` élève : acheter (consentement exigé), poser ou retirer une décoration, un collier                                                                                                                                                                                                                                                                                                                                                           |
+| `src/lib/components/mathoux/`                            | `ChatterieRaces` (les Mathoux par race, `readOnly` pour le prof), `MathouAvatar` (SVG paramétré : race, stade, sieste, silhouette, décoration, collier), le dessin `mathou-dessin.ts`, les races `mathou-races.ts`, les décorations `mathou-decorations.ts`, les colliers `mathou-colliers.ts` ; `ChatterieDecorer` (fenêtre « Décorer »), `MathouDecorationsShowcase` (vitrine du Marché) ; `MathouNewsCard` et `fetchMathouNews` (fin de séance) |
+| `dashboard/student/chatterie/+page.{server.ts,svelte}`   | la page ; `unavailable` si une lecture échoue                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `api/student/mathoux/+server.ts`                         | `GET` élève : les compteurs et les nouveautés, pour le Palotin et la fin de séance                                                                                                                                                                                                                                                                                                                                                                 |
+| `dashboard/teacher/gamification/mathoux/`                | onglet « Mathoux » du prof : élèves par classe, compteurs de la mémoire                                                                                                                                                                                                                                                                                                                                                                            |
+| `dashboard/teacher/students/[studentId]/chatterie/`      | la Chatterie d'un élève vue par le prof, en lecture seule                                                                                                                                                                                                                                                                                                                                                                                          |
 
 ### Lectures et RLS
 
@@ -285,8 +285,8 @@ sauf la transformation d'un stade à l'autre (image par image, `requestAnimation
 Lot B des accessoires, décisions de David du 2026-10-24
 ([journal](../wip/mathoux-accessoires-progress.md)). Six décorations, du moins cher au plus cher :
 cœur 10, étoile 10, petite gidouille 20, cocarde 20, médaille de la Grande Passoire 40, blason 40
-(gidouilles). Pas de croissant (réservé au Lunaire), pas de pelage à vendre (identité de la race),
-pas encore de collier.
+(gidouilles). Pas de croissant (réservé au Lunaire), pas de pelage à vendre (identité de la race).
+Les colliers, au cou, suivent les mêmes règles : voir « Colliers » ci-dessous.
 
 - **Règles** : une décoration s'achète **une fois** et orne **un seul Mathou à la fois** ; la poser
   sur un autre la déplace, gratuitement ; un Mathou en porte une au plus ; retrait gratuit. Ni
@@ -325,6 +325,40 @@ pas encore de collier.
 - Preuves : `tests/integration/mathoux-decorations.test.ts` (règles, droits, catalogue) et
   `tests/integration/mathoux-vue-prof.test.ts` (la décoration vue par l'élève et le prof, pas par un
   autre élève).
+
+## Colliers
+
+Lot C des accessoires, décisions de David du 2026-10-25
+([journal](../wip/mathoux-colliers-progress.md)). Quatre colliers, au **cou** : ruban à grelot 10,
+nœud papillon 10, collier de cuir 20, collier de l'Ordre de la Grande Passoire 40. Pas de foulard ni
+de perles.
+
+- **Règles** : celles de la panse (acheté une fois, un seul Mathou à la fois, déplacement et retrait
+  gratuits, consentement à l'achat). Un Mathou porte **une décoration de panse et un collier** au
+  plus : les deux se cumulent. La sieste le garde, la silhouette n'en a pas, le prof le voit.
+- **Base** (migration `20261025160000_mathoux_colliers.sql`) : même table d'achats et même catalogue
+  que la panse ; `mathou_decoration_slot` rend l'emplacement (`belly` / `neck`) ;
+  `student_mathoux.collar` porte le collier (clé étrangère vers les achats de l'élève, index unique
+  partiel, contraintes CHECK : chaque colonne n'accepte que les clés de son emplacement).
+  `buy_mathou_decoration` pose à l'emplacement de la clé ; `set_mathou_collar` (service seul) pose,
+  déplace ou retire ; `set_mathou_decoration` refuse un collier.
+- **Code** : `MATHOU_COLLARS` / `MATHOU_COLLAR_IDS` dans `$lib/mathoux/decorations.ts` (égalité avec
+  la base vérifiée par `tests/integration/mathoux-colliers.test.ts`) ; `readOwnedDecorations` rend
+  les deux sortes d'achats ; `readMathouMemory` lit `collar`, `Mathou.collar` le porte jusqu'au
+  dessin (Chatterie, vue prof, carte de fin de séance).
+- **Routes** : l'achat passe par `…/decorations/buy` (sa liste accepte les clés des colliers) ; la
+  pose par `POST /api/student/mathoux/decorations/wear-collar` (`{ notionId, collar | null }`,
+  élève, sans consentement), mêmes refus et même limite de débit que `…/wear`.
+- **Dessins** (`mathou-colliers.ts`, versions choisies sur la planche
+  `scripts/mathoux-planches/colliers.test.ts` : grelot A, nœud A, cuir A, Ordre B) : une **bande**
+  qui fait le tour du cou (`collarNeck` : hauteur et largeur mesurées par stade, interpolées pendant
+  la transformation) et ce qui **pend**, dans un repère au point d'accroche. Ordre de dessin : la
+  bande juste après le contour du corps, puis la décoration de panse, puis ce qui pend (il passe
+  devant). **Règle de la fraise** : chez le grand matou, la bande passe sous la fraise et ce qui pend
+  s'accroche sous elle (`collier-pendentif`, dessiné après la fraise).
+- **Où** : la fenêtre « Décorer » a deux rangées, « Panse » et « Cou » ; chaque dessin montre aussi
+  ce que le Mathou porte à l'autre emplacement. La vitrine du Marché montre les colliers sous les
+  décorations de panse (« Sur la panse », « Au cou »).
 
 ## Le Palotin, gardien de la Chatterie
 
@@ -388,7 +422,7 @@ tombent les cartes dues) s'il y a une carte due, sinon vers l'Entraînement de l
 Mathou né porte aussi « Faire grandir » (nom accessible « Faire grandir Tangentin ») vers
 cet Entraînement, s'il existe ; jamais sur une silhouette, ni sur un Mathou endormi sans carte due
 (son « Réveiller » y mène déjà : un seul bouton). Chaque Mathou né porte enfin « Décorer » (voir
-« Décorations de panse »). Liens passés par `resolve()`, la requête ajoutée après `?`. Les silhouettes montrent
+« Décorations de panse » et « Colliers »). Liens passés par `resolve()`, la requête ajoutée après `?`. Les silhouettes montrent
 le nom de la notion, pas celui du Mathou. Aucun mot interdit par le Compendium (XP, niveau, score).
 
 ## Vue du professeur
@@ -406,7 +440,7 @@ Phase 0 validée par David le 2026-10-21 ([journal](../wip/mathoux-prof-progress
   l'onglet, dont le layout refuse l'admin),
   élève du prof (`verifyTeacherStudentWithRole`, sinon 403) **avant toute lecture**, identifiant
   validé par Zod (sinon 400). Même rendu que chez l'élève (`ChatterieRaces`), décorations
-  comprises, sans « Réveiller », « Faire grandir » ni « Décorer » ; « Pas encore de niveau : pas de Chatterie » sans niveau ; « fermée » si une
+  et colliers compris, sans « Réveiller », « Faire grandir » ni « Décorer » ; « Pas encore de niveau : pas de Chatterie » sans niveau ; « fermée » si une
   lecture échoue. Retour vers l'onglet Mathoux.
 - **Jamais d'écriture** : `readMathouCollection` refait le calcul au client du prof sans écrire la
   mémoire. Écrire « consommerait » les nouveautés que l'élève doit voir annoncées en fin de séance.
@@ -418,5 +452,5 @@ Phase 0 validée par David le 2026-10-21 ([journal](../wip/mathoux-prof-progress
 
 ## Hors v1
 
-Combats (réécriture de Navadra), colliers (règle à trouver pour la fraise du grand matou). (L'annonce des nouveautés en fin de
+Combats (réécriture de Navadra). (L'annonce des nouveautés en fin de
 séance est livrée en v1.2, la vue du professeur ensuite, ci-dessus.)

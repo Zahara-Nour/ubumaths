@@ -116,7 +116,7 @@ const ALLOWED_SERVICE_ROLE_PATHS = [
 	// Mémoire des Mathoux (Chatterie) : `authenticated` n'a que SELECT sur
 	// `student_mathoux` ; écrite par le serveur pour l'élève de la session, après le calcul
 	'lib/server/mathoux/collection.ts',
-	// Décorations de panse : achat et pose réservés à `service_role`, pour l'élève de la
+	// Décorations (panse et colliers) : achat et pose réservés à `service_role`, pour l’élève de la
 	// session ; consentement vérifié avant l'achat
 	'/api/student/mathoux/decorations/'
 ] as const;

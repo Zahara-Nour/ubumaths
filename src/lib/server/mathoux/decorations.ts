@@ -1,14 +1,16 @@
 /**
- * Décorations de panse des Mathoux — lecture, achat, pose (lot B des accessoires)
- * ===============================================================================
+ * Décorations des Mathoux — lecture, achat, pose (lots B et C des accessoires)
+ * ============================================================================
  *
- * Décisions de David du 2026-10-24 (docs/wip/mathoux-accessoires-progress.md,
- * « Lot B : comportements validés »). La base tient les règles (migration
- * 20261024235000) :
+ * Panse : décisions de David du 2026-10-24 (docs/wip/mathoux-accessoires-progress.md,
+ * « Lot B : comportements validés ») ; cou (colliers) : mêmes règles, décidées le
+ * 2026-10-25 (docs/wip/mathoux-colliers-progress.md). La base tient les règles
+ * (migrations 20261024235000 et 20261025160000) :
  *   - `buy_mathou_decoration` : solde vérifié, débit, décoration donnée et posée
- *     sur le Mathou choisi, ligne au journal, sous verrou (double clic = un débit) ;
- *   - `set_mathou_decoration` : pose (en la retirant du Mathou qui la portait),
- *     remplacement ou retrait, gratuits.
+ *     à son emplacement sur le Mathou choisi, ligne au journal, sous verrou
+ *     (double clic = un débit) ;
+ *   - `set_mathou_decoration` (panse) et `set_mathou_collar` (cou) : pose (en la
+ *     retirant du Mathou qui la portait), remplacement ou retrait, gratuits.
  *
  * LECTURE au client de l'appelant (RLS : l'élève lit ses décorations, le prof
  * celles de ses élèves). ACHAT et POSE au client SERVICE seulement (droits
@@ -22,7 +24,12 @@
 import { z } from 'zod';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { isMathouDecoration, type MathouDecorationId } from '$lib/mathoux/decorations';
+import {
+	isMathouCatalogId,
+	type MathouCatalogId,
+	type MathouCollarId,
+	type MathouDecorationId
+} from '$lib/mathoux/decorations';
 
 // Types
 type SB = SupabaseClient<Database>;
@@ -64,7 +71,7 @@ function parseOutcome(fn: string, data: unknown): DecorationOutcome {
 }
 
 /**
- * Décorations achetées par l'élève, dans l'ordre du catalogue. Au client de
+ * Décorations achetées par l'élève (panse et colliers). Au client de
  * l'appelant (RLS : un refus rendrait zéro ligne, donc « rien d'acheté », sans
  * erreur — c'est sans risque : la base refusera un second achat).
  *
@@ -73,17 +80,18 @@ function parseOutcome(fn: string, data: unknown): DecorationOutcome {
 export async function readOwnedDecorations(
 	supabase: SB,
 	studentId: string
-): Promise<MathouDecorationId[]> {
+): Promise<MathouCatalogId[]> {
 	const { data, error } = await supabase
 		.from('student_mathou_decorations')
 		.select('decoration')
 		.eq('student_id', studentId);
 	if (error) throw new Error(`Décorations illisibles : ${error.message}`);
-	return (data ?? []).map((row) => row.decoration).filter(isMathouDecoration);
+	return (data ?? []).map((row) => row.decoration).filter(isMathouCatalogId);
 }
 
 /**
- * Achète `decoration` et la pose sur le Mathou de `notionId`.
+ * Achète `decoration` (panse ou collier) et la pose à son emplacement sur le
+ * Mathou de `notionId`.
  *
  * @param service client SERVICE.
  * @param studentId l'élève de la SESSION.
@@ -92,7 +100,7 @@ export async function readOwnedDecorations(
 export async function buyMathouDecoration(
 	service: SB,
 	studentId: string,
-	decoration: MathouDecorationId,
+	decoration: MathouCatalogId,
 	notionId: string
 ): Promise<DecorationOutcome> {
 	const { data, error } = await service.rpc('buy_mathou_decoration', {
@@ -126,4 +134,28 @@ export async function wearMathouDecoration(
 	});
 	if (error) throw new Error(`Pose de décoration refusée : ${error.message}`);
 	return parseOutcome('set_mathou_decoration', data);
+}
+
+/**
+ * Pose le collier `collar` sur le Mathou de `notionId` (en le retirant de celui
+ * qui le portait), ou le retire (`null`). Gratuit.
+ *
+ * @param service client SERVICE.
+ * @param studentId l'élève de la SESSION.
+ * @throws si l'appel échoue ou rend une forme inattendue.
+ */
+export async function wearMathouCollar(
+	service: SB,
+	studentId: string,
+	notionId: string,
+	collar: MathouCollarId | null
+): Promise<DecorationOutcome> {
+	const { data, error } = await service.rpc('set_mathou_collar', {
+		p_student_id: studentId,
+		p_notion_id: notionId,
+		// La fonction SQL prend NULL pour « retirer »
+		p_collar: collar as string
+	});
+	if (error) throw new Error(`Pose de collier refusée : ${error.message}`);
+	return parseOutcome('set_mathou_collar', data);
 }

@@ -391,7 +391,7 @@ describe('buildMathouCollection avec la mémoire', () => {
 		});
 	});
 
-	it('la décoration portée vient de la mémoire ; sans elle, aucune', () => {
+	it('la décoration et le collier portés viennent de la mémoire ; sans elle, aucun', () => {
 		const collection = buildMathouCollection({
 			points: [
 				{ id: 'p1', nodeId: 'n-ent', grade: '2' },
@@ -404,17 +404,22 @@ describe('buildMathouCollection avec la mémoire', () => {
 			}),
 			nappingPointIds: new Set(),
 			memory: memory({
-				'n-ent': { bestStage: 'chaton', starredGrades: [], decoration: 'cockade' },
+				'n-ent': {
+					bestStage: 'chaton',
+					starredGrades: [],
+					decoration: 'cockade',
+					collar: 'bow_tie'
+				},
 				'n-calc': { bestStage: 'chaton', starredGrades: [] }
 			})
 		});
 		const decorations = collection.races
 			.flatMap((race) => race.mathoux)
-			.map((m) => [m.notionId, m.decoration]);
+			.map((m) => [m.notionId, m.decoration, m.collar]);
 		expect(decorations).toEqual(
 			expect.arrayContaining([
-				['n-ent', 'cockade'],
-				['n-calc', null]
+				['n-ent', 'cockade', 'bow_tie'],
+				['n-calc', null, null]
 			])
 		);
 	});

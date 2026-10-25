@@ -198,7 +198,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			supabase
 				.from('student_mathoux')
 				.select(
-					'notion_id, best_stage, starred_grades, asleep, decoration, first_seen_at, updated_at'
+					'notion_id, best_stage, starred_grades, asleep, decoration, collar, first_seen_at, updated_at'
 				)
 				.eq('student_id', userId),
 

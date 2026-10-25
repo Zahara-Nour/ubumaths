@@ -335,6 +335,28 @@ describe('Chatterie vue par le professeur', () => {
 		expect(await readOwnedDecorations(autre, eleveId)).toEqual([]);
 	});
 
+	it('collier : l’élève et le prof le voient au cou du Mathou, un autre élève rien', async () => {
+		const { error } = await service
+			.from('profiles')
+			.update({ gidouilles: 10 })
+			.eq('id', eleveId)
+			.select('id')
+			.single();
+		if (error) throw new Error(`décor : gidouilles : ${error.message}`);
+		const achat = await buyMathouDecoration(service, eleveId, 'bow_tie', notionVecteurs);
+		expect(achat).toEqual({ ok: true, balance: 0 });
+
+		const vueEleve = await loadMathouCollectionWithNews(eleve, eleveId, GRADE);
+		expect(mathouOf(vueEleve.collection, notionVecteurs)?.collar).toBe('bow_tie');
+		expect(mathouOf(vueEleve.collection, notionFractions)?.collar).toBeNull();
+		const vueProf = await readMathouCollection(prof, eleveId, GRADE);
+		expect(mathouOf(vueProf, notionVecteurs)?.collar).toBe('bow_tie');
+
+		expect(await readOwnedDecorations(eleve, eleveId)).toContain('bow_tie');
+		expect(await readOwnedDecorations(prof, eleveId)).toContain('bow_tie');
+		expect(await readOwnedDecorations(autre, eleveId)).toEqual([]);
+	});
+
 	it('compteurs de classe : la mémoire, sans les notions archivées', async () => {
 		const { error } = await service
 			.from('student_mathoux')

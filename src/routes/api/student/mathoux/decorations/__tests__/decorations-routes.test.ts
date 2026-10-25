@@ -1,9 +1,10 @@
 /**
- * POST /api/student/mathoux/decorations/buy et /wear — achat et pose des
- * décorations de panse (lot B des accessoires, décisions de David du 2026-10-24).
+ * POST /api/student/mathoux/decorations/buy, /wear et /wear-collar — achat et
+ * pose des décorations de panse et des colliers (lots B et C des accessoires,
+ * décisions de David du 2026-10-24 et du 2026-10-25).
  *
  * La base tient les règles (prouvé en intégration :
- * tests/integration/mathoux-decorations.test.ts). Ici : élève de la session
+ * tests/integration/mathoux-decorations.test.ts, mathoux-colliers.test.ts). Ici : élève de la session
  * seulement, consentement pour l'achat, entrée validée, refus de la base
  * traduits pour l'élève, réponse inattendue = panne (jamais un faux succès).
  */
@@ -21,6 +22,7 @@ import { rateLimit } from '$lib/server/middleware/rateLimit';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { POST as buy } from '../buy/+server';
 import { POST as wear } from '../wear/+server';
+import { POST as wearCollar } from '../wear-collar/+server';
 
 // Constantes
 const NOTION = '7b0f6a52-3c1e-4d5f-9a8b-2c3d4e5f6a7b';
@@ -61,6 +63,16 @@ describe('POST /api/student/mathoux/decorations/buy', () => {
 			p_notion_id: NOTION
 		});
 		expect(await response.json()).toEqual({ balance: 15 });
+	});
+
+	it('un collier s’achète par la même route (la base le pose au cou)', async () => {
+		rpc.mockResolvedValue({ data: { ok: true, balance: 0 }, error: null });
+		await buy(event({ decoration: 'order_chain', notionId: NOTION }));
+		expect(rpc).toHaveBeenCalledWith('buy_mathou_decoration', {
+			p_student_id: 'eleve-1',
+			p_decoration: 'order_chain',
+			p_notion_id: NOTION
+		});
 	});
 
 	it('un identifiant d’élève dans le corps est ignoré', async () => {
@@ -128,7 +140,8 @@ describe('POST /api/student/mathoux/decorations/buy', () => {
 describe('limite de débit, partagée par l’achat et la pose', () => {
 	it.each([
 		['buy', () => buy(event({ decoration: 'heart', notionId: NOTION }))],
-		['wear', () => wear(event({ notionId: NOTION, decoration: null }))]
+		['wear', () => wear(event({ notionId: NOTION, decoration: null }))],
+		['wear-collar', () => wearCollar(event({ notionId: NOTION, collar: null }))]
 	])('%s : clé par élève, 30 par minute ; dépassée → 429, rien n’est appelé', async (_, call) => {
 		rpc.mockResolvedValue({ data: { ok: true }, error: null });
 		await call();
@@ -172,6 +185,7 @@ describe('POST /api/student/mathoux/decorations/wear', () => {
 
 	it.each([
 		['décoration inconnue', { notionId: NOTION, decoration: 'crescent' }],
+		['un collier ne se pose pas sur la panse', { notionId: NOTION, decoration: 'leather' }],
 		['décoration absente (null explicite exigé pour retirer)', { notionId: NOTION }],
 		['notion qui n’est pas un UUID', { notionId: 'x', decoration: null }]
 	])('400 : %s', async (_, body) => {
@@ -193,6 +207,69 @@ describe('POST /api/student/mathoux/decorations/wear', () => {
 	it('panne : 500', async () => {
 		rpc.mockResolvedValue({ data: null, error: { message: 'boom' } });
 		await expect(wear(event({ notionId: NOTION, decoration: 'heart' }))).rejects.toMatchObject({
+			status: 500
+		});
+	});
+});
+
+describe('POST /api/student/mathoux/decorations/wear-collar', () => {
+	it('pose pour l’élève de la session, sans consentement exigé (rien ne s’achète)', async () => {
+		rpc.mockResolvedValue({ data: { ok: true }, error: null });
+		const response = await wearCollar(
+			event({ notionId: NOTION, collar: 'bell', studentId: 'autre' })
+		);
+		expect(rpc).toHaveBeenCalledWith('set_mathou_collar', {
+			p_student_id: 'eleve-1',
+			p_notion_id: NOTION,
+			p_collar: 'bell'
+		});
+		expect(requireConsent).not.toHaveBeenCalled();
+		expect(response.status).toBe(200);
+	});
+
+	it('retrait : collar null passe NULL à la base', async () => {
+		rpc.mockResolvedValue({ data: { ok: true }, error: null });
+		await wearCollar(event({ notionId: NOTION, collar: null }));
+		expect(rpc.mock.calls[0][1].p_collar).toBeNull();
+	});
+
+	it('réservé aux élèves', async () => {
+		vi.mocked(requireRole).mockRejectedValue({ status: 403 });
+		await expect(wearCollar(event({ notionId: NOTION, collar: null }))).rejects.toMatchObject({
+			status: 403
+		});
+		expect(rpc).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		['collier inconnu', { notionId: NOTION, collar: 'scarf' }],
+		['une décoration de panse ne se pose pas au cou', { notionId: NOTION, collar: 'heart' }],
+		['collier absent (null explicite exigé pour retirer)', { notionId: NOTION }],
+		['notion qui n’est pas un UUID', { notionId: 'x', collar: null }],
+		['corps illisible', '{pas du json']
+	])('400 : %s', async (_, body) => {
+		await expect(wearCollar(event(body))).rejects.toMatchObject({ status: 400 });
+		expect(rpc).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		[{ reason: 'not_owned' }, 409, 'Tu n’as pas encore cette décoration.'],
+		[{ reason: 'mathou_not_found' }, 404, 'Ce Mathou n’est pas encore né.']
+	])('refus de la base %o → %i', async (refusal, status, message) => {
+		rpc.mockResolvedValue({ data: { ok: false, ...refusal }, error: null });
+		await expect(wearCollar(event({ notionId: NOTION, collar: 'bell' }))).rejects.toMatchObject({
+			status,
+			body: { message }
+		});
+	});
+
+	it('panne ou réponse inattendue : 500, jamais un faux succès', async () => {
+		rpc.mockResolvedValue({ data: null, error: { message: 'boom' } });
+		await expect(wearCollar(event({ notionId: NOTION, collar: 'bell' }))).rejects.toMatchObject({
+			status: 500
+		});
+		rpc.mockResolvedValue({ data: { ok: 'oui' }, error: null });
+		await expect(wearCollar(event({ notionId: NOTION, collar: 'bell' }))).rejects.toMatchObject({
 			status: 500
 		});
 	});

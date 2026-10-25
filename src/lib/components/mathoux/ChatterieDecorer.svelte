@@ -1,8 +1,10 @@
 <script lang="ts">
 	/**
-	 * « Décorer » un Mathou de la Chatterie (lot B des accessoires, décisions de
-	 * David du 2026-10-24) : les six décorations de panse dessinées sur CE Mathou,
-	 * avec leur prix, « Achetée » ou « Portée par … ».
+	 * « Décorer » un Mathou de la Chatterie (lots B et C des accessoires, décisions
+	 * de David du 2026-10-24 et du 2026-10-25) : deux rangées, « Panse » (six
+	 * décorations) et « Cou » (quatre colliers), dessinées sur CE Mathou — avec ce
+	 * qu'il porte à l'autre emplacement, les deux se cumulant —, leur prix,
+	 * « Achetée » ou « Portée par … ».
 	 *
 	 * - pas encore achetée : « Acheter » (l'achat la pose sur ce Mathou) ; sans
 	 *   consentement parental, le bouton est grisé (comme la boutique VIP) ; solde
@@ -23,8 +25,11 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { syncGidouilles } from '$lib/utils/cache-sync';
 	import {
+		MATHOU_COLLARS,
 		MATHOU_DECORATIONS,
-		type MathouDecorationId,
+		isMathouCollar,
+		isMathouDecoration,
+		type MathouCatalogId,
 		type MathouDecorationInfo
 	} from '$lib/mathoux/decorations';
 	import type { Mathou } from '$lib/mathoux/collection-logic';
@@ -36,31 +41,48 @@
 		mathou: Mathou | null;
 		/** Tous les Mathoux de l'élève : qui porte quoi */
 		mathoux: Mathou[];
-		owned: MathouDecorationId[];
+		owned: MathouCatalogId[];
 		balance: number;
 		onclose: () => void;
 	}
 
 	type PostOutcome = 'done' | 'refused' | 'failed';
 
+	type CatalogInfo = MathouDecorationInfo<MathouCatalogId>;
+
+	interface Row {
+		id: 'panse' | 'cou';
+		title: string;
+		items: readonly CatalogInfo[];
+		/** Accords : une décoration (« Portée »), un collier (« Porté ») */
+		feminine: boolean;
+	}
+
 	// Constantes
 	const FAILURE = 'Action impossible pour l’instant : réessaie dans un moment.';
+
+	const ROWS: readonly Row[] = [
+		{ id: 'panse', title: 'Panse', items: MATHOU_DECORATIONS, feminine: true },
+		{ id: 'cou', title: 'Cou', items: MATHOU_COLLARS, feminine: false }
+	];
 
 	// Variables
 	let { mathou, mathoux, owned, balance, onclose }: Props = $props();
 
-	let busy = $state<MathouDecorationId | null>(null);
+	let busy = $state<MathouCatalogId | null>(null);
 
+	// Qui porte quoi, panse et cou
 	const wornBy = $derived(
-		new Map(
-			mathoux
-				.filter((m): m is Mathou & { decoration: MathouDecorationId } => m.decoration !== null)
-				.map((m) => [m.decoration, m])
+		new Map<MathouCatalogId, Mathou>(
+			mathoux.flatMap((m) => [
+				...(m.decoration ? [[m.decoration, m] as const] : []),
+				...(m.collar ? [[m.collar, m] as const] : [])
+			])
 		)
 	);
 
 	// Functions
-	function missingFor(info: MathouDecorationInfo): number {
+	function missingFor(info: CatalogInfo): number {
 		return Math.max(0, Math.ceil(info.price - balance));
 	}
 
@@ -94,7 +116,7 @@
 	}
 
 	/** Une action à la fois ; la page rechargée sauf panne ; jamais de boutons bloqués. */
-	async function run(info: MathouDecorationInfo, action: () => Promise<PostOutcome>) {
+	async function run(info: CatalogInfo, action: () => Promise<PostOutcome>) {
 		busy = info.id;
 		try {
 			if ((await action()) !== 'failed') await invalidateAll();
@@ -103,7 +125,7 @@
 		}
 	}
 
-	function buy(target: Mathou, info: MathouDecorationInfo) {
+	function buy(target: Mathou, info: CatalogInfo) {
 		return run(info, async () => {
 			const outcome = await post('/api/student/mathoux/decorations/buy', {
 				decoration: info.id,
@@ -119,15 +141,25 @@
 		});
 	}
 
-	function wear(target: Mathou, info: MathouDecorationInfo, on: boolean) {
+	function wear(target: Mathou, info: CatalogInfo, on: boolean) {
+		const collar = isMathouCollar(info.id);
 		return run(info, async () => {
-			const outcome = await post('/api/student/mathoux/decorations/wear', {
-				notionId: target.notionId,
-				decoration: on ? info.id : null
-			});
+			const outcome = collar
+				? await post('/api/student/mathoux/decorations/wear-collar', {
+						notionId: target.notionId,
+						collar: on ? info.id : null
+					})
+				: await post('/api/student/mathoux/decorations/wear', {
+						notionId: target.notionId,
+						decoration: on ? info.id : null
+					});
 			if (outcome === 'done') {
 				toaster.success(
-					on ? `${capitalize(target.name)} porte : ${info.name}` : 'Décoration retirée'
+					on
+						? `${capitalize(target.name)} porte : ${info.name}`
+						: collar
+							? 'Collier retiré'
+							: 'Décoration retirée'
 				);
 			}
 			return outcome;
@@ -147,8 +179,8 @@
 			<Dialog.Header>
 				<Dialog.Title>Décorer {target.name}</Dialog.Title>
 				<Dialog.Description>
-					Une décoration s’achète une fois et orne un seul Mathou à la fois. La changer de Mathou ou
-					la retirer est gratuit.
+					Une décoration sur la panse, un collier au cou. Chacun s’achète une fois et orne un seul
+					Mathou à la fois. Le changer de Mathou ou le retirer est gratuit.
 				</Dialog.Description>
 			</Dialog.Header>
 
@@ -163,76 +195,88 @@
 				</p>
 			{/if}
 
-			<ul class="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-3">
-				{#each MATHOU_DECORATIONS as info (info.id)}
-					{@const isOwned = owned.includes(info.id)}
-					{@const wearer = wornBy.get(info.id)}
-					{@const onThis = wearer?.notionId === target.notionId}
-					{@const missing = missingFor(info)}
-					<li
-						class="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 text-center"
-						data-decoration={info.id}
-					>
-						<MathouAvatar
-							raceIndex={target.raceIndex}
-							stage={target.growth === 'a_decouvrir' ? 'chaton' : target.growth}
-							asleep={target.asleep}
-							animated={false}
-							decoration={info.id}
-							size={88}
-							label={`${target.name} avec : ${info.name}`}
-						/>
-						<p class="font-medium">{info.name}</p>
-						{#if !isOwned}
-							<p class="flex items-center gap-1 text-sm">
-								{info.price}
-								<img src={gidouilleImage} alt="gidouilles" class="h-4 w-4" />
-							</p>
-						{:else if wearer}
-							<p class="text-sm text-muted-foreground">Portée par {wearer.name}</p>
-						{:else}
-							<p class="text-sm text-muted-foreground">Achetée</p>
-						{/if}
-
-						<div class="mt-auto">
-							{#if !isOwned}
-								{#if missing > 0}
-									<p class="text-sm text-muted-foreground">Il te manque {gidouilles(missing)}</p>
+			{#each ROWS as row (row.id)}
+				<section aria-labelledby="decorer-{row.id}" data-row={row.id} class="space-y-2">
+					<h3 id="decorer-{row.id}" class="font-semibold">{row.title}</h3>
+					<ul class="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-3">
+						{#each row.items as info (info.id)}
+							{@const isOwned = owned.includes(info.id)}
+							{@const wearer = wornBy.get(info.id)}
+							{@const onThis = wearer?.notionId === target.notionId}
+							{@const missing = missingFor(info)}
+							<li
+								class="flex flex-col items-center gap-2 rounded-lg border border-border bg-card p-3 text-center"
+								data-decoration={info.id}
+							>
+								<MathouAvatar
+									raceIndex={target.raceIndex}
+									stage={target.growth === 'a_decouvrir' ? 'chaton' : target.growth}
+									asleep={target.asleep}
+									animated={false}
+									decoration={isMathouDecoration(info.id) ? info.id : target.decoration}
+									collar={isMathouCollar(info.id) ? info.id : target.collar}
+									size={88}
+									label={`${target.name} avec : ${info.name}`}
+								/>
+								<p class="font-medium">{info.name}</p>
+								{#if !isOwned}
+									<p class="flex items-center gap-1 text-sm">
+										{info.price}
+										<img src={gidouilleImage} alt="gidouilles" class="h-4 w-4" />
+									</p>
+								{:else if wearer}
+									<p class="text-sm text-muted-foreground">
+										{row.feminine ? 'Portée' : 'Porté'} par {wearer.name}
+									</p>
 								{:else}
-									<Button
-										size="sm"
-										disabled={busy !== null || consent.isReadOnly}
-										title={consent.isReadOnly ? consent.getDisabledTooltip() : undefined}
-										aria-label="Acheter {info.name} pour {target.name}"
-										onclick={() => buy(target, info)}
-									>
-										Acheter
-									</Button>
+									<p class="text-sm text-muted-foreground">{row.feminine ? 'Achetée' : 'Acheté'}</p>
 								{/if}
-							{:else if onThis}
-								<Button
-									size="sm"
-									variant="outline"
-									disabled={busy !== null}
-									aria-label="Retirer {info.name}, portée par {target.name}"
-									onclick={() => wear(target, info, false)}
-								>
-									Retirer
-								</Button>
-							{:else}
-								<Button
-									size="sm"
-									disabled={busy !== null}
-									aria-label="Poser {info.name} sur {target.name}"
-									onclick={() => wear(target, info, true)}
-								>
-									Poser
-								</Button>
-							{/if}
-						</div>
-					</li>
-				{/each}
-			</ul>
+
+								<div class="mt-auto">
+									{#if !isOwned}
+										{#if missing > 0}
+											<p class="text-sm text-muted-foreground">
+												Il te manque {gidouilles(missing)}
+											</p>
+										{:else}
+											<Button
+												size="sm"
+												disabled={busy !== null || consent.isReadOnly}
+												title={consent.isReadOnly ? consent.getDisabledTooltip() : undefined}
+												aria-label="Acheter {info.name} pour {target.name}"
+												onclick={() => buy(target, info)}
+											>
+												Acheter
+											</Button>
+										{/if}
+									{:else if onThis}
+										<Button
+											size="sm"
+											variant="outline"
+											disabled={busy !== null}
+											aria-label="Retirer {info.name}, {row.feminine
+												? 'portée'
+												: 'porté'} par {target.name}"
+											onclick={() => wear(target, info, false)}
+										>
+											Retirer
+										</Button>
+									{:else}
+										<Button
+											size="sm"
+											disabled={busy !== null}
+											aria-label="Poser {info.name} sur {target.name}"
+											onclick={() => wear(target, info, true)}
+										>
+											Poser
+										</Button>
+									{/if}
+								</div>
+							</li>
+						{/each}
+					</ul>
+				</section>
+			{/each}
 		{/if}
 	</Dialog.Content>
 </Dialog.Root>
