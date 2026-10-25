@@ -2,8 +2,8 @@
 	Operation — bloc ```operation
 	=============================
 
-	Opération posée en colonnes (addition, soustraction ; phase 0 :
-	`docs/wip/operations-posees-progress.md`). Dessinée depuis
+	Opération posée en colonnes (addition, soustraction, multiplication ;
+	phase 0 : `docs/wip/operations-posees-progress.md`). Dessinée depuis
 	`buildOperationScene`, la même scène que le PDF.
 
 	- Grille HTML (pas SVG) : les cases de saisie s'y logent.
@@ -15,7 +15,8 @@
 	- `answer` (case d'une question, PR 1b) : cases du résultat saisies de
 	  droite à gauche, lues comme UN nombre (`operation-answer.ts`) ; retenues
 	  facultatives, jamais jugées ni gardées ; réponse fausse → chiffres faux
-	  surlignés, opération résolue à côté.
+	  surlignés, opération résolue à côté. Multiplication : affichage seul tant
+	  que sa saisie n'existe pas (PR 2b) ; produits partiels en cases d'aide.
 
 	@module components/markdown/nodes/Operation
 -->
@@ -60,7 +61,7 @@
 
 	let { node, showErrors, answer, class: className = '' }: Props = $props();
 
-	const SIGN = { '+': '+', '-': '−' } as const;
+	const SIGN = { '+': '+', '-': '−', '×': '×' } as const;
 
 	/** Rang d'une colonne : 0 unités, 1 dizaines… ; -1 dixièmes… */
 	const PLACE_NAMES: Record<number, string> = {
@@ -102,7 +103,10 @@
 	let resultInputs = $state<HTMLInputElement[]>([]);
 
 	let interactive = $derived(
-		answer !== undefined && scene !== null && node.spec?.cells !== 'aucune'
+		answer !== undefined &&
+			scene !== null &&
+			node.spec?.cells !== 'aucune' &&
+			node.spec?.operator !== '×'
 	);
 	let wrong = $derived(
 		interactive && answer?.isCorrect === false && scene ? wrongResultDigits(scene, digits) : []
@@ -281,6 +285,35 @@
 					{/each}
 				{/each}
 
+				<!-- Multiplication : retenues de l'addition, puis les produits partiels (aide, jamais jugés) -->
+				{#if scene.partialCarries}
+					<span class="operation-carreau"></span>
+					{#each scene.partialCarries as mark, c (c)}
+						<span class="operation-carreau operation-dessus">
+							{#if mark}
+								<span class="operation-petit" class:operation-case-petite={mark.blank}
+									>{markText(mark)}</span
+								>
+							{/if}
+						</span>
+					{/each}
+				{/if}
+				{#each scene.partials as row, r (r)}
+					{@const last = r === scene.partials.length - 1}
+					<span class="operation-carreau operation-signe" class:operation-trait={last}
+						>{last ? '+' : ''}</span
+					>
+					{#each row as cell, c (c)}
+						<span class="operation-carreau" class:operation-trait={last}>
+							{#if cell.blank}
+								<span class="operation-case-aide"></span>
+							{:else}
+								{cell.digit}
+							{/if}
+						</span>
+					{/each}
+				{/each}
+
 				<span class="operation-carreau"></span>
 				{#each scene.result as cell, c (c)}
 					<span class="operation-carreau">
@@ -418,6 +451,14 @@
 		width: 78%;
 		height: 78%;
 		border: 2px solid var(--color-primary);
+		border-radius: 4px;
+	}
+
+	/* Produits partiels à remplir : une aide, jamais jugée → pointillés, pas l'accent */
+	.operation-case-aide {
+		width: 78%;
+		height: 78%;
+		border: 1px dashed var(--color-muted-foreground);
 		border-radius: 4px;
 	}
 

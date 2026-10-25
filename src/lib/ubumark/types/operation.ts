@@ -2,8 +2,8 @@
  * Bloc ```operation — types
  * =========================
  *
- * Opération posée en colonnes (addition, soustraction au lot 1 ; phase 0 :
- * `docs/wip/operations-posees-progress.md`) :
+ * Opération posée en colonnes (addition, soustraction au lot 1,
+ * multiplication au lot 2 ; phase 0 : `docs/wip/operations-posees-progress.md`) :
  *
  * ```operation
  * calcul: 245 + 437
@@ -27,8 +27,14 @@ import type { BaseNode } from './ast';
 /** Chiffres d'un terme : avant la virgule, après la virgule */
 export const OPERATION_MAX_DIGITS = { integer: 10, decimal: 3 } as const;
 
-/** Nombre de termes : 2 ou 3 pour une addition, 2 pour une soustraction */
-export const OPERATION_MAX_TERMS = { '+': 3, '-': 2 } as const;
+/** Nombre de termes : 2 ou 3 pour une addition, 2 pour une soustraction ou une multiplication */
+export const OPERATION_MAX_TERMS = { '+': 3, '-': 2, '×': 2 } as const;
+
+/**
+ * Multiplication : chiffres de chaque facteur, virgule ôtée (CM1-051 :
+ * 3 chiffres × 3 chiffres ; en haut, de quoi poser 46,55 ou 8,76 et au-delà)
+ */
+export const OPERATION_MAX_FACTOR_DIGITS = { top: 6, bottom: 3 } as const;
 
 /** Message à l'élève (et dans le PDF) pour un bloc en erreur */
 export const OPERATION_UNAVAILABLE = 'Opération indisponible';
@@ -42,8 +48,8 @@ export const OPERATION_METHODS = ['compensation', 'cassage'] as const;
 export type OperationCells = (typeof OPERATION_CELLS)[number];
 export type OperationMethod = (typeof OPERATION_METHODS)[number];
 
-/** Opérateurs du lot 1 (`×` et `÷` : lots 2 et 3) */
-export type OperationOperator = '+' | '-';
+/** Opérateurs des lots 1 et 2 (`÷` : lot 3) */
+export type OperationOperator = '+' | '-' | '×';
 
 // ============================================================================
 // NŒUD
@@ -61,7 +67,10 @@ export interface OperationTerm {
 
 export interface OperationSpec {
 	operator: OperationOperator;
-	/** 2 ou 3 termes, dans l'ordre de la ligne `calcul:` */
+	/**
+	 * 2 ou 3 termes, dans l'ordre de la ligne `calcul:` ; multiplication : dans
+	 * l'ordre de pose, le facteur qui a le plus de chiffres en haut (Q1)
+	 */
 	terms: OperationTerm[];
 	/** `résultat` : cases à remplir ; `aucune` : opération résolue */
 	cells: OperationCells;

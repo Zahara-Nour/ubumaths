@@ -308,7 +308,7 @@ Dans un choix de QCM : 3 cm (`--horloge-taille` posé par `MultipleChoiceInput` 
 série figée : `withChoiceClockSize` ajoute `taille: 3cm`, lettre seule sur sa ligne).
 
 **Opération posée en colonnes** (chantier [operations-posees](../wip/operations-posees-progress.md),
-addition et soustraction ; multiplication et division à venir) — `src/lib/ubumark/__tests__/operation/` :
+addition, soustraction, multiplication ; division à venir) — `src/lib/ubumark/__tests__/operation/` :
 
 ````text
 ```operation
@@ -318,8 +318,8 @@ cases: aucune
 ````
 
 `calcul:` (obligatoire) : 2 ou 3 termes pour `+`, 2 pour `−` (`-` et `–` acceptés), le premier le
-plus grand ; virgule ou point, espaces de milliers acceptés ; 10 chiffres au plus avant la virgule,
-3 après ; `×` et `÷` refusés pour l'instant. Facultatives : `cases: résultat | aucune` (défaut
+plus grand, 2 facteurs pour `×` (`x` et `*` acceptés) ; virgule ou point, espaces de milliers
+acceptés ; 10 chiffres au plus avant la virgule, 3 après ; `÷` refusé pour l'instant. Facultatives : `cases: résultat | aucune` (défaut
 `résultat` : cases du résultat à remplir ; `aucune` : opération résolue), `retenues: oui | non`
 (cases de retenue, ou retenues écrites), `méthode: compensation | cassage` (soustraction seulement ;
 compensation : petit 1 devant le chiffre du haut et contre celui du bas de la colonne suivante —
@@ -331,6 +331,19 @@ retenue finale). Virgules alignées ; carreaux vides à droite des décimaux plu
 zéro ajouté. Scène partagée `utils/operation-scene.ts` ; écran en grille HTML (carreaux de cahier),
 PDF en `table` Typst native (sans les cases de retenue : l'élève écrit sur papier libre). Aucune
 valeur attendue dans le DOM d'une case à remplir.
+
+**Multiplication** : le facteur qui a le plus de chiffres (virgule ôtée) est posé en haut, égalité →
+ordre écrit (6 chiffres au plus en haut, 3 en bas). Facteurs alignés à droite sur leur dernier
+chiffre (pas virgule sous virgule), virgules à leur place ; une ligne de produit partiel par chiffre
+non nul du bas, décalée de son rang, zéros de décalage écrits (la ligne d'un 0 est sautée), `+`
+devant la dernière, second trait ; une seule ligne non nulle (`× 7`, `× 10`) → résultat directement
+sous le trait. Résultat : décimales des deux facteurs réunies (`2,5 × 4` → `10,0`). À remplir : autant
+de colonnes que les chiffres des deux facteurs réunis, virgule du résultat **non dessinée** (l'élève
+la posera), produits partiels en cases d'aide (pointillés, une case de plus que le nombre du haut,
+plus le décalage, zéros de décalage compris), une rangée de retenues au-dessus du haut et une pour
+l'addition des produits partiels ; résolue : retenues de l'addition seules s'il y a des produits
+partiels. Saisie dans une question : pas encore (PR 2b) — le générateur refuse un bloc `×` à
+remplir, `Operation.svelte` ne le rend pas saisissable.
 
 Dans une question, un bloc à remplir porte **une** case (clé `case: N`, posée par
 `assignBlankIndices`, jamais écrite par l'auteur ; refusée avec `cases: aucune`). `Operation.svelte`
