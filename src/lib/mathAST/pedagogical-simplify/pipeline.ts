@@ -48,7 +48,7 @@ import { expandIfShorter, simplifyPolynomialFractions, tidyAsSteps } from './red
 import {
 	flattenGroupedProducts,
 	runFactoriserStrategies,
-	tidyKeepingFactorOrder
+	tidyEachFactor
 } from './factor-strategies';
 import {
 	PedagogicalSimplifyNotImplemented,
@@ -501,7 +501,7 @@ export function generatePedagogicalSimplifySteps(
 			// `(2/4)x + x` rendait `(2/4 + 1)x` au lieu de `(3/2)x`. `tidy` met au
 			// propre sans jamais DÉVELOPPER : c'est tout son contrat. Le rendu du
 			// noyau, lui, est déjà propre (et `tidy` y réordonnerait `x − 1 − √2`).
-			const factored = outcome.clean ? outcome.result : tidyKeepingFactorOrder(outcome.result);
+			const factored = outcome.clean ? outcome.result : tidyEachFactor(outcome.result);
 			// La dernière ligne affichée EST le résultat : la mise au propre finale
 			// (ordre du noyau, `tidy`) se fait dans la dernière étape, pas en silence
 			const last = outcome.steps.length - 1;
@@ -519,7 +519,7 @@ export function generatePedagogicalSimplifySteps(
 			// Une fraction facteur d'un produit laisse `3·1` : mis au propre dans la
 			// dernière étape, comme la factorisation (revue)
 			const result =
-				fractions.steps.length > 0 ? tidyKeepingFactorOrder(fractions.result) : fractions.result;
+				fractions.steps.length > 0 ? tidyEachFactor(fractions.result) : fractions.result;
 			const fractionSteps = fractions.steps.map((step, index) =>
 				index === fractions.steps.length - 1 ? { ...step, globalAfter: result } : step
 			);

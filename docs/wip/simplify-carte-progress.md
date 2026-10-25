@@ -8,7 +8,7 @@ _Mis à jour le 2026-10-25, lot 7 codé (après #1762)._
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → 6a ✓ → 6b ✓ → **7 renommages** (dernier lot).
 - **Prochaine action** : lot 7 codé (§ 102), PR `refactor/simplify-carte-7` : revue Sonnet, CI, merge ; puis versement du chantier (dernier lot) — à proposer à David.
-- **En attente de David** : nom de R4 (`tidyEachFactor` ?, § 102) ; vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93).
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93).
 - **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; banc des modèles : script non gardé, réécrit au § 99 (`generateInstance`, graines 1..8, `generatedAt` à retirer), aveugle hors questions ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
 - **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `refactor/simplify-carte-7`.
 
@@ -1238,7 +1238,7 @@ Relevé sur `origin/main` (grep hors tests, définitions relues). **Aucun résul
 - **Q1** : une PR pour R1-R5 ; R4 sort dans une PR à part si sa sonde montre des différences (le lot de renommages ne change aucune forme).
 - **Q2** : noms du § 101 ; `resultToShow` pour les deux `readable`/`readableExact`, `exactImageToShow`, `typedText`, `approximateValueAt` (rationnels) / `decimalValueAt` (×2, `evaluate` décimal).
 - **Q3** : `getNumericValue` → `literalNumberValue`.
-- **Sonde R4** (`tidyWithoutReordering` → `tidy`), suite serveur complète : 10 rouges. Pas équivalent : en plus de l'ordre, il ne multiplie pas les facteurs entre eux (`factoriser` garde `x²·x³`, `√2·√8`, `1·x`, `0·x`, `\frac{6}{8}x → \frac{3}{4}x`) ; `xy+x` → `(y+1)x` (règle) au lieu de `x(y+1)`. → **gardé**, renommé `tidyKeepingFactorOrder` (nom validé) ; `tidyEachFactor` proposé à David, pas encore de réponse. En-tête mis à jour (exemple `(x+1)eˣ` périmé depuis Q13).
+- **Sonde R4** (`tidyWithoutReordering` → `tidy`), suite serveur complète : 10 rouges. Pas équivalent : en plus de l'ordre, il ne multiplie pas les facteurs entre eux (`factoriser` garde `x²·x³`, `√2·√8`, `1·x`, `0·x`, `\frac{6}{8}x → \frac{3}{4}x`) ; `xy+x` → `(y+1)x` (règle) au lieu de `x(y+1)`. → **gardé**, renommé `tidyEachFactor` (David, 2026-10-25 : « go », sur ma reco : le nom dit qu'il ne multiplie pas les facteurs). En-tête mis à jour (exemple `(x+1)eˣ` périmé depuis Q13).
 - **Fait (branche)** : R1 (relais `solve/numeric-value.ts` supprimé, + un second relais trouvé dans `solvers/polynomial.ts`, réexport pour `quartic.ts`) ; R2 ; R3 — écart : la copie `getNumericValue` d'`infer.ts` n'était pas identique (lit `+3`, signes imbriqués, rend `undefined`) → renommée `signedLiteralValue` au lieu d'être supprimée ; R5 (en-tête de `tidyTerms`).
-- PR #1765. Revue `code-reviewer` Sonnet : aucun bloquant ; important corrigé (en-tête de `tidyKeepingFactorOrder` renvoyait au journal wip → mesure écrite en clair).
+- PR #1765. Revue `code-reviewer` Sonnet : aucun bloquant ; important corrigé (en-tête de `tidyEachFactor` renvoyait au journal wip → mesure écrite en clair).
 - Mesures : `check:incremental` 0 ; suite serveur complète verte (61 402) ; cliquet tenu ; `lint:fast` ; garde doc verte. Docs système : `mathast/README.md`, `atelier.md` (noms).

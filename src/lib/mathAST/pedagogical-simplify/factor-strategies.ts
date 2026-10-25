@@ -155,20 +155,20 @@ interface ProductView {
  * nombres côte à côte (voir plus bas). `tidy` seul ne convient donc pas : il
  * rendrait `x⁵`, `4`, `x` (mesuré, 10 tests du panel de référence rouges).
  */
-export function tidyKeepingFactorOrder(node: MathNode): MathNode {
+export function tidyEachFactor(node: MathNode): MathNode {
 	// Un produit factorisé peut être sous un signe ou dans une fonction :
 	// `−(x+1)eˣ`, `sin((x−1)eˣ)`. Passés à `tidy` entiers, ils devenaient
 	// `−eˣ(x+1)` et `sin(eˣ(x−1))`. On ne descend que s'il y a un produit
 	// dessous : sinon `tidy` garde la main sur le nœud entier (`√8` → `2√2`).
 	if (node.type === 'opposite' && node.operand.type === 'multiplication') {
-		return { ...node, operand: tidyKeepingFactorOrder(node.operand) };
+		return { ...node, operand: tidyEachFactor(node.operand) };
 	}
 	if (node.type === 'function' && node.args.some((arg) => arg.type === 'multiplication')) {
-		return { ...node, args: node.args.map(tidyKeepingFactorOrder) };
+		return { ...node, args: node.args.map(tidyEachFactor) };
 	}
 	if (node.type !== 'multiplication') return tidy(node);
-	const left = tidyKeepingFactorOrder(node.left);
-	const right = tidyKeepingFactorOrder(node.right);
+	const left = tidyEachFactor(node.left);
+	const right = tidyEachFactor(node.right);
 	// Deux nombres côte à côte ne sont pas une factorisation à préserver : ils
 	// viennent d'une identité qui a rendu un nombre (`2\ln(e)` → `2 × 1`,
 	// `3\ln(e^2)` → `3 × 2`). Aucune règle de `factoriser` ne décompose un
@@ -218,7 +218,7 @@ function viewOf(node: MathNode, v: string): ProductView {
 			parts.push({ kind: 'poly', coefficients, multiplicity: m, reduced, node });
 			return;
 		}
-		parts.push({ kind: 'other', node: tidyKeepingFactorOrder(n), multiplicity: m });
+		parts.push({ kind: 'other', node: tidyEachFactor(n), multiplicity: m });
 	};
 	visit(node, 1);
 	return { variable: v, constant, parts };
