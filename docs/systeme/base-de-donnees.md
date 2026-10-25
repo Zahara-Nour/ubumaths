@@ -480,6 +480,14 @@ choisi, ligne `gidouilles_activity` négative « Chatterie : cocarde achetée »
 étapes ; rend `{ok, balance}` ou `{ok: false, reason, missing?}`) et `set_mathou_decoration`
 (pose en déplaçant, remplace, ou retire avec NULL ; gratuit). Les prix font foi dans
 `mathou_decoration_catalog`. Test : `tests/integration/mathoux-decorations.test.ts`.
+Colliers (migration `20261025160000`) : des décorations du même catalogue et de la même table
+d'achats (`bell`, `bow_tie`, `leather`, `order_chain`), à l'emplacement « cou »
+(`mathou_decoration_slot` : `belly` ou `neck`, `service_role` seul). Le Mathou porte une
+décoration par emplacement : `student_mathoux.decoration` (panse) et `student_mathoux.collar`
+(cou), chacune bornée à ses clés par un CHECK, achetée par CET élève (clé composée, SET NULL) et
+portée par un seul Mathou (index unique partiel). `buy_mathou_decoration` pose à l'emplacement de
+la clé ; `set_mathou_decoration` refuse un collier ; `set_mathou_collar` pose, déplace, remplace
+ou retire le collier (mêmes gardes). Test : `tests/integration/mathoux-colliers.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
 (dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
 jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible

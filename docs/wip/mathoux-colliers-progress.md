@@ -8,8 +8,8 @@
 _Mis à jour le 2026-10-25, PR 1 (migration) ouverte._
 
 - **État** : catalogue choisi (4 colliers) ; PR 1 = migration `20261025160000_mathoux_colliers.sql`
-  - `tests/integration/mathoux-colliers.test.ts` (21/21 rouges sans, verts avec ; suites Mathoux
-    125 vertes ; garde DEFINER verte).
+  et `tests/integration/mathoux-colliers.test.ts` (21/21 rouges sans, verts avec ; suites Mathoux
+  125 vertes ; garde DEFINER verte).
 - **Prochaine action** : revue (`code-reviewer` + `security-auditor`), CI, merge, `db:migrate`,
   `db:types` sur la branche de la PR 2 (code : catalogue TS, dessins, routes, « Décorer », vitrine,
   vue prof, export RGPD).
