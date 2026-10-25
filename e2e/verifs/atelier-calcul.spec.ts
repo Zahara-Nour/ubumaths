@@ -555,3 +555,253 @@ test('#1361 — .limite dans la console', async ({ page }) => {
 	);
 	expect((await calc(page, '.aide')).text).toContain('.limite');
 });
+
+test('5f-4 — « Comment ? » de .résoudre : décimaux et radicaux gardés', async ({ page }) => {
+	const decimal = await calc(page, '.résoudre 2x=0,6');
+	expectLatex(decimal, 'x = 0{,}3');
+	expectStepsContaining(await steps(decimal), 'Solution : $x = 0{,}3$');
+
+	const affine = await calc(page, '.résoudre 0,5x+1=2');
+	const affineSteps = await steps(affine);
+	expectStepsContaining(affineSteps, '0{,}5x &= 1');
+	expectStepsContaining(affineSteps, 'On divise les deux membres par $0{,}5$');
+
+	// La dernière étape écrit S comme la ligne
+	const square = await calc(page, '.résoudre 2x^2=1');
+	const solutions = 'S = \\left\\{ -\\dfrac{\\sqrt{2}}{2} \\,;\\, \\dfrac{\\sqrt{2}}{2} \\right\\}';
+	expectLatex(square, solutions);
+	expectStepsContaining(await steps(square), `Solutions ${solutions}`);
+
+	const trinomial = await calc(page, '.résoudre x^2-x-1=0');
+	const trinomialSteps = await steps(trinomial);
+	expectStepsContaining(trinomialSteps, 'On simplifie les solutions');
+	expectStepsContaining(trinomialSteps, '= \\dfrac{1 - \\sqrt{5}}{2}');
+
+	const absolute = await calc(page, '.résoudre |x/2-0,5|=1');
+	expectStepsContaining(
+		await steps(absolute),
+		'On résout $\\dfrac{x}{2} - 0{,}5 = 1$ \\dfrac{x}{2} - 0{,}5 = 1'
+	);
+
+	expectLatex(await calc(page, '.résoudre 3x=2'), 'x = \\dfrac{2}{3}');
+});
+
+test('#1735 (Q50) — « Comment ? » de .résoudre sur une inéquation', async ({ page }) => {
+	const square = await calc(page, '.résoudre x^2<0,5');
+	const interval = 'S = ]-\\dfrac{\\sqrt{2}}{2} ; \\dfrac{\\sqrt{2}}{2}[';
+	expectLatex(square, interval);
+	const squareSteps = await steps(square);
+	expectStepsContaining(squareSteps, 'x^2 - 0{,}5 &< 0');
+	expectStepsContaining(squareSteps, `Solution : $${interval}$`);
+
+	const trinomial = await calc(page, '.résoudre x^2-x-1<0');
+	expectLatex(trinomial, 'S = ]\\dfrac{1 - \\sqrt{5}}{2} ; \\dfrac{1 + \\sqrt{5}}{2}[');
+	const trinomialSteps = await steps(trinomial);
+	expectStepsContaining(trinomialSteps, 'On dresse le tableau de signes');
+	expectStepsContaining(trinomialSteps, '$\\dfrac{1 - \\sqrt{5}}{2}$');
+
+	// Une vraie fraction, plus de « 1 / 2 »
+	const rational = await calc(page, '.résoudre 1/(2x-1)>0');
+	expectLatex(rational, 'S = ]\\dfrac{1}{2} ; +\\infty[');
+	expect(rational.text).not.toContain('1 / 2');
+
+	expectLatex(await calc(page, '.résoudre 2x<0,6'), 'x < 0{,}3');
+	expectLatex(await calc(page, '.résoudre 2x<\\sqrt{2}'), 'x < \\dfrac{\\sqrt{2}}{2}');
+
+	const decimalRoot = await calc(page, '.résoudre (x-0,5)/(x+1)>0');
+	expectLatex(decimalRoot, 'S = ]-\\infty ; -1[ \\cup ]0{,}5 ; +\\infty[');
+	expectStepsContaining(await steps(decimalRoot), '$-1$ $0{,}5$ $+\\infty$');
+});
+
+test('#1741 (Q51, Q52) — « Comment ? » de .résoudre : × ou ÷, développer', async ({ page }) => {
+	async function firstMove(input: string, expected: string, move: string) {
+		const answer = await calc(page, `.résoudre ${input}`);
+		expectLatex(answer, expected);
+		const detail = await steps(answer);
+		expectStepsContaining(detail, `Étape 2 ${move}`);
+		return detail;
+	}
+
+	await firstMove('x/4=0,5', 'x = 2', 'On multiplie les deux membres par $4$');
+	await firstMove('x/3<0,1', 'x < 0{,}3', 'On multiplie les deux membres par $3$');
+	await firstMove(
+		'\\frac{2}{3}x=1',
+		'x = \\dfrac{3}{2}',
+		'On multiplie les deux membres par $\\dfrac{3}{2}$'
+	);
+	await firstMove('0,5x=1', 'x = 2', 'On divise les deux membres par $0{,}5$');
+	const bracket = await firstMove('0,5(x+1)=2', 'x = 3', 'On divise les deux membres par $0{,}5$');
+	expectStepsContaining(bracket, 'x + 1 &= 4');
+	expectStepsContaining(bracket, 'Étape 3 On soustrait $1$ aux deux membres');
+	await firstMove('-(x-3)=0', 'x = 3', 'On multiplie les deux membres par $-1$');
+	await firstMove('2(x+1)+3=7', 'x = 1', 'On soustrait $3$ aux deux membres');
+	await firstMove('3(x-1)=2x+1', 'x = 4', 'On développe');
+	await firstMove('3+(x-1)=5', 'x = 3', 'On supprime les parenthèses');
+	await firstMove(
+		'-2(x+1)\\le4',
+		'x \\geqslant -3',
+		'On divise les deux membres par $-2$ (changement de sens car $-2$ est négatif)'
+	);
+});
+
+test('#1710 — « Comment ? » de .limite : décimaux, facteur commun', async ({ page }) => {
+	const half = await calc(page, '.limite (0,5x^2+1)/x^2 en +inf');
+	expectLatexContaining(half, '= 0{,}5');
+	const halfSteps = await steps(half);
+	expectStepsContaining(halfSteps, 'x^2 \\left( 0{,}5 + \\dfrac{1}{x^2} \\right)');
+	expectStepsContaining(halfSteps, 'La limite vaut $0{,}5$');
+	expectStepsNotContaining(halfSteps, '\\frac{1}{2}');
+
+	const quotient = await calc(page, '.limite (1,5x+2)/(3x-1) en +inf');
+	expectLatexContaining(quotient, '= 0{,}5');
+	const quotientSteps = await steps(quotient);
+	expectStepsContaining(quotientSteps, '1{,}5 + \\dfrac{2}{x}');
+	expectStepsContaining(quotientSteps, 'La limite vaut $0{,}5$');
+	expectStepsNotContaining(quotientSteps, '\\frac{1}{2}');
+	expectStepsNotContaining(quotientSteps, '\\frac{3}{2}');
+
+	// Développé, factorisé, puis simplifié
+	const common = await calc(page, '.limite ((x+1)^2-1)/x en 0');
+	expectStepsContaining(
+		await steps(common),
+		'Simplification du facteur commun \\begin{aligned} & \\textcolor{blue}{\\lim_{x \\to 0} \\dfrac{\\left( x + 1 \\right)^2 - 1}{x}} \\\\ & = \\lim_{x \\to 0} \\dfrac{x^2 + 2 x}{x} \\\\ & = \\lim_{x \\to 0} \\dfrac{x \\left( x + 2 \\right)}{x} \\\\ & = \\lim_{x \\to 0} \\left( x + 2 \\right) \\end{aligned}'
+	);
+
+	const difference = await calc(page, '.limite (x^2-1)/(x-1) en 1');
+	const differenceSteps = await steps(difference);
+	expectStepsContaining(
+		differenceSteps,
+		'\\dfrac{\\left( x - 1 \\right) \\left( x + 1 \\right)}{x - 1} \\\\ & = \\lim_{x \\to 1} \\left( x + 1 \\right)'
+	);
+
+	const negative = await calc(page, '.limite (-0,5x^2+0,5)/(x-1) en 1');
+	expectStepsContaining(await steps(negative), '-0{,}5 \\left( x + 1 \\right)');
+});
+
+test('#1709 — /calc retirée : redirigée vers /atelier', async ({ page }) => {
+	for (const address of ['/calc', '/calc/', '/calc?share=abc']) {
+		await page.goto(address);
+		await expect(page).toHaveURL(/\/atelier$/);
+	}
+	const sum = await calc(page, '2+3*4');
+	expectLatex(sum, '14');
+	const sumSteps = await steps(sum);
+	expectStepsContaining(sumSteps, '= 2 + 12');
+	expectStepsContaining(sumSteps, '= 14');
+
+	// Pages voisines, pas redirigées
+	for (const address of ['/calcul', '/calculatrices']) {
+		await page.goto(address);
+		await expect(page).toHaveURL(new RegExp(`${address}$`));
+	}
+});
+
+test('#1708 — primitives à coefficients décimaux, f′ factorisée', async ({ page }) => {
+	expectLatex(await calc(page, '.intégrer 0,6x+1,2'), '0{,}3x^2 + 1{,}2x + C');
+	expectLatex(
+		await calc(page, '.intégrer 0,5x^2-1,5x'),
+		'\\dfrac{1}{6} x^3 - \\dfrac{3}{4} x^2 + C'
+	);
+	expectLatex(await calc(page, '.intégrer -0,6x+1,2'), '-0{,}3x^2 + 1{,}2x + C');
+
+	const parts = await calc(page, '.intégrer (x+1)e^x');
+	expectStepsContaining(
+		await steps(parts),
+		'On simplifie \\left( x + 1 \\right) e^x - e^x = x e^x'
+	);
+
+	expectLatex(await calc(page, '.variations 0,5x^3-1,5x^2'), "f'(x) = 1{,}5 x (x - 2)");
+});
+
+test('#1703 — dérivées réduites, racine cubique', async ({ page }) => {
+	expectLatex(await calc(page, '.dériver 1 - x e^x'), '-(x + 1)e^x');
+	expectLatex(await calc(page, '.variations 1 - x e^x'), "f'(x) = -(x + 1)e^x");
+	expectLatex(await calc(page, '.simplifier cbrt(x) - cbrt(x)'), '0');
+
+	// En dernier : « Comment ? » de ce quotient tombe sur le bug de #1674
+	const quotient = await calc(page, '.dériver x/(x+1)');
+	expectLatex(quotient, '\\dfrac{1}{(x + 1)^2}');
+	expectStepsNotContaining(await steps(quotient), 'x + 1 - x');
+});
+
+test('#1663 — valeur exacte affichée (console)', async ({ page }) => {
+	expectLatex(await calc(page, '0,1+0,2'), '0{,}3');
+	expectLatex(await calc(page, '2,50'), '2{,}5');
+	expectLatex(await calc(page, '1/3+0,5'), '\\dfrac{5}{6}');
+	expectLatex(await calc(page, '0,5*sqrt(2)'), '\\dfrac{\\sqrt{2}}{2}');
+	expectLatex(await calc(page, '(1+sqrt(5))/2'), '\\dfrac{1 + \\sqrt{5}}{2}');
+	expectLatex(await calc(page, '3*10^20'), '3 \\times 10^{20}');
+	expectLatex(await calc(page, '1/(sqrt(3)-1)'), '\\dfrac{1 + \\sqrt{3}}{2}');
+	expectLatex(await calc(page, 'ln(8)'), '3 \\ln(2)');
+	expectLatex(await calc(page, 'ln(6)'), '\\ln(6)');
+
+	expectLatex(
+		await calc(page, '.résoudre x^2 = 0,5'),
+		'S = \\left\\{ -\\dfrac{\\sqrt{2}}{2} \\,;\\, \\dfrac{\\sqrt{2}}{2} \\right\\}'
+	);
+	expectLatex(
+		await calc(page, '.résoudre x^2-x-1=0'),
+		'S = \\left\\{ \\dfrac{1 - \\sqrt{5}}{2} \\,;\\, \\dfrac{1 + \\sqrt{5}}{2} \\right\\}'
+	);
+	expectLatex(await calc(page, '.résoudre 2x = 0,6'), 'x = 0{,}3');
+	expectLatexContaining(
+		await calc(page, '.résoudre 2^n > 1000'),
+		'n > \\dfrac{\\ln(1000)}{\\ln(2)}'
+	);
+});
+
+test('#1673 (Q30) — la valeur avant la lettre dans un produit', async ({ page }) => {
+	expectLatex(await calc(page, '.dériver log_2(x)'), '\\dfrac{1}{\\ln(2) x}');
+	expectLatex(await calc(page, '.dériver 2^(x^2)'), '2 \\ln(2) x \\times 2^{x^2}');
+	expectLatex(await calc(page, '.développer sqrt(2)(x+1)'), '\\sqrt{2} x + \\sqrt{2}');
+});
+
+test('#1620 — facteur commun simplifié avec sa condition', async ({ page }) => {
+	const ratio = await calc(page, '.simplifier x/x');
+	expectLatex(ratio, '1');
+	expectStepsContaining(await steps(ratio), 'On simplifie par le facteur commun, pour x ≠ 0');
+
+	const factored = await calc(page, '.factoriser (x^2-1)/(x+1)');
+	expectLatex(factored, 'x - 1');
+	expectStepsContaining(await steps(factored), 'On simplifie par le facteur commun, pour x ≠ −1');
+
+	expectLatex(await calc(page, '.dériver \\ln(3x)'), '\\dfrac{1}{x}');
+	// Ordre de la ligne ; l'Atelier répond x^x(ln(x) + 1) — à trancher par David
+	expectLatex(await calc(page, '.dériver x^x'), '(\\ln(x) + 1)x^x');
+
+	// En dernier : « Comment ? » de ce produit tombe sur le bug de #1674
+	const product = await calc(page, '.dériver x\\ln(x)');
+	expectLatex(product, '\\ln(x) + 1');
+	expectStepsNotContaining(await steps(product), '\\frac{x}{x}');
+});
+
+test('#1624 — décimaux gardés (console)', async ({ page }) => {
+	expectLatex(await calc(page, '0.5+0.25'), '0{,}75');
+	expectLatex(await calc(page, '.simplifier 0.5x+0.25x'), '0{,}75 x');
+	expectLatex(await calc(page, '.simplifier 0.5(x+1)'), '0{,}5 (x + 1)');
+	expectLatex(
+		await calc(page, '.résoudre 0.8^n<0.1'),
+		'n > \\dfrac{\\ln(0{,}1)}{\\ln(0{,}8)} \\approx 10{,}32'
+	);
+	expectLatexContaining(await calc(page, '.limite (0.5x+1)/x en +inf'), '= 0{,}5');
+});
+
+test('#1628 — racine d’une fraction (console)', async ({ page }) => {
+	expectLatex(await calc(page, '(2/3)^(1/2)'), '\\dfrac{\\sqrt{6}}{3}');
+});
+
+test('#1631 — ordre des termes (console)', async ({ page }) => {
+	expectLatex(
+		await calc(page, '.dériver cos(3x+π/4)'),
+		'-3 \\sin\\left( 3 x + \\dfrac{\\pi}{4} \\right)'
+	);
+	expectLatex(
+		await calc(page, '.intégrer 1/x + 1/(x+1) + 1/x'),
+		'2 \\ln\\left| x \\right| + \\ln\\left| x + 1 \\right| + C'
+	);
+});
+
+test('#1636 — la fonction avant l’exponentielle (console)', async ({ page }) => {
+	expectLatex(await calc(page, '.dériver 2e^(sin(x))'), '2 \\cos(x) e^{\\sin(x)}');
+	expectLatex(await calc(page, '.dériver 2^x'), '\\ln(2) \\times 2^x');
+});
