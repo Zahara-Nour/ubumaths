@@ -1,7 +1,7 @@
 ---
 title: Atelier — une fonction définie sur un intervalle (phase 0)
 date: 2026-10-13
-status: lots 1 à 3 livrés ; décisions a, b, d-g livrées ; c) = futur chantier (composées)
+status: lots 1 à 3 livrés ; décisions a, b, d-g livrées ; c) = futur chantier (composées) ; archivé le 2026-10-25
 ---
 
 # Atelier — une fonction définie sur un intervalle

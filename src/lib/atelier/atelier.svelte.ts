@@ -977,7 +977,7 @@ export class Atelier {
 
 	/**
 	 * Créer — ou mettre à jour — la carte `f⁻¹` (lot 3 de
-	 * `docs/wip/atelier-reciproque-phase0.md`, R1).
+	 * `docs/archive/wip/atelier-reciproque-phase0.md`, R1).
 	 *
 	 * Refusée sans carte quand f n'a pas de réciproque (constante, non bijective,
 	 * le moteur ne sait pas) : le refus dit pourquoi. La carte SUIT f
@@ -2680,7 +2680,7 @@ export class Atelier {
 	/**
 	 * Remplacer TOUT l'atelier (objets, grille, réglages rangés) par `state`, en
 	 * UNE étape d'Annuler nommée `label` — « remplacer mon atelier », « retrouver
-	 * mon atelier précédent » (`docs/wip/atelier-remplacer-phase0.md`, coordination
+	 * mon atelier précédent » (`docs/archive/wip/atelier-remplacer-phase0.md`, coordination
 	 * avec le lot 5).
 	 *
 	 * La différence avec `restore()` : la pile est GARDÉE. Un Ctrl+Z rend
@@ -4032,7 +4032,7 @@ export class Atelier {
 
 	/**
 	 * La carte `f′` porte l'ensemble de f (lot 2 de
-	 * `docs/wip/atelier-intervalle-phase0.md`) : recopié à chaque recalcul, il
+	 * `docs/archive/wip/atelier-intervalle-phase0.md`) : recopié à chaque recalcul, il
 	 * suit f quand son ensemble change ou disparaît (I6). Jamais sauvegardé.
 	 *
 	 * Décision d : toute fonction porte aussi l'ensemble hérité des fonctions

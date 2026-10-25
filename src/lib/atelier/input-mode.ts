@@ -1,7 +1,7 @@
 /**
  * Le réglage « Saisie dans Calcul » : texte ou écriture mathématique.
  *
- * Phase 0 `docs/wip/atelier-reglages-phase0.md`. Une préférence de l'élève,
+ * Phase 0 `docs/archive/wip/atelier-reglages-phase0.md`. Une préférence de l'élève,
  * retenue dans ce navigateur comme « Résumé / Détaillé » (`steps-summary.ts`) :
  * elle ne voyage ni dans un lien, ni dans un historique exporté.
  *

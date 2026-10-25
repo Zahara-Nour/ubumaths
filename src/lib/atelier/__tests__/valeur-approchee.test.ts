@@ -1,6 +1,6 @@
 /**
  * Le bouton ≈ de Calcul, vu depuis le résultat d'une saisie (phase 0
- * `docs/wip/atelier-cas-phase0.md`, PR 2 ; décisions de David du 2026-10-11 :
+ * `docs/archive/wip/atelier-cas-phase0.md`, PR 2 ; décisions de David du 2026-10-11 :
  * 4 décimales, « = » quand l'écriture décimale est exacte, rien sur un
  * résultat déjà entier ou décimal).
  */

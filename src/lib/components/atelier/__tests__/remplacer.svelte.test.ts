@@ -1,6 +1,6 @@
 /**
  * « Remplacer mon atelier », vu depuis l'écran (phase 0
- * `docs/wip/atelier-remplacer-phase0.md`, R1-R5 et B1-B8, validée par David).
+ * `docs/archive/wip/atelier-remplacer-phase0.md`, R1-R5 et B1-B8, validée par David).
  *
  * Sur un atelier reçu par lien, deux gestes : « Garder dans mon atelier » (la
  * fusion) et « Remplacer mon atelier ». Remplacer confirme en comptant ce qui

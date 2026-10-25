@@ -1,7 +1,7 @@
 /**
  * La carte d'une fonction définie sur un intervalle, au VRAI clavier de MathLive.
  *
- * Phase 0 `docs/wip/atelier-intervalle-phase0.md`, lot 1. Mesuré ici dans
+ * Phase 0 `docs/archive/wip/atelier-intervalle-phase0.md`, lot 1. Mesuré ici dans
  * Chromium (2026-10-13) : MathLive écrit « sur » en trois lettres collées à ce
  * qui précède (`x+1sur…`), et, `smartFence` actif, `[0;+∞[` devient
  * `\left\lbrack0;+\infty\left\lbrack\right\rbrack\right\rbrack` — illisible.

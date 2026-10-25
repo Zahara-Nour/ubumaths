@@ -3,7 +3,7 @@
  * ======================================================
  *
  * `/cas` est retirée le 2026-10-13 : l'atelier la remplace (phase 0
- * `docs/wip/atelier-cas-phase0.md`, PR 4). Un lien gardé ou un favori mène à
+ * `docs/archive/wip/atelier-cas-phase0.md`, PR 4). Un lien gardé ou un favori mène à
  * `/atelier` en 308 (permanente, comme les autres anciennes routes), la query
  * string comprise.
  *

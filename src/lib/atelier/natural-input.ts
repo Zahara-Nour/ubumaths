@@ -5,7 +5,7 @@
  * le premier mot décide (commande ou calcul), les petits mots ne sont des mots
  * que dans une commande, un mot devient texte quand il est FINI, une unité ne
  * se lit qu'après « nombre + espace ». Depuis le 2026-10-14, l'élève choisit
- * ce mode ou le texte dans les réglages (`docs/wip/atelier-reglages-phase0.md`).
+ * ce mode ou le texte dans les réglages (`docs/archive/wip/atelier-reglages-phase0.md`).
  *
  * Logique pure, sans MathLive : le champ (`NaturalField.svelte`) lui passe le
  * LaTeX à gauche du curseur et applique ce qu'elle rend.

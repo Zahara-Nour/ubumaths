@@ -1,7 +1,7 @@
 /**
  * Pedagogical Simplify — les étapes de « développer », rédigées comme au tableau
  *
- * Section E de la phase 0 `docs/wip/atelier-developper-phase0.md`, validée par
+ * Section E de la phase 0 `docs/archive/wip/atelier-developper-phase0.md`, validée par
  * David le 2026-10-14. Décisions du 2026-09-21 : « développer contient déjà
  * réduire », et la trace de `normalize` n'est PAS pédagogique — elle sort du
  * chemin de l'élève. Mesuré sur cette trace le 2026-10-14 : produits collés

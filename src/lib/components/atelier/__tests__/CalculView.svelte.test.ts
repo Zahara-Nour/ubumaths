@@ -468,7 +468,7 @@ describe('exporter l’historique', () => {
 });
 
 /**
- * Le clavier de Calcul (phase 0 `docs/wip/atelier-cas-phase0.md`, PR 1).
+ * Le clavier de Calcul (phase 0 `docs/archive/wip/atelier-cas-phase0.md`, PR 1).
  *
  * ⚠️ De VRAIES frappes (`userEvent.keyboard`) : Entrée doit être empêchée
  * d'envoyer le formulaire, Tab de quitter le champ — un `KeyboardEvent`
@@ -725,7 +725,7 @@ describe('le clavier de Calcul', () => {
 
 /**
  * Le bouton exact ⇄ décimal de chaque ligne (phase 0
- * `docs/wip/atelier-cas-phase0.md`, PR 2). Un VRAI clic (`userEvent.click`).
+ * `docs/archive/wip/atelier-cas-phase0.md`, PR 2). Un VRAI clic (`userEvent.click`).
  */
 describe('le bouton valeur approchée', () => {
 	const lastLine = (container: HTMLElement) =>
@@ -776,7 +776,7 @@ describe('le bouton valeur approchée', () => {
 
 /**
  * La complétion des fonctions et des lettres grecques (phase 0
- * `docs/wip/atelier-cas-phase0.md`, PR 3). De VRAIES frappes : Tab ne doit pas
+ * `docs/archive/wip/atelier-cas-phase0.md`, PR 3). De VRAIES frappes : Tab ne doit pas
  * quitter le champ, et Entrée doit CALCULER même liste ouverte (décision de
  * David : `3ta` avec t et a dans le panneau donne 3·t·a, pas `3tan(`).
  */

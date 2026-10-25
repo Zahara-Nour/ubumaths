@@ -1,6 +1,6 @@
 /**
  * `f⁻¹` tapé dans Calcul = la réciproque, calculée À LA VOLÉE comme `f'`
- * (décision (1) de David, 2026-10-13, `docs/wip/atelier-reciproque-phase0.md`).
+ * (décision (1) de David, 2026-10-13, `docs/archive/wip/atelier-reciproque-phase0.md`).
  *
  * Aucune carte requise ; la carte, si elle existe, donne le même résultat.
  * f non bijective → le refus de `.réciproque f` ; hors de l'ensemble de départ

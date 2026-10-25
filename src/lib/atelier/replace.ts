@@ -1,7 +1,7 @@
 /**
  * Atelier — remplacer son atelier, et la copie mise de côté
  *
- * Phase 0 : `docs/wip/atelier-remplacer-phase0.md` (R1-R5, B1-B9, validée par
+ * Phase 0 : `docs/archive/wip/atelier-remplacer-phase0.md` (R1-R5, B1-B9, validée par
  * David). « Remplacer mon atelier » (un atelier reçu par lien) et « Charger »
  * (un fichier `.atelier.json`) remplacent l'atelier personnel ; avant, il est
  * **mis de côté** — une seule copie, sous sa propre clé (`SET_ASIDE_STORAGE_KEY`),

@@ -605,7 +605,7 @@ fonction, rangée en x). Lettres proposées aux points : A, B, C… ; aux courbe
 sans collision possible ; elle n'est pas citable (absente de `functionNames`). Le nommage automatique évite les noms cités par la définition (#329).
 
 **Fonction définie sur un intervalle** (lot 1 de
-[atelier-intervalle-phase0.md](../wip/atelier-intervalle-phase0.md), I1-I6 validées le 2026-10-13) :
+[atelier-intervalle-phase0.md](../archive/wip/atelier-intervalle-phase0.md), I1-I6 validées le 2026-10-13) :
 l'élève écrit l'ensemble dans le même champ que la définition, après le mot « sur »
 (`f(x) = x^2 sur [0;+∞[`). `splitInterval` (`src/lib/atelier/interval.ts`) coupe AVANT le parseur
 de l'expression : en texte (Calcul), un mot entier ; en LaTeX (carte), « sur » arrive en trois
@@ -671,7 +671,7 @@ que sur l'ensemble : point plein à une borne fermée, creux à une borne ouvert
 là où f n'est pas définie (détail : [grapheur.md](grapheur.md)). `f′`, qui hérite, se trace
 restreinte aussi.
 
-**La réciproque** (lot 3 de [atelier-reciproque-phase0.md](../wip/atelier-reciproque-phase0.md),
+**La réciproque** (lot 3 de [atelier-reciproque-phase0.md](../archive/wip/atelier-reciproque-phase0.md),
 R1-R4) : le bouton « Réciproque » de la carte d'une fonction et `.réciproque f [sur I]` donnent la
 MÊME ligne (`reciprocalResult`, `src/lib/atelier/reciprocal.ts`) — réponse `f⁻¹(x) = …, f⁻¹ : départ
 → arrivée` (R4), étapes de `computeReciprocal` (R3, [mathast/reciproque.md](mathast/reciproque.md))
@@ -1279,7 +1279,7 @@ Chemin d'une commande dans `runCommand` (`calcul.ts`), dans cet ordre :
 6. la réponse du moteur est rendue (`renderResult`), et les **étapes** pédagogiques s'y ajoutent
    quand elles savent faire — elles remplacent le formateur de terminal, jamais la réponse.
 
-**Au clavier** (`CalculView.svelte`, phase 0 [atelier-cas-phase0.md](../wip/atelier-cas-phase0.md),
+**Au clavier** (`CalculView.svelte`, phase 0 [atelier-cas-phase0.md](../archive/wip/atelier-cas-phase0.md),
 décisions de David du 2026-10-11) :
 
 - après un point, la liste des commandes (8 au plus) est un **combobox** : ↑ / ↓ surlignent (la liste
@@ -1861,7 +1861,7 @@ d'une fonction, sur une ligne : le nom, le « : » ou le « = », puis le champ 
 ### Copier une réponse
 
 Chaque ligne qui a une réponse porte **« Copier »** (phase 0
-[atelier-copier-phase0.md](../wip/atelier-copier-phase0.md), décisions de David du 2026-10-15) : la
+[atelier-copier-phase0.md](../archive/wip/atelier-copier-phase0.md), décisions de David du 2026-10-15) : la
 **réponse seule**, en **texte lisible** (`2√2`, `2x² + 5x − 3`, `S = ]−∞ ; −2[ ∪ ]2 ; +∞[`,
 `12,3 km`, `lim x→+∞ (1 + 1/x)ˣ = e`) ; la flèche ▾ propose **« Copier en LaTeX »**. La valeur
 approchée quand le bouton ≈ l'affiche (le « = » de tête tombe). Pas de bouton sur un refus ni sur
@@ -1889,7 +1889,7 @@ recalcule), jamais dans un lien. **« Saisie dans Calcul »** : **Texte** (le ch
 devant les commandes ; le défaut) ou **Écriture mathématique** (MathLive, sans point, marquée « en
 essai »). Le choix prend effet tout de suite et reste dans le navigateur (`chiphre-atelier-saisie`,
 à part de l'atelier) : ni dans un lien, ni dans un export ; présent aussi sur un atelier reçu.
-Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; journal des règles de
+Phase 0 : [atelier-reglages-phase0.md](../archive/wip/atelier-reglages-phase0.md) ; journal des règles de
 frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.md).
 
 **Règles de frappe** (décisions de David du 2026-10-13, `natural-input.ts`) :
@@ -1991,7 +1991,7 @@ frappe : [atelier-saisie-naturelle.md](../archive/wip/atelier-saisie-naturelle.m
   `atelier-remplacer-phase0.md`, `renameInObject` : texte et LaTeX de carte, `a_1` / `a_{1}`,
   longueurs `AM`, constructions, premier terme d'une suite) — reçu `a = 3` et `f(x) = a x` dans un
   atelier qui a `a = 5`, `f` suit le `a` reçu devenu `b`, plus le `a` local.
-- **Remplacer mon atelier** (`docs/wip/atelier-remplacer-phase0.md`, R1-R5 et B1-B9, validée
+- **Remplacer mon atelier** (`docs/archive/wip/atelier-remplacer-phase0.md`, R1-R5 et B1-B9, validée
   par David le 2026-10-19) : l'autre geste d'un atelier reçu, à côté de « Garder »
   (`ShareBar.svelte`, `onReplace`). Confirmation qui compte (« Tes 6 objets et ta grille seront
   remplacés. Ton atelier est mis de côté : tu pourras le retrouver. », `replacementLoss`), sans
@@ -2603,7 +2603,7 @@ du moteur (`DOMAIN_UNRESOLVED` : `\sqrt{\sin x}`) sortent plus haut, inchangés,
   (`\sqrt{x^2-5x+6}`, Q4) et pour le domaine universel (Q6). Tests :
   `domaine-etapes.test.ts`, `domaine-etapes-affichage.svelte.test.ts`.
 
-**`.développer` en détail** (`expand.ts`, phase 0 [atelier-developper-phase0.md](../wip/atelier-developper-phase0.md),
+**`.développer` en détail** (`expand.ts`, phase 0 [atelier-developper-phase0.md](../archive/wip/atelier-developper-phase0.md),
 décisions de David du 2026-10-14). Servie par l'atelier (`ATELIER_ONLY_COMMANDS` : le registre
 n'a pas d'`expand`), après la substitution des noms (`.développer f`, `.développer f(x)`).
 Développer, c'est aussi réduire. La réponse est le résultat de l'intention `developper`, remis

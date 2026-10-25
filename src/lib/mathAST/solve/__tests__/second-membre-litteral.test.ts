@@ -1,6 +1,6 @@
 /**
  * Second membre LITTÉRAL : `y = f(x)` résolue en x (lot 1 du chantier
- * « réciproque », docs/wip/atelier-reciproque-phase0.md).
+ * « réciproque », docs/archive/wip/atelier-reciproque-phase0.md).
  *
  * Mesuré le 2026-10-13 : `y = e^{2x+1}`, `y = \ln(x-1)`, `y = \sqrt{x+2}`,
  * `y = 2^x`, `y = 3e^x - 1`, la logistique, `y = \ln x + \ln 2` revenaient en

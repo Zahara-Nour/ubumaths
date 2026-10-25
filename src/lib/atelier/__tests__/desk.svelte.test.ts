@@ -162,7 +162,7 @@ describe('la saisie au clavier', () => {
 });
 
 /**
- * ↑ / ↓ rappellent les saisies (phase 0 `docs/wip/atelier-cas-phase0.md`,
+ * ↑ / ↓ rappellent les saisies (phase 0 `docs/archive/wip/atelier-cas-phase0.md`,
  * PR 1) — ce que `/cas` savait faire et que l'atelier ne savait pas.
  */
 describe('le rappel des saisies', () => {

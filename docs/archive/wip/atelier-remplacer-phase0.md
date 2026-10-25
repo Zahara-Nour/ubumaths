@@ -1,12 +1,12 @@
 ---
 title: Atelier — remplacer son atelier par un atelier reçu (phase 0)
 date: 2026-10-18
-status: LIVRÉ (#1523, `ea087fb3f`, 2026-10-19) ; choix 1-3 confirmés par David ; Charger / Repartir de zéro annulables : PR 3 du lot 5 (modifs-fixes)
+status: LIVRÉ (#1523, `ea087fb3f`, 2026-10-19) ; choix 1-3 confirmés par David ; Charger / Repartir de zéro annulables : PR 3 du lot 5 (modifs-fixes) ; archivé le 2026-10-25
 ---
 
 # Atelier — remplacer son atelier par un atelier reçu
 
-Chapeau : [atelier-progress.md](atelier-progress.md). Doc système : [atelier.md](../systeme/atelier.md)
+Chapeau : [atelier-progress.md](../../wip/atelier-progress.md). Doc système : [atelier.md](../../systeme/atelier.md)
 (§ Session, persistance, URL : mode éphémère, « Garder dans mon atelier », `mergeInto`).
 
 ## Le besoin

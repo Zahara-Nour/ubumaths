@@ -1,6 +1,6 @@
 /**
  * « Garder dans mon atelier » : un arrivant renommé emmène ceux qui le citent
- * (B9 de `docs/wip/atelier-remplacer-phase0.md`, validé par David le 2026-10-19).
+ * (B9 de `docs/archive/wip/atelier-remplacer-phase0.md`, validé par David le 2026-10-19).
  *
  * Le défaut : reçu `a = 3` et `f(x) = a x`, local `a = 5` → le `a` reçu devient
  * `b`, mais `f` restait `a x` et suivait le `a = 5` local, sans rien dire.

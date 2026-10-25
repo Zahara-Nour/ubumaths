@@ -6,7 +6,7 @@ couvre:
 # La réciproque calculée (`reciprocal/`)
 
 > Moteur : `src/lib/mathAST/reciprocal/` ([README.md](README.md)). Chantier :
-> [atelier-reciproque-phase0.md](../../wip/atelier-reciproque-phase0.md) (décisions R1-R4, Q5).
+> [atelier-reciproque-phase0.md](../../archive/wip/atelier-reciproque-phase0.md) (décisions R1-R4, Q5).
 > Lot 2, livré sans l'atelier. La commande `.réciproque f [sur I]` et la carte `f⁻¹` (lot 3) :
 > [atelier.md](../atelier.md) § « La réciproque ».
 

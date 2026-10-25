@@ -13,7 +13,7 @@
 	 *
 	 * Spécification : `docs/archive/wip/atelier-vue-calcul-phase0.md`. Le champ
 	 * est en texte ou en écriture mathématique, au choix de l'élève dans les
-	 * réglages (`docs/wip/atelier-reglages-phase0.md`).
+	 * réglages (`docs/archive/wip/atelier-reglages-phase0.md`).
 	 */
 	import { convertLatexToMarkup, type MathfieldElement } from 'mathlive';
 	import type { CalcDesk, Entry } from '$lib/atelier/desk.svelte';

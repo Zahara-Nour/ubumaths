@@ -3,7 +3,7 @@
  * texte envoyé au moteur (`.dériver x^3`, avec le point qu'il n'a jamais tapé).
  * Et le champ vide dit quoi y écrire.
  *
- * Suite de `docs/wip/atelier-reglages-phase0.md` (points restés ouverts au merge
+ * Suite de `docs/archive/wip/atelier-reglages-phase0.md` (points restés ouverts au merge
  * de #1385, demandés par David le 2026-10-14).
  */
 

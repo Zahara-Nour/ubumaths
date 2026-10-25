@@ -4,7 +4,7 @@
  * Une seule règle pour les deux chemins qui renomment : `Atelier.rename` (l'élève
  * renomme une carte) et la fusion (`mergeInto` : un arrivant renommé pour cause
  * de collision emmène les arrivants qui le citent, B9 de
- * `docs/wip/atelier-remplacer-phase0.md`). Deux copies de la règle finiraient par
+ * `docs/archive/wip/atelier-remplacer-phase0.md`). Deux copies de la règle finiraient par
  * diverger — c'est ainsi que la fusion avait oublié de réécrire.
  *
  * @module atelier/rename

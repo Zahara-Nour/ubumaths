@@ -251,7 +251,7 @@ describe('revues du lot 2b', () => {
 	});
 });
 
-// Décision f du 2026-10-13 (`docs/wip/atelier-intervalle-phase0.md`)
+// Décision f du 2026-10-13 (`docs/archive/wip/atelier-intervalle-phase0.md`)
 describe('« Sur le graphique » d’une fonction définie sur un intervalle', () => {
 	it('la tangente hors de l’ensemble est refusée, et le dit', async () => {
 		const { atelier, card } = await openPlotted('x^2');

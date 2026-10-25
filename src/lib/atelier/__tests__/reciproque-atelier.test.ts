@@ -1,5 +1,5 @@
 /**
- * La réciproque dans l'atelier — lot 3 de `docs/wip/atelier-reciproque-phase0.md`.
+ * La réciproque dans l'atelier — lot 3 de `docs/archive/wip/atelier-reciproque-phase0.md`.
  *
  * R1 : bouton « Réciproque » et `.réciproque f [sur I]` → carte `f⁻¹` + ligne
  * dans Calcul ; R3 : étapes ; R4 : ensembles ; Q5 (b) : la carte porte son

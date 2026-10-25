@@ -1,7 +1,7 @@
 /**
  * Atelier — une fonction définie sur un intervalle, lot 3 (le tracé, I5).
  *
- * Phase 0 `docs/wip/atelier-intervalle-phase0.md`. L'atelier passe au grapheur
+ * Phase 0 `docs/archive/wip/atelier-intervalle-phase0.md`. L'atelier passe au grapheur
  * l'ensemble de la fonction sous forme numérique (`ExplicitFunction.restriction`) ;
  * sans ensemble, rien ne change.
  */

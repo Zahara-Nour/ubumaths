@@ -1,7 +1,7 @@
 /**
  * Atelier — une fonction définie sur un intervalle : `f(x) = x^2 sur [0;+∞[`.
  *
- * Phase 0 `docs/wip/atelier-intervalle-phase0.md` (I1-I6, validée le
+ * Phase 0 `docs/archive/wip/atelier-intervalle-phase0.md` (I1-I6, validée le
  * 2026-10-13), lot 1. L'ensemble s'écrit dans le même champ que la définition,
  * après le mot « sur » ; il est lu par `parseStudentDomain`, le parseur des
  * réponses d'élève (intervalles, réunions, `ℝ \ {0}`, `ℝ₊`…).

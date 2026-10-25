@@ -77,4 +77,4 @@ morceau ») — David ne veut PAS du point devant les commandes : « une écritu
   `safe-latex.ts`, deux audits de sécurité). `.limite` créée par une autre session ; reste `développer`.
 - 2026-10-14 — **demande de David** : une fenêtre de réglages où l'élève choisit la saisie de Calcul,
   texte (l'actuelle) ou MathLive. Change la décision 1 (« aucun mode à choisir ») : le mode texte
-  reste. Phase 0 : [atelier-reglages-phase0.md](../../wip/atelier-reglages-phase0.md).
+  reste. Phase 0 : [atelier-reglages-phase0.md](atelier-reglages-phase0.md).

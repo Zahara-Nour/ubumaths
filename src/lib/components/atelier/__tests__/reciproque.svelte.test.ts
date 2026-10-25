@@ -1,6 +1,6 @@
 /**
  * La réciproque dans l'atelier, à l'écran — lot 3 de
- * `docs/wip/atelier-reciproque-phase0.md`.
+ * `docs/archive/wip/atelier-reciproque-phase0.md`.
  *
  * R1 : le bouton « Réciproque » de la carte crée la carte `f⁻¹` et écrit la
  * ligne dans Calcul SANS changer de vue (G7). Un refus cite ses formules

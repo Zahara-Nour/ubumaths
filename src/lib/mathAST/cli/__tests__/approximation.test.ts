@@ -1,7 +1,7 @@
 /**
  * La valeur approchée d'un résultat exact, pour le bouton ≈ de Calcul.
  *
- * Décisions de David (2026-10-11, `docs/wip/atelier-cas-phase0.md`, PR 2) :
+ * Décisions de David (2026-10-11, `docs/archive/wip/atelier-cas-phase0.md`, PR 2) :
  * 4 décimales ; une valeur dont l'écriture décimale tient dans l'arrondi
  * s'écrit avec « = » sans zéros inutiles ; rien pour un résultat déjà entier
  * ou décimal.

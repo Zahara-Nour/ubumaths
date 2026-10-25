@@ -150,7 +150,7 @@ export const redirectHandle: Handle = async ({ event, resolve }) => {
 	}
 
 	// `/cas` (calculatrice symbolique) retirée le 2026-10-13 : l'atelier fait tout
-	// ce qu'elle faisait, avec le même moteur (`docs/wip/atelier-cas-phase0.md`, PR 4).
+	// ce qu'elle faisait, avec le même moteur (`docs/archive/wip/atelier-cas-phase0.md`, PR 4).
 	// Filet pour les liens gardés et les favoris.
 	if (pathname === '/cas' || pathname === '/cas/') {
 		throw redirect(308, '/atelier' + event.url.search);

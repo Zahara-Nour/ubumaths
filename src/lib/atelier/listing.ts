@@ -7,7 +7,7 @@
  * `b = 2*5`. Le panneau fait foi : on liste ses cartes, dans son ordre, comme
  * il les montre (nom affiché, lettre de l'élève, ensemble, état).
  *
- * Phase 0 : `docs/wip/atelier-cas-phase0.md`, PR 4.
+ * Phase 0 : `docs/archive/wip/atelier-cas-phase0.md`, PR 4.
  *
  * @module atelier/listing
  */

@@ -118,7 +118,7 @@ partage l'abscisse de la tangente. La tangente est tracée en tirets (`dashed`) 
 sa courbe, la dérivée en pointillé fin (`dotted`) : les deux restent distinctes de f et entre elles.
 
 **Restriction** (optionnelle, `ExplicitFunction.restriction`, lot 3 de
-[atelier-intervalle-phase0.md](../wip/atelier-intervalle-phase0.md)) : des morceaux NUMÉRIQUES
+[atelier-intervalle-phase0.md](../archive/wip/atelier-intervalle-phase0.md)) : des morceaux NUMÉRIQUES
 (`CurvePiece` : bornes réelles, ±∞ permis, ouvertes ou fermées). `FunctionCurve` échantillonne
 chaque morceau à part (un sous-chemin `M…` par morceau) et marque chaque borne finie visible d'un
 cercle : plein (`endpoint-closed`, couleur de la courbe) si fermée, creux (`endpoint-open`,

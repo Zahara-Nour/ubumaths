@@ -1,7 +1,7 @@
 ---
 title: Atelier — le bouton « Copier » d'une ligne de Calcul (phase 0)
 date: 2026-10-15
-status: livré (#1417, 2026-10-15), en attente du deploy:prod
+status: livré (#1417, 2026-10-15), en prod ; archivé le 2026-10-25
 ---
 
 # Atelier — le bouton « Copier »
