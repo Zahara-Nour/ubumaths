@@ -30,7 +30,10 @@
 -- 	created_at timestamptz default now() not null,
 -- 	updated_at timestamptz default now() not null
 -- );
--- (voir la baseline pour les index, le trigger, les 4 policies et l'activation de la RLS)
+-- Puis, depuis la baseline : la fonction `update_spreadsheets_updated_at()` avec son
+-- `set search_path`, son trigger, les 2 index, `enable row level security` et les 4 policies
+-- « own » (`auth.uid() = user_id`). Ne PAS rejouer les `grant all ... to anon` de la baseline :
+-- 20261001170000_anon_retrait_droits_herites.sql les a retirés.
 
 drop table public.spreadsheets;
 
