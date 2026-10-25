@@ -478,7 +478,8 @@ situés : coupure inconnue (avec la liste de ce qui existe), pièce écrite en b
 Réservés (« pas encore disponible ») : centimes (`50c`, `0,50`), billets de 200 et 500 €.
 Facultatives : `disposition: rangé | mélangé` (défaut `rangé` ; `mélangé` : billets dans un ordre
 tiré, pièces en vrac), `légendes:`, `taille:` (comme la collection : 8 cm pleine largeur, même
-échelle d'un ensemble à l'autre ; côte à côte s'ils tiennent, sinon l'un sous l'autre). Pas de `prix:` : le prix va dans l'énoncé. **Rendu stylisé**
+échelle d'un ensemble à l'autre). Les ensembles se placent côte à côte s'ils tiennent, sinon l'un
+sous l'autre. Pas de `prix:` : le prix va dans l'énoncé. **Rendu stylisé**
 (aucun élément des vrais billets ni pièces, règles BCE : [journal § 6](../wip/monnaie-progress.md)) :
 plus la valeur est grande, plus la coupure est grande ; valeur écrite au centre, répétée en petit
 dans deux coins d'un billet ; la pièce de 2 € a un anneau. Billets en haut, pièces dessous ; scène

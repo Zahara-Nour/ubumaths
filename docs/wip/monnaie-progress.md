@@ -361,3 +361,5 @@ CP-045 (« peut-il acheter ? » seulement).
   ensembles côte à côte à 390 px → décision 13 amendée ; (3) longue légende coupée mot à mot au PDF →
   décision 14 ; (4) au PDF, une phrase peut finir en bas de page et son bloc partir sur la suivante :
   commun à tous les blocs, **hors chantier** (point ouvert). PR `fix/monnaie-recette`.
+- 2026-10-25 : revue `code-reviewer` (Sonnet) de #1781 : aucun bloquant ; ajouté le test du repli (rangée
+  pleine : pas de colonne élargie, vu rouge en forçant 3 cm) ; phrase de `ubumark.md` allégée.

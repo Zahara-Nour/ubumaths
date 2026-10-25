@@ -84,6 +84,14 @@ describe('bloc ```monnaie au PDF', () => {
 		expect(count(out, /par\(justify: false\)/g)).toBe(2);
 	});
 
+	it('rangée pleine : pas de colonne élargie, la légende reste à la largeur de son dessin', () => {
+		// Deux grands ensembles remplissent déjà les 16 cm : élargir le petit sortirait de la page
+		const out = typst('billets: 50 20 20 10 ; 50 20 20 10 ; 5', 'légendes: Léa ; Tom ; Zoé');
+		const widths = captionWidths(out);
+		expect(widths[2]).toBeLessThan(3);
+		expect(widths.reduce((sum, w) => sum + w, 0) + 2 * 0.6).toBeLessThanOrEqual(16.001);
+	});
+
 	it('légende d’un grand dessin : aussi large que lui', () => {
 		const out = typst('billets: 50 20 20 10 ; 5', 'légendes: Léa ; Tom');
 		const k = 8 / MONNAIE_VIEW.fullWidth;
