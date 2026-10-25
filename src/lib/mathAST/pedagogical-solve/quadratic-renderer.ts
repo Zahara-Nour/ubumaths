@@ -20,7 +20,7 @@ import type {
 	SchoolLevel
 } from '../common/step-renderer-base';
 import { toLatex, RELATION_MAP } from '../latex-generator';
-import { computeNumericValue } from '../solve/numeric-value';
+import { computeNumericValue } from '../eval/numeric-value';
 import { constantSign } from '../common/constant-sign';
 import type { MathNode } from '../types';
 import type { SignMark, SignTableGrid, SignTableRow } from './sign-table-grid';

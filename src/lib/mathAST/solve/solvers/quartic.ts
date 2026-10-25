@@ -36,7 +36,6 @@ import {
 } from '../descriptions-fr';
 import {
 	isZeroNode,
-	computeNumericValue,
 	getTermDegree,
 	extractCoefficient,
 	extractPowerEquation,
@@ -44,6 +43,7 @@ import {
 	solveCubicCardano,
 	findSimpleFraction
 } from './polynomial';
+import { computeNumericValue } from '../../eval/numeric-value';
 
 // =============================================================================
 // Types

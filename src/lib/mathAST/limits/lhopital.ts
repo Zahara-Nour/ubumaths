@@ -370,7 +370,7 @@ function tryDirectEvaluationExact(
 		// Get denominator sign to determine final sign
 		// Valeur négative = nœud `opposite` (jamais de littéral négatif)
 		// Lu sur la forme normale : une fraction exacte (−1/2) n'est pas un
-		// littéral que getNumericValue saurait lire
+		// littéral que literalNumberValue saurait lire
 		const denValue = resultToNumber(denResult);
 		const denNegative = denValue !== null && denValue < 0;
 

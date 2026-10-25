@@ -28,7 +28,7 @@ import {
 	arcsinRule,
 	exponentialBaseRule,
 	containsVariable,
-	getNumericValue
+	literalNumberValue
 } from '../rules';
 import { classifyIntegrand } from '../classify';
 import { compile } from '../../eval/compile';
@@ -293,7 +293,7 @@ function isArctanPattern(
 				}
 			} else if (!containsVariable(term, variable)) {
 				// Could be just a number (like 4 = 2²)
-				const val = getNumericValue(term);
+				const val = literalNumberValue(term);
 				if (val !== null && val > 0) {
 					// Treat as a² where a = √val
 					aSquared = term;
@@ -307,7 +307,7 @@ function isArctanPattern(
 				return { a: aSquared.base, varNode: (xSquared as { base: MathNode }).base };
 			} else {
 				// It's a number, so a = √number
-				const val = getNumericValue(aSquared);
+				const val = literalNumberValue(aSquared);
 				if (val !== null) {
 					const sqrtVal = Math.sqrt(val);
 					if (Number.isInteger(sqrtVal)) {
@@ -392,7 +392,7 @@ function isArcsinPattern(
 
 		// Pattern: number - x² where number = a²
 		if (!containsVariable(left, variable)) {
-			const val = getNumericValue(left);
+			const val = literalNumberValue(left);
 			if (val !== null && val > 0) {
 				if (right.type === 'superscript') {
 					if (isVariable(right.base) && right.base.name === variable) {

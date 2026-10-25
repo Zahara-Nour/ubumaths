@@ -40,14 +40,6 @@ import { computeNumericValue } from '../../eval/numeric-value';
 /** Plus grand coefficient de période écrit (`1000k\pi`) : au-delà, la famille n’est pas écrite. */
 const MAX_PERIOD_INTEGER = 1000;
 
-/**
- * Une solution écrite pour être lue (`{1/2}sqrt(2)` → `\dfrac{\sqrt{2}}{2}`,
- * `exp(-1)` → `1/e`) : la valeur exacte à afficher commune (lot 5c).
- */
-function tidyValue(value: MathNode): MathNode {
-	return exactValueToShow(value);
-}
-
 // =============================================================================
 // Solutions en ln : décimaux gardés, valeur approchée (décision de David,
 // 2026-10-09 — seuils des suites géométriques, 1re / Tle)
@@ -92,7 +84,7 @@ function rounded(value: number): string {
  * `null` sans ln : l'appelant garde son écriture.
  */
 export function logarithmicValueLatex(value: MathNode, approximate?: number): string | null {
-	const tidied = tidyValue(value);
+	const tidied = exactValueToShow(value);
 	if (!hasLogarithm(tidied)) return null;
 	const written = frenchDecimals(toLatex(tidied));
 	const approximation = approximate ?? computeNumericValue(value);
@@ -107,7 +99,7 @@ export function logarithmicValueLatex(value: MathNode, approximate?: number): st
  */
 export function logarithmicValueText(value: MathNode, approximate?: number): string | null {
 	// Mis au propre comme le LaTeX : ln(3)/2, pas {1/2}ln(3)
-	const tidied = tidyValue(value);
+	const tidied = exactValueToShow(value);
 	if (!hasLogarithm(tidied)) return null;
 	const approximation = approximate ?? computeNumericValue(value);
 	const written = toCustom(tidied);
@@ -129,7 +121,7 @@ function thresholdOf(
 	const upperInfinite = isInfinity(upper.value);
 	if (lowerInfinite === upperInfinite) return null;
 	const end = lowerInfinite ? upper : lower;
-	if (!hasLogarithm(tidyValue(end.value))) return null;
+	if (!hasLogarithm(exactValueToShow(end.value))) return null;
 	const open = end.type === 'open';
 	if (lowerInfinite) {
 		return { bound: end.value, latexSign: open ? '<' : '\\leq', textSign: open ? '<' : '≤' };
@@ -231,7 +223,7 @@ function familyMembers(
 	const term = periodTerm(family.period);
 	if (term === null) return null;
 	const bases = sorted(family.baseSolutions).map((solution) => {
-		const base = tidyValue(solution.value);
+		const base = exactValueToShow(solution.value);
 		return { base, isZero: isNumber(base) && base.value === '0' };
 	});
 	const member = (written: string, isZero: boolean, k: string) =>
@@ -314,7 +306,7 @@ export function solutionsLatex(result: SolveResult): string | null {
 			const common = commonCondition(ordered);
 			const values = ordered.map(
 				(s) =>
-					toLatex(tidyValue(s.value)) +
+					toLatex(exactValueToShow(s.value)) +
 					(common === undefined && s.condition ? ` \\text{ si } ${toLatex(s.condition)}` : '')
 			);
 			const suffix = common ? ` \\quad \\text{si } ${toLatex(common)}` : '';
@@ -354,7 +346,7 @@ export function solutionsApproximationLatex(result: SolveResult): string | null 
 	if (periodicLatex(result) !== null) return null;
 
 	// Dans l'ordre et la forme de `solutionsLatex` : la ligne qu'elles accompagnent
-	const values = sorted(result.solutions).map((s) => tidyValue(s.value));
+	const values = sorted(result.solutions).map((s) => exactValueToShow(s.value));
 	if (values.length === 1 && logarithmicValueLatex(values[0]) !== null) return null;
 	return approximateSolutionsLatex(result.variable, values, values.length > 1);
 }
@@ -363,7 +355,7 @@ export function solutionsApproximationLatex(result: SolveResult): string | null 
 function boundLatex(value: MathNode): string {
 	if (isInfinity(value)) return value.sign === 'negative' ? '-\\infty' : '+\\infty';
 	// Décimaux gardés dans les ln (`\ln(0{,}1)`, S1), à la française comme un seuil
-	const tidied = tidyValue(value);
+	const tidied = exactValueToShow(value);
 	return hasLogarithm(tidied) ? frenchDecimals(toLatex(tidied)) : toLatex(tidied);
 }
 
@@ -454,7 +446,7 @@ export function inequalitySolutionLatex(domain: Domain, variable?: string): stri
 			const whole = realLineExclusions(domain);
 			if (whole !== null) {
 				if (whole.length === 0) return 'S = \\mathbb{R}';
-				const points = whole.map((p) => toLatex(tidyValue(p)));
+				const points = whole.map((p) => toLatex(exactValueToShow(p)));
 				return `S = \\mathbb{R} \\setminus \\left\\{ ${points.join(' \\,;\\, ')} \\right\\}`;
 			}
 			const intervals = domain.intervals.map((i) => {
@@ -466,7 +458,7 @@ export function inequalitySolutionLatex(domain: Domain, variable?: string): stri
 				if (open === '[' && close === ']' && lower === upper) return `\\{${lower}\\}`;
 				return `${open}${lower} ; ${upper}${close}`;
 			});
-			const excluded = domain.excludedPoints.map((p) => toLatex(tidyValue(p.value)));
+			const excluded = domain.excludedPoints.map((p) => toLatex(exactValueToShow(p.value)));
 			const minus =
 				excluded.length === 0
 					? ''

@@ -25,7 +25,7 @@
 import type { MathNode } from '../types';
 import { number } from '../factory';
 import { integrationLatex as toLatex } from './latex';
-import { numericValue } from '../integration/forbidden-value';
+import { numericValueOrNaN } from '../integration/forbidden-value';
 import { withExplicitNumberProducts } from '../pedagogical-differentiation/tidy-step';
 import type {
 	PedagogicalRenderOptions,
@@ -321,7 +321,7 @@ function significantDecimal(value: number, digits: number): string {
 function closedIntervalLatex(step: PedagogicalIntegrationStep): string {
 	if (!step.definite) return '?';
 	const { lower, upper } = step.definite;
-	const reversed = numericValue(lower) > numericValue(upper);
+	const reversed = numericValueOrNaN(lower) > numericValueOrNaN(upper);
 	const [lo, hi] = reversed ? [upper, lower] : [lower, upper];
 	return `\\left[ ${toLatex(lo)} ; ${toLatex(hi)} \\right]`;
 }

@@ -10,7 +10,7 @@
 import type { MathNode } from '../types';
 import { isInfinity, isSignedZero } from '../guards';
 import { number, positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../factory';
-import { getNumericValue, numericNode } from '../common/numeric';
+import { literalNumberValue, numericNode } from '../common/numeric';
 
 // =============================================================================
 // Types
@@ -39,9 +39,9 @@ function indeterminate(form: IndeterminateForm): ExtendedResult {
 }
 
 // Recognise both number('N') and opposite(number('N')) (canonical for negatives).
-// Delegates to getNumericValue from common/numeric which handles both forms.
+// Delegates to literalNumberValue from common/numeric which handles both forms.
 function getNumberValue(node: MathNode): number | null {
-	return getNumericValue(node);
+	return literalNumberValue(node);
 }
 
 function isZeroNumber(node: MathNode): boolean {

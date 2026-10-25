@@ -26,7 +26,7 @@ import {
 	zeroMinus
 } from '../../factory';
 import { isInfinity, isSignedZero } from '../../guards';
-import { getNumericValue } from '../../common/numeric';
+import { literalNumberValue } from '../../common/numeric';
 
 // =============================================================================
 // Helpers
@@ -35,8 +35,8 @@ import { getNumericValue } from '../../common/numeric';
 function expectNumber(result: ExtendedResult, expected: number, tolerance = 1e-10): void {
 	expect(result.type).toBe('value');
 	if (result.type === 'value') {
-		// getNumericValue handles both number('N') and opposite(number('N')) (canonical).
-		const actual = getNumericValue(result.value);
+		// literalNumberValue handles both number('N') and opposite(number('N')) (canonical).
+		const actual = literalNumberValue(result.value);
 		if (actual !== null) {
 			expect(Math.abs(actual - expected)).toBeLessThan(tolerance);
 			return;

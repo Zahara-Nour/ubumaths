@@ -141,7 +141,7 @@ function cleanText(output: string): string {
  * écriture déjà lue. Un nombre seul et une notation scientifique (mode
  * décimal) restent tels quels.
  */
-function readable(ast: MathNode): MathNode {
+function resultToShow(ast: MathNode): MathNode {
 	// Une grandeur est déjà mise au propre par la console (`quantities.ts`) :
 	// `tidy` recalculerait l'écriture juxtaposée `2 h 30 min` en une seule unité (lot C)
 	if (findNodes(ast, isUnit).length > 0) return ast;
@@ -179,7 +179,7 @@ export function renderResult(
 		return { text };
 	}
 
-	// Un calcul s'écrit depuis son ARBRE, mis au propre (`readable`, phase 0
+	// Un calcul s'écrit depuis son ARBRE, mis au propre (`resultToShow`, phase 0
 	// grandeurs, lot B). ⚠️ Plus jamais depuis le texte : un antislash y faisait
 	// prendre `{1/3}\pi` pour du LaTeX (« 1/3π » en ligne), et une grandeur n'y
 	// gardait son unité que si sa valeur était une fraction.
@@ -188,7 +188,7 @@ export function renderResult(
 	if (result.ast !== undefined) {
 		// Une écriture gardée (résultat exact trop long) : `tidy` la développerait — le
 		// calcul de 13 s que le garde-fou évite
-		const ast = result.exactTooLong === undefined ? readable(result.ast) : result.ast;
+		const ast = result.exactTooLong === undefined ? resultToShow(result.ast) : result.ast;
 		return { latex: displayUnitsInLatex(toLatex(ast)), text, ast };
 	}
 

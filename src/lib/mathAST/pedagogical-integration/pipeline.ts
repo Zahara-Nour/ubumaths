@@ -127,7 +127,7 @@ import type {
 } from './_helpers';
 import { abs, ln } from '../factory';
 import { findProportionalityConstant, findProportionalityRatio } from '../integration/patterns';
-import { forbiddenValueOnInterval, numericValue } from '../integration/forbidden-value';
+import { forbiddenValueOnInterval, numericValueOrNaN } from '../integration/forbidden-value';
 import { withUniformCoefficients, withValueInRegister } from '../integration/coefficient-register';
 import { isCertainlyPositive } from './positivity';
 import { isMinusOneCoefficient, onlyConstantOut } from './descriptions-fr';
@@ -347,7 +347,8 @@ function generateDefiniteSteps(
 	// f définie sur tout [a ; b], bornes numériques : l'intervalle sert à écrire
 	// ln u sans valeur absolue quand u > 0 y est certain
 	const numericBounds =
-		Number.isFinite(numericValue(definite.lower)) && Number.isFinite(numericValue(definite.upper));
+		Number.isFinite(numericValueOrNaN(definite.lower)) &&
+		Number.isFinite(numericValueOrNaN(definite.upper));
 	const boundedCtx: DispatchContext = { ...ctx, definite };
 	const innerCtx: DispatchContext =
 		check.kind === 'defined' && numericBounds ? { ...boundedCtx, interval: definite } : boundedCtx;

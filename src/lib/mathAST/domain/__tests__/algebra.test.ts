@@ -39,7 +39,7 @@ import {
 } from '../factory';
 import { isNumber, isNegativeInfinity } from '$lib/mathAST/guards';
 import { number, opposite } from '$lib/mathAST/factory';
-import { getNumericValue } from '$lib/mathAST/common/numeric';
+import { literalNumberValue } from '$lib/mathAST/common/numeric';
 
 describe('isEmpty()', () => {
 	it('returns true for empty domain', () => {
@@ -247,10 +247,10 @@ describe('complement()', () => {
 		if (result.kind === 'interval_set') {
 			expect(result.intervals).toHaveLength(2);
 			// First: ]-inf, -1[ — bounds may be number(...) or opposite(number(...))
-			expect(getNumericValue(result.intervals[0].upper.value)).toBe(-1);
+			expect(literalNumberValue(result.intervals[0].upper.value)).toBe(-1);
 			expect(result.intervals[0].upper.type).toBe('open');
 			// Second: ]1, +inf[
-			expect(getNumericValue(result.intervals[1].lower.value)).toBe(1);
+			expect(literalNumberValue(result.intervals[1].lower.value)).toBe(1);
 			expect(result.intervals[1].lower.type).toBe('open');
 		}
 	});

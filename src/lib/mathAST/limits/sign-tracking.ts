@@ -28,7 +28,7 @@ import {
 } from '../guards';
 import { containsVariable } from '../common/contains-variable';
 import { number, positiveInfinity, negativeInfinity, zeroPlus, zeroMinus } from '../factory';
-import { evaluateNumeric, getNumericValue, numericNode } from '../common';
+import { evaluateNumeric, literalNumberValue, numericNode } from '../common';
 import {
 	addExtended,
 	subtractExtended,
@@ -249,7 +249,7 @@ function classifyWithSignNumeric(
 	}
 
 	// Handle finite approach (π/2 : pas un littéral, valeur approchée)
-	const approachValue = getNumericValue(approach) ?? computeNumericValue(approach);
+	const approachValue = literalNumberValue(approach) ?? computeNumericValue(approach);
 	if (approachValue === null) {
 		return { type: 'unknown' };
 	}
@@ -882,8 +882,8 @@ export function signedValueToMathNode(value: SignedLimitValue): MathNode | null 
  * Convert a MathNode to a SignedLimitValue.
  */
 export function mathNodeToSignedValue(node: MathNode): SignedLimitValue {
-	// getNumericValue accepts both number('N') and opposite(number('N')) (canonical for negatives).
-	const val = getNumericValue(node);
+	// literalNumberValue accepts both number('N') and opposite(number('N')) (canonical for negatives).
+	const val = literalNumberValue(node);
 	if (val !== null) {
 		if (val === 0) return { type: 'zero' };
 		if (Number.isFinite(val)) return { type: 'finite', value: val };

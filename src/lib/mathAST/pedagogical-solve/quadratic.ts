@@ -50,7 +50,7 @@ import {
 import { nodesEqual } from '../normal/hash';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { extractQuadraticCoefficients } from '../solve/solvers/quadratic';
-import { computeNumericValue } from '../solve/numeric-value';
+import { computeNumericValue } from '../eval/numeric-value';
 import { canon, isConstantCoefficient, isZero, makeStep, renumberSteps } from './_helpers';
 
 // =============================================================================

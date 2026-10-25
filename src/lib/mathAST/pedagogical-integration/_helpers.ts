@@ -17,7 +17,7 @@ import { hashMathNode } from '../normal/hash';
 import { findProportionalityRatio } from '../integration/patterns';
 import { number } from '../factory';
 import type { Rational } from '../normal/types';
-import { getNumericValue } from '../common/numeric';
+import { literalNumberValue } from '../common/numeric';
 import { evalPoly, quadraticRootParts, toPolynomial } from '../factor';
 import {
 	divRational,
@@ -659,7 +659,7 @@ export function tryDetectCompositePower(
 		if (!containsVariable(node.base, variable)) return null;
 		if (containsVariable(node.superscript, variable)) return null;
 		// Reject n = -1 (would be composite-ln) and n = 0 (constant).
-		const nValue = getNumericValue(node.superscript);
+		const nValue = literalNumberValue(node.superscript);
 		if (nValue === -1 || nValue === 0) return null;
 		// Reject base = exact variable (would match power-rule basic path).
 		if (isExactVariable(node.base, variable)) return null;
@@ -781,7 +781,7 @@ function isPolynomialOf(node: MathNode, variable: string): boolean {
 	if (isExactVariable(node, variable)) return true;
 	if (node.type === 'superscript') {
 		if (!isExactVariable(node.base, variable)) return false;
-		const n = getNumericValue(node.superscript);
+		const n = literalNumberValue(node.superscript);
 		return n !== null && Number.isInteger(n) && n >= 0;
 	}
 	if (node.type === 'multiplication') {
@@ -1034,9 +1034,9 @@ export function matchArctanForm(integrand: MathNode, variable: string): { a: Mat
 	const xSquaredSide = leftHasVar ? left : right;
 	if (xSquaredSide.type !== 'superscript') return null;
 	if (!isExactVariable(xSquaredSide.base, variable)) return null;
-	const n = getNumericValue(xSquaredSide.superscript);
+	const n = literalNumberValue(xSquaredSide.superscript);
 	if (n !== 2) return null;
-	const cValue = getNumericValue(constantSide);
+	const cValue = literalNumberValue(constantSide);
 	if (cValue === null || cValue <= 0) return null;
 	// a = √c. For perfect squares emit a rational ; otherwise emit `sqrt(c)`.
 	const aValue = Math.sqrt(cValue);
@@ -1067,11 +1067,11 @@ export function matchArcsinForm(integrand: MathNode, variable: string): { a: Mat
 	const constantSide = inside.left;
 	const xSquaredSide = inside.right;
 	if (containsVariable(constantSide, variable)) return null;
-	const cValue = getNumericValue(constantSide);
+	const cValue = literalNumberValue(constantSide);
 	if (cValue === null || cValue <= 0) return null;
 	if (xSquaredSide.type !== 'superscript') return null;
 	if (!isExactVariable(xSquaredSide.base, variable)) return null;
-	const n = getNumericValue(xSquaredSide.superscript);
+	const n = literalNumberValue(xSquaredSide.superscript);
 	if (n !== 2) return null;
 	const aValue = Math.sqrt(cValue);
 	const a: MathNode =
@@ -1125,5 +1125,5 @@ export function flattenSum(
 
 // Re-export common dependencies that pipeline.ts needs, so it has a single
 // import site.
-export { containsVariable, getNumericValue, isNumber, isVariable, isOne, isZero };
+export { containsVariable, literalNumberValue, isNumber, isVariable, isOne, isZero };
 export type { FunctionNode };

@@ -38,7 +38,7 @@ import { extractQuadraticCoefficients } from '../solve/solvers/quadratic';
 import { extractLinearForm } from '../analysis/coefficient-utils';
 import { solve } from '../solve/solve';
 import { solveInequality } from '../solve/inequality';
-import { computeNumericValue } from '../solve/numeric-value';
+import { computeNumericValue } from '../eval/numeric-value';
 import {
 	canon,
 	describeDomain,

@@ -4,7 +4,7 @@
  * Une même valeur a plusieurs écritures : `-\frac23` est `opposite(division)`,
  * `\frac{-3}{4}` une division de numérateur opposé, `-0.5` devient `-\dfrac12`
  * après `canon`, `-\sqrt2` un opposé de racine. Lire le signe sur
- * `number` / `opposite(number)` seulement (`getNumericValue`) les rate tous :
+ * `number` / `opposite(number)` seulement (`literalNumberValue`) les rate tous :
  * c'est ce qui faisait garder le sens de `-\frac23 x + 1 < 5` (écart V36).
  *
  * @module mathAST/common/constant-sign
@@ -12,7 +12,7 @@
 
 import type { MathNode } from '../types';
 import { extractExactRational } from './numeric';
-import { computeNumericValue } from '../solve/numeric-value';
+import { computeNumericValue } from '../eval/numeric-value';
 
 /** Signe d'une constante : −1, 0 ou 1. */
 export type ConstantSign = -1 | 0 | 1;

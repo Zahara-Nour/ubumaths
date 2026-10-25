@@ -13,13 +13,13 @@ import type { MathNode } from '../types';
 import type { LimitValue } from './types';
 import { toLatex } from '../latex-generator';
 import { tidy } from '../tidy';
-import { tidyCriticalAbscissa } from './critical-points';
+import { abscissaToShow } from './critical-points';
 
 /** `+\infty` / `-\infty`, sinon la valeur mise au propre (`1/2` → `\dfrac{1}{2}`). */
 export function variationValueLatex(value: MathNode): string {
 	if (value.type === 'infinity') return value.sign === 'negative' ? '-\\infty' : '+\\infty';
 	try {
-		const abscissa = tidyCriticalAbscissa(value);
+		const abscissa = abscissaToShow(value);
 		return toLatex(abscissa === value ? tidy(value) : abscissa);
 	} catch {
 		return toLatex(value);

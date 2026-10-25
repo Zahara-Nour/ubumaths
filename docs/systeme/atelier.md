@@ -2820,7 +2820,7 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
 10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`). Un **calcul** s'écrit depuis
     son arbre, écrit par la valeur exacte à afficher commune (`exactValueToShow`,
     `mathAST/eval/exact-value.ts`, lot 5c — la même que `{{eval}}`, le tableau de variations, le
-    grapheur et les limites). Le moteur (`readableExact`, `web-repl-engine.ts`) la calcule avec la
+    grapheur et les limites). Le moteur (`resultToShow`, `web-repl-engine.ts`) la calcule avec la
     saisie pour source : registre décimal gardé (`0,1+0,2 → 0,3`, `2,50 → 2,5`, `1/3+0,5 → 5/6`,
     `0,5√2 → √2/2`), `cos(π/6)` calculé, une seule fraction sur un dénominateur commun
     (`(1+√5)/2`), notation scientifique tapée gardée (`3 × 10²⁰`) ; un nombre
