@@ -1,7 +1,7 @@
 /**
  * Pedagogical Simplify — `réduire` et `auto` sans `normalize`
  *
- * Chantier simplify-carte, lot 3 (`docs/wip/simplify-carte-progress.md` § 33,
+ * Chantier simplify-carte, lot 3 (`docs/archive/wip/simplify-carte-progress.md` § 33,
  * validé par David le 2026-10-23). Avant, les deux intentions finissaient par
  * `normalize`, qui développe tout : `2(x+3) → 2x+6`, `(x+1)² → x²+2x+1`, et
  * `auto` montrait l'aller-retour `x²+2x+1 → (x+1)² → x²+2x+1`.
