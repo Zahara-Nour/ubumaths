@@ -6,6 +6,7 @@ _Mis à jour le 2026-10-25, après #1759 et son `db:migrate`._
 
 - **État** : groupe A COMPLET (#1712 → #1753) ; **lot H mergé (#1759)** : 3 brouillons en prod (`9780d3c1` CP-046, `f1759d81` CP-047, `0f7381e6` CP-016), migration `20261026130000` jouée et vérifiée en prod (sous-notion + 1 tag chacun, `updated_at` inchangé, trigger actif). Page à cocher H : https://claude.ai/artifact/PG6EhGTHaAkTiEkSSst4st — **3/3 OK** par David. Blocs horloge et opération pas en prod : brouillons mal rendus dans l'admin de prod jusqu'au `deploy:prod`.
 - **Prochaine action** : phase 0 du lot **B1** tableaux (068, 069, 084), puis B2 → B3 (§ 4 nonies).
+- **Case « figure »** : phase 0 de CP-059 **validée** (§ 2 ter) ; code après B3, chantier à part. 034 et 058 à réexaminer.
 - **En attente de David** : **toutes les pages relues OK** (A1 à A6, H) ; publication A1 à H en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; le bon choix d'un QCM n'accepte qu'UN `{{if:…}}` ; **une variable `h` remplace la lettre « h » des valeurs (« 6 h » → « 6 12 ») : ne pas nommer une variable comme une lettre du texte** ; bloc ```operation : plus grand terme en premier ; sous zsh, `$LISTE` ne se découpe pas ; corps de commit ≤ 100 caractères par ligne ; jamais de variable `e` ; relire le rendu ; la base refuse un tag sur un modèle sans nœud.
 - **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1759).
@@ -88,7 +89,7 @@ Proposition passée au conseil (5 conseillers + relecture croisée anonyme). Ce 
 - **Première action du chantier** : en phase 0, écrire le modèle CP-059 tel que le prof l'écrirait et ce que voit
   l'enfant (consigne, outils, réussite, erreur, blocage), avant toute ligne de code.
 
-## 2 ter. Case « figure » : phase 0 de CP-059 (brouillon du 2026-10-25, à valider)
+## 2 ter. Case « figure » : phase 0 de CP-059 (VALIDÉE par David le 2026-10-25)
 
 Écrite avant le chantier (qui reste après B1 → B3) pour que sa phase 0 soit prête. Rien n'est codé.
 
@@ -156,6 +157,12 @@ règle graduée), pas « reporter une longueur » comme noté au § 2 bis : comm
    dans l'appli (aucun `speechSynthesis`) : la consigne se lit seule ou avec l'adulte.
 8. **Format** : un bloc ` ```construction ` (figure et réponse ensemble), ou une case `[_]` qui renvoie à un bloc
    ` ```figure ` ?
+
+**Décisions de David (2026-10-25, « je suis tes recos »)** : (1) outil **droite** seul ; (2) **toucher** A puis B ;
+(3) **feuille blanche**, sans quadrillage ; (4) **un** point piège ; (5) trait en trop = **faux** ; (6) Valider **grisé** tant
+que rien n'est tracé ; (7) `delay` **60 s** ; (8) bloc ` ```construction ` (figure de départ et réponse ensemble). Les
+modèles CP-059 / 060 s'écrivent **dans le chantier figure** (ils dépendent du bloc neuf), pas dans le chantier questions.
+Le code attend toujours la fin de B1 → B3 (§ 4 nonies).
 
 ## 3. Outils proposés
 
@@ -303,3 +310,4 @@ David suit mes recommandations (« je suis tes recos. go »).
 - 2026-10-25 : page A3 relue par David, 6/6 OK. Tous les brouillons du chantier (A1 à H) sont validés.
 - 2026-10-25 : validation des figures faites par l'élève passée au conseil ; verdict consigné (§ 2 bis) et suivi par David : 008 → réponses à placer, 058 à réexaminer (§ 3, § 4 nonies).
 - 2026-10-25 : case « figure », phase 0 de CP-059 écrite en brouillon (§ 2 ter), 8 questions à David ; CP-034 à réexaminer (« comparer », pas « reporter »).
+- 2026-10-25 : phase 0 de CP-059 validée par David (§ 2 ter, 8 décisions) ; modèles 059/060 dans le chantier figure.
