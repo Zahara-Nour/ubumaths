@@ -79,6 +79,36 @@ describe('FillBlanksInput — bloc ```operation', () => {
 		expect(values[0]).toBe('1');
 	});
 
+	it('multiplication : chiffres et virgule de l’élève remplissent values[N] (PR 2b, § 11)', async () => {
+		const statement = ['```operation', 'case: 0', 'calcul: 7 × 46,55', '```'].join(
+			'\n'
+		) as ResolvedMarkdown;
+		const values: string[] = [];
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement,
+				blanks: [
+					{
+						type: 'math',
+						expectedAnswer: '325.85',
+						expectedAnswerLatex: '325{,}85',
+						operation: true
+					}
+				],
+				values,
+				validationResults: []
+			}
+		});
+		const cells = resultCells(screen.container);
+		expect(cells).toHaveLength(5);
+		await userEvent.click(cells[4]);
+		await userEvent.keyboard('58523');
+		await userEvent.click(cells[2]);
+		await userEvent.keyboard(',');
+		expect(values[0]).toBe('325{,}85');
+	});
+
 	it('Entrée, grille vide : le curseur va dans la case vide la plus à droite', async () => {
 		let submitted = 0;
 		const screen = await render(FillBlanksInput, {

@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -342,13 +342,23 @@ de colonnes que les chiffres des deux facteurs réunis, virgule du résultat **n
 la posera), produits partiels en cases d'aide (pointillés, une case de plus que le nombre du haut,
 plus le décalage, zéros de décalage compris), une rangée de retenues au-dessus du haut et une pour
 l'addition des produits partiels ; résolue : retenues de l'addition seules s'il y a des produits
-partiels. Saisie dans une question : pas encore (PR 2b) — le générateur refuse un bloc `×` à
-remplir, `Operation.svelte` ne le rend pas saisissable.
+partiels. Saisie dans une question (§ 11 du journal) : l'élève **pose la virgule** du résultat (« , »
+ou « . » dans une case → virgule à droite de cette case, sans toucher à son chiffre ; une seule,
+retapée → enlevée ; clavier `inputmode="decimal"`, même pour un produit d'entiers) ; les cases se
+lisent avec sa virgule (`readOperationAnswer(…, comma)` ; virgule sans chiffre à sa gauche → 0
+implicite ; case vide à droite du dernier chiffre ignorée si la virgule est à sa gauche, sinon
+réponse vide) ; la valeur est jugée (`2,5 × 4` saisi `10` sans virgule : juste). Produits partiels
+et retenues de leur addition saisissables, chiffres seuls, jamais jugés ni gardés. Noms accessibles
+neutres (« Résultat, case 3 sur 5 en partant de la droite », « Produit partiel 1, case 2… ») : « chiffre
+des unités » dirait où est la virgule. Correction : virgule mal placée surlignée, virgule oubliée →
+sa place entourée (`wrongComma`) ; retour sur la question : réponse remise alignée à droite, virgule
+comprise (`commaFromAnswer`), zéros de fin possiblement perdus (`10,0` → `10`).
 
 Dans une question, un bloc à remplir porte **une** case (clé `case: N`, posée par
 `assignBlankIndices`, jamais écrite par l'auteur ; refusée avec `cases: aucune`). `Operation.svelte`
 reçoit alors `answer` : cases du résultat saisies de droite à gauche (le curseur passe à gauche,
-Retour arrière sur une case vide efface celle de droite, tout autre caractère ignoré), carreaux de
+Retour arrière sur une case vide efface celle de droite, flèches ↑/↓ d'une rangée de cases à
+l'autre, tout autre caractère ignoré), carreaux de
 40 px, grille qui défile dans son cadre sur téléphone. Les cases se lisent comme un nombre
 (`utils/operation-answer.ts`, `readOperationAnswer`) : cases de tête vides ignorées, décimales de fin
 vides comptées 0 (`0,5 + 0,5`, élève « 1 » : juste), case vide au milieu → réponse vide ; zéros de tête et zéros décimaux de fin retirés (`1,0` → `1`), espaces de

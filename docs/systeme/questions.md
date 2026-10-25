@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc ```operation le 2026-10-25 ; étapes des inéquations (Q50) le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc ```operation le 2026-10-25 (multiplication à remplir, PR 2b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -222,8 +222,7 @@ Le **type** n'est pas déclaré : `getQuestionType` le déduit — `options.cour
    (`operationExpectedAnswer`, forme la plus simple), jamais du modèle : `blanks[]` peut l'omettre
    (case insérée à son rang ; un modèle sans autre case n'a pas besoin de `blanks`), ou lui donner
    une entrée de réglages avec `expectedAnswer` vide — une réponse écrite est refusée. Un bloc en
-   erreur fait échouer la génération (message situé). Une ligne `case:` écrite par l'auteur aussi, et une multiplication à remplir (sa saisie
-   n'existe pas encore : `cases: aucune` pour la montrer résolue). Dans un QCM ou une carte de cours, le bloc ne porte aucune case. La case est `type: 'math'`,
+   erreur fait échouer la génération (message situé). Une ligne `case:` écrite par l'auteur aussi. Dans un QCM ou une carte de cours, le bloc ne porte aucune case. La case est `type: 'math'`,
    `operation: true`, jugée comme une case ordinaire.
 6. Chaque case reçoit ses réglages fusionnés : **case ▸ `blankDefaults`** pour `precision`,
    `unit`, `answerKind`, `rulesSuffice`, `acceptDecimal`… ; `requiredForm` : case ▸

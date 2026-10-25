@@ -105,11 +105,22 @@ describe('bloc ```operation : la case et sa réponse', () => {
 		expect(result.errors.join(' ')).toMatch(/case 1.*calcul.*bloc operation/i);
 	});
 
-	it('multiplication à remplir : refusée tant que sa saisie n’existe pas (PR 2b)', () => {
-		const result = generateInstance(template({ statement: op('calcul: 548 × 16') }), 42);
-		expect(result.success).toBe(false);
-		if (result.success) return;
-		expect(result.errors.join(' ')).toMatch(/case 1.*multiplication.*pas encore disponible/i);
+	it('multiplication à remplir : une case, réponse calculée par le bloc (PR 2b, § 11 n° 1)', () => {
+		const instance = generate(template({ statement: op('calcul: 548 × 16') }));
+		expect(instance.blanks).toHaveLength(1);
+		expect(instance.blanks?.[0]).toMatchObject({
+			type: 'math',
+			expectedAnswer: '8768',
+			operation: true
+		});
+	});
+
+	it('multiplication décimale : la valeur est jugée, virgule absente mais valeur juste → juste (§ 11 n° 10)', () => {
+		const decimal = generate(template({ statement: op('calcul: 7 × 46,55') }));
+		expect(validateAnswer('325{,}85', decimal, '325{,}85').status).toBe('correct');
+		expect(validateAnswer('32\\,585', decimal, '32\\,585').isCorrect).toBe(false);
+		const trailing = generate(template({ statement: op('calcul: 2,5 × 4') }));
+		expect(validateAnswer('10', trailing, '10').status).toBe('correct');
 	});
 
 	it('multiplication résolue (cases: aucune) : acceptée, sans case', () => {

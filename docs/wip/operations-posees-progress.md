@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1740._
+_Mis à jour le 2026-10-25, PR 2b commencée._
 
-- **État** : lot 1 COMPLET sur `main`, pas en prod (#1716, #1726, #1738). Lot 2 (multiplication) : phase 0 validée (§ 10) ; **PR 2a #1740 mergée** (affichage écran + PDF ; une multiplication à remplir est refusée dans une question).
-- **Prochaine action** : PR 2b — saisie de la multiplication (virgule posée par l'élève, Q3 ; cases des produits partiels ; surlignage de la virgule) ; lever le refus de `instance-generator.ts`. Écrire les comportements de la PR 2b et les faire valider.
+- **État** : lot 1 COMPLET sur `main`, pas en prod (#1716, #1726, #1738). Lot 2 : PR 2a #1740 mergée (affichage) ; **PR 2b en cours** (saisie), comportements validés (§ 11).
+- **Prochaine action** : tests rouges (`operation-answer`, `Operation.svelte`, générateur) puis code.
 - **En attente de David** : vérifications #1716, #1726, #1738, #1740 (`verifications-manuelles.md`), avant le prochain `deploy:prod`. Précision Q1 (zéros de tête non comptés, § 10) à confirmer.
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — republiée le 2026-10-25 avec la multiplication (affichage, 8 cas, erreurs).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas ; `operation-answer.ts` suppose une virgule de grille fixe (à revoir en PR 2b).
-- **Worktree / branche** : supprimés après #1740.
+- **Worktree / branche** : `ubumaths-wt-operations-posees` · `feat/operations-posees-saisie-multiplication`.
 
 ---
 
@@ -290,6 +290,50 @@ Découpage : **PR 2a** affichage (parseur, scène, écran, PDF, éditeur riche, 
 13. Plus de deux facteurs (`3 × 4 × 5`) ; signes mélangés (`3 × 4 + 1`).
 14. Plus de 6 chiffres en haut ou plus de 3 en bas ; bornes de chiffres du lot 1.
 15. `méthode:` sur une multiplication ; `÷` « pas encore disponible (lot 3) ».
+
+## 11. PR 2b — saisie de la multiplication (validés par David le 2026-10-25)
+
+Recommandations suivies (« je suis tes recos ») : (a) virgule absente mais valeur juste → juste ;
+(b) virgule offerte même pour un produit d'entiers ; (c) noms accessibles neutres pour la
+multiplication seulement.
+
+### Nominal
+
+1. Une multiplication à remplir n'est plus refusée par `instance-generator.ts` : une case, réponse
+   attendue calculée par le bloc (`548 × 16` → `8768`).
+2. Saisie du résultat comme au lot 1 (chiffre → case de gauche, Effacer → droite, Entrée valide).
+3. Virgule (Q3) : « , » ou « . » dans une case du résultat pose une virgule à droite de cette case,
+   sans toucher à son chiffre ; une seule (ailleurs → déplacée ; même case → enlevée). Clavier de
+   téléphone avec virgule (`inputmode="decimal"`).
+4. Lecture : de gauche à droite avec la virgule de l'élève (`3 2 5 , 8 5` → `325,85`) ; zéros de fin
+   et de tête retirés comme au lot 1 (`1 0 , 0` → `10`).
+5. Produits partiels saisissables (zéros de décalage compris, Q4) : chiffres seulement, jamais jugés
+   ni envoyés au juge, perdus au rechargement.
+6. Retenues : la rangée du haut (déjà là) et celle de l'addition des produits partiels, mêmes règles.
+7. Flèches ←/→ dans une rangée, ↑/↓ d'une rangée à l'autre ; au doigt, toucher la case.
+8. Correction : chiffres faux surlignés case par case ; virgule absente → la case où elle devait être
+   surlignée ; mal placée → la virgule de l'élève surlignée ; opération résolue à côté ; produits
+   partiels jamais surlignés.
+9. Noms accessibles neutres : « résultat, case 3 sur 5 en partant de la droite », « produit partiel
+   1, case 2 » (pas de « chiffre des unités » : il dirait où est la virgule).
+
+### Limites
+
+10. `2,5 × 4` saisi `1 0` sans virgule : juste (le juge juge la valeur).
+11. `48 × 16` saisi `76,8` : faux, virgule surlignée.
+12. `0,5 × 0,3` saisi `, 1 5` → `0,15` (0 implicite).
+13. Cases vides : tête = rien ; milieu = incomplet ; à droite du dernier chiffre : ignorées si la
+    virgule est à leur gauche (`1 0 , _` → `10`), sinon incomplet (`_ 3 2 _` n'est pas `32`).
+14. Retour sur la question : réponse remise alignée à droite, zéros de fin possiblement perdus
+    (`10,0` → `1 0`).
+15. Téléphone : inchangé, la grille défile dans son cadre.
+
+### Erreurs
+
+16. Touche autre que chiffre ou virgule ignorée ; virgule ignorée dans produits partiels et retenues.
+17. Aucune valeur attendue dans le DOM (ni place de la virgule, ni chiffres des produits partiels).
+18. QCM / carte de cours avec multiplication à remplir : comme au lot 1.
+19. PDF inchangé.
 
 ## Journal
 
