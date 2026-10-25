@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot B1 en cours (avant PR)._
+_Mis à jour le 2026-10-25, lot B1 en cours (avant création des brouillons)._
 
 - **État** : groupe A et lot H en prod (brouillons validés). **Lot B1** (tableaux, § 4 undecies) : 3 modèles écrits dans `scripts/questions/cp-b1/` (générateur `docs/wip/questions/lot-b1.py`), 16 specs vertes, 100/100 tirages, rendu relu à 390 px, simulation `create-questions` verte.
 - **Prochaine action** : go de David pour `create-questions --publier` → migration nœud + tag (sous-notions « tableaux » et « tableau à double entrée ») et son test → PR → page à cocher.
-- **En attente de David** : go de création des brouillons B1 ; publication A1 à H en un lot ; vérification manuelle #1702.
+- **En attente de David** : **go explicite** de création des brouillons B1 (`create-questions --publier`, simulation verte : 3 à créer) ; publication A1 à H en un lot ; vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; **case dans un tableau = `$?$` (un `[_]` déborde au téléphone)** ; **un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte** ; le moteur ne mélange pas : indicatrices de Lagrange ; ne pas nommer une variable comme une lettre du texte ; jamais de variable `e` ; corps de commit ≤ 100 caractères par ligne ; la base refuse un tag sur un modèle sans nœud.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-b1`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -193,8 +193,9 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 3 modèles, réponses en case nombre dans un tableau markdown (`tableau-croise` n'a pas de case jugée) ; chacun sur la sous-notion de son point, un tag.
 - CP-068 « Compte et range dans un tableau » (« tableaux ») : file de formes mélangées, tableau Forme / Nombre ; 3 formes ● ▲ ■ et 9 objets, ou 4 formes (+ ★) et 12 objets ; un compte à 0 est une réponse valable.
 - CP-069 « Complète le tableau à double entrée » : table d'addition 3 × 3 (en-têtes croissants de 1 à 9, 4 cases en croix) ; formes pleines ou vides (10 objets parmi ● ○ ▲ △ ■ □, rond / triangle / carré × plein / vide, 2 cases données, 4 à remplir).
-- CP-084 « Remplis le tableau à double entrée » : tableau préparé entièrement vide, données en phrases (« Léa a 3 billes rouges et 2 billes bleues. ») ; 2 ou 3 enfants × 2 couleurs. Nombres de 1 à 9 (et non 0 à 9 : « Léa a 0 bille rouge » ne se dit pas). En-tête à trouver : écarté (réponse en mot).
+- CP-084 « Remplis le tableau à double entrée » : tableau préparé entièrement vide, données en phrases (« Léa a 3 billes rouges et 2 billes bleues. ») ; 2 ou 3 enfants × 2 couleurs. Nombres de 1 à 9 (et non 0 à 9 : « Léa a 0 bille rouge » ne se dit pas) — validé par David. En-tête à trouver : écarté (réponse en mot).
 - Formes en symboles (pas d'emojis : rendu PDF incertain).
+- Table d'addition 4 colonnes : léger défilement horizontal au téléphone, accepté par David (tient sur tablette).
 
 ## 5. Méthode (pour le futur skill)
 
