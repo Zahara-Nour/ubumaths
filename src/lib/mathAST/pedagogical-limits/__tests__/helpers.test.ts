@@ -88,6 +88,21 @@ describe('helpers — evaluateAtPoint', () => {
 			evaluateAtPoint({ type: 'function', name: 'sqrt', args: [opposite(number('1'))] }, 'x', 0)
 		).toBeNull();
 	});
+
+	// Lot 6a (simplify-carte § 25) : la puissance et la réciproque d'une
+	// fonction, π et e étaient ignorés
+	it('évalue la puissance d’une fonction : sin²(x) en 1', () => {
+		expect(evaluateAtPoint(parseLatex('\\sin^2(x)'), 'x', 1)).toBeCloseTo(Math.sin(1) ** 2);
+	});
+
+	it('évalue la réciproque : cos⁻¹(x) en 0,5 = arccos(0,5)', () => {
+		expect(evaluateAtPoint(parseLatex('\\cos^{-1}(x)'), 'x', 0.5)).toBeCloseTo(Math.acos(0.5));
+	});
+
+	it('évalue π et e', () => {
+		expect(evaluateAtPoint(parseLatex('\\pi x'), 'x', 2)).toBeCloseTo(2 * Math.PI);
+		expect(evaluateAtPoint(parseLatex('e^{x}'), 'x', 1)).toBeCloseTo(Math.E);
+	});
 });
 
 describe('helpers — divideByCommonRoot', () => {
