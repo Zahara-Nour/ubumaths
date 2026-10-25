@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1749 (M2)._
+_Mis à jour le 2026-10-25, lot 6a en cours (pas de PR)._
 
-- **État** : lot 5 CLOS (#1743), et M2 (puissances de même base non voisines, § 93) mergé en #1749 ; les questions de 5f-5 sont closes (§ 93). Code pas en prod.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → ~~5~~ → **6 valeurs approchées** → 7 renommages.
-- **Prochaine action** : lot 6 (valeurs approchées) — relire son périmètre dans le journal, phase 0 (comportements, à valider par David).
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64) ; § 87 : pipeline rationnel qui multiplie la fraction tapée, `(x − 1)/(x² − 1) ≥ 0`, `x² < −1` sans étapes ; **§ 89** : `\frac{2}{3}x = 0,5` → « × 1,5 », x à droite (échanger les membres ?), termes mixtes → ÷ 1/6, inéquation sans `stepsAsShown` (« ÷ −1/4 ») ; mineurs de M2 (§ 93) : `x(−eˣ)e`, `x/x` visible.
-- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; l'Atelier écrit `0{,}25`, le moteur `0.25` ; sonde vitest : `console.log` muet, faire échouer un `expect` ; `number(-1)` interdit ; `check:incremental` : erreurs fantômes → `FRESH=1` ; client CI : `wrapDynamicImport` = relancer le job ; **PR sans CI = conflit avec `main`** ; commitlint : corps ≤ 100 caractères par ligne ; **pas de `Claude-Session:` ni de lien `claude.ai/code`** (PR comprise).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-6` (repartie d'`origin/main` après #1749).
+- **État** : M2 mergé (#1749). Lot 6 : phase 0 validée (§ 95, « je te suis »). 6a en cours, branche `feat/simplify-carte-6` : tests rouges commités ; code NON commité (évaluateur unique dans `common/numeric.ts`, banc jetable `common/bench-6a.ts`).
+- **Écart au plan validé (§ 96)** : `compile` ne convient pas (π/e changent les chemins du moteur des limites, tolérance des flottants perdue) → un évaluateur maison corrigé, 2 modes de pôle. **À dire à David** avant la PR.
+- **Prochaine action** : lire le banc complet (`scratchpad/bench-6a.jsonl` de la session, sinon relancer) ; retirer le banc et `legacy*` ; `evaluateAtPoint` = `evaluateNumeric(…, 'undefined')` ; remplacer le test π/e par un test `∛` ; PR 6a (revue opus). Puis 6b.
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93) ; Q2 du § 95 (signe d'un pôle) seulement si le banc le montre.
+- **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; `algebraic.ts:663` (`evaluateAtPoint`, `number(String(value))`) rend `null` pour tout x < 0 (bug latent, à noter pour 6b) ; relire les décisions du lot 4a avant `tidy` ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-6`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1158,3 +1157,14 @@ Inventaire refait sur `origin/main` (agent Sonnet en lecture seule, points clés
 1. Deux PR (6a limites puis 6b enveloppes) ?
 2. 6a : si le banc montre une divergence de **signe d'un pôle** (`1/(−x)` en 0), on garde l'ancienne règle « signe du numérateur » ou celle de `compile` (signe de −0) ?
 3. Les B qui laissent passer NaN et les L qui lèvent : hors lot 6 (proposé), ou un lot 6c « conventions d'échec » avec test rouge par site ?
+
+**Réponse de David (2026-10-25) : « je te suis ».** Q1 : deux PR, 6a puis 6b. Q3 : NaN qui passe et exceptions qui remontent restent hors du lot 6. Q2 (signe d'un pôle) : sans recommandation de ma part, **non tranchée** ; défaut = l'ancienne règle (rien ne change), reposée à David seulement si le banc montre l'écart.
+
+## 96. Lot 6a : banc d'écart, le plan change (2026-10-25)
+
+Banc jetable (chaque appel calcule ancien et nouveau, écarts dans un JSONL) sur la suite serveur complète (61 357 tests).
+
+- **Ce que l'ancien `evaluateNumeric` ignorait aussi** : la constante e (`euler`), π, et **l'indice des racines** (`∛(x²)` calculée comme `√(x²)`). Rend NaN (∞·0, sin ∞) : tous ses appelants traitent NaN comme `null` → sans effet.
+- **`compile` écarté** : évaluer π et e change le chemin du moteur (`lim (x+1)/(πx)` → `0,3183…` au lieu de `1/π`, 2 tests rouges) ; et propage les infinis intermédiaires (`e^{−1/x}` en 0 → 0, faux pour la substitution directe).
+- **Valeur sûre exacte (substitution + rationnels) écartée pour `evaluateAtPoint`** : x = −2/3 en flottant → `3x+2` = 2e-16 ≠ 0, la factorisation disparaît.
+- **Retenu (essai)** : un seul évaluateur maison, mode `'infinity'` (`evaluateNumeric`) ou `'undefined'` (`evaluateAtPoint`), qui corrige `sin²`, `cos⁻¹` et l'indice des racines ; π et e restent `null` (connu, les évaluer changerait des limites). Sur `common`, `limits`, `pedagogical-limits` : 1 737 tests verts, seuls écarts du banc = les trois bugs.
