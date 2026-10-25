@@ -1,6 +1,6 @@
 /**
  * Bloc ```operation — la scène : calcul et grille (phase 0 :
- * `docs/wip/operations-posees-progress.md` § 4)
+ * `docs/archive/wip/operations-posees-progress.md` § 4)
  *
  * Lecture des lignes (aide `line`) : `_` carreau vide, `¹` petite retenue
  * devant le chiffre (compensation), `~` chiffre barré (cassage), `,` virgule

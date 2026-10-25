@@ -1,6 +1,6 @@
 /**
  * Bloc ```operation — multiplication (lot 2, PR 2a ; phase 0 :
- * `docs/wip/operations-posees-progress.md` § 10)
+ * `docs/archive/wip/operations-posees-progress.md` § 10)
  *
  * Lecture des lignes (aide `line`) : `_` carreau vide, `,` virgule après le
  * chiffre ; entre crochets, une case à remplir avec son chiffre attendu.

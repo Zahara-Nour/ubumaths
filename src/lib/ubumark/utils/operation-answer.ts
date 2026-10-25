@@ -13,7 +13,7 @@
  * l'élève pose (multiplication, Q3) — `comma` = la case à droite de laquelle
  * elle est, null sans virgule.
  *
- * Phase 0 : `docs/wip/operations-posees-progress.md` § 9 et § 11.
+ * Phase 0 : `docs/archive/wip/operations-posees-progress.md` § 9 et § 11.
  *
  * @module ubumark/utils/operation-answer
  */

@@ -305,7 +305,7 @@ describe('assignBlankIndices', () => {
 	});
 });
 
-// Bloc ```operation à remplir : UNE case (PR 1b, docs/wip/operations-posees-progress.md § 9)
+// Bloc ```operation à remplir : UNE case (PR 1b, docs/archive/wip/operations-posees-progress.md § 9)
 describe('assignBlankIndices — bloc ```operation', () => {
 	const op = (...body: string[]) => ['```operation', ...body, '```'].join('\n');
 

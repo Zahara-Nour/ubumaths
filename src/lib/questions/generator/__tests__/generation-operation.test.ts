@@ -1,6 +1,6 @@
 /**
  * Génération d'une question à bloc ```operation à remplir (PR 1b, phase 0 :
- * `docs/wip/operations-posees-progress.md` § 9)
+ * `docs/archive/wip/operations-posees-progress.md` § 9)
  *
  * Le bloc compte pour une case ; sa réponse attendue vient du calcul du bloc,
  * jamais du modèle ; elle passe au juge ordinaire.

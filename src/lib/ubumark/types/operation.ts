@@ -4,7 +4,7 @@
  *
  * Opération posée en colonnes (addition, soustraction au lot 1,
  * multiplication au lot 2, division en potence au lot 3 ; phase 0 :
- * `docs/wip/operations-posees-progress.md`) :
+ * `docs/archive/wip/operations-posees-progress.md`) :
  *
  * ```operation
  * calcul: 245 + 437
