@@ -29,6 +29,23 @@ réponses (§G.3).
 3. **`simplify` écrit une grandeur numérique dans l'unité adaptée à son ordre
    de grandeur**, en décimal, comme le mode `best` de `evaluateWithUnits`
    (`12000 m → 12 km`, `3600 s → 1 h`) — révisé : unités scolaires (§D.3).
+4. **Ce qui entre dans `tidy` : quatre tests** (David, 2026-10-22, chantier simplify-carte, S1-S4 ;
+   [ADR 0032](../../adr/0032-la-forme-affichee-se-choisit-par-le-but.md)). Une réécriture n'entre
+   dans `tidy` que si elle passe les quatre :
+   1. **elle enlève sans transformer** — ni développement, ni factorisation, ni changement de
+      registre (un décimal reste décimal, §A.3 ; unités et notation scientifique gardées) ;
+   2. **elle est préférée quel que soit le but** — aucun contexte ne voudrait l'autre forme
+      (`1 − sin²x → cos²x` échoue : dépend du but) ;
+   3. **elle garde le domaine** — sinon seulement sous hypothèse déclarée (`typeCtx`, `domain`,
+      ADR 0012) : `x/x` reste (§A) ;
+   4. **elle ne cache aucune leçon** — `tidy` est appliqué en silence à chaque étape affichée :
+      les identités qu'on enseigne (`ln(eˣ) → x`, `sin²+cos² = 1`, `√(x²) = |x|`, valeurs
+      remarquables) vont dans `réduire`, avec une étape nommée.
+
+   Reste à `tidy` : l'arithmétique et la structure — parenthèses et signes inutiles, neutres,
+   absorbants, termes semblables, calculs numériques, fractions numériques, ordre (§A). Les
+   gardes que les appelants recopiaient autour de `tidy` (« le réécrirait en fraction »,
+   « simplifierait `x/x` »…) étaient exactement ses écarts à cette définition : elles ont disparu.
 
 ---
 

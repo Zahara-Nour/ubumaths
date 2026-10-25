@@ -124,6 +124,40 @@ syntaxe maison ──── parseCustom ─┤
 | `normalize`       | `NormalForm` | toujours    | calcul exact, forme canonique (`denormalize` pour revenir à un arbre)                                                                    |
 | `equivalenceForm` | `NormalForm` | toujours    | **comparer seulement** : y vivent les réductions trigonométriques (ADR 0006)                                                             |
 
+### Quelle fonction pour quel besoin
+
+Carte dressée par le chantier simplify-carte (2026-10-22 → 2026-10-25, lots 1 à 7,
+[ADR 0032](../../adr/0032-la-forme-affichee-se-choisit-par-le-but.md)). On part du **besoin** de
+l'appelant, jamais du nom d'une fonction qui « a l'air de convenir ».
+
+| Besoin                                                                                | Appeler                                                                                                                                                                                            | Ne pas faire                                                                                                                      |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Comparer** deux expressions (égalité, nullité, dédoublonner, parité)                | `areEquivalent` (ne lève jamais, repli flottant) ; `equivalenceForms` + `normalFormsEquivalent` quand l'échec doit se voir (égalité `a = b` de la console, coordonnées de vecteurs et de matrices) | `normalize` + égalité (rate `sin²+cos²`, `2^{x+1} = 2·2^x`) ; `tidy` + égalité d'écriture (dépend de l'ordre des facteurs)        |
+| **Juger** la réponse d'un élève                                                       | la chaîne de `validateAnswer` : valeur (`areEquivalent`), puis forme (`checkForm`, règles du registre `superflu/`, [questions.md](../questions.md))                                                | `tidy` comme juge : il range (`3+x` serait une faute), calcule (`400+80`) et ne nomme pas la faute                                |
+| **Écrire** une expression avec variable                                               | la **forme cible** du contexte (table ci-dessous), puis `tidy` ; `tidy({ order: 'kept' })` / `tidyTerms` quand l'ordre écrit compte                                                                | `denormalize(normalize())` à l'écran : développe, met au même dénominateur, réécrit les décimaux, simplifie en perdant le domaine |
+| **Écrire** une valeur exacte (sans variable)                                          | `evaluate` puis `exactValueToShow` (§ ci-dessous)                                                                                                                                                  | une mise au propre locale avec ses propres gardes (il y en avait 7, aux gardes divergentes)                                       |
+| **Appliquer une consigne**, avec étapes (réduire, développer, factoriser, simplifier) | `generatePedagogicalSimplifySteps` avec son intention (ADR 0007) ; « développer » est rédigé par `writeExpandSteps` / `explainExpansion`                                                           | `simplify` : pas d'étapes                                                                                                         |
+| **Calculer en interne** (coefficients, degré, discriminant)                           | `normalize` / `denormalize` (le nom est juste : une forme normale ; David, 2026-10-22)                                                                                                             | montrer sa sortie à l'élève quand l'expression a une variable                                                                     |
+| **Une valeur approchée**                                                              | `computeNumericValue` (fini ou `null`), `computeNumericValueOrInfinity` (±∞ permis : bornes, images de la réciproque), `compile` dans les boucles (tracé, échantillonnage) ; invariant 11          | un `try/catch` + `isFinite` local ; une décision « vaut 0 » sur un flottant (le juge et `isZeroTerm` restent sur les rationnels)  |
+
+**La forme cible se choisit par le but, déclaré par l'appelant** ; le moteur ne le devine jamais.
+La même dérivée est réduite pour répondre à « calculer f′(x) » et factorisée pour lire son signe.
+`auto` ne sert que là où il n'y a pas de but (`.simplifier`).
+
+| Contexte                                                                                         | Forme cible                                                                   | Où                                                                     |
+| ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Valeur exacte : Atelier, `.eval`, `{{eval}}`, limite, solutions, tableau de variations, grapheur | la plus calculée, décimal gardé (S1)                                          | `exactValueToShow`                                                     |
+| Expression littérale tapée dans l'Atelier                                                        | `tidy`, ordre de l'élève, ni identité ni développement (D3)                   | `resultToShow` (`atelier/render.ts`), [atelier.md](../atelier.md)      |
+| Dérivée, étapes                                                                                  | la règle telle quelle, puis « On simplifie »                                  | `withTidyStep`                                                         |
+| Dérivée, réponse finale                                                                          | réduite, exponentielle commune en facteur, rien d'autre de factorisé (D1)     | `finalDerivative` (`final-form.ts`)                                    |
+| f′ dans l'étude des variations                                                                   | factorisée pour lire le signe, numérateur d'un quotient seul (D2)             | `displayedDerivatives` (`variations/display.ts`)                       |
+| Primitive                                                                                        | ordre de la règle, exponentielle commune en facteur, un seul registre décimal | `tidyTerms`, `developAndFactor`, `withUniformCoefficients`             |
+| Dérivée ou primitive dont l'énoncé demande une forme                                             | la forme demandée (D4)                                                        | `finalForm` du modèle, `requested-form.ts`                             |
+| Étapes d'une limite                                                                              | décimaux gardés, développé et factorisé montrés                               | lot 5f-3, § Le moteur de réécriture                                    |
+| Étapes du solveur                                                                                | écrites comme la réponse                                                      | `stepsAsShown`                                                         |
+| `.développer`, `.factoriser`, corrections « réduire / développer / factoriser »                  | l'intention de la consigne                                                    | `generatePedagogicalSimplifySteps`, `tidyEachFactor` pour `factoriser` |
+| `.simplifier` (calcul libre)                                                                     | la plus propre (`auto`)                                                       | seul contexte sans but                                                 |
+
 **`simplify(node, options)`** (`simplify/simplify.ts`) tourne sur le moteur `rewrite`
 (`common/rewriting-engine.ts`), stratégie `cost-fixpoint`. Par itération : `tidy` →
 règles de motif (`absSimplifyRules`, `trigSimplifyRules`, `hypSimplifyRules`, coupables par
@@ -1615,9 +1649,38 @@ Doublons qui restent, chacun pour un autre besoin :
   flottants sur des coefficients décimaux (`domain/preimage.ts`, solveurs de degré 3-4 de
   `solve/`).
 
-## Points ouverts connus (mesurés le 2026-10-10)
+## Points ouverts connus (mesurés le 2026-10-10, mis à jour le 2026-10-25)
 
-- Fusion des deux moteurs : voir plus haut ; `auto ≡ reduire` sur `(x+1)²`.
+- Fusion des deux moteurs : `reduire` et `auto` ne passent plus par `normalize` (2026-10-23) ;
+  `developper` y passe encore pour son résultat (voir plus haut).
+- Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
+  une valeur fausse :
+  - `tidy` n'a pas de variante `{ result, conditions }` : `x/x` reste écrit au lieu de « 1, pour
+    x ≠ 0 » (S3 ; écrite avec son premier appelant, qui n'est pas venu) ;
+  - valeurs remarquables (`cos(π/3) → 1/2`) dans `réduire`, avec étape et selon le niveau (S4) :
+    lot reporté ;
+  - `.intégrer` à bornes : une borne décimale dans une exponentielle mêle les registres
+    (`∫₀^{0,5} 0,5eˣ = \dfrac{1}{2}e^{0,5} − \dfrac{1}{2}`) ; paramètre au dénominateur laissé en
+    fraction (`0,5e^{ax}` de 0 à 1 → `(e^a − 1)/(2a)`) ; `0,5x²` de 0 à a → `\dfrac{1}{6}a³` ;
+  - `tidy` en ordre canonique trie à part les termes gardés par S3 (`3 − ln x + x + ln x →
+ln(x) + x + 3 − ln(x)`) ; le récit de `ln(x)+3−ln(x)` fait un aller-retour ; `cbrt(x) −
+cbrt(x)` reste écrit (prudent) ;
+  - `.simplifier` : `x(−eˣ)e` non regroupé ; `\frac{e^{2x}x}{eˣx} → \frac{x eˣ}{x}` ;
+  - `factoriser` sur `(a+b)(a−b)/((a−b)(a+b))` rend `(a+b)·1/(a+b)` ; facteurs opposés non
+    reconnus (`(x²−1)/(1−x)` reste) ; `MAX_FRACTIONS = 8` coupe en silence ;
+  - `tidy` : `1/(1/x) → x` (un `x⁻¹` sous une barre échappe au suivi du domaine) ;
+    `reduceFractionOfSums` ignore `domain` (`(2x−2)/(x−1)` reste) ;
+  - `detectSymmetry` conclut « aucune, prouvé » pour `∛x`, `x^{1/3}`, `x^{2/3}`,
+    `ln(x+√(x²+1))` (sans appelant en production) ;
+  - `toCustom` écrit `(1/2)^xe^x`, illisible en syntaxe maison.
+- Solveur pédagogique, écritures perfectibles (simplify-carte § 87, § 89), **à trancher par
+  David** : x à droite (`4 < 2(x−1)` → `2 < x − 1`, puis − x, − 2, ÷ (−1) ; échanger les
+  membres ?) ; `\frac{2}{3}x = 0,5` → « On multiplie par 1,5 » ; `0,5x = \frac{x}{3} + 1` → « On
+  divise par 1/6 » ; correction de question d'une inéquation sans `stepsAsShown`
+  (`-0,25(x−2) ≥ 1` → « On divise par −1/4 », l'Atelier dit −0,25) ; le pipeline rationnel
+  multiplie la fraction tapée pour n'avoir que des entiers (`(x − 0,5)/(x + 1) > 0` annonce
+  `P(x) = 2x − 1`) ; `(x − 1)/(x² − 1) ≥ 0` raisonne sur la fraction simplifiée (le 1 interdit
+  disparaît des étapes, réponse juste) ; `x² < −1` sans étapes.
 - `ParseCache` exporté, jamais branché ; `pedagogical-evaluate/` réduit à des types.
 - Cycle dans `runPatternLoop` (`pedagogical-simplify/pipeline.ts`) : sur `x(1+1)` et
   `x(1-1)`, `sum-cubes-numeric` (et `diff-squares-numeric`) tirait jusqu'à la limite de
@@ -1652,6 +1715,7 @@ Doublons qui restent, chacun pour un autre besoin :
 | Un moteur, quatre intentions                               | [ADR 0007](../../adr/0007-un-moteur-quatre-intentions.md)                        |
 | Les hypothèses de l'énoncé restreignent la comparaison     | [ADR 0012](../../adr/0012-hypotheses-de-l-enonce-restreignent-la-comparaison.md) |
 | Un moteur commun de factorisation (amende 0007)            | [ADR 0024](../../adr/0024-moteur-commun-de-factorisation.md)                     |
+| La forme affichée se choisit par le but                    | [ADR 0032](../../adr/0032-la-forme-affichee-se-choisit-par-le-but.md)            |
 
 Décisions de module, toujours en vigueur (ex-`decisions.md` de juin, revérifiées) :
 

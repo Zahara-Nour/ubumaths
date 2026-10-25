@@ -339,7 +339,7 @@ Contraintes réglables (`options.constraints`, `ConfigurableConstraintId`) : `sp
 juge exige alors `7 900`, et l'affichage de la question écrit `7 900` (contexte
 `content-digit-grouping.ts` posé par `QuestionCard`, `FlashCard`, `CorrectionCard`,
 `CourseCardView` ; valeurs préremplies ; séries d'automatismes figées). Décision E2,
-`docs/wip/simplify-carte-progress.md` § 15 et § 43.
+`docs/archive/wip/simplify-carte-progress.md` § 15 et § 43.
 
 **Lecture des formules** : réponse de l'élève et réponse attendue sont lues par le parseur avec la
 même configuration, `readingOf(instance)` (`formula-reading.ts`) : fonctions déclarées et sens de

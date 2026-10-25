@@ -1,6 +1,6 @@
 # 0007 — Un moteur de simplification, quatre intentions
 
-- **Statut** : acceptée — mise en œuvre en cours (voir `docs/wip/tidy-*-progress.md`) ; intention `factoriser` amendée par [0024](0024-moteur-commun-de-factorisation.md)
+- **Statut** : acceptée — `réduire` et `auto` mis en œuvre le 2026-10-23 (chantier simplify-carte, lot 3) ; `développer` passe encore par `normalize` pour son résultat (`docs/systeme/mathast/README.md`) ; intention `factoriser` amendée par [0024](0024-moteur-commun-de-factorisation.md) ; précisée par [0032](0032-la-forme-affichee-se-choisit-par-le-but.md)
 - **Date** : 2026-09-21 · **Décidée par** : David
 
 ## Contexte
