@@ -1,6 +1,6 @@
 /**
  * POST /api/short-links — le lien court d'une série, pour son QR code. Prof et admin.
- * Phase 0 : docs/wip/liens-courts-phase0.md (comportements 1, 3, 7).
+ * Phase 0 : docs/archive/wip/liens-courts-phase0.md (comportements 1, 3, 7).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { POST } from '../+server';

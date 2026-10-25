@@ -1,6 +1,6 @@
 /**
  * Le QR code d'une série porte un lien court, que seuls un prof et l'admin créent.
- * Phase 0 : docs/wip/liens-courts-phase0.md (comportements 1 et question 1).
+ * Phase 0 : docs/archive/wip/liens-courts-phase0.md (comportements 1 et question 1).
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';

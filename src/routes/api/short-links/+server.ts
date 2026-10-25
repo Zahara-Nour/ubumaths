@@ -5,7 +5,7 @@
  *
  * Corps : { target: '/chemin?requête' } (lien de série seulement, ASCII imprimable).
  * Réponse 200 : { code, path } — la même cible rend toujours le même code.
- * Phase 0 : docs/wip/liens-courts-phase0.md.
+ * Phase 0 : docs/archive/wip/liens-courts-phase0.md.
  */
 
 import { json } from '@sveltejs/kit';

@@ -11,7 +11,7 @@
 	Le QR code porte un lien court (`/l/<code>`) : le lien de série dépasse
 	toujours ce qu'un QR lisible contient. Seuls un prof et l'admin en créent
 	(le panier est public) ; ailleurs, le QR est indisponible et le lien long
-	reste copiable. Phase 0 : docs/wip/liens-courts-phase0.md.
+	reste copiable. Phase 0 : docs/archive/wip/liens-courts-phase0.md.
 -->
 
 <script lang="ts">

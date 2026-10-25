@@ -4,7 +4,7 @@
  *
  * Les mêmes règles que la migration `20261019170000_liens_courts` : la base
  * reste le filet, Zod donne le refus 400 en français avant d'y aller.
- * Phase 0 : `docs/wip/liens-courts-phase0.md`.
+ * Phase 0 : `docs/archive/wip/liens-courts-phase0.md`.
  *
  * @module validation/short-link
  */

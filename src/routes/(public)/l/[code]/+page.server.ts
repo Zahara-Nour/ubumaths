@@ -3,7 +3,7 @@
  *
  * Code inconnu et code mal formé rendent la même 404 : rien ne dit qu'un code
  * « presque pareil » existe. Ni la redirection ni la 404 ne sont indexées.
- * Phase 0 : docs/wip/liens-courts-phase0.md.
+ * Phase 0 : docs/archive/wip/liens-courts-phase0.md.
  */
 
 import { error, redirect } from '@sveltejs/kit';

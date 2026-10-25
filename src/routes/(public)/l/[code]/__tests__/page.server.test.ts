@@ -1,6 +1,6 @@
 /**
  * /l/<code> — redirige vers la cible du lien court, ou 404.
- * Phase 0 : docs/wip/liens-courts-phase0.md (comportements 2 et 6).
+ * Phase 0 : docs/archive/wip/liens-courts-phase0.md (comportements 2 et 6).
  */
 import { describe, it, expect, vi } from 'vitest';
 import { load } from '../+page.server';
