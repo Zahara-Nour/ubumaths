@@ -112,6 +112,7 @@ describe('digitsFromAnswer : la réponse déjà saisie remise dans les cases', (
 	it.each([
 		['calcul: 45 + 37', '82', '_82'],
 		['calcul: 56,75 + 234 + 0,8', '291{,}55', '_29155'],
+		// Décimale de fin laissée vide : rendue en 0 au retour, même valeur lue
 		['calcul: 0,5 + 0,5', '1', '_10'],
 		['calcul: 25000 + 5000', '30\\,000', '_30000'],
 		['calcul: 45 + 37', '', '___']
@@ -131,6 +132,29 @@ describe('wrongResultDigits : chiffres faux surlignés à la correction (comport
 			false,
 			false,
 			false
+		]);
+	});
+
+	it('décimale de fin laissée vide là où 0 était attendu : jamais fausse', () => {
+		expect(wrongResultDigits(scene('calcul: 0,5 + 0,5'), cells('_2_'))).toEqual([
+			false,
+			true,
+			false
+		]);
+		expect(wrongResultDigits(scene('calcul: 2,25 + 1,25'), cells('_45_'))).toEqual([
+			false,
+			true,
+			false,
+			false
+		]);
+	});
+
+	it('décimale de fin laissée vide là où un chiffre non nul était attendu : fausse', () => {
+		expect(wrongResultDigits(scene('calcul: 2,5 + 1,25'), cells('_37_'))).toEqual([
+			false,
+			false,
+			false,
+			true
 		]);
 	});
 
