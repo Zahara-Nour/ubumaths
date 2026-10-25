@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1748._
+_Mis à jour le 2026-10-25, phase 0 du lot 3 écrite._
 
-- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740, #1745, #1748 : 0 des dixièmes non écrit → incomplète), sur `main`, pas en prod.
-- **Prochaine action** : lot 3 (division posée), phase 0 à écrire et à faire valider.
-- **En attente de David** : vérifications #1716, #1726, #1738, #1740, #1745, #1748 avant `deploy:prod`. Précision Q1 (§ 10).
+- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740, #1745, #1748 : 0 des dixièmes non écrit → incomplète), sur `main`, pas en prod. Lot 3 : phase 0 écrite (§ 12).
+- **Prochaine action** : réponses de David à Q1-Q8 du § 12 (et la question du 0 au quotient, nominal 2), puis worktree neuf pour la PR 3a.
+- **En attente de David** : Q1-Q8 du § 12 ; vérifications #1716, #1726, #1738, #1740, #1745, #1748 avant `deploy:prod`. Précision Q1 (§ 10).
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie de la multiplication).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
 - **Worktree / branche** : `ubumaths-wt-operations-posees` gardé tant que le serveur de test (5179) sert à David ; branche mergée.
@@ -337,6 +337,83 @@ multiplication seulement.
 17. Aucune valeur attendue dans le DOM (ni place de la virgule, ni chiffres des produits partiels).
 18. QCM / carte de cours avec multiplication à remplir : comme au lot 1.
 19. PDF inchangé.
+
+## 12. Lot 3 — division posée (phase 0, EN ATTENTE de David)
+
+Points visés : CM1-053 (euclidienne, diviseur 1 chiffre, dividende ≤ 5 chiffres), CM2-056
+(décimale, dividende entier, arrêt au centième, reste nul), CM2-057 (dividende décimal, idem),
+6-123 (euclidienne, diviseur < 100).
+
+### Questions (recommandation en premier)
+
+- **Q1 — Soustractions écrites** : réglage `étapes: soustractions | restes`, défaut `soustractions`
+  (le produit soustrait écrit sous chaque dividende partiel, signe −, trait ; c'est la forme du CM1).
+  `restes` : seuls les restes successifs, soustraction faite de tête (6e).
+- **Q2 — Euclidienne : combien de réponses** : **deux cases** (quotient, reste), numérotées dans
+  l'ordre quotient puis reste ; le bloc compte pour 2 dans la question. Sinon : quotient seul, reste
+  en aide non jugée.
+- **Q3 — Euclidienne ou décimale** : réglage `quotient: entier | décimal`. Défaut : `entier` si le
+  dividende est entier, `décimal` s'il est décimal. `785 ÷ 4` → 196 reste 1 ; avec
+  `quotient: décimal` → 196,25.
+- **Q4 — Quotient décimal qui ne s'arrête pas** : v1 exacte seulement : erreur située si le quotient
+  ne s'arrête pas au plus tard au millième (`10 ÷ 3`). Valeur approchée (`arrondi: centième`) plus
+  tard, avec la 6e.
+- **Q5 — Zéros abaissés** (`785 ÷ 4` décimal) : le dividende reste écrit tel quel (`785`) ; résolu,
+  les zéros ajoutés s'écrivent à sa droite (`785,00`, en plus clair) et la virgule du quotient
+  apparaît avec le premier chiffre des dixièmes. À remplir, des carreaux libres à droite du dividende.
+- **Q6 — Virgule du quotient** : posée par l'élève, comme au lot 2 (« , » dans une case → virgule à
+  sa droite ; absente mais valeur juste → juste ; mal placée → surlignée).
+- **Q7 — Zone des étapes à remplir** : une zone quadrillée libre sous le dividende, de hauteur fixée
+  par le **nombre de chiffres du dividende** (le maximum possible), sans lignes tracées : des lignes
+  prêtes diraient combien le quotient a de chiffres. Aide, jamais jugée, perdue au rechargement.
+- **Q8 — Diviseur** : entier de 1 ou 2 chiffres (6-123), non nul ; diviseur décimal refusé
+  (transformation de la 6e, hors périmètre). Dividende : ≤ 6 chiffres, décimales comprises.
+
+Découpage pressenti : **PR 3a** affichage (parseur, scène, potence écran et PDF, éditeur riche,
+`check:ubumark`) ; **PR 3b** saisie (cases du quotient et du reste, zone des étapes, virgule).
+
+### Nominal
+
+1. `calcul: 9 456 ÷ 7` (`:` accepté) : potence à la française — dividende en haut à gauche,
+   diviseur en haut à droite, trait vertical entre les deux, trait horizontal sous le diviseur,
+   quotient sous ce trait.
+2. Résolu (`cases: aucune`), `étapes: soustractions` : sous chaque dividende partiel, le produit
+   soustrait (−, trait), puis le reste avec le chiffre abaissé à sa droite ; dernier reste en bas.
+   `9 456 ÷ 7` → quotient `1 350`, reste `6`. Un 0 au quotient (dividende partiel < diviseur) :
+   ligne écrite `0` soustrait ou sautée ? → **sautée**, le chiffre suivant abaissé (usage courant).
+3. `étapes: restes` : seuls les restes successifs, chiffre abaissé compris.
+4. À remplir, euclidienne : cases du quotient sous le trait, **autant que de chiffres du dividende**
+   (la largeur ne trahit rien) ; case(s) du reste en bas à gauche, autant que de chiffres du
+   diviseur. Deux réponses jugées par le juge ordinaire, attendus calculés par le bloc.
+5. Saisie du quotient **de gauche à droite** (on l'écrit dans ce sens, à l'inverse des lots 1-2) :
+   chiffre → case de droite, Effacer → vide et revient à gauche. Reste : de droite à gauche comme
+   au lot 1.
+6. Lecture du quotient : cases vides **à droite** ignorées (`1 3 5 0 _` → `1350`) ; vide au milieu
+   → incomplet ; zéros de tête retirés (`0 1 3 5 0` → `1350`).
+7. Décimale (`785 ÷ 4`, `quotient: décimal` ; `148,2 ÷ 5`) : une seule case jugée (le quotient,
+   virgule posée par l'élève) ; pas de case de reste (il est nul). Cases du quotient : chiffres du
+   dividende + 2 (centième) ; dividende décimal : sa virgule écrite à sa place.
+8. Correction : chiffres faux du quotient et du reste surlignés ; virgule comme au lot 2 ; potence
+   résolue à côté ; zone des étapes jamais surlignée.
+9. PDF : potence vide (zone des étapes quadrillée) ou résolue.
+
+### Limites
+
+10. Diviseur plus grand que le premier chiffre (`456 ÷ 7`) : premier dividende partiel `45`,
+    quotient `65` reste `1`. Diviseur plus grand que le dividende (`5 ÷ 7`) : quotient `0`, reste `5`.
+11. `9 ÷ 1`, `0 ÷ 7` acceptés.
+12. Reste nul en euclidienne : la case du reste attend `0` ; vide → incomplète (pas de 0 implicite :
+    écrire le reste fait partie de la réponse).
+13. `148,2 ÷ 5` → `29,64` (zéro abaissé après le 2).
+14. Téléphone : la potence défile dans son cadre, comme les lots 1-2.
+
+### Erreurs (messages situés pour le prof ; l'élève voit « Opération indisponible »)
+
+15. Division par 0 ; diviseur décimal ou de plus de 2 chiffres ; dividende de plus de 6 chiffres.
+16. `quotient: entier` avec un dividende décimal ; quotient décimal qui ne s'arrête pas au millième.
+17. Plus de deux termes, signes mélangés (`12 ÷ 3 + 1`).
+18. `méthode:` ou `retenues:` sur une division ; `étapes:` / `quotient:` sur une autre opération ;
+    valeur hors liste ; clé répétée.
 
 ## Journal
 
