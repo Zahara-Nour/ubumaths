@@ -12,7 +12,7 @@
  * cas fautif ; le juge y nomme la règle, et `tidy` du même cas passe le juge. Une
  * règle ajoutée au registre sans cas fait échouer le test.
  *
- * Chantier : docs/wip/simplify-carte-progress.md § 10.
+ * Chantier : docs/archive/wip/simplify-carte-progress.md § 10.
  */
 
 import { describe, it, expect } from 'vitest';

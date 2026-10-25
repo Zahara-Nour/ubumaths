@@ -11,7 +11,7 @@
  * L'ordre compte : `zeros` et `spaces` se jugent sur la chaîne tapée, avant
  * l'analyse ; les règles sur l'arbre s'appliquent dans l'ordre du registre.
  *
- * Chantier : docs/wip/simplify-carte-progress.md § 46-47.
+ * Chantier : docs/archive/wip/simplify-carte-progress.md § 46-47.
  *
  * @module mathAST/superflu/rules
  */

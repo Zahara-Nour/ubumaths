@@ -2,7 +2,7 @@
  * Registre des règles de superflu : une fiche par règle, lue par le juge, l'éditeur
  * de modèles, les messages à l'élève et le schéma des modèles.
  *
- * Chantier : docs/wip/simplify-carte-progress.md § 46-47.
+ * Chantier : docs/archive/wip/simplify-carte-progress.md § 46-47.
  */
 
 import { describe, it, expect } from 'vitest';

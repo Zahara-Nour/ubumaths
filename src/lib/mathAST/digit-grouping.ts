@@ -7,7 +7,7 @@
  * après le séparateur décimal, il est d'usage de ne pas isoler un chiffre par
  * une espace ». À 4 chiffres l'espace est facultative et on ne l'écrit pas ;
  * dès 5 chiffres on l'écrit. Chaque côté de la virgule est compté à part.
- * Décision E2, docs/wip/simplify-carte-progress.md § 15. Un modèle de question
+ * Décision E2, docs/archive/wip/simplify-carte-progress.md § 15. Un modèle de question
  * peut garder la règle de l'école, espace dès 4 chiffres (réglage
  * « Espaces dès 4 chiffres », § 43) : d'où le seuil `minDigits`.
  *

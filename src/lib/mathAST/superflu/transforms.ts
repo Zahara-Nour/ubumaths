@@ -9,7 +9,7 @@
  * pas : il réécrit l'expression entière, et le test
  * `tidy/__tests__/tidy-passe-le-juge.test.ts` garde l'accord entre les deux.
  *
- * Chantier : docs/wip/simplify-carte-progress.md § 46-47.
+ * Chantier : docs/archive/wip/simplify-carte-progress.md § 46-47.
  *
  * @module mathAST/superflu/transforms
  */

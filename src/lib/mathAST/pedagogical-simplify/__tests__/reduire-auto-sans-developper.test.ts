@@ -1,5 +1,5 @@
 /**
- * Lot 3 du chantier simplify-carte (`docs/wip/simplify-carte-progress.md` § 33,
+ * Lot 3 du chantier simplify-carte (`docs/archive/wip/simplify-carte-progress.md` § 33,
  * validé par David le 2026-10-23) : `réduire` et `auto` cessent de développer.
  *
  * - `réduire` : identités, puissances, racines (étapes nommées), puis `tidy`,
