@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -368,7 +368,9 @@ d'un QCM (bon / coché à tort / oublié), les remarques de forme. Spécificatio
 silencieux sur le mode A (seul le point accepte aussi `\infty`, `+\infty`, `-\infty`).
 
 Mode B : `generateCorrection` résout les variables, appelle le pipeline `pedagogical-*` et range
-les étapes dans `correction._renderedSteps`. Si le pipeline lève une erreur (expression
+les étapes dans `correction._renderedSteps`. Les étapes de `linear-equation` et
+`quadratic-equation` sont écrites comme la réponse (`stepsAsShown`, lot 5f-4 : décimaux tapés
+gardés, `S = {−√2/2 ; √2/2}` ; détail dans `mathast/README.md`). Si le pipeline lève une erreur (expression
 illisible, dénominateur nul du calcul numérique…), `generateCorrection` la journalise et rend
 l'instance **sans** étapes : la question reste affichable, avec son mode A s'il existe. Le **niveau** (`options.schoolLevel`, défaut `auto`)
 vient de `gradeLevelToSchoolLevel(grades)` : le plus haut niveau des `grades`, `lycee` par défaut.

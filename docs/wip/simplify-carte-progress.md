@@ -1053,3 +1053,11 @@ CI verte du premier coup (après fusion d'`origin/main`), mergée. Vérification
 ## 83. Point 2 de Q49 mergé (#1722, 2026-10-25)
 
 CI verte, mergée. Vérification manuelle de #1717 mise à jour (π²/4, (e − 1)/2).
+
+## 84. Lot 5f-4 (solveur, R8, Q46) codé (branche `feat/simplify-carte-5f-4`, 2026-10-25)
+
+- **`stepsAsShown`** (`pedagogical-solve/shown-steps.ts`), avant le rendu, dans `.résoudre` (`solve-steps.ts` ; garde-fou et `S = …` lisent toujours les étapes du calcul) et `generateCorrection` (`linear-equation`, `quadratic-equation`). Équation à décimal tapé : chaque nœud des étapes par `inDecimalRegister` (`x = 0,3`, `0,5x = 1`, « On divise les deux membres par 0,5 », `a = 0,5`, `|2x| = 0,6` → `0,6 et −0,6`) ; l'équation tapée garde son écriture. Valeurs lues (`read-solution`, `read-solutions`, `simplify-solutions`, `solve-each-factor`) par `exactValueToShow` : `S = {−√2/2 ; √2/2}`, `x₁ = (1 − √5)/2` — aussi SANS décimal (Q46 « même écriture que la réponse »).
+- **Ajout** : `inDecimalRegister` entre dans la racine d'un nombre (`\sqrt{4/25}` → `\sqrt{0,16}`, Δ = 0,16) ; effet aussi sur les limites (suites limites vertes).
+- Tests : `atelier/__tests__/resoudre-etapes-5f4.test.ts` (12 rouges sur 16 avant, + `√0,16` rouge sans l'ajout), `questions/generator/__tests__/correction-solveur-5f4.test.ts` (3 rouges sur 4 avant).
+- **Trouvés, hors Q46 (à poser à David)** : (1) **inéquations** : la ligne de réponse et la conclusion restent en écriture de calcul (`x² < 0,5` → `S = ]−1/2√2 ; 1/2√2[`, `x² − x − 1 < 0` → `]1/2 − 1/2√5 ; …[`), et une inéquation rationnelle écrit `S = ]1 / 2 ; +∞[` (barre en texte) — chaînes `solutionDescription` du pipeline ; (2) `x/4 = 0,5` : « On divise les deux membres par 0,25 » (le solveur divise par 1/4 au lieu de multiplier par 4, déjà vrai avant) ; (3) `0,5(x+1) = 2` : aucune étape (`UndevelopedLinearForm`, déjà vrai avant).
+- Mesures : suite serveur `src/lib` 58 129 verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre ; doc `mathast/README.md`, `atelier.md`, `questions.md`. Banc non relancé : aucun modèle de prod n'a de correction automatique (§ 75).
