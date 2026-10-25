@@ -1,7 +1,7 @@
 /**
  * NBVAL et NB.VIDE dans la grille : compter les cases non vides, et les vides.
  *
- * Phase 0 `docs/wip/atelier-tableur-nbval-phase0.md`, Q-NV-1 à Q-NV-4
+ * Phase 0 `docs/archive/wip/atelier-tableur-nbval-phase0.md`, Q-NV-1 à Q-NV-4
  * (validées le 2026-10-18).
  */
 

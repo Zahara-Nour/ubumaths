@@ -1,7 +1,7 @@
 /**
  * Les fonctions de calcul du tableur et l'aide sous la barre (lot 4, PR 2).
  *
- * Phase 0 `docs/wip/atelier-tableur-lot4-phase0.md` §3 et §5 : ARRONDI, ENT,
+ * Phase 0 `docs/archive/wip/atelier-tableur-lot4-phase0.md` §3 et §5 : ARRONDI, ENT,
  * RACINE, ABS, LN, EXP, PI ; mêmes refus que Calcul ; une aide qui donne la
  * forme de la fonction en cours d'écriture.
  */

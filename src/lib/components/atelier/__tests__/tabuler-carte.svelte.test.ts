@@ -1,7 +1,7 @@
 /**
  * « Tabuler » depuis la carte d'une fonction (tableur intégré, lot 3, PR 2).
  *
- * Phase 0 `docs/wip/atelier-tableur-lot3-phase0.md` §1 : un petit formulaire
+ * Phase 0 `docs/archive/wip/atelier-tableur-lot3-phase0.md` §1 : un petit formulaire
  * « de / à / pas » dans la carte, pré-rempli (Q-L3-3) ; valider écrit le
  * tableau dans la grille et passe sur Données, colonnes sélectionnées
  * (Q-L3-1) ; un refus se dit sous le formulaire, rien n'est écrit.

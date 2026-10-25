@@ -2,6 +2,10 @@
 
 ## Reprendre ici (2026-10-24)
 
+> **Chantier CLOS le 2026-10-25** : ce journal et ses 8 phases 0 sont versés dans
+> `docs/archive/wip/`. `/spreadsheet` est retiré (#1692). Il ne reste que les vérifications
+> manuelles de David (point 3). La doc durable est [atelier.md](../../systeme/atelier.md).
+
 **Tout est livré et en production** (lots 1-5 en v0.36.0, CSV en v0.37.0, NBVAL en v0.39.0 ;
 vérifié sur la branche `production` le 2026-10-24). Lots 1 à 5 (#1410 → #1439), défauts
 (#1442, #1444), mise en forme (#1466, #1469), RESTE et ET/OU (#1472), ouvrir un CSV (#1473),
@@ -10,15 +14,15 @@ NBVAL et NB.VIDE (#1477). Aucune PR ouverte, aucun worktree du tableur.
 Reste, à décider par David :
 
 1. ~~Mise en production~~ : faite.
-2. **Le sort de `/spreadsheet`** (V4) : retirer, rediriger vers l'atelier, ou garder. L'atelier en
+2. ~~Le sort de `/spreadsheet`~~ : retiré, redirigé vers l'atelier (#1692). L'atelier en
    reprend l'essentiel ; ce qu'il ne reprend pas : NON, VRAI/FAUX, SIERREUR, ESTVIDE et
    compagnie, les fonctions de texte (CONCATENER…), VAR, MODE, PRODUIT, PUISSANCE, PLAFOND,
    PLANCHER, TRONQUE (la grille a déjà `sin`, `cos`, `log`, `floor`… sous leur nom de Calcul).
 3. **Les vérifications manuelles** du tableur dans
-   [verifications-manuelles.md](verifications-manuelles.md) (#1410 → #1477), à faire par David.
+   [verifications-manuelles.md](../../wip/verifications-manuelles.md) (#1410 → #1477), à faire par David.
 4. **Fin de chantier = versement** : ce journal et les phases 0 du tableur partent en
    `docs/archive/` une fois le chantier déclaré clos (la doc durable est déjà dans
-   [atelier.md](../systeme/atelier.md)).
+   [atelier.md](../../systeme/atelier.md)).
 
 Phase 0 validée : [atelier-tableur-phase0.md](atelier-tableur-phase0.md) (option C ; Q1-Q5, T1-T9,
 P1-P2 décidées le 2026-10-15).

@@ -3,7 +3,7 @@
  *
  * Une cellule qui commence par `=` est calculée par le MOTEUR DE L'ATELIER
  * (option C) : valeur exacte, objets de l'atelier (`f`, curseurs), mêmes refus
- * que Calcul. Phase 0 : `docs/wip/atelier-tableur-lot2-phase0.md`.
+ * que Calcul. Phase 0 : `docs/archive/wip/atelier-tableur-lot2-phase0.md`.
  *
  * Lecture : chaque référence (`A2`, `$B$3`) devient une variable marquée
  * `(ω_k)` avant la lecture — un nom d'objet n'est jamais une lettre grecque, et

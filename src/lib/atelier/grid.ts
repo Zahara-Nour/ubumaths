@@ -6,7 +6,7 @@
  * sans nom gardent leurs cellules dans la grille de l'`Atelier`. Chaque
  * cellule a donc un seul propriétaire.
  *
- * Phase 0 : `docs/wip/atelier-tableur-phase0.md` (Q3, T1, T4, P2, §4).
+ * Phase 0 : `docs/archive/wip/atelier-tableur-phase0.md` (Q3, T1, T4, P2, §4).
  *
  * @module atelier/grid
  */

@@ -1,7 +1,7 @@
 /**
  * La grille de la vue Données — lot 1 du tableur intégré, PR 1 (le modèle).
  *
- * Phase 0 : `docs/wip/atelier-tableur-phase0.md` (T1, T3, T7, P2, §1 et §7).
+ * Phase 0 : `docs/archive/wip/atelier-tableur-phase0.md` (T1, T3, T7, P2, §1 et §7).
  * Une liste est une colonne NOMMÉE : ses cellules sont les entrées de sa
  * définition, une par ligne. Les colonnes sans nom gardent leurs cellules dans
  * la grille.

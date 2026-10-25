@@ -735,10 +735,10 @@ un affichage, jamais un objet.
 
 ### La grille (vue Données)
 
-Tableur intégré, lot 1 (phase 0 : [atelier-tableur-phase0.md](../wip/atelier-tableur-phase0.md),
-décisions de David du 2026-10-15 ; journal : [atelier-tableur-progress.md](../wip/atelier-tableur-progress.md)).
+Tableur intégré, lot 1 (phase 0 : [atelier-tableur-phase0.md](../archive/wip/atelier-tableur-phase0.md),
+décisions de David du 2026-10-15 ; journal : [atelier-tableur-progress.md](../archive/wip/atelier-tableur-progress.md)).
 Une cellule est du texte brut ; une cellule qui commence par `=` est une **formule** (lot 2, phase
-0 : [atelier-tableur-lot2-phase0.md](../wip/atelier-tableur-lot2-phase0.md), validée le
+0 : [atelier-tableur-lot2-phase0.md](../archive/wip/atelier-tableur-lot2-phase0.md), validée le
 2026-10-15).
 
 - **Formules** (`formula.ts`) : écrites comme une ligne de Calcul en texte (virgule décimale, `;`
@@ -822,7 +822,7 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   (`=0,25`), une somme de décimaux, un ARRONDI (`=ARRONDI(PI();4)` ne montre plus 3927/1250), un
   `f(-1,5)` sans division la masquent. `shownExact` dit si la case montre déjà ce qui compte. Une
   valeur TAPÉE (sans `=`) s'écrit telle quelle (`1/4` reste `1/4`).
-- **Tabuler** (lot 3, phase 0 : [atelier-tableur-lot3-phase0.md](../wip/atelier-tableur-lot3-phase0.md),
+- **Tabuler** (lot 3, phase 0 : [atelier-tableur-lot3-phase0.md](../archive/wip/atelier-tableur-lot3-phase0.md),
   validée le 2026-10-15) : `Atelier.tabulate({ name, from, to, step })` écrit, dans les deux
   premières colonnes libres, les abscisses (`-2`, `=A1+0,5`, `=A2+0,5`…) et les images (`=f(A1)`…),
   titrées `x` et `f(x)` (la lettre de l'élève : `t`, `f(t)`) — un tableau **vivant**, en un seul
@@ -852,7 +852,7 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   que la grille change (`atelier.revision`, comme l'image). Refermer la carte referme le
   formulaire. Aucune ligne dans Calcul.
 - **Fonctions du tableur** (lot 4, phase 0 :
-  [atelier-tableur-lot4-phase0.md](../wip/atelier-tableur-lot4-phase0.md), validée le 2026-10-15) :
+  [atelier-tableur-lot4-phase0.md](../archive/wip/atelier-tableur-lot4-phase0.md), validée le 2026-10-15) :
   une couche AVANT mathAST (Q-L4-1). `findCalls` (`grid-functions.ts`) repère les appels SOMME,
   MOYENNE, MEDIANE, MIN, MAX, NB, ECARTYPE (n − 1), ECARTYPEP (n) ; chacun devient une marque
   `(ψ_k)`, comme une case devient `(ω_k)`, et chaque argument est lu par la même lecture
@@ -878,7 +878,7 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   (`safely`), jamais celle de la grille. Mesuré : 600 formules à plages, 285 ms ; changer la case
   dont elles dépendent toutes, 250 ms.
 - **Compter les cases** (phase 0 :
-  [atelier-tableur-nbval-phase0.md](../wip/atelier-tableur-nbval-phase0.md), validée le
+  [atelier-tableur-nbval-phase0.md](../archive/wip/atelier-tableur-nbval-phase0.md), validée le
   2026-10-18) : `NBVAL(plage ; …)` compte les cases non vides (nombres et mots, tapés ou rendus par
   une formule), `NB.VIDE(plage)` les vides (`COUNT_FUNCTIONS`, `countCells`, `formula.ts`). Une
   case est vide si elle MONTRE du vide : une formule qui rend `""` compte comme vide pour les deux
@@ -899,7 +899,7 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   un résultat de plus de 15 chiffres significatifs est approché, jamais présenté comme exact. Leurs arguments
   sont des nombres : une plage est refusée, et une case vide citée laisse la formule vide (T5), à
   l'inverse des statistiques. **RESTE(n ; d)** (repris de V4, phase 0 :
-  [atelier-tableur-reste-et-ou-csv-phase0.md](../wip/atelier-tableur-reste-et-ou-csv-phase0.md),
+  [atelier-tableur-reste-et-ou-csv-phase0.md](../archive/wip/atelier-tableur-reste-et-ou-csv-phase0.md),
   validée le 2026-10-18), du signe du diviseur comme LibreOffice (`RESTE(-7;3)` = 2, le reste
   euclidien) : deux arguments exacts → en entiers longs (`remainder`, `RESTE(10^20+1;7)` = 3,
   `RESTE(2/3;1/2)` = 1/6) ; sinon l'arbre `n − d × floor(n/d)`, approché, REFUSÉ quand le
@@ -943,7 +943,7 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   courbes ou français (`“fille”`, `«fille»` : la ponctuation intelligente de l'iPad) et `≤ ≥ ≠` ;
   la barre et les cases ont `autocorrect="off"`. Le critère de NB.SI peut être une case seule, dont
   le mot compte (`=NB.SI(B$2:B$30;B2)`).
-- **Le hasard** (lot 5, phase 0 : [atelier-tableur-lot5-phase0.md](../wip/atelier-tableur-lot5-phase0.md),
+- **Le hasard** (lot 5, phase 0 : [atelier-tableur-lot5-phase0.md](../archive/wip/atelier-tableur-lot5-phase0.md),
   validée le 2026-10-15) : `ALEA()` (dans [0 ; 1[, approché) et `ALEA.ENTRE.BORNES(a ; b)` (entier
   exact ; a ⩽ b entiers sûrs, au plus un million d’issues, sinon refus). Un tirage ne dépend que de la **graine**
   de l'atelier (`gridSeed`), de l'adresse de la case et du rang de l'appel dans sa formule
@@ -962,7 +962,7 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   reste la nôtre) : le rapport le dit si des cases à hasard ont vraiment été écrites
   (`MergeReport.redrawn`, d'après `randomCells` avant et après).
 - **Mise en forme** (reprise de V4, phase 0 :
-  [atelier-tableur-mise-en-forme-phase0.md](../wip/atelier-tableur-mise-en-forme-phase0.md), validée le
+  [atelier-tableur-mise-en-forme-phase0.md](../archive/wip/atelier-tableur-mise-en-forme-phase0.md), validée le
   2026-10-18) : gras, italique, alignement, couleur du texte et du fond (6 couleurs du thème), format
   de nombre (décimales 0 à 6, pourcentage, monnaie). Rangée PAR ZONE (`FormatZone`, `#formats` de
   l'`Atelier`) sous forme CANONIQUE après chaque geste (`normalizeFormats`) : des rectangles qui ne
@@ -1054,7 +1054,7 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   mot qui commence par `=`, `+`, `-`, `@` est précédé d'une apostrophe (injection de formule : une
   grille peut venir d'un lien reçu).
 - **Ouvrir un CSV** (repris de V4, phase 0 :
-  [atelier-tableur-reste-et-ou-csv-phase0.md](../wip/atelier-tableur-reste-et-ou-csv-phase0.md)
+  [atelier-tableur-reste-et-ou-csv-phase0.md](../archive/wip/atelier-tableur-reste-et-ou-csv-phase0.md)
   §3, validée le 2026-10-18) : bouton « Ouvrir un CSV… » (champ de fichier caché). Le fichier est
   lu DANS le navigateur, rien n'est envoyé (`readCsvFile`, `grid.ts`) : plus de 1 Mo
   (`MAX_CSV_BYTES`) refusé AVANT lecture (la taille du `File`) ; un octet nul (image, `.xlsx`)
@@ -2958,7 +2958,7 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
   [atelier-geometrie-progress.md](../archive/wip/atelier-geometrie-progress.md) ;
 - **tableur intégré** (option C) : lots 1 à 5 (#1410 → #1439 : grille, formules, `.tabuler`,
   fonctions, hasard à graine) en v0.36.0, mise en forme, RESTE / ET / OU, ouvrir un CSV (v0.37.0),
-  NBVAL et NB.VIDE (v0.39.0). Journal : [atelier-tableur-progress.md](../wip/atelier-tableur-progress.md).
+  NBVAL et NB.VIDE (v0.39.0). Journal : [atelier-tableur-progress.md](../archive/wip/atelier-tableur-progress.md).
 
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 

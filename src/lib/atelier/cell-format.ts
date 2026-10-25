@@ -1,7 +1,7 @@
 /**
  * Atelier — la mise en forme des cases de la grille (reprise de V4, 2026-10-18).
  *
- * Phase 0 `docs/wip/atelier-tableur-mise-en-forme-phase0.md` : gras, italique,
+ * Phase 0 `docs/archive/wip/atelier-tableur-mise-en-forme-phase0.md` : gras, italique,
  * alignement, couleurs du thème, formats de nombre (décimales, pourcentage,
  * monnaie). Elle ne change que l'AFFICHAGE : une formule cite la valeur.
  *

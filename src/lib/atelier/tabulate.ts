@@ -1,7 +1,7 @@
 /**
  * Atelier — tabuler une fonction dans la grille (tableur intégré, lot 3).
  *
- * Phase 0 `docs/wip/atelier-tableur-lot3-phase0.md` : le tableau de valeurs est
+ * Phase 0 `docs/archive/wip/atelier-tableur-lot3-phase0.md` : le tableau de valeurs est
  * écrit EN FORMULES — `-2`, `=A1+0,5`, `=A2+0,5`… et `=f(A1)`, `=f(A2)`… —
  * pour rester vivant : redéfinir f, bouger un curseur, changer la première case
  * recalcule tout. Ce module prépare le tableau et dit ses refus ; l'`Atelier`

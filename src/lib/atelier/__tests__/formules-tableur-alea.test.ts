@@ -2,7 +2,7 @@
  * Le hasard dans la grille (tableur intégré, lot 5, PR 1) : ALEA,
  * ALEA.ENTRE.BORNES, la graine.
  *
- * Phase 0 `docs/wip/atelier-tableur-lot5-phase0.md` : un tirage ne dépend que
+ * Phase 0 `docs/archive/wip/atelier-tableur-lot5-phase0.md` : un tirage ne dépend que
  * de la graine de l'atelier et de sa place (case, rang de l'appel) — il ne
  * change qu'au clic sur « Relancer » (T8, Q-L5-5) ; la graine est rangée et
  * voyage dans le lien (Q-L5-4).

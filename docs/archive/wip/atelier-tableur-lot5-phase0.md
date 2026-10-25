@@ -138,4 +138,4 @@ Relancer »), et elle rend les tirages indépendants de l'ordre des calculs. Mod
 2. **Le bouton** : « Relancer », F9, l'annonce, l'annulation (Q-L5-3), la note de la fusion.
    Tests dans un vrai navigateur, capture.
 
-Doc : [atelier.md](../systeme/atelier.md) à chaque PR (section « La grille »).
+Doc : [atelier.md](../../systeme/atelier.md) à chaque PR (section « La grille »).

@@ -2,7 +2,7 @@
  * La mise en forme des cases, vue depuis l'écran : la barre d'outils au-dessus
  * de la grille et ce que montrent les cases.
  *
- * Phase 0 : `docs/wip/atelier-tableur-mise-en-forme-phase0.md` (Q-MF-1 à Q-MF-5).
+ * Phase 0 : `docs/archive/wip/atelier-tableur-mise-en-forme-phase0.md` (Q-MF-1 à Q-MF-5).
  * Le modèle (zones, annulation, sauvegarde, lien) est testé en node :
  * `src/lib/atelier/__tests__/mise-en-forme.test.ts`.
  */

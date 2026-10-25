@@ -1,7 +1,7 @@
 /**
  * RESTE, ET et OU dans la grille, repris de `/spreadsheet` (V4).
  *
- * Phase 0 `docs/wip/atelier-tableur-reste-et-ou-csv-phase0.md` §1 et §2,
+ * Phase 0 `docs/archive/wip/atelier-tableur-reste-et-ou-csv-phase0.md` §1 et §2,
  * Q-RE-1 à Q-RE-3 et Q-RE-6 (validées le 2026-10-18).
  */
 

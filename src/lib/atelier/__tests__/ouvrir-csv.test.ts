@@ -3,7 +3,7 @@
  * lecture du fichier — taille, encodage, séparateur, guillemets — puis la pose
  * comme un collage.
  *
- * Phase 0 `docs/wip/atelier-tableur-reste-et-ou-csv-phase0.md` §3, Q-RE-4 et
+ * Phase 0 `docs/archive/wip/atelier-tableur-reste-et-ou-csv-phase0.md` §3, Q-RE-4 et
  * Q-RE-5 (validées le 2026-10-18).
  */
 
