@@ -27,7 +27,7 @@
  * des nombres. Une erreur ne fait pas disparaître le bloc (le nœud porte ses
  * messages). Repérage et blocs non fermés : ceux de ```horloge.
  *
- * Phase 0 : `docs/wip/operations-posees-progress.md`.
+ * Phase 0 : `docs/archive/wip/operations-posees-progress.md`.
  *
  * @module ubumark/parser/operation-parser
  */

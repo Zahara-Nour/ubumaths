@@ -114,6 +114,7 @@ import {
 	containsFloatArtifact
 } from './exact-evaluation';
 import { getNumericValue, ZERO_TOLERANCE } from '../common';
+import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
 // Default Options
@@ -1310,11 +1311,7 @@ function argumentTendsToInfinity(
 
 /** Constante dont la valeur approchée est finie. */
 function isFiniteConstant(node: MathNode): boolean {
-	try {
-		return Number.isFinite(evaluateNodeToApproximatedNumber(node));
-	} catch {
-		return false;
-	}
+	return computeNumericValue(node) !== null;
 }
 
 /** Constante non nulle, sûre (rationnel exact, ou flottant loin de 0 et de ∞). */
@@ -1445,13 +1442,8 @@ function tryConstantFactor(
 	const split = splitConstantFactor(expression, varName);
 	if (split === null) return null;
 
-	let kValue: number;
-	try {
-		kValue = evaluateNodeToApproximatedNumber(split.constant);
-	} catch {
-		return null;
-	}
-	if (!Number.isFinite(kValue)) return null;
+	const kValue = computeNumericValue(split.constant);
+	if (kValue === null) return null;
 	// k doit être sûr : un rationnel exact, ou un flottant loin de 0 et de
 	// l'infini. sin(π)·x vaut 0·x mais sin(π) s'évalue à 1,2e−16 (→ +∞ faux) ;
 	// tan(π/2) s'évalue à 1,6e16 alors qu'il n'est pas défini. Dans le doute,
@@ -1526,12 +1518,8 @@ function tryContinuousOfExactLimit(
 		if (result.status !== 'exact' || result.value === null || isInfinity(result.value)) {
 			return null;
 		}
-		try {
-			const value = evaluateNodeToApproximatedNumber(result.value);
-			return Number.isFinite(value) ? { node: result.value, value } : null;
-		} catch {
-			return null;
-		}
+		const value = computeNumericValue(result.value);
+		return value !== null ? { node: result.value, value } : null;
 	};
 	const exactOrSymbolic = (value: MathNode): MathNode => exactConstantNode(value) ?? value;
 
@@ -1556,13 +1544,8 @@ function tryContinuousOfExactLimit(
 
 	if (exponentHasVariable) {
 		// a^u, a > 0 constant (e^u compris)
-		let base: number;
-		try {
-			base = evaluateNodeToApproximatedNumber(node.base);
-		} catch {
-			return null;
-		}
-		if (!Number.isFinite(base) || !(base > 0)) return null;
+		const base = computeNumericValue(node.base);
+		if (base === null || !(base > 0)) return null;
 		const inner = limitOf(node.superscript);
 		if (inner === null) return null;
 		if (inner.value === 0) return number('1');
@@ -1687,13 +1670,8 @@ function toFactorLimit(result: LimitResult): FactorLimit | null {
 		if (rational.n === 0n) return { kind: 'zero' };
 		return { kind: 'nonzero', value, sign: isNegative(rational) ? -1 : 1 };
 	}
-	let numeric: number;
-	try {
-		numeric = evaluateNodeToApproximatedNumber(value);
-	} catch {
-		return null;
-	}
-	if (!Number.isFinite(numeric)) return null;
+	const numeric = computeNumericValue(value);
+	if (numeric === null) return null;
 	if (isSafeFactor(value, numeric)) {
 		return { kind: 'nonzero', value, sign: numeric > 0 ? 1 : -1 };
 	}
@@ -2645,7 +2623,7 @@ function hasVanishingDenominator(
 	}
 	return denominators.some((den) => {
 		if (!containsVariable(den, varName)) return false;
-		const value = tryEvaluateNumeric(substituteValue(den, varName, approach));
+		const value = computeNumericValue(substituteValue(den, varName, approach));
 		return value !== null && Math.abs(value) < VANISHING_DENOMINATOR;
 	});
 }
@@ -2659,7 +2637,7 @@ function hasVanishingDenominator(
  */
 function pointInDomain(expr: MathNode, varName: string, approach: MathNode): boolean {
 	// π, π/2 : pas un littéral numérique, mais une valeur approchée suffit ici
-	const value = getNumericValue(approach) ?? tryEvaluateNumeric(approach);
+	const value = getNumericValue(approach) ?? computeNumericValue(approach);
 	if (value === null) return true;
 	try {
 		return containsValue(computeDomain(expr, varName).domain, value);
@@ -2728,7 +2706,7 @@ function tryDirectSubstitutionNumeric(
 	recorder: LimitStepRecorderImpl
 ): MathNode | null {
 	const substituted = substituteValue(expr, varName, approach);
-	const numericValue = tryEvaluateNumeric(substituted);
+	const numericValue = computeNumericValue(substituted);
 
 	if (numericValue !== null && Number.isFinite(numericValue)) {
 		const resultNode: MathNode = { type: 'number', value: cleanNumberString(numericValue) };
@@ -2744,20 +2722,6 @@ function tryDirectSubstitutionNumeric(
 	}
 
 	return null;
-}
-
-/**
- * Try to evaluate an expression numerically.
- * Delegates to the eval module's evaluateNodeToApproximatedNumber,
- * returning null on any error (unsupported types, variables, etc.).
- */
-function tryEvaluateNumeric(expr: MathNode): number | null {
-	try {
-		const result = evaluateNodeToApproximatedNumber(expr);
-		return Number.isFinite(result) ? result : null;
-	} catch {
-		return null;
-	}
 }
 
 /**

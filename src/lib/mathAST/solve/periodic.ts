@@ -14,7 +14,7 @@ import type { MathNode } from '../types';
 import type { PeriodicSolutionFamily, Solution } from './types';
 import { add, divide, multiply, number } from '../factory';
 import { normalize, denormalize } from '../normal';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
 // Constantes
@@ -46,13 +46,7 @@ const MAX_COMMON_MULTIPLE = 12;
 // =============================================================================
 
 function numericOf(solution: Solution): number | null {
-	if (solution.approximate !== undefined) return solution.approximate;
-	try {
-		const value = evaluateNodeToApproximatedNumber(solution.value);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
+	return solution.approximate ?? computeNumericValue(solution.value);
 }
 
 function simplified(node: MathNode): MathNode {

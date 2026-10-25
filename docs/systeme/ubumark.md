@@ -307,7 +307,7 @@ natif (ni paquet ni image). Nom accessible « Horloge à aiguilles », **jamais 
 Dans un choix de QCM : 3 cm (`--horloge-taille` posé par `MultipleChoiceInput` et les aperçus ;
 série figée : `withChoiceClockSize` ajoute `taille: 3cm`, lettre seule sur sa ligne).
 
-**Opération posée en colonnes** (chantier [operations-posees](../wip/operations-posees-progress.md),
+**Opération posée en colonnes** (chantier [operations-posees](../archive/wip/operations-posees-progress.md),
 addition, soustraction, multiplication, division en potence) — `src/lib/ubumark/__tests__/operation/` :
 
 ````text

@@ -24,7 +24,7 @@ import {
 } from '../guards';
 import { containsVariable } from '../common/contains-variable';
 import { superscript } from '../factory';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 
 /** Intervalle fermé [min, max] contenant toutes les valeurs de l'expression. */
 export interface Bounds {
@@ -42,7 +42,7 @@ const UNIT_BOUNDED_FUNCTIONS = new Set(['sin', 'cos']);
  */
 export function structuralBounds(expr: MathNode, varName: string): Bounds | null {
 	if (!containsVariable(expr, varName)) {
-		const value = constantValue(expr);
+		const value = computeNumericValue(expr);
 		return value === null ? null : { min: value, max: value };
 	}
 
@@ -93,7 +93,7 @@ export function structuralBounds(expr: MathNode, varName: string): Bounds | null
 	}
 
 	if (isSuperscript(expr) && !containsVariable(expr.superscript, varName)) {
-		const exponent = constantValue(expr.superscript);
+		const exponent = computeNumericValue(expr.superscript);
 		if (exponent === null || !Number.isInteger(exponent) || exponent < 1) return null;
 		const base = structuralBounds(expr.base, varName);
 		if (base === null) return null;
@@ -121,13 +121,4 @@ function absBounds(bounds: Bounds): Bounds {
 function productBounds(a: Bounds, b: Bounds): Bounds {
 	const products = [a.min * b.min, a.min * b.max, a.max * b.min, a.max * b.max];
 	return { min: Math.min(...products), max: Math.max(...products) };
-}
-
-function constantValue(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
 }

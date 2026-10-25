@@ -19,8 +19,8 @@ import type { MathNode } from '$lib/mathAST/types';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { analyzeContinuity, getDiscontinuitySourceDescription } from '$lib/mathAST/analysis';
 import type { Discontinuity, LimitSign } from '$lib/mathAST/analysis';
-import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
 import { isInfinity } from '$lib/mathAST/guards';
+import { computeNumericValue } from '$lib/mathAST/eval/numeric-value';
 
 /**
  * A discontinuity of `f` whose location falls inside the integration range
@@ -99,25 +99,6 @@ export function getAllDiscontinuities(
 }
 
 /**
- * Try to evaluate a `MathNode` to a finite number. Returns `null` if evaluation
- * fails or yields a non-finite value. Used to position a discontinuity point on
- * the real line for boundary/interior classification.
- *
- * Symbolic points that cannot be evaluated are skipped — in practice,
- * `analyzeContinuity` only emits numeric `point` nodes for the kinds of
- * expressions handled by `integrale`/`aire`, so this is a graceful-degradation
- * path rather than a hot one.
- */
-function pointToNumber(point: MathNode): number | null {
-	try {
-		const v = evaluateNodeToApproximatedNumber(point);
-		return Number.isFinite(v) ? v : null;
-	} catch {
-		return null;
-	}
-}
-
-/**
  * Decide whether a discontinuity inside `[a, b]` makes the integral diverge.
  *
  * - `removable` / `jump`: never diverge on a finite range (intégrable au sens
@@ -168,7 +149,7 @@ export function classifyDiscontinuitiesForRange(
 
 	const inRange: RangeDiscontinuity[] = [];
 	for (const disc of allDiscs) {
-		const pVal = pointToNumber(disc.point);
+		const pVal = computeNumericValue(disc.point);
 		if (pVal === null) continue;
 		if (pVal < lo - BOUNDARY_TOL) continue;
 		if (pVal > hi + BOUNDARY_TOL) continue;

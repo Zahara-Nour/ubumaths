@@ -88,13 +88,82 @@ Proposition passée au conseil (5 conseillers + relecture croisée anonyme). Ce 
 - **Première action du chantier** : en phase 0, écrire le modèle CP-059 tel que le prof l'écrirait et ce que voit
   l'enfant (consigne, outils, réussite, erreur, blocage), avant toute ligne de code.
 
+## 2 ter. Case « figure » : phase 0 de CP-059 (brouillon du 2026-10-25, à valider)
+
+Écrite avant le chantier (qui reste après B1 → B3) pour que sa phase 0 soit prête. Rien n'est codé.
+
+**Le programme** (`docs/systeme/programmes/bornes/cycle2.md`) : CP-059 « Utiliser la règle comme instrument de tracé » —
+« tracer une droite passant par deux points ; horizontale, verticale ou oblique ». Limite assumée : à l'écran on n'évalue
+pas le maniement de la règle, seulement « la droite passe par les deux bons points ».
+
+**Ce que le prof écrit** (proposition ; même format JSON que `scripts/questions/cp-h/`) — un bloc neuf ` ```construction `
+qui est à la fois la figure de départ et la case réponse :
+
+````text
+Trace la droite qui passe par les points {{p}} et {{q}}.
+
+```construction
+fenetre: 0 ; 10 ; 0 ; 6
+outils: droite
+verifier: droite_par {{p}} ; {{q}}
+---
+A = point({{xa}}, {{ya}})
+B = point({{xb}}, {{yb}})
+C = point({{xc}}, {{yc}})
+```
+````
+
+- Trois variations, comme le dit le programme : horizontale, verticale, oblique (tirage de points entiers, conditions :
+  points distincts, assez éloignés, dans la fenêtre).
+- Un **point en plus** (C) que l'élève ne doit pas prendre : sans lui, avec un seul outil et l'aimantation, il ne peut
+  pas se tromper (angle mort « exercice trivial » du conseil).
+- `verifier:` = liste nommée ; `droite_par P ; Q` cherche, parmi les droites tracées par l'élève, une droite alignée avec
+  P et Q, en comparant des **positions**. Les `testSpecs` donnent la figure de l'élève (objets tracés) et le verdict attendu.
+
+**Ce que voit l'enfant** (tablette d'abord) :
+
+- la consigne en une ligne ; la figure en grand, points en croix nommées ;
+- pas de barre d'outils : un seul outil, déjà choisi ; un bouton « Effacer » (annule le dernier trait) et « Valider » ;
+- il touche un point puis un autre ; près d'un point donné, le doigt est **aimanté** sur lui (`snapToPoint` existe) ;
+  ailleurs, le trait part de l'endroit touché (il peut donc se tromper) ; la droite tracée dépasse des deux côtés ;
+- réussite : la droite passe en vert, « Bravo » ;
+- erreur : message de la vérification ratée + la bonne droite en pointillés par-dessus ;
+- rien tracé + Valider : « Tu n'as rien tracé. » (refus ou faute : à trancher, Q6).
+
+**Comportements (nominal / limite / erreur)** :
+
+| Ce que trace l'élève                 | Verdict | Message                                    |
+| ------------------------------------ | ------- | ------------------------------------------ |
+| droite par A et B (ou B et A)        | juste   | Bravo                                      |
+| droite par A et B + un autre trait   | Q5      | —                                          |
+| droite par A et C (le point en plus) | faux    | « Ta droite passe par A et C, pas par B. » |
+| droite par A et un point proche de B | faux    | « Ta droite ne passe pas par le point B. » |
+| rien                                 | Q6      | « Tu n'as rien tracé. »                    |
+
+**Constaté en écrivant** : CP-034 est « Comparer des segments selon leur longueur » (par superposition, report,
+règle graduée), pas « reporter une longueur » comme noté au § 2 bis : comme 058, il est peut-être un QCM sur une figure
+(lot B2) plutôt qu'une construction. À réexaminer.
+
+**Questions à David** :
+
+1. **Droite ou segment au CP ?** Le programme dit « droite » (le trait dépasse les points). Outil « droite » seul ?
+2. **Geste** : toucher A puis B, ou glisser le doigt de A à B (plus proche du geste de la règle) ?
+3. **Quadrillage** pour 059, ou feuille blanche (le quadrillage donne l'horizontale et la verticale gratuitement) ?
+4. **Point en plus** (C) : d'accord ? Un ou deux ?
+5. **Trait en trop** (la bonne droite + une autre) : ignoré ou faute ?
+6. **Valider sans rien tracer** : bouton grisé, ou réponse fausse ?
+7. **Temps** : les modèles CP ont un `delay` (30 s pour l'horloge). Quel temps pour tracer ? Pas de lecture à voix haute
+   dans l'appli (aucun `speechSynthesis`) : la consigne se lit seule ou avec l'adulte.
+8. **Format** : un bloc ` ```construction ` (figure et réponse ensemble), ou une case `[_]` qui renvoie à un bloc
+   ` ```figure ` ?
+
 ## 3. Outils proposés
 
 1. Bloc `horloge` (cadran paramétrable ; CP heures entières, puis minutes CE1/CE2) — recommandé en premier.
 2. Bloc `collection` (vrac, barres de dix + cubes, groupements partiels).
 3. Bloc `monnaie` (pièces et billets d'euros).
-4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles).
-5. **Case « figure »** (§ 2 bis) : branche les prédicats existants et la barre d'outils de l'atelier dans une question.
+4. Plus tard : réponses à placer (point sur la droite, étiquettes à ranger, aiguilles) — reçoit **CP-008** (verdict du conseil, § 2 bis, suivi par David le 2026-10-25).
+5. **Case « figure »** (§ 2 bis, verdict du conseil) : objets de l'élève retrouvés par leur position sur les nœuds, vérification de propriétés en tout-ou-rien ; CP-059 d'abord, puis 060, puis 034.
 6. **Opérations posées** (demandé par David le 2026-10-24) : bloc « en colonnes » (addition au CP, CP-016 ; puis soustraction, multiplication, division aux niveaux suivants) — aucun rendu « posé » n'existe dans `ubumark`. Place dans l'ordre : à trancher.
 
 ## 4. Questions à David
@@ -176,7 +245,7 @@ David suit mes recommandations (« je te suis »).
 
 1. D'abord, ses relectures en attente (A3, `92c8e499`) puis la publication A1-A6 en un lot : elles orientent les lots suivants.
 2. **Lot H** (une PR) : modèles d'horloge CP-046 (lire) et CP-047 (positionner, en QCM d'horloges) + **CP-016** (addition posée, le lot 1 d'`operations-posees` est sur `main`). Les deux blocs ne sont pas en prod : brouillons jusqu'au `deploy:prod`.
-3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 008, 058, 034 restent pour la case « figure ».
+3. **Groupe B inséré avant la case « figure »** (aucun outil neuf), trois lots : **B1** tableaux (068, 069, 084) → **B2** reconnaître sur une figure, affichage seul (054-056, 057, 061, 062, 067) → **B3** images fixes (049-052, 040). 034 (avec 059, 060) reste pour la case « figure » ; **008** passe aux « réponses à placer » (§ 3.4) et **058** est à réexaminer (pas forcément une figure) — David suit le verdict du conseil (§ 2 bis), 2026-10-25.
 4. Puis case « figure » (chantier à part), collection, monnaie — inchangé (§ 4 bis).
 
 ## 4 decies. Lot H : décisions (David, 2026-10-25)
@@ -243,5 +312,7 @@ David suit mes recommandations (« je suis tes recos, go »).
 - 2026-10-25 : `db:migrate` lancé par David (demo_scripts + lot H), vérifié en prod : 3 modèles H sur leur sous-notion, 1 tag chacun ; 5 scripts de démo au prof, 0 à l'admin. Page à cocher H relue : 3/3 OK.
 - 2026-10-25 : relevé des pages : `92c8e499` (A6) OK depuis 14 h 22 → A6 9/9 OK ; A3 toujours sans verdict.
 - 2026-10-25 : page A3 relue par David, 6/6 OK. Tous les brouillons du chantier (A1 à H) sont validés.
+- 2026-10-25 : validation des figures faites par l'élève passée au conseil ; verdict consigné (§ 2 bis) et suivi par David : 008 → réponses à placer, 058 à réexaminer (§ 3, § 4 nonies).
+- 2026-10-25 : case « figure », phase 0 de CP-059 écrite en brouillon (§ 2 ter), 8 questions à David ; CP-034 à réexaminer (« comparer », pas « reporter »).
 - 2026-10-25 : lot B1, phase 0 validée (§ 4 undecies), worktree `../ubumaths-wt-questions` (`feat/questions-b1`) ; 3 modèles écrits, 16 specs vertes, rendu relu à 390 px (cases `[_]` → `$?$` : le champ texte débordait ; « la ligne de Inès » → Lina).
 - 2026-10-25 : B1, 3 brouillons créés en prod (`create-questions --publier`, go de David : `7752c23e`, `76d14aa6`, `55662eef`), vérifiés sans nœud ni tag ; question d'accès tranchée (personne) ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.

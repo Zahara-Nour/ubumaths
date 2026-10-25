@@ -4,7 +4,7 @@
  *
  * Calcul pur d'une division posée à la française et de sa grille, partagé
  * par l'écran (`OperationDivision.svelte`) et le PDF (`operation-typst.ts`).
- * Phase 0 : `docs/wip/operations-posees-progress.md` § 12.
+ * Phase 0 : `docs/archive/wip/operations-posees-progress.md` § 12.
  *
  * Partie gauche : le dividende sur la première rangée, puis les étapes, une
  * colonne par chiffre du dividende (zéros ajoutés compris). Partie droite :

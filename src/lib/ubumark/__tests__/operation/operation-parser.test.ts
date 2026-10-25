@@ -1,5 +1,5 @@
 /**
- * Bloc ```operation — analyse (phase 0 : `docs/wip/operations-posees-progress.md` § 4)
+ * Bloc ```operation — analyse (phase 0 : `docs/archive/wip/operations-posees-progress.md` § 4)
  */
 
 import { describe, expect, it } from 'vitest';

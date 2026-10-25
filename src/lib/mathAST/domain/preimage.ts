@@ -25,7 +25,7 @@ import {
 import { numericNode } from '../common/numeric';
 import { ZERO_TOLERANCE } from '../common';
 import { findNodes } from '../transforms';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 import { realQuarticRoots } from '../common/quartic-roots';
 
 // =============================================================================
@@ -53,12 +53,8 @@ function classifyExpressionRec(expr: MathNode, variable: string): ExpressionKind
 		(expr.type === 'function' || expr.type === 'division') &&
 		findNodes(expr, (n) => n.type === 'variable').length === 0
 	) {
-		try {
-			const value = evaluateNodeToApproximatedNumber(expr);
-			return Number.isFinite(value) ? { kind: 'constant', value } : { kind: 'complex' };
-		} catch {
-			return { kind: 'complex' };
-		}
+		const value = computeNumericValue(expr);
+		return value !== null ? { kind: 'constant', value } : { kind: 'complex' };
 	}
 	switch (expr.type) {
 		case 'number':

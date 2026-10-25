@@ -22,7 +22,7 @@ import { relation } from '../factory';
 import { isInfinity, isLogical, isRelation } from '../guards';
 import { flattenRelationChain } from '../flatten';
 import { substitute } from '../eval/substitute';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValueOrInfinity } from '../eval/numeric-value';
 import { tidy } from '../tidy';
 import { computeVariations } from '../variations/compute';
 import type { LimitValue, VariationResult } from '../variations/types';
@@ -50,13 +50,7 @@ export type Pieces = readonly MonotonePiece[] | null;
 // =============================================================================
 
 export function approx(node: MathNode): number | null {
-	if (isInfinity(node)) return node.sign === 'positive' ? Infinity : -Infinity;
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isNaN(value) ? null : value;
-	} catch {
-		return null;
-	}
+	return computeNumericValueOrInfinity(node);
 }
 
 function limitNode(limit: LimitValue): MathNode | null {

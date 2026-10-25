@@ -15,6 +15,7 @@ import { number, multiply, divide, PI, TWO_PI } from '../factory';
 import { numericNode } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 import { extractLinearForm } from './coefficient-utils';
 import { toLatex } from '../latex-generator';
 import { periodicExclusion, tanDomain, cotDomain, universalDomain } from '../domain/factory';
@@ -469,12 +470,8 @@ function dividePeriod(period: MathNode, coefficient: MathNode): MathNode {
  * Compute numeric value of a period node.
  */
 function periodToNumeric(period: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(period);
-		return isFinite(value) && value > 0 ? value : null;
-	} catch {
-		return null;
-	}
+	const value = computeNumericValue(period);
+	return value !== null && value > 0 ? value : null;
 }
 
 /**

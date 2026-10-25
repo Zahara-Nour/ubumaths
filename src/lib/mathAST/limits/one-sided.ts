@@ -19,6 +19,7 @@ import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { computeDomain } from '../domain/compute';
 import { ZERO_TOLERANCE } from '../common';
+import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
 // One-Sided Limit Evaluation
@@ -194,23 +195,14 @@ const SAME_VALUE_TOLERANCE = 1e-9;
  * (`(a − 1)(a + 1)` et `(a + 1)(a − 1)` restent distincts) mais les regroupe.
  */
 function sameValue(a: MathNode, b: MathNode): boolean {
-	const x = tryApproximate(a);
-	const y = tryApproximate(b);
+	const x = computeNumericValue(a);
+	const y = computeNumericValue(b);
 	if (x !== null && y !== null) {
 		return Math.abs(x - y) <= SAME_VALUE_TOLERANCE * Math.max(1, Math.abs(x), Math.abs(y));
 	}
 	return (
 		structurallyEqual(tidy(a), tidy(b)) || isZero(tidy(subtract(parentheses(a), parentheses(b))))
 	);
-}
-
-function tryApproximate(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
 }
 
 /**
@@ -451,27 +443,16 @@ function isTrigPoleAt(expr: MathNode, varName: string, approach: MathNode): bool
 	if (!isFunction(expr) || expr.args.length !== 1) return false;
 	const vanishingFactor = TRIG_POLE_VANISHING[expr.name];
 	if (vanishingFactor === undefined) return false;
-	let point: number;
-	try {
-		point = evaluateNodeToApproximatedNumber(approach);
-	} catch {
-		return false;
-	}
-	if (!Number.isFinite(point)) return false;
+	const point = computeNumericValue(approach);
+	if (point === null) return false;
 	const arg = evaluateAtValue(expr.args[0], varName, point);
 	if (arg === null) return false;
 	return Math.abs(vanishingFactor(arg)) < 1e-9;
 }
 
 function evaluateAtValue(expr: MathNode, varName: string, value: number): number | null {
-	try {
-		const valueNode: MathNode = { type: 'number', value: String(value) };
-		const substituted = substitute(expr, { [varName]: valueNode });
-		const result = evaluateNodeToApproximatedNumber(substituted);
-		return Number.isFinite(result) ? result : null;
-	} catch {
-		return null;
-	}
+	const valueNode: MathNode = { type: 'number', value: String(value) };
+	return computeNumericValue(substitute(expr, { [varName]: valueNode }));
 }
 
 // =============================================================================

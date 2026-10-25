@@ -3,7 +3,7 @@
 	================================================================
 
 	Potence à la française dessinée depuis `buildDivisionScene`, la même scène
-	que le PDF (phase 0 : `docs/wip/operations-posees-progress.md` § 12, § 13).
+	que le PDF (phase 0 : `docs/archive/wip/operations-posees-progress.md` § 12, § 13).
 	Le bloc sans erreur arrive d'`Operation.svelte`, qui traite les erreurs.
 
 	- Cases à remplir : AUCUNE valeur attendue dans le DOM (ni texte, ni

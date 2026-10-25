@@ -1,6 +1,6 @@
 /**
  * Bloc ```operation — la réponse d'une division posée (PR 3b, phase 0 :
- * `docs/wip/operations-posees-progress.md` § 12)
+ * `docs/archive/wip/operations-posees-progress.md` § 12)
  *
  * Euclidienne : deux cases (quotient, reste) ; décimale : une seule (le
  * quotient, virgule posée par l'élève). Le quotient se lit de gauche à

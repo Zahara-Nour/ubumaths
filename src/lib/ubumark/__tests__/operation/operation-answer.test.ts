@@ -1,6 +1,6 @@
 /**
  * Bloc ```operation — la réponse de l'élève (PR 1b, phase 0 :
- * `docs/wip/operations-posees-progress.md` § 9)
+ * `docs/archive/wip/operations-posees-progress.md` § 9)
  *
  * Les cases du résultat, lues de gauche à droite, donnent UNE réponse : un
  * nombre en LaTeX, passé au juge ordinaire. `_` = case vide dans les aides.

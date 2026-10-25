@@ -41,7 +41,7 @@ import {
 	type IndeterminateForm
 } from '../eval/extended-arithmetic';
 import { tryEvaluateLimitExact, resultToNumber } from './exact-evaluation';
-import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { computeNumericValue } from '../eval/numeric-value';
 
 // =============================================================================
 // Types
@@ -146,7 +146,7 @@ function monotoneArgument(expr: MathNode, varName: string): MathNode | null {
 	const isConstant = (node: MathNode) => !containsVariable(node, varName);
 	const isNonZeroConstant = (node: MathNode) => {
 		if (!isConstant(node)) return false;
-		const value = approximateConstant(node);
+		const value = computeNumericValue(node);
 		return value !== null && value !== 0;
 	};
 	if (isDelimiter(expr) && (expr.semantic ?? 'grouping') === 'grouping') return expr.content;
@@ -155,7 +155,7 @@ function monotoneArgument(expr: MathNode, varName: string): MathNode | null {
 		return expr.args[0];
 	}
 	if (isSuperscript(expr) && isConstant(expr.base) && containsVariable(expr.superscript, varName)) {
-		const base = approximateConstant(expr.base);
+		const base = computeNumericValue(expr.base);
 		return base !== null && base > 0 && base !== 1 ? expr.superscript : null;
 	}
 	if (isDivision(expr) && isNonZeroConstant(expr.numerator)) return expr.denominator;
@@ -249,22 +249,12 @@ function classifyWithSignNumeric(
 	}
 
 	// Handle finite approach (π/2 : pas un littéral, valeur approchée)
-	const approachValue = getNumericValue(approach) ?? approximateConstant(approach);
+	const approachValue = getNumericValue(approach) ?? computeNumericValue(approach);
 	if (approachValue === null) {
 		return { type: 'unknown' };
 	}
 
 	return classifyAtFinitePoint(expr, varName, approachValue, direction);
-}
-
-/** Valeur approchée d'un point constant (π/2), ou `null`. */
-function approximateConstant(node: MathNode): number | null {
-	try {
-		const value = evaluateNodeToApproximatedNumber(node);
-		return Number.isFinite(value) ? value : null;
-	} catch {
-		return null;
-	}
 }
 
 /**
