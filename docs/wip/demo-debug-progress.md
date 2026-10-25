@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1731 (6i-b)._
+_Mis à jour le 2026-10-25, après #1737 (6i-c)._
 
-- **État** : PR 1 à 5 et 6a à 6h mergées ; 6i-a = #1729 (coloration des blocs de code) et 6i-b = #1731 (thème des diapositives d'après le fond, réduction d'une `UbuMarkSlide` trop longue, cercle trigo juste à toute échelle) mergées. Rien de tout cela en prod.
-- **Prochaine action** : **6i-c**, la vitrine `/demo/diaporama` (13 diapositives, plan et décisions dans « PR 6i » plus bas), sur `feat/demo-diaporama` (poussée, sans code ; aucune PR ouverte). Phase 0 déjà validée : coder directement, tests d'abord.
+- **État** : phases 1 à 6 terminées (PR 1 à 5, 6a à 6i) ; dernière : #1737, vitrine `/demo/diaporama` (13 diapositives) + marqueur `->` d'une `UbuMarkSlide` reconnu après une formule. Rien de tout cela en prod. Vérification manuelle notée (`verifications-manuelles.md`).
+- **Prochaine action** : **phase 7**, accueil `/demo` + robots/sitemap ouverts sur `/demo/…` + liens depuis `/professeurs`, `/parents`, `/eleves` et le pied de page (« Plan en phases »). **Phase 0 à faire** : comportements en français, à valider par David avant de coder.
 - **Hors chantier, décidé par David le 2026-10-25** : le cahier de texte passe à ubumark (voie 2), **futur chantier à part** `cahier-ubumark` ; énigmes (HTML lu comme markdown) à mesurer.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** ; `z` ≈ `2` → regarder en dernier, PR à part dans `tools/chiphre-math/`.
 - **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
-- **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : degrés par défaut, **courbe() comprise**, `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : chemin relatif ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; test de page qui lit le lexique : simuler `fetchDictionary` ; commitlint : lignes du corps ≤ 100 caractères ; **`{@html}` n'est pas corrigé à l'hydratation** (calculer après `onMount`) ; dans un test, cliquer au milieu de l'éditeur tombe sur un champ MathLive.
-- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/demo-diaporama` (6i-c). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `await render(…)` exigé par `lint:fast` ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; commitlint : lignes du corps ≤ 100 caractères ; **`{@html}` n'est pas corrigé à l'hydratation** ; **dans `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale`** (les classes `text-*` n'y font rien) ; `gh pr checks --watch` peut sortir avant que « Code Quality » soit inscrit → suivre le run.
+- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/demo-accueil` (phase 7, partie d'`origin/main`). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
