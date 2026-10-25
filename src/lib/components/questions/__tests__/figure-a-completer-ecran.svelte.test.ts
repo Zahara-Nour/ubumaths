@@ -287,7 +287,7 @@ describe('case « figure » : mesures à l’écran (revue #1775)', () => {
 		const [x1] = changes[1].slice('droite('.length).split(';').map(Number);
 		expect(x1).toBeGreaterThan(1);
 		expect(changes[1].endsWith(';7;2)')).toBe(true);
-		screen.unmount();
+		await screen.unmount();
 	});
 
 	it('la droite va jusqu’aux bords de la fenêtre', async () => {
