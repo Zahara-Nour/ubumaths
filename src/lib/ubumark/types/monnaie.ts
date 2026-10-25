@@ -35,10 +35,12 @@ export const MONNAIE_NOTES = [100, 50, 20, 10, 5] as const;
 export const MONNAIE_RESERVED_NOTES = [200, 500] as const;
 
 /**
- * Largeur d'un ensemble « pleine largeur », en cm : 8 cm (écran et PDF), 3 cm
- * dans un choix de QCM ; un ensemble plus étroit garde la même échelle
+ * Largeur d'un ensemble « pleine largeur », en cm : 8 cm (écran et PDF), 6 cm
+ * dans un choix de QCM ; un ensemble plus étroit garde la même échelle. Pas
+ * 3 cm comme la collection : l'enfant doit LIRE chaque valeur, illisible à
+ * 3 cm (≈ 3 pt) ; 6 cm décidé par David le 2026-10-25, sur capture
  */
-export const MONNAIE_SIZE_CM = { min: 2, max: 12, default: 8, choice: 3 } as const;
+export const MONNAIE_SIZE_CM = { min: 2, max: 12, default: 8, choice: 6 } as const;
 
 /** Ensembles d'un bloc (comparaison) */
 export const MONNAIE_MAX_SETS = 3;

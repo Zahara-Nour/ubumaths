@@ -235,7 +235,7 @@ describe('buildSerie — cas nominaux', () => {
 		expect(serie.solution).toMatch(/Réponse : \*\*[ab]\)\*\*\s*$/m);
 	});
 
-	it('QCM de porte-monnaie : chaque choix reste un bloc, 3 cm sauf taille donnée', () => {
+	it('QCM de porte-monnaie : chaque choix reste un bloc, 6 cm sauf taille donnée', () => {
 		const serie = buildSerie(modeles, [{ templateId: 'porte-monnaies', seed: 1 }]);
 		const found: { spec: { sizeCm: number | null } | null }[] = [];
 		const visit = (node: unknown): void => {
@@ -246,7 +246,7 @@ describe('buildSerie — cas nominaux', () => {
 			Object.values(record).forEach(visit);
 		};
 		visit(parseMarkdown(serie.statement));
-		expect(found.map((n) => n.spec?.sizeCm).sort()).toEqual([3, 5]);
+		expect(found.map((n) => n.spec?.sizeCm).sort()).toEqual([5, 6]);
 	});
 
 	it('plusieurs cases (texte et formule) : toutes à trous, toutes remplies au corrigé', () => {

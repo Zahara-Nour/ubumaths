@@ -216,7 +216,7 @@ describe('Monnaie — branchée dans le rendu Markdown', () => {
 		expect(screen.container.querySelectorAll('svg[role="img"]')).toHaveLength(2);
 	});
 
-	it('dans un choix de QCM : 3 cm pleine largeur', async () => {
+	it('dans un choix de QCM : 6 cm pleine largeur', async () => {
 		const choice = (lines: string) => `\`\`\`monnaie\n${lines}\n\`\`\`` as ResolvedMarkdown;
 		const screen = await render(MultipleChoiceInput, {
 			target: mainElement(),
@@ -228,6 +228,6 @@ describe('Monnaie — branchée dans le rendu Markdown', () => {
 			buildMonnaieScene(node('billets: 20 20 5').spec!, 0).width / MONNAIE_VIEW.fullWidth;
 		const svgs = screen.container.querySelectorAll('svg[role="img"]');
 		expect(svgs).toHaveLength(2);
-		for (const svg of svgs) expect(widthCm(svg)).toBeCloseTo(3 * ratio, 1);
+		for (const svg of svgs) expect(widthCm(svg)).toBeCloseTo(6 * ratio, 1);
 	});
 });

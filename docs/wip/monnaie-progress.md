@@ -2,15 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1776._
+_Mis à jour le 2026-10-25, PR 2 écrite (pas encore ouverte au moment de l'écriture)._
 
-- **État** : phase 0 validée (§ 10 bis). PR 1 « scène commune » mergée (#1776) : `utils/scene-commune.ts` + `nodes/scene-marks.svelte.ts`, collection branchée dessus, inchangée.
-- **Prochaine action** : PR 2, bloc ` ```monnaie ` complet (§ 7, § 8) : tests rouges (parseur, scène, écran, PDF, QCM) → code → captures 390 px clair/sombre + PDF.
-- **En attente de David** : rien.
-- **Pièges en cours** : instantanés `collection-scene-figee.test.ts` = garde de la collection ; `scatterCenters` ne vérifie pas `spread > 1` (cases du vrac à dimensionner pour la pièce de 2 €).
-- **Worktree / branche** : `../ubumaths-wt-monnaie` · `feat/monnaie-bloc` (`feat/monnaie` supprimée après #1776).
-
----
+- **État** : PR 2 « bloc ` ```monnaie ` complet » écrite sur `feat/monnaie-bloc` : types, parseur, scène, écran + marquage, PDF, QCM (6 cm, décision 12), série figée, éditeur riche, `check:ubumark`, doc `ubumark.md`. Tests verts (serveur, navigateur, compilation Typst réelle) ; captures 390 px clair/sombre et PDF relues.
+- **Prochaine action** : PR ouverte → revue `code-reviewer` (Sonnet) → CI verte → merge.
+- **En attente de David** : recette à l'œil (captures dans le message de la session).
+- **Pièges en cours** : instantanés `collection-scene-figee.test.ts` = garde de la collection ; dans un choix de QCM la monnaie fait 6 cm, pas 3 (la collection reste à 3).
+- **Worktree / branche** : `../ubumaths-wt-monnaie` · `feat/monnaie-bloc`.
 
 ## 1. Origine et périmètre
 
@@ -325,6 +323,7 @@ CP-045 (« peut-il acheter ? » seulement).
 9. **Découpage** : PR 1 scène commune, puis PR 2 bloc complet.
 10. **Disposition par défaut** : `rangé`.
 11. **Prix dans l'énoncé**, pas de clé `prix:` en v1.
+12. **Choix de QCM à 6 cm**, pas 3 (David, 2026-10-25, sur capture) : à 3 cm le chiffre d'un billet fait ≈ 3 pt, illisible ; l'enfant doit lire chaque valeur. Remplace le « 3 cm » du nominal 6 (§ 2) et du § 5.
 
 ## Journal
 
@@ -343,3 +342,11 @@ CP-045 (« peut-il acheter ? » seulement).
   et la preuve sur l'ancien code ; mineurs laissés (`scatterCenters` ne vérifie pas `spread > 1` : à garder
   en tête pour la monnaie).
 - 2026-10-25 : CI verte, #1776 mergée ; branche `feat/monnaie` supprimée, PR 2 sur `feat/monnaie-bloc`.
+- 2026-10-25 : PR 2 écrite (`feat/monnaie-bloc`). Neuf : `types/monnaie.ts`, `parser/monnaie-parser.ts`
+  (`decomposeAmount` glouton, vérifié de 0 à 100 €), `utils/monnaie-scene.ts` (billets en lignes qui passent
+  à la ligne, pièces en rangées ou en vrac — case 34, jitter 5 : centres à ≥ 24 > 21, la pièce de 2 €),
+  `nodes/Monnaie.svelte`, `generators/monnaie-typst.ts` ; branchements calqués sur la collection. Tests :
+  parseur, scène, Typst (texte + compilation réelle), écran (navigateur), éditeur riche, chat restreint,
+  série figée, fermeture Q66. Preuve qu'ils mordent : case du vrac à 24 → 4 échecs ; décomposition faussée →
+  2 échecs. Captures : à 3 cm dans un QCM les valeurs sont illisibles → décision 12 (6 cm). Le catalogue des
+  blocs (`block-catalog/`) n'a pas d'entrée pour la collection non plus : non ajouté.

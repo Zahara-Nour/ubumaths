@@ -447,7 +447,7 @@
 							</Badge>
 							<!-- Horloge, collection ou monnaie d'un choix : 3 cm, comme chez l'élève -->
 							<div
-								class="flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:3cm]"
+								class="flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:6cm]"
 							>
 								<MarkdownRenderer content={choice.content} {genericFunctions} />
 							</div>

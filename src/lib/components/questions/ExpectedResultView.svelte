@@ -175,7 +175,7 @@
 						{#if isBlockChoice(choice.content)}
 							<!-- Choix en bloc (```horloge, ```collection, ```monnaie) : dessiné, 3 cm comme dans le QCM -->
 							<div
-								class="min-w-0 flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:3cm]"
+								class="min-w-0 flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:6cm]"
 							>
 								<MarkdownRenderer content={choice.content} />
 							</div>

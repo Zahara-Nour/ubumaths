@@ -265,7 +265,7 @@ describe('bloc ```monnaie dans un item de liste', () => {
 describe('withChoiceMonnaieSize — choix de QCM imprimé', () => {
 	it('ajoute la taille d’un choix à un bloc qui n’en donne pas', () => {
 		const out = withChoiceMonnaieSize('```monnaie\nbillets: 20 20 5\npièces: 2 1\n```');
-		expect(monnaieOf(parseMarkdown(out).children).spec?.sizeCm).toBe(3);
+		expect(monnaieOf(parseMarkdown(out).children).spec?.sizeCm).toBe(6);
 	});
 
 	it('garde la taille donnée par l’auteur', () => {

@@ -789,7 +789,7 @@
 													{String.fromCharCode(65 + ci)}
 												</Badge>
 												<div
-													class="flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:3cm]"
+													class="flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:6cm]"
 												>
 													<MarkdownRenderer content={choice.content} />
 												</div>

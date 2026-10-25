@@ -12,7 +12,7 @@
 	- La valeur de chaque coupure est écrite (l'enfant la lit) ; le TOTAL ne
 	  l'est jamais (nom accessible « Pièces et billets »), sinon un lecteur
 	  d'écran donnerait la réponse.
-	- Échelle : `taille:` du bloc, sinon `--monnaie-taille` (3 cm dans un choix
+	- Échelle : `taille:` du bloc, sinon `--monnaie-taille` (6 cm dans un choix
 	  de QCM), sinon 8 cm, pour un ensemble pleine largeur ; les plus étroits
 	  gardent la même échelle ; jamais plus large que le conteneur.
 	- Toucher pour marquer, comme la collection (`scene-marks.svelte.ts`) :
