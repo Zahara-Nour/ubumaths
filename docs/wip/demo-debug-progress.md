@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 6h en cours (`/demo/editeur`)._
+_Mis à jour le 2026-10-25, après #1723._
 
-- **État** : PR 1 à 5 et 6a à 6g mergées, pas en prod. PR 6h `/demo/editeur` finie, en route vers la PR.
-- **Prochaine action** : merger 6h, puis diaporama (phase 0 à faire valider).
+- **État** : PR 1 à 5 et 6a à 6h mergées, pas en prod ; 6h = #1723, `/demo/editeur` (+ retour arrière après Ctrl+A corrigé).
+- **Prochaine action** : phase 6, dernière page : diaporama (plan validé plus bas, « Diaporama `/demo/diaporama` ») ; nouveau worktree `../ubumaths-wt-demo-debug` depuis `origin/main`, phase 0 à faire valider.
 - **Hors chantier, décidé par David le 2026-10-25** : le cahier de texte passe à ubumark (voie 2), **futur chantier à part** `cahier-ubumark` ; énigmes (HTML lu comme markdown) à mesurer.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** ; `z` ≈ `2` → regarder en dernier, PR à part dans `tools/chiphre-math/`.
 - **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : degrés par défaut, **courbe() comprise**, `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : chemin relatif ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; test de page qui lit le lexique : simuler `fetchDictionary` ; commitlint : lignes du corps ≤ 100 caractères ; **`{@html}` n'est pas corrigé à l'hydratation** (calculer après `onMount`) ; dans un test, cliquer au milieu de l'éditeur tombe sur un champ MathLive.
-- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/demo-editeur` ; serveur de test sur 5177. À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **Worktree / branche** : aucun (#1723 nettoyée). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
