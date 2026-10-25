@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 1b codée, avant ouverture de la PR._
+_Mis à jour le 2026-10-25, après #1726._
 
-- **État** : PR 1b (saisie + juge) codée sur `feat/operations-posees-saisie` : case `case: N` posée par `assignBlankIndices`, réponse calculée par le bloc, grille saisissable (`Operation.svelte` + `FillBlanksInput`), correction chiffre par chiffre. Tests, typecheck, cliquet, lint rapide verts ; docs `ubumark.md` et `questions.md` à jour.
-- **Prochaine action** : PR, revue `code-reviewer` (Opus : correction des réponses), CI, merge ; puis republier la page de démonstration avec la saisie.
-- **En attente de David** : vérification #1716 ; avis sur la précision du comportement 5 (§ 9) ; décimales de fin laissées vides (journal, 2026-10-25).
+- **État** : lot 1 COMPLET sur `main`, pas en prod — PR 1a #1716 (affichage) et PR 1b #1726 (saisie + juge : `case: N`, réponse calculée par le bloc, grille saisissable, correction chiffre par chiffre).
+- **Prochaine action** : republier la page de démonstration avec la saisie ; puis lot 2 (multiplication) — phase 0 à écrire et faire valider.
+- **En attente de David** : vérifications #1716 et #1726 (`verifications-manuelles.md`) ; avis sur le comportement 5 précisé (§ 9 : zéros retirés, espaces posés) ; décimales de fin laissées vides (`0,5 + 0,5`, élève « 1 » sans le 0) → aujourd'hui incomplète, jugée fausse.
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie).
-- **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` ; sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas (l'élève écrit les deux 1 sur papier).
-- **Worktree / branche** : `../ubumaths-wt-operations-posees` · `feat/operations-posees-saisie`.
+- **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
+- **Worktree / branche** : supprimés après #1726.
 
 ---
 
