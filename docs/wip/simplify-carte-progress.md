@@ -2,16 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, 5f-3 codé (PR ouverte)._
+_Mis à jour le 2026-10-25, après #1710 (5f-3)._
 
-- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691), ~~5e D4~~ (#1696), ~~5f-1 `tidy`~~ (#1703), ~~5f-2 primitives~~ (#1708, § 75-76) mergés ; **5f-3 limites codé, PR ouverte** (§ 78). Code pas en prod.
+- **État** : lot 5. ~~Q19~~, ~~5a~~, ~~5b~~, ~~5c~~ (#1663), ~~5c-bis~~ (#1670), ~~Q30~~ (#1673), ~~Q29~~ (#1674), ~~annulation-domaine~~ (#1682), ~~5d D3~~ (#1684), ~~Q33~~ (#1691), ~~5e D4~~ (#1696), ~~5f-1 `tidy`~~ (#1703), ~~5f-2 primitives~~ (#1708, § 75-76) mergés , ~~5f-3 limites~~ (#1710, § 78-79) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (… → 5f restes : ~~5f-1~~ → ~~5f-2~~ → **5f-3** (PR) → Q49 → 5f-4 → 5f-5) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : merger la PR de 5f-3 si CI verte (§ 78), puis Q49 (§ 77).
-- **Après 5f-3** : Q49 (§ 77), petite PR : valeur d'une intégrale bornée à décimaux en décimal si elle tombe juste.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 et #1708) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
+- **Ordre des lots** : … → **5** (… → 5f restes : ~~5f-1~~ → ~~5f-2~~ → ~~5f-3~~ → **Q49** → 5f-4 → 5f-5) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : Q49 (§ 77), petite PR : valeur d'une intégrale bornée dont l'intégrande tape un décimal → décimal si l'écriture est finie (`∫₀¹ 0,5x dx = 0,25`), sinon fraction ; corrections et `.intégrer`. Puis 5f-4 solveur (R8, Q46).
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703, #1708, #1710) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60, futur chantier) ; `0/x → 0` et `f(x) − f(x) → 0` gardés (§ 64, à confirmer).
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; banc : `zz-tirages.mts` copié à la racine, `pnpm exec tsx`, `main.txt` = référence, TABLEAU zsh ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **PR sans CI = conflit avec `main`** (`mergeStateStatus` DIRTY) : fusionner `origin/main` dans la branche ; « Task killed: prettier » au pre-commit = une AUTRE tâche a échoué (lire la sortie entière) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-3` (partie d'`origin/main` après #1708).
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-q49` (partie d'`origin/main` après #1710).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1028,3 +1027,7 @@ CI verte (après fusion d'`origin/main` : la PR, en conflit sur `verifications-m
 - Tests : `atelier/__tests__/limite-etapes-5f3.test.ts` (7 rouges sur 10 avant ; +4 de la revue, rouges avant) ; 2 tests mis à jour (`limite-etapes`, `renderer` : dernière ligne `& =`), instantané démo (ligne factorisée ajoutée, voulu).
 - **Revue `code-reviewer` (opus), corrigé, tests rouges d'abord** : (1) sous-étape « Factorisation du dénominateur » `0,5x = 0,5x` (test d'égalité avant le registre → `sameShown`) ; (2) `0,5(-x - 1)` → `-0,5(x + 1)` (`leadingNegative`) ; (3) `x/1 → 1x` → `x`.
 - Mesures : suite serveur `src/lib` 58 050 verts (avant la revue), suites limites/atelier/questions 10 995 verts après ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre ; doc `mathast/README.md`, `atelier.md`. Banc non relancé : aucun modèle de prod n'a d'étapes de limite automatiques (§ 75).
+
+## 79. 5f-3 mergé (#1710, 2026-10-25)
+
+CI verte (après deux fusions d'`origin/main` : conflit sur `verifications-manuelles.md`, lignes des deux côtés gardées), mergée. Vérifications manuelles notées (#1710).
