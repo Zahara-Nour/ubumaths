@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1712 (A2 en cours)._
+_Mis à jour le 2026-10-25, après #1720._
 
-- **État** : lot A1 livré (#1712, 6 brouillons en prod, relus 6/6 OK). Lot A2, branche `feat/questions-cp-a2` : 7 brouillons créés en prod le 2026-10-25 (`b831b7b8` CP-003, `73bb66e4` CP-003, `b19dfc8e` CP-004, `78a6ba79` CP-007, `dc95f4f6` CP-075, `23acfcd1` CP-075, `1bd1f044` CP-076) ; migration `20261025190000_questions_cp_a2_rangement_tags` (nœud + tag) écrite, test 8/8 vert, 5/8 rouges sans le SQL. Page à cocher A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb.
-- **Prochaine action** : `security-auditor`, PR, CI verte → merge, `db:migrate` depuis le dépôt principal, vérification prod, page à cocher A2.
-- **En attente de David** : publication des 6 brouillons A1 ; vérification manuelle #1702.
-- **Pièges en cours** : nouveaux modèles = `scripts/create-questions.ts` (brouillons, ni nœud ni tag) puis migration nœud + tag ; la case naît d'une variable `expression1` ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point (trigger) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e` (= Euler)** ; une spec ne calcule pas les variables dérivées (`b = eval:a+k`) : une règle qui en dépend se vérifie aussi au rendu (`question-specs --apercu`).
-- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-cp-a2`.
+- **État** : lots A1 (#1712) et A2 (#1720) livrés. A2 = 7 brouillons en prod (`b831b7b8` CP-003, `73bb66e4` CP-003, `b19dfc8e` CP-004, `78a6ba79` CP-007, `dc95f4f6` CP-075, `23acfcd1` CP-075, `1bd1f044` CP-076), rangés et tagués (`db:migrate` fait, vérifié en prod : nœuds, 1 tag chacun, `updated_at`, trigger `tgenabled = O`). Relus par David : 7/7 OK (page https://claude.ai/artifact/BKgtf3Wv2EYsJJBHc4wwp4, collection `verdicts`). Page A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb.
+- **Prochaine action** : lot A4 sens des opérations (014, 077, 015, 078, 079, 017 — § 4 ter), phase 0, nouveau worktree `../ubumaths-wt-questions`.
+- **En attente de David** : publication des 13 brouillons A1 + A2 (tous relus OK) ; vérification manuelle #1702.
+- **Pièges en cours** : nouveaux modèles = `scripts/create-questions.ts` (brouillons, ni nœud ni tag) puis migration nœud + tag (dériver celle d'A2) ; la case naît d'une variable `expression1` (plusieurs cases : `?<{{n}}<?`) ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point (trigger) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e` (= Euler)** ; une spec ne calcule pas les variables dérivées : relire le rendu (`question-specs --file … --apercu N`) ; le moteur ne trie pas et n'écrit pas les nombres en lettres.
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1720).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -126,3 +126,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : groupe A découpé (§ 4 ter) ; lot A1 : 6 modèles créés en brouillon (`create-questions`), #1712 (nœud + tag) mergée, `db:migrate`, vérifié en prod ; page à cocher publiée.
 - 2026-10-25 : lot A2, phase 0 validée (§ 4 quater), 7 modèles écrits et verts (`checkTemplate`) ; bug `e` = Euler trouvé au rendu et corrigé.
 - 2026-10-25 : A2, 7 brouillons créés en prod (`create-questions --publier`, go de David) ; question d'accès tranchée (personne ne gagne ni ne perd d'accès) ; migration nœud + tag et son test.
+- 2026-10-25 : #1720 mergée, `db:migrate`, vérifié en prod ; page à cocher A2 publiée, relue 7/7 OK par David.
