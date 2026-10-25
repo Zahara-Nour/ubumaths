@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 écrite._
+_Mis à jour le 2026-10-25, phase 0 validée._
 
-- **État** : phase 0 écrite (§ 1 à 9) ; questions Q1 à Q11 posées à David (§ 10). Aucun code.
-- **Prochaine action** : réponses de David → PR 1 (scène commune, § 8) : tests rouges → extraction → collection verte.
-- **En attente de David** : go de phase 0 et Q1 à Q11 (§ 10).
+- **État** : phase 0 validée (« je suis tes recos », § 10 bis). PR 1 (scène commune) en cours.
+- **Prochaine action** : PR 1 (§ 8) : test qui fige les scènes de la collection → extraction → collection verte ; puis PR 2 (bloc complet).
+- **En attente de David** : rien.
 - **Pièges en cours** : la scène est partagée avec ` ```collection ` (EN PAUSE, `collection-progress.md`) : ses tests doivent rester verts, sans un pixel changé.
 - **Worktree / branche** : `../ubumaths-wt-monnaie` · `feat/monnaie`.
 
@@ -312,6 +312,20 @@ CP-045 (« peut-il acheter ? » seulement).
   l'énoncé ? _Reco : dans l'énoncé en v1 (aucun dessin de plus) ; une étiquette viendrait avec
   « construire »._
 
+## 10 bis. Décisions (David, 2026-10-25 : « je suis tes recos »)
+
+1. **Rendu stylisé**, aucun élément des vrais billets ni pièces ; une seule couleur d'accent.
+2. **Valeurs v1** : pièces 1 et 2 € ; billets 5, 10, 20, 50 et **100 €** ; 200 / 500 € et centimes (`50c`) réservés (« pas encore disponible »).
+3. **Liste et forme comptée** acceptées.
+4. **`montant:`** en v1, décomposition « le moins d'objets ».
+5. **30 objets** au plus par ensemble.
+6. **CP-044 / CP-071 en v1** : formes du § 4 ; la manipulation attend « construire ».
+7. **« Construire »** : lot commun collection + monnaie, hors de ce chantier.
+8. **Code partagé, option (a)** : module commun (hasard, vrac, décalage, toucher) + marquage au doigt partagé ; scènes collection et monnaie séparées.
+9. **Découpage** : PR 1 scène commune, puis PR 2 bloc complet.
+10. **Disposition par défaut** : `rangé`.
+11. **Prix dans l'énoncé**, pas de clé `prix:` en v1.
+
 ## Journal
 
 - 2026-10-25 : chantier lancé par David (collection mise en pause) ; worktree `../ubumaths-wt-monnaie`,
@@ -321,3 +335,4 @@ CP-045 (« peut-il acheter ? » seulement).
   règles BCE et pièces vérifiées (§ 6), code de la collection lu (parseur, écran, PDF, branchements
   QCM, éditeur, `check:ubumark`) → réutilisé / neuf (§ 7), découpage étayé par la taille de #1766
   (§ 8), 3e exemple (CP-044 en QCM), questions renumérotées Q1 à Q11.
+- 2026-10-25 : phase 0 validée par David (« je suis tes recos ») → § 10 bis.
