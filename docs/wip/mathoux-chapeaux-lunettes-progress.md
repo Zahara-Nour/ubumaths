@@ -6,13 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, catalogue choisi._
+_Mis à jour le 2026-10-25, PR 1 (#1734) en revue._
 
-- **État** : catalogue choisi par David sur la planche (ci-dessous) ; plan proposé, rien de codé.
-- **Prochaine action** : après validation du plan, PR 1 (migration additive : catalogue,
-  emplacements `eyes` / `head`, colonnes `glasses` / `hat`, deux fonctions de pose).
-- **En attente de David** : validation du plan et des 4 comportements (transformation, réveil,
-  clés, fonctions de pose).
+- **État** : PR 1 #1734 (migration `20261025235500`) ouverte ; revue (Sonnet) et audit (Opus) sans
+  bloquant, corrections poussées ; 22/22 rouges sans la migration, verts avec. Comportements
+  validés par David : chapeau gardé à la transformation (pas de couronne), lunettes et chapeau en
+  fondu au réveil, clés anglaises, une fonction de pose par emplacement.
+- **Prochaine action** : CI verte → merge → `db:migrate` (depuis la branche mergée ; refusé la
+  dernière fois par le mode auto → David) → PR 2 (`db:types`, dessins, rendu, routes, Chatterie,
+  Marché, vue prof, mémoire, nouveautés, **export RGPD `glasses`/`hat` + `export.test.ts`**,
+  doc `docs/systeme/mathoux.md`).
+- **En attente de David** : peut-être `db:migrate`.
 - **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ;
   chapeau à l'échelle bornée (0,92 à 1,35 de la tête du matou), sinon trop petit sur le grand matou.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-chapeaux-lunettes`, `feat/mathoux-chapeaux-lunettes`.
@@ -57,3 +61,7 @@ Bicorne : pas au catalogue.
 - 2026-10-25 — phase 0 tranchée (questions posées en fin de session des colliers, #1725).
 - 2026-10-25 — planche `scripts/mathoux-planches/chapeaux-lunettes.test.ts` publiée pour le choix.
 - 2026-10-25 — catalogue choisi par David (10 pièces, bicorne écarté).
+- 2026-10-25 — PR 1 #1734 : migration (catalogue, emplacements `eyes`/`head`, colonnes
+  `glasses`/`hat`, `set_mathou_glasses`/`set_mathou_hat`) ; preuve rouge 22/22. Revue (Sonnet) :
+  doc du schéma, test d'accès qui essaie de vraies poses et l'achat, commentaire d'index faux
+  (recopié des colliers) → corrigés. Audit (Opus) : aucun bloquant ; export RGPD à compléter en PR 2.

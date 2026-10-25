@@ -517,28 +517,41 @@ describe('Lunettes et chapeaux des Mathoux', () => {
 			expect(await wornBy(other.id)).toEqual({ [othersMathou]: BARE });
 		});
 
-		it('un élève connecté ne peut pas appeler les poses, ni le visiteur', async () => {
-			const student = await newStudent(20);
+		it('un élève connecté ne peut ni acheter ni poser lui-même, ni le visiteur', async () => {
+			const student = await newStudent(50);
 			const mathou = await newMathou(student.id);
 			await buy(student.id, 'round_glasses', mathou);
 			await buy(student.id, 'bowler', mathou);
+			const spare = await newMathou(student.id);
 
 			for (const client of [student.client, anon]) {
-				for (const [fn, param] of [
-					[WEAR_GLASSES, 'p_glasses'],
-					[WEAR_HAT, 'p_hat']
+				// Déplacer une pièce achetée vers un autre Mathou, puis la retirer
+				for (const [fn, param, piece] of [
+					[WEAR_GLASSES, 'p_glasses', 'round_glasses'],
+					[WEAR_HAT, 'p_hat', 'bowler']
 				] as const) {
-					const { error } = await client.rpc(fn, {
-						p_student_id: student.id,
-						p_notion_id: mathou,
-						[param]: null
-					});
-					expect([fn, error?.code]).toEqual([fn, PERMISSION_DENIED]);
+					for (const value of [piece, null]) {
+						const { error } = await client.rpc(fn, {
+							p_student_id: student.id,
+							p_notion_id: value ? spare : mathou,
+							[param]: value
+						});
+						expect([fn, value, error?.code]).toEqual([fn, value, PERMISSION_DENIED]);
+					}
 				}
+				const bought = await client.rpc(BUY, {
+					p_student_id: student.id,
+					p_decoration: 'monocle',
+					p_notion_id: mathou
+				});
+				expect(bought.error?.code).toBe(PERMISSION_DENIED);
 			}
 			expect(await wornBy(student.id)).toEqual({
-				[mathou]: { ...BARE, glasses: 'round_glasses', hat: 'bowler' }
+				[mathou]: { ...BARE, glasses: 'round_glasses', hat: 'bowler' },
+				[spare]: BARE
 			});
+			expect(await balanceOf(student.id)).toBe(30);
+			expect(await ownedBy(student.id)).toHaveLength(2);
 		});
 	});
 

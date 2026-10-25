@@ -94,7 +94,7 @@ alter table public.student_mathoux
 	add constraint student_mathoux_hat_check
 		check (hat in ('bowler', 'beret', 'boater', 'top_hat', 'pointed_hat'));
 
--- Un seul Mathou à la fois ; sert aussi les clés étrangères ci-dessous.
+-- Un seul Mathou à la fois (une pièce achetée, un seul porteur).
 create unique index student_mathoux_glasses_once
 	on public.student_mathoux (student_id, glasses)
 	where glasses is not null;
