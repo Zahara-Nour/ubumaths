@@ -356,7 +356,7 @@ test('#1278, #1279 — inéquations : terme soustrait en bleu, relation gardée'
 	for (const input of ['3x-4\\leq 2x+1', '2x^2<2', '-2x^2\\geq -8']) {
 		const answer = await calc(page, `.résoudre ${input}`);
 		const detail = await steps(answer);
-		// Ni « = 0 » ni « >= » à la place de la relation
+		// Aucune ligne alignée en « = » (« = 0 ») ni « >= » / « <= » à la place de la relation
 		expectStepsNotContaining(detail, '&=');
 		expectStepsNotContaining(detail, '>=');
 		expectStepsNotContaining(detail, '<=');
@@ -386,13 +386,13 @@ test('#1300 — commandes de /cas absentes, .latex sans expression', async ({ pa
 	expect(erase.text).toContain("« .effacer » n'est pas une commande");
 	expectLatex(await calc(page, 'a+1'), '4');
 
-	// La liste des commandes ne propose plus `.poser` (elle s'ouvre bien sur `.lat`)
+	// La liste des commandes, ouverte sur `.lat`, se ferme sur `.pose` : plus de `.poser`
 	const field = page.getByLabel('Calcul, définition ou commande');
 	const commands = page.getByRole('listbox', { name: 'Commandes disponibles' });
 	await field.fill('.lat');
 	await expect(commands.getByRole('option', { name: /\.latex/ })).toBeVisible();
 	await field.fill('.pose');
-	await expect(commands.getByRole('option', { name: /\.poser/ })).toHaveCount(0);
+	await expect(commands).toBeHidden();
 
 	// `.latex` puis Entrée complète la commande ; la seconde Entrée la lance
 	const lines = page.locator('ol.historique > li');
@@ -531,10 +531,10 @@ test('#1353, #1357 — .évaluer : remplacement puis une opération par étape',
 	const product = await calc(page, '.évaluer x(x-1) en x=-2');
 	expectLatex(product, '6');
 	// Le remplacement, écrit avec ses parenthèses, est dans les deux rédactions
-	expectStepsContaining(
-		await steps(product),
-		'On remplace $x$ par $-2$ \\left( -2 \\right) \\left( -2 - 1 \\right)'
-	);
+	const replaced = 'On remplace $x$ par $-2$ \\left( -2 \\right) \\left( -2 - 1 \\right)';
+	await steps(product);
+	expectStepsContaining(await stepsAs(product, 'Détaillé'), replaced);
+	expectStepsContaining(await stepsAs(product, 'Résumé'), replaced);
 
 	const exponential = await calc(page, '.évaluer e^x en x=0');
 	expectLatex(exponential, '1');

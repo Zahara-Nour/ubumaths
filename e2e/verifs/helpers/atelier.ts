@@ -74,7 +74,8 @@ export async function steps(answer: Answer): Promise<string> {
 
 /**
  * Choisit la rédaction des étapes dépliées (interrupteur « Résumé / Détaillé »)
- * et rend leur texte
+ * et rend leur texte. Les étapes doivent être dépliées (`steps()` d'abord) ; le
+ * choix est retenu pour les lignes dépliées ensuite.
  */
 export async function stepsAs(answer: Answer, choice: 'Résumé' | 'Détaillé'): Promise<string> {
 	const button = answer.line.getByRole('button', { name: choice });
