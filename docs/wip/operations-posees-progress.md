@@ -7,7 +7,7 @@ _Mis à jour le 2026-10-25, après #1740._
 - **État** : lot 1 COMPLET sur `main`, pas en prod (#1716, #1726, #1738). Lot 2 (multiplication) : phase 0 validée (§ 10) ; **PR 2a #1740 mergée** (affichage écran + PDF ; une multiplication à remplir est refusée dans une question).
 - **Prochaine action** : PR 2b — saisie de la multiplication (virgule posée par l'élève, Q3 ; cases des produits partiels ; surlignage de la virgule) ; lever le refus de `instance-generator.ts`. Écrire les comportements de la PR 2b et les faire valider.
 - **En attente de David** : vérifications #1716, #1726, #1738, #1740 (`verifications-manuelles.md`), avant le prochain `deploy:prod`. Précision Q1 (zéros de tête non comptés, § 10) à confirmer.
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — lot 1 seulement (pas encore la multiplication).
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — republiée le 2026-10-25 avec la multiplication (affichage, 8 cas, erreurs).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas ; `operation-answer.ts` suppose une virgule de grille fixe (à revoir en PR 2b).
 - **Worktree / branche** : supprimés après #1740.
 
