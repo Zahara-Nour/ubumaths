@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, ouverture du chantier (avant B1 → B3, décision de David)._
+_Mis à jour le 2026-10-25, PR 1 (moteur) prête, avant revue._
 
-- **État** : chantier ouvert ; plan technique validé (§ 4, 3 PR). PR 1 (moteur) en cours, tests rouges d'abord.
-- **Prochaine action** : PR 1 — parseur ` ```construction `, case unique par bloc, juge `droite_par` (`src/lib/questions/construction/`).
+- **État** : PR 1 codée et verte (parseur ` ```construction `, case, juge `droite_par`, registre des positions) ; revue en cours.
+- **Prochaine action** : merger la PR 1, puis PR 2 (écran élève : tracé dans `FillBlanksInput`, import de `positions-setup`).
 - **En attente de David** : statut de **CP-034** et de **CP-058** ; phase 0 de CP-060.
-- **Pièges en cours** : les `check*` de `geometry-core/validation/checks.ts` prennent des identifiants → les faire porter sur
-  des positions ; `snapToPoint` existe (`geometry-core/interaction/snap.ts`) ; `deplacable:` / `rendu:` refusés dans un bloc d'exercice ;
+- **Pièges en cours** : registre des positions à importer par l'écran élève (PR 2), sinon « positions non inscrites » ;
+  `validateAnswer` rend l'exception dans `message` ; `snapToPoint` existe (`geometry-core/interaction/snap.ts`) ;
   fiche du catalogue (`block-catalog/types.ts`) seulement après le merge de `catalogue-blocs`.
 - **Worktree / branche** : `../ubumaths-wt-geometrie-validation` · `feat/geometrie-validation`.
 
@@ -152,6 +152,16 @@ Revue : `code-reviewer` en Opus (correction des réponses).
 
 **Décisions** : trait en trop → « Tu as tracé une droite de trop. » ; PDF → figure de départ seule ; 3 PR.
 
+**Positions des points (David, 2026-10-25)** : un **registre**, comme le PDF des figures (`figure-typst-registry.ts`),
+plutôt qu'une lecture légère (`point(x, y)` seulement) ou un import direct de geometry-core. Mesuré (esbuild, minifié) :
+générateur + juge 1,82 Mo ; avec l'interpréteur 2,25 Mo (+430 Ko, +110 Ko gzip, +24 %) ; avec le registre +11 Ko.
+Scinder geometry-core : écarté (interpréteur d'un seul tenant, `builtins.ts` 200 Ko).
+
+**Écarts au plan, à signaler** : ` ```construction ` est reconnu par le repérage de ` ```figure ` (`figure-parser.ts`
+touché : regex d'ouverture + aiguillage de `parseFigure`), pour ne pas dupliquer les six repérages du parseur ;
+` ```figure ` inchangé (tests). Message ajouté hors tableau : « Ta droite ne passe ni par le point A, ni par le point B. » ;
+plusieurs vérifications : « Il manque la droite qui passe par A et C. »
+
 ## Journal
 
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 1), au journal questions.
@@ -160,3 +170,4 @@ Revue : `code-reviewer` en Opus (correction des réponses).
 - 2026-10-25 : phase 0 de CP-059 validée par David (8 décisions) ; modèles 059/060 dans ce chantier.
 - 2026-10-25 : § 2 bis / 2 ter sortis du journal questions vers ce journal.
 - 2026-10-25 : chantier ouvert sans attendre B1 → B3 (David) ; plan en 3 PR validé (§ 4).
+- 2026-10-25 : registre des positions décidé (David) ; PR 1 (moteur) codée, 46 tests neufs, suites voisines vertes.
