@@ -301,3 +301,10 @@ Une PR = une session. Ancienne adresse → redirection 301 vers la nouvelle (« 
 - Trouvé en route, pas corrigé : `calculateNewStability` (`src/lib/srs/fsrs.ts`) ignore la note ;
   après la 1re révision, Difficile, Bien et Facile donnent le même intervalle (22 j dans l'essai).
   La démo n'affiche que la 1re révision (1, 3, 6, 9 j), qui n'est pas touchée. Signalé à David.
+- `TestInteractive` et `FlashSeries` gagnent `loginNote` (défaut `true`) : la vitrine coupe le
+  bandeau sans se dire connectée. Test du bandeau vu rouge sans `loginNote={false}`.
+- Tests : la page (titre, 5 onglets, chaque forme montée, simulation FSRS, aucune requête
+  d'écriture) et la série (4 réponses, intervalles croissants). Le test de page simule
+  `fetchDictionary`, sinon la vraie requête fait planter le serveur de vitest (`wrapDynamicImport`).
+- Vu sans compte sur 5177 (Playwright, 1280 et 390 px) : 200, 5 onglets, aucune erreur de console,
+  aucune requête autre que GET, rien qui déborde ; « Facile » → « dans 9 jours ». Pas de revue.

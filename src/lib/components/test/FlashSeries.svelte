@@ -14,6 +14,7 @@
 	Props:
 	- instances: QuestionInstance[] - Cartes de la série
 	- isLoggedIn: boolean - Visiteur non connecté : message « Connecte-toi… »
+	- loginNote?: boolean - false : pas de message « Connecte-toi… » (vitrine `/demo/questions`)
 	- onComplete: (result: TestResult) => void - Appelé une seule fois, à la fin du premier tour
 	- onRestart: () => void - Nouvelles questions (la page régénère)
 	- onBack: () => void - Retour au panier
@@ -35,12 +36,13 @@
 	interface Props {
 		instances: QuestionInstance[];
 		isLoggedIn: boolean;
+		loginNote?: boolean;
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
 		onBack: () => void;
 	}
 
-	let { instances, isLoggedIn, onComplete, onRestart, onBack }: Props = $props();
+	let { instances, isLoggedIn, loginNote = true, onComplete, onRestart, onBack }: Props = $props();
 
 	// Variables
 	// Indices (dans `instances`) des cartes du tour en cours : toutes, puis les ratées
@@ -152,7 +154,7 @@
 </script>
 
 <div class="mx-auto w-full max-w-4xl space-y-6" bind:this={root}>
-	{#if !isLoggedIn}
+	{#if !isLoggedIn && loginNote}
 		<div
 			class="flex items-center gap-3 rounded-lg border border-border bg-muted/50 p-4 text-sm"
 			role="note"

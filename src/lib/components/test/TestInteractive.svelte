@@ -15,6 +15,7 @@
 	Props:
 	- items: ClassroomItem[] - Questions de la série, chacune avec sa durée
 	- isLoggedIn: boolean - Visiteur non connecté : message « Connecte-toi… »
+	- loginNote?: boolean - false : pas de message « Connecte-toi… » (vitrine `/demo/questions`)
 	- onComplete: (result: TestResult) => void - Appelé à la fin de la série
 	- onRestart: () => void - Nouvelles questions (la page régénère)
 	- onBack: () => void - Retour au panier (à « Mes évaluations » pour une évaluation)
@@ -50,6 +51,7 @@
 	interface Props {
 		items: ClassroomItem[];
 		isLoggedIn: boolean;
+		loginNote?: boolean;
 		onComplete: (result: TestResult) => void;
 		onRestart: () => void;
 		onBack: () => void;
@@ -68,6 +70,7 @@
 	let {
 		items,
 		isLoggedIn,
+		loginNote = true,
 		onComplete,
 		onRestart,
 		onBack,
@@ -187,7 +190,7 @@
 </script>
 
 <div class="space-y-6">
-	{#if !isLoggedIn}
+	{#if !isLoggedIn && loginNote}
 		<div
 			class="flex items-center gap-3 rounded-lg border border-border bg-muted/50 p-4 text-sm"
 			role="note"
