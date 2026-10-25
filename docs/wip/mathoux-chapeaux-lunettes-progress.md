@@ -6,17 +6,33 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, planche publiée._
+_Mis à jour le 2026-10-25, catalogue choisi._
 
-- **État** : planche des dessins publiée (https://claude.ai/artifact/7iaTAB3MWhm6dCg764kKqb) :
-  5 lunettes et 6 chapeaux, en A/B, sur le vrai `MathouAvatar` ; rien de codé dans l'appli.
-- **Prochaine action** : lire les choix de David (`ArtifactData` list, collection `choix`, doc
-  `david`), puis écrire le plan (migration additive `glasses` / `hat`, dessins dans
-  `mathou-dessin.ts`, rendu dans `MathouAvatar`, Chatterie et Marché).
-- **En attente de David** : le catalogue (modèles, variante A/B, prix) sur la planche.
+- **État** : catalogue choisi par David sur la planche (ci-dessous) ; plan proposé, rien de codé.
+- **Prochaine action** : après validation du plan, PR 1 (migration additive : catalogue,
+  emplacements `eyes` / `head`, colonnes `glasses` / `hat`, deux fonctions de pose).
+- **En attente de David** : validation du plan et des 4 comportements (transformation, réveil,
+  clés, fonctions de pose).
 - **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ;
   chapeau à l'échelle bornée (0,92 à 1,35 de la tête du matou), sinon trop petit sur le grand matou.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-chapeaux-lunettes`, `feat/mathoux-chapeaux-lunettes`.
+
+## Catalogue (choisi par David le 2026-10-25, planche https://claude.ai/artifact/7iaTAB3MWhm6dCg764kKqb)
+
+| Emplacement | Modèle               | Dessin retenu (id de la planche)       | Prix |
+| ----------- | -------------------- | -------------------------------------- | ---- |
+| Yeux        | Lunettes rondes      | monture dorée (`rondes-b`)             | 10   |
+| Yeux        | Lunettes de soleil   | verres noirs (`soleil-a`)              | 10   |
+| Yeux        | Monocle              | d'or à chaînette (`monocle-a`)         | 20   |
+| Yeux        | Pince-nez            | doré, cordon noir (`pince-nez-a`)      | 20   |
+| Yeux        | Lunettes à gidouille | spirales noires (`gidouille-a`)        | 40   |
+| Tête        | Chapeau melon        | noir, ruban rouge (`melon-a`)          | 10   |
+| Tête        | Béret                | rouge (`beret-a`)                      | 10   |
+| Tête        | Canotier             | ruban rouge (`canotier-a`)             | 10   |
+| Tête        | Haut-de-forme        | noir à ruban rouge (`haut-de-forme-a`) | 20   |
+| Tête        | Chapeau pointu       | noir à la lune d'or (`pointu-b`)       | 20   |
+
+Bicorne : pas au catalogue.
 
 ## Phase 0 — décisions (2026-10-25)
 
@@ -40,3 +56,4 @@ _Mis à jour le 2026-10-25, planche publiée._
 
 - 2026-10-25 — phase 0 tranchée (questions posées en fin de session des colliers, #1725).
 - 2026-10-25 — planche `scripts/mathoux-planches/chapeaux-lunettes.test.ts` publiée pour le choix.
+- 2026-10-25 — catalogue choisi par David (10 pièces, bicorne écarté).
