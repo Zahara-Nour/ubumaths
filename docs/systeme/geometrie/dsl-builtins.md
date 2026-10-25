@@ -24,22 +24,22 @@ ubumark ` ```figure `, constructions animées). Vue d'ensemble du système : [RE
 
 ## 1. Le langage en bref
 
-| Construction              | Exemple                                                     | Code                                |
-| ------------------------- | ----------------------------------------------------------- | ----------------------------------- |
-| Affectation, commentaire  | `A = point(0, 0)  # origine`                                | `parser.ts`                         |
-| Arguments nommés          | `cercle(O, rayon=2, couleur="rouge")`                       |                                     |
-| Tuple, déstructuration    | `(M, N) = extremites(s)`                                    | `destructuring`                     |
-| Nom indexé                | `P[i] = point(i, 0)`                                        | `indexedAssignment`                 |
-| Boucles (1000 tours max)  | `pour i de 0 a n - 1:` · `pour x dans liste:`               | `forRange`, `forIn`                 |
-| Condition                 | `si … :` / `sinon:`                                         | `if`                                |
-| Macro utilisateur         | `macro creer(x, y):` … `retourne P` (profondeur ≤ 10)       | `macro-registry.ts`                 |
-| Coordonnée réactive       | `A.x`, `A.y` (seules propriétés acceptées)                  | `interpreter.ts` (`propertyAccess`) |
-| Fonctions mathématiques   | `sqrt abs sin cos tan asin acos atan`                       | `MATH_FUNCTIONS`                    |
-| Constantes                | `\pi`, `inf` / `+inf` / `-inf`                              | `interpreter.ts`                    |
-| Unité d'angle             | `unite_angle("degres")` (défaut) / `unite_angle("radians")` | appel spécial, hors `BUILTIN_NAMES` |
-| Calcul sur vecteurs       | `u + v`, `3*u`, `-u`                                        | `interpreter.ts` (`isVectorValue`)  |
-| Directive (animation)     | `@pause(500)`, `@instrument("regle")`                       | `DslDirective` → `onDirective`      |
-| Décorateur (chorégraphie) | `d = mediatrice(A, B) @euclide @complet -arcs`              | `parseTrailingDecorators`           |
+| Construction              | Exemple                                                     | Code                                                                                                                                                                            |
+| ------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Affectation, commentaire  | `A = point(0, 0)  # origine`                                | `parser.ts`                                                                                                                                                                     |
+| Arguments nommés          | `cercle(O, rayon=2, couleur="rouge")`                       |                                                                                                                                                                                 |
+| Tuple, déstructuration    | `(M, N) = extremites(s)`                                    | `destructuring`                                                                                                                                                                 |
+| Nom indexé                | `P[i] = point(i, 0)`                                        | `indexedAssignment`                                                                                                                                                             |
+| Boucles (1000 tours max)  | `pour i de 0 a n - 1:` · `pour x dans liste:`               | `forRange`, `forIn`                                                                                                                                                             |
+| Condition                 | `si … :` / `sinon:`                                         | `if`                                                                                                                                                                            |
+| Macro utilisateur         | `macro creer(x, y):` … `retourne P` (profondeur ≤ 10)       | `macro-registry.ts`                                                                                                                                                             |
+| Coordonnée réactive       | `A.x`, `A.y` (seules propriétés acceptées)                  | `interpreter.ts` (`propertyAccess`)                                                                                                                                             |
+| Fonctions mathématiques   | `sqrt abs sin cos tan asin acos atan`                       | `MATH_FUNCTIONS`                                                                                                                                                                |
+| Constantes                | `\pi`, `inf` / `+inf` / `-inf`                              | `interpreter.ts`                                                                                                                                                                |
+| Unité d'angle             | `unite_angle("degres")` (défaut) / `unite_angle("radians")` | appel spécial, hors `BUILTIN_NAMES` ; vaut aussi pour les équations de `courbe()` (`y = sin(x)` presque plate en degrés), sauf les polaires `r = f(theta)`, toujours en radians |
+| Calcul sur vecteurs       | `u + v`, `3*u`, `-u`                                        | `interpreter.ts` (`isVectorValue`)                                                                                                                                              |
+| Directive (animation)     | `@pause(500)`, `@instrument("regle")`                       | `DslDirective` → `onDirective`                                                                                                                                                  |
+| Décorateur (chorégraphie) | `d = mediatrice(A, B) @euclide @complet -arcs`              | `parseTrailingDecorators`                                                                                                                                                       |
 
 - Mots réservés : `KEYWORDS` (`dsl/keywords.ts`). Identifiants : lettres latines, chiffres,
   lettres grecques Unicode (`Ω = point(0, 1)`) ; `α` et `alpha` sont deux noms différents, `π`
