@@ -46,7 +46,7 @@ import {
 import { findNodes, mapNode } from '../transforms';
 import { getVariables } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
-import { computeNumericValue } from '../eval/numeric-value';
+import { computeNumericValue, computeNumericValueOrInfinity } from '../eval/numeric-value';
 import { normalize, denormalize } from '../normal';
 import { nodesEqual } from '../normal/hash';
 import { isPolynomialIn } from './classify';
@@ -540,7 +540,7 @@ function nonZeroDenominators(inU: MathNode, fresh: string, root: MathNode): Math
 /** Dédoublonnage numérique, ordre croissant. */
 function dedupe(solutions: readonly Solution[]): Solution[] {
 	const withValues = solutions.map((s) => {
-		const numeric = s.approximate ?? computeNumericValue(s.value) ?? Number.NaN;
+		const numeric = s.approximate ?? computeNumericValueOrInfinity(s.value) ?? Number.NaN;
 		// Racine paramétrée : pas de valeur approchée (NaN s'affichait « ≈ NaN »)
 		return { solution: Number.isFinite(numeric) ? { ...s, approximate: numeric } : s, numeric };
 	});
