@@ -88,17 +88,20 @@ async function outcomeOf(run: () => unknown): Promise<{ status: number; message:
 // ============================================================================
 
 describe('API scripts de démo : ni l’élève ni l’admin n’y ont accès', () => {
-	it.each([
+	const VERBES = [
 		['GET', (locals: unknown) => GET({ locals } as never)],
 		['POST', (locals: unknown) => POST({ locals, request: postRequest() } as never)],
 		['DELETE', (locals: unknown) => DELETE({ locals, url: deleteUrl() } as never)]
-	])('%s par un élève ou l’admin → 403, table non touchée', async (_verb, run) => {
-		for (const role of ['student', 'admin'] as const) {
-			const { locals, tablesTouched } = fakeLocals(role);
-			const { status } = await outcomeOf(() => run(locals));
-			expect(status).toBe(403);
-			expect(tablesTouched).toEqual([]);
-		}
+	] as const;
+	const CAS = (['student', 'admin'] as const).flatMap((role) =>
+		VERBES.map(([verbe, run]) => [verbe, role, run] as const)
+	);
+
+	it.each(CAS)('%s par %s → 403, table non touchée', async (_verbe, role, run) => {
+		const { locals, tablesTouched } = fakeLocals(role);
+		const { status } = await outcomeOf(() => run(locals));
+		expect(status).toBe(403);
+		expect(tablesTouched).toEqual([]);
 	});
 
 	it('prof : GET, POST et DELETE passent', async () => {

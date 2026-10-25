@@ -17,8 +17,11 @@
 --
 -- Transfert seulement s'il existe exactement un prof (mono-professeur) ; un script
 -- dont le prof a déjà un homonyme (index unique author_id, name) reste à l'admin.
--- Aucune ligne supprimée.
--- Prouvé par tests/integration/construction-demo-scripts-reserves.test.ts.
+-- Aucune ligne supprimée. Un NOTICE dit combien de scripts sont passés au prof.
+-- Policy prouvée par tests/integration/construction-demo-scripts-reserves.test.ts.
+-- Transfert : pas de test (le bloc tourne sur une table vide au db:reset) ; vérifié en
+-- local dans une transaction (2 scripts transférés, l'homonyme laissé à l'admin), puis
+-- en prod après db:migrate (5 scripts au prof attendus).
 --
 -- ROLLBACK :
 --   DROP POLICY "Teacher can CRUD own demo scripts" ON public.construction_demo_scripts;
@@ -36,8 +39,11 @@
 DO $$
 DECLARE
 	prof_id uuid;
+	nb_profs int;
+	nb_transferes int := 0;
 BEGIN
-	IF (SELECT count(*) FROM public.profiles WHERE role = 'teacher') = 1 THEN
+	SELECT count(*) INTO nb_profs FROM public.profiles WHERE role = 'teacher';
+	IF nb_profs = 1 THEN
 		SELECT id INTO prof_id FROM public.profiles WHERE role = 'teacher';
 		UPDATE public.construction_demo_scripts s
 		SET author_id = prof_id
@@ -46,7 +52,9 @@ BEGIN
 				SELECT 1 FROM public.construction_demo_scripts t
 				WHERE t.author_id = prof_id AND t.name = s.name
 			);
+		GET DIAGNOSTICS nb_transferes = ROW_COUNT;
 	END IF;
+	RAISE NOTICE 'scripts de démo : % prof(s), % script(s) transféré(s) au prof', nb_profs, nb_transferes;
 END
 $$;
 
