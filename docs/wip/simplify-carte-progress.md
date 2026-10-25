@@ -2,14 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot 6a en cours (pas de PR)._
+_Mis à jour le 2026-10-25, lot 6a prêt pour la PR._
 
-- **État** : M2 mergé (#1749). Lot 6 : phase 0 validée (§ 95, « je te suis »). 6a en cours, branche `feat/simplify-carte-6` : tests rouges commités ; code NON commité (évaluateur unique dans `common/numeric.ts`, banc jetable `common/bench-6a.ts`).
-- **Écart au plan validé (§ 96)** : `compile` ne convient pas (π/e changent les chemins du moteur des limites, tolérance des flottants perdue) → un évaluateur maison corrigé, 2 modes de pôle. **À dire à David** avant la PR.
-- **Banc complet lu** (§ 96) : 61 288 verts, seuls rouges = tests π/e à remplacer ; écarts = `∛`, `sin²`, `cos⁻¹` + `log(0)` → −∞ (1 appel).
-- **Prochaine action** : après l'accord de David sur le § 96, retirer le banc et `legacy*` ; `evaluateAtPoint` = `evaluateNumeric(…, 'undefined')` ; remplacer le test π/e par un test `∛` ; PR 6a (revue opus). Puis 6b.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93) ; Q2 du § 95 (signe d'un pôle) seulement si le banc le montre.
-- **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; `algebraic.ts:663` (`evaluateAtPoint`, `number(String(value))`) rend `null` pour tout x < 0 (bug latent, à noter pour 6b) ; relire les décisions du lot 4a avant `tidy` ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **État** : M2 mergé (#1749). Lot 6a codé et relu sur `feat/simplify-carte-6` (§ 96-97) : évaluateur flottant unique des limites, `sin²`/`cos⁻¹`/`∛` justes ; David a validé l'évaluateur maison (« ok, continue ») et l'écart π/e noté pour plus tard (doc mathAST, Points ouverts).
+- **Prochaine action** : suite serveur complète verte → push, PR 6a, CI, merge ; puis page de synthèse ; puis 6b (enveloppes → `computeNumericValue`, § 95).
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93).
+- **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; `algebraic.ts:663` (`evaluateAtPoint`, `number(String(value))`) rend `null` pour tout x < 0 (bug latent, pour 6b) ; relire les décisions du lot 4a avant `tidy` ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
 - **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-6`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
@@ -1171,3 +1169,9 @@ Banc jetable (chaque appel calcule ancien et nouveau, écarts dans un JSONL) sur
 - **Retenu (essai)** : un seul évaluateur maison, mode `'infinity'` (`evaluateNumeric`) ou `'undefined'` (`evaluateAtPoint`), qui corrige `sin²`, `cos⁻¹` et l'indice des racines ; π et e restent `null` (connu, les évaluer changerait des limites). Sur `common`, `limits`, `pedagogical-limits` : 1 737 tests verts, seuls écarts du banc = les trois bugs.
 
 - **Banc sur la suite serveur complète** : 61 288 tests verts ; 2 rouges = les tests π/e (à remplacer par `∛`). Écarts : `∛` (≈ 13 500 appels), `sin²`, `cos⁻¹`, et `log(x)` en 0 → −∞ au lieu de `null` (1 appel, `log` désormais lu comme `ln`). Aucun écart de signe de pôle → Q2 du § 95 sans objet. `sign`/`sgn` ajoutés à `compile` : à retirer (inutile).
+
+## 97. Lot 6a : décision et revue (2026-10-25)
+
+- David : « ok, continue avec l'évaluateur maison et note l'écart pour plus tard ». `compile` inchangé (le grapheur ne décide rien d'un `null`, le moteur des limites si). Écart π/e : `docs/systeme/mathast/README.md`, Points ouverts connus.
+- Code : `evaluateNumeric(expr, x, v, poles = 'infinity')` ; `evaluateAtPoint` (limites pédagogiques) = réglage `'undefined'`. Tests π/e remplacés par `∛`.
+- Revue `code-reviewer` opus, corrigée avec test rouge d'abord : (1) le réglage `'undefined'` lisait `floor`/`ceil`/`sign`/`arc*` → `⌊x⌋` en 1 conclu « 1 par substitution directe » (atteignait les corrections de questions) ; (2) `log` lu en `'infinity'` → `log_{0,5}(x)` en 0 rendu −∞ ; (3) puissance de fonction → NaN. Correctif : chaque réglage garde la liste de fonctions de son évaluateur d'origine (`FUNCTIONS_BY_POLE_MODE`, lue sur le nom écrit : `\cos^{-1}` suit `cos`) ; `ln(0)` sans cas particulier. Corrections assumées : `\ln^{-1}` → `null`, `\ln_2` respecte sa base, réciproque sans définition refusée.
