@@ -1670,7 +1670,12 @@ Doublons qui restent, chacun pour un autre besoin :
   valeur fausse : `(x+1)/π → x/π + 1/π` et `(x+1)/√2` en deux écritures (le coefficient ne
   passe devant que pour un dénominateur entier) ; `√8` seul reste écrit (`√8(x+1) → 2√2x +
 2√2`) ; ordre d'une somme d'exponentielles ; `x(1/x − 1) → −x + x/x` (« `1 − x`, pour
-  x ≠ 0 » attend la variante `{ result, conditions }` de `tidy`, ci-dessous).
+  x ≠ 0 » attend la variante `{ result, conditions }` de `tidy`, ci-dessous). `√x√x` → rien
+  à développer (produit sans parenthèse), mais `√x³√x → (√x)⁴` (une puissance de racine déjà
+  écrite) et `∛x∛x → (∛x)²` se regroupent encore.
+- `solve`, quartique à paramètre littéral (relevé le 2026-10-26, revue de normalize-usages) :
+  `ax⁴ + x − 1 = 0`, `x⁴ − ax − 1 = 0`, `(a+1)x⁴ + x − 2 = 0` (inconnue x) répondent « pas de
+  solution » au lieu d'un refus. Antérieur au chantier.
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
   - `tidy` n'a pas de variante `{ result, conditions }` : `x/x` reste écrit au lieu de « 1, pour

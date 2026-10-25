@@ -125,6 +125,10 @@ describe('√x·√x : rien à distribuer, rien à développer (David, 2026-10-2
 	it.each([
 		['\\sqrt{x}\\sqrt{x}', 'unchanged'],
 		['2\\sqrt{x}\\cdot3\\sqrt{x}', 'unchanged'],
+		['-\\sqrt{x}\\sqrt{x}', 'unchanged'],
+		// revue : seul un produit sans parenthèse est gardé ; le reste se calcule
+		['(3\\sqrt{x})^2', '9 \\sqrt{x}^2'],
+		['\\sqrt{x}\\sqrt{x}+x+x', '\\sqrt{x}^2 + 2 x'],
 		// les cas frères, déjà justes
 		['\\sqrt{x}\\sqrt{x}+1', 'unchanged'],
 		['(\\sqrt{x})^2', 'unchanged'],
