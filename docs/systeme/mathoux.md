@@ -364,7 +364,7 @@ de perles.
 ## Lunettes et chapeaux
 
 Lot D des accessoires, décisions de David du 2026-10-25
-([journal](../wip/mathoux-chapeaux-lunettes-progress.md)). Deux emplacements neufs :
+([journal](../archive/wip/mathoux-chapeaux-lunettes-progress.md)). Deux emplacements neufs :
 
 - **Yeux** : lunettes rondes (monture dorée) 10, lunettes de soleil 10, monocle d'or à chaînette 20,
   pince-nez 20, lunettes à gidouille 40 ;
