@@ -4,7 +4,7 @@
  * Puissances décroissantes de x, les autres lettres traitées comme des
  * coefficients ; sans x, l'ordre alphabétique, chaque lettre à sa plus haute
  * puissance d'abord (a² + 2ab + b², ax + ab) — tableau B de la phase 0
- * `docs/wip/atelier-developper-phase0.md`, décision de David du 2026-10-14.
+ * `docs/archive/wip/atelier-developper-phase0.md`, décision de David du 2026-10-14.
  *
  * ⚠️ **Ce n'est PAS le résultat de l'intention `developper`**, qui garde l'ordre
  * de `normalize` (`2ab + a² + b²`) : il sert à l'intégration et à la stratégie 6

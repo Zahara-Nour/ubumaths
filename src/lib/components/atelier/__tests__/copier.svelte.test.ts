@@ -1,7 +1,7 @@
 /**
  * Le bouton « Copier » d'une ligne de Calcul, vu depuis l'écran.
  *
- * Phase 0 `docs/wip/atelier-copier-phase0.md` : la réponse seule, en texte
+ * Phase 0 `docs/archive/wip/atelier-copier-phase0.md` : la réponse seule, en texte
  * lisible ; « Copier en LaTeX » au menu ; un retour annoncé, jamais muet.
  */
 

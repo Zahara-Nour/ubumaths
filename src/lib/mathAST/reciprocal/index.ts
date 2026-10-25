@@ -1,6 +1,6 @@
 /**
  * La réciproque d'une fonction, calculée algébriquement (lot 2 du chantier
- * « réciproque », docs/wip/atelier-reciproque-phase0.md)
+ * « réciproque », docs/archive/wip/atelier-reciproque-phase0.md)
  *
  * `computeReciprocal(f, { interval })` résout `y = f(x)` en x (`solve`, second
  * membre littéral depuis #1302), garde la solution qui tombe dans I, et rend

@@ -1,6 +1,6 @@
 /**
  * Une courbe restreinte à un ensemble — lot 3 de
- * `docs/wip/atelier-intervalle-phase0.md` (I5).
+ * `docs/archive/wip/atelier-intervalle-phase0.md` (I5).
  *
  * Le grapheur reçoit l'ensemble sous forme NUMÉRIQUE (des morceaux aux bornes
  * réelles, ±∞ compris) : il ne trace que sur ces morceaux, marque chaque borne

@@ -1,7 +1,7 @@
 /**
  * La valeur approchée d'un résultat exact — le bouton ≈ de la vue Calcul.
  *
- * Décisions de David (2026-10-11, `docs/wip/atelier-cas-phase0.md`, PR 2) :
+ * Décisions de David (2026-10-11, `docs/archive/wip/atelier-cas-phase0.md`, PR 2) :
  * - **4 décimales**, zéros compris : `\approx 5.0990` ;
  * - une valeur dont l'écriture décimale tient dans l'arrondi s'écrit avec
  *   **=**, sans zéros inutiles : 1/4 → `= 0.25` ;

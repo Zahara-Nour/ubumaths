@@ -1,7 +1,7 @@
 /**
  * La fenêtre de réglages de l'atelier, et le choix de la saisie dans Calcul.
  *
- * Phase 0 `docs/wip/atelier-reglages-phase0.md` : « Texte » par défaut, le
+ * Phase 0 `docs/archive/wip/atelier-reglages-phase0.md` : « Texte » par défaut, le
  * choix prend effet tout de suite et reste dans ce navigateur, la ligne en
  * cours suit la bascule, les réponses ne changent pas.
  */

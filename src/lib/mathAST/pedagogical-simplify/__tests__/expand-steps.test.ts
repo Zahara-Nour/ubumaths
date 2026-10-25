@@ -1,6 +1,6 @@
 /**
  * Les étapes de « développer », rédigées comme au tableau (section E de la phase 0
- * `docs/wip/atelier-developper-phase0.md`, validée par David le 2026-10-14).
+ * `docs/archive/wip/atelier-developper-phase0.md`, validée par David le 2026-10-14).
  *
  * Le RÉSULTAT reste celui de l'intention `developper` (il sert à l'intégration
  * et à la stratégie 6 de `factoriser`) : `writeExpandSteps` ne calcule pas la

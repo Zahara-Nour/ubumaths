@@ -213,7 +213,7 @@ export function variationTableNode(
 
 	// La première borne se lit sur le PREMIER intervalle, point critique compris :
 	// x² étudiée sur [0 ; +∞[ commence par `[0 ; 0]`, et `]0 ; +∞[` marquait 0
-	// exclu (lot 2 de `docs/wip/atelier-intervalle-phase0.md`)
+	// exclu (lot 2 de `docs/archive/wip/atelier-intervalle-phase0.md`)
 	// La dernière, symétriquement, sur le DERNIER : sans elle, `[0 ; 5[` sortait
 	// fermé en 5, avec 25 en haut — « f(5) = 25 est atteint », faux (revue de #1307)
 	const firstOpen =

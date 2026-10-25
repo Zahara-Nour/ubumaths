@@ -2,7 +2,7 @@
 	/**
 	 * La fenêtre de réglages de l'atelier.
 	 *
-	 * Phase 0 `docs/wip/atelier-reglages-phase0.md` : la saisie dans Calcul ;
+	 * Phase 0 `docs/archive/wip/atelier-reglages-phase0.md` : la saisie dans Calcul ;
 	 * puis les angles (2026-10-18) et le déplacement des points (2026-10-22).
 	 * Le choix prend effet tout de suite, sans bouton
 	 * « Enregistrer » ; c'est le conteneur qui le retient dans ce navigateur.

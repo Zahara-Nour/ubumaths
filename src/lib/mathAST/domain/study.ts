@@ -8,7 +8,7 @@
  * ensemble vide et aux autres lecteurs de `dans`.
  *
  * C'est aussi par ce mot que l'atelier transmet l'ensemble d'une fonction
- * définie sur un intervalle (lot 2 de `docs/wip/atelier-intervalle-phase0.md`).
+ * définie sur un intervalle (lot 2 de `docs/archive/wip/atelier-intervalle-phase0.md`).
  *
  * @module mathAST/domain/study
  */

@@ -1,6 +1,6 @@
 /**
  * L'écriture du manuel pour f⁻¹, sur l'écriture finale seulement (décisions
- * de David du 2026-10-13, docs/wip/atelier-reciproque-phase0.md) :
+ * de David du 2026-10-13, docs/archive/wip/atelier-reciproque-phase0.md) :
  *
  * - **sous une racine**, le contenu du radicande sort : `factorPolynomial`
  *   (noyau de l'ADR 0024) le donne, `extractPerfectPower` (`normal/radical.ts`)

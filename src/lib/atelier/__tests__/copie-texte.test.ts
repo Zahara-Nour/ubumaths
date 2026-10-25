@@ -1,7 +1,7 @@
 /**
  * Le texte lisible que copie le bouton « Copier » d'une ligne de Calcul.
  *
- * Phase 0 `docs/wip/atelier-copier-phase0.md` : on convertit le LaTeX de la
+ * Phase 0 `docs/archive/wip/atelier-copier-phase0.md` : on convertit le LaTeX de la
  * ligne (propre partout), pas son texte (souvent la sortie du terminal), ni par
  * MathLive (`(1)/(2)`, `k m`).
  */

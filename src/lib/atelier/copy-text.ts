@@ -1,7 +1,7 @@
 /**
  * Atelier — ce que copie le bouton « Copier » d'une ligne de Calcul
  *
- * Phase 0 `docs/wip/atelier-copier-phase0.md` (décisions de David, 2026-10-15) :
+ * Phase 0 `docs/archive/wip/atelier-copier-phase0.md` (décisions de David, 2026-10-15) :
  * la réponse seule, en texte lisible ; le LaTeX au menu.
  *
  * Le texte vient du LaTeX de la ligne, propre partout — pas de son texte, qui

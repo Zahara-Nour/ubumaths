@@ -1,13 +1,13 @@
 ---
 title: Atelier — ce qui manque avant de retirer /cas (phase 0)
 date: 2026-10-11
-status: PR 1 (#1080), PR 2 (#1086) et PR 3 (#1094) livrées le 2026-10-11 ; PR 4 (retrait de /cas) livrée le 2026-10-13 (#1340) ; points mis de côté faits (#1101, #1107)
+status: PR 1 (#1080), PR 2 (#1086) et PR 3 (#1094) livrées le 2026-10-11 ; PR 4 (retrait de /cas) livrée le 2026-10-13 (#1340) ; points mis de côté faits (#1101, #1107) ; archivé le 2026-10-25
 ---
 
 # Atelier — ce qui manque avant de retirer `/cas`
 
 Inventaire du 2026-10-11 (`/cas` contre l'atelier, lu dans le code) et décisions de David du même jour.
-Chapeau du chantier : [atelier-progress.md](atelier-progress.md).
+Chapeau du chantier : [atelier-progress.md](../../wip/atelier-progress.md).
 
 ## Décisions de David (2026-10-11)
 

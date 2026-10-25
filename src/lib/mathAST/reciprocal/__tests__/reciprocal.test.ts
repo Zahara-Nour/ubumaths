@@ -1,6 +1,6 @@
 /**
  * La réciproque calculée (lot 2 du chantier « réciproque »,
- * docs/wip/atelier-reciproque-phase0.md) — testée sans l'atelier.
+ * docs/archive/wip/atelier-reciproque-phase0.md) — testée sans l'atelier.
  *
  * Chaque succès est vérifié NUMÉRIQUEMENT : f(f⁻¹(y)) = y pour trois y de
  * l'ensemble de départ de f⁻¹, et f⁻¹(f(x)) = x pour trois x de I. Les

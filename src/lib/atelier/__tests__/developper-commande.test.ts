@@ -1,6 +1,6 @@
 /**
  * `.développer` — une commande que l'atelier sert lui-même, comme `.factoriser`
- * (phase 0 `docs/wip/atelier-developper-phase0.md`, décisions de David du
+ * (phase 0 `docs/archive/wip/atelier-developper-phase0.md`, décisions de David du
  * 2026-10-14).
  *
  * PR 1 : la réponse. PR 2 : le « Comment ? » (section E de la phase 0) — les

@@ -1,7 +1,7 @@
 /**
  * Grapheur — une courbe restreinte à un ensemble (réunion d'intervalles).
  *
- * Lot 3 de `docs/wip/atelier-intervalle-phase0.md` (I5) : une fonction de
+ * Lot 3 de `docs/archive/wip/atelier-intervalle-phase0.md` (I5) : une fonction de
  * l'atelier définie sur `[0;+∞[` ne se trace que là, et chaque borne finie se
  * marque d'un point plein (fermée) ou creux (ouverte), sur le modèle de
  * geometry-core (`functionToSVG`, `courbe … sur ]a;b]`).

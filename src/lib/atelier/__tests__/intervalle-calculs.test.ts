@@ -1,7 +1,7 @@
 /**
  * Atelier — une fonction définie sur un intervalle, lot 2 (les calculs).
  *
- * Phase 0 `docs/wip/atelier-intervalle-phase0.md` (I4, validée par David le
+ * Phase 0 `docs/archive/wip/atelier-intervalle-phase0.md` (I4, validée par David le
  * 2026-10-13) : `.variations`, `.résoudre` et leurs actions de carte
  * travaillent sur l'ensemble de la fonction ; `f′` hérite de l'ensemble de f.
  * Tout passe par les vrais chemins : `CalcDesk.submit` (la vue Calcul),

@@ -193,7 +193,7 @@ function answerFor(step: EquationStep, rendered: RenderedStep): string | null {
  *   donnée après un point-virgule (`3 = 2t ; t`) — comme `.solve`, aucune
  *   devinette (décision de David, 2026-10-06).
  * @param within - L'ensemble de la fonction résolue (lot 2 de
- *   `docs/wip/atelier-intervalle-phase0.md`) : les étapes résolvent sur ℝ, puis
+ *   `docs/archive/wip/atelier-intervalle-phase0.md`) : les étapes résolvent sur ℝ, puis
  *   une dernière ne garde que les solutions de l'ensemble. Seulement pour une
  *   équation qui conclut sur des solutions isolées ; sinon, repli (`null`).
  */

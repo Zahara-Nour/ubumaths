@@ -1,6 +1,6 @@
 /**
  * « Remplacer mon atelier » — modèle et stockage (phase 0
- * `docs/wip/atelier-remplacer-phase0.md`, R1-R5 et B1-B9, validée par David).
+ * `docs/archive/wip/atelier-remplacer-phase0.md`, R1-R5 et B1-B9, validée par David).
  *
  * - `Atelier.replaceWith` : tout l'état remplacé en UNE étape d'Annuler, la pile
  *   gardée (coordination avec le lot 5) ;

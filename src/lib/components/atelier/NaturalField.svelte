@@ -4,7 +4,7 @@
 
 	Un champ MathLive, en maths par défaut, sans point (décisions 2 à 9 de
 	`docs/archive/wip/atelier-saisie-naturelle.md`), choisi dans les réglages de
-	l'atelier (`docs/wip/atelier-reglages-phase0.md`). Deux chemins pour la
+	l'atelier (`docs/archive/wip/atelier-reglages-phase0.md`). Deux chemins pour la
 	même règle :
 
 	- clavier physique : `keydown` en capture, AVANT MathLive — le mot fini par

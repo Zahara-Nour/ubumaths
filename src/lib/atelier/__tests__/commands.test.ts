@@ -286,7 +286,7 @@ describe('quand la commande n’existe pas', () => {
 
 /**
  * Le modèle affiché sous le champ une fois la commande choisie (phase 0
- * `docs/wip/atelier-cas-phase0.md`, PR 1, décision de David du 2026-10-11).
+ * `docs/archive/wip/atelier-cas-phase0.md`, PR 1, décision de David du 2026-10-11).
  */
 describe('la commande en cours d’écriture', () => {
 	const catalog = commandCatalog(new WebReplEngine());

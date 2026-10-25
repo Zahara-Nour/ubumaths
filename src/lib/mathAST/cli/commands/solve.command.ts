@@ -1098,7 +1098,7 @@ export class SolveCommand extends BaseCommand {
 	 * (`[0 ; 2\pi]`) garde son écriture ; sinon, tout ce que lit le parseur
 	 * des réponses d'élève : borne infinie (`[0 ; +∞[`), réunion, `ℝ \ {0}` —
 	 * l'ensemble d'une fonction de l'atelier (lot 2 de
-	 * `docs/wip/atelier-intervalle-phase0.md`).
+	 * `docs/archive/wip/atelier-intervalle-phase0.md`).
 	 */
 	private readSolvingDomain(
 		text: string,

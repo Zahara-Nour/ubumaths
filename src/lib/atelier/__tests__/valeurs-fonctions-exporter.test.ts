@@ -1,6 +1,6 @@
 /**
  * `.valeurs`, `.fonctions` et `.exporter` dans Calcul — retrait de `/cas`
- * (phase 0 `docs/wip/atelier-cas-phase0.md`, PR 4, 2026-10-13).
+ * (phase 0 `docs/archive/wip/atelier-cas-phase0.md`, PR 4, 2026-10-13).
  *
  * Avant : `.valeurs` et `.fonctions` rendaient la liste du MOTEUR, en anglais
  * (« Variables: », « Functions: »), où une suite passait pour une fonction et

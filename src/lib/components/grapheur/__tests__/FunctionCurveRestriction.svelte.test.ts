@@ -9,7 +9,7 @@ import type { Restriction } from '$lib/grapheur/restriction';
 
 /**
  * Une courbe restreinte se dessine sur son ensemble seulement, avec ses
- * points de bord (lot 3 de `docs/wip/atelier-intervalle-phase0.md`, I5).
+ * points de bord (lot 3 de `docs/archive/wip/atelier-intervalle-phase0.md`, I5).
  * On vérifie le RENDU : les cercles présents, leur remplissage, et les
  * abscisses réellement atteintes par le tracé.
  */

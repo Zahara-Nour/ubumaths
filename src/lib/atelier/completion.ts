@@ -1,7 +1,7 @@
 /**
  * Atelier — la complétion des fonctions et des lettres grecques dans Calcul
  *
- * Phase 0 `docs/wip/atelier-cas-phase0.md`, PR 3 (décisions de David du
+ * Phase 0 `docs/archive/wip/atelier-cas-phase0.md`, PR 3 (décisions de David du
  * 2026-10-11). **Règle unique** : la liste s'ouvre quand le mot en cours
  * (lettres seulement) a au moins 2 lettres et est le début d'une proposition
  * — la choisir change toujours le champ.

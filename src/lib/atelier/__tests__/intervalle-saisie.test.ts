@@ -1,7 +1,7 @@
 /**
  * Atelier — une fonction définie sur un intervalle, lot 1 (modèle et saisie).
  *
- * Phase 0 `docs/wip/atelier-intervalle-phase0.md`, validée par David le
+ * Phase 0 `docs/archive/wip/atelier-intervalle-phase0.md`, validée par David le
  * 2026-10-13 (I1-I6 selon les recos). Tout passe par les vrais chemins :
  * `CalcDesk.submit` (la vue Calcul), `Atelier.update` (la carte), la
  * sauvegarde locale et le lien de partage.

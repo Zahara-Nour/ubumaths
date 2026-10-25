@@ -1,6 +1,6 @@
 /**
  * Atelier — une fonction définie sur un intervalle : les suites décidées par
- * David le 2026-10-13 (journal de `docs/wip/atelier-intervalle-phase0.md`,
+ * David le 2026-10-13 (journal de `docs/archive/wip/atelier-intervalle-phase0.md`,
  * décisions a, b, d, e, f, g ; c = futur chantier).
  *
  * Tout passe par les vrais chemins : `CalcDesk.submit` (la vue Calcul),

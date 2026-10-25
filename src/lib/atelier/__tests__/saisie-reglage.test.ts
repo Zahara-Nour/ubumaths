@@ -1,7 +1,7 @@
 /**
  * Le réglage « Saisie dans Calcul », retenu dans ce navigateur.
  *
- * Phase 0 `docs/wip/atelier-reglages-phase0.md` (A, C) : « Texte » par défaut,
+ * Phase 0 `docs/archive/wip/atelier-reglages-phase0.md` (A, C) : « Texte » par défaut,
  * le choix gardé à part de l'atelier, un navigateur qui refuse le stockage
  * n'est pas une erreur.
  */

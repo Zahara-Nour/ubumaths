@@ -1,7 +1,7 @@
 /**
  * Atelier — la réciproque d'une fonction de l'atelier
  *
- * Lot 3 de `docs/wip/atelier-reciproque-phase0.md` (R1-R4, Q5 = (b)) : le
+ * Lot 3 de `docs/archive/wip/atelier-reciproque-phase0.md` (R1-R4, Q5 = (b)) : le
  * moteur (`computeReciprocal`, `mathAST/reciprocal/`) calcule, l'atelier lui
  * passe f (noms remplacés), son intervalle et sa lettre, puis range la réponse
  * dans la carte `f⁻¹` — formule, et ensemble de départ comme `interval`.

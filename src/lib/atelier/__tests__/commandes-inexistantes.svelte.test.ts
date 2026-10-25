@@ -14,7 +14,7 @@
  * basculait la saisie en LaTeX (`sqrt(2)*sqrt(8)` devenait « s q r t »).
  *
  * `.réciproque` n'en est plus : c'est la réciproque CALCULÉE (lot 3 de
- * `docs/wip/atelier-reciproque-phase0.md`), servie par l'atelier.
+ * `docs/archive/wip/atelier-reciproque-phase0.md`), servie par l'atelier.
  */
 
 import { describe, it, expect } from 'vitest';

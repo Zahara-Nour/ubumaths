@@ -1,14 +1,14 @@
 ---
 title: Atelier — la réciproque calculée (phase 0)
 date: 2026-10-13
-status: chantier livré (#1302, #1304, #1314, #1328, 2026-10-13) ; questions ouvertes au journal ; reste paramètres sans carte
+status: chantier livré (#1302, #1304, #1314, #1328, 2026-10-13) ; questions (1)-(5) tranchées et livrées (#1338, #1342) ; paramètres décrits dans docs/systeme/atelier.md ; archivé le 2026-10-25
 ---
 
 # Atelier — la réciproque calculée
 
 Décision de David (2026-10-13) : on ne reprend pas `.inv` de `/cas` (réciproque donnée à la main,
 jamais vérifiée) ; on garde l'idée d'une **vraie réciproque, calculée algébriquement par le moteur**.
-Contexte : [atelier-cas-phase0.md](atelier-cas-phase0.md). Chapeau : [atelier-progress.md](atelier-progress.md).
+Contexte : [atelier-cas-phase0.md](atelier-cas-phase0.md). Chapeau : [atelier-progress.md](../../wip/atelier-progress.md).
 
 ## Décisions de David (2026-10-13, « tes recos pour les 4 questions »)
 
@@ -96,7 +96,7 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
   mettre au propre au lot 2 (`ln(y/3 + 1/3)` → `ln((y+1)/3)`, `(1/2)^a`). **Question à David** :
   `ax = 1` → `1/a` et `e^{ax} = 2` → `ln 2 / a` sans « si a ≠ 0 » (convention V41, déjà sur main).
 - 2026-10-13 — **lot 2 en PR** : `computeReciprocal` (`src/lib/mathAST/reciprocal/`, doc
-  [reciproque.md](../systeme/mathast/reciproque.md)) ; les 8 cas du tableau et les 4 refus testés,
+  [reciproque.md](../../systeme/mathast/reciproque.md)) ; les 8 cas du tableau et les 4 refus testés,
   aller-retour numérique ; f(I) lue par les variations ET par le solveur, en accord. Écritures
   laissées au solveur : `x² − 4x + 1` sur [2 ; +∞[ → `√(4x + 12)/2 + 2`, `1/x²` → `√x/x`.
 - 2026-10-13 — **lot 2 MERGÉ (#1304)** : `computeReciprocal` (`src/lib/mathAST/reciprocal/`, doc
@@ -136,7 +136,7 @@ mise au propre habituelle de Calcul (ordre de David, virgule décimale).
   à lettres (`(x − b)/a`) quand le solveur la trouve et qu'elle coïncide avec la réciproque jugée
   aux valeurs actuelles, sinon formule à nombres (`a eˣ` → `ln(x/2)`) recalculée à chaque cran ;
   « Pour a = 0 et b = 3, f est constante : pas de réciproque. » Refus composés en maths dans Calcul
-  et sur la carte. Doc : [atelier.md](../systeme/atelier.md) § « La réciproque ».
+  et sur la carte. Doc : [atelier.md](../../systeme/atelier.md) § « La réciproque ».
 - 2026-10-13 — **lot 3 MERGÉ (#1328)** : bouton « Réciproque », `.réciproque f [sur I]` (I CROISÉ avec
   l'ensemble de f), carte `f⁻¹` (nom interne `f^-1`) qui suit f, ensemble = départ de f⁻¹,
   paramètres avec curseurs. Deux revues ciblées. **Chantier livré** (lots 1-3 + écriture/refus #1314).
