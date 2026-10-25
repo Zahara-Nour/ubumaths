@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { calc, hasSteps, openAtelier, steps } from './helpers/atelier';
+import { calc, cardAction, cards, hasSteps, openAtelier, steps } from './helpers/atelier';
 
 /**
  * Sonde de la console de l'Atelier — pour ÉCRIRE un test, pas un test
@@ -10,6 +10,10 @@ import { calc, hasSteps, openAtelier, steps } from './helpers/atelier';
  * étapes de « Comment ? ». Sautée sans `SONDE`.
  *
  *   SONDE=$'.dériver x^2\n.limite 1/x en 0' VERIFS_PORT=5179 pnpm test:verifs sonde
+ *
+ * Une ligne `@Action carte` choisit une action du menu d'une carte
+ * (`@Réciproque f`, `@Dériver f`) ; après chaque ligne, la sonde imprime aussi
+ * les cartes affichées (`CARTES`).
  *
  * ⚠️ Une seule page : une valeur posée (`a = 2`) vaut pour les lignes
  * suivantes, et une erreur de la page peut gâter la suite (`PAGEERROR`).
@@ -25,6 +29,13 @@ test('sonde', async ({ page }) => {
 	page.on('pageerror', (error) => console.log('PAGEERROR', error.message.split('\n')[0]));
 	await openAtelier(page);
 	for (const input of lines) {
+		const action = /^@(\S+) (\S+)$/.exec(input);
+		if (action) {
+			await cardAction(page, action[2], action[1]);
+			await page.waitForTimeout(500);
+			console.log('CARTES', JSON.stringify(await cards(page)));
+			continue;
+		}
 		const answer = await calc(page, input);
 		const detail = (await hasSteps(answer))
 			? await steps(answer).catch((error: Error) => `ÉCHEC ${error.message.split('\n')[0]}`)
@@ -38,5 +49,6 @@ test('sonde', async ({ page }) => {
 				steps: detail
 			})
 		);
+		console.log('CARTES', JSON.stringify(await cards(page)));
 	}
 });

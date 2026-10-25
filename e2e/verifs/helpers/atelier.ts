@@ -108,3 +108,61 @@ export function expectLatexContaining(answer: Answer, expected: string): void {
 export async function hasSteps(answer: Answer): Promise<boolean> {
 	return (await answer.line.getByRole('button', { name: 'Comment ?' }).count()) > 0;
 }
+
+/** Une carte de l'Atelier, telle qu'affichée */
+export interface Card {
+	/** Le nom affiché (`f`, `f′`, `f⁻¹`) */
+	name: string;
+	/** Le LaTeX : celui du champ d'une carte qu'on écrit, ou `data-latex` d'une carte calculée */
+	latex: string | null;
+	/** L'intervalle affiché après « sur », sans le « sur » */
+	interval: string | null;
+	/** Le message de la carte, ou le refus de son champ */
+	message: string | null;
+}
+
+/** La carte de ce nom affiché */
+export function cardLocator(page: Page, name: string): Locator {
+	return page
+		.locator('article.objet')
+		.filter({ has: page.locator('.nom', { hasText: new RegExp(`^${escapeRegExp(name)}$`) }) });
+}
+
+function escapeRegExp(text: string): string {
+	return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Toutes les cartes affichées, dans l'ordre */
+export async function cards(page: Page): Promise<Card[]> {
+	return page.locator('article.objet').evaluateAll((articles) =>
+		articles.map((article) => {
+			const read = (selector: string) =>
+				article.querySelector(selector)?.textContent?.replace(/\s+/g, ' ').trim() || null;
+			const field = article.querySelector('math-field') as
+				(HTMLElement & { value?: string }) | null;
+			const shown = article.querySelector('[data-latex]');
+			return {
+				name: read('.nom') ?? '',
+				latex: field ? (field.value ?? null) : (shown?.getAttribute('data-latex') ?? null),
+				interval: read('.intervalle')?.replace(/^sur /, '') ?? null,
+				message: read('.message') ?? read('.refus')
+			};
+		})
+	);
+}
+
+/** La carte de ce nom, lue ; échoue si elle n'est pas affichée */
+export async function card(page: Page, name: string): Promise<Card> {
+	await expect(cardLocator(page, name)).toBeVisible();
+	const found = (await cards(page)).find((each) => each.name === name);
+	if (found === undefined) throw new Error(`carte ${name} introuvable`);
+	return found;
+}
+
+/** Choisit une action du menu « Options » d'une carte (« Dériver », « Réciproque »…) */
+export async function cardAction(page: Page, name: string, action: string): Promise<void> {
+	await cardLocator(page, name)
+		.getByRole('button', { name: `Options de ${name}` })
+		.click();
+	await page.getByRole('menuitem', { name: action, exact: true }).click();
+}

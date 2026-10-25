@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1783._
+_Mis à jour le 2026-10-25, lot 4 en PR._
 
-- **État** : lot 3 MERGÉ (#1783) — 14 lignes console de plus (5f-4, Q50-Q52, #1620 → #1710) : 48 tests dans `e2e/verifs/atelier-calcul.spec.ts`. Rouges : #1674, et la fin de #1703 (`.dériver x/(x+1)`) et de #1620 (`.dériver x\ln(x)`) — même bug `each_key_duplicate`, chantier à part.
-- **Prochaine action** : lot 4 dans un worktree neuf (`git worktree add -b test/verifs-auto-4 ../ubumaths-wt-verifs-auto origin/main`) : les lignes à cartes (#1305 → #1338, clics « Réciproque », « Dériver », et la carte f′ de #1703). La sonde d'abord, les écarts à David.
-- **En attente de David** : #1620, `.dériver x^x` → la ligne dit `(ln(x)+1)x^x`, l'Atelier `x^x(ln(x)+1)` : ligne périmée ou bug ? (test rouge en attendant). `.simplifier` des lignes #1682 et #1625 MIS DE CÔTÉ (chantier tidy / simplify). Run en prod (`VERIFS_URL=https://chiph.re pnpm test:verifs`) après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : ports 5175-5178 souvent pris → `lsof` d'abord (5179 ce lot) ; `each_key_duplicate` casse la page de la sonde pour toutes les lignes suivantes : sonder seule une dérivée de produit/quotient/composée ; formules de « Comment ? » = `<math-span>` → `steps()` les écrit `$latex$` ; une commande seule (`.latex`) : la 1re Entrée COMPLÈTE la commande. Une ligne peut être PÉRIMÉE : test rouge = bug ou ligne périmée, le dire, ne JAMAIS changer l'attendu seul. `verifications-manuelles.md` : repérer une ligne par sa colonne PR, jamais par son numéro.
-- **Worktree / branche** : aucun (retirés après #1783).
+- **État** : lot 4 sur `test/verifs-auto-4` (PR à ouvrir/ouverte) — 8 tests cartes dans `e2e/verifs/atelier-cartes.spec.ts` (#1305, #1307, #1309, #1315, #1328, #1337, #1338, carte f′ de #1703) ; `data-latex` posé sur les cartes calculées (`FunctionCard`) et les formules d'un refus (`FormulaText`) ; la sonde lit les cartes et joue `@Action carte`. 4 rouges : 3 écarts à trancher + `each_key_duplicate` au bout de #1307.
+- **Prochaine action** : merger le lot 4, puis lot 5 (lignes Atelier restantes : Graphe, Données, Géométrie).
+- **En attente de David** : écarts du lot 4 — #1309 `f(1)` 2,5 au lieu de 5/2 ; #1337 carte g sans « sur [0 ; +∞[ » ; #1338 `.réciproque sin` → « écris sin(…) » (arcsin seulement avec `sin(x)`) ; #1305 `a = 3 sur 4` refusé (« reste accepté » ?). Du lot 3 : #1620 `.dériver x^x`, ordre des facteurs. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : ports 5175-5178 pris → `lsof` (5179) ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord (un `vite` orphelin du lot 3 a recréé le dossier, kill refusé au classifieur) ; suite complète à froid avec 4 workers → délais dépassés, relancer à chaud ; `each_key_duplicate` casse « Comment ? » (dérivées produit/quotient/composée, `.résoudre` sur intervalle) ; champ d'une carte : le 1er clic après un calcul rend le focus à la console (`typeInCard` reclique) ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul ; `verifications-manuelles.md` : repérer une ligne par sa colonne PR.
+- **Worktree / branche** : `../ubumaths-wt-verifs-auto` · `test/verifs-auto-4`.
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -32,6 +32,12 @@ _Mis à jour le 2026-10-25, après #1783._
 5f-4, Q50 (#1735), Q51-Q52 (#1741), #1710 (sans la lisibilité sur téléphone), #1709 (sans l'infobulle du clavier), #1708 (sans la correction d'un modèle d'essai), #1703 (sans la carte f′), #1663 (console seule), #1673 (console seule), #1620 (console seule), #1624 (sans le mode décimal), #1628, #1631, #1636 (console seule). Sonde : AUCUN écart avec les lignes, sauf `each_key_duplicate` sur « Comment ? » de `.dériver x/(x+1)`, `.dériver x\ln(x)` et `.dériver 2^(x^2)` (cette dernière ligne ne demande que la réponse : test vert).
 
 Vu en passant, hors des lignes (à montrer à David, rien changé) : `.intégrer -0,6x+1,2` → la ligne dit $-0{,}3x^2 + 1{,}2x + C$, la dernière étape $1{,}2x - 0{,}3x^2 + C$ ; `.résoudre (x-0,5)/(x+1)>0` → « P(x) = 2x − 1, Q(x) = 2x + 2 » (multipliés par 2) et l'étape 1 d'une inéquation rationnelle explique « Une inéquation du second degré s'écrit… » ; `.résoudre |x/2-0,5|=1` → la branche réécrit x/2 en $0{,}5x$ dès l'étape suivante.
+
+## Lot 4 — lignes retenues (2026-10-25)
+
+Cartes : #1305 (sans `a = 3 sur 4`, à trancher), #1307, #1309, #1315 (thème clair ; sombre et /grapheur restent), #1328 (sans le dessin ni les 3 étapes dans Calcul), #1337, #1338 (sans le gris de y = x), carte f′ et bouton « Dériver » de #1703. Sonde étendue : `CARTES` après chaque ligne, `@Réciproque f` pour un clic de menu.
+
+Écarts vus (rien changé, à David) : `f(1)` de `max(2,5 ; x)` → 2,5 (la ligne : 5/2) ; carte `g(x) = f(x)+1` sans intervalle affiché (le Graphe l'applique) ; `.réciproque sin` demande des parenthèses ; `a = 3 sur 4` en erreur. Nouveau cas `each_key_duplicate` : « Comment ? » de `.résoudre f(x)=4` avec f sur `[0;+∞[`. Vu en passant : la légende du tableau de variations dit « Tableau de variations de la fonction x » (au lieu de f).
 
 ## Plan d'ensemble
 
