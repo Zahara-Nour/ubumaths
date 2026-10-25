@@ -2,13 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot 6a prêt pour la PR._
+_Mis à jour le 2026-10-25, après #1760 (lot 6a)._
 
-- **État** : M2 mergé (#1749). Lot 6a codé et relu sur `feat/simplify-carte-6` (§ 96-97) : évaluateur flottant unique des limites, `sin²`/`cos⁻¹`/`∛` justes ; David a validé l'évaluateur maison (« ok, continue ») et l'écart π/e noté pour plus tard (doc mathAST, Points ouverts).
-- **Prochaine action** : suite serveur complète verte → push, PR 6a, CI, merge ; puis page de synthèse ; puis 6b (enveloppes → `computeNumericValue`, § 95).
+- **État** : lot 6a mergé (#1760) : évaluateur flottant unique des limites, `sin²`/`cos⁻¹`/`∛` justes, aucun autre résultat changé (banc) ; écart π/e noté (doc mathAST, Points ouverts). Pas de vérification manuelle : aucun résultat visible ne change. Code pas en prod.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
+- **Ordre des lots** : … → 6a ✓ → **6b enveloppes** → 7 renommages.
+- **Prochaine action** : 6b (§ 95) : `computeNumericValue` → `eval/numeric-value.ts` (réexport), remplace les ~16 fonctions A et les blocs A≈ ; variante ±∞ pour `inequality/index.ts:251` et `reciprocal/image.ts:55` ; B/L/X inchangés. Preuve : suite serveur + banc 1 008 modèles × 8. Revue Sonnet. Branche neuve depuis `origin/main`.
 - **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1749) ; Q49 (§ 80) ; § 60 ; § 64 ; § 87 ; § 89 ; mineurs M2 (§ 93).
-- **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; `algebraic.ts:663` (`evaluateAtPoint`, `number(String(value))`) rend `null` pour tout x < 0 (bug latent, pour 6b) ; relire les décisions du lot 4a avant `tidy` ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-6`.
+- **Pièges en cours** : `number("-0.01")` lève → `numericNode` ; `algebraic.ts:663` (`evaluateAtPoint`, `number(String(value))`) rend `null` pour tout x < 0 (bug latent, à traiter en 6b avec test rouge) ; banc d'écart = ancien et nouveau calculés à chaque appel, écarts en JSONL ; pas de `pnpm math` ; commitlint corps ≤ 100 car. ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte` ; `feat/simplify-carte-6` mergée, à supprimer ; 6b sur une branche neuve.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1175,3 +1177,7 @@ Banc jetable (chaque appel calcule ancien et nouveau, écarts dans un JSONL) sur
 - David : « ok, continue avec l'évaluateur maison et note l'écart pour plus tard ». `compile` inchangé (le grapheur ne décide rien d'un `null`, le moteur des limites si). Écart π/e : `docs/systeme/mathast/README.md`, Points ouverts connus.
 - Code : `evaluateNumeric(expr, x, v, poles = 'infinity')` ; `evaluateAtPoint` (limites pédagogiques) = réglage `'undefined'`. Tests π/e remplacés par `∛`.
 - Revue `code-reviewer` opus, corrigée avec test rouge d'abord : (1) le réglage `'undefined'` lisait `floor`/`ceil`/`sign`/`arc*` → `⌊x⌋` en 1 conclu « 1 par substitution directe » (atteignait les corrections de questions) ; (2) `log` lu en `'infinity'` → `log_{0,5}(x)` en 0 rendu −∞ ; (3) puissance de fonction → NaN. Correctif : chaque réglage garde la liste de fonctions de son évaluateur d'origine (`FUNCTIONS_BY_POLE_MODE`, lue sur le nom écrit : `\cos^{-1}` suit `cos`) ; `ln(0)` sans cas particulier. Corrections assumées : `\ln^{-1}` → `null`, `\ln_2` respecte sa base, réciproque sans définition refusée.
+
+## 98. Lot 6a mergé (#1760, 2026-10-25)
+
+CI verte (16 checks). Suite serveur complète verte après rebase (deux rouges de migration venus de `main`, corrigés par #1757).
