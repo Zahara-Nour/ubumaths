@@ -1,0 +1,170 @@
+/**
+ * Génération d'une question à bloc ```operation à remplir (PR 1b, phase 0 :
+ * `docs/wip/operations-posees-progress.md` § 9)
+ *
+ * Le bloc compte pour une case ; sa réponse attendue vient du calcul du bloc,
+ * jamais du modèle ; elle passe au juge ordinaire.
+ */
+
+import { describe, it, expect } from 'vitest';
+import { generateInstance } from '../instance-generator';
+import type { QuestionTemplate, QuestionVariation } from '../../types';
+import { templateMarkdown } from '$lib/ubumark';
+import { validateAnswer } from '$lib/utils/answer-validator';
+
+function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
+	return {
+		id: 'test-operation',
+		title: 'Opération posée',
+		status: 'draft',
+		variations: [{ ...variation, statement: templateMarkdown(variation.statement) }],
+		grades: ['CE1'],
+		theme: 'Test',
+		domain: 'Test',
+		level: 1
+	} as QuestionTemplate;
+}
+
+const op = (...body: string[]) => ['```operation', ...body, '```'].join('\n');
+
+function generate(t: QuestionTemplate) {
+	const result = generateInstance(t, 42);
+	if (!result.success) throw new Error(result.errors.join(' ; '));
+	return result.instance;
+}
+
+describe('bloc ```operation : la case et sa réponse', () => {
+	it('sans blanks[] : la case est créée, réponse calculée par le bloc (comportements 1-2)', () => {
+		const instance = generate(
+			template({ statement: `Pose l’addition.\n\n${op('calcul: 45 + 37')}` })
+		);
+		expect(instance.blanks).toHaveLength(1);
+		expect(instance.blanks?.[0]).toMatchObject({
+			type: 'math',
+			expectedAnswer: '82',
+			operation: true
+		});
+		expect(String(instance.statement)).toContain('case: 0');
+	});
+
+	it('variables résolues avant le bloc', () => {
+		const instance = generate(
+			template({
+				statement: op('calcul: {{a}} + {{b}}'),
+				variables: [
+					{ name: 'a', expression: '45' },
+					{ name: 'b', expression: '37' }
+				]
+			})
+		);
+		expect(instance.blanks?.[0].expectedAnswer).toBe('82');
+	});
+
+	it('décimaux : réponse sous sa forme la plus simple', () => {
+		const instance = generate(template({ statement: op('calcul: 0,5 + 0,5') }));
+		expect(instance.blanks?.[0].expectedAnswer).toBe('1');
+		expect(
+			generate(template({ statement: op('calcul: 56,75 + 234 + 0,8') })).blanks?.[0]
+		).toMatchObject({
+			expectedAnswer: '291.55',
+			expectedAnswerLatex: '291{,}55'
+		});
+	});
+
+	it('avec d’autres cases : blanks[] ne donne que les autres, la case du bloc est insérée à son rang (comportement 8)', () => {
+		const instance = generate(
+			template({
+				statement: `$? + 1 = 3$\n\n${op('calcul: 45 + 37')}\n\nMot : [_]`,
+				blanks: [{ expectedAnswer: '2' }, { expectedAnswer: 'addition' }]
+			})
+		);
+		expect(instance.blanks?.map((b) => b.expectedAnswer)).toEqual(['2', '82', 'addition']);
+		expect(instance.blanks?.map((b) => b.type)).toEqual(['math', 'math', 'text']);
+	});
+
+	it('blanks[] complet : l’entrée du bloc, sans réponse, garde ses réglages (comportement 2)', () => {
+		const instance = generate(
+			template({
+				statement: op('calcul: 45 + 37'),
+				blanks: [{ expectedAnswer: '', precision: { type: 'none' } }]
+			})
+		);
+		expect(instance.blanks?.[0]).toMatchObject({
+			expectedAnswer: '82',
+			precision: { type: 'none' }
+		});
+	});
+
+	it('blanks[] complet avec une réponse écrite pour le bloc : refusé (une seule source)', () => {
+		const result = generateInstance(
+			template({ statement: op('calcul: 45 + 37'), blanks: [{ expectedAnswer: '82' }] }),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/case 1.*calcul.*bloc operation/i);
+	});
+
+	it('cases: aucune : pas de case', () => {
+		const instance = generate(
+			template({
+				statement: `${op('calcul: 45 + 37', 'cases: aucune')}\n\n$? = 82$`,
+				blanks: [{ expectedAnswer: '82' }]
+			})
+		);
+		expect(instance.blanks).toHaveLength(1);
+		expect(instance.blanks?.[0].operation).toBeUndefined();
+	});
+});
+
+describe('bloc ```operation : le juge ordinaire (comportement 5)', () => {
+	const instance = generate(template({ statement: op('calcul: 45 + 37') }));
+
+	it('82 juste, 81 faux', () => {
+		expect(validateAnswer('82', instance, '82').status).toBe('correct');
+		expect(validateAnswer('81', instance, '81').isCorrect).toBe(false);
+	});
+
+	it('grille décimale 1,0 lue 1 : juste, sans remarque', () => {
+		const decimal = generate(template({ statement: op('calcul: 0,5 + 0,5') }));
+		expect(validateAnswer('1', decimal, '1').status).toBe('correct');
+	});
+
+	it('grand résultat lu avec ses espaces : juste, sans remarque', () => {
+		const big = generate(template({ statement: op('calcul: 25000 + 5000') }));
+		expect(validateAnswer('30\\,000', big, '30\\,000').status).toBe('correct');
+	});
+});
+
+describe('bloc ```operation : erreurs (comportement 14)', () => {
+	it('bloc en erreur dans une question : génération refusée, message situé', () => {
+		const result = generateInstance(template({ statement: op('calcul: 4a + 2') }), 42);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/bloc operation.*Ligne 1/);
+	});
+
+	it('bloc à remplir dans une liste : génération refusée', () => {
+		const result = generateInstance(
+			template({
+				statement: ['- Pose :', '', '  ```operation', '  calcul: 45 + 37', '  ```'].join('\n')
+			}),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/premier niveau/);
+	});
+});
+
+describe('bloc ```operation : validation du modèle', () => {
+	it('seul bloc en cases: aucune, sans blanks[] : toujours une case manquante', () => {
+		const result = generateInstance(
+			template({ statement: op('calcul: 45 + 37', 'cases: aucune') }),
+			42
+		);
+		expect(result.success).toBe(false);
+		if (result.success) return;
+		expect(result.errors.join(' ')).toMatch(/fill_in_blanks requires blanks/);
+	});
+});

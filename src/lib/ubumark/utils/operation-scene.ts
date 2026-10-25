@@ -190,10 +190,11 @@ export function buildOperationScene(spec: OperationSpec): OperationScene {
 			}
 		}
 		if (spec.carries) {
-			// Cases possibles : en haut sauf la première colonne, en bas sauf les unités
+			// À remplir : une case en haut par colonne (sauf la première) ; le petit 1 du bas
+			// suit la case de la colonne de droite, l'élève ne l'écrit pas (PR 1b, décision c)
 			for (let c = 0; c < columns; c++) {
 				if (c > 0 || topTen[c] !== '') terms[0][c].mark = written(topTen[c]);
-				if (c < columns - 1 || bottomOne[c] !== '') terms[1][c].mark = written(bottomOne[c]);
+				if (!toFill && bottomOne[c] !== '') terms[1][c].mark = written(bottomOne[c]);
 			}
 		}
 	} else {

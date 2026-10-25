@@ -773,6 +773,11 @@ export interface InstanceBlank extends CalculusBlankFields {
 	type: 'math' | 'text' | 'graphical';
 	/** Resolved pre-filled value */
 	prefilled?: string;
+	/**
+	 * Case portée par un bloc ```operation (cases du résultat, lues comme un
+	 * nombre) : réponse calculée par le bloc, juge ordinaire, saisie dans la grille.
+	 */
+	operation?: true;
 
 	/**
 	 * Name of the `<<expr:NAME>>` expression this blank originates from, when

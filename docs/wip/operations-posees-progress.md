@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-25, phase 0 de la PR 1b._
 
 - **État** : PR 1a #1716 MERGÉE (bloc ```operation d'affichage). PR 1b (saisie + juge) en phase 0 : questions du § 8 tranchées (§ 8 bis), comportements écrits (§ 9).
-- **Prochaine action** : faire valider le § 9 par David, puis tests rouges → code.
-- **En attente de David** : validation du § 9 ; vérification #1716 dans `verifications-manuelles.md`.
+- **Prochaine action** : § 9 validé ; tests rouges → code.
+- **En attente de David** : vérification #1716 dans `verifications-manuelles.md`.
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (grilles calculées par la vraie scène ; à republier quand la saisie arrive).
 - **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` ; sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write`.
 - **Worktree / branche** : `../ubumaths-wt-operations-posees` · `feat/operations-posees-saisie`.
@@ -192,7 +192,7 @@ David a répondu « je te suis » aux quatre recommandations, une par question :
 - (d) Correction : chiffres faux de la saisie surlignés (comparaison alignée à droite), opération
   résolue montrée à côté.
 
-## 9. Comportements de la PR 1b (à valider par David avant les tests)
+## 9. Comportements de la PR 1b (validés par David le 2026-10-25)
 
 ### Nominal
 

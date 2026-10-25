@@ -45,6 +45,9 @@ import {
 } from './content-resolver';
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
+import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
+import { toFrenchDecimal } from '$lib/utils/french-math';
 import { normalizeExpression, detectExpressionType } from '$lib/ubumark/parameterization';
 import {
 	applyRemoveSpaces,
@@ -450,8 +453,11 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let expressionsArray: QuestionInstance['expressions'] = undefined;
 		let finalStatement: ResolvedMarkdown = resolvedStatement;
 
-		if (resolvedVariation.blanks) {
+		// Un bloc ```operation à remplir porte sa case, même sans `blanks` dans le modèle
+		const hasOperationBlock = /^\s*>?\s*```operation\s*$/m.test(String(resolvedStatement));
+		if (resolvedVariation.blanks || hasOperationBlock) {
 			// 7a. Fill-in-blanks pipeline
+			const templateBlanks = resolvedVariation.blanks ?? [];
 
 			// Resolve answerFormats for expression variables (variable resolution + LaTeX conversion)
 			let resolvedAnswerFormats: Record<string, string> | undefined;
@@ -478,12 +484,52 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			// Call assignBlankIndices (? → \placeholder[N]{}, [_] → {{blank:N}})
 			const blankResult = assignBlankIndices(String(resolvedStatement), resolvedAnswerFormats);
 
-			// Coherence check: totalBlanks must match blanks[] length
-			if (blankResult.totalBlanks !== resolvedVariation.blanks.length) {
+			if (blankResult.operationErrors) {
+				return { success: false, errors: blankResult.operationErrors };
+			}
+
+			// Cases des blocs ```operation : réponse calculée par le bloc, jamais écrite
+			const operationAnswers = new Map<number, string>();
+			for (const [key, source] of Object.entries(blankResult.operationBlanks ?? {})) {
+				const index = Number(key);
+				const node = parseOperationContent(source);
+				if (node.spec === null || node.errors.length > 0) {
+					return {
+						success: false,
+						errors: [
+							`Case ${index + 1} (bloc operation) : ${node.errors.map((e) => e.message).join(' ; ')}`
+						]
+					};
+				}
+				operationAnswers.set(index, operationExpectedAnswer(node.spec));
+			}
+
+			// Coherence check: totalBlanks must match blanks[] length. Les cases des blocs
+			// ```operation peuvent manquer à blanks[] (insérées à leur rang) ; présentes,
+			// elles ne donnent que des réglages.
+			let alignedBlanks: TemplateBlank[];
+			if (templateBlanks.length === blankResult.totalBlanks) {
+				for (const index of operationAnswers.keys()) {
+					if (templateBlanks[index].expectedAnswer.trim() !== '') {
+						return {
+							success: false,
+							errors: [
+								`Case ${index + 1} : sa réponse vient du calcul du bloc operation ; laisser expectedAnswer vide`
+							]
+						};
+					}
+				}
+				alignedBlanks = templateBlanks;
+			} else if (templateBlanks.length === blankResult.totalBlanks - operationAnswers.size) {
+				const others = [...templateBlanks];
+				alignedBlanks = Array.from({ length: blankResult.totalBlanks }, (_, index) =>
+					operationAnswers.has(index) ? { expectedAnswer: '' } : others.shift()!
+				);
+			} else {
 				return {
 					success: false,
 					errors: [
-						`Blank count mismatch: statement has ${blankResult.totalBlanks} blank(s) but blanks[] has ${resolvedVariation.blanks.length} entry/entries`
+						`Blank count mismatch: statement has ${blankResult.totalBlanks} blank(s) but blanks[] has ${templateBlanks.length} entry/entries`
 					]
 				};
 			}
@@ -492,7 +538,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			finalStatement = resolvedMarkdown(blankResult.statement);
 
 			// Build instance.blanks[] with inferred types and merged validation
-			resolvedBlanks = resolvedVariation.blanks.map((blank, i) => {
+			resolvedBlanks = alignedBlanks.map((templateBlank, i) => {
+				const operationAnswer = operationAnswers.get(i);
+				const blank =
+					operationAnswer === undefined
+						? templateBlank
+						: { ...templateBlank, expectedAnswer: operationAnswer };
 				// Resolve expectedAnswer:
 				// - Math blanks: normalize then resolve, like variables do.
 				//   normalizeExpression converts "eval:a+b" → "{{eval:a+b}}", etc.
@@ -614,6 +665,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 											isCleanable,
 											capitalPairs
 										);
+				}
+				if (operationAnswer !== undefined) {
+					resolved.operation = true;
+					resolved.expectedAnswerLatex = toFrenchDecimal(operationAnswer);
 				}
 				return resolved;
 			});
