@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1727 (5f-4 solveur)._
+_Mis à jour le 2026-10-25, après #1735 (Q50 inéquations)._
 
-- **État** : lot 5. ~~Q19~~ → … → ~~5f-3 limites~~ (#1710), ~~Q49~~ (#1717, #1722), ~~5f-4 solveur~~ (#1727, § 84) mergés. Code pas en prod.
+- **État** : lot 5. ~~Q19~~ → … → ~~5f-3 limites~~ (#1710), ~~Q49~~ (#1717, #1722), ~~5f-4 solveur~~ (#1727, § 84), ~~Q50 inéquations~~ (#1735, § 87) mergés. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : … → **5** (5f restes : ~~5f-1~~ → ~~5f-2~~ → ~~5f-3~~ → ~~Q49~~ → ~~5f-4~~ → **Q50 inéquations** → **Q51+Q52 solveur** → 5f-5) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : Q50 (§ 85) — conclusion et réponse d'une inéquation écrites comme une équation : bornes du `Domain` par `exactValueToShow` avant `describeDomain` (`quadratic-inequality.ts`, `rational-inequality.ts`, `_helpers.ts` ; `]1 / 2 ; +∞[` en texte), registre décimal des étapes (`stepsAsShown` étendu), ligne `x < 0,3` (`answerFor`, `solve-steps.ts`). Puis Q51+Q52 (§ 85-86), validés.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1722, 5f-4) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64, à confirmer).
-- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; l'Atelier écrit `0{,}25` (assertion sur la virgule), le moteur `0.25` ; une sonde vitest : `console.log` muet, faire échouer un `expect` pour lire ; zsh ne découpe pas `$F` (tableau `F=(…)`) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **PR sans CI = conflit avec `main`** : fusionner `origin/main` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-q50` (partie d'`origin/main` après #1727).
+- **Ordre des lots** : … → **5** (5f restes : ~~5f-1~~ → ~~5f-2~~ → ~~5f-3~~ → ~~Q49~~ → ~~5f-4~~ → ~~Q50~~ → **Q51+Q52 solveur** → 5f-5) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : Q51+Q52 (§ 85-86, validés), une PR « solveur » : multiplier quand l'inconnue est divisée (`x/4 = 0,5` → × 4, `x/3 < 0,1` aussi ; `(2/3)x = 1` → × 3/2) ; `k(…) = c` divisé par k (`0,5(x+1) = 2` → `x + 1 = 4`), `−(…)` × −1, constante ôtée d'abord, développer si x des deux côtés, parenthèses ôtées après un +, inéquations avec retournement. Point de départ : refus `UndevelopedLinearForm` (`membres-non-developpes.test.ts`).
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1735) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64) ; trouvés au § 87 : pipeline rationnel qui multiplie la fraction tapée (`P(x) = 10, Q(x) = 10x − 3` pour `1/(x − 0,3)`), `(x − 1)/(x² − 1) ≥ 0` (étapes sur la fraction simplifiée), `x² < −1` sans étapes.
+- **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; l'Atelier écrit `0{,}25`, le moteur `0.25` ; sonde vitest : `console.log` muet, faire échouer un `expect` ; zsh ne découpe pas `$F` ; `check:incremental` : erreurs fantômes → `FRESH=1` ; **PR sans CI = conflit avec `main`** : fusionner `origin/main` (conflits fréquents sur l'en-tête « Vérifié » des docs) ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-q51-q52` (partie d'`origin/main` après #1735).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -1081,3 +1081,7 @@ CI verte du premier coup, mergée. Vérification manuelle notée (5f-4). **Q51-Q
 - Tests : `atelier/__tests__/resoudre-inequations-q50.test.ts` — 9 rouges sur 10 avant (le 10e, `3x < 1 → x < 1/3`, garde la non-régression). Suites solveur, atelier, solve, questions, domaine : 11 830 verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre ; doc `mathast/README.md`, `atelier.md`.
 - **Revue `code-reviewer` (opus)** : 47 entrées sondées (ordre des tableaux de signes après réécriture, contiguïté de `ℝ \ {a}`, point isolé `{a}`, équations), aucune valeur fausse. **3 mineurs corrigés, tests rouges d'abord** : (1) premier degré : la borne de la forme résolue par `exactValueToShow` (`2x < √2` → `x < √2/2`, avant `x < 1/2√2`) ; (2) corrections de questions `quadratic-inequality` et `rational-inequality` par `stepsAsShown` (sinon conclusion en décimal, étapes en fraction : `x² − 0,3x − 0,1 < 0`) ; (3) commentaire périmé. Mesures après la revue : suites voisines 11 833 verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre ; suite serveur `src/lib` complète (avant la revue) 58 143 verts.
 - **Trouvé, hors Q50 (à poser à David)** : `x/3 < 0,1` → « On divise par 1/3 » (Q51 le couvrira) ; `(x − 1)/(x² − 1) ≥ 0` : étapes sur la fraction simplifiée (`D = ℝ \ {−1}`, le 1 interdit disparaît des étapes, réponse juste) ; `x² < −1` : pas d'étapes (le pipeline jette). Et : le pipeline rationnel multiplie la fraction tapée pour n'avoir que des entiers — `(x − 0,5)/(x + 1) > 0` annonce `P(x) = 2x − 1, Q(x) = 2x + 2`, `1/(x − 0,3) < 0` annonce `P(x) = 10, Q(x) = 10x − 3` (signes justes, mais ce n'est pas la fraction écrite). Déjà vrai avant.
+
+## 88. Q50 mergé (#1735, 2026-10-25)
+
+CI verte (après fusion d'`origin/main`, conflit sur l'en-tête de `questions.md`), mergée. Vérification manuelle notée (Q50).
