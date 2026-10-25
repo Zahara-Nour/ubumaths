@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc ```operation le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -216,7 +216,14 @@ Le **type** n'est pas déclaré : `getQuestionType` le déduit — `options.cour
    `?` dans une formule → `\placeholder[N]{}` ; `[_]` dans le texte → `{{blank:N}}` ;
    `<<expr:NAME>>` réserve les cases de `answerFormats[NAME]`. `NAME` doit commencer par
    `expression` (sinon le marqueur passe en silence au `?` ordinaire) ; le lien case →
-   `answerFormats` est porté par `InstanceBlank.expressionName`.
+   `answerFormats` est porté par `InstanceBlank.expressionName`. Un bloc ```operation à remplir
+   (au premier niveau de l'énoncé ; en liste ou cité → échec de génération) compte pour **une**
+   case, son numéro écrit dans le bloc (`case: N`). Sa réponse attendue vient du calcul du bloc
+   (`operationExpectedAnswer`, forme la plus simple), jamais du modèle : `blanks[]` peut l'omettre
+   (case insérée à son rang ; un modèle sans autre case n'a pas besoin de `blanks`), ou lui donner
+   une entrée de réglages avec `expectedAnswer` vide — une réponse écrite est refusée. Un bloc en
+   erreur fait échouer la génération (message situé). La case est `type: 'math'`,
+   `operation: true`, jugée comme une case ordinaire.
 6. Chaque case reçoit ses réglages fusionnés : **case ▸ `blankDefaults`** pour `precision`,
    `unit`, `answerKind`, `rulesSuffice`, `acceptDecimal`… ; `requiredForm` : case ▸
    `blankDefaults` ▸ `requiredForm` de la variation ; `validationRules` : case ▸ variation.
@@ -262,6 +269,7 @@ Natures de réponse :
 | Nature                      | Déclaration                                 | Jugée par                                                                                        |
 | --------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | Expression / nombre         | case ordinaire                              | équivalence + forme (§ 5)                                                                        |
+| Opération posée             | bloc ```operation (`cases: résultat`)       | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts`)               |
 | Texte                       | `[_]` hors formule                          | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                |
 | Grandeur                    | `unit: { expected, required? }`             | `validateQuantityAnswer` (conversion, unité imposée)                                             |
 | Ensemble en intervalles     | `answerKind: 'intervalles'`                 | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm`                       |

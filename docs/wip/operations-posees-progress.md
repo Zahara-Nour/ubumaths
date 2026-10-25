@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, phase 0 de la PR 1b._
+_Mis à jour le 2026-10-25, PR 1b codée, avant ouverture de la PR._
 
-- **État** : PR 1a #1716 MERGÉE (bloc ```operation d'affichage). PR 1b (saisie + juge) en phase 0 : questions du § 8 tranchées (§ 8 bis), comportements écrits (§ 9).
-- **Prochaine action** : § 9 validé ; tests rouges → code.
-- **En attente de David** : vérification #1716 dans `verifications-manuelles.md`.
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (grilles calculées par la vraie scène ; à republier quand la saisie arrive).
-- **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` ; sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write`.
+- **État** : PR 1b (saisie + juge) codée sur `feat/operations-posees-saisie` : case `case: N` posée par `assignBlankIndices`, réponse calculée par le bloc, grille saisissable (`Operation.svelte` + `FillBlanksInput`), correction chiffre par chiffre. Tests, typecheck, cliquet, lint rapide verts ; docs `ubumark.md` et `questions.md` à jour.
+- **Prochaine action** : PR, revue `code-reviewer` (Opus : correction des réponses), CI, merge ; puis republier la page de démonstration avec la saisie.
+- **En attente de David** : vérification #1716 dans `verifications-manuelles.md` ; avis sur la précision du comportement 5 (§ 9).
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie).
+- **Pièges en cours** : `resolveText` prend un tableau `{ name, value }` ; sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas (l'élève écrit les deux 1 sur papier).
 - **Worktree / branche** : `../ubumaths-wt-operations-posees` · `feat/operations-posees-saisie`.
 
 ---
@@ -207,6 +207,9 @@ David a répondu « je te suis » aux quatre recommandations, une par question :
    cases de tête vides = rien (`_ 8 2` → `82`) ; `291,55` reste `291,55`.
 5. Cette réponse passe au juge ordinaire : `82` juste, `81` faux. Décimaux : `4,0` et `4` sont
    jugés comme le juge actuel le fait pour une case nombre.
+   **Précisé en codant (2026-10-25)** : le juge met `4{,}0` en ambre (« zéros inutiles ») ; la lecture
+   de la grille retire donc les zéros de tête et les zéros décimaux de fin (`1,0` → `1`) et pose les
+   espaces de milliers (`30 000`) — aucune remarque de forme que la grille impose. Signalé à David.
 6. Retenues : cases facultatives, jamais jugées ni envoyées au juge, perdues au rechargement de la
    question. Compensation : écrire 1 en haut d'une colonne montre le petit 1 contre le chiffre du
    bas de la colonne suivante. Cassage : la case au-dessus du chiffre reçoit sa nouvelle valeur
@@ -237,6 +240,16 @@ David a répondu « je te suis » aux quatre recommandations, une par question :
     case : « chiffre des unités », « chiffre des dizaines »…
 
 ## Journal
+
+### 2026-10-25 — PR 1b codée
+
+- § 8 tranché (§ 8 bis, « je te suis »), § 9 écrit puis validé par David.
+- Fait : clé `case:` du parseur ; `utils/operation-answer.ts` (lecture, attendu, chiffres faux) ;
+  scène : compensation à remplir sans case du bas ; `assignBlankIndices` (`operationBlanks`,
+  `operationErrors`) ; générateur (case insérée ou entrée de réglages, réponse calculée) ;
+  `template-validator` (un bloc à remplir suffit sans `blanks`) ; `Operation.svelte` (`answer`) ;
+  `FillBlanksInput` (rendu, ordre des cases, Entrée, correction).
+- Écart au § 9 : comportement 5 précisé (zéros retirés, espaces posés), voir le § 9.
 
 - 2026-10-25 : worktree créé, phase 0 rédigée.
 - 2026-10-25 : décisions de David (§ 7 bis). PR 1a : `types/operation.ts`, `parser/operation-parser.ts`,

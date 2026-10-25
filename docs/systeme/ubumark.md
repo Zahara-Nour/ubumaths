@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -321,14 +321,26 @@ plus grand ; virgule ou point, espaces de milliers acceptés ; 10 chiffres au pl
 3 après ; `×` et `÷` refusés pour l'instant. Facultatives : `cases: résultat | aucune` (défaut
 `résultat` : cases du résultat à remplir ; `aucune` : opération résolue), `retenues: oui | non`
 (cases de retenue, ou retenues écrites), `méthode: compensation | cassage` (soustraction seulement ;
-compensation : petit 1 devant le chiffre du haut et contre celui du bas de la colonne suivante ;
+compensation : petit 1 devant le chiffre du haut et contre celui du bas de la colonne suivante —
+à remplir, une seule case par colonne, en haut, le 1 du bas suit ;
 cassage : chiffre barré, nouvelle valeur au-dessus). Le bloc calcule lui-même résultat et retenues
 (`operationResult`, chiffre par chiffre, jamais en flottant) : l'auteur ne les écrit pas. À
 remplir, une addition a une colonne de plus que son plus long terme (la largeur ne trahit pas la
 retenue finale). Virgules alignées ; carreaux vides à droite des décimaux plus courts, jamais de
 zéro ajouté. Scène partagée `utils/operation-scene.ts` ; écran en grille HTML (carreaux de cahier),
 PDF en `table` Typst native (sans les cases de retenue : l'élève écrit sur papier libre). Aucune
-valeur attendue dans le DOM d'une case à remplir. Saisie de l'élève : pas encore (lot 1b).
+valeur attendue dans le DOM d'une case à remplir.
+
+Dans une question, un bloc à remplir porte **une** case (clé `case: N`, posée par
+`assignBlankIndices`, jamais écrite par l'auteur ; refusée avec `cases: aucune`). `Operation.svelte`
+reçoit alors `answer` : cases du résultat saisies de droite à gauche (le curseur passe à gauche,
+Retour arrière sur une case vide efface celle de droite, tout autre caractère ignoré), carreaux de
+40 px, grille qui défile dans son cadre sur téléphone. Les cases se lisent comme un nombre
+(`utils/operation-answer.ts`, `readOperationAnswer`) : cases de tête vides ignorées, case vide au
+milieu → réponse vide ; zéros de tête et zéros décimaux de fin retirés (`1,0` → `1`), espaces de
+milliers posés — jamais de remarque de forme que la grille impose. Petites cases de retenue (≈ 28 px) :
+aide, jamais jugée ni gardée. Réponse fausse : chiffres faux surlignés (`wrongResultDigits`),
+opération résolue à côté ; bonne réponse affichée (`showCorrectAnswers`) : opération résolue.
 
 ### Cases à compléter
 
