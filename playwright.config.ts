@@ -15,6 +15,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
 	testDir: './e2e',
+	// Les vérifications manuelles automatisées ont leur config (`pnpm test:verifs`)
+	testIgnore: ['verifs/**'],
 
 	// Maximum time one test can run for
 	// Increased to 120s for rate limiting tests (database-based, no Redis)

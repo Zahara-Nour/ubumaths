@@ -43,10 +43,12 @@ export async function calc(page: Page, input: string): Promise<Answer> {
 
 /**
  * Le LaTeX ramené à une forme comparable : sans espaces, `\dfrac` = `\frac`,
- * sans `\left` / `\right`. Ces écarts ne se voient pas à l'écran.
+ * sans `\left` / `\right`, `\exponentialE` = `e`. Ces écarts ne se voient
+ * pas à l'écran.
  */
 export function normalizeLatex(latex: string): string {
 	return latex
+		.replace(/\\exponentialE(?![a-zA-Z])/g, 'e')
 		.replace(/\\(left|right)(?![a-zA-Z])/g, '')
 		.replace(/\\[dt]frac/g, '\\frac')
 		.replace(/\\[,;:! ]/g, '')
@@ -59,10 +61,31 @@ export function expectLatex(answer: Answer, expected: string): void {
 	expect(normalizeLatex(answer.latex ?? '')).toBe(normalizeLatex(expected));
 }
 
-/** Déplie « Comment ? » et rend le texte des étapes */
+/**
+ * Déplie « Comment ? » et rend le texte des étapes, chaque formule écrite
+ * `$latex$` : `<math-span>` compose dans son ombre, son texte visible est vide.
+ */
 export async function steps(answer: Answer): Promise<string> {
 	await answer.line.getByRole('button', { name: 'Comment ?' }).click();
 	const box = answer.line.locator('.etapes');
 	await expect(box).toBeVisible();
-	return (await box.innerText()).replace(/\s+/g, ' ').trim();
+	const text = await box.evaluate((element) => {
+		const copy = element.cloneNode(true) as HTMLElement;
+		for (const math of copy.querySelectorAll('math-span')) {
+			math.replaceWith(`$${math.textContent ?? ''}$`);
+		}
+		return copy.textContent ?? '';
+	});
+	return text.replace(/\s+/g, ' ').trim();
+}
+
+/** La réponse composée contient ce LaTeX (aux écarts invisibles près) */
+export function expectLatexContaining(answer: Answer, expected: string): void {
+	expect(answer.latex, `réponse en texte : « ${answer.text} »`).not.toBeNull();
+	expect(normalizeLatex(answer.latex ?? '')).toContain(normalizeLatex(expected));
+}
+
+/** La ligne a un bouton « Comment ? » */
+export async function hasSteps(answer: Answer): Promise<boolean> {
+	return (await answer.line.getByRole('button', { name: 'Comment ?' }).count()) > 0;
 }
