@@ -23,8 +23,8 @@
  *   pnpm tsx scripts/create-questions.ts --dir <dossier> --publier  (écrit)
  *   … --publier --mettre-a-jour   remplace aussi le contenu des modèles DÉJÀ en base, s'ils
  *                                 sont encore en brouillon (un modèle publié n'est jamais touché).
- *                                 Contenu = variations, shared, options, test_specs ET grades
- *                                 (comparés comme un ensemble).
+ *                                 Contenu = description, variations, shared, options, test_specs
+ *                                 ET grades (comparés comme un ensemble).
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -98,7 +98,7 @@ async function main(): Promise<number> {
 	for (const { fichier, modele } of entrees) {
 		let requete = supabase
 			.from('question_templates')
-			.select('id, status, grades, variations, shared, options, test_specs')
+			.select('id, status, grades, description, variations, shared, options, test_specs')
 			.eq('title', modele.title)
 			.eq('theme', modele.theme)
 			.eq('domain', modele.domain)
@@ -121,6 +121,7 @@ async function main(): Promise<number> {
 			const memesGrades = sameGrades(existant.grades, ligne.grades);
 			const identique =
 				memesGrades &&
+				existant.description === ligne.description &&
 				canonique(existant.variations) === canonique(ligne.variations) &&
 				canonique(existant.shared) === canonique(ligne.shared) &&
 				canonique(existant.options) === canonique(ligne.options) &&
@@ -147,6 +148,7 @@ async function main(): Promise<number> {
 				.from('question_templates')
 				.update({
 					grades: ligne.grades,
+					description: ligne.description,
 					variations: ligne.variations,
 					shared: ligne.shared,
 					options: ligne.options,

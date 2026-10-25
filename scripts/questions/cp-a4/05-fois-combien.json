@@ -1,0 +1,112 @@
+{
+	"title": "Le sens de « fois » : combien ?",
+	"description": "3 fois 4, c'est 4 + 4 + 4 = 12 (sans le signe ×)",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Sens",
+	"level": 2,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Calcule.\n\n${{g}}$ fois ${{n}}$, c'est $?$.",
+			"variables": [
+				{
+					"name": "g",
+					"expression": "2..5"
+				},
+				{
+					"name": "n",
+					"expression": "2..5"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:g*n}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"${{g}}$ fois ${{n}}$, c'est ${{n}}$ répété ${{g}}$ fois.",
+					"$${{if:g==2|{{n}}+{{n}}|{{if:g==3|{{n}}+{{n}}+{{n}}|{{if:g==4|{{n}}+{{n}}+{{n}}+{{n}}|{{n}}+{{n}}+{{n}}+{{n}}+{{n}}}}}}}}={{eval:g*n}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 fois 4 : 12",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["12"]
+		},
+		{
+			"description": "bornes : 5 fois 5 : 25",
+			"variationIndex": 0,
+			"variables": {
+				"g": "5",
+				"n": "5"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["25"]
+		},
+		{
+			"description": "bornes : 2 fois 2 : 4",
+			"variationIndex": 0,
+			"variables": {
+				"g": "2",
+				"n": "2"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Erreur : 3 + 4 (7)",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "Erreur : 34 juxtaposés",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["34"]
+		},
+		{
+			"description": "Zéro inutile 012",
+			"variationIndex": 0,
+			"variables": {
+				"g": "3",
+				"n": "4"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			},
+			"answers": ["012"]
+		}
+	]
+}
