@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot A1 écrit._
+_Mis à jour le 2026-10-25, après #1712._
 
-- **État** : lot A1 : 6 brouillons créés en prod le 2026-10-25 (`7eb376bf` CP-020, `85f93a6e` CP-081, `882c436f` CP-021, `87a869c2` CP-082, `ee822bbc` CP-028, `eccf910b` CP-027) ; migration `20261025140000_questions_cp_a1_rangement_tags` (nœud + tag) écrite, test 8/8 vert (5/8 rouges sans le SQL), `security-auditor` sans finding bloquant ; PR ouverte.
-- **Prochaine action** : CI verte → merge → `db:migrate` depuis le dépôt principal, puis relire en prod nœuds, tags et `tgenabled` du trigger `update_question_templates_updated_at` ; page à cocher pour la relecture de David ; puis lot A2.
-- **En attente de David** : relecture d'A1 (page à cocher) et publication des 6 brouillons ; vérification manuelle #1702.
-- **Pièges en cours** : la case naît d'une variable `expression1` (sinon « Blank count mismatch ») ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; `create-questions` ne pose ni nœud ni tag ; un modèle CP peut prendre un point CE1 (pas l'inverse) ; dater les migrations après la prod (`list_migrations`) ; `db:migrate` depuis le dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-cp-a1`.
+- **État** : lot A1 livré — 6 brouillons en prod (`7eb376bf` CP-020, `85f93a6e` CP-081, `882c436f` CP-021, `87a869c2` CP-082, `ee822bbc` CP-028, `eccf910b` CP-027), rangés et tagués (#1712 mergée, `db:migrate` fait, vérifié en prod : nœuds, tags, `updated_at`, trigger `tgenabled = O`). Page à cocher : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb (collection `verdicts`). Outil « opérations posées » lancé dans une autre session.
+- **Prochaine action** : lire les verdicts de la page (`ArtifactData` list `verdicts`), corriger les « À revoir » ; puis lot A2 (suite et ordre : 003, 004, 007, 075, 076 — § 4 ter), phase 0, nouveau worktree.
+- **En attente de David** : relecture d'A1 sur la page, puis publication des 6 brouillons ; vérification manuelle #1702.
+- **Pièges en cours** : nouveaux modèles = `scripts/create-questions.ts` (brouillons, ni nœud ni tag) puis migration nœud + tag ; la case naît d'une variable `expression1` ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point (trigger) ; un modèle CP peut prendre un point CE1 (pas l'inverse) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal.
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1712).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -116,3 +116,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-24 : décisions du § 4 (§ 4 bis).
 - 2026-10-24 : corrections CP — M1 (contenu, 4 modèles) + M2 (rangement, niveaux, tags), branche `fix/questions`.
 - 2026-10-24 : #1702 mergée, `db:migrate` (M1 + M2), vérifié en prod ; horloge lancée en parallèle (session « horloge »).
+- 2026-10-25 : groupe A découpé (§ 4 ter) ; lot A1 : 6 modèles créés en brouillon (`create-questions`), #1712 (nœud + tag) mergée, `db:migrate`, vérifié en prod ; page à cocher publiée.
