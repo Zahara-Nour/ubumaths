@@ -210,6 +210,18 @@
 	{/each}
 {/snippet}
 
+{#snippet pendant(list: readonly DecorationShape[])}
+	<!-- Sous la fraise, il apparaît avec elle à la fin de la transformation -->
+	<g
+		data-part="collier-pendentif"
+		transform={pendantTransform}
+		stroke-linejoin="round"
+		class:apparait={ruffed && crowning}
+	>
+		{@render shapes(list)}
+	</g>
+{/snippet}
+
 <svg
 	role="img"
 	aria-label={label}
@@ -422,12 +434,9 @@
 						<path d={geo.body} fill="none" stroke={INK} stroke-width={STROKE} />
 
 						{#if collarParts}
-							<!-- Collier : la bande au cou ; ce qui pend, ici, sauf sous la fraise (plus bas) -->
+							<!-- Collier : la bande au cou ; ce qui pend vient après la décoration de panse -->
 							<g data-part="collier" data-collar={collar} stroke-linejoin="round">
 								{@render shapes(collarParts.band)}
-								{#if !ruffed}
-									<g transform={pendantTransform}>{@render shapes(collarParts.pendant)}</g>
-								{/if}
 							</g>
 						{/if}
 
@@ -441,6 +450,11 @@
 							>
 								{@render shapes(DECORATION_SHAPES[decoration])}
 							</g>
+						{/if}
+
+						{#if collarParts && !ruffed}
+							<!-- Ce qui pend du collier, devant le poitrail : par-dessus la décoration de panse -->
+							{@render pendant(collarParts.pendant)}
 						{/if}
 
 						<!-- Yeux -->
@@ -550,14 +564,7 @@
 							</g>
 							{#if collarParts}
 								<!-- Ce qui pend du collier dépasse sous la fraise -->
-								<g
-									data-part="collier-pendentif"
-									transform={pendantTransform}
-									stroke-linejoin="round"
-									class:apparait={crowning}
-								>
-									{@render shapes(collarParts.pendant)}
-								</g>
+								{@render pendant(collarParts.pendant)}
 							{/if}
 						{/if}
 

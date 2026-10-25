@@ -340,9 +340,8 @@ describe('MathouAvatar — collier', () => {
 				});
 				const collar = collarOf(container);
 				expect(collar?.getAttribute('data-collar')).toBe(id);
-				// Grand matou : ce qui pend est dessiné à part, sous la fraise
-				const pendant =
-					stage === 'grand_matou' ? hangingOf(container) : collar?.querySelector('g[transform]');
+				expect(collar?.children.length).toBeGreaterThan(0);
+				const pendant = hangingOf(container);
 				expect(pendant?.children.length).toBeGreaterThan(0);
 				// Au cou : sous la tête, bien au-dessus du bas de la panse
 				const geo = pearGeometry(stage);
@@ -386,8 +385,6 @@ describe('MathouAvatar — collier', () => {
 		expect(ruff && pendant && ruff.compareDocumentPosition(pendant)).toBe(
 			Node.DOCUMENT_POSITION_FOLLOWING
 		);
-		// Rien ne pend dans la bande elle-même
-		expect(collar?.querySelector('g[transform]')).toBeNull();
 		// Accroché au bas des godrons
 		const puffs = [...(ruff?.querySelectorAll('circle') ?? [])];
 		const ruffBottom = Math.max(
@@ -396,18 +393,28 @@ describe('MathouAvatar — collier', () => {
 		expect(hangY(pendant)).toBeGreaterThan(ruffBottom - 2);
 	});
 
-	it('se cumule avec la décoration de panse', async () => {
-		const { container } = await render(MathouAvatar, {
-			raceIndex: 0,
-			stage: 'matou',
-			label: 'M',
-			decoration: 'heart',
-			collar: 'bow_tie'
-		});
-		expect(collarOf(container)?.getAttribute('data-collar')).toBe('bow_tie');
-		expect(
-			container.querySelector('[data-part="decoration"]')?.getAttribute('data-decoration')
-		).toBe('heart');
+	it('se cumule avec la décoration de panse ; ce qui pend passe devant elle', async () => {
+		for (const stage of MATHOU_STAGES) {
+			const { container } = await render(MathouAvatar, {
+				raceIndex: 0,
+				stage,
+				label: 'M',
+				decoration: 'cockade',
+				collar: 'bell'
+			});
+			const collar = collarOf(container);
+			const deco = container.querySelector('[data-part="decoration"]');
+			const pendant = hangingOf(container);
+			expect(collar?.getAttribute('data-collar')).toBe('bell');
+			expect(deco?.getAttribute('data-decoration')).toBe('cockade');
+			// Ordre de dessin : la bande, la décoration de panse, puis ce qui pend
+			expect(collar && deco && collar.compareDocumentPosition(deco)).toBe(
+				Node.DOCUMENT_POSITION_FOLLOWING
+			);
+			expect(deco && pendant && deco.compareDocumentPosition(pendant)).toBe(
+				Node.DOCUMENT_POSITION_FOLLOWING
+			);
+		}
 	});
 
 	it('la sieste le garde, la silhouette n’en a pas', async () => {
