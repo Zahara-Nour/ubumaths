@@ -55,6 +55,7 @@ toute nouvelle page publique qui n'est dans aucune des trois listes.
 | L'Almanach des Chiphres                    | `/almanach`                                        | Calendrier pataphysique, date du jour, convertisseur                                                                                                                           | **non**                 | oui      |
 | Zygomatics (« Les presques évaluations »)  | `/presques-evaluations`                            | Parodies d'évaluations en PDF                                                                                                                                                  | oui                     | oui      |
 | Chiphre, c'est quoi ?                      | `/a-propos`                                        | Le manifeste, pour les parents                                                                                                                                                 | non (panneau « Infos ») | oui      |
+| Démonstrations                             | `/demo` (9 vitrines)                               | Chiphre en action, sans compte : questions, corrigés, diaporama, figures… (`src/lib/seo/demo-pages.ts`)                                                                        | non (panneau « Infos ») | oui      |
 | Exercice partagé                           | `/exercice/[slug]`                                 | Variantes, graine partageable, export PDF, solution ; le tuteur seulement pour un élève connecté. Indexé seulement si coché « Afficher sur Google » (sinon `noindex`)          | non (lien partagé)      | si coché |
 | Cahier de textes public                    | `/cahier/[token]`                                  | Séances et devoirs d'une classe, par lien                                                                                                                                      | non (lien du prof)      | non      |
 | Cours public                               | `/cours/[token]`                                   | Cours publié d'une classe (chapitres, documents, fiches, objectifs, séries), par lien                                                                                          | non (lien du prof)      | non      |
@@ -109,7 +110,7 @@ connexion Google désactivée (`GOOGLE_LOGIN_ENABLED`, `src/routes/(public)/auth
 
 ## Ne pas mettre en avant
 
-- Démos et pages de mise au point : `/demo/*`, `/construction-demo`,
+- Pages de mise au point : `/construction-demo`,
   tout `/dev/*` (admin seul : polices, cadres, pages d'erreur, Blockly, diaporama, structure…),
   tout `/aide-ecriture/*` (prof seul : géométrie, cercle trigonométrique).
 - Héritage remplacé par l'Atelier ([atelier.md](atelier.md)) : `/cas` (2026-10-13), `/spreadsheet`
