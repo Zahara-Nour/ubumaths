@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1784._
+_Mis à jour le 2026-10-25, lot (b) en phase 0._
 
-- **État** : lot (a) MERGÉ (#1784) — « développer » sans `normalize` (`expand.ts`), règle du domaine gardé ; pas encore en prod. Vérification manuelle notée.
-- **Prochaine action** : lot (b), phase courte : une fonction partagée dans `normal/` au lieu des ~12 copies locales de `denormalize(normalize())` (nom à proposer à David) + `polynomialCoefficients(expr, x)` pour les 7 lectures de coefficients (§ 1.3) ; rien ne change à l'écran. Aussi : `distributeBinomialProduct` / `algebraicExpandingRules` sans appelant en prod (code mort à proposer).
-- **En attente de David** : rien de bloquant ; à lui montrer : `√x√x → (√x)²`, ordre d'une primitive (`… − 2 sin x + x²/2`), mineurs du § 4.
-- **Pièges connus** : banc des modèles AVEUGLE pour `developper` (aucun `generatedSteps` en prod) ; `nodesEqual` ignore le style du × ; `tidy({ order: 'kept' })` garde le × écrit ; `check:incremental` exit 2 = verrou d'une autre session, attendre.
-- **Worktree / branche** : aucun (retiré après #1784) ; lot (b) : nouveau worktree `ubumaths-wt-normalize-usages`, branche `refactor/normalize-usages-noms`.
+- **État** : lot (a) MERGÉ (#1784), pas encore en prod. Lot (b) : phase 0 écrite (§ 6), **à valider par David**.
+- **Prochaine action** : après validation, tests de non-régression d'abord, puis `canonicalForm` + `polynomialCoefficients` dans `normal/`, code mort retiré.
+- **En attente de David** : Q6 (nom), Q7 (coefficients), Q8 (code mort) du § 6 ; à lui montrer aussi : `√x√x → (√x)²`, ordre d'une primitive (`… − 2 sin x + x²/2`), mineurs du § 4.
+- **Pièges connus** : banc des modèles AVEUGLE pour `developper` ; `nodesEqual` ignore le style du × ; `check:incremental` exit 2 = verrou d'une autre session, attendre.
+- **Worktree / branche** : `ubumaths-wt-normalize-usages`, `refactor/normalize-usages-noms`.
 
 ## Contexte
 
@@ -90,3 +90,18 @@ Une douzaine de ces appels sont déjà enveloppés dans des fonctions locales qu
 ## 5. Lot (a) mergé (#1784, 2026-10-25)
 
 CI verte du premier coup (après fusion d'`origin/main`), mergée. Vérification manuelle notée. Worktree retiré.
+
+## 6. Lot (b), phase 0 (2026-10-25, à valider par David)
+
+Relevé refait dans le code (le § 1.3 était approximatif) : 95 `denormalize(normalize(…))` dans 28 fichiers.
+
+- **Copies identiques** (corps = `denormalize(normalize(node))`) : `simplified` ×3 (`solve/absolute-value`, `solve/periodic`, `solve/trig-equality`), `canon` ×2 (`solve/inequality/index`, `pedagogical-solve/_helpers` — exporté, ~40 appels), `normalForm` (`solve/literal-parameter`), `simplify` (`matrix/operations`), le lambda `canonicalExponent` (`normal/normalize.ts:2113`).
+- **Avec `try/catch` → `null`** : `normalizeSafe` (`eval/exact-value`) ; `exactValue` (`integrators/quadratic-denominator`) et `exactRationalOf` (`integration/class-form`) identiques entre elles (`extractExactRational` de la forme canonique).
+- **Lectures de coefficients** (forme canonique puis `extract*Coefficients`) : 4 vraies (`solvers/polynomial:395` cubique, `solvers/linear:157`, `solvers/quadratic:244`, `solve:1951`) ; `solve:2153` (variables restantes) et `rational:93` (fraction canonique) n'en sont pas. Trois extracteurs quasi identiques (degrés 1, 2, 3), 28 appels.
+- **Code mort** : l'objet `Rule` `distributeBinomialProduct` (+ son test) et le tableau `algebraicExpandingRules` (+ ses 3 règles, utilisées nulle part ailleurs). L'identifiant `'distribute-binomial-product'` reste (étapes, descriptions).
+
+Comportements : **nominal** — mêmes réponses et mêmes étapes partout (suite mathAST inchangée, sans test mis à jour) ; **limite** — expressions avec lettres (inéquations, paramètres littéraux) : forme identique au nœud près ; **erreur** — `normalize` qui lève : les variantes `try/catch` rendent `null` comme avant, les autres propagent comme avant.
+
+- **Q6 — nom.** Reco : `canonicalForm(node)` dans `normal/` (ce que c'est : la forme canonique de `normalize`, réécrite en arbre ; vaut pour les expressions avec lettres, pas seulement les valeurs, d'où pas `exactForm`), plus `exactRational(node): Rational | null` pour les deux copies rationnelles. `canon` de `_helpers` disparaît (ses ~40 appels passent à `canonicalForm`). `normalizeSafe` reste local (un seul appelant), appuyé sur `canonicalForm`.
+- **Q7 — coefficients.** Reco : `polynomialCoefficients(expr, x, degree)` dans `normal/` (tableau indexé par le degré, `null` si un terme dépasse), qui fait la forme canonique puis le tri par degré ; les trois `extract*Coefficients` deviennent des enveloppes d'une ligne (leurs 28 appels ne bougent pas), les 4 lectures l'appellent directement.
+- **Q8 — code mort.** Reco : supprimer `distributeBinomialProduct` et `algebraicExpandingRules` dans cette PR.
