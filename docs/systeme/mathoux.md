@@ -452,8 +452,10 @@ Spécification validée par David le 2026-10-21 ([journal](../wip/mathoux-annonc
 
 `/dashboard/student/chatterie`, entrée « La Chatterie » de la navigation élève (pas de bouton
 retour : page de la navigation). Titre « La Chatterie de Faustroll », compteurs (« 7 Mathoux, 2 en
-sieste, 12 à découvrir »), une section titrée par race, une liste de Mathoux : dessin, « Nom, Race » (« Tangentin, le Chartreux de
-Yoyolande », la race en gris), le nom de la notion dessous, stade,
+sieste, 12 à découvrir »), une section par branche, titrée par son nom suivi de sa race en gris italique (« Nombres et
+calculs _le Noir de Nombrilie_ », une fois par section, pas sur chaque carte), une liste de
+Mathoux : dessin (80 px) avec le stade dessous ; à droite, centrés : le nom (« Tangentin »), la notion dessous en
+petites capitales grises,
 étoiles (« ★ 2nde ★ 1ère Spé », le symbole masqué aux lecteurs d'écran), « Fait la sieste » et
 « Réveiller » : vers la révision du programme (`/dashboard/revisions/decks/programme`, là où
 tombent les cartes dues) s'il y a une carte due, sinon vers l'Entraînement de la notion (aucun bouton s'il n'y en a pas). Chaque
