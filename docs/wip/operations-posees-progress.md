@@ -7,7 +7,7 @@ _Mis à jour le 2026-10-25, après #1754._
 - **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740, #1745, #1748) ; lot 3 division : PR 3a affichage mergée (#1754). Tout sur `main`, pas en prod.
 - **Prochaine action** : PR 3b (saisie de la division : quotient de gauche à droite, reste, zone des étapes, virgule posée par l'élève ; § 12), dans un worktree neuf.
 - **En attente de David** : vérifications #1716 → #1754 avant `deploy:prod`. Précision Q1 (§ 10).
-- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — division ajoutée le 2026-10-25 ; saisie de la multiplication pas rejouée.
+- **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — à jour au 2026-10-25 (saisie de la multiplication, division en potence) ; à compléter avec la saisie de la division (PR 3b).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas ; le validateur de modèle accepte une division à remplir que le générateur refuse (transitoire, jusqu'à la PR 3b).
 - **Worktree / branche** : `ubumaths-wt-operations-posees-division` (serveur 5180) et `ubumaths-wt-operations-posees` (5179), figés tant qu'ils servent à David ; branches mergées.
 
