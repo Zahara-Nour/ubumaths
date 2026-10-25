@@ -61,11 +61,26 @@ function lastReadColumn(
 }
 
 /**
+ * Première case lue : le premier chiffre écrit, ou la première décimale. Les
+ * cases vides n'ont de 0 implicite qu'avant la virgule : `_ _ , _ 1 5` n'est
+ * pas `0,015` (0 des dixièmes non écrit, David, 2026-10-25).
+ */
+function firstReadColumn(
+	scene: OperationScene,
+	digits: readonly string[],
+	comma: number | null
+): number {
+	const first = digits.findIndex((d) => d !== '');
+	return Math.min(first === -1 ? scene.columns : first, integerColumnsOf(scene, comma));
+}
+
+/**
  * La réponse lue dans les cases du résultat (`digits[c]` : '' si vide), en
  * LaTeX (`291{,}55`, `30\,000`). Cases de tête vides = rien ; décimales de fin
  * vides = 0, comme les cases de tête (`0,5 + 0,5`, élève « 1 » : `1`) ; une
- * autre case vide après le premier chiffre écrit rend la réponse incomplète : ''.
- * Virgule sans chiffre à sa gauche : 0 implicite (`, 1 5` → `0,15`).
+ * autre case vide après le premier chiffre écrit, ou après la virgule, rend la
+ * réponse incomplète : ''. Virgule sans chiffre à sa gauche : 0 implicite
+ * (`, 1 5` → `0,15`) ; décimale de tête vide : incomplète (`, _ 1 5`).
  */
 export function readOperationAnswer(
 	scene: OperationScene,
@@ -73,8 +88,8 @@ export function readOperationAnswer(
 	options: FrenchDecimalOptions = {},
 	comma: number | null = gridComma(scene)
 ): string {
-	const first = digits.findIndex((d) => d !== '');
-	if (first === -1) return '';
+	if (digits.every((d) => d === '')) return '';
+	const first = firstReadColumn(scene, digits, comma);
 	const last = lastReadColumn(scene, digits, comma);
 	if (digits.slice(first, last + 1).some((d) => d === '')) return '';
 	const integerColumns = integerColumnsOf(scene, comma);
@@ -128,7 +143,8 @@ export function commaFromAnswer(scene: OperationScene, value: string): number | 
  * Chiffres faux des cases du résultat, comparés à l'opération résolue (la
  * scène porte l'attendu de chaque case, '' pour un zéro de tête). Un zéro de
  * tête écrit ou laissé vide n'est jamais faux (le 0 des unités de `0,15`
- * compris) ; une décimale de fin laissée vide vaut 0, comme à la lecture.
+ * compris) ; une décimale de fin laissée vide vaut 0, comme à la lecture ;
+ * une décimale de tête laissée vide est fausse (`, _ 1 5`).
  */
 export function wrongResultDigits(
 	scene: OperationScene,
@@ -136,12 +152,12 @@ export function wrongResultDigits(
 	comma: number | null = gridComma(scene)
 ): boolean[] {
 	const last = lastReadColumn(scene, digits, comma);
-	const first = digits.findIndex((d) => d !== '');
+	const first = firstReadColumn(scene, digits, comma);
 	return scene.result.map((cell, c) => {
 		const typed = c > last ? '0' : (digits[c] ?? '');
 		if (cell.digit === '') return typed !== '' && typed !== '0';
 		// Case de tête vide là où 0 était attendu : le 0 implicite de la lecture (`, 1 5` → 0,15)
-		if (typed === '' && cell.digit === '0' && (first === -1 || c < first)) return false;
+		if (typed === '' && cell.digit === '0' && c < first) return false;
 		return typed !== cell.digit;
 	});
 }

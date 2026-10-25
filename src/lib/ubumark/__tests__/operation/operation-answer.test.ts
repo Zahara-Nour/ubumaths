@@ -206,6 +206,31 @@ describe('multiplication : la virgule posée par l’élève (§ 11)', () => {
 		expect(readOperationAnswer(m('calcul: 0,5 × 0,3'), cells('_015'), {}, 1)).toBe('0{,}15');
 	});
 
+	it('0 des dixièmes non écrit : incomplète, pas de 0 implicite après la virgule (David, 2026-10-25)', () => {
+		// 0,05 × 0,3 saisi `_ _ , _ 1 5` : n'est pas 0,015
+		expect(readOperationAnswer(m('calcul: 0,05 × 0,3'), cells('___15'), {}, 1)).toBe('');
+		expect(readOperationAnswer(m('calcul: 0,05 × 0,3'), cells('__015'), {}, 1)).toBe('0{,}015');
+		// Même règle avec la virgule de la grille
+		expect(readOperationAnswer(scene('calcul: 0,03 + 0,02'), cells('___5'))).toBe('');
+		expect(readOperationAnswer(scene('calcul: 0,03 + 0,02'), cells('__05'))).toBe('0{,}05');
+	});
+
+	it('0 des dixièmes non écrit : sa case surlignée à la correction', () => {
+		expect(wrongResultDigits(m('calcul: 0,05 × 0,3'), cells('___15'), 1)).toEqual([
+			false,
+			false,
+			true,
+			false,
+			false
+		]);
+		expect(wrongResultDigits(scene('calcul: 0,03 + 0,02'), cells('___5'))).toEqual([
+			false,
+			false,
+			true,
+			false
+		]);
+	});
+
 	it('virgule après la dernière case : nombre entier', () => {
 		expect(readOperationAnswer(m('calcul: 548 × 16'), cells('_8768'), {}, 4)).toBe('8768');
 	});

@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1745._
+_Mis à jour le 2026-10-25, PR de suite en cours._
 
-- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740 affichage, #1745 saisie), sur `main`, pas en prod.
-- **Prochaine action** : selon les réponses de David aux deux questions ci-dessous, petite PR de suite ; puis lot 3 (division posée), phase 0 à écrire.
-- **En attente de David** : (1) retour sur une question fausse : le diagnostic est recalculé depuis la valeur simplifiée (`1,00` mal placée → `_ _ 1`, « virgule oubliée ») — reco : accepter (n° 14) ; (2) `0,05 × 0,3` saisi `_ _ , _ 1 5` (0 des dixièmes non écrit) lu `0,015` juste — reco : incomplète. Vérifications #1716, #1726, #1738, #1740, #1745 avant `deploy:prod`. Précision Q1 (§ 10).
+- **État** : lot 1 COMPLET (#1716, #1726, #1738) ; lot 2 multiplication COMPLET (#1740 affichage, #1745 saisie), sur `main`, pas en prod. PR de suite (0 des dixièmes non écrit → incomplète) en cours.
+- **Prochaine action** : merger la PR de suite ; puis lot 3 (division posée), phase 0 à écrire.
+- **En attente de David** : vérifications #1716, #1726, #1738, #1740, #1745 avant `deploy:prod`. Précision Q1 (§ 10).
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB (à republier avec la saisie de la multiplication).
 - **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; au PDF, la compensation à remplir n'a plus de case en bas.
-- **Worktree / branche** : `ubumaths-wt-operations-posees` gardé tant que le serveur de test (5179) sert à David ; branche mergée.
+- **Worktree / branche** : `ubumaths-wt-operations-posees` gardé tant que le serveur de test (5179) sert à David ; branche mergée. PR de suite : `ubumaths-wt-operations-posees-suite` · `fix/operations-posees-zero-apres-virgule`.
 
 ---
 
@@ -322,6 +322,9 @@ multiplication seulement.
 10. `2,5 × 4` saisi `1 0` sans virgule : juste (le juge juge la valeur).
 11. `48 × 16` saisi `76,8` : faux, virgule surlignée.
 12. `0,5 × 0,3` saisi `, 1 5` → `0,15` (0 implicite).
+    **Décimale de tête vide (David, 2026-10-25, reco suivie)** : `0,05 × 0,3` saisi `_ _ , _ 1 5`
+    (0 des dixièmes non écrit) → incomplète, la case surlignée ; pas de 0 implicite après la
+    virgule. Même règle avec la virgule de la grille (`0,03 + 0,02`, élève `_ _ , _ 5`).
 13. Cases vides : tête = rien ; milieu = incomplet ; à droite du dernier chiffre : ignorées si la
     virgule est à leur gauche (`1 0 , _` → `10`), sinon incomplet (`_ 3 2 _` n'est pas `32`).
 14. Retour sur la question : réponse remise alignée à droite, zéros de fin possiblement perdus
@@ -336,6 +339,13 @@ multiplication seulement.
 19. PDF inchangé.
 
 ## Journal
+
+### 2026-10-25 — PR de suite (0 des dixièmes non écrit)
+
+Questions de #1745 tranchées (recos suivies) : (1) diagnostic recalculé depuis la valeur simplifiée
+au retour sur la question → accepté, rien à changer ; (2) décimale de tête vide → incomplète
+(`firstReadColumn` dans `operation-answer.ts`, lecture et surlignage). Worktree
+`ubumaths-wt-operations-posees-suite`, branche `fix/operations-posees-zero-apres-virgule`.
 
 ### 2026-10-25 — #1745 PR 2b (multiplication, saisie)
 
