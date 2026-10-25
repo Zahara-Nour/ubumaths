@@ -49,7 +49,6 @@ import { detectVariable, getPolynomialDegree } from '../solve/classify';
 import { extractQuadraticCoefficients } from '../solve/solvers/quadratic';
 import { computeNumericValue } from '../eval/numeric-value';
 import {
-	canon,
 	describeDomain,
 	flipRelation,
 	isConstantCoefficient,
@@ -59,6 +58,7 @@ import {
 	renumberSteps,
 	domainDescriptionLatex
 } from './_helpers';
+import { canonicalForm } from '../normal';
 import {
 	_buildStandardizeStep,
 	_buildIdentifyCoefficientsStep,
@@ -199,7 +199,7 @@ function buildBZeroInequalitySteps(
 	const displayedOp: InequalityOp =
 		aValue !== null && aValue < 0 ? (flipRelation(op) as InequalityOp) : op;
 
-	const rhs = canon(fraction(opposite(c), a));
+	const rhs = canonicalForm(fraction(opposite(c), a));
 	const square = power(varNode(variable), number('2'));
 	const isolatedIneq = relation(displayedOp, square, rhs);
 	steps.push(
@@ -256,7 +256,7 @@ function buildCZeroInequalitySteps(
 	);
 
 	// Step: factor-common-x — `x · (ax + b) ⊻ 0`
-	const remainder = canon(add(implicitMultiply(a, varNode(variable)), b));
+	const remainder = canonicalForm(add(implicitMultiply(a, varNode(variable)), b));
 	const factoredLeft = implicitMultiply(varNode(variable), parentheses(remainder));
 	const factoredIneq = relation(op, factoredLeft, number('0'));
 	steps.push(
@@ -273,7 +273,7 @@ function buildCZeroInequalitySteps(
 
 	// Roots: 0 and -b/a
 	const root0 = number('0');
-	const rootOther = canon(fraction(opposite(b), a));
+	const rootOther = canonicalForm(fraction(opposite(b), a));
 
 	// Step: sign table
 	steps.push(buildSignTableStep(current, a, [root0, rootOther], variable, idGen));
@@ -326,7 +326,7 @@ function buildFactoredInequalitySteps(
 				`buildFactoredInequalitySteps: cannot extract linear coefficients from a factor (precondition violated by caller)`
 			);
 		}
-		effectiveA = canon(implicitMultiply(effectiveA, linear.alpha));
+		effectiveA = canonicalForm(implicitMultiply(effectiveA, linear.alpha));
 	}
 
 	// Step: sign table
@@ -413,7 +413,7 @@ export function generateQuadraticInequalitySteps(
 	// Standardize for the degree probe. Parametric coefficients are rejected
 	// by the per-coefficient check after `extractQuadraticCoefficients` below
 	// (mirrors the pattern in `quadratic.ts`).
-	const standardForm = canon(subtract(inequality.left, inequality.right));
+	const standardForm = canonicalForm(subtract(inequality.left, inequality.right));
 
 	// 3. Sanity check : degree must be 0, 1, or 2.
 	const degree = getPolynomialDegree(standardForm, variable);

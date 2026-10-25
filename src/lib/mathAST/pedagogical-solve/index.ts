@@ -21,7 +21,7 @@ import type { RelationNode } from '../types';
 import type { SchoolLevel } from '../common/step-renderer-base';
 import { add as addNode, opposite } from '../factory';
 import { detectVariable, getPolynomialDegree } from '../solve/classify';
-import { canon } from './_helpers';
+import { canonicalForm } from '../normal';
 import { generateLinearEquationSteps } from './linear';
 import { generateQuadraticEquationSteps, PedagogicalQuadraticNotImplemented } from './quadratic';
 import { generateAbsoluteValueEquationSteps, hasAbsoluteValueOf } from './absolute-value';
@@ -116,7 +116,7 @@ export function generateEquationSteps(
 		return generateAbsoluteValueEquationSteps(equation, { level: options.level, variable });
 	}
 
-	const standardForm = canon(addNode(equation.left, opposite(equation.right)));
+	const standardForm = canonicalForm(addNode(equation.left, opposite(equation.right)));
 	const degree = getPolynomialDegree(standardForm, variable);
 
 	if (degree === null) {
@@ -217,7 +217,7 @@ export function generateInequalitySteps(
 		});
 	}
 
-	const standardForm = canon(addNode(inequality.left, opposite(inequality.right)));
+	const standardForm = canonicalForm(addNode(inequality.left, opposite(inequality.right)));
 	const degree = getPolynomialDegree(standardForm, variable);
 
 	if (degree === null) {

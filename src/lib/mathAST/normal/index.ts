@@ -209,6 +209,13 @@ export {
 	denormalizeExtended
 } from './denormalize.js';
 
+export {
+	canonicalForm,
+	exactRational,
+	polynomialCoefficients,
+	coefficientsByDegree
+} from './canonical-form.js';
+
 // =============================================================================
 // Phase 1 Preprocessing Rules
 // =============================================================================

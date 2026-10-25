@@ -17,9 +17,9 @@ import type {
 import { getPolynomialDegree } from '../classify';
 import { getVariables } from '../../eval/substitute';
 import { computeNumericValue } from '../../eval/numeric-value';
-import { flattenSumShallow, unflattenSum } from '../../flatten';
 import { number, fraction, opposite, equals, variable as varNode } from '../../factory';
 import { preprocess, denormalize, normalize, normalFormsEquivalent } from '../../normal';
+import { canonicalForm, coefficientsByDegree } from '../../normal/canonical-form';
 import { toLatex } from '../../latex-generator';
 import { describeSolution, describeCoefficients } from '../descriptions-fr';
 
@@ -28,76 +28,20 @@ import { describeSolution, describeCoefficients } from '../descriptions-fr';
 // =============================================================================
 
 /**
- * Extract coefficient and constant from a linear expression ax + b.
- * Returns { a, b } such that expr = ax + b.
+ * Extract coefficient and constant from a linear expression ax + b, read as
+ * written. `null` when a coefficient still depends on x: in `2(x-1)` or
+ * `(2x-3)+1` the constant hides INSIDE the x term (dividing by x gave
+ * `(2x-2)/x`, hence `2(x-1)=4` solved as x = 2x/(x-1)) ; the solver then reads
+ * the expanded form.
  */
-function extractLinearCoefficients(
+export function extractLinearCoefficients(
 	expr: MathNode,
 	variable: string
 ): { a: MathNode; b: MathNode } | null {
-	// Flatten the expression into terms
-	const flatSum = flattenSumShallow(expr);
-
-	// Separate terms into those with variable and without
-	const variableTerms: MathNode[] = [];
-	const constantTerms: MathNode[] = [];
-
-	for (const { sign, term } of flatSum) {
-		const signedTerm = sign === '-' ? opposite(term) : term;
-		const vars = getVariables(signedTerm);
-
-		if (vars.has(variable)) {
-			variableTerms.push(signedTerm);
-		} else {
-			constantTerms.push(signedTerm);
-		}
-	}
-
-	// Build coefficient a (sum of variable terms divided by x)
-	// For a linear expression, each variable term should be of form c*x
-	// So the coefficient is the sum of the c's
-
-	// Build the constant b — canonicalize so the recorded operand is a clean
-	// literal (e.g. `-4`) rather than the raw flat sum (`3 + -7`).
-	// Note: unflattenSum returns null only for empty arrays, which we've already handled
-	const bRaw =
-		constantTerms.length === 0
-			? number('0')
-			: constantTerms.length === 1
-				? constantTerms[0]
-				: unflattenSum(constantTerms.map((t) => ({ sign: '+' as const, term: t })))!;
-	const b = denormalize(normalize(bRaw));
-
-	// For the coefficient a, we need to extract it from terms like 2x, -3x, x
-	// The simplest approach: coefficient = (expr - b) / x when evaluated with x=1
-	// But we should keep it symbolic. Let's extract it differently.
-
-	// For each variable term, divide by x symbolically and simplify
-	if (variableTerms.length === 0) {
-		// No variable terms - a = 0
-		return { a: number('0'), b };
-	}
-
-	// Sum the variable terms
-	// Note: unflattenSum returns null only for empty arrays, which we've already handled
-	const variableSum =
-		variableTerms.length === 1
-			? variableTerms[0]
-			: unflattenSum(variableTerms.map((t) => ({ sign: '+' as const, term: t })))!;
-
-	// Extract coefficient by dividing by x
-	// variableSum / x should give us the coefficient
-	const coeffExpr = fraction(variableSum, varNode(variable));
-	const coeffSimplified = denormalize(normalize(coeffExpr));
-
-	// Un coefficient de ax + b ne dépend pas de x. Un terme non développé
-	// passe pourtant le tri ci-dessus : dans `2(x-1)` ou `(2x-3)+1`, la
-	// constante est cachée DANS le terme en x, et la division par x rendait
-	// `(2x-2)/x` — d'où `2(x-1)=4` résolue en x = 2x/(x-1). On refuse : le
-	// solveur relit alors la forme développée (même garde que le quadratique).
-	if (getVariables(coeffSimplified).has(variable)) return null;
-
-	return { a: coeffSimplified, b };
+	const coefficients = coefficientsByDegree(expr, variable, 1);
+	if (coefficients === null) return null;
+	const [b, a] = coefficients;
+	return { a, b };
 }
 
 /**
@@ -154,7 +98,7 @@ export const linearSolver: EquationSolver = {
 		// lit pas directement comme ax + b (terme non développé : `2(x-1)`).
 		const coeffs =
 			extractLinearCoefficients(simplified, variable) ??
-			extractLinearCoefficients(denormalize(normalize(simplified)), variable);
+			extractLinearCoefficients(canonicalForm(simplified), variable);
 
 		if (!coeffs) {
 			return {

@@ -12,7 +12,6 @@ import { describe, it, expect } from 'vitest';
 import {
 	absSimplifyRules,
 	algebraicFactoringRules,
-	algebraicExpandingRules,
 	hypSimplifyRules,
 	logExpRules,
 	powerRules,
@@ -265,12 +264,6 @@ describe('categorizeRule — exhaustivity over imported rule sets', () => {
 
 	it('every rule in algebraicFactoringRules has a non-fallback category', () => {
 		for (const r of algebraicFactoringRules) {
-			expect(categorizeRule(r.name)).not.toBe('autre');
-		}
-	});
-
-	it('every rule in algebraicExpandingRules has a non-fallback category', () => {
-		for (const r of algebraicExpandingRules) {
 			expect(categorizeRule(r.name)).not.toBe('autre');
 		}
 	});

@@ -12,7 +12,7 @@
 
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
-import { denormalize, normalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { tidy } from '../tidy';
 import { decimalString, hasDecimalLiteral } from '../tidy/decimal';
 import { computeCost } from '../simplify/cost';
@@ -366,7 +366,7 @@ function toEulerPowers(node: MathNode): MathNode {
 /** La forme normale réécrite, `null` si `normalize` lève une exception. */
 function normalizeSafe(node: MathNode): MathNode | null {
 	try {
-		return denormalize(normalize(node));
+		return canonicalForm(node);
 	} catch {
 		return null;
 	}

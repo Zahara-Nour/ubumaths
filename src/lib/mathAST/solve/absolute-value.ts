@@ -27,7 +27,7 @@ import type { Solution, SolveOptions, SolveResult } from './types';
 import { isSolverFailure } from './types';
 import { add, equals, number, opposite, subtract, variable as variableNode } from '../factory';
 import { isFunction } from '../guards';
-import { denormalize, normalize } from '../normal';
+import { canonicalForm } from '../normal';
 import { nodesEqual } from '../normal/hash';
 import { getVariables, substitute } from '../eval/substitute';
 import { findNodes, replaceNode } from '../transforms';
@@ -51,10 +51,6 @@ const RELATIVE_DUPLICATE_TOLERANCE = 1e-12;
 
 function isAbs(node: MathNode): node is FunctionNode {
 	return isFunction(node) && node.name === 'abs' && node.args.length === 1;
-}
-
-function simplified(node: MathNode): MathNode {
-	return denormalize(normalize(node));
 }
 
 /** u est affine en l'inconnue : degré 1 exactement (|x² − 1| = 3 est refusée). */
@@ -189,7 +185,7 @@ function analyzeSingle(
 	// Un paramètre littéral (|x| = a) : le signe de c n'est pas connu
 	if (getVariables(value).size > 0) return null;
 
-	const sign = constantSign(simplified(value));
+	const sign = constantSign(canonicalForm(value));
 	return sign === null ? null : { value, sign };
 }
 

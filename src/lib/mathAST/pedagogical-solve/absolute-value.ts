@@ -30,7 +30,8 @@ import { findNodes } from '../transforms';
 import { solve } from '../solve/solve';
 import { analyzeAbsoluteValue, type AbsoluteValueShape } from '../solve/absolute-value';
 import { detectVariable } from '../solve/classify';
-import { canon, makeStep } from './_helpers';
+import { makeStep } from './_helpers';
+import { canonicalForm } from '../normal';
 import { computeNumericValue } from '../eval/numeric-value';
 import { generateLinearEquationSteps } from './linear';
 import type { EquationOperation, EquationStep, LinearSchoolLevel } from './types';
@@ -162,12 +163,15 @@ function isolatedForm(
 /** Les équations du premier degré : u = c puis u = −c, ou u = v puis u = −v. */
 function branchesOf(shape: AbsoluteValueShape, value: MathNode | undefined): RelationNode[] {
 	if (shape.kind === 'equal') {
-		return [equals(shape.left, shape.right), equals(shape.left, canon(opposite(shape.right)))];
+		return [
+			equals(shape.left, shape.right),
+			equals(shape.left, canonicalForm(opposite(shape.right)))
+		];
 	}
 	const c = value ?? shape.value;
 	return shape.sign === 0
 		? [equals(shape.argument, number('0'))]
-		: [equals(shape.argument, c), equals(shape.argument, canon(opposite(c)))];
+		: [equals(shape.argument, c), equals(shape.argument, canonicalForm(opposite(c)))];
 }
 
 function splitDescription(op: EquationOperation & { kind: 'split-absolute-value' }): string {
@@ -278,7 +282,7 @@ export function generateAbsoluteValueEquationSteps(
 		const status = solve(branch, { variable }).status;
 		if (status === 'infinite' || status === 'no-solution') {
 			const relation = getVariables(last).has(variable)
-				? equals(canon(subtract(branch.left, branch.right)), number('0'))
+				? equals(canonicalForm(subtract(branch.left, branch.right)), number('0'))
 				: last;
 			const truth = status === 'infinite';
 			push(

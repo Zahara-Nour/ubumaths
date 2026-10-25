@@ -28,6 +28,7 @@ import { flattenSumShallow } from '../../flatten';
 import { number, opposite, equals, variable as varNode, fraction } from '../../factory';
 import { numericNode } from '../../common/numeric';
 import { denormalize, normalize } from '../../normal';
+import { termDegree, coefficientOfDegree } from '../../normal/canonical-form';
 import {
 	describeSolution,
 	describeIdentifyQuartic,
@@ -36,8 +37,6 @@ import {
 } from '../descriptions-fr';
 import {
 	isZeroNode,
-	getTermDegree,
-	extractCoefficient,
 	extractPowerEquation,
 	solvePowerEquation,
 	solveCubicCardano,
@@ -79,7 +78,7 @@ function extractQuarticCoefficients(expr: MathNode, variable: string): QuarticCo
 
 	for (const { sign, term } of flatSum) {
 		const signedTerm = sign === '-' ? opposite(term) : term;
-		const degree = getTermDegree(signedTerm, variable);
+		const degree = termDegree(signedTerm, variable);
 
 		if (degree === 4) {
 			aTerms.push(signedTerm);
@@ -100,11 +99,11 @@ function extractQuarticCoefficients(expr: MathNode, variable: string): QuarticCo
 	// Must have x⁴ term
 	if (aTerms.length === 0) return null;
 
-	const a = extractCoefficient(aTerms, variable, 4);
-	const b = extractCoefficient(bTerms, variable, 3);
-	const c = extractCoefficient(cTerms, variable, 2);
-	const d = extractCoefficient(dTerms, variable, 1);
-	const e = extractCoefficient(eTerms, variable, 0);
+	const a = coefficientOfDegree(aTerms, variable, 4);
+	const b = coefficientOfDegree(bTerms, variable, 3);
+	const c = coefficientOfDegree(cTerms, variable, 2);
+	const d = coefficientOfDegree(dTerms, variable, 1);
+	const e = coefficientOfDegree(eTerms, variable, 0);
 
 	// Verify a != 0
 	if (isZeroNode(a)) return null;

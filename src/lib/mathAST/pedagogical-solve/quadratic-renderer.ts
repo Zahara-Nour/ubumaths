@@ -1031,7 +1031,7 @@ export function rationalSignTableGrid(
 		const v = computeNumericValue(z);
 		if (v === null) return null;
 		const m = op.denominatorMultiplicities[i] ?? 1;
-		// Merge if a root and a zero coincide (rare but possible after canon).
+		// Merge if a root and a zero coincide (rare but possible after canonicalForm).
 		const same = criticals.find((c) => Math.abs(c.value - v) < 1e-9);
 		if (same) {
 			same.isQ = true;

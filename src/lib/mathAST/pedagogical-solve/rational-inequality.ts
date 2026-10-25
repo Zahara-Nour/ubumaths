@@ -40,7 +40,6 @@ import { solve } from '../solve/solve';
 import { solveInequality } from '../solve/inequality';
 import { computeNumericValue } from '../eval/numeric-value';
 import {
-	canon,
 	describeDomain,
 	isConstantCoefficient,
 	isZero,
@@ -48,6 +47,7 @@ import {
 	renumberSteps,
 	domainDescriptionLatex
 } from './_helpers';
+import { canonicalForm } from '../normal';
 import {
 	generateLinearInequalitySteps,
 	UnsupportedInequalityDegree,
@@ -161,7 +161,7 @@ function combineFractions(terms: readonly ClassifiedTerm[]): {
 	const commonDenominator =
 		distinctDenoms.length === 1
 			? distinctDenoms[0]
-			: canon(implicitMultiply(distinctDenoms[0], distinctDenoms[1]));
+			: canonicalForm(implicitMultiply(distinctDenoms[0], distinctDenoms[1]));
 
 	// For each term, multiply its numerator by the « missing » factor so its
 	// fraction sits on the common denominator.
@@ -182,17 +182,17 @@ function combineFractions(terms: readonly ClassifiedTerm[]): {
 				return null;
 			}
 		}
-		// Guard : `numerator × 1` should display as just `numerator` ; canon may
+		// Guard : `numerator × 1` should display as just `numerator` ; canonicalForm may
 		// or may not strip the `× 1` depending on AST shape, so we short-circuit.
 		const adjustedNum =
 			missingFactor.type === 'number' && missingFactor.value === '1'
 				? t.numerator
-				: canon(implicitMultiply(t.numerator, missingFactor));
+				: canonicalForm(implicitMultiply(t.numerator, missingFactor));
 		adjustedNumerators.push(adjustedNum);
 		const signed = t.sign === '+' ? adjustedNum : opposite(adjustedNum);
 		combinedNumerator = add(combinedNumerator, signed);
 	}
-	combinedNumerator = canon(combinedNumerator);
+	combinedNumerator = canonicalForm(combinedNumerator);
 
 	return {
 		originalTerms: terms,
@@ -594,13 +594,13 @@ export function generateRationalInequalitySteps(
 	}
 
 	// 4. Standardise to canonical P/Q form (subtract right side, simplify).
-	const canonForm = canon(subtract(inequality.left, inequality.right));
+	const canonForm = canonicalForm(subtract(inequality.left, inequality.right));
 	const rationalForm = tryExtractRationalForm(canonForm);
 	if (rationalForm === null) {
 		// After canonicalisation, the form is no longer a fraction — could be a
 		// polynomial after cancellation (e.g. `(x²-1)/(x-1) < 0` simplifies to
 		// `x+1 < 0`). The top-level `generateInequalitySteps` dispatcher handles
-		// these naturally because `getPolynomialDegree(canon)` returns a number,
+		// these naturally because `getPolynomialDegree(canonicalForm(…))` returns a number,
 		// routing to the polynomial pipeline. Direct callers of this function
 		// receive a typed error so they can re-route via the dispatcher.
 		throw new InequalityNotSolvable(
