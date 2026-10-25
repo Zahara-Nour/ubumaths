@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-25, lot A4 en cours (après #1720)._
 
 - **État** : lot A4 (sens des opérations), 7 brouillons en prod sans nœud ni tag (§ 4 quinquies) : `a59fba89` Addition ou soustraction ? (CP-014), `3bde8d25` Soustraction ou addition ? (CP-077), `c342f32e` Les signes + et − (CP-015), `c4644788` Les signes − et + (CP-078), `f7463b7d` Le signe = (CP-079), `6e712e78` fois : quel calcul ? et `b873739e` fois : combien ? (CP-017). Migration nœud + tag `20261025210000_questions_cp_a4_rangement_tags` et son test : rouges sans elle, 24/24 verts (A1 + A2 + A4).
-- **Prochaine action** : PR, `security-auditor`, CI verte → merge → `db:migrate` depuis le dépôt principal → vérifier en prod → page à cocher A4.
+- **Prochaine action** : PR (`security-auditor` : aucun finding bloquant ; `check:incremental` 0 erreur, `lint:fast`, `types:cliquet` OK), CI verte → merge → `db:migrate` depuis le dépôt principal → vérifier en prod → page à cocher A4.
 - **En attente de David** : descriptions périmées de `a59fba89` et `c342f32e` (`create-questions` ne les met pas à jour) ; publication des brouillons A1 + A2 (+ A4 après relecture) ; vérification manuelle #1702.
 - **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020, règle en base) — lire les ADR avant de proposer un tag double ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau et ne touche pas la description ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` ; dater les migrations après la prod ; **jamais de variable `e`** ; relire le rendu (`question:specs --apercu`).
 - **Worktree / branche** : `../ubumaths-wt-questions`, `feat/questions-cp-a4`.
