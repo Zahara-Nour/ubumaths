@@ -1,20 +1,18 @@
 ---
 title: Python → atelier — « Ouvrir dans l'atelier » depuis le playground
 date: 2026-10-25
-status: PR 1 mergée (#1746), recette de David en attente
+status: CLOS le 2026-10-25 (#1746 mergée) ; recette suivie dans docs/wip/verifications-manuelles.md
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1746._
+_Mis à jour le 2026-10-25 : chantier CLOS, journal et phase 0 versés dans `docs/archive/wip/`._
 
-- **État** : PR 1 #1746 **mergée** (sur `main`, pas en prod) : « Ouvrir dans l'atelier » depuis `/python`,
-  listes et effectifs, boîte aux lettres `localStorage`, revue `code-reviewer` appliquée.
-- **Prochaine action** : rien de prévu ; chantier à clore (verser la phase 0 dans `docs/archive/wip/`,
-  le durable est déjà dans `docs/systeme/atelier.md` et `docs/systeme/python/`) après la recette de David.
-- **En attente de David** : vérifications manuelles (ligne #1746 de `verifications-manuelles.md`).
-- **Pièges** : le playground s'exécute dans l'espace GLOBAL de Pyodide (doc `worker.md` corrigée) ;
-  limites assumées : morse, `global`, branche non exécutée (valeur d'une exécution précédente).
+- **État** : livré par #1746 (sur `main`, pas en prod). Le durable est dans `docs/systeme/atelier.md`
+  et `docs/systeme/python/` (`worker.md`, `components.md`).
+- **En attente de David** : la recette, suivie à la ligne #1746 de `docs/wip/verifications-manuelles.md`.
+- **Pièges** : le playground s'exécute dans l'espace GLOBAL de Pyodide ; limites assumées : morse,
+  `global`, branche non exécutée (valeur d'une exécution précédente).
 - **Worktree / branche** : retirés.
 
 ---
@@ -29,6 +27,7 @@ _Mis à jour le 2026-10-25, après #1746._
   (> 20 modalités, mots > 40 caractères, textes lus comme nombres, vides, sans lettre, avec virgule),
   texte long qui faisait rejeter tout le message (`long-text`), effectifs réunis par modalité, garde
   > 1 million d'éléments (`too-long`), `match` / `except*`. Tests : 36 + 10. #1746 mergée, CI verte.
+- 2026-10-25 : chantier clos, journal et phase 0 versés dans `docs/archive/wip/`.
 
 ## Vérifications manuelles (David)
 

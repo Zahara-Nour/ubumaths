@@ -175,7 +175,7 @@ export async function openLink(params: URLSearchParams, storage?: Storage): Prom
 
 /**
  * Les listes qu'un programme de `/python` a déposées (phase 0
- * `docs/wip/python-vers-atelier-phase0.md`) : un atelier neuf, chaque liste
+ * `docs/archive/wip/python-vers-atelier-phase0.md`) : un atelier neuf, chaque liste
  * dans sa colonne, titrée du nom Python (Q6). Lue une fois : rouvrir l'adresse
  * (un rechargement) ne retrouve rien, et le dit.
  */

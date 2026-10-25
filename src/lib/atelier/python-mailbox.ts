@@ -1,7 +1,7 @@
 /**
  * Atelier — la boîte aux lettres de « Ouvrir dans l'atelier » depuis Python
  *
- * Q4 de la phase 0 (`docs/wip/python-vers-atelier-phase0.md`) : un lien `?a=`
+ * Q4 de la phase 0 (`docs/archive/wip/python-vers-atelier-phase0.md`) : un lien `?a=`
  * ne tient pas 200 flottants (1 800 caractères). La page `/python` dépose donc
  * les listes dans `localStorage` sous une clé neuve et ouvre
  * `/atelier?depuis-python=<clé>` ; l'atelier les lit UNE fois et les efface.

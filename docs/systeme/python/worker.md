@@ -165,7 +165,7 @@ Tous préfixés `_chiphre_` pour ne pas polluer le namespace de l'utilisateur.
 
 ### Les listes pour l'atelier (`_chiphre_atelier_lists`)
 
-« Ouvrir dans l'atelier » (phase 0 [python-vers-atelier-phase0.md](../../wip/python-vers-atelier-phase0.md)) :
+« Ouvrir dans l'atelier » (phase 0 [python-vers-atelier-phase0.md](../../archive/wip/python-vers-atelier-phase0.md)) :
 après une exécution **isolée** réussie, le worker relit l'AST de `code` et retient les noms affectés
 **au niveau du module** (`=`, `+=`, cible de `for`, `with … as`, corps de `if`/`while`/`try`), jamais
 dans une `def` ou une `class`, ni en `_`. Seuls ces noms comptent : l'espace global garde les

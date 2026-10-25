@@ -1,7 +1,7 @@
 /**
  * Atelier — « Ouvrir dans l'atelier » depuis Python : ce que le menu propose
  *
- * Le sens inverse du pont (phase 0 `docs/wip/python-vers-atelier-phase0.md`,
+ * Le sens inverse du pont (phase 0 `docs/archive/wip/python-vers-atelier-phase0.md`,
  * validée par David le 2026-10-25) : une liste laissée par un programme de
  * `/python` devient une COPIE dans un atelier éphémère. Pas d'état partagé.
  *
