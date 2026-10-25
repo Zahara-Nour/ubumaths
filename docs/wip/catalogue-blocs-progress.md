@@ -2,17 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1764._
+_Mis à jour le 2026-10-25, PR 2 ouverte._
 
-- **État** : PR 1 mergée (#1764) : `/aide-ecriture/blocs` et les 10 fiches, en attente de
-  `deploy:prod`. Serveur de test : `http://localhost:5177/aide-ecriture/blocs` (compte prof).
-- **Prochaine action** : PR 2, la vitrine `/demo/blocs` (mêmes fichiers
-  `src/lib/block-catalog/*.ts`, sélection par niveau, « Voir ce qu'écrit le prof » replié,
-  entrée `DEMO_PAGES` + `SeoHead`), branche `feat/catalogue-blocs-vitrine`.
-- **En attente de David** : regard sur les pages. Erreurs muettes des parseurs : **chantier à
-  part `erreurs-blocs`** (décidé le 2026-10-25), rien à corriger ici.
-- **Pièges connus** : nouvelle vitrine → `DEMO_PAGES` + `<SeoHead {...demoSeo(…)} />` ; dans
-  `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale`.
+- **État** : PR 1 mergée (#1764). PR 2 (vitrine `/demo/blocs`) ouverte, CI en cours ; à son
+  merge, les deux PR attendent `deploy:prod`. Serveur de test : `http://localhost:5177/demo/blocs`.
+- **Prochaine action** : merger la PR 2 (CI verte), puis clore le chantier (versement : la doc
+  durable est déjà dans `docs/systeme/utilitaires-et-demos.md`, archiver ce journal).
+- **En attente de David** : regard sur les pages (aide et vitrine). Erreurs muettes des
+  parseurs : chantier à part `erreurs-blocs`.
+- **Pièges connus** : la division posée est une grille, pas un svg (test de rendu de la vitrine).
 - **Worktree / branche** : `../ubumaths-wt-catalogue-blocs` · `feat/catalogue-blocs-vitrine`.
 
 ## Origine
@@ -85,3 +83,18 @@ Pas de revue de code (pages qui assemblent des composants existants).
   erreur, segment hors bornes = avertissement.
 - **trig** : `color` sans contrôle ; `projections`/`grid` vrais seulement pour `true`, `axes`/
   `labels`/`values` vrais sauf `false` (une faute de frappe agit dans les deux sens).
+
+## PR 2 — vitrine `/demo/blocs` (2026-10-25)
+
+- Sélection : `src/lib/block-catalog/showcase.ts` (`SHOWCASE_SECTIONS`, `SHOWCASE_ITEMS`), un
+  renvoi (slug de fiche + titre d'exemple) par bloc, textes écrits pour un visiteur. Primaire :
+  horloge (durée entre deux horloges), division euclidienne, quarts sur une droite graduée ;
+  collège : barres, circulaire, nuage avec ajustement ; lycée : dérivée et variations,
+  probabilités conditionnelles, parabole et tangente.
+- Page `src/routes/(public)/demo/blocs/+page.svelte` : titre « Les blocs du prof », cartes en
+  3 colonnes, rendu sans `showAuthoringErrors`, texte replié sous « Voir ce qu'écrit le prof ».
+- `DEMO_PAGES` : entrée placée après le cercle trigo (même famille de contenu), ordre du test mis
+  à jour. Carte des fonctionnalités : 11 vitrines.
+- Tests : `showcase.test.ts` (9 blocs de la phase 0 par niveau, renvois valides, renvoi cassé
+  lève), `page-demo-blocs.svelte.test.ts` (titres, 9 rendus, 9 `details` repliés, aucun message
+  d'erreur).
