@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-25, après #1728._
 
-- **État** : lots A1 (#1712), A2 (#1720) et A4 (#1728) livrés. A4 = 7 brouillons en prod (`a59fba89` CP-014, `3bde8d25` CP-077, `c342f32e` CP-015, `c4644788` CP-078, `f7463b7d` CP-079, `6e712e78` et `b873739e` CP-017), rangés sur leur notion et tagués (`db:migrate` fait, vérifié en prod : nœud, 1 tag chacun, `updated_at` inchangé, trigger `tgenabled = O`). Page à cocher A4 : https://claude.ai/artifact/LZBCHvdLMKCJhjRQH1VGBx (collection `verdicts`, vide au 2026-10-25). Pages A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb · A2 : https://claude.ai/artifact/BKgtf3Wv2EYsJJBHc4wwp4.
-- **Prochaine action** : lire les verdicts A4 et corriger les « À revoir » (`create-questions --publier --mettre-a-jour`, brouillons seulement) ; puis lot A5 problèmes (029-031, § 4 ter), phase 0, nouveau worktree `../ubumaths-wt-questions`.
-- **En attente de David** : relecture A4 (page à cocher) ; publication des brouillons A1 + A2 (relus OK) puis A4 ; vérification manuelle #1702.
+- **État** : lots A1 (#1712), A2 (#1720) et A4 (#1728) livrés. A4 = 7 brouillons en prod (`a59fba89` CP-014, `3bde8d25` CP-077, `c342f32e` CP-015, `c4644788` CP-078, `f7463b7d` CP-079, `6e712e78` et `b873739e` CP-017), rangés sur leur notion et tagués (`db:migrate` fait, vérifié en prod : nœud, 1 tag chacun, `updated_at` inchangé, trigger `tgenabled = O`). Page à cocher A4 : https://claude.ai/artifact/LZBCHvdLMKCJhjRQH1VGBx (collection `verdicts`) : **relus par David, 7/7 OK**. Pages A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb · A2 : https://claude.ai/artifact/BKgtf3Wv2EYsJJBHc4wwp4.
+- **Prochaine action** : lot A5 problèmes (029-031, § 4 ter), phase 0, nouveau worktree `../ubumaths-wt-questions`.
+- **En attente de David** : publication des 20 brouillons A1 + A2 + A4 (tous relus OK) ; vérification manuelle #1702.
 - **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020, règle en base) — lire les ADR avant de proposer un tag ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » (`domain`/`subdomain` = anciennes colonnes) ; `--mettre-a-jour` retrouve un brouillon par titre + niveau (et réécrit la description depuis #1728) ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu (`question:specs --apercu`) ; script d'un tirage hors du dépôt → extension `.mts`.
 - **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1728).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -139,3 +139,4 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : A4, 5 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés.
 - 2026-10-25 : A4, tag double refusé par la base (ADR 0020) ; option A : 2 brouillons mis à jour, 2 créés (7 modèles) ; migration nœud + tag et test, rouge puis vert.
 - 2026-10-25 : #1728 mergée, `db:migrate`, vérifié en prod ; descriptions de `a59fba89` et `c342f32e` corrigées (`--mettre-a-jour` réécrit désormais la description) ; page à cocher A4 publiée.
+- 2026-10-25 : page à cocher A4 relue par David, 7/7 OK.
