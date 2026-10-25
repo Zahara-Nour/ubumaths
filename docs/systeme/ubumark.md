@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 ; scène commune collection / monnaie le 2026-10-25.
 
 ## À quoi ça sert
 
@@ -448,9 +448,12 @@ de QCM). `centaines:` est réservée (« pas encore disponible »). Groupes de d
 isolés dessous ; groupement partiel (3 dizaines et 15 unités) accepté. Le vrac est tiré d'une graine
 faite du contenu du bloc et du rang de la collection : même bloc → même dessin, à l'écran comme au
 PDF ; deux objets restent à 1,5 objet l'un de l'autre au moins. Chaque objet de la scène
-(`utils/collection-scene.ts`) porte sa valeur (1 ou 10), pour la monnaie à venir. À l'écran,
+(`utils/collection-scene.ts`) porte sa valeur (1 ou 10), pour la monnaie à venir ; hasard, vrac,
+décalage et toucher viennent de `utils/scene-commune.ts`, partagé avec la monnaie (instantanés
+`collection-scene-figee.test.ts` : un objet déplacé d'un centième les fait échouer). À l'écran,
 **toucher pour marquer** : un objet touché est barré (aide de comptage, non jugée, rien
-d'enregistré, effacée à la collection suivante ; « Effacer les marques »). Nom accessible
+d'enregistré, effacée à la collection suivante ; « Effacer les marques ») — classe `SceneMarks`
+de `nodes/scene-marks.svelte.ts`, commune aux deux blocs. Nom accessible
 « Collection d'objets », **jamais le nombre**. PDF en Typst natif, noir sur blanc. Dans un choix de
 QCM : `--collection-taille: 3cm` (comme l'horloge) ; série figée : `withChoiceCollectionSize`.
 

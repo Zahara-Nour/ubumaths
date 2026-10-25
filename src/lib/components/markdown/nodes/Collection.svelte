@@ -15,14 +15,14 @@
 	  étroites gardent la même échelle ; jamais plus large que le conteneur.
 	- Toucher pour marquer (décision 2) : un objet touché est barré, comme au
 	  crayon sur papier ; aide non jugée, rien n'est enregistré, et une nouvelle
-	  collection repart sans marque. Au doigt seulement : c'est une aide de
-	  comptage, la réponse se donne dans la case ou le QCM.
+	  collection repart sans marque (`scene-marks.svelte.ts`, partagé avec la
+	  monnaie). Au doigt seulement : c'est une aide de comptage, la réponse se
+	  donne dans la case ou le QCM.
 	- Bloc en erreur : messages pour le prof, cadre neutre pour l'élève (Q48).
 
 	@module components/markdown/nodes/Collection
 -->
 <script lang="ts">
-	import { SvelteSet } from 'svelte/reactivity';
 	import {
 		COLLECTION_ARIA_LABEL,
 		COLLECTION_DEFAULT_CAPTIONS,
@@ -36,6 +36,7 @@
 		type CollectionItem
 	} from '$lib/ubumark/utils/collection-scene';
 	import { readAuthoringErrors } from '../authoring-errors';
+	import { SceneMarks, scenePointOf } from './scene-marks.svelte';
 
 	interface Props {
 		node: CollectionNode;
@@ -63,37 +64,15 @@
 	/** Taille donnée par l'auteur : prioritaire sur celle du contexte (choix de QCM) */
 	let size = $derived(node.spec?.sizeCm == null ? undefined : `${node.spec.sizeCm}cm`);
 
-	/**
-	 * Marques de l'élève, « collection:objet », valables pour UNE collection : une
-	 * autre (question suivante) repart sans marque, sans effet de bord
-	 */
-	const marks = new SvelteSet<string>();
-	let marksFor = $state('');
-	let sceneKey = $derived(JSON.stringify(node.spec));
-	let marked = $derived(marksFor === sceneKey ? marks : new Set<string>());
-
-	function toggle(setIndex: number, itemIndex: number) {
-		if (marksFor !== sceneKey) {
-			marks.clear();
-			marksFor = sceneKey;
-		}
-		const key = `${setIndex}:${itemIndex}`;
-		if (marks.has(key)) marks.delete(key);
-		else marks.add(key);
-	}
-
-	function clearMarks() {
-		marks.clear();
-	}
+	/** Marques de l'élève, valables pour UNE collection (une autre repart sans marque) */
+	const marks = new SceneMarks(() => JSON.stringify(node.spec));
 
 	/** Toucher : l'objet le plus proche du doigt, en coordonnées de la scène */
 	function handleTap(event: MouseEvent, setIndex: number) {
-		const svg = event.currentTarget as SVGSVGElement;
-		const matrix = svg.getScreenCTM();
-		if (matrix === null) return;
-		const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+		const point = scenePointOf(event);
+		if (point === null) return;
 		const index = findCollectionItemAt(collections[setIndex].scene, point);
-		if (index !== null) toggle(setIndex, index);
+		if (index !== null) marks.toggle(setIndex, index);
 	}
 
 	/** Trait de la marque : en travers de l'objet, du bas à gauche au haut à droite */
@@ -156,7 +135,7 @@
 							rx="6"
 						/>
 						{#each collection.scene.items as item, i (i)}
-							{@const isMarked = marked.has(`${c}:${i}`)}
+							{@const isMarked = marks.has(c, i)}
 							<g
 								class="collection-objet collection-{item.kind}"
 								class:collection-objet-marque={isMarked}
@@ -215,11 +194,11 @@
 				</figure>
 			{/each}
 		</div>
-		{#if marked.size > 0}
+		{#if marks.size > 0}
 			<button
 				type="button"
 				class="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-				onclick={clearMarks}
+				onclick={() => marks.clear()}
 			>
 				Effacer les marques
 			</button>
