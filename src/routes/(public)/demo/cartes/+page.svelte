@@ -7,6 +7,8 @@
 	demo-debug, PR 6c).
 -->
 <script lang="ts">
+	import { demoSeo } from '$lib/seo/demo-pages';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import BackLink from '$lib/components/navigation/BackLink.svelte';
 	import VipCardHolo from '$lib/components/VipCardHolo.svelte';
 	import type { VipCardRarity } from '$lib/types/vip-card';
@@ -21,9 +23,9 @@
 	};
 </script>
 
+<SeoHead {...demoSeo('/demo/cartes')} />
+
 <svelte:head>
-	<title>Les cartes VIP — Chiphre</title>
-	<meta name="robots" content="noindex" />
 	<!-- Effets holographiques, comme `/dev/cartes` et le tableau de bord -->
 	<link rel="stylesheet" href="/css/holo-cards/base.css" />
 	<link rel="stylesheet" href="/css/holo-cards/cards.css" />

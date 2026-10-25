@@ -78,6 +78,18 @@ describe('les trois vues', () => {
 	);
 });
 
+// Phase 7 du chantier demo-debug (David suit la recommandation, 2026-10-25) : un seul lien
+// vers l'accueil de la vitrine, par page de public
+describe('la vitrine', () => {
+	it.each(VIEWS.map((v) => [v.id, v] as const))('%s : un lien, un seul, vers /demo', (_, view) => {
+		expect(links(view).filter((h) => h.startsWith('/demo'))).toEqual(['/demo']);
+	});
+
+	it('les professeurs l’ont en 3ᵉ bouton d’appel', () => {
+		expect(TEACHER_VIEW.calls.map((c) => c.href)).toEqual(['/automaths', '/atelier', '/demo']);
+	});
+});
+
 describe('le registre', () => {
 	it('les élèves sont tutoyés', () => {
 		expect(text(STUDENT_VIEW)).toMatch(/\b(tu|ton|ta|tes|te)\b/i);

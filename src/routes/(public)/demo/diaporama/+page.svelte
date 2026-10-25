@@ -12,6 +12,8 @@
 	page, dans un cadre ; F ou le bouton le passent en plein écran.
 -->
 <script lang="ts">
+	import { demoSeo } from '$lib/seo/demo-pages';
+	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { Maximize, Minimize } from '@lucide/svelte';
@@ -83,10 +85,7 @@
 	);
 </script>
 
-<svelte:head>
-	<title>Le diaporama — Chiphre</title>
-	<meta name="robots" content="noindex" />
-</svelte:head>
+<SeoHead {...demoSeo('/demo/diaporama')} />
 
 <div class="mx-auto max-w-6xl space-y-6 px-4 py-8">
 	<BackLink href="/demo" label="Retour aux démonstrations" />

@@ -426,3 +426,17 @@ no position before the top-level node` dans les raccourcis Backspace de la droit
 - Vu sur 5177 (Playwright, 1280 et 390 px, les 13 diapositives) : aucune erreur de console,
   aucune requête autre que GET, rien qui déborde. Sur téléphone, les flèches du Deck chevauchent
   parfois le bas du contenu (comportement du Deck, pas touché).
+
+## PR 7 — accueil `/demo`, robots, liens (phase 0 : David suit les recommandations, le 2026-10-25)
+
+- **Accueil `/demo`** : 9 cartes (titre + une ligne), une seule couleur d'accent, ordre : questions,
+  corrigés, diaporama, géométrie, cercle trigo, éditeur, lexique, cartes VIP, structure. Prérendue,
+  sans `BackLink` (carrefour). Mathémo et Trio en sortent (déjà dans `/games`).
+- **Robots** : `Disallow: /demo` retiré (le reste fermé) ; `noindex` retiré des 9 pages, une
+  `meta description` chacune ; sitemap : `/demo` (0,6) + les 9 (0,5), exclusion `/demo/**` retirée.
+- **Liens** : un seul lien vers `/demo` par page de public (recommandation suivie) — 3ᵉ bouton
+  d'appel sur `/professeurs`, « Voir Chiphre en action » dans un bloc de `/parents` et `/eleves` ;
+  5ᵉ lien « Démonstrations » dans l'`InfoPanel`.
+- Ouverture aux robots dans cette PR (recommandation suivie) : effective au prochain `deploy:prod`.
+- Une seule liste `DEMO_PAGES` (`$lib/seo/demo-pages.ts`) nourrit l'accueil, le sitemap et les
+  descriptions ; un test exige qu'elle colle aux dossiers de `/demo`. Revue : `code-reviewer` (Sonnet).

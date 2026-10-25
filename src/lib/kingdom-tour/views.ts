@@ -57,6 +57,8 @@ const AUTHOR =
 	'Chiphre est créé par un enseignant agrégé de mathématiques et ingénieur en informatique, passionné de littérature et d’illusionnisme.';
 
 const CONTACT: TourLink = { label: 'contact@chiph.re', href: 'mailto:contact@chiph.re' };
+/** L'accueil de la vitrine, un lien par page de public (chantier demo-debug, PR 7) */
+const DEMO: TourLink = { label: 'Voir Chiphre en action', href: '/demo' };
 
 /** Un lieu public, sous son nom et sa description du Tour du Royaume */
 function place(id: PlaceId, text?: string): ViewItem {
@@ -77,7 +79,8 @@ export const STUDENT_VIEW: AudienceView = {
 		{
 			id: 'sans-compte',
 			title: 'Sans compte, tout de suite',
-			items: [place('automaths'), place('atelier'), place('cabinet-noir'), place('games')]
+			items: [place('automaths'), place('atelier'), place('cabinet-noir'), place('games')],
+			links: [DEMO]
 		},
 		{
 			id: 'essai',
@@ -158,7 +161,8 @@ export const PARENT_VIEW: AudienceView = {
 					title: 'Réviser au bon moment',
 					text: 'Une question revient juste avant qu’il l’oublie.'
 				}
-			]
+			],
+			links: [DEMO]
 		},
 		{
 			id: 'forme',
@@ -249,7 +253,8 @@ export const TEACHER_VIEW: AudienceView = {
 	],
 	calls: [
 		{ label: 'Essayer Automaths', href: '/automaths' },
-		{ label: 'Ouvrir l’Atelier', href: '/atelier' }
+		{ label: 'Ouvrir l’Atelier', href: '/atelier' },
+		{ label: 'Voir les démonstrations', href: '/demo' }
 	]
 };
 

@@ -8,6 +8,7 @@ couvre:
   - 'src/routes/(public)/a-propos/+page.svelte'
   - 'src/routes/(public)/demo/+page.svelte'
   - 'src/routes/(public)/demo/+page.ts'
+  - src/lib/seo/demo-pages.ts
   - 'src/routes/(protected)/dev/carte-question/+page.svelte'
   - 'src/routes/(protected)/dev/bancs-essai/+page.svelte'
   - 'src/routes/(protected)/dev/theme/+page.svelte'
@@ -79,7 +80,7 @@ couvre:
 # Utilitaires, composants isolés et pages de démo
 
 > Vérifié contre le code le 2026-10-12 (commit 4ab55c5e8) ; `french-math.ts` le 2026-10-23 ; pages de
-> démo et de mise au point le 2026-10-24.
+> démo et de mise au point le 2026-10-24 ; vitrine `/demo` le 2026-10-25.
 > Ce fichier **recense** : il dit ce que fait chaque fichier, qui l'appelle, et s'il est mort.
 > Chaque fichier de l'index est dans le `couvre:` : une PR qui le modifie relit sa ligne.
 > Il ne remplace pas la doc du domaine qui l'utilise ; quand elle existe, elle est citée.
@@ -136,18 +137,23 @@ Les anciennes adresses sont redirigées en 308 par `redirectHandle` (table `MOVE
 [auth.md](auth.md#la-chaîne-de-handles)), sous-pages comprises ; une ancienne adresse publique mène
 donc le visiteur à la connexion. `/test-font` ne l'est qu'à l'adresse exacte, ses images restant
 sous `static/test-font/`. Les pages vitrine (`/demo/…`) arrivent une par une (phase 6 du
-chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d), `/demo/corriges` (PR 6e), `/demo/geometrie` (PR 6f), `/demo/questions` (PR 6g), `/demo/editeur` (PR 6h), `/demo/diaporama` (PR 6i-c). Elles ne sont reliées de nulle part avant l'accueil de la
-vitrine (phase 7).
+chantier) : `/demo/structure` (PR 6a), `/demo/cercle-trigo` (PR 6b), `/demo/cartes` (PR 6c), `/demo/lexique` (PR 6d), `/demo/corriges` (PR 6e), `/demo/geometrie` (PR 6f), `/demo/questions` (PR 6g), `/demo/editeur` (PR 6h), `/demo/diaporama` (PR 6i-c).
 
-Toutes sont hors du sitemap (`src/lib/seo/sitemap-pages.ts` exclut `/demo/**` ; `/dev` est
-protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo`, `/test-`, `/dev`), sauf `/a-propos` et
-`/upsilon`, qui sont de vraies pages.
+**La vitrine est ouverte** (phase 7) : une seule liste, `DEMO_PAGES` de `src/lib/seo/demo-pages.ts`,
+nourrit les cartes de l'accueil `/demo`, le sitemap (`/demo` en 0,6, les vitrines en 0,5) et la
+`<title>` et la `meta description` de chaque vitrine (`<SeoHead {...demoSeo('/demo/…')} />`) ; le test `demo-pages.test.ts` exige
+une entrée par dossier de `/demo`, le passage par `SeoHead` (canonique, Open Graph), l'absence de `noindex` et de `Disallow: /demo`. L'accueil est
+relié depuis les trois vues des publics (`DEMO` de `src/lib/kingdom-tour/views.ts`) et l'`InfoPanel`.
+
+Les pages de mise au point restent hors du sitemap (`/dev` est protégé, donc absent) et interdites
+aux robots par `static/robots.txt` (`/test-`, `/dev`, `/aide-ecriture`) ; `/a-propos` et `/upsilon`
+sont de vraies pages.
 
 | Page                          | Servie à                                   | Liens entrants                                         | Contenu                                                                                                                                                              | Statut                |
 | ----------------------------- | ------------------------------------------ | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
 | `/a-propos`                   | tous                                       | `InfoPanel`, tour du Royaume, vue « parents », sitemap | « Chiphre, c'est quoi ? » : le manifeste pour les parents (`docs/Chiphres/lore-pataphysique.md`, section I)                                                          | **Vraie page**        |
 | `/upsilon`                    | tous                                       | `Header`, `Sidebar`, tour du Royaume, sitemap          | Simulateur de la calculatrice Upsilon dans une `iframe`                                                                                                              | **Vraie page**        |
-| `/demo`                       | tous (prérendue : `+page.ts`, `prerender`) | aucun, hors des `BackLink` de ses sous-pages           | Carrefour : liens vers les seules pages publiques (Mathémo, Trio)                                                                                                    | Démo, non liée        |
+| `/demo`                       | tous (prérendue : `+page.ts`, `prerender`) | vues des publics, `InfoPanel`, sitemap                 | Accueil de la vitrine : une carte par vitrine, dans l'ordre de `DEMO_PAGES` (`src/lib/seo/demo-pages.ts`)                                                            | Vitrine               |
 | `/dev/bancs-essai`            | admin (`/dev`)                             | `/dev`                                                 | Champ MathLive (`MathField`, `DynamicMathField`), cartes retournables, journal (`LoggerDemo`), toasts (`ToastDemo`)                                                  | Mise au point         |
 | `/dev/carte-question`         | admin (`/dev`)                             | `/dev`                                                 | `FlashCard` sur 8 questions d'exemple : réglages (`MySelect`, `MyCheckbox`), journaux des événements, instance en JSON                                               | Mise au point         |
 | `/dev/editeur-riche`          | admin (`/dev`)                             | `/dev`                                                 | `RichTextEditor` : modes chat et form, import et export Markdown, onglet « Messagerie » (`Messagerie.svelte`)                                                        | Mise au point         |
@@ -156,15 +162,15 @@ protégé, donc absent) et interdites aux robots par `static/robots.txt` (`/demo
 | `/dev/cadres`                 | admin (`/dev`)                             | `/dev`                                                 | Cadres arrondis autour d'une formule : `\htmlStyle` (`colorLatex`) contre `\enclose{roundedbox}`                                                                     | Mise au point, gardée |
 | `/dev/polices`                | admin (`/dev`)                             | `/dev`                                                 | Bascule des polices de formules KaTeX ↔ Shantell (`mathlive-fonts.ts`)                                                                                               | Mise au point, gardée |
 | `/dev/structure`              | admin (`/dev`)                             | `/dev`                                                 | « Structure d'une expression » au survol (`$lib/mathAST/structure`)                                                                                                  | **Chantier vivant**   |
-| `/demo/structure`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                      | Vitrine, non liée     |
-| `/demo/cercle-trigo`          | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                              | Vitrine, non liée     |
-| `/demo/cartes`                | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 4 cartes VIP écrites dans le code, une par rareté, avec leur effet holographique                                                                           | Vitrine, non liée     |
-| `/demo/lexique`               | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : mots du dictionnaire soulignés dans une question et 5 phrases, sélecteur de niveau                                                                         | Vitrine, non liée     |
-| `/demo/corriges`              | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : une page de Corrigé de fiche (écriture manuscrite) en image fixe, `static/demo/corriges/`                                                                  | Vitrine, non liée     |
-| `/demo/geometrie`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 10 figures manipulables (collège, lycée, pour le plaisir), script replié, réduites à la largeur de l'écran                                                 | Vitrine, non liée     |
-| `/demo/questions`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : une série de 4 questions sous ses 5 formes en onglets, révisions espacées simulées, rien d'enregistré                                                      | Vitrine, non liée     |
-| `/demo/editeur`               | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : une phrase écrite dans l'éditeur, vue dans 3 usages (message, cahier de texte, énoncé), rien d'enregistré                                                  | Vitrine, non liée     |
-| `/demo/diaporama`             | tous                                       | aucun (accueil de la vitrine en phase 7)               | Vitrine : 13 diapositives (navigation, fragments, formules, Python, cercle trigo, figure, minuteur, annotation, tableau blanc)                                       | Vitrine, non liée     |
+| `/demo/structure`             | tous                                       | `/demo`, sitemap                                       | Vitrine : la formule de `/dev/structure` seule, 6 exemples, réglages par défaut                                                                                      | Vitrine               |
+| `/demo/cercle-trigo`          | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 exemples du bloc `trig` (exploration, π/6, cos x = 1/2, cos x > 1/2), sans le texte du bloc                                                              | Vitrine               |
+| `/demo/cartes`                | tous                                       | `/demo`, sitemap                                       | Vitrine : 4 cartes VIP écrites dans le code, une par rareté, avec leur effet holographique                                                                           | Vitrine               |
+| `/demo/lexique`               | tous                                       | `/demo`, sitemap                                       | Vitrine : mots du dictionnaire soulignés dans une question et 5 phrases, sélecteur de niveau                                                                         | Vitrine               |
+| `/demo/corriges`              | tous                                       | `/demo`, sitemap                                       | Vitrine : une page de Corrigé de fiche (écriture manuscrite) en image fixe, `static/demo/corriges/`                                                                  | Vitrine               |
+| `/demo/geometrie`             | tous                                       | `/demo`, sitemap                                       | Vitrine : 10 figures manipulables (collège, lycée, pour le plaisir), script replié, réduites à la largeur de l'écran                                                 | Vitrine               |
+| `/demo/questions`             | tous                                       | `/demo`, sitemap                                       | Vitrine : une série de 4 questions sous ses 5 formes en onglets, révisions espacées simulées, rien d'enregistré                                                      | Vitrine               |
+| `/demo/editeur`               | tous                                       | `/demo`, sitemap                                       | Vitrine : une phrase écrite dans l'éditeur, vue dans 3 usages (message, cahier de texte, énoncé), rien d'enregistré                                                  | Vitrine               |
+| `/demo/diaporama`             | tous                                       | `/demo`, sitemap                                       | Vitrine : 13 diapositives (navigation, fragments, formules, Python, cercle trigo, figure, minuteur, annotation, tableau blanc)                                       | Vitrine               |
 | `/dev/saisie-naturelle`       | admin (`/dev`)                             | `/dev`                                                 | Saisie naturelle de Calcul, sans point, avec le panneau « sous le capot » ; le champ (`NaturalField.svelte`) sert aussi l'atelier, réglage « Écriture mathématique » | Prototype jetable     |
 
 Précisions :

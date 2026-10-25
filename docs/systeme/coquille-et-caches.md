@@ -51,7 +51,8 @@ Déjà documenté ailleurs, et seulement cité ici :
 - sur mobile, le menu ouvre un tiroir (`Sheet`) avec les mêmes liens, le thème, la taille du
   texte et, connecté, « Mon cabinet » et « Déconnexion » ;
 - sur `/` seulement, le bouton « Infos et confidentialité » en bas à droite (`InfoPanel`, règle
-  `showsInfoButton` de `src/lib/utils/footer.ts`) : à propos, données personnelles, CGU, éditeur,
+  `showsInfoButton` de `src/lib/utils/footer.ts`) : à propos, démonstrations (`/demo`), données
+  personnelles, CGU, éditeur,
   copyright, version.
 
 **Partout** : une barre fine en haut de l'écran pendant une navigation, les toasts en haut à
