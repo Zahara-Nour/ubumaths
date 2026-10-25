@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1766._
+_Mis à jour le 2026-10-25, après #1770._
 
-- **État** : bloc ```collection livré sur `main` (#1766, pas en prod) : parseur, scène, écran avec marquage au doigt, PDF, QCM, série figée, éditeur riche, doc `ubumark.md`.
+- **État** : bloc ```collection livré sur `main` (#1766 ; PDF à 8 cm par défaut #1770 ; pas en prod) : parseur, scène, écran avec marquage au doigt, PDF, QCM, série figée, éditeur riche, doc `ubumark.md`.
 - **Prochaine action** : recette de David (captures 390 px clair/sombre + PDF) ; modèles CP-001/004/070 par la session « questions » ; plus tard « construire » (CP-002), puis ` ```monnaie ` sur la même scène.
 - **En attente de David** : recette (vérification manuelle notée, en prod après `deploy:prod`).
 - **Pièges en cours** : marques gardées si deux questions de suite ont exactement le même bloc (constat 2 de la revue, accepté) ; marquage au doigt seulement (assumé).
-- **Worktree / branche** : `../ubumaths-wt-collection` · `fix/collection-pdf-8cm` (PDF : 8 cm par défaut).
+- **Worktree / branche** : aucun (`../ubumaths-wt-collection` retiré après #1770).
 
 ---
 
@@ -202,3 +202,4 @@ Voir le message de la session du 2026-10-25 (Q1 à Q9).
   changeait le désordre) ; marques réutilisées entre deux questions au bloc identique : accepté, noté.
 - 2026-10-25 : CI verte, #1766 mergée ; ligne de vérification manuelle ajoutée.
 - 2026-10-25 : David tranche la taille au PDF : **8 cm** par défaut (cubes ≈ 3,6 mm au lieu de 2,7 mm), comme à l'écran.
+- 2026-10-25 : #1770 mergée (CI verte) ; worktree retiré.
