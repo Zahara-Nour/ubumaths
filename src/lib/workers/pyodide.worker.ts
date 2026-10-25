@@ -27,8 +27,11 @@ import {
 	LoadingStageIndex,
 	CONTEXT_CONFIG,
 	ERROR_MESSAGES,
+	MAX_ATELIER_LISTS,
 	toWorkerMessageSchema
 } from '$lib/shared/python';
+import { MAX_CATEGORIES, MAX_LIST_VALUES } from '$lib/atelier/types';
+import type { PythonListReport } from '$lib/atelier/from-python';
 import { runExerciseValidation } from '$lib/shared/python/validation-core';
 
 // =============================================================================
@@ -403,6 +406,103 @@ async function loadPyodideModule(): Promise<LoadPyodideFunc> {
 /**
  * Initialize Pyodide (lazy loading mode - no packages loaded at init)
  */
+/**
+ * « Ouvrir dans l'atelier » (phase 0 `docs/wip/python-vers-atelier-phase0.md`) :
+ * les listes AFFECTÉES au niveau du module par le code exécuté — pas celles
+ * d'une exécution précédente, que l'espace de noms du playground garde encore,
+ * ni les variables locales d'une fonction, ni les noms en `_`.
+ *
+ * Rapporte ce que le JSON ne dirait pas (booléen, grand entier, `nan`, autre
+ * type), puis les valeurs (au plus `max_values`) ou, au-delà, les effectifs
+ * (au plus `max_distinct` valeurs différentes). Les règles de l'atelier sont
+ * appliquées ensuite, côté page (`$lib/atelier/from-python`, `offerOf`).
+ */
+const ATELIER_LISTS_HELPER = `
+def _chiphre_atelier_lists(code, ns, max_values, max_distinct, max_lists):
+    import ast, json, math
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return '[]'
+    names = []
+
+    def add(target):
+        if isinstance(target, ast.Name):
+            if target.id not in names:
+                names.append(target.id)
+        elif isinstance(target, (ast.Tuple, ast.List)):
+            for element in target.elts:
+                add(element)
+        elif isinstance(target, ast.Starred):
+            add(target.value)
+
+    # Le niveau du module seulement : jamais le corps d'une fonction ou d'une classe
+    def walk(body):
+        for node in body:
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    add(target)
+            elif isinstance(node, (ast.AugAssign, ast.AnnAssign)):
+                add(node.target)
+            elif isinstance(node, (ast.For, ast.AsyncFor)):
+                add(node.target)
+                walk(node.body)
+                walk(node.orelse)
+            elif isinstance(node, (ast.While, ast.If)):
+                walk(node.body)
+                walk(node.orelse)
+            elif isinstance(node, (ast.With, ast.AsyncWith)):
+                for item in node.items:
+                    if item.optional_vars is not None:
+                        add(item.optional_vars)
+                walk(node.body)
+            elif isinstance(node, ast.Try):
+                walk(node.body)
+                for handler in node.handlers:
+                    walk(handler.body)
+                walk(node.orelse)
+                walk(node.finalbody)
+
+    walk(tree.body)
+    reports = []
+    for name in names:
+        if len(reports) >= max_lists:
+            break
+        value = ns.get(name)
+        if name.startswith('_') or not isinstance(value, list):
+            continue
+        report = {'name': name, 'length': len(value), 'distinct': 0}
+        problem = None
+        for item in value:
+            if isinstance(item, bool):
+                problem = {'kind': 'bool'}
+            elif isinstance(item, int):
+                if abs(item) > 2 ** 53:
+                    problem = {'kind': 'big-int'}
+            elif isinstance(item, float):
+                if not math.isfinite(item):
+                    problem = {'kind': 'not-finite'}
+            elif not isinstance(item, str):
+                problem = {'kind': 'other', 'type': type(item).__name__}
+            if problem is not None:
+                break
+        if problem is not None:
+            report['problem'] = problem
+            reports.append(report)
+            continue
+        # Effectifs dans l'ordre de première apparition ; 1 et 1.0 sont une même valeur
+        counts = {}
+        for item in value:
+            counts[item] = counts.get(item, 0) + 1
+        report['distinct'] = len(counts)
+        if len(value) <= max_values:
+            report['items'] = value
+        elif len(counts) <= max_distinct:
+            report['counts'] = [[item, count] for item, count in counts.items()]
+        reports.append(report)
+    return json.dumps(reports)
+`;
+
 async function initializePyodide(): Promise<void> {
 	try {
 		// Stage 0: Initializing
@@ -1037,6 +1137,9 @@ def _chiphre_debug_generator(code, breakpoints_json):
         yield _snap
 `);
 
+		// « Ouvrir dans l'atelier » : les listes que le programme affecte
+		await pyodide.runPythonAsync(ATELIER_LISTS_HELPER);
+
 		// Start idle context cleanup
 		startIdleCleanup();
 
@@ -1444,6 +1547,15 @@ _stderr_value
 		// Clean up (only if matplotlib was loaded)
 		if (loadedPackages.has('matplotlib')) {
 			pyodide.runPython('_chiphre_cleanup_matplotlib()');
+		}
+
+		// « Ouvrir dans l'atelier » : le playground seulement (exécution isolée)
+		if (!useNamespace) {
+			const json = pyodide.runPython(
+				`_chiphre_atelier_lists(_chiphre_user_code, globals(), ${MAX_LIST_VALUES}, ${MAX_CATEGORIES}, ${MAX_ATELIER_LISTS})`
+			) as string;
+			const lists = JSON.parse(json) as PythonListReport[];
+			if (lists.length > 0) postMessage({ type: 'atelier-lists', lists, id });
 		}
 
 		// General garbage collection

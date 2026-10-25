@@ -175,6 +175,11 @@ class PythonPlaygroundStore {
 		return this._executor.plotData;
 	}
 
+	/** « Ouvrir dans l'atelier » : les listes affectées par la dernière exécution (forwarded from executor) */
+	get atelierLists() {
+		return this._executor.atelierLists;
+	}
+
 	/** LaTeX output from sympy expressions (forwarded from executor) */
 	get latexOutput() {
 		return this._executor.latexOutput;

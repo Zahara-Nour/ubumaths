@@ -6,6 +6,7 @@
  */
 
 import { z } from 'zod';
+import { MAX_CATEGORIES, MAX_LIST_VALUES } from '$lib/atelier/types';
 
 // =============================================================================
 // Base Schemas
@@ -694,6 +695,43 @@ export const plotlyMessageSchema = z.object({
 	id: executionIdSchema
 });
 
+/** Les listes rapportées pour « Ouvrir dans l'atelier » : au plus autant qu'on en propose. */
+export const MAX_ATELIER_LISTS = 50;
+
+const pythonEntrySchema = z.union([z.number(), z.string().max(10_000)]);
+
+/**
+ * « Ouvrir dans l'atelier » : les listes que le programme a affectées
+ * (`$lib/atelier/from-python`, `PythonListReport`), bornées aux plafonds de
+ * l'atelier — ce que le worker envoie vient d'un programme de l'élève.
+ */
+export const atelierListsMessageSchema = z.object({
+	type: z.literal('atelier-lists'),
+	id: executionIdSchema,
+	lists: z
+		.array(
+			z.object({
+				name: z.string().min(1).max(200),
+				length: z.number().int().nonnegative(),
+				distinct: z.number().int().nonnegative(),
+				problem: z
+					.discriminatedUnion('kind', [
+						z.object({ kind: z.literal('bool') }),
+						z.object({ kind: z.literal('big-int') }),
+						z.object({ kind: z.literal('not-finite') }),
+						z.object({ kind: z.literal('other'), type: z.string().max(100) })
+					])
+					.optional(),
+				items: z.array(pythonEntrySchema).max(MAX_LIST_VALUES).optional(),
+				counts: z
+					.array(z.tuple([pythonEntrySchema, z.number().int().positive()]))
+					.max(MAX_CATEGORIES)
+					.optional()
+			})
+		)
+		.max(MAX_ATELIER_LISTS)
+});
+
 /**
  * Context created message schema
  */
@@ -851,6 +889,7 @@ export const fromWorkerMessageSchema = z.discriminatedUnion('type', [
 	packagesLoadingMessageSchema,
 	packagesLoadedMessageSchema,
 	plotlyMessageSchema,
+	atelierListsMessageSchema,
 	contextCreatedMessageSchema,
 	contextDestroyedMessageSchema,
 	contextResetMessageSchema,

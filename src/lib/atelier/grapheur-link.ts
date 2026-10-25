@@ -16,6 +16,8 @@ import { renamedOnReadMessage } from './geometry';
 import { splitInterval } from './interval';
 import { readingMode } from './parse';
 import type { AtelierState } from './persistence';
+import type { MailboxList } from './from-python';
+import { PYTHON_MAILBOX_PARAM, takeFromPython } from './python-mailbox';
 
 // =============================================================================
 // Constantes
@@ -127,9 +129,13 @@ export type OpenedLink =
  * B1 : « Partager » depuis `/grapheur` fabrique `/grapheur?a=…`, que la page
  * ne lisait pas — le camarade voyait son propre atelier, sans un mot).
  *
- * `?a=` porte un atelier entier (partage), `?f=` des courbes (projection).
+ * `?a=` porte un atelier entier (partage), `?f=` des courbes (projection),
+ * `?depuis-python=` la clé d'une liste déposée par `/python` (`python-mailbox.ts`).
  */
-export async function openLink(params: URLSearchParams): Promise<OpenedLink> {
+export async function openLink(params: URLSearchParams, storage?: Storage): Promise<OpenedLink> {
+	const mailbox = params.get(PYTHON_MAILBOX_PARAM);
+	if (mailbox !== null) return openFromPython(mailbox, storage);
+
 	const payload = params.get('a');
 	if (payload !== null) {
 		const decoded = await decodeAtelier(payload);
@@ -165,4 +171,46 @@ export async function openLink(params: URLSearchParams): Promise<OpenedLink> {
 		state: built.atelier.serialize(),
 		notice: null
 	};
+}
+
+/**
+ * Les listes qu'un programme de `/python` a déposées (phase 0
+ * `docs/wip/python-vers-atelier-phase0.md`) : un atelier neuf, chaque liste
+ * dans sa colonne, titrée du nom Python (Q6). Lue une fois : rouvrir l'adresse
+ * (un rechargement) ne retrouve rien, et le dit.
+ */
+function openFromPython(id: string, storage?: Storage): OpenedLink {
+	const taken = takeFromPython(id, storage);
+	if (!taken.ok) {
+		return {
+			kind: 'invalid',
+			message:
+				taken.reason === 'missing'
+					? 'Cette liste venue de Python a déjà été ouverte : clique de nouveau sur « Ouvrir dans l’atelier » dans Python.'
+					: 'Cette liste venue de Python est abîmée : elle n’a pas pu être ouverte.'
+		};
+	}
+	const atelier = new Atelier();
+	// Comme une courbe de lien : la réception n'est pas un geste de l'élève
+	const built = atelier.untracked(() => buildFromPython(atelier, taken.lists));
+	if (!built.ok) return { kind: 'invalid', message: built.message };
+	return { kind: 'received', atelier, state: atelier.serialize(), notice: null };
+}
+
+function buildFromPython(
+	atelier: Atelier,
+	lists: readonly MailboxList[]
+): { ok: true } | { ok: false; message: string } {
+	for (const list of lists) {
+		const created = atelier.create(
+			{ kind: 'list', definition: list.definition, ...(list.name && { name: list.name }) },
+			'text'
+		);
+		if (!created.ok) return { ok: false, message: created.message };
+		const column = atelier.columnOf(created.object.name);
+		if (list.title !== undefined && column !== undefined) {
+			atelier.setTitle(column, list.title, { recorded: false });
+		}
+	}
+	return { ok: true };
 }

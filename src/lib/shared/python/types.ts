@@ -661,6 +661,16 @@ export interface DebugFinishedMessage {
 }
 
 /**
+ * « Ouvrir dans l'atelier » : les listes affectées par le programme exécuté
+ * (envoyé avant `complete`, seulement après une exécution réussie)
+ */
+export interface AtelierListsMessage {
+	type: 'atelier-lists';
+	id: string;
+	lists: import('$lib/atelier/from-python').PythonListReport[];
+}
+
+/**
  * Union type for all messages sent from the worker
  */
 export type FromWorkerMessage =
@@ -677,6 +687,7 @@ export type FromWorkerMessage =
 	| PackagesLoadingMessage
 	| PackagesLoadedMessage
 	| PlotlyMessage
+	| AtelierListsMessage
 	| ContextCreatedMessage
 	| ContextDestroyedMessage
 	| ContextResetMessage

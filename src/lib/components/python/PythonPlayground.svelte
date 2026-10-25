@@ -10,6 +10,7 @@
 	import PythonFileManager from './PythonFileManager.svelte';
 	import PythonMigrationPrompt from './PythonMigrationPrompt.svelte';
 	import PythonSettings from './PythonSettings.svelte';
+	import PythonToAtelier from './PythonToAtelier.svelte';
 	import { DebugToolbar, DebugPanel } from './debug';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { browser } from '$app/environment';
@@ -430,6 +431,7 @@
 						executionTime={pythonStore.executionTime}
 						showPedagogicErrors={pythonStore.showPedagogicErrors}
 					/>
+					<PythonToAtelier lists={pythonStore.atelierLists} />
 				{/if}
 				{#if pythonStore.isLoadingPackages}
 					<div class="mt-2 flex items-center gap-2 rounded bg-muted/50 px-3 py-2 text-sm">
@@ -528,6 +530,7 @@
 						executionTime={pythonStore.executionTime}
 						showPedagogicErrors={pythonStore.showPedagogicErrors}
 					/>
+					<PythonToAtelier lists={pythonStore.atelierLists} />
 				{/if}
 				{#if pythonStore.isLoadingPackages}
 					<div class="mt-2 flex items-center gap-2 rounded bg-muted/50 px-3 py-2 text-sm">
