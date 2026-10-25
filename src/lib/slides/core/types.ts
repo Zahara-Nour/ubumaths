@@ -105,6 +105,12 @@ export interface SlideBackgroundConfig {
 }
 
 /**
+ * Thème imposé à une diapositive (texte et blocs clairs ou foncés), quand son
+ * fond ne permet pas de le déduire (dégradé, image, vidéo)
+ */
+export type SlideTheme = 'clair' | 'sombre';
+
+/**
  * Slide props
  */
 export interface SlideProps {
@@ -114,6 +120,11 @@ export interface SlideProps {
 	transitionSpeed?: TransitionSpeed;
 	/** Background color */
 	background?: string;
+	/**
+	 * Thème du contenu. Par défaut, déduit d'un fond de couleur unie ; sans fond,
+	 * celui du site ; sous un dégradé, une image ou une vidéo, texte blanc
+	 */
+	theme?: SlideTheme;
 	/** Background image URL */
 	backgroundImage?: string;
 	/** Background video URL */

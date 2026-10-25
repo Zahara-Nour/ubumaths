@@ -4,6 +4,7 @@
 	import { DECK_CONTEXT_KEY, SLIDE_POSITION_KEY } from './context.js';
 	import type { DeckStore } from '../stores/deckStore.svelte.js';
 	import { TRANSITION_DURATIONS } from './types.js';
+	import { slideColorScheme } from './slide-theme.js';
 
 	// ============================================================================
 	// Types
@@ -31,6 +32,7 @@
 		transition = 'fade',
 		transitionSpeed = 'default',
 		background,
+		theme,
 		backgroundImage,
 		backgroundVideo,
 		backgroundIframe,
@@ -131,6 +133,16 @@
 	// Check if we have any background media
 	const hasBackgroundMedia = $derived(
 		!!background || !!backgroundImage || !!backgroundVideo || !!backgroundIframe
+	);
+
+	// Thème du contenu d'après le fond (slide-theme.ts) : 'light' / 'dark' posent
+	// color-scheme, et les couleurs light-dark() du site basculent ; 'site' suit le
+	// site ; 'unknown' (dégradé, image, vidéo) garde le texte blanc
+	const colorScheme = $derived(
+		slideColorScheme({ background, backgroundImage, backgroundVideo, backgroundIframe, theme })
+	);
+	const forcedScheme = $derived(
+		colorScheme === 'light' || colorScheme === 'dark' ? colorScheme : undefined
 	);
 
 	// Slide style (just the transition)
@@ -269,7 +281,9 @@
 			class:past={isPast}
 			class:future={isFuture}
 			class:background-interactive={backgroundInteractive}
+			class:themed={colorScheme !== 'unknown'}
 			style={slideStyle}
+			style:color-scheme={forcedScheme}
 			{...dataAttributes}
 			onclick={handleSlideClick}
 		>
@@ -286,7 +300,9 @@
 		class:past={isPast}
 		class:future={isFuture}
 		class:background-interactive={backgroundInteractive}
+		class:themed={colorScheme !== 'unknown'}
 		style={slideStyle}
+		style:color-scheme={forcedScheme}
 		{...dataAttributes}
 		onclick={handleSlideClick}
 	>
@@ -429,6 +445,11 @@
 		/* Default text styles for slides */
 		color: var(--slide-color, #fff);
 		text-align: center;
+	}
+
+	/* Fond connu (couleur unie, thème imposé, ou fond du site) : la couleur du texte du thème */
+	.slide.themed .slide-content {
+		color: var(--slide-color, var(--color-foreground));
 	}
 
 	/*

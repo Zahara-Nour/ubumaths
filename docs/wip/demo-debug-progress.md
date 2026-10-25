@@ -2,15 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1723 (phase 0 de 6i validée)._
+_Mis à jour le 2026-10-25, après #1729 (6i-a)._
 
 - **État** : PR 1 à 5 et 6a à 6h mergées, pas en prod. Phase 0 du diaporama faite et validée le 2026-10-25 (section « PR 6i » plus bas) : elle se découpe en 3 PR, **6i-a** coloration de ` ```python ` (`CodeBlock`), **6i-b** thème d'après le fond + réduction automatique des diapositives, **6i-c** la vitrine.
-- **Prochaine action** : 6i-a en cours sur `feat/code-coloration` ; puis 6i-b (même session si possible, lot de petites PR), puis 6i-c.
+- **Fait** : 6i-a = #1729, mergée (coloration des blocs de code, pas en prod).
+- **Prochaine action** : 6i-b en cours sur `feat/diapositives-theme` (thème d'après le fond, réduction automatique) ; puis 6i-c, la vitrine.
 - **Hors chantier, décidé par David le 2026-10-25** : le cahier de texte passe à ubumark (voie 2), **futur chantier à part** `cahier-ubumark` ; énigmes (HTML lu comme markdown) à mesurer.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** ; `z` ≈ `2` → regarder en dernier, PR à part dans `tools/chiphre-math/`.
 - **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
 - **Pièges en cours** : sous `/dev`, jamais de `+layout@` ni de donnée sensible par un load universel ; chaque page ajoutée → une ligne dans `DEV_PAGES` / `AIDE_PAGES`, un `<h1>`, des marges, un `couvre:` ; `MySelect` ignore `id` ; `await render(…)` exigé par `lint:fast` ; pnpm 12 refuse `pnpm -s` ; DSL géométrie : degrés par défaut, **courbe() comprise**, `e` réservé ; `pnpm tsx` hors `scripts/fiches/` : chemin relatif ; svelte-autofixer exige `resolve()` sur `goto` et `href` ; test de page qui lit le lexique : simuler `fetchDictionary` ; commitlint : lignes du corps ≤ 100 caractères ; **`{@html}` n'est pas corrigé à l'hydratation** (calculer après `onMount`) ; dans un test, cliquer au milieu de l'éditeur tombe sur un champ MathLive.
-- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/code-coloration` (6i-a). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
+- **Worktree / branche** : `../ubumaths-wt-demo-debug`, `feat/diapositives-theme` (6i-b). À vérifier plus tard : les images des 4 cartes Mathémo (« Hors chantier »).
 
 ## Décisions de David (2026-10-24)
 
@@ -391,3 +392,11 @@ no position before the top-level node` dans les raccourcis Backspace de la droit
   Diapositive 5 : $(x+1)^2$ développé **ligne par ligne, tout seul** (`autoSlide` + fragments, ~2 s) ;
   diapositive 8 : `GeometryCanvas` (droite d'Euler de `/demo/geometrie`) ; diapositive 9 : **minuteur
   du diaporama** (2 questions de la démo, 10 s chacune, barre qui se vide, puis la correction).
+
+### 6i-a — coloration des blocs de code (#1729, mergée le 2026-10-25)
+
+- `utils/code-highlight.ts` : cœur + un morceau par langage, chargés à la demande ; chargement
+  raté retenté au bloc suivant (revue). `CodeBlock` : coloration après le montage, l'ancienne reste
+  jusqu'à la nouvelle. Revue `code-reviewer` (Sonnet) : 0 bloquant, 2 « à corriger » corrigés.
+- Piège : un test client qui charge un module **nouveau** pour Vite peut échouer au premier passage
+  (cache Vite d'avant le module, rechargement en plein test) ; à froid ou au 2ᵉ passage, vert.

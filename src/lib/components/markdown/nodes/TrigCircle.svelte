@@ -234,21 +234,30 @@
 	function handleMouseMove(event: MouseEvent) {
 		if (!isDragging || node.config.mode !== 'interactive') return;
 
+		const { x, y } = svgPoint(event);
+		interactiveAngle = pointToAngle(x, y);
+	}
+
+	/**
+	 * Le point de la souris en unités du dessin (viewBox SVG_SIZE × SVG_SIZE) : le
+	 * cercle peut être affiché plus petit ou plus grand (diapositive réduite, deck
+	 * mis à l'échelle), les coordonnées d'écran ne sont pas celles du dessin
+	 */
+	function svgPoint(event: MouseEvent): { x: number; y: number } {
 		const svg = event.currentTarget as SVGSVGElement;
 		const rect = svg.getBoundingClientRect();
-		const x = event.clientX - rect.left;
-		const y = event.clientY - rect.top;
-
-		interactiveAngle = pointToAngle(x, y);
+		const ratioX = rect.width > 0 ? SVG_SIZE / rect.width : 1;
+		const ratioY = rect.height > 0 ? SVG_SIZE / rect.height : 1;
+		return {
+			x: (event.clientX - rect.left) * ratioX,
+			y: (event.clientY - rect.top) * ratioY
+		};
 	}
 
 	function handleMouseDown(event: MouseEvent) {
 		if (node.config.mode !== 'interactive') return;
 
-		const svg = event.currentTarget as SVGSVGElement;
-		const rect = svg.getBoundingClientRect();
-		const x = event.clientX - rect.left;
-		const y = event.clientY - rect.top;
+		const { x, y } = svgPoint(event);
 
 		// Check if click is near the circle
 		const dx = x - CENTER;

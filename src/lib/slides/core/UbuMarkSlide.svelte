@@ -7,6 +7,8 @@
 	 * - Math formulas ($...$ and $$...$$)
 	 * - Variables (predefined via props)
 	 * - Fragments via {.fragment} marker
+	 * - Contenu trop grand réduit pour tenir dans la diapositive, jusqu'à
+	 *   MIN_FIT_SCALE ; au-delà, la diapositive défile (chantier demo-debug, 6i-b)
 	 */
 	import { tick, getContext } from 'svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
@@ -14,6 +16,9 @@
 	import Slide from './Slide.svelte';
 	import { DECK_CONTEXT_KEY } from './context.js';
 	import type { DeckStore } from '../stores/deckStore.svelte.js';
+
+	// Échelle minimale d'un contenu trop grand : en dessous, il ne serait plus lisible
+	const MIN_FIT_SCALE = 0.5;
 
 	// Get deck store from context to update fragment visibility after processing
 	const deckContext = getContext<{ getStore: () => DeckStore }>(DECK_CONTEXT_KEY);
@@ -49,6 +54,37 @@
 
 	// Track if fragments have been processed (to avoid flash)
 	let fragmentsReady = $state(false);
+
+	// Réduction : la diapositive (boîte) et la taille naturelle du contenu, à
+	// largeur fixe (celle de la boîte) — changer l'échelle ne refait pas la mise en page
+	let boxElement: HTMLElement | undefined = $state();
+	let fit = $state({ scale: 1, boxWidth: 0, height: 0 });
+
+	function measureFit() {
+		if (!boxElement || !slideElement) return;
+		const boxWidth = boxElement.clientWidth;
+		const boxHeight = boxElement.clientHeight;
+		const height = slideElement.offsetHeight;
+		const width = slideElement.scrollWidth;
+		if (boxWidth === 0 || boxHeight === 0 || height === 0) return;
+		const needed = Math.min(1, boxHeight / height, boxWidth / width);
+		const scale = needed >= 1 ? 1 : Math.max(MIN_FIT_SCALE, needed);
+		if (scale !== fit.scale || boxWidth !== fit.boxWidth || height !== fit.height) {
+			fit = { scale, boxWidth, height };
+		}
+	}
+
+	// Les formules, figures et images se rendent après coup : on remesure à chaque
+	// changement de taille du contenu ou de la diapositive
+	$effect(() => {
+		if (!boxElement || !slideElement) return;
+		const observer = new ResizeObserver(() => measureFit());
+		observer.observe(boxElement);
+		observer.observe(slideElement);
+		return () => observer.disconnect();
+	});
+
+	const scaled = $derived(fit.scale < 1);
 
 	/**
 	 * Update fragment visibility based on current deckStore.f
@@ -133,10 +169,26 @@
 <Slide {...slideProps}>
 	<div
 		class="ubumark-slide"
-		bind:this={slideElement}
+		class:scrolls={scaled && fit.scale === MIN_FIT_SCALE}
+		bind:this={boxElement}
 		style:visibility={fragmentsReady ? 'visible' : 'hidden'}
 	>
-		<MarkdownRenderer content={resolvedContent} />
+		<!-- Enveloppe à la taille réduite : centrage et défilement suivent ce qui se voit -->
+		<div
+			class="ubumark-sizer"
+			style:width={scaled ? `${fit.boxWidth * fit.scale}px` : undefined}
+			style:height={scaled ? `${fit.height * fit.scale}px` : undefined}
+		>
+			<div
+				class="ubumark-fit"
+				bind:this={slideElement}
+				data-fit-scale={fit.height > 0 ? fit.scale : undefined}
+				style:width={scaled ? `${fit.boxWidth}px` : undefined}
+				style:transform={scaled ? `scale(${fit.scale})` : undefined}
+			>
+				<MarkdownRenderer content={resolvedContent} />
+			</div>
+		</div>
 	</div>
 </Slide>
 
@@ -150,9 +202,35 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
+		/* safe : un contenu qui déborde commence en haut, jamais coupé au-dessus
+		   (la première ligne sert de repli à un navigateur qui ignorerait safe) */
 		justify-content: center;
+		justify-content: safe center;
 		align-items: center;
 		text-align: center;
+		overflow: hidden;
+	}
+
+	/* Contenu encore trop grand à l'échelle minimale : la diapositive défile */
+	.ubumark-slide.scrolls {
+		overflow-y: auto;
+	}
+
+	.ubumark-sizer {
+		position: relative;
+		width: 100%;
+		flex-shrink: 0;
+	}
+
+	.ubumark-fit {
+		display: flex;
+		flex-direction: column;
+		/* safe : un enfant plus large (tableau, formule) déborde à droite seulement,
+		   donc scrollWidth le mesure en entier */
+		align-items: center;
+		align-items: safe center;
+		width: 100%;
+		transform-origin: top left;
 	}
 
 	/* Override markdown-content styles for slides */
@@ -205,7 +283,7 @@
 		text-align: left;
 		padding: 1em;
 		border-radius: 8px;
-		background: rgba(0, 0, 0, 0.3);
+		background: color-mix(in srgb, var(--color-foreground) 8%, transparent);
 	}
 
 	/* Tables */
@@ -217,7 +295,7 @@
 	.ubumark-slide :global(th),
 	.ubumark-slide :global(td) {
 		padding: 0.5em 1em;
-		border: 1px solid rgba(255, 255, 255, 0.3);
+		border: 1px solid color-mix(in srgb, var(--color-foreground) 30%, transparent);
 	}
 
 	/* Images */
