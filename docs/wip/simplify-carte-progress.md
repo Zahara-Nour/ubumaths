@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1741 (Q51+Q52 solveur)._
+_Mis à jour le 2026-10-25, 5f-5 codé (§ 91), pas encore de PR._
 
-- **État** : lot 5. ~~Q19~~ → … → ~~5f-4 solveur~~ (#1727), ~~Q50~~ (#1735), ~~Q51+Q52~~ (#1741, § 89 : × inverse d'un coefficient fraction, membre factorisé défait par `linear-unwrap.ts`) mergés. Code pas en prod.
+- **État** : lot 5. ~~Q19~~ → … → ~~Q51+Q52~~ (#1741) mergés ; **5f-5 codé et commité** sur `feat/simplify-carte-5f-5` (§ 91 : puissances n/2 → racine dans `tidy`, `same-base-div`/`same-base-mul-bare`). Suite verte, banc identique (aveugle), check 0, lint propre. Code pas en prod.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : … → **5** (5f restes : ~~5f-1~~ → … → ~~Q50~~ → ~~Q51+Q52~~ → **5f-5**) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5f-5, puissances et `.simplifier` (R9, R10 ; § 71-72) — relire R9-R10 au § 71, phase 0 si un point reste ouvert.
-- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1741) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64) ; § 87 : pipeline rationnel qui multiplie la fraction tapée, `(x − 1)/(x² − 1) ≥ 0`, `x² < −1` sans étapes ; **§ 89** : `\frac{2}{3}x = 0,5` → « × 1,5 » (3/2 ?), x à droite (`4 < 2(x−1)` : échanger les membres ?), termes mixtes `0,5x = x/3 + 1` → ÷ 1/6, correction de question d'une inéquation sans `stepsAsShown` (`-0,25(x−2) ≥ 1` → « ÷ −1/4 »).
+- **Prochaine action** : revue `code-reviewer` (opus) de 5f-5 — interrompue par la limite d'usage hebdomadaire (reprise à 12 h) ; puis push, PR, CI, merge.
+- **En attente de David** : § 91 : `2^{−1/2} → √2/2` et `(8/27)^{1/3}` laissé écrit (« entière » à la lettre) ; vérifications manuelles (`docs/wip/verifications-manuelles.md`, #1703 → #1741) ; 3 points d'écriture de Q49 (§ 80) ; LaTeX dans le TEXTE d'une étiquette de figure (§ 60) ; `0/x → 0` et `f(x) − f(x) → 0` (§ 64) ; § 87 : pipeline rationnel qui multiplie la fraction tapée, `(x − 1)/(x² − 1) ≥ 0`, `x² < −1` sans étapes ; **§ 89** : `\frac{2}{3}x = 0,5` → « × 1,5 » (3/2 ?), x à droite (`4 < 2(x−1)` : échanger les membres ?), termes mixtes `0,5x = x/3 + 1` → ÷ 1/6, correction de question d'une inéquation sans `stepsAsShown` (`-0,25(x−2) ≥ 1` → « ÷ −1/4 »).
 - **Pièges en cours** : relire les décisions du lot 4a avant de proposer sur `tidy` ; ne plus sonder avec `pnpm math` ; l'Atelier écrit `0{,}25`, le moteur `0.25` ; sonde vitest : `console.log` muet, faire échouer un `expect` ; zsh ne découpe pas `$F` (`${=F}`) ; `number(-1)` interdit (`opposite(number(1))`) ; `check:incremental` : erreurs fantômes → `FRESH=1` ; client CI : `wrapDynamicImport` = navigateur fermé, relancer le job ; **PR sans CI = conflit avec `main`** : fusionner `origin/main` ; **pas de `Claude-Session:` ni de lien `claude.ai/code`**.
 - **Worktree / branche** : `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-5f-5` (partie d'`origin/main` après #1741).
 
