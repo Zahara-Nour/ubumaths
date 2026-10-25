@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-25, lot B1 en cours (brouillons créés, PR à ouvrir)._
 
 - **État** : groupe A et lot H en prod (brouillons validés). **Lot B1** (tableaux, § 4 undecies) : 3 brouillons créés en prod (go de David : `7752c23e` CP-068, `76d14aa6` CP-069, `55662eef` CP-084), vérifiés sans nœud ni tag ; migration `20261026140000` nœud + tag et test, rouge (5/9) puis vert.
-- **Prochaine action** : PR B1, CI, audit sécurité, merge → `db:migrate` (question d'accès tranchée : personne) → page à cocher B1 ; puis phase 0 de B2 (reconnaître sur une figure ; CP-034 y viendra si David le range en QCM sur figure).
+- **Prochaine action** : PR B1 ouverte, CI, audit sécurité, merge → `db:migrate` (question d'accès tranchée : personne) → page à cocher B1 ; puis phase 0 de B2 (reconnaître sur une figure ; CP-034 y viendra si David le range en QCM sur figure).
 - **En attente de David** : publication A1 à H (et B1) en un lot ; vérification manuelle #1702 ; les 8 questions de phase 0 de la case « figure » (session `geometrie-validation`, § 2 ter).
 - **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; **case dans un tableau = `$?$` (un `[_]` déborde au téléphone)** ; **un prénom rangé dans une variable est relu comme un nom de variable : l'écrire dans le texte** ; le moteur ne mélange pas : indicatrices de Lagrange ; ne pas nommer une variable comme une lettre du texte ; jamais de variable `e` ; corps de commit ≤ 100 caractères par ligne ; la base refuse un tag sur un modèle sans nœud.
 - **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-b1`.
