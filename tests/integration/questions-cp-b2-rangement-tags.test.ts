@@ -23,6 +23,7 @@ import { TestData } from '../helpers/database/test-data-factory';
 import { extractRollback } from '../helpers/database/migration-rollback';
 import { readNodePaths } from '../helpers/database/classification-paths';
 import { insertProdCopies } from '../helpers/database/prod-copies';
+import { QUESTIONS_CP_FORMES } from '../helpers/database/later-migrations';
 
 // ============================================================================
 // TYPES
@@ -155,6 +156,8 @@ describe('Questions CP, lot B2 : nœud et tag des modèles neufs (migration de d
 		pg = await getPostgresClient();
 
 		await pg.query('begin');
+		// CP-054 et CP-055 ont quitté « propriétés » depuis (20261026170000) : retrouver l'état d'alors
+		await pg.query(extractRollback(QUESTIONS_CP_FORMES));
 		await poserEtatProd(pg, prof.id);
 		await pg.query(readFileSync(MIGRATION, 'utf-8'));
 		apres = await lireEtat(pg);
@@ -204,6 +207,7 @@ describe('Questions CP, lot B2 : les branches d’échec de la migration', () =>
 	async function enTransaction(corps: () => Promise<void>): Promise<void> {
 		await pg.query('begin');
 		try {
+			await pg.query(extractRollback(QUESTIONS_CP_FORMES));
 			await corps();
 		} finally {
 			await pg.query('rollback');
