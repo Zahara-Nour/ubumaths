@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-25, après #1731 (6i-b)._
 
 - **État** : PR 1 à 5 et 6a à 6h mergées ; 6i-a = #1729 (coloration des blocs de code) et 6i-b = #1731 (thème des diapositives d'après le fond, réduction d'une `UbuMarkSlide` trop longue, cercle trigo juste à toute échelle) mergées. Rien de tout cela en prod.
-- **Prochaine action** : **6i-c**, la vitrine `/demo/diaporama` (13 diapositives, plan et décisions dans « PR 6i » plus bas), sur `feat/demo-diaporama` (créée, pas encore poussée). Phase 0 déjà validée : coder directement, tests d'abord.
+- **Prochaine action** : **6i-c**, la vitrine `/demo/diaporama` (13 diapositives, plan et décisions dans « PR 6i » plus bas), sur `feat/demo-diaporama` (poussée, sans code ; aucune PR ouverte). Phase 0 déjà validée : coder directement, tests d'abord.
 - **Hors chantier, décidé par David le 2026-10-25** : le cahier de texte passe à ubumark (voie 2), **futur chantier à part** `cahier-ubumark` ; énigmes (HTML lu comme markdown) à mesurer.
 - **Tranché par David** : `/aide-ecriture/geometrie` reste fermée à l'admin (403), le 2026-10-24. Le 2026-10-25, il suit les recommandations : bug FSRS → **chantier à part `fsrs`** ; `z` ≈ `2` → regarder en dernier, PR à part dans `tools/chiphre-math/`.
 - **Signalé à David, hors chantier** : `angle_polaire` rend des degrés même en mode radians et `dsl-builtins.md` dit « radians » → pour `geometry-expert`, plus tard.
