@@ -2,17 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1775._
+_Mis à jour le 2026-10-25, PR 3 en cours._
 
-- **État** : PR 1 (moteur, #1768), renommage (#1774) et PR 2 (écran élève, § 5, #1775) mergés ; rien en prod.
-- **Prochaine action** : PR 3 — modèle CP-059 (3 variations, `delay` 60 s), fiche du catalogue, doc système, verso de
-  `FlashCard` et copie corrigée en figure, garde du verdict de `CorrectionCard`, corrigé PDF (à trancher) ; nouveau
-  worktree `../ubumaths-wt-geometrie-validation`.
-- **En attente de David** : statut de **CP-034** et de **CP-058** ; phase 0 de CP-060 ; Q3/Q4 du § 5 prises « sans
-  changement » (à corriger s'il le veut) ; corrigé PDF des cases portées par un bloc (séries).
-- **Pièges en cours** : `CorrectionCard` juge sans positions inscrites → « faux » en silence (§ 5, revue) ; la correction
-  s'affiche dans `FlashCard` (`QuestionCard` jamais) ; essai : `/dev/carte-question`, « Figure à compléter (CP-059) ».
-- **Worktree / branche** : aucun (retirés après #1775).
+- **État** : PR 1 (#1768), renommage (#1774), PR 2 (#1775) mergés ; PR 3 codée sur `feat/geometrie-validation-modele`
+  (modèle CP-059 en fichier, copie corrigée et verso en figure, garde de `CorrectionCard`, fiche du catalogue, doc).
+- **Prochaine action** : PR 3 → revue Opus, CI, merge ; puis, au go de David, `create-questions --publier`
+  (`scripts/questions/cp-figure/`) et migration nœud + tag de CP-059 (PR suivante, gabarit du lot H).
+- **En attente de David** : go pour créer le brouillon CP-059 en prod ; corrigé PDF des séries pour une case portée
+  par un bloc (§ 6) ; statut de **CP-034** et de **CP-058** ; phase 0 de CP-060 ; Q3/Q4 du § 5 prises « sans changement ».
+- **Pièges en cours** : les lettres ne peuvent pas être des valeurs de variables (une lettre seule est lue comme un
+  nom de variable) → positions par rôle, lettres en `{{if:}}` (§ 6) ; essai : `/dev/carte-question`.
+- **Worktree / branche** : `../ubumaths-wt-geometrie-validation` · `feat/geometrie-validation-modele`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -201,6 +201,30 @@ tests du repère en cadre étroit et des bords, zone live permanente, type parta
 (rechargement de la page de résultats), « positions non inscrites » devient « faux » en silence. À garder par
 `hasConstructionPositions()` (aucun appelant aujourd'hui) ou en important `positions-setup` sur cette page.
 
+## 6. PR 3 — modèle CP-059, copie corrigée (2026-10-25)
+
+**Modèle** (`scripts/questions/cp-figure/01-tracer-une-droite.json`, écrit par
+`docs/wip/geometrie-validation/modele-cp059.py`) : « Trace la droite qui passe par deux points », `delay` 60 s,
+3 variations (horizontale, verticale, oblique montante ou descendante), fenêtre 0..10 × 0..6, points entiers à 1 du
+bord au moins. Les deux points à relier sont écartés (4 au moins) ; le piège est à 2 au moins de la droite
+(horizontale, verticale) ou à environ 1 (oblique : |produit vectoriel| ≥ 9) et à 3 (Manhattan) des deux points.
+`k` (1..3) choisit la lettre du piège (C, B ou A) : les lettres ne pouvant pas être des valeurs de variables, les
+positions sont tirées par **rôle** puis données aux lettres (`xa`…`yc`), et les lettres s'écrivent en `{{if:k==…}}`.
+18 specs vertes (bonne droite, sens inverse, deux autres points de la droite ; piège, point voisin, trait en trop),
+150 tirages sans échec (`create-questions` en simulation).
+
+**Copie corrigée et verso** : ligne `figure` du résultat attendu, dessinée par `FigureAnswer.svelte` (droites de
+l'élève vertes si juste ; sinon la bonne en pointillés ; sans réponse, la bonne droite) + message du juge ; consigne
+seule au-dessus (`instructionOf` retire le bloc). Plus de `droite(2;3;8;3)` en texte.
+
+**Garde de `CorrectionCard`** (revue de #1775) : sans positions inscrites, la carte charge
+`positions-setup` à la demande (`loadConstructionPositions`) et n'affiche ni verdict ni attendu avant. Preuve
+rouge : garde neutralisée → « juste » affiché « faux ».
+
+**À trancher (David)** : corrigé PDF des séries — `serie-automatismes.ts` refuse toute case portée par un bloc
+(```operation compris). Reco : laisser tel quel (une série d'automatismes CP en PDF n'est pas demandée) ; à rouvrir
+avec les fiches CP.
+
 ## Journal
 
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 1), au journal questions.
@@ -214,3 +238,4 @@ tests du repère en cadre étroit et des bords, zone live permanente, type parta
 - 2026-10-25 : bloc renommé ` ```figure-a-completer ` (David) ; ` ```construction ` n'ouvre plus rien.
 - 2026-10-25 : PR 2 (écran élève) : phase 0 validée (§ 5), codée ; 16 tests du tracé, 9 d'écran (rouges sans le branchement), 1 PDF.
 - 2026-10-25 : revue Opus de #1775 : 6 points corrigés, 4 tests d'écran ajoutés (13), 1 point reporté à la PR 3.
+- 2026-10-25 : PR 3 codée : modèle CP-059 (18 specs, 150 tirages), copie corrigée et verso en figure, garde de `CorrectionCard` (rouge sans elle), fiche du catalogue ; 9 tests neufs, rouges sans le code.

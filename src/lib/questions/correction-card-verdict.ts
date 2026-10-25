@@ -81,13 +81,18 @@ export function trainingStatus(
 const MATH_WITH_BLANK = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/g;
 const HAS_BLANK = /\\placeholder\[\d+\]|<<expr:/;
 
+/** Bloc ```figure-a-completer : la case « figure », montrée par le résultat attendu */
+const FIGURE_CASE_BLOCK = /^```figure-a-completer\b[\s\S]*?^```[ \t]*$/gm;
+
 /**
  * Consigne d'un énoncé R1 (Q104) : l'énoncé sans la formule qui contient la
- * case ; chaîne vide s'il ne reste ni lettre ni chiffre.
+ * case, ni le bloc d'une case « figure » ; chaîne vide s'il ne reste ni lettre
+ * ni chiffre.
  */
 export function instructionOf(statement: string): string {
 	const rest = statement
 		.replace(MATH_WITH_BLANK, (zone) => (HAS_BLANK.test(zone) ? '' : zone))
+		.replace(FIGURE_CASE_BLOCK, '')
 		.replace(/[ \t]+/g, ' ')
 		.replace(/\n{3,}/g, '\n\n')
 		.trim();

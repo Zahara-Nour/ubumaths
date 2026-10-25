@@ -83,7 +83,19 @@ export type ExpectedLine =
 			studentAnswer?: string;
 			studentStatus?: ExpectedStatus;
 	  }
-	| { kind: 'empty'; text: string };
+	| { kind: 'empty'; text: string }
+	/**
+	 * Case « figure » (bloc ```figure-a-completer) : la figure elle-même, avec les
+	 * tracés de l'élève (`answer`, chaîne `droite(…)` lue par le juge, jamais
+	 * rendue en markdown) ; `null` sans réponse (R9) : la bonne droite seule
+	 */
+	| {
+			kind: 'figure';
+			index: number;
+			source: string;
+			answer: string | null;
+			status: ExpectedStatus;
+	  };
 
 export interface ExpectedResult {
 	/** Statut global (celui de `validateAnswer`) ; `null` sans réponse d'élève (R9) */
@@ -226,6 +238,8 @@ interface BlankView {
 	student: string | null;
 	status: ValidationStatus | null;
 	remarks: string[];
+	/** Case « figure » : texte du bloc et réponse brute (la figure la dessine, rien n'est rendu) */
+	figure?: { source: string; answer: string };
 }
 
 function blankViews(
@@ -260,7 +274,10 @@ function blankViews(
 				rulesDecide: rulesDecide(blank),
 				student,
 				status: detail?.status ?? null,
-				remarks: detail?.remarks ?? []
+				remarks: detail?.remarks ?? [],
+				...(blank.construction && {
+					figure: { source: blank.construction.source, answer: detail?.answer ?? value }
+				})
 			}
 		];
 	});
@@ -338,6 +355,25 @@ function statementLines(
 		{ kind: 'your-answer', markdown, fills: views.map(studentFill) },
 		...remarkLines(views)
 	];
+}
+
+/** Case « figure » : la figure (tracés de l'élève, bonne droite), ses remarques, « rien répondu » */
+function figureLines(
+	view: BlankView,
+	figure: NonNullable<BlankView['figure']>,
+	withAnswer: boolean
+): ExpectedLine[] {
+	const status = toExpectedStatus(view.status ?? 'empty');
+	const line: ExpectedLine = {
+		kind: 'figure',
+		index: view.index,
+		source: figure.source,
+		answer: withAnswer ? figure.answer : null,
+		status: withAnswer ? status : 'solution'
+	};
+	if (!withAnswer) return [line];
+	if (status === 'empty') return [line, { kind: 'empty', text: EMPTY_ANSWER_TEXT }];
+	return [line, ...remarkLines([view])];
 }
 
 function expectedOnlyLine(view: BlankView, withAnswer: boolean): ExpectedLine {
@@ -419,7 +455,11 @@ function build(
 	// R8 / R10 : case graphique, ou case introuvable dans l'énoncé
 	const apart = views
 		.filter((v) => !inStatement.includes(v))
-		.map((v) => expectedOnlyLine(v, verdict !== undefined));
+		.flatMap((v) =>
+			v.figure
+				? figureLines(v, v.figure, verdict !== undefined)
+				: [expectedOnlyLine(v, verdict !== undefined)]
+		);
 
 	if (inStatement.length === 0) return { status, lines: apart };
 
