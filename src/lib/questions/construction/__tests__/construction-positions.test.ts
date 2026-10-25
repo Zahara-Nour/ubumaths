@@ -70,4 +70,23 @@ describe('jugement sans registre', () => {
 		expect(result.isCorrect).toBe(false);
 		expect(result.message).toContain('positions des figures non inscrites');
 	});
+
+	it('points invisibles (CP-060, sans lettres) : positions quand même', async () => {
+		vi.resetModules();
+		await import('../positions-setup');
+		const { constructionPositions } = await import('../positions');
+		const points = constructionPositions(
+			[
+				'fenetre: 0 ; 10 ; 0 ; 7',
+				'grille: 1',
+				'verifier: carre A ; B',
+				'---',
+				'A = point(2, 3, visible=faux)',
+				'B = point(5, 3, visible=faux)',
+				's = segment(A, B)'
+			].join('\n')
+		);
+		expect(points.get('A')).toEqual({ x: 2, y: 3 });
+		expect(points.get('B')).toEqual({ x: 5, y: 3 });
+	});
 });

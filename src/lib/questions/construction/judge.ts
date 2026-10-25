@@ -13,8 +13,21 @@
  * @module questions/construction/judge
  */
 
-import type { ConstructionCheck, DroiteParCheck } from '$lib/ubumark/types/construction';
+import type {
+	ConstructionCheck,
+	DroiteParCheck,
+	PolygonCheck
+} from '$lib/ubumark/types/construction';
 import { parseConstructionAnswer, type DrawnLine } from './answer';
+import { PolygonAuthorError, judgePolygon } from './polygon';
+
+export {
+	EXTRA_SEGMENT_FEEDBACK,
+	NOT_A_SQUARE_FEEDBACK,
+	NOT_CLOSED_FEEDBACK,
+	NOT_ON_GRID_LINES_FEEDBACK,
+	OVERSHOOT_FEEDBACK
+} from './polygon';
 
 export interface Position {
 	x: number;
@@ -56,7 +69,7 @@ function positionOf(points: ReadonlyMap<string, Position>, name: string): Positi
 
 function satisfies(
 	line: DrawnLine,
-	check: ConstructionCheck,
+	check: DroiteParCheck,
 	points: ReadonlyMap<string, Position>
 ): boolean {
 	return (
@@ -69,7 +82,7 @@ function satisfies(
 function droiteParFeedback(
 	check: DroiteParCheck,
 	unused: DrawnLine[],
-	others: readonly ConstructionCheck[],
+	others: readonly DroiteParCheck[],
 	points: ReadonlyMap<string, Position>
 ): string {
 	const [a, b] = check.points;
@@ -95,18 +108,36 @@ function droiteParFeedback(
 		: `Ta droite ne passe pas par le point ${missed}.`;
 }
 
+function isPolygonCheck(check: ConstructionCheck): check is PolygonCheck {
+	return check.kind !== 'droite_par';
+}
+
 /**
- * Verdict d'une réponse : chaque vérification prend SA droite parmi celles
- * tracées ; une droite qu'aucune vérification ne prend est de trop.
+ * Verdict d'une réponse. Droites : chaque vérification prend SA droite parmi
+ * celles tracées ; une droite qu'aucune vérification ne prend est de trop.
+ * Carré / rectangle (une seule vérification, garantie par le parseur) :
+ * `polygon.ts`.
  */
 export function judgeConstruction(
-	checks: readonly ConstructionCheck[],
+	allChecks: readonly ConstructionCheck[],
 	points: ReadonlyMap<string, Position>,
 	answer: string
 ): ConstructionVerdict {
 	const lines = parseConstructionAnswer(answer);
 	if (lines === null) return { status: 'incorrect' };
 	if (lines.length === 0) return { status: 'empty' };
+
+	const polygon = allChecks.find(isPolygonCheck);
+	if (polygon) {
+		try {
+			return judgePolygon(polygon, points, lines);
+		} catch (error) {
+			if (error instanceof PolygonAuthorError) throw new ConstructionAuthorError(error.message);
+			throw error;
+		}
+	}
+	const checks = allChecks.filter((c): c is DroiteParCheck => c.kind === 'droite_par');
+	if (lines.some((l) => l.kind !== 'droite')) return { status: 'incorrect' };
 
 	const unused = [...lines];
 	for (const check of checks) {

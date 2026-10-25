@@ -106,13 +106,13 @@ describe('construction — erreurs situées', () => {
 			messages(
 				block('fenetre: 0 ; 10 ; 0 ; 6', 'outils: compas', 'verifier: droite_par A ; B', '---')
 			)
-		).toContain('Ligne 2 : outil « compas » inconnu (droite)');
+		).toContain('Ligne 2 : outil « compas » inconnu (droite, segment)');
 	});
 
 	it('vérification inconnue', () => {
 		expect(
 			messages(block('fenetre: 0 ; 10 ; 0 ; 6', 'verifier: cercle_par A ; B', '---'))
-		).toContain('Ligne 2 : vérification « cercle_par » inconnue (droite_par)');
+		).toContain('Ligne 2 : vérification « cercle_par » inconnue (droite_par, carre, rectangle)');
 	});
 
 	it('droite_par attend deux points', () => {
@@ -137,6 +137,98 @@ describe('construction — erreurs situées', () => {
 		expect(messages(block('verifier: droite_par A ; B', '---', 'A = point(1, 2)'))).toContain(
 			'Fenêtre manquante : ajouter « fenetre: xmin ; xmax ; ymin ; ymax »'
 		);
+	});
+});
+
+describe('carré et rectangle sur quadrillage (CP-060, § 7 et § 9)', () => {
+	const messages = (markdown: string) => firstNode(markdown).errors.map((e) => e.message);
+
+	it('`carre A ; B` avec l’outil segment', () => {
+		const node = firstNode(
+			block(
+				'fenetre: 0 ; 10 ; 0 ; 7',
+				'grille: 1',
+				'outils: segment',
+				'verifier: carre A ; B',
+				'---',
+				'A = point(2, 3, visible=faux)',
+				'B = point(5, 3, visible=faux)',
+				's = segment(A, B)'
+			)
+		);
+		expect(node.errors).toEqual([]);
+		expect(node.header.grid).toEqual({ x: 1, y: 1 });
+		expect(node.construction).toEqual({
+			tools: ['segment'],
+			checks: [{ kind: 'carre', points: ['A', 'B'], line: 4 }]
+		});
+	});
+
+	it('`rectangle A ; B ; C`', () => {
+		const node = firstNode(
+			block('fenetre: 0 ; 10 ; 0 ; 7', 'outils: segment', 'verifier: rectangle A ; B ; C', '---')
+		);
+		expect(node.construction?.checks).toEqual([
+			{ kind: 'rectangle', points: ['A', 'B', 'C'], line: 3 }
+		]);
+	});
+
+	it('`outils:` absent : l’outil de la vérification (segment pour un carré)', () => {
+		const node = firstNode(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: carre A ; B', '---'));
+		expect(node.errors).toEqual([]);
+		expect(node.construction?.tools).toEqual(['segment']);
+	});
+
+	it('carre attend deux points, rectangle trois, tous différents', () => {
+		expect(messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: carre A', '---'))).toContain(
+			'Ligne 2 : carre attend deux points : « carre A ; B »'
+		);
+		expect(
+			messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: rectangle A ; B', '---'))
+		).toContain('Ligne 2 : rectangle attend trois points : « rectangle A ; B ; C »');
+		expect(
+			messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: rectangle A ; B ; A', '---'))
+		).toContain('Ligne 2 : rectangle attend trois points différents');
+	});
+
+	it('un seul outil par bloc', () => {
+		expect(
+			messages(
+				block('fenetre: 0 ; 10 ; 0 ; 7', 'outils: droite, segment', 'verifier: carre A ; B', '---')
+			)
+		).toContain('Ligne 2 : un seul outil par figure');
+	});
+
+	it('l’outil va avec la vérification', () => {
+		expect(
+			messages(block('fenetre: 0 ; 10 ; 0 ; 7', 'outils: droite', 'verifier: carre A ; B', '---'))
+		).toContain('Ligne 3 : carre se trace avec l’outil segment (outils: segment)');
+		expect(
+			messages(
+				block('fenetre: 0 ; 10 ; 0 ; 7', 'outils: segment', 'verifier: droite_par A ; B', '---')
+			)
+		).toContain('Ligne 3 : droite_par se trace avec l’outil droite (outils: droite)');
+	});
+
+	it('droites et polygones ne se mêlent pas', () => {
+		expect(
+			messages(
+				block(
+					'fenetre: 0 ; 10 ; 0 ; 7',
+					'verifier: droite_par A ; B',
+					'verifier: carre A ; B',
+					'---'
+				)
+			)
+		).toContain('Ligne 3 : carre se trace avec l’outil segment (outils: segment)');
+	});
+
+	it('un seul carré ou rectangle par figure', () => {
+		expect(
+			messages(
+				block('fenetre: 0 ; 10 ; 0 ; 7', 'verifier: carre A ; B', 'verifier: carre C ; D', '---')
+			)
+		).toContain('Ligne 3 : un seul carré ou rectangle par figure');
 	});
 });
 
