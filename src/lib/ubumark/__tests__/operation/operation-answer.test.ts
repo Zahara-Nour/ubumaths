@@ -83,7 +83,24 @@ describe('readOperationAnswer : les cases lues comme un nombre (comportement 4)'
 	it('case vide au milieu : réponse incomplète, rien n’est lu (comportement 11)', () => {
 		expect(readOperationAnswer(scene('calcul: 45 + 37'), cells('8_2'))).toBe('');
 		expect(readOperationAnswer(scene('calcul: 45 + 37'), cells('_8_'))).toBe('');
-		expect(readOperationAnswer(scene('calcul: 2,5 + 1,25'), cells('_37_'))).toBe('');
+		expect(readOperationAnswer(scene('calcul: 2,5 + 1,25'), cells('_3_5'))).toBe('');
+		expect(readOperationAnswer(scene('calcul: 1,125 + 2'), cells('_31_5'))).toBe('');
+	});
+
+	it('décimales de fin laissées vides : comptées 0, comme les cases de tête (2026-10-25)', () => {
+		expect(readOperationAnswer(scene('calcul: 0,5 + 0,5'), cells('_1_'))).toBe('1');
+		expect(readOperationAnswer(scene('calcul: 2,5 + 1,5'), cells('_4_'))).toBe('4');
+		expect(readOperationAnswer(scene('calcul: 12,50 + 7,85'), cells('_203_'))).toBe('20{,}3');
+		expect(readOperationAnswer(scene('calcul: 1,125 + 2'), cells('_31__'))).toBe('3{,}1');
+	});
+
+	it('décimales de fin vides et réponse fausse : lue, donc jugée fausse', () => {
+		expect(readOperationAnswer(scene('calcul: 2,5 + 1,25'), cells('_37_'))).toBe('3{,}7');
+	});
+
+	it('unités laissées vides : toujours incomplète, la règle ne vaut qu’après la virgule', () => {
+		expect(readOperationAnswer(scene('calcul: 45 + 37'), cells('_8_'))).toBe('');
+		expect(readOperationAnswer(scene('calcul: 0,5 + 0,5'), cells('___'))).toBe('');
 	});
 
 	it('aucune case remplie : réponse vide', () => {

@@ -57,6 +57,28 @@ describe('FillBlanksInput — bloc ```operation', () => {
 		expect(values[1]).toBe('82');
 	});
 
+	it('0,5 + 0,5 : « 1 » sans le 0 des dixièmes remplit values[N] (décimales de fin)', async () => {
+		const statement = ['```operation', 'case: 0', 'calcul: 0,5 + 0,5', '```'].join(
+			'\n'
+		) as ResolvedMarkdown;
+		const values: string[] = [];
+		const screen = await render(FillBlanksInput, {
+			target: mainElement(),
+			props: {
+				statement,
+				blanks: [{ type: 'math', expectedAnswer: '1', expectedAnswerLatex: '1', operation: true }],
+				values,
+				validationResults: []
+			}
+		});
+		const cells = resultCells(screen.container);
+		expect(cells).toHaveLength(3);
+		await userEvent.click(cells[1]);
+		await userEvent.keyboard('1');
+		expect(cells[2].value).toBe('');
+		expect(values[0]).toBe('1');
+	});
+
 	it('Entrée, grille vide : le curseur va dans la case vide la plus à droite', async () => {
 		let submitted = 0;
 		const screen = await render(FillBlanksInput, {
