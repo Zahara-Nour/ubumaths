@@ -314,8 +314,9 @@ describe('intentions : une longueur sort des racines', () => {
 	);
 
 	it.each(INTENTS)('%s : mode produit et minuscules inchangés', (intent) => {
+		// `developper` n'applique aucune identité (normalize-usages, Q3)
 		expect(byIntent('\\sqrt{x^2}', intent)).toBe(
-			intent === 'factoriser' ? '\\sqrt{x^2}' : '\\left| x \\right|'
+			intent === 'factoriser' || intent === 'developper' ? '\\sqrt{x^2}' : '\\left| x \\right|'
 		);
 		expect(byIntent('\\sqrt{(AB)^2}', intent, true)).not.toBe('A B');
 	});
