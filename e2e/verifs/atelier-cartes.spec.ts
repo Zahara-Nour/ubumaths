@@ -108,6 +108,13 @@ test('#1305 — intervalle d’une carte : tapé au clavier, gardé au rechargem
 	expect(typed).not.toContain('))');
 	expect(typed.split('(').length).toBe(typed.split(')').length);
 	expectLatex(await calc(page, 'p(3)'), '2');
+
+	// `a = 3 sur 4` n'est pas pris pour un intervalle : la carte a est rangée, en erreur
+	// comme avant (« 3 sur 4 » ne se lit pas), sans refus d'intervalle
+	const notInterval = await calc(page, 'a = 3 sur 4');
+	expect(notInterval.text).toContain('« a » est dans tes objets');
+	expect(notInterval.text).not.toContain('intervalle');
+	expect((await card(page, 'a')).message).toBe("« 3 sur 4 » n'est pas une expression valide.");
 });
 
 test('#1307 — variations, résolution et dérivée sur un intervalle', async ({ page }) => {
@@ -153,8 +160,8 @@ test('#1309 — max(… ; …) dans une carte', async ({ page }) => {
 	expect(comma.refused).toBe(true);
 	expect(comma.text).toContain('Sépare les valeurs avec « ; »');
 
-	// ⚠️ La ligne dit 5/2 ; l'Atelier répond 2,5 (décimal tapé → décimal) : à trancher
-	expectLatex(await calc(page, 'f(1)'), '\\dfrac{5}{2}');
+	// Décimal tapé → réponse décimale (comme #1717), retenu par David (2026-10-26)
+	expectLatex(await calc(page, 'f(1)'), '2{,}5');
 });
 
 test('#1315 — Graphe : bornes pleines et creuses, morceaux', async ({ page }) => {
@@ -273,9 +280,12 @@ test('#1337 — domaine choisi : .domaine, héritage, intégrale, tangente, lien
 	await expect(page.locator('circle.endpoint-closed')).toHaveCount(1);
 	await expect(page.locator('circle.endpoint-open')).toHaveCount(0);
 
-	// ⚠️ La carte g ne montre pas « sur [0 ; +∞[ » : à trancher
+	// L'ensemble hérité se lit par .domaine : le champ de la carte ne montre que
+	// l'ensemble PROPRE (décision d de #1337)
 	await calc(page, 'g(x) = f(x)+1');
-	expect((await card(page, 'g')).interval).toBe('[0 ; +∞[');
+	expect((await calc(page, '.domaine g')).text).toContain(
+		'g est définie sur [0 ; +∞[ (ensemble hérité)'
+	);
 });
 
 test('#1338 — f⁻¹ dans Calcul, droite y = x, refus de .réciproque sin, f(x)^-1', async ({
@@ -301,8 +311,8 @@ test('#1338 — f⁻¹ dans Calcul, droite y = x, refus de .réciproque sin, f(x
 	await calc(page, 'f(x) = 2x+3');
 	expectLatex(await calc(page, 'g(2)'), '\\dfrac{1}{7}');
 
-	// ⚠️ `.réciproque sin(x)` nomme arcsin ; `.réciproque sin` demande des parenthèses : à trancher
-	const sin = await calc(page, '.réciproque sin');
+	// `sin` sans parenthèses est refusé partout depuis le 2026-10-06 : la ligne dit `sin(x)`
+	const sin = await calc(page, '.réciproque sin(x)');
 	expect(sin.refused).toBe(true);
 	expect(sin.text).toContain('arcsin');
 	expect(sin.text).not.toContain('.réciproque');
