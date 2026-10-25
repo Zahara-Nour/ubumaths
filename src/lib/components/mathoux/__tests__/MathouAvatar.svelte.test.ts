@@ -2,7 +2,7 @@
  * MathouAvatar — dessin SVG d'un Mathou : nom accessible, sieste, silhouette, ids uniques.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import MathouAvatar from '../MathouAvatar.svelte';
 import {
@@ -415,6 +415,43 @@ describe('MathouAvatar — collier', () => {
 				Node.DOCUMENT_POSITION_FOLLOWING
 			);
 		}
+	});
+
+	it('transformation : le cou suit le Mathou qui grandit ; au grand matou, sous la fraise', async () => {
+		// Chaton → matou : accroché au cou du chaton, puis à celui du matou (y 82 + 2)
+		const grow = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'matou',
+			growFrom: 'chaton',
+			reaction: 'bond',
+			reactionKey: 1,
+			label: 'M',
+			collar: 'bell'
+		});
+		expect(hangY(hangingOf(grow.container))).toBeGreaterThan(84);
+		await vi.waitFor(() => expect(hangY(hangingOf(grow.container))).toBe(84), { timeout: 3000 });
+
+		// Matou → grand matou : à la fin, la fraise arrive et le pendentif passe sous elle
+		const crown = await render(MathouAvatar, {
+			raceIndex: 0,
+			stage: 'grand_matou',
+			growFrom: 'matou',
+			reaction: 'bond',
+			reactionKey: 1,
+			label: 'M',
+			collar: 'bell'
+		});
+		expect(crown.container.querySelector('[data-part="collerette"]')).toBeNull();
+		await vi.waitFor(
+			() => {
+				const ruff = crown.container.querySelector('[data-part="collerette"]');
+				const pendant = hangingOf(crown.container);
+				expect(ruff && pendant && ruff.compareDocumentPosition(pendant)).toBe(
+					Node.DOCUMENT_POSITION_FOLLOWING
+				);
+			},
+			{ timeout: 3000 }
+		);
 	});
 
 	it('la sieste le garde, la silhouette n’en a pas', async () => {
