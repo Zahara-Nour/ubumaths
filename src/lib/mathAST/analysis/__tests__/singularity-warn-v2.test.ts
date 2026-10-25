@@ -14,7 +14,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { parseCustom } from '$lib/mathAST';
-import { getNumericValue } from '$lib/mathAST/common/numeric';
+import { literalNumberValue } from '$lib/mathAST/common/numeric';
 import { analyzeRangeContinuity, type RangeDiscontinuity } from '../singularity-warn';
 
 // =============================================================================
@@ -22,7 +22,7 @@ import { analyzeRangeContinuity, type RangeDiscontinuity } from '../singularity-
 // =============================================================================
 
 function pointValue(rd: RangeDiscontinuity): number {
-	const v = getNumericValue(rd.disc.point);
+	const v = literalNumberValue(rd.disc.point);
 	if (v !== null) return v;
 	throw new Error(`Unexpected point type: ${rd.disc.point.type}`);
 }

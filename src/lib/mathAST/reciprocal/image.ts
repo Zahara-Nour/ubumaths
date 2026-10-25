@@ -49,10 +49,6 @@ export type Pieces = readonly MonotonePiece[] | null;
 // Outils numériques
 // =============================================================================
 
-export function approx(node: MathNode): number | null {
-	return computeNumericValueOrInfinity(node);
-}
-
 function limitNode(limit: LimitValue): MathNode | null {
 	if (limit === 'infinity') return positiveInfinity();
 	if (limit === 'negative_infinity') return negativeInfinity();
@@ -72,15 +68,17 @@ function valueAtEnd(
 	end: Endpoint,
 	side: 'left' | 'right'
 ): MathNode | null {
-	const at = approx(end.value);
+	const at = computeNumericValueOrInfinity(end.value);
 	if (at === null) return null;
 	const limit = (variations.boundaryLimits ?? []).find(
-		(b) => approx(b.point) === at && (b.direction === side || b.direction === 'both')
+		(b) =>
+			computeNumericValueOrInfinity(b.point) === at &&
+			(b.direction === side || b.direction === 'both')
 	);
 	if (limit) return limitNode(limit.limit);
 	if (isInfinity(end.value)) return null;
 	const value = tidy(substitute(f, { [variable]: end.value }));
-	return approx(value) === null ? null : value;
+	return computeNumericValueOrInfinity(value) === null ? null : value;
 }
 
 function imageOfPiece(
@@ -121,22 +119,34 @@ export function monotonePieces(f: MathNode, variable: string, domain: Domain): P
 	const raws: Raw[] = [];
 	let pendingPoint: Endpoint | null = null;
 	for (const { interval: iv, monotonicity } of variations.monotonicIntervals) {
-		const isPoint = approx(iv.lower.value) === approx(iv.upper.value);
+		const isPoint =
+			computeNumericValueOrInfinity(iv.lower.value) ===
+			computeNumericValueOrInfinity(iv.upper.value);
 		if (isPoint && monotonicity === 'constant') {
 			pendingPoint = { value: iv.lower.value, type: 'closed' };
 			const last = raws[raws.length - 1];
-			if (last && approx(last.upper.value) === approx(iv.lower.value)) last.upper = pendingPoint;
+			if (
+				last &&
+				computeNumericValueOrInfinity(last.upper.value) ===
+					computeNumericValueOrInfinity(iv.lower.value)
+			)
+				last.upper = pendingPoint;
 			continue;
 		}
 		if (monotonicity !== 'increasing' && monotonicity !== 'decreasing') return null;
 		const increasing = monotonicity === 'increasing';
 		const lower =
-			pendingPoint && approx(pendingPoint.value) === approx(iv.lower.value)
+			pendingPoint &&
+			computeNumericValueOrInfinity(pendingPoint.value) ===
+				computeNumericValueOrInfinity(iv.lower.value)
 				? pendingPoint
 				: iv.lower;
 		const last = raws[raws.length - 1];
 		const touching =
-			last && last.upper.type === 'closed' && approx(last.upper.value) === approx(lower.value);
+			last &&
+			last.upper.type === 'closed' &&
+			computeNumericValueOrInfinity(last.upper.value) ===
+				computeNumericValueOrInfinity(lower.value);
 		if (last && touching && last.increasing === increasing) last.upper = iv.upper;
 		else raws.push({ lower, upper: iv.upper, increasing });
 		pendingPoint = null;
@@ -155,7 +165,7 @@ export function monotonePieces(f: MathNode, variable: string, domain: Domain): P
 /** Deux images se recouvrent (un point commun suffit). */
 function overlap(a: Interval, b: Interval): boolean | null {
 	const [aLow, aHigh, bLow, bHigh] = [a.lower, a.upper, b.lower, b.upper].map((e) =>
-		approx(e.value)
+		computeNumericValueOrInfinity(e.value)
 	);
 	if (aLow === null || aHigh === null || bLow === null || bHigh === null) return null;
 	const low = Math.max(aLow, bLow);
@@ -163,8 +173,8 @@ function overlap(a: Interval, b: Interval): boolean | null {
 	if (low < high) return true;
 	if (low > high) return false;
 	const closedAt = (iv: Interval, v: number): boolean =>
-		(approx(iv.lower.value) === v && iv.lower.type === 'closed') ||
-		(approx(iv.upper.value) === v && iv.upper.type === 'closed');
+		(computeNumericValueOrInfinity(iv.lower.value) === v && iv.lower.type === 'closed') ||
+		(computeNumericValueOrInfinity(iv.upper.value) === v && iv.upper.type === 'closed');
 	return closedAt(a, low) && closedAt(b, low);
 }
 

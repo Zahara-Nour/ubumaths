@@ -141,29 +141,34 @@ interface ProductView {
 /**
  * Met au propre **sans réordonner** un produit déjà factorisé.
  *
- * `tidy` range les facteurs dans son ordre canonique : `(x+1)e^x` y devient
- * `e^x(x+1)`. Les deux écritures sont justes, mais c'est la première qu'on
- * écrit au tableau pour une dérivée, et l'ordre vient ici d'une factorisation
- * que l'élève vient de suivre — le moteur n'a pas à la rebattre.
+ * `tidy` range les facteurs dans son ordre canonique (nombre, lettres,
+ * parenthèses, fonctions) : `(y+1)x` y devient `x(y+1)`. Les deux écritures
+ * sont justes, mais l'ordre vient ici d'une factorisation que l'élève vient de
+ * suivre — le moteur n'a pas à la rebattre.
  *
  * On met donc chaque facteur au propre séparément, en gardant l'ordre. Tout ce
  * qui n'est pas un produit passe par `tidy` entier : `√8` devient `2√2`,
  * `2x + 3x` devient `5x`.
+ *
+ * Les facteurs ne sont pas non plus multipliés entre eux : `x²·x³`, `√2·√8`,
+ * `1·x` restent écrits (`factoriser` ne calcule pas le produit), sauf deux
+ * nombres côte à côte (voir plus bas). `tidy` seul ne convient donc pas : il
+ * rendrait `x⁵`, `4`, `x` (mesuré, 10 tests du panel de référence rouges).
  */
-export function tidyWithoutReordering(node: MathNode): MathNode {
+export function tidyEachFactor(node: MathNode): MathNode {
 	// Un produit factorisé peut être sous un signe ou dans une fonction :
 	// `−(x+1)eˣ`, `sin((x−1)eˣ)`. Passés à `tidy` entiers, ils devenaient
 	// `−eˣ(x+1)` et `sin(eˣ(x−1))`. On ne descend que s'il y a un produit
 	// dessous : sinon `tidy` garde la main sur le nœud entier (`√8` → `2√2`).
 	if (node.type === 'opposite' && node.operand.type === 'multiplication') {
-		return { ...node, operand: tidyWithoutReordering(node.operand) };
+		return { ...node, operand: tidyEachFactor(node.operand) };
 	}
 	if (node.type === 'function' && node.args.some((arg) => arg.type === 'multiplication')) {
-		return { ...node, args: node.args.map(tidyWithoutReordering) };
+		return { ...node, args: node.args.map(tidyEachFactor) };
 	}
 	if (node.type !== 'multiplication') return tidy(node);
-	const left = tidyWithoutReordering(node.left);
-	const right = tidyWithoutReordering(node.right);
+	const left = tidyEachFactor(node.left);
+	const right = tidyEachFactor(node.right);
 	// Deux nombres côte à côte ne sont pas une factorisation à préserver : ils
 	// viennent d'une identité qui a rendu un nombre (`2\ln(e)` → `2 × 1`,
 	// `3\ln(e^2)` → `3 × 2`). Aucune règle de `factoriser` ne décompose un
@@ -213,7 +218,7 @@ function viewOf(node: MathNode, v: string): ProductView {
 			parts.push({ kind: 'poly', coefficients, multiplicity: m, reduced, node });
 			return;
 		}
-		parts.push({ kind: 'other', node: tidyWithoutReordering(n), multiplicity: m });
+		parts.push({ kind: 'other', node: tidyEachFactor(n), multiplicity: m });
 	};
 	visit(node, 1);
 	return { variable: v, constant, parts };

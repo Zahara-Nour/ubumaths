@@ -12,7 +12,7 @@ import { describe, it, expect } from 'vitest';
 import { evaluateLimit, analyzeOneSidedLimits, analyzeDiscontinuity } from '../evaluate';
 import { needsOneSidedAnalysis, checkLimitsEqual, analyzeSign } from '../one-sided';
 import { number, variable, divide, func, positiveInfinity, negativeInfinity } from '../../factory';
-import { getNumericValue } from '../../common/numeric';
+import { literalNumberValue } from '../../common/numeric';
 import { isInfinity } from '../../guards';
 import { parseCustom } from '../../parser/custom';
 import type { LimitResult } from '../types';
@@ -311,7 +311,7 @@ describe('One-Sided Limits', () => {
 
 				expect(result.status).toBe('exact');
 				expect(result.value).not.toBeNull();
-				expect(getNumericValue(result.value!)).toBe(-1);
+				expect(literalNumberValue(result.value!)).toBe(-1);
 			});
 
 			it('evaluates sign(x) as x → 0⁺ to 1', () => {

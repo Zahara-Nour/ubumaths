@@ -24,7 +24,7 @@
 import type { MathNode } from '../types';
 import { analyzeSign } from '../sign/analyze';
 import { compile } from '../eval/compile';
-import { numericValue } from '../integration/forbidden-value';
+import { numericValueOrNaN } from '../integration/forbidden-value';
 import { toPolynomial } from '../factor';
 
 /** Un intervalle d'intégration, bornes numériques dans un ordre quelconque. */
@@ -58,12 +58,12 @@ export function isCertainlyPositive(
 			);
 		}
 
-		const a = numericValue(interval.lower);
-		const b = numericValue(interval.upper);
+		const a = numericValueOrNaN(interval.lower);
+		const b = numericValueOrNaN(interval.upper);
 		if (!Number.isFinite(a) || !Number.isFinite(b)) return false;
 		const [lo, hi] = a <= b ? [a, b] : [b, a];
 		for (const zero of analysis.zeros) {
-			const z = zero.approximate ?? numericValue(zero.value);
+			const z = zero.approximate ?? numericValueOrNaN(zero.value);
 			if (!Number.isFinite(z)) return false;
 			if (z >= lo - EPS && z <= hi + EPS) return false;
 		}

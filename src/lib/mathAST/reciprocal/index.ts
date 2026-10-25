@@ -39,13 +39,8 @@ import { tidy } from '../tidy';
 import { formatInterval } from '../domain/format';
 import { domainsAreEqual } from '../domain/validation/compare-domains';
 import { inequalitySolutionLatex, withRealLineWritten } from '../cli/commands/solve-latex';
-import {
-	approx,
-	imageBySolver,
-	imageByVariations,
-	injectiveByPieces,
-	monotonePieces
-} from './image';
+import { computeNumericValueOrInfinity } from '../eval/numeric-value';
+import { imageBySolver, imageByVariations, injectiveByPieces, monotonePieces } from './image';
 import type { Pieces } from './image';
 import { textbookWriting } from './writing';
 
@@ -189,7 +184,7 @@ function whyNotInjective(
 }
 
 /** Une borne approchée par les variations (8222164341/5000000000) ne s'écrit pas à un élève. */
-function readable(domain: Domain): boolean {
+function hasShortBounds(domain: Domain): boolean {
 	return !/\d{7,}/.test(formatInterval(domain));
 }
 
@@ -228,7 +223,7 @@ function refuseNotBijective(
 	const listable =
 		several &&
 		pieces.length <= MAX_LISTED_PIECES &&
-		pieces.every(({ piece }) => readable(intervalSet([tidyInterval(piece)])));
+		pieces.every(({ piece }) => hasShortBounds(intervalSet([tidyInterval(piece)])));
 	const listed =
 		context.listPieces && listable ? pieces.map(({ piece }) => listedPiece(context, piece)) : null;
 	const mais = `Mais ${name} est bijective sur`;
@@ -247,7 +242,7 @@ function refuseNotBijective(
 	const fromPieces =
 		withFormula ?? (several && last ? intervalSet([tidyInterval(last.piece)]) : undefined);
 	const candidate = periodic ? (periodic.suggestion ?? undefined) : fromPieces;
-	let suggestion = candidate && readable(candidate) ? candidate : undefined;
+	let suggestion = candidate && hasShortBounds(candidate) ? candidate : undefined;
 	// Décision (5) de David : jamais proposer une commande qui échouerait. Aucun
 	// morceau listé n'a de formule (tan sur ]−1 ; 4[ : arctan) et la commande
 	// proposée échoue : f périodique → le refus périodique, honnête (« Sa
@@ -374,7 +369,7 @@ function refuseTangent(context: NonInjective): ReciprocalResult | null {
 	if (domain.kind !== 'periodic_exclusion' || onlyTrigonometricIn(f, variable) !== 'tan') {
 		return null;
 	}
-	const period = approx(domain.period);
+	const period = computeNumericValueOrInfinity(domain.period);
 	if (period === null || period <= 0) return null;
 	const proved = [0, 0.3, -0.7, 1.1].some((x) => {
 		const [y0, y1] = [valueAt(f, variable, x), valueAt(f, variable, x + period)];
@@ -442,9 +437,9 @@ function refusePeriodic(
 		pieces?.find(
 			({ piece }) =>
 				containsValue(intervalSet([piece]), 0) &&
-				approx(piece.lower.value) !== 0 &&
-				approx(piece.upper.value) !== 0
-		) ?? pieces?.find(({ piece }) => approx(piece.lower.value) === 0);
+				computeNumericValueOrInfinity(piece.lower.value) !== 0 &&
+				computeNumericValueOrInfinity(piece.upper.value) !== 0
+		) ?? pieces?.find(({ piece }) => computeNumericValueOrInfinity(piece.lower.value) === 0);
 	// Une borne où f n'existe pas reste OUVERTE : la fenêtre fermée gardait π/2
 	// pour tan sur ]−1 ; 4[ (revue de #1342)
 	const suggestion = chosen
@@ -456,7 +451,7 @@ function refusePeriodic(
 /** L'intervalle, chaque borne finie où f n'est pas définie rendue ouverte. */
 function openWhereUndefined(piece: Interval, f: MathNode, variable: string): Interval {
 	const open = (end: Interval['lower']): Interval['lower'] => {
-		const at = approx(end.value);
+		const at = computeNumericValueOrInfinity(end.value);
 		return at !== null && Number.isFinite(at) && valueAt(f, variable, at) === null
 			? { ...end, type: 'open' }
 			: end;
@@ -505,7 +500,10 @@ function samplesOf(domain: Domain): number[] {
 	const spread: number[] = [];
 	if (domain.kind === 'interval_set') {
 		for (const iv of domain.intervals) {
-			const [low, high] = [approx(iv.lower.value), approx(iv.upper.value)];
+			const [low, high] = [
+				computeNumericValueOrInfinity(iv.lower.value),
+				computeNumericValueOrInfinity(iv.upper.value)
+			];
 			if (low === null || high === null) continue;
 			if (Number.isFinite(low) && Number.isFinite(high)) {
 				for (let k = 0; k <= 8; k++) spread.push(low + ((high - low) * k) / 8);
@@ -520,7 +518,7 @@ function samplesOf(domain: Domain): number[] {
 }
 
 function valueAt(node: MathNode, letter: string, value: number): number | null {
-	const result = approx(substitute(node, { [letter]: value }));
+	const result = computeNumericValueOrInfinity(substitute(node, { [letter]: value }));
 	return result !== null && Number.isFinite(result) ? result : null;
 }
 

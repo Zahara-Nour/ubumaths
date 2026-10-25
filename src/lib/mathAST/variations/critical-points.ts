@@ -216,7 +216,7 @@ export function evaluateAtCriticalPoint(
 		// mesuré : `-1/2·e^{2·(−1/2)}` pour x e^{2x} —, le décimal tranche alors.
 		if (exactNode === null && yApproximate === undefined) return null;
 
-		return { y: tidyExactValue(substituted, exactNode), yApproximate };
+		return { y: exactImageToShow(substituted, exactNode), yApproximate };
 	} catch {
 		// Evaluation failed (e.g., division by zero, domain error)
 		return null;
@@ -232,7 +232,7 @@ export function evaluateAtCriticalPoint(
  * @param substituted - f(x₀), x₀ substitué, non évalué
  * @param evaluated - Ce que rend l'évaluation exacte, `null` si elle a échoué
  */
-export function tidyExactValue(substituted: MathNode, evaluated: MathNode | null): MathNode {
+export function exactImageToShow(substituted: MathNode, evaluated: MathNode | null): MathNode {
 	return exactValueToShow(evaluated ?? substituted, { source: substituted });
 }
 
@@ -244,9 +244,9 @@ export function tidyExactValue(substituted: MathNode, evaluated: MathNode | null
  * Partagée avec les bornes des intervalles de monotonie (`monotonicity.ts`) :
  * sans ça, le tableau écrivait `x = 1/e` au-dessus de `]0 ; exp(-1)[`.
  */
-export function tidyCriticalAbscissa(value: MathNode): MathNode {
+export function abscissaToShow(value: MathNode): MathNode {
 	if (findFirst(value, isExpCall) === undefined) return value;
-	return tidyExactValue(value, null);
+	return exactImageToShow(value, null);
 }
 
 function isExpCall(node: MathNode): boolean {
@@ -305,7 +305,7 @@ function findDerivativeZeros(
 } {
 	const { zeros, resolved } = findZerosWithStatus(derivative, variable, domain);
 	return {
-		zeros: zeros.map((zero) => ({ ...zero, value: tidyCriticalAbscissa(zero.value) })),
+		zeros: zeros.map((zero) => ({ ...zero, value: abscissaToShow(zero.value) })),
 		resolved
 	};
 }

@@ -17,7 +17,7 @@ import {
 } from '../differentiability';
 import { parseLatex } from '../../parser';
 import { number } from '../../factory';
-import { getNumericValue } from '../../common/numeric';
+import { literalNumberValue } from '../../common/numeric';
 import type { NonDifferentiabilityType } from '../differentiability-types';
 
 // =============================================================================
@@ -42,7 +42,7 @@ function hasNonDiffPointAt(
 	expectedType?: NonDifferentiabilityType
 ): boolean {
 	return result.nonDifferentiablePoints.some((p) => {
-		const value = getNumericValue(p.point);
+		const value = literalNumberValue(p.point);
 		if (value === null) return false;
 		const matches = Math.abs(value - pointValue) < 1e-6;
 		if (expectedType && matches) {
@@ -760,7 +760,7 @@ describe('analyzeDifferentiability - edge cases: fractional power variations', (
 		const result = analyzeDiff('(x + 1)^{1/3}');
 
 		const pointAtMinus1 = result.nonDifferentiablePoints.find((p) => {
-			const v = getNumericValue(p.point);
+			const v = literalNumberValue(p.point);
 			return v !== null && Math.abs(v + 1) < 1e-6;
 		});
 		expect(pointAtMinus1).toBeDefined();
@@ -940,7 +940,7 @@ describe('analyzeDifferentiability - edge cases: logarithmic variations', () => 
 		const result = analyzeDiff('\\ln(x + 1)');
 
 		const boundary = result.boundaryBehavior.find((b) => {
-			const val = getNumericValue(b.point);
+			const val = literalNumberValue(b.point);
 			return val !== null && Math.abs(val + 1) < 1e-6;
 		});
 		expect(boundary).toBeDefined();

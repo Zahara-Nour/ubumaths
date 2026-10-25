@@ -208,7 +208,8 @@ export function parameterCondition(
 // Une couche
 // =============================================================================
 
-function tidy(node: MathNode): MathNode {
+/** La forme normale réécrite (`normalize` développe). */
+function normalForm(node: MathNode): MathNode {
 	return denormalize(normalize(node));
 }
 
@@ -252,7 +253,7 @@ function peel(core: MathNode, target: MathNode, variable: string): Layer | null 
 	if (ln && isFunction(core) && core.base === undefined) {
 		return {
 			argument: getBindingNode(ln, 'u') ?? core,
-			target: tidy(superscript(euler(), target)),
+			target: normalForm(superscript(euler(), target)),
 			condition: null,
 			description: "On applique l'exponentielle aux deux membres",
 			equationType: 'logarithmic'
@@ -263,7 +264,7 @@ function peel(core: MathNode, target: MathNode, variable: string): Layer | null 
 	if (log && logBase !== null) {
 		return {
 			argument: getBindingNode(log, 'u') ?? core,
-			target: tidy(superscript(logBase, target)),
+			target: normalForm(superscript(logBase, target)),
 			condition: null,
 			description: `On élève ${toCustom(logBase)} à la puissance de chaque membre`,
 			equationType: 'logarithmic'
@@ -275,7 +276,7 @@ function peel(core: MathNode, target: MathNode, variable: string): Layer | null 
 		const even = index % 2 === 0;
 		return {
 			argument: getBindingNode(root, 'u') ?? core,
-			target: tidy(superscript(target, number(String(index)))),
+			target: normalForm(superscript(target, number(String(index)))),
 			// ⁿ√u = c, n impair : u = cⁿ pour tout c ; n pair : c ≥ 0
 			condition: even ? relation('>=', target, number('0')) : null,
 			description: even
@@ -354,7 +355,7 @@ export function tryLiteralParameter(
 		if (value === null || value === 0) return null;
 		target = divide(target, coefficient, 'fraction');
 	}
-	target = tidy(target);
+	target = normalForm(target);
 
 	const layer = peel(core, target, variable);
 	if (layer === null) return null;

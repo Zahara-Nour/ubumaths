@@ -62,7 +62,7 @@ import {
 	describeCubicDiscriminant,
 	describeFactorCommonRoot
 } from '../descriptions-fr';
-import { computeNumericValue } from '../numeric-value';
+import { computeNumericValue } from '../../eval/numeric-value';
 
 // =============================================================================
 // Helper Functions
@@ -95,9 +95,6 @@ export function isNegativeNode(node: MathNode): boolean {
 	const rat = algebraicTerm.rational;
 	return rat.n < 0n;
 }
-
-// Re-export for quartic.ts which imports computeNumericValue from here
-export { computeNumericValue } from '../numeric-value';
 
 /**
  * Extract BigInt value from a constant MathNode (if possible).

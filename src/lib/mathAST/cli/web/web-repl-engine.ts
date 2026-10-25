@@ -137,7 +137,7 @@ function approximationFields(
  * variable, que `tidy` rangerait (même règle que l'écran de l'atelier,
  * `render.ts`).
  */
-function readableExact(node: MathNode, source: MathNode): MathNode {
+function resultToShow(node: MathNode, source: MathNode): MathNode {
 	if (getVariables(node).size > 0) return node;
 	// La notation scientifique tapée est gardée (Q24) : ici seulement, pas dans `{{eval}}`
 	return exactValueToShow(node, { source, keepScientific: true });
@@ -697,8 +697,8 @@ export class WebReplEngine {
 				exactResult2.node.type === 'number'
 			) {
 				// Compare the values (handle both Rational and number)
-				const val1 = this.getNumericValue(exactResult1.value);
-				const val2 = this.getNumericValue(exactResult2.value);
+				const val1 = this.literalNumberValue(exactResult1.value);
+				const val2 = this.literalNumberValue(exactResult2.value);
 				const isEqual = val1 === val2;
 				return this.createEqualityResult(isEqual);
 			}
@@ -938,7 +938,7 @@ export class WebReplEngine {
 			// L'écriture exacte, la même à l'écran et dans le texte : `\pi/3`, pas la
 			// forme de calcul `{1/3}\pi` d'`evaluate`
 			const exactShown =
-				tooLong === null ? readableExact(exactResult.node, expanded) : exactResult.node;
+				tooLong === null ? resultToShow(exactResult.node, expanded) : exactResult.node;
 			const exactStr = toCustom(tooLong === null ? exactShown : typedWriting(expanded));
 			const exactOutput = exactStr;
 
@@ -1162,7 +1162,7 @@ export class WebReplEngine {
 	 * Extract numeric value from MathNode, number, or ComplexValueResult.
 	 * Throws if value is complex with non-zero imaginary part.
 	 */
-	private getNumericValue(value: EvalValue): number {
+	private literalNumberValue(value: EvalValue): number {
 		if (typeof value === 'number') return value;
 		if (typeof value === 'boolean') {
 			throw new Error('Cannot convert boolean to number');

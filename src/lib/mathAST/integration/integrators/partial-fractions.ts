@@ -842,7 +842,7 @@ function solveMixedFactors(
 
 		if (linearTerms.length === 1 && quadraticTerms.length === 1) {
 			// Simple case: one linear, one quadratic
-			const linearCoeff = getNumericValue(solvedTerms[0]?.coefficient);
+			const linearCoeff = coefficientValue(solvedTerms[0]?.coefficient);
 			if (linearCoeff === null) {
 				solvedTerms.push(quadTerm);
 				continue;
@@ -895,7 +895,7 @@ function solveMixedFactors(
 /**
  * Get numeric value from a coefficient MathNode.
  */
-function getNumericValue(node: MathNode | undefined): number | null {
+function coefficientValue(node: MathNode | undefined): number | null {
 	if (!node) return null;
 	// −(1/4), 3/2… ; un paramètre littéral rend null
 	const value = evaluateAt(node, '', 0);
@@ -1039,7 +1039,7 @@ function exactCoefficient(value: number): MathNode | null {
 function termValueAt(term: PartialFractionTerm, variable: string, t: number): number | null {
 	if (term.factor.type === 'linear') {
 		const root = getRootValue(term.factor.root!);
-		const coefficient = getNumericValue(term.coefficient);
+		const coefficient = coefficientValue(term.coefficient);
 		if (root === null || coefficient === null) return null;
 		return coefficient / Math.pow(t - root, term.power);
 	}
@@ -1054,7 +1054,7 @@ function termValueAt(term: PartialFractionTerm, variable: string, t: number): nu
 	if (extended.xCoeff !== undefined || extended.constCoeff !== undefined) {
 		return ((extended.xCoeff ?? 0) * t + (extended.constCoeff ?? 0)) / quadratic;
 	}
-	const coefficient = getNumericValue(term.coefficient);
+	const coefficient = coefficientValue(term.coefficient);
 	return coefficient === null ? null : coefficient / quadratic;
 }
 
@@ -1107,7 +1107,7 @@ function integratePartialFraction(
 			if (n === 1) {
 				return implicitMultiply(term.coefficient, func('ln', [func('abs', [integerFactor.node])]));
 			}
-			const value = getNumericValue(term.coefficient);
+			const value = coefficientValue(term.coefficient);
 			if (value === null) return null;
 			const coefficient = exactCoefficient(value * Math.pow(Number(integerFactor.leading), n - 1));
 			if (coefficient === null) return null;

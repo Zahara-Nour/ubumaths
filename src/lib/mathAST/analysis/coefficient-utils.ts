@@ -20,7 +20,7 @@ import {
 	isSubtraction
 } from '../guards';
 import { number, opposite, multiply, divide, add, subtract } from '../factory';
-import { numericNode, getNumericValue } from '../common/numeric';
+import { numericNode, literalNumberValue } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
 import { containsVariable } from '../common/contains-variable';
 
@@ -126,10 +126,10 @@ export function addCoefficients(a: MathNode, b: MathNode): MathNode {
 	}
 
 	// Numeric addition: n + m = (n+m).
-	// getNumericValue handles both number('3') and opposite(number('3')) (canonical).
+	// literalNumberValue handles both number('3') and opposite(number('3')) (canonical).
 	// numericNode keeps the result in canonical form.
-	const aVal = getNumericValue(a);
-	const bVal = getNumericValue(b);
+	const aVal = literalNumberValue(a);
+	const bVal = literalNumberValue(b);
 	if (aVal !== null && bVal !== null) {
 		return numericNode(aVal + bVal);
 	}

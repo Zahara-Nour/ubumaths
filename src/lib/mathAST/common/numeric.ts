@@ -60,11 +60,11 @@ const FUNCTIONS_BY_POLE_MODE: Record<PoleMode, ReadonlySet<string>> = {
  * @returns The numeric value or null if not a number
  *
  * @example
- * getNumericValue(number('3'))           // 3
- * getNumericValue(opposite(number('5'))) // -5
- * getNumericValue(variable('x'))         // null
+ * literalNumberValue(number('3'))           // 3
+ * literalNumberValue(opposite(number('5'))) // -5
+ * literalNumberValue(variable('x'))         // null
  */
-export function getNumericValue(node: MathNode): number | null {
+export function literalNumberValue(node: MathNode): number | null {
 	if (isNumber(node)) {
 		const val = parseFloat(node.value);
 		return Number.isFinite(val) ? val : null;

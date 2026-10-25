@@ -32,7 +32,7 @@ import {
 	isVariable,
 	isZero
 } from '../guards';
-import { getNumericValue, numericNode } from '../common/numeric';
+import { literalNumberValue, numericNode } from '../common/numeric';
 import {
 	zero,
 	one,
@@ -49,7 +49,7 @@ import { containsVariable } from '../common/contains-variable';
 // Re-export for backward compatibility (used by differentiate.ts and tests)
 export {
 	containsVariable,
-	getNumericValue,
+	literalNumberValue,
 	numericNode,
 	zero,
 	one,
@@ -176,7 +176,7 @@ export function powerRuleConstantExp(
 	dBase: MathNode,
 	simplify: boolean
 ): MathNode {
-	const expVal = getNumericValue(exp);
+	const expVal = literalNumberValue(exp);
 
 	if (simplify) {
 		// Handle special cases

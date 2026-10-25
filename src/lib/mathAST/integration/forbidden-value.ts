@@ -43,7 +43,7 @@ const BOUND_TOLERANCE = 1e-12;
 // =============================================================================
 
 /** Valeur numérique d'une constante (π, √2 compris), NaN si littérale */
-export function numericValue(node: MathNode): number {
+export function numericValueOrNaN(node: MathNode): number {
 	try {
 		return compile(node)({});
 	} catch {
@@ -84,8 +84,8 @@ function candidatesOf(domain: Domain, lo: number): MathNode[] {
 			];
 		case 'periodic_exclusion': {
 			// Premier point interdit ≥ lo : base + k·période
-			const base = numericValue(domain.basePoint);
-			const period = numericValue(domain.period);
+			const base = numericValueOrNaN(domain.basePoint);
+			const period = numericValueOrNaN(domain.period);
 			if (!Number.isFinite(base) || !Number.isFinite(period) || period === 0) return [];
 			const steps = Math.ceil((lo - base) / Math.abs(period) - BOUND_TOLERANCE);
 			// Nombre de périodes signé : la période du domaine peut être négative
@@ -124,8 +124,8 @@ export function forbiddenValueOnInterval(
 	lower: MathNode,
 	upper: MathNode
 ): IntervalCheck {
-	const a = numericValue(lower);
-	const b = numericValue(upper);
+	const a = numericValueOrNaN(lower);
+	const b = numericValueOrNaN(upper);
 	if (!Number.isFinite(a) || !Number.isFinite(b)) {
 		return { kind: 'unchecked', reason: 'literal-bounds' };
 	}
@@ -146,7 +146,7 @@ export function forbiddenValueOnInterval(
 
 	const margin = BOUND_TOLERANCE * Math.max(1, Math.abs(lo), Math.abs(hi));
 	const inside = [lower, upper, ...candidatesOf(domain, lo)]
-		.map((node) => ({ node, value: numericValue(node) }))
+		.map((node) => ({ node, value: numericValueOrNaN(node) }))
 		.filter(({ value }) => Number.isFinite(value) && value >= lo - margin && value <= hi + margin)
 		.sort((p, q) => p.value - q.value);
 

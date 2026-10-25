@@ -32,7 +32,7 @@ import { containsVariable } from '../common/contains-variable';
 import { unwrapGrouping, unwrapGroupingMembers } from '../solve/classify';
 import { denormalize, normalize } from '../normal';
 import { constantSign } from '../common/constant-sign';
-import { getNumericValue } from '../common/numeric';
+import { literalNumberValue } from '../common/numeric';
 import { tidy } from '../tidy';
 import { InequalityNotSolvable } from '../solve/inequality/types';
 import { getVariables } from '../eval/substitute';
@@ -360,7 +360,7 @@ export function negativeTermMagnitude(term: MathNode): MathNode | null {
 		case 'division':
 			return negativeTermMagnitude(term.numerator) !== null ? canon(opposite(term)) : null;
 		default: {
-			const numeric = getNumericValue(term);
+			const numeric = literalNumberValue(term);
 			return numeric !== null && numeric < 0 ? canon(opposite(term)) : null;
 		}
 	}

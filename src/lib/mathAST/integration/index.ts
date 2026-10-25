@@ -67,7 +67,7 @@ export {
 export {
 	zero,
 	one,
-	getNumericValue,
+	literalNumberValue,
 	numericNode,
 	simplifiedAdd,
 	simplifiedMultiply,

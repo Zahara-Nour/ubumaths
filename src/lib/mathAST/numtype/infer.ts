@@ -276,7 +276,7 @@ function inferTypeUncached(node: MathNode, ctx: TypeContext): MathType {
  * - OppositeNode with number: negated value
  * - PositiveNode with number: same value
  */
-function getNumericValue(node: MathNode): number | undefined {
+function signedLiteralValue(node: MathNode): number | undefined {
 	if (node.type === 'number') {
 		const value = parseFloat(node.value);
 		return Number.isFinite(value) ? value : undefined;
@@ -284,7 +284,7 @@ function getNumericValue(node: MathNode): number | undefined {
 
 	// Handle -n where n is a number
 	if (node.type === 'opposite') {
-		const operandValue = getNumericValue(node.operand);
+		const operandValue = signedLiteralValue(node.operand);
 		if (operandValue !== undefined) {
 			return -operandValue;
 		}
@@ -292,7 +292,7 @@ function getNumericValue(node: MathNode): number | undefined {
 
 	// Handle +n where n is a number
 	if (node.type === 'positive') {
-		return getNumericValue(node.operand);
+		return signedLiteralValue(node.operand);
 	}
 
 	return undefined;
@@ -306,8 +306,8 @@ function inferSuperscriptType(base: MathNode, exponent: MathNode, ctx: TypeConte
 	const expType = inferType(exponent, ctx);
 
 	// Get numeric values if available
-	const baseValue = getNumericValue(base);
-	const expValue = getNumericValue(exponent);
+	const baseValue = signedLiteralValue(base);
+	const expValue = signedLiteralValue(exponent);
 
 	return inferPowerType(baseType, expType, baseValue, expValue);
 }
@@ -317,7 +317,7 @@ function inferSuperscriptType(base: MathNode, exponent: MathNode, ctx: TypeConte
  */
 function inferFunctionNodeType(node: FunctionNode, ctx: TypeContext): MathType {
 	const argTypes = node.args.map((arg) => inferType(arg, ctx));
-	const argValues = node.args.map((arg) => getNumericValue(arg));
+	const argValues = node.args.map((arg) => signedLiteralValue(arg));
 
 	const type = inferFunctionType(node.name, argTypes, argValues);
 	const lowerName = node.name.toLowerCase();
@@ -368,7 +368,7 @@ function getSimpleNumericValue(node: MathNode): number | undefined {
 		return numerator / denominator;
 	}
 	if (node.type === 'delimiter') return getSimpleNumericValue(node.content);
-	return getNumericValue(node);
+	return signedLiteralValue(node);
 }
 
 /**

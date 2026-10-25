@@ -13,7 +13,7 @@ import { isNumber, isVariable } from '../guards';
 import { inferType, isSubtype } from '../numtype';
 import { containsValue } from '$lib/math/intervals';
 import { containsVariable } from '../common/contains-variable';
-import { getNumericValue } from '../common/numeric';
+import { literalNumberValue } from '../common/numeric';
 
 // =============================================================================
 // Helper Functions
@@ -25,7 +25,7 @@ import { getNumericValue } from '../common/numeric';
  * Returns undefined if the node is not numeric or the value is not finite.
  */
 function parseNumberValue(node: MathNode): number | undefined {
-	const parsed = getNumericValue(node);
+	const parsed = literalNumberValue(node);
 	return parsed !== null && Number.isFinite(parsed) ? parsed : undefined;
 }
 

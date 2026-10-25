@@ -33,7 +33,7 @@ import type { Pattern } from '../pattern/types';
 import { number, positiveInfinity, negativeInfinity, func, opposite } from '../factory';
 import { structuralBounds, hasStrictSign, type Bounds } from './bounded';
 import { rewriteReciprocalTrig } from './reciprocal-trig';
-import { getNumericValue, numericNode } from '../common/numeric';
+import { literalNumberValue, numericNode } from '../common/numeric';
 import { rootIndexOf } from '../differentiation/rules';
 import { containsVariable } from '../common/contains-variable';
 import { differentiate } from '../differentiation';
@@ -293,7 +293,7 @@ function tryElementaryAtInfinity(
 
 	// Case 2: Power x^n → ±∞
 	if (isSuperscript(expr) && isVariable(expr.base) && expr.base.name === varName) {
-		const exp = getNumericValue(expr.superscript);
+		const exp = literalNumberValue(expr.superscript);
 		if (exp !== null && exp > 0 && Number.isInteger(exp)) {
 			// x^n as x → ±∞
 			// Even power: always +∞
@@ -482,7 +482,7 @@ function extractTerms(
 	function monomialDegree(node: MathNode): number | null {
 		if (isVariable(node) && node.name === varName) return 1;
 		if (isSuperscript(node) && isVariable(node.base) && node.base.name === varName) {
-			const exp = getNumericValue(node.superscript);
+			const exp = literalNumberValue(node.superscript);
 			if (exp !== null && Number.isInteger(exp)) return exp;
 		}
 		return null;
@@ -502,7 +502,7 @@ function extractTerms(
 			extractFromNode(node.right, -sign);
 		} else if (isMultiplication(node)) {
 			// a * x^n
-			const coeff = getNumericValue(node.left);
+			const coeff = literalNumberValue(node.left);
 			const rightDegree = monomialDegree(node.right);
 			if (coeff !== null && rightDegree !== null) {
 				terms.push({ coefficient: sign * coeff, degree: rightDegree });
@@ -911,7 +911,7 @@ function extractLinearPart(
 
 		// x + c
 		if (isVariable(left) && left.name === varName) {
-			const c = getNumericValue(right);
+			const c = literalNumberValue(right);
 			if (c !== null) {
 				return { isLinear: true, coefficient: 1, constant: c };
 			}
@@ -919,7 +919,7 @@ function extractLinearPart(
 
 		// c + x
 		if (isVariable(right) && right.name === varName) {
-			const c = getNumericValue(left);
+			const c = literalNumberValue(left);
 			if (c !== null) {
 				return { isLinear: true, coefficient: 1, constant: c };
 			}
@@ -931,7 +931,7 @@ function extractLinearPart(
 		const { left, right } = expr;
 
 		if (isVariable(left) && left.name === varName) {
-			const c = getNumericValue(right);
+			const c = literalNumberValue(right);
 			if (c !== null) {
 				return { isLinear: true, coefficient: 1, constant: -c };
 			}
@@ -1228,14 +1228,14 @@ function extractVariablePower(expr: MathNode, varName: string): number | null {
 
 	// Case 2: x^n
 	if (isSuperscript(expr) && isVariable(expr.base) && expr.base.name === varName) {
-		const exp = getNumericValue(expr.superscript);
+		const exp = literalNumberValue(expr.superscript);
 		return exp !== null && Number.isInteger(exp) ? exp : null;
 	}
 
 	// Case 3: a * x^n where a is a number
 	if (isMultiplication(expr)) {
-		const leftNum = getNumericValue(expr.left);
-		const rightNum = getNumericValue(expr.right);
+		const leftNum = literalNumberValue(expr.left);
+		const rightNum = literalNumberValue(expr.right);
 
 		// 1 * x^n or a * x^n
 		if (leftNum !== null) {

@@ -79,7 +79,7 @@ function formulaOf(atelier: Atelier, object: FunctionObject, letter: string): st
 	if (derivativeOf(object.name) !== null) {
 		const derived = derivativeAstOf(atelier, object.name);
 		if (!derived.ok) return '…';
-		return readable(
+		return typedText(
 			letter === INTERNAL_LETTER
 				? derived.ast
 				: renameVariableIn(derived.ast, INTERNAL_LETTER, letter)
@@ -90,7 +90,7 @@ function formulaOf(atelier: Atelier, object: FunctionObject, letter: string): st
 	if (reciprocalOf(object.name) !== null) {
 		const ast = astOf(object.definition, object.provenance ?? 'url', atelier.functionNames);
 		if (ast !== null) {
-			return readable(
+			return typedText(
 				letter === INTERNAL_LETTER ? ast : renameVariableIn(ast, INTERNAL_LETTER, letter)
 			);
 		}
@@ -103,7 +103,7 @@ function formulaOf(atelier: Atelier, object: FunctionObject, letter: string): st
  * (`{x-1}/2`), que la ligne montrerait telles quelles (revue) ; on les lit en
  * parenthèses, comme l'élève les tape — même sens pour le lecteur de Calcul.
  */
-function readable(ast: MathNode): string {
+function typedText(ast: MathNode): string {
 	return toCustom(ast).replaceAll('{', '(').replaceAll('}', ')');
 }
 

@@ -12,7 +12,7 @@
 import type { MathNode } from '../types';
 import { number, add, subtract, multiply, divide, opposite, power } from '../factory';
 import { isZero, isOne, isMinusOne } from '../guards';
-import { getNumericValue, numericNode } from './numeric';
+import { literalNumberValue, numericNode } from './numeric';
 
 // =============================================================================
 // Constants
@@ -77,8 +77,8 @@ export function simplifiedMultiply(a: MathNode, b: MathNode): MathNode {
 	if (isMinusOne(b)) return opposite(a);
 
 	// Simplify constant multiplication
-	const aVal = getNumericValue(a);
-	const bVal = getNumericValue(b);
+	const aVal = literalNumberValue(a);
+	const bVal = literalNumberValue(b);
 	if (aVal !== null && bVal !== null) {
 		return numericNode(aVal * bVal);
 	}

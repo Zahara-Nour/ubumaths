@@ -197,8 +197,8 @@ Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
 
 `evaluate` rend une forme de **calcul** (`⅓ π`, `½ √2`) ; `exactValueToShow(valeur, { source?, decimal? })`
 en fait la forme de **lecture**, la même pour tous les affichages d'une valeur calculée : ligne de
-l'Atelier (`readableExact`, `render.ts`), `.eval`, `{{eval}}` (`formatExact`), valeurs du tableau de
-variations (`tidyExactValue`, `tidyCriticalAbscissa`), ordonnées du grapheur (`simplifyExact`),
+l'Atelier (`resultToShow`, `render.ts`), `.eval`, `{{eval}}` (`formatExact`), valeurs du tableau de
+variations (`exactImageToShow`, `abscissaToShow`), ordonnées du grapheur (`simplifyExact`),
 limites (`writeLimitValue`) et solutions (`solve-latex.ts`, `solve.command.ts`, ligne `S = …` de
 l'Atelier). `evaluate` reste inchangé pour les calculs internes.
 
@@ -944,7 +944,7 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
      indicée `e_1`, `i_1`, ou `i` dans un indice) ;
    - **le signe d'une constante se lit sur sa valeur, pas sur son type** : `-\frac23` est
      `opposite(division)`, `\frac{-3}{4}` une division, `-0.5` devient `-\dfrac12` après
-     `canon`, `-\sqrt2` un opposé de racine. `getNumericValue` ne voit que `number` et
+     `canon`, `-\sqrt2` un opposé de racine. `literalNumberValue` ne voit que `number` et
      `opposite(number)` : pour décider d'un signe (sens d'une inéquation, tableau de signes),
      `constantSign` (`common/constant-sign.ts` : rationnel exact, sinon valeur approchée hors
      d'une marge de 10⁻⁹, `null` si indécidable). Écart V36 : `-\dfrac{2}{3}x+1<5` concluait

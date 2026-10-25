@@ -33,7 +33,7 @@ import type { SchoolLevel } from '../common/step-renderer-base';
 import type { MathNode } from '../types';
 import { extractExactRational } from '../common/numeric';
 import { getVariables } from '../eval/substitute';
-import { numericValue } from '../integration/forbidden-value';
+import { numericValueOrNaN } from '../integration/forbidden-value';
 import { integrationLatex as toLatex } from './latex';
 import type { IntegrationBindings, PedagogicalIntegrationRule } from './types';
 
@@ -194,7 +194,7 @@ export function coefficientPrefix(bindings: IntegrationBindings): string {
  * [1 ; e]) ; ordre d'écriture gardé si une borne n'est pas un nombre.
  */
 function sortedInterval(lower: MathNode, upper: MathNode): string {
-	const reversed = numericValue(lower) > numericValue(upper);
+	const reversed = numericValueOrNaN(lower) > numericValueOrNaN(upper);
 	const [lo, hi] = reversed ? [upper, lower] : [lower, upper];
 	return `\\left[ ${toLatex(lo)} ; ${toLatex(hi)} \\right]`;
 }
