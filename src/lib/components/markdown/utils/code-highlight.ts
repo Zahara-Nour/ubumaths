@@ -46,15 +46,46 @@ const ALIASES: Record<string, string> = {
 
 // Variables
 let core: Promise<HLJSApi> | null = null;
-const registered = new Set<string>();
+// Par langage : le cœur chargé et le langage enregistré (une seule fois, même
+// quand plusieurs blocs du même langage arrivent ensemble)
+const ready = new Map<string, Promise<HLJSApi>>();
 
 // Functions
 /** Le langage coloré désigné par l'étiquette du bloc, ou null (texte brut). */
 export function resolveLanguage(language: string | undefined): string | null {
 	if (!language) return null;
 	const name = language.trim().toLowerCase();
-	const resolved = ALIASES[name] ?? name;
+	const resolved = Object.hasOwn(ALIASES, name) ? ALIASES[name] : name;
 	return Object.hasOwn(LANGUAGES, resolved) ? resolved : null;
+}
+
+/** Le cœur de highlight.js ; un chargement raté se retente au bloc suivant. */
+function loadCore(): Promise<HLJSApi> {
+	core ??= import('highlight.js/lib/core')
+		.then((module) => module.default)
+		.catch((error: unknown) => {
+			core = null;
+			throw error;
+		});
+	return core;
+}
+
+/** highlight.js prêt à colorer ce langage ; un chargement raté se retente. */
+function loadLanguage(name: string): Promise<HLJSApi> {
+	let promise = ready.get(name);
+	if (promise === undefined) {
+		promise = Promise.all([loadCore(), LANGUAGES[name]()])
+			.then(([hljs, module]) => {
+				hljs.registerLanguage(name, module.default);
+				return hljs;
+			})
+			.catch((error: unknown) => {
+				ready.delete(name);
+				throw error;
+			});
+		ready.set(name, promise);
+	}
+	return promise;
 }
 
 /** Le HTML coloré du code, ou null quand son langage n'est pas coloré. */
@@ -64,11 +95,6 @@ export async function highlightCode(
 ): Promise<string | null> {
 	const name = resolveLanguage(language);
 	if (name === null) return null;
-	core ??= import('highlight.js/lib/core').then((module) => module.default);
-	const hljs = await core;
-	if (!registered.has(name)) {
-		hljs.registerLanguage(name, (await LANGUAGES[name]()).default);
-		registered.add(name);
-	}
+	const hljs = await loadLanguage(name);
 	return hljs.highlight(code, { language: name, ignoreIllegals: true }).value;
 }

@@ -37,13 +37,15 @@
 		const source = code;
 		const sourceLanguage = language;
 		let cancelled = false;
-		highlighted = null;
+		// L'ancienne coloration reste affichée jusqu'à la nouvelle : pas de
+		// clignotement en texte brut pendant une édition en direct
 		highlightCode(source, sourceLanguage)
 			.then((html) => {
 				if (!cancelled) highlighted = html;
 			})
 			.catch(() => {
-				// Morceau de highlight.js introuvable (réseau) : le texte brut reste
+				// Morceau de highlight.js introuvable (réseau) : texte brut, jamais l'ancien code
+				if (!cancelled) highlighted = null;
 			});
 		return () => {
 			cancelled = true;

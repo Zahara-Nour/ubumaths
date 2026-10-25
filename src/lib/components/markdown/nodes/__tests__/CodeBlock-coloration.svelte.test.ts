@@ -39,6 +39,20 @@ describe('coloration des blocs de code', () => {
 		expect(code.textContent).toBe(PYTHON);
 	});
 
+	it('suit un changement de code, sans garder l’ancien', async () => {
+		const { container, rerender } = await render(CodeBlock, {
+			code: PYTHON,
+			language: 'python'
+		});
+		await coloredOf(container);
+		const next = 'while True:\n    break';
+		await rerender({ code: next, language: 'python' });
+		await expect.poll(() => container.querySelector('code')?.textContent).toBe(next);
+		expect(container.querySelector('code .hljs-keyword')?.textContent).toBe('while');
+	});
+
+	// Le langage est choisi sans rien charger (`resolveLanguage`, testé à part) :
+	// un langage non coloré ne déclenche aucun chargement qui arriverait en retard
 	it('laisse en texte brut un langage inconnu, étiquette comprise', async () => {
 		const { container } = await render(CodeBlock, { code: 'si x > 0 alors', language: 'pseudo' });
 		// Le temps qu'une coloration éventuelle arrive
