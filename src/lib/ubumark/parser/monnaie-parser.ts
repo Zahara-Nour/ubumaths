@@ -24,7 +24,7 @@
  * des nombres. Une erreur ne fait pas disparaître le bloc (le nœud porte ses
  * messages). Repérage et blocs non fermés : ceux de ```collection.
  *
- * Phase 0 : `docs/wip/monnaie-progress.md`.
+ * Phase 0 : `docs/archive/wip/monnaie-progress.md`.
  *
  * @module ubumark/parser/monnaie-parser
  */

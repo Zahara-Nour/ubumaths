@@ -2,7 +2,7 @@
  * Bloc ```collection — scènes figées
  *
  * La scène de la collection partage son hasard, son vrac et son toucher avec
- * ```monnaie (`utils/scene-commune.ts`, phase 0 : `docs/wip/monnaie-progress.md`
+ * ```monnaie (`utils/scene-commune.ts`, phase 0 : `docs/archive/wip/monnaie-progress.md`
  * § 8). Ces instantanés fixent la position de chaque objet : une retouche du
  * code commun qui déplacerait un seul objet d'un centième les fait échouer.
  */

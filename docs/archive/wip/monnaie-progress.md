@@ -1,14 +1,13 @@
 # Chantier « monnaie » — bloc ubumark ` ```monnaie `
 
-## Reprendre ici
+## Clôture
 
-_Mis à jour le 2026-10-25, après #1781._
+_Chantier CLOS le 2026-10-25 (journal archivé)._
 
-- **État** : bloc ` ```monnaie ` complet sur `main` (#1776, #1778) ; recette faite sur captures, corrigés en #1781 (cadre rogné à l'écran, monnaie ET collection ; légende du PDF ≥ 3 cm, non justifiée ; décisions 13 et 14) ; pas en prod.
-- **Prochaine action** : coup d'œil de David sur les captures v2 (`…/scratchpad/recette/v2/`, session du 2026-10-25 — se refont en 1 min : `exemples.mjs` + `captures.mjs` montent `MarkdownRenderer` dans `/demo/blocs` via Vite) ; puis fin de chantier = versement (durable déjà dans `docs/systeme/ubumark.md`, ce journal part en archive). Modèles CP-042/043/044/071 : session « questions » ; « construire » : lot commun avec la collection (décision 7).
-- **En attente de David** : son OK sur les captures v2.
-- **Pièges en cours** : QCM à 6 cm (décision 12) ; `0×10` sans message (voulu) ; point ouvert hors chantier : au PDF, une phrase peut finir en bas de page et son bloc partir sur la suivante (tous les blocs).
-- **Worktree / branche** : aucun (`../ubumaths-wt-monnaie` retiré après #1781).
+- **Livré** (sur `main`, pas encore en prod) : bloc ` ```monnaie ` (#1776, #1778), corrigés de la recette (#1781 : cadre rogné à l'écran, monnaie ET collection ; légende du PDF ≥ 3 cm, non justifiée ; décisions 13 et 14).
+- **Recette** : captures 390 px clair/sombre + PDF refaites depuis `main` après #1781, validées par David le 2026-10-25.
+- **Doc durable** : `docs/systeme/ubumark.md` (bloc ` ```monnaie `, scène commune avec la collection, QCM à 6 cm).
+- **Reste hors chantier** : modèles CP-042/043/044/071 → session « questions » ; « construire » → lot commun avec la collection (décision 7) ; au PDF, une phrase peut finir en bas de page et son bloc partir sur la suivante (tous les blocs).
 
 ## 1. Origine et périmètre
 

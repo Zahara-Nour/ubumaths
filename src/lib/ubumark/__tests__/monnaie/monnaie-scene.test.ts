@@ -1,5 +1,5 @@
 /**
- * Bloc ```monnaie — la scène (phase 0 : `docs/wip/monnaie-progress.md` § 2, 5)
+ * Bloc ```monnaie — la scène (phase 0 : `docs/archive/wip/monnaie-progress.md` § 2, 5)
  *
  * Position de chaque coupure, calculée une fois pour l'écran et le PDF : les
  * valeurs exactes, rien ne se chevauche, tout tient dans le cadre, et le

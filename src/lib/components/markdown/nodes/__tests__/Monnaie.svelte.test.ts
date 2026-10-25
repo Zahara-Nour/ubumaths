@@ -1,5 +1,5 @@
 /**
- * Bloc ```monnaie à l'écran (phase 0 : `docs/wip/monnaie-progress.md` § 2, 5, 10 bis)
+ * Bloc ```monnaie à l'écran (phase 0 : `docs/archive/wip/monnaie-progress.md` § 2, 5, 10 bis)
  *
  * Rendu dans <main> : décor réel de l'application (`app.css` y impose des règles).
  */

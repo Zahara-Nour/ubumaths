@@ -1,5 +1,5 @@
 /**
- * Bloc ```monnaie — analyse (phase 0 : `docs/wip/monnaie-progress.md` § 2, 3, 10 bis)
+ * Bloc ```monnaie — analyse (phase 0 : `docs/archive/wip/monnaie-progress.md` § 2, 3, 10 bis)
  */
 
 import { describe, expect, it } from 'vitest';

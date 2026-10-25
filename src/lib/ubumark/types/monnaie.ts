@@ -3,7 +3,7 @@
  * =======================
  *
  * Pièces et billets fictifs en euros, à lire ou comparer (CP-043, CP-042,
- * CP-044 et CP-071 en partie ; phase 0 : `docs/wip/monnaie-progress.md`) :
+ * CP-044 et CP-071 en partie ; phase 0 : `docs/archive/wip/monnaie-progress.md`) :
  *
  * ```monnaie
  * billets: 20 10 10 ; 1×50

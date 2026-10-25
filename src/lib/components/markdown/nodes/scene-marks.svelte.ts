@@ -4,7 +4,7 @@
  *
  * Toucher un objet le barre, comme au crayon sur papier : aide de comptage non
  * jugée, rien n'est enregistré (décision 2 de `docs/wip/collection-progress.md`,
- * reprise par la monnaie, décision 8 de `docs/wip/monnaie-progress.md`).
+ * reprise par la monnaie, décision 8 de `docs/archive/wip/monnaie-progress.md`).
  *
  * Les marques valent pour UN contenu de bloc (`key`, le texte de sa spec) : un
  * autre bloc (question suivante) repart sans marque, sans effet de bord.
