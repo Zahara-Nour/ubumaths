@@ -471,8 +471,10 @@ function generateInline(node: InlineNode, options: ResolvedTypstTranspilerOption
 				return `\`${unescapedContent}\``;
 			}
 
-			// For regular text, escape special Typst characters
-			let text = escapeTypst(unescapedContent);
+			// For regular text, escape special Typst characters ; crochets compris : le
+			// texte est souvent posé dans un contenu `[…]` (élément de liste, bloc collé),
+			// qu'un `]` d'intervalle (`]2 ; 3[`) fermerait trop tôt
+			let text = escapeTypstBrackets(unescapedContent);
 			if (node.bold) text = `*${text}*`;
 			// Use #emph[] instead of _..._ for italic - more reliable in content blocks
 			if (node.italic) text = `#emph[${text}]`;

@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, avant la PR._
+_Mis à jour le 2026-10-26, PR #1791 ouverte._
 
-- **État** : correctif écrit et testé (rendu réel compilé), PR à ouvrir.
-- **Prochaine action** : PR, revue `code-reviewer` (Sonnet), merge ; puis clôture (journal archivé, durable déjà dans `docs/systeme/ubumark.md`).
+- **État** : PR #1791 ouverte ; revue faite, son point (crochets du texte) corrigé.
+- **Prochaine action** : CI verte → merge ; puis clôture (journal archivé, durable déjà dans `docs/systeme/ubumark.md`).
 - **En attente de David** : rien.
 - **Pièges en cours** : le premier paragraphe d'un élément de liste passe par `ubu-item(…, tete: […])`, pas par un `#block` (le numéro resterait seul sur sa ligne) ; pas de `%` dans l'en-tête (garde de `percent-typst.test.ts`).
 - **Worktree / branche** : `../ubumaths-wt-pdf-paragraphe-colle` · `fix/pdf-paragraphe-colle`.
@@ -31,3 +31,4 @@ Portée : un paragraphe est collé à **tout bloc sauf** un autre paragraphe, un
 ## Journal
 
 - 2026-10-26 : preuve sur la recette de la monnaie (correctif posé à la main dans le Typst, INTRO passe en page 2). Première version : le premier paragraphe d'un élément en `#block` → le numéro seul sur sa ligne (vu au rendu) → `tete:` dans `ubu-item`. Effet de bord : le bloc qui suit ce premier paragraphe est centré (il restait à gauche sur `main`, alors que le générateur demande `align(center)`). Tests : `generators/__tests__/paragraphe-colle-typst.test.ts`, rouge sur `main` (INTRO séparé pour 24 à 32 lignes), vert ici ; empreintes de 4 tests mises à jour (énoncé collé, en-tête qui contient `sticky`).
+- 2026-10-26, revue `code-reviewer` : un `]` du texte (intervalle `]2 ; 3[`) ferme le contenu `[…]`. Compilé pour de vrai : déjà cassé sur `main` (paragraphe seul suivi d'un bloc), et la PR déplaçait la panne (tête d'élément). Correctif : `escapeTypstBrackets` sur le texte des nœuds `text` ; test de rendu sur 3 cas ; empreinte de `encadres-typst` (`[y]` → `\[y\]`, même rendu).

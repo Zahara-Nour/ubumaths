@@ -151,7 +151,9 @@ comme dans un élément de liste (`keepsWithNext`). Premier paragraphe d'un él�
 `ubu-item` (`tete:`), dans le même bloc collé que le numéro, sinon le numéro resterait seul sur sa
 ligne. Effet de bord voulu : le bloc qui suit ce premier paragraphe est centré, comme partout (il
 restait à gauche). Tests : `generators/__tests__/paragraphe-colle-typst.test.ts` (rendu réel
-compilé, texte des pages lu par pdfjs).
+compilé, texte des pages lu par pdfjs). Le texte d'auteur échappe ses crochets (`escapeTypstBrackets`) : posé dans un
+contenu `[…]`, un intervalle écrit en texte (`]2 ; 3[`) le fermait trop tôt et le PDF ne compilait
+plus (déjà vrai avant, selon la place du crochet).
 
 ### Marques en ligne propres à ubumark
 

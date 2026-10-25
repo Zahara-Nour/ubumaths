@@ -82,7 +82,8 @@ describe('détails en ligne au PDF', () => {
 	// échoue (« unknown variable: voir »). Le `;` termine l'appel et ne s'imprime pas.
 	it.each([
 		['[x]{.rappel}(voir page 3)', '(voir page 3)'],
-		['[x]{.calcul}[y]', '[y]'],
+		// Crochets du texte échappés depuis #1791
+		['[x]{.calcul}[y]', '\\[y\\]'],
 		['[x]{.méthode}.suite', '.suite']
 	])('détail collé à la suite (%s) : appel terminé par « ; »', (md, after) => {
 		expect(typst(md)).toContain(`[x];${after}`);

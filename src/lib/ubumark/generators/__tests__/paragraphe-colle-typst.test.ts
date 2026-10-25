@@ -135,4 +135,20 @@ describe('rendu réel : le paragraphe change de page avec son bloc', () => {
 			expect(separated, where).toEqual([]);
 		}
 	}, 240_000);
+
+	// Revue de #1791 : le texte d'un paragraphe est posé entre crochets (bloc collé,
+	// `tete:`) ; un intervalle écrit en texte (`]2 ; 3[`) le fermait trop tôt.
+	// Déjà cassé sur main selon la place du crochet (paragraphe seul, élément de liste)
+	it.each([
+		['paragraphe collé', `Intervalle ]2;3[ et [0;1] :\n\n${MONNAIE}`],
+		['tête d’un élément', `1. Soit ]a[ :\n\n   ${MONNAIE.replaceAll('\n', '\n   ')}`],
+		['élément seul', '1. Liste ]x[ seule.']
+	])(
+		'crochets non appariés dans le texte (%s) : le PDF compile et les montre',
+		async (_nom, md) => {
+			const all = await pages(md);
+			expect(all.join('')).toMatch(/\]2;3\[|\]a\[|\]x\[/);
+		},
+		60_000
+	);
 });
