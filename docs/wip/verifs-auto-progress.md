@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot 2 en cours._
+_Mis à jour le 2026-10-25, après #1780._
 
-- **État** : lot 2 sur `test/verifs-auto-2` (PR à ouvrir) — 13 lignes de plus (#1253, #1278, #1282, #1300, #1321, #1483, #1326, #1329, #1333, #1334, #1347, #1353, #1361) : 34 tests, 33 verts, #1674 toujours rouge (chantier à part). Aide `stepsAs()` (interrupteur Résumé / Détaillé). Pilote : #1773.
-- **Prochaine action** : merger le lot 2, puis lot 3 : les lignes de console plus récentes (#1620 → #1710, 5f-4, Q50-Q52) ; ensuite celles à cartes (#1305 → #1338, clics « Réciproque », « Dériver »).
+- **État** : lot 2 MERGÉ (#1780) — 13 lignes de plus (#1253 → #1361, console) : 34 tests dans `e2e/verifs/atelier-calcul.spec.ts`, 33 verts, #1674 rouge (bug `each_key_duplicate`, chantier à part). Aide `stepsAs()` (Résumé / Détaillé). Pilote : #1773.
+- **Prochaine action** : lot 3 dans un worktree neuf (`git worktree add -b test/verifs-auto-3 ../ubumaths-wt-verifs-auto origin/main`) : les lignes de console plus récentes (#1620 → #1710, 5f-4, Q50-Q52) ; ensuite celles à cartes (#1305 → #1338, clics « Réciproque », « Dériver »). La sonde d'abord, les écarts à David.
 - **En attente de David** : `.simplifier` des lignes #1682 et #1625 MIS DE CÔTÉ (il regarde où en est le chantier tidy / simplify). Run en prod (`VERIFS_URL=https://chiph.re pnpm test:verifs`) après le `deploy:prod` qui livre `data-latex` (ligne en tête de `verifications-manuelles.md`).
 - **Pièges en cours** : ports 5175-5178 souvent pris → `lsof` d'abord ; formules de « Comment ? » = `<math-span>` (texte vide) → `steps()` les écrit `$latex$` ; une erreur Svelte gâte les lignes suivantes d'une même page (la sonde, pas les tests) ; une commande tapée seule (`.latex`) : la 1re Entrée COMPLÈTE la commande, sans ligne — `calc()` attend alors 15 s puis échoue, et un test qui échoue peut laisser son serveur de dev vivant (port à libérer). Une ligne peut être PÉRIMÉE : un test rouge = bug ou ligne périmée, le dire, ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `../ubumaths-wt-verifs-auto`, `test/verifs-auto-2` ; serveur de test sur 5179.
+- **Worktree / branche** : aucun (retirés après #1780).
 
 ## Phase 0 (validée le 2026-10-25)
 
