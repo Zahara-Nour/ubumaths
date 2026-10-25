@@ -1,0 +1,102 @@
+{
+	"title": "Le rang en chiffres (jusqu'à vingtième)",
+	"description": "Lire un rang écrit en lettres : quatorzième → place numéro 14",
+	"grades": ["CP"],
+	"theme": "Entiers",
+	"domain": "Apprivoiser",
+	"subdomain": "Ordinaux",
+	"level": 2,
+	"delay": 30,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "« **{{if:k==1|premier|{{if:k==2|deuxième|{{if:k==3|troisième|{{if:k==4|quatrième|{{if:k==5|cinquième|{{if:k==6|sixième|{{if:k==7|septième|{{if:k==8|huitième|{{if:k==9|neuvième|{{if:k==10|dixième|{{if:k==11|onzième|{{if:k==12|douzième|{{if:k==13|treizième|{{if:k==14|quatorzième|{{if:k==15|quinzième|{{if:k==16|seizième|{{if:k==17|dix-septième|{{if:k==18|dix-huitième|{{if:k==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}** », c'est la place numéro $?$.",
+			"variables": [
+				{
+					"name": "k",
+					"expression": "1..20"
+				}
+			],
+			"conditions": [],
+			"blanks": [
+				{
+					"expectedAnswer": "{{k}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"« {{if:k==1|premier|{{if:k==2|deuxième|{{if:k==3|troisième|{{if:k==4|quatrième|{{if:k==5|cinquième|{{if:k==6|sixième|{{if:k==7|septième|{{if:k==8|huitième|{{if:k==9|neuvième|{{if:k==10|dixième|{{if:k==11|onzième|{{if:k==12|douzième|{{if:k==13|treizième|{{if:k==14|quatorzième|{{if:k==15|quinzième|{{if:k==16|seizième|{{if:k==17|dix-septième|{{if:k==18|dix-huitième|{{if:k==19|dix-neuvième|vingtième}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}} » s'écrit ${{if:k==1|1^{\\text{er}}|{{if:k==2|2^{\\text{e}}|{{if:k==3|3^{\\text{e}}|{{if:k==4|4^{\\text{e}}|{{if:k==5|5^{\\text{e}}|{{if:k==6|6^{\\text{e}}|{{if:k==7|7^{\\text{e}}|{{if:k==8|8^{\\text{e}}|{{if:k==9|9^{\\text{e}}|{{if:k==10|10^{\\text{e}}|{{if:k==11|11^{\\text{e}}|{{if:k==12|12^{\\text{e}}|{{if:k==13|13^{\\text{e}}|{{if:k==14|14^{\\text{e}}|{{if:k==15|15^{\\text{e}}|{{if:k==16|16^{\\text{e}}|{{if:k==17|17^{\\text{e}}|{{if:k==18|18^{\\text{e}}|{{if:k==19|19^{\\text{e}}|20^{\\text{e}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}$ : c'est la place numéro ${{k}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "quatorzième : 14",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["14"]
+		},
+		{
+			"description": "Erreur : quatorzième, 4",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "Erreur : quatorzième, 40",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["40"]
+		},
+		{
+			"description": "borne : premier, 1",
+			"variationIndex": 0,
+			"variables": {
+				"k": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["1"]
+		},
+		{
+			"description": "borne : vingtième, 20",
+			"variationIndex": 0,
+			"variables": {
+				"k": "20"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["20"]
+		},
+		{
+			"description": "Zéro inutile",
+			"variationIndex": 0,
+			"variables": {
+				"k": "14"
+			},
+			"expected": {
+				"status": "unoptimal_form",
+				"constraintViolations": ["zeros"]
+			},
+			"answers": ["014"]
+		}
+	]
+}

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1736 et son `db:migrate`._
+_Mis à jour le 2026-10-25, lot A3 en cours (branche `feat/questions-a3`)._
 
-- **État** : A1 (#1712), A2 (#1720), A4 (#1728) livrés et relus. **A5 problèmes** : #1736 mergée ; 4 brouillons en prod (`da6e20cd`, `a1c5da8b` CP-029 ; `5c6999c6` CP-030 ; `87460358` CP-031), **relus par David 4/4 OK** (page à cocher : https://claude.ai/artifact/7X9xCEmgzKAijPJTsfaHvZ, collection `verdicts`). Migration `20261026000000_questions_cp_a5_rangement_tags` jouée (`db:migrate`, question d'accès tranchée par David), vérifiée en prod : sous-notion du point, 1 tag chacun, `updated_at` inchangé, trigger `tgenabled = O`.
-- **Prochaine action** : lot A3 ordinaux (009-013, § 4 ter : réponses en mots en QCM, un rang reste une case nombre), phase 0, nouveau worktree `../ubumaths-wt-questions`.
-- **En attente de David** : publication des 24 brouillons A1 + A2 + A4 + A5 (tous relus OK) ; vérification manuelle #1702.
-- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau ; accords au singulier (données ≥ 2 dans les problèmes) ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; script d'un tirage hors du dépôt → `.mts`.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1736).
+- **État** : A1 (#1712), A2 (#1720), A4 (#1728), A5 (#1736) livrés et relus. **A3 ordinaux** : phase 0 validée (§ 4 septies) ; 6 brouillons créés en prod (go de David) : `d437959a`, `c3b236fc` CP-009 ; `7dc1629e` CP-010 ; `10226cae` CP-011 ; `0559204d` CP-012 ; `62ae6847` CP-013, sans nœud ni tag (vérifié). Migration `20261026010000_questions_cp_a3_rangement_tags` et son test (rouge sans elle, 8/8 vert avec).
+- **Prochaine action** : PR, CI, merge ; page à cocher A3 ; `db:migrate` quand les 4 conditions sont réunies.
+- **En attente de David** : question d'accès de la migration A3 (« personne ne gagne ni ne perd d'accès ») ; relecture des 6 brouillons ; publication des 24 brouillons A1 + A2 + A4 + A5 (tous relus OK) ; vérification manuelle #1702.
+- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020) ; un modèle est QCM OU à cases ; **le bon choix d'un QCM n'accepte qu'UN `{{if:…}}`, pas une chaîne imbriquée** → formule `{{eval:mod(…)}}` ; dire branche / notion / sous-notion, jamais « domaine » ; `--mettre-a-jour` retrouve un brouillon par titre + niveau ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu ; script d'un tirage hors du dépôt → `.mts`.
+- **Worktree / branche** : `../ubumaths-wt-questions`, `feat/questions-a3`.
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -123,6 +123,17 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - **CP-030** (≤ 30, intermédiaire et final compris) : retrait puis ajout (bus), deux retraits, deux ajouts, réunion puis retrait.
 - **CP-031** (≤ 30, sans reste, sans le signe ×) : valeur du tout, nombre de parts, valeur d'une part ; 2 à 6 groupes de 2 à 10 ; corrigé par addition répétée.
 
+## 4 septies. Lot A3 : décisions (David, 2026-10-25)
+
+David suit mes cinq recommandations (« je te suis », après les avoir demandées).
+
+- Rangement : sous-notion « ordinaux et rangs » (les 5 points y sont), aucun modèle en prod.
+- 6 modèles, rangs jusqu'au 20e : CP-009 « Le rang en lettres » (QCM) et « Le rang en chiffres » (case) ; CP-010 « Dire la place » (QCM : perles, file d'enfants) ; CP-011 « Repérer un rang » (case : liste de 5 nombres dans les deux sens, perles depuis la gauche ou la droite) ; CP-012 « Rang et nombre devant » (devant, rang, derrière : exemple du BO) ; CP-013 « Suites qui se répètent » (QCM : ● ▲, ● ● ▲, ■ ▲ ●, A B C D).
+- Leurres des QCM de mots : les rangs voisins et le nombre ordinaire (sixième / huitième / sept), pas de fautes d'orthographe.
+- Notation $7^{\text{e}}$, $1^{\text{er}}$ / $1^{\text{re}}$ ; « premier / première » accordé avec l'objet ; pas de « second ».
+- Sens : CP-010 de gauche à droite seulement ; CP-011 les deux sens, le sens en gras.
+- Suites : motif montré deux fois, place demandée au-delà, jusqu'à la 20e ; pas de suite de nombres (1, 3, 5… relève de CP-003).
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -152,3 +163,5 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : A5, 4 modèles écrits (specs vertes, rendu relu), 4 brouillons créés en prod (go de David) ; migration nœud + tag et test, rouge puis vert.
 - 2026-10-25 : #1736 mergée ; page à cocher A5 publiée, relue 4/4 OK par David ; `db:migrate` en attente de la question d'accès.
 - 2026-10-25 : question d'accès A5 tranchée par David ; `db:migrate`, vérifié en prod (4 modèles sur leur sous-notion, 1 tag chacun).
+- 2026-10-25 : lot A3, phase 0 validée (§ 4 septies), worktree `../ubumaths-wt-questions` (`feat/questions-a3`) ; 6 modèles écrits, 59 specs vertes, rendu relu (accords et corrigés retouchés).
+- 2026-10-25 : A3, 6 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés sans nœud ni tag ; migration nœud + tag et test, rouge puis vert.
