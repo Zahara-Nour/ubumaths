@@ -54,9 +54,16 @@ export function figureNameWarnings(
 		// Type des cases lu dans l'énoncé, comme au tirage (`[_]` = texte)
 		const statement = variation.statement ?? template.shared?.statement ?? '';
 		const answerFormats = variation.answerFormats ?? template.shared?.answerFormats;
-		const { blankTypes } = assignBlankIndices(statement, answerFormats);
-		variation.blanks?.forEach((blank, blankIndex) => {
-			if (blankTypes[blankIndex] === 'text') return;
+		const { blankTypes, operationBlanks = {} } = assignBlankIndices(statement, answerFormats);
+		// Case d'un bloc ```operation : réponse calculée par le bloc, souvent omise de blanks[]
+		const operationIndices = Object.keys(operationBlanks).map(Number);
+		const omitted = (variation.blanks?.length ?? 0) < blankTypes.length;
+		const caseIndices = blankTypes
+			.map((_, i) => i)
+			.filter((i) => !omitted || !operationIndices.includes(i));
+		variation.blanks?.forEach((blank, position) => {
+			const blankIndex = caseIndices[position] ?? position;
+			if (blankTypes[blankIndex] === 'text' || operationIndices.includes(blankIndex)) return;
 			const figure = figureNameIn(blank.expectedAnswer);
 			if (!figure) return;
 			warnings.push(

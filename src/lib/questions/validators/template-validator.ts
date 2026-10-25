@@ -183,7 +183,11 @@ function validateVariation(
 	// Type-specific validation (per-variation)
 	switch (questionType) {
 		case 'fill_in_blanks':
-			if (!variation.blanks || variation.blanks.length === 0) {
+			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul)
+			if (
+				(!variation.blanks || variation.blanks.length === 0) &&
+				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? ''))
+			) {
 				errors.push(`${prefix} fill_in_blanks requires blanks[]`);
 			}
 			break;
@@ -218,6 +222,16 @@ function validateVariation(
 	}
 
 	return errors;
+}
+
+/** Énoncé avec un bloc ```operation à remplir (pas `cases: aucune`) */
+function hasOperationToFill(statement: string): boolean {
+	// En retrait ou cité compris : le générateur dira qu'il doit être au premier niveau
+	const blocks = statement.split(/^\s*>?\s*```operation\s*$/m).slice(1);
+	return blocks.some((rest) => {
+		const body = rest.replace(/^\n/, '').split(/^\s*>?\s*```\s*$|^\s*$/m)[0] ?? '';
+		return !/^\s*cases\s*:\s*aucune\s*$/im.test(body);
+	});
 }
 
 /**

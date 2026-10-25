@@ -218,7 +218,7 @@ d'un modèle publié se changent aussi là.
 Le champ `"points"` des JSON (codes des anciens points du référentiel) est **abandonné** (arbre des
 notions, étape 3) : `create-questions.ts` et `question:specs` refusent un fichier qui le porte, et
 `link-template-points.ts` a été retiré. `create-questions.ts --mettre-a-jour` réécrit toujours le
-contenu et les `grades` d'un **brouillon** (comparés comme un ensemble) ; un modèle publié n'est
+contenu, la description et les `grades` d'un **brouillon** (comparés comme un ensemble) ; un modèle publié n'est
 jamais touché.
 
 ### Déclarer des fonctions dans un modèle (`shared.genericFunctions`)

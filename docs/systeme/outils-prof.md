@@ -35,7 +35,7 @@ couvre:
 | ----------------------- | -------------------------------------- | ------------------------------------------- | -------------------------------------------- | ---------------------------- |
 | Tableau blanc           | `/whiteboard`                          | « Whiteboard » (Header, Sidebar), prof      | 11 modèles ; documents hors base             | **vivant**                   |
 | Diaporamas (UbuSlides)  | aucune propre (bibliothèque)           | via le notebook Python et `ClassroomSeries` | aucune table                                 | **vivant** (bibliothèque)    |
-| Tableur (V4)            | `/spreadsheet` → `/atelier` (308)      | aucun                                       | 1 tableur, modifié le 2025-12-05             | **retiré** le 2026-10-24     |
+| Tableur (V4)            | `/spreadsheet` → `/atelier` (308)      | aucun                                       | table supprimée le 2026-10-25                | **retiré** le 2026-10-24     |
 | Kanban                  | `/organisation/kanban`                 | « Suivi du site », menu **admin** seul      | 2 tableaux, 3 cartes (mai 2026)              | vivant, usage interne        |
 | Anciennes constructions | `/constructions/conversion`            | bouton depuis `/constructions`              | 0 construction au format `json` (sur 9)      | **résiduel**                 |
 | Google Classroom        | `/dashboard/teacher/settings/google` … | masqués (`GOOGLE_CLASSROOM_ENABLED`)        | 1 intégration, 3 cours (derniers en 2025-12) | **éteint**, plomberie gardée |
@@ -112,16 +112,17 @@ défilement automatique. ≠ le **Deck** de révision SRS (voir CONTEXT.md).
 
 ### Carte du code
 
-| Fichier                                          | Rôle                                                                              |
-| ------------------------------------------------ | --------------------------------------------------------------------------------- |
-| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`… |
-| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions                      |
-| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation                            |
-| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                   |
-| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL               |
-| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)            |
-| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                    |
-| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                |
+| Fichier                                          | Rôle                                                                                          |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `src/lib/slides/index.ts`                        | Exports : `Deck`, `Slide`, `UbuMarkSlide`, `AnnotatableSlide`, `WhiteboardSlide`…             |
+| `src/lib/slides/core/Deck.svelte`                | Conteneur : contexte, clavier, mise à l'échelle, transitions                                  |
+| `src/lib/slides/stores/deckStore.svelte.ts`      | `createDeckStore` : position `{ h, v, f }`, navigation                                        |
+| `src/lib/slides/stores/autoSlideTimer.svelte.ts` | `createAutoSlideTimer` : défilement automatique                                               |
+| `src/lib/slides/navigation/hash.ts`              | `parseHash` / `formatHash` / `syncHashEffect` : position dans l'URL                           |
+| `src/lib/slides/actions/`                        | `keyboard.ts`, `swipe.ts`, `editableTarget.ts` (`isFromEditableField`)                        |
+| `src/lib/slides/core/config.ts`                  | `defaultConfig`, `mergeConfig`                                                                |
+| `src/lib/slides/core/slide-theme.ts`             | `slideColorScheme` : thème du contenu d'une diapositive d'après son fond (ou sa prop `theme`) |
+| `src/lib/slides/transitions/`                    | slide, fade, zoom, convex, concave                                                            |
 
 ### Consommateurs (seuls points d'entrée)
 
@@ -152,10 +153,25 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
 - Les flèches de navigation du `Deck` suivent le thème : flèche `--color-foreground` sur une
   pastille `--color-background`, visibles sur le fond du thème (carnets, séries en classe) comme
   sur une diapositive sombre (testé par `Deck.fleches.svelte.test.ts`).
-- Le contenu d'une `UbuMarkSlide` a la couleur du thème (`--color-foreground`), comme ses
-  paragraphes : sur le fond du thème (présentation des carnets), une formule en bloc reste lisible
-  en clair comme en sombre. Un fond sombre imposé à une `UbuMarkSlide` rend donc le texte illisible
-  en thème clair (testé par `UbuMarkSlide.couleur.svelte.test.ts`).
+- **La couleur du contenu suit le fond de la diapositive** (`slideColorScheme`, PR 6i-b du
+  chantier demo-debug) : un fond de couleur unie lisible (`#rgb`, `#rrggbb`, `rgb()`, `white`,
+  `black`) donne son thème par sa luminance ; la prop `theme="clair" | "sombre"` l'impose (utile sous
+  un dégradé ou une image). La diapositive pose alors `color-scheme`, et les couleurs `light-dark()`
+  du site basculent pour tout son contenu (texte, tableaux, blocs ubumark), quel que soit le thème
+  du site. Sans fond, elle suit le site (couleur `--color-foreground`) ; sous un dégradé, une image,
+  une vidéo ou une page sans `theme`, le texte reste blanc, comme avant. `AnnotatableSlide` et
+  `WhiteboardSlide` relaient `theme`. Un `theme` sans fond s'applique aussi : il doit accompagner
+  un fond peint par le parent. Bordures de tableau et fond des blocs de code d'une `UbuMarkSlide`
+  sont tirés de `--color-foreground` (`color-mix`), lisibles dans les deux thèmes. Testé par `slide-theme.test.ts` et
+  `UbuMarkSlide.theme.svelte.test.ts` ; `UbuMarkSlide.couleur.svelte.test.ts` garde la formule en
+  bloc de la couleur du texte sur le fond du thème (carnets).
+- **Une `UbuMarkSlide` trop grande se réduit pour tenir**, sans jamais grossir : contenu à largeur
+  fixe (celle de la diapositive), échelle `min(1, hauteur dispo / hauteur, largeur dispo / largeur)`
+  remesurée par `ResizeObserver` (formules et figures se rendent après coup). Plancher
+  `MIN_FIT_SCALE` = 0,5 : au-delà, la diapositive défile (le haut reste visible, `safe center`).
+  Concerne aussi les cellules longues de la présentation des carnets, avant coupées. Un tableau
+  trop large défile dans son propre cadre (`TableNode`), sans être coupé. Sous la réduction, un
+  cercle trigo interactif lit la souris en unités de son dessin (voir `ubumark.md`).
 - Quand la barre d'annotation disparaît (on quitte la diapositive annotable), le focus revient au
   deck si le dernier focus était dans la barre et qu'il n'est allé nulle part ailleurs (`<body>`) :
   le clavier pilote toujours le diaporama, et un champ focalisé hors de la barre garde son focus
@@ -168,6 +184,8 @@ de David, 2026-10-11) : les retirer couperait l'unique point d'entrée de la bar
 `src/lib/slides/core/__tests__/Deck.autoSlide.svelte.test.ts`,
 `src/lib/slides/core/__tests__/Deck.annotation.svelte.test.ts`,
 `src/lib/slides/core/__tests__/UbuMarkSlide.couleur.svelte.test.ts`,
+`src/lib/slides/core/__tests__/UbuMarkSlide.theme.svelte.test.ts`,
+`src/lib/slides/core/__tests__/slide-theme.test.ts`,
 `src/lib/slides/core/__tests__/Deck.fleches.svelte.test.ts`,
 `src/lib/slides/actions/__tests__/inputFilter.svelte.test.ts`.
 
@@ -182,9 +200,10 @@ l'atelier le remplace (formules calculées par mathAST, CSV, mise en forme ; voi
 (`src/lib/server/redirectHandle.ts`). Ce que l'atelier ne reprend pas (NON, SIERREUR, fonctions
 de texte, VAR, MODE…) : [atelier-tableur-progress.md](../archive/wip/atelier-tableur-progress.md).
 
-**Reste en base** : la table `spreadsheets` (1 ligne en prod, d'un seul compte, modifiée le
-2025-12-05), plus lue par aucun code. La supprimer est une migration destructive, à décider par
-David après le `deploy:prod` qui livre ce retrait. Le code retiré se relit dans l'historique git
+**Table supprimée** le 2026-10-25, après le `deploy:prod` v0.47.0 qui livre ce retrait, sur
+décision de David : migration `20261025230000_drop_spreadsheets.sql` (la table et sa fonction de
+trigger ; 1 ligne perdue, le tableur d'un élève modifié le 2025-12-05). Test :
+`tests/integration/drop-spreadsheets.test.ts`. Le code retiré se relit dans l'historique git
 (commit parent du retrait).
 
 ---
@@ -349,7 +368,7 @@ Aucun ADR propre à ces outils. Google Classroom : drapeau décrit dans
 
 1. **Tableur V4** : retiré le 2026-10-24 (§ 3) ; ses deux écarts (accès du prof, alias sans
    fonction) sont sans objet.
-2. **Table `spreadsheets`** : orpheline depuis le retrait, à supprimer sur décision de David.
+2. **Table `spreadsheets`** : supprimée le 2026-10-25 (§ 3).
 3. **Tableau blanc** : réservé au prof et à l'admin depuis le 2026-10-11 (D5, décision de David :
    outil de projection mono-utilisateur ; test `src/routes/(protected)/whiteboard/__tests__/page.server.test.ts`).
    Le panneau de fichiers ne propose plus rien de Google quand le drapeau est éteint (V5, test

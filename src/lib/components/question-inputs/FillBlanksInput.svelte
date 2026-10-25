@@ -67,6 +67,7 @@
 	import StaticBlockNode from '$lib/components/markdown/nodes/StaticBlockNode.svelte';
 	import TableNode from '$lib/components/markdown/nodes/TableNode.svelte';
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
+	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import {
 		provideCapitalPairs,
@@ -181,6 +182,7 @@
 				!!node.expressionName || hasPrompts(node.expression, node.syntax, blanksCapitalPairs())
 			);
 		}
+		if (node.type === 'operation') return node.caseIndex !== undefined;
 		return false;
 	}
 
@@ -407,8 +409,14 @@
 		};
 	});
 
-	/** Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive ou champ texte */
-	type Slot = { field: MathfieldElement; promptId: string } | { input: HTMLInputElement };
+	/**
+	 * Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive, champ texte,
+	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse)
+	 */
+	type Slot =
+		| { field: MathfieldElement; promptId: string }
+		| { input: HTMLInputElement }
+		| { operation: HTMLElement; index: number };
 
 	/**
 	 * Cases dans l'ordre du DOM, qui est l'ordre visuel : un tableau `:table-h` est
@@ -417,9 +425,14 @@
 	 */
 	function slotsInOrder(): Slot[] {
 		if (!container) return [];
-		const elements = container.querySelectorAll<HTMLElement>('math-field, input[type="text"]');
+		const elements = container.querySelectorAll<HTMLElement>(
+			'math-field, input[type="text"]:not([data-operation-cell]), [data-operation-case]'
+		);
 		return [...elements].flatMap((element): Slot[] => {
 			if (element instanceof HTMLInputElement) return element.disabled ? [] : [{ input: element }];
+			if (element.dataset.operationCase !== undefined) {
+				return [{ operation: element, index: Number(element.dataset.operationCase) }];
+			}
 			if (!isMathField(element)) return [];
 			return element
 				.getPrompts({ locked: false })
@@ -428,11 +441,22 @@
 	}
 
 	function slotValue(slot: Slot): string {
+		if ('operation' in slot) return values[slot.index] ?? '';
 		return 'input' in slot ? slot.input.value : (slot.field.getPromptValue(slot.promptId) ?? '');
 	}
 
 	/** Curseur dans la case */
 	function focusSlot(slot: Slot) {
+		if ('operation' in slot) {
+			// Saisie de droite à gauche : la case vide la plus à droite
+			const cells = [
+				...slot.operation.querySelectorAll<HTMLInputElement>(
+					'input[data-operation-cell="résultat"]'
+				)
+			];
+			(cells.findLast((cell) => cell.value === '') ?? cells.at(-1))?.focus();
+			return;
+		}
 		if ('input' in slot) {
 			slot.input.focus();
 			return;
@@ -456,7 +480,7 @@
 		const slots = slotsInOrder();
 		// MathLive notifie `input` après un setTimeout : relire les prompts avant de valider
 		for (const slot of slots) {
-			if ('input' in slot) continue;
+			if (!('field' in slot)) continue;
 			const index = Number(slot.promptId);
 			if (Number.isInteger(index)) handleInputChange(index, slotValue(slot));
 		}
@@ -702,6 +726,27 @@
 					{#key node.expression}
 						<MathBlock expression={node.expression} syntax={node.syntax} {genericFunctions} />
 					{/key}
+				{/if}
+			{:else if node.type === 'operation' && node.caseIndex !== undefined}
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if flashMode}
+					<Operation {node} />
+				{:else if showCorrectAnswers}
+					<!-- Bonne réponse : l'opération résolue, retenues comprises -->
+					<Operation node={{ ...node, spec: node.spec && { ...node.spec, cells: 'aucune' } }} />
+				{:else}
+					<Operation
+						{node}
+						answer={{
+							value: state?.value ?? '',
+							isCorrect: state?.isCorrect ?? null,
+							disabled: effectiveDisabled,
+							onChange: (value) => handleInputChange(caseIndex, value),
+							onSubmit: submitOrFocusFirstEmpty,
+							minDigits: digitGrouping()
+						}}
+					/>
 				{/if}
 			{:else if node.type === 'image'}
 				<ImageDisplay

@@ -364,3 +364,17 @@ describe('withoutCapitalPairShortcuts — AA ne devient plus ∀ en mode longueu
 		expect(defaults).toHaveProperty('AA');
 	});
 });
+
+describe('figureNameWarnings — bloc ```operation omis de blanks[] (revue #1726)', () => {
+	it('case texte après le bloc : comparée comme une chaîne, rien à signaler, numéro juste', () => {
+		const template = lengthTemplate('ABC');
+		template.variations[0].statement = templateMarkdown(
+			['```operation', 'calcul: 45 + 37', '```', '', 'Quel triangle ? [_]'].join('\n')
+		);
+		expect(figureNameWarnings(template)).toEqual([]);
+		template.variations[0].statement = templateMarkdown(
+			['```operation', 'calcul: 45 + 37', '```', '', '$?$'].join('\n')
+		);
+		expect(figureNameWarnings(template)[0]).toMatch(/case 2/);
+	});
+});

@@ -85,6 +85,11 @@ export interface OperationNode extends BaseNode {
 	/** null si le bloc est en erreur */
 	spec: OperationSpec | null;
 	errors: OperationIssue[];
+	/**
+	 * Numéro de la case de la question (`case: N`), posé par le générateur
+	 * (`assign-blank-indices.ts`) sur un bloc à remplir ; absent ailleurs.
+	 */
+	caseIndex?: number;
 }
 
 export interface OperationBlockRange {

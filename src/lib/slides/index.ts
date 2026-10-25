@@ -66,6 +66,7 @@ export type {
 	SlideChangedEvent,
 	SlideInfo,
 	SlideProps,
+	SlideTheme,
 	SlideTransition,
 	TransitionDirection,
 	TransitionSpeed,

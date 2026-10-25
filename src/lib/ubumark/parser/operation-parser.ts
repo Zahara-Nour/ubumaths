@@ -69,11 +69,15 @@ const SIGNS: Record<string, OperationOperator | 'later'> = {
 const SIGN_SPLIT_REGEX = /([+\-−–×x*÷:/])/;
 
 /** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
-const BLOCK_KEYS = ['calcul', 'cases', 'retenues', 'méthode', 'methode'] as const;
+const BLOCK_KEYS = ['calcul', 'cases', 'retenues', 'méthode', 'methode', 'case'] as const;
 
-type Key = 'calcul' | 'cases' | 'retenues' | 'méthode';
+type Key = 'calcul' | 'cases' | 'retenues' | 'méthode' | 'case';
 
+/** Clés de l'auteur ; `case:` est posée par le générateur de questions, jamais écrite */
 const KEY_NAMES: Key[] = ['calcul', 'cases', 'retenues', 'méthode'];
+
+/** `case: N` : numéro de la case de la question (0, 1, 2…) */
+const CASE_INDEX_REGEX = /^\d{1,3}$/;
 
 // ============================================================================
 // DÉTECTION
@@ -117,6 +121,7 @@ class LineError extends Error {}
 function normalizeKey(raw: string): Key | null {
 	const lower = raw.toLowerCase();
 	if (lower === 'methode') return 'méthode';
+	if (lower === 'case') return 'case';
 	return KEY_NAMES.find((k) => k === lower) ?? null;
 }
 
@@ -211,6 +216,7 @@ export function parseOperationContent(source: string): OperationNode {
 	let cells: OperationCells = 'résultat';
 	let carries = true;
 	let method: OperationMethod = 'compensation';
+	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
 
 	lines.forEach((line, index) => {
@@ -249,6 +255,12 @@ export function parseOperationContent(source: string): OperationNode {
 				case 'méthode':
 					method = oneOf(value, OPERATION_METHODS, 'méthode');
 					break;
+				case 'case':
+					if (!CASE_INDEX_REGEX.test(value)) {
+						throw new LineError('case: attend un numéro de case (0, 1, 2…)');
+					}
+					caseIndex = Number(value);
+					break;
 			}
 		} catch (e) {
 			if (!(e instanceof LineError)) throw e;
@@ -263,6 +275,10 @@ export function parseOperationContent(source: string): OperationNode {
 	} else if (read.operator === '+' && seen.has('méthode')) {
 		fail(seen.get('méthode')!, 'méthode: seulement pour une soustraction');
 	}
+	// `cells` est réaffectée dans le forEach : TS la croit encore à sa valeur initiale
+	if (caseIndex !== undefined && (cells as OperationCells) === 'aucune') {
+		fail(seen.get('case')!, 'case: sans objet avec cases: aucune');
+	}
 
 	if (errors.length > 0 || read === null) {
 		return { type: 'operation', source, spec: null, errors };
@@ -271,7 +287,8 @@ export function parseOperationContent(source: string): OperationNode {
 		type: 'operation',
 		source,
 		spec: { operator: read.operator, terms: read.terms, cells, carries, method },
-		errors
+		errors,
+		...(caseIndex !== undefined && { caseIndex })
 	};
 }
 

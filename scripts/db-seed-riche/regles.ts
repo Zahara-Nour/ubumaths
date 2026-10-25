@@ -92,7 +92,6 @@ export const JAMAIS: readonly string[] = [
 	'srs_review_sessions',
 	'game_spells',
 	'game_players',
-	'spreadsheets',
 	'messages',
 	'conversations',
 	'conversation_participants',

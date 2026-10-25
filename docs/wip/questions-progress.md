@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1720._
+_Mis à jour le 2026-10-25, après #1728._
 
-- **État** : lots A1 (#1712) et A2 (#1720) livrés. A2 = 7 brouillons en prod (`b831b7b8` CP-003, `73bb66e4` CP-003, `b19dfc8e` CP-004, `78a6ba79` CP-007, `dc95f4f6` CP-075, `23acfcd1` CP-075, `1bd1f044` CP-076), rangés et tagués (`db:migrate` fait, vérifié en prod : nœuds, 1 tag chacun, `updated_at`, trigger `tgenabled = O`). Relus par David : 7/7 OK (page https://claude.ai/artifact/BKgtf3Wv2EYsJJBHc4wwp4, collection `verdicts`). Page A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb.
-- **Prochaine action** : lot A4 sens des opérations (014, 077, 015, 078, 079, 017 — § 4 ter), phase 0, nouveau worktree `../ubumaths-wt-questions`.
-- **En attente de David** : publication des 13 brouillons A1 + A2 (tous relus OK) ; vérification manuelle #1702.
-- **Pièges en cours** : nouveaux modèles = `scripts/create-questions.ts` (brouillons, ni nœud ni tag) puis migration nœud + tag (dériver celle d'A2) ; la case naît d'une variable `expression1` (plusieurs cases : `?<{{n}}<?`) ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; nœud du modèle = nœud du point (trigger) ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e` (= Euler)** ; une spec ne calcule pas les variables dérivées : relire le rendu (`question-specs --file … --apercu N`) ; le moteur ne trie pas et n'écrit pas les nombres en lettres.
-- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1720).
+- **État** : lots A1 (#1712), A2 (#1720) et A4 (#1728) livrés. A4 = 7 brouillons en prod (`a59fba89` CP-014, `3bde8d25` CP-077, `c342f32e` CP-015, `c4644788` CP-078, `f7463b7d` CP-079, `6e712e78` et `b873739e` CP-017), rangés sur leur notion et tagués (`db:migrate` fait, vérifié en prod : nœud, 1 tag chacun, `updated_at` inchangé, trigger `tgenabled = O`). Page à cocher A4 : https://claude.ai/artifact/LZBCHvdLMKCJhjRQH1VGBx (collection `verdicts`) : **relus par David, 7/7 OK**. Pages A1 : https://claude.ai/artifact/ThGn2EVEksfzZ6DFn4Yfsb · A2 : https://claude.ai/artifact/BKgtf3Wv2EYsJJBHc4wwp4.
+- **Prochaine action** : lot A5 problèmes (029-031, § 4 ter), phase 0, nouveau worktree `../ubumaths-wt-questions`.
+- **En attente de David** : publication des 20 brouillons A1 + A2 + A4 (tous relus OK) ; vérification manuelle #1702.
+- **Pièges en cours** : **un modèle porte au plus UN point par programme** (ADR 0020, règle en base) — lire les ADR avant de proposer un tag ; un modèle est QCM OU à cases ; dire branche / notion / sous-notion, jamais « domaine » (`domain`/`subdomain` = anciennes colonnes) ; `--mettre-a-jour` retrouve un brouillon par titre + niveau (et réécrit la description depuis #1728) ; accords au singulier ; `svelte-kit sync` avant `pnpm tsx` dans un worktree neuf ; dater les migrations après la prod ; `db:migrate` depuis le dépôt principal ; **jamais de variable `e`** ; relire le rendu (`question:specs --apercu`) ; script d'un tirage hors du dépôt → extension `.mts`.
+- **Worktree / branche** : aucun (`../ubumaths-wt-questions` retiré après #1728).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -107,6 +107,14 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - Encadrement libre : `rulesSuffice`, en bas tout entier de 0 à n − 1, en haut tout entier > n (plafond technique 1 000 000) : une réponse vraie (150) n'est jamais refusée.
 - Ranger : le moteur ne trie pas → 4 nombres tirés rangés, affichés selon une permutation fixe parmi 4 (ni croissante ni décroissante).
 
+## 4 quinquies. Lot A4 : décisions (David, 2026-10-25)
+
+- Rangement : sur la **notion** du point, sans sous-notion ni nœud neuf — « Entiers : addition et soustraction » (CP-014, 077, 015, 078, 079), « Entiers : multiplication » (CP-017).
+- ~~Modèles mélangés à deux tags~~ : interdit par l'ADR 0020 (au plus un point par programme), que j'avais manqué (refus vu au test d'intégration). **Option A choisie** : un modèle par point, l'autre opération en leurre — « Addition ou soustraction ? » (CP-014 : réunion, ajout, retrait) et « Soustraction ou addition ? » (CP-077 : retrait, écart, ajout), nombres ≤ 20 ; « Les signes + et − » (CP-015) et « Les signes − et + » (CP-078) : lire, sens, écrire, le signe du point deux fois sur trois.
+- « Addition ou soustraction ? » : deux choix seulement (a + b / a − b), pas de leurre artificiel.
+- « Le signe = » (CP-079) : signe manquant (+, −, =) et égalités vraies ou fausses (8 = 5 + 3, 5 + 3 = 3 + 5, 5 + 3 = 5 + 5).
+- CP-017 : « fois » et addition répétée, **sans le signe ×** (livret CP : × en fin de CP ou au CE1) ; groupes et taille de 2 à 5. Deux modèles (QCM « quel calcul ? » et case « combien ? »), un modèle ne pouvant mêler QCM et cases.
+
 ## 5. Méthode (pour le futur skill)
 
 1. Relevé SQL : modèles du niveau + tags ; points du niveau avec nombre de modèles.
@@ -127,3 +135,8 @@ la droite graduée, `checkPointAt`). Restent hors appli : 053, 063-066 (manipula
 - 2026-10-25 : lot A2, phase 0 validée (§ 4 quater), 7 modèles écrits et verts (`checkTemplate`) ; bug `e` = Euler trouvé au rendu et corrigé.
 - 2026-10-25 : A2, 7 brouillons créés en prod (`create-questions --publier`, go de David) ; question d'accès tranchée (personne ne gagne ni ne perd d'accès) ; migration nœud + tag et son test.
 - 2026-10-25 : #1720 mergée, `db:migrate`, vérifié en prod ; page à cocher A2 publiée, relue 7/7 OK par David.
+- 2026-10-25 : lot A4, phase 0 validée (§ 4 quinquies) ; 5 modèles écrits, specs vertes, rendu relu (accord « 1 bille » corrigé).
+- 2026-10-25 : A4, 5 brouillons créés en prod (`create-questions --publier`, go de David), vérifiés.
+- 2026-10-25 : A4, tag double refusé par la base (ADR 0020) ; option A : 2 brouillons mis à jour, 2 créés (7 modèles) ; migration nœud + tag et test, rouge puis vert.
+- 2026-10-25 : #1728 mergée, `db:migrate`, vérifié en prod ; descriptions de `a59fba89` et `c342f32e` corrigées (`--mettre-a-jour` réécrit désormais la description) ; page à cocher A4 publiée.
+- 2026-10-25 : page à cocher A4 relue par David, 7/7 OK.

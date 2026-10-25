@@ -140,3 +140,33 @@ describe('bloc ```operation — erreurs (comportements 13 à 17)', () => {
 		expect(children.some((c) => c.type === 'paragraph')).toBe(true);
 	});
 });
+
+describe('bloc ```operation — clé case: (posée par le générateur de questions, PR 1b)', () => {
+	it('case: 2 → numéro de la case de la question', () => {
+		const node = parse('case: 2', 'calcul: 45 + 37');
+		expect(node.errors).toEqual([]);
+		expect(node.caseIndex).toBe(2);
+	});
+
+	it('sans case: → aucun numéro (bloc d’affichage)', () => {
+		expect(parse('calcul: 45 + 37').caseIndex).toBeUndefined();
+	});
+
+	it('case: illisible → erreur située', () => {
+		expect(messages(parse('case: deux', 'calcul: 45 + 37'))).toEqual([
+			'Ligne 1 : case: attend un numéro de case (0, 1, 2…)'
+		]);
+	});
+
+	it('case: avec cases: aucune → erreur (rien à remplir)', () => {
+		expect(messages(parse('case: 0', 'calcul: 45 + 37', 'cases: aucune'))).toEqual([
+			'Ligne 1 : case: sans objet avec cases: aucune'
+		]);
+	});
+
+	it('case: répétée → erreur (le modèle l’a écrite à la main)', () => {
+		expect(messages(parse('case: 0', 'case: 1', 'calcul: 45 + 37'))).toEqual([
+			'Ligne 2 : « case » déjà donnée ligne 1'
+		]);
+	});
+});

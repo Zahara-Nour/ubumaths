@@ -45,6 +45,7 @@
 		transition,
 		transitionSpeed,
 		background,
+		theme,
 		backgroundImage,
 		backgroundVideo,
 		backgroundIframe,
@@ -202,6 +203,7 @@
 	{transition}
 	{transitionSpeed}
 	{background}
+	{theme}
 	{backgroundImage}
 	{backgroundVideo}
 	{backgroundIframe}

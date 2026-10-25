@@ -152,10 +152,10 @@ describe('soustraction par compensation', () => {
 		expect(grid(scene('calcul: 1000 - 998', 'cases: aucune')).result).toBe('___2');
 	});
 
-	it('à remplir : cases de retenue en haut (sauf 1re colonne) et en bas (sauf unités)', () => {
+	it('à remplir : une case de retenue par colonne, en haut (sauf 1re colonne) ; le 1 du bas suit (PR 1b, décision c)', () => {
 		expect(grid(scene('calcul: 52 - 37'))).toEqual({
 			above: '_ _',
-			terms: ['5[1]2', '[1]37'],
+			terms: ['5[1]2', '37'],
 			result: '[1][5]'
 		});
 	});
