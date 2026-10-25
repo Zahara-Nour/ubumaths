@@ -243,15 +243,19 @@
 		stroke: var(--color-border);
 	}
 
-	/* La seule couleur d'accent : le remplissage des objets */
+	/*
+	 * La seule couleur d'accent : le remplissage des objets ; leurs traits dans
+	 * une teinte foncée de la même couleur, lisible en clair comme en sombre
+	 * (un trait de la couleur du texte, clair en sombre, s'efface sur le jaune)
+	 */
 	.collection-forme {
 		fill: var(--color-primary);
-		stroke: var(--color-foreground);
+		stroke: color-mix(in oklab, var(--color-primary) 45%, black);
 		stroke-width: 0.8;
 	}
 
 	.collection-separation {
-		stroke: var(--color-foreground);
+		stroke: color-mix(in oklab, var(--color-primary) 45%, black);
 		stroke-width: 0.6;
 	}
 
