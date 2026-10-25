@@ -8,9 +8,9 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après la clôture du chantier du tableur._
+_Mis à jour le 2026-10-25, après le deploy:prod v0.47.0._
 
-- **État** : `/spreadsheet` retiré et pont « Ouvrir dans Python » livrés sur `main`, pas en prod.
+- **État** : `/spreadsheet` retiré et pont « Ouvrir dans Python » livrés et en prod (v0.47.0).
   Aucun worktree ni PR ouverts pour l'atelier.
 - **Fait** : **`/calc` retirée** (2026-10-25, chantier `retrait-calc`, PR 1 #1705 + PR 2) :
   redirection 308 vers `/atelier`, hors du sitemap, `components/calculator`,
@@ -19,8 +19,8 @@ _Mis à jour le 2026-10-25, après la clôture du chantier du tableur._
   (2026-10-25) : [journal](../archive/wip/atelier-tableur-progress.md) et 8 phases 0 versés dans
   `docs/archive/wip/` ; restent ses vérifications manuelles (David).
 - **Ensuite** : rien de lancé ; prochain sujet à choisir par David.
-- **En attente de David** : `pnpm deploy:prod` ; après lui, proposer la suppression de la table
-  `spreadsheets` (1 ligne, migration destructive : s'arrêter et expliquer).
+- **Déployé** : v0.47.0 (2026-10-25) livre le retrait de `/spreadsheet`, de `/calc` et le pont Python.
+  Suppression de la table `spreadsheets` : chantier [drop-spreadsheets](drop-spreadsheets-progress.md).
 - **Plus tard, si l'usage le demande** : sens inverse Python → atelier ; « Ouvrir dans Python » pour
   une carte `f′`.
 
