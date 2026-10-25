@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.49.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.48.0...v0.49.0) (2026-10-25)
+
+### ✨ Features
+
+- **aide-ecriture:** catalogue des blocs ubumark, une fiche par bloc ([6c6f803](https://github.com/Zahara-Nour/ubumaths/commit/6c6f8034ff3c03f3cdbc93db149df188349ec3f7))
+- **construction:** bloc construction et juge de la case figure (moteur, sans écran) ([71ed1f3](https://github.com/Zahara-Nour/ubumaths/commit/71ed1f390b5b9bbb31f909912bd65ca5d6d5a32f))
+- **demo:** vitrine des blocs ubumark, neuf exemples par niveau ([d4f7363](https://github.com/Zahara-Nour/ubumaths/commit/d4f7363350e50a6e477b4a32839f04782a843f2e))
+- **questions:** lot B1, migration du nœud et du tag des 3 modèles (CP-068, 069, 084) ([f704161](https://github.com/Zahara-Nour/ubumaths/commit/f704161d52d7d9bc40c45101a107a0c1809bc436))
+- **questions:** lot B2 du CP, reconnaître sur une figure (10 modèles) ([673c85d](https://github.com/Zahara-Nour/ubumaths/commit/673c85db15809e58ee95e4a0357d4c8506af44d9))
+- **questions:** lot B2, nœud et tag des 10 modèles (migration + test) ([1276c02](https://github.com/Zahara-Nour/ubumaths/commit/1276c0287bc19a368b847836628194dcf16b101d))
+- **questions:** modèles CP du lot B1 (tableaux, CP-068, 069, 084), en fichiers ([14f5eaa](https://github.com/Zahara-Nour/ubumaths/commit/14f5eaa584ac6c27c33a871712ab4da3513f7df0))
+- **ubumark:** bloc collection, jetons, barres et cubes (écran, PDF, QCM, marquage) ([6924eed](https://github.com/Zahara-Nour/ubumaths/commit/6924eed020fa5d38cf92ce7c48f80d3e367886d1))
+
+### 🐛 Bug Fixes
+
+- **collection:** graine du vrac sans taille ni légendes (QCM imprimé = écran) ([b02da72](https://github.com/Zahara-Nour/ubumaths/commit/b02da7245ed4ff8e84bce8ec20c03e85b631b26d))
+- **construction:** correctifs de revue (point inconnu, bloc non fermé, tolérance, messages) ([0effae1](https://github.com/Zahara-Nour/ubumaths/commit/0effae17fcacc5693e2a0790ddef7519bb9daa08))
+- **construction:** marque du bloc sans caractère de contrôle dans une regex ([d354fcb](https://github.com/Zahara-Nour/ubumaths/commit/d354fcbdf577a3e558f906b815c63849392609b9))
+- **mathast:** dedupe garde ±∞ comme avant (revue du lot 6b) ([72dc967](https://github.com/Zahara-Nour/ubumaths/commit/72dc9672246012999e3e1cf54ec45ea6b958c0a2))
+- **ubumark:** collection au PDF, 8 cm pleine largeur par défaut ([0895680](https://github.com/Zahara-Nour/ubumaths/commit/0895680e8cdd550426499ced7e01e9363a7bd6f8))
+
+### 📚 Documentation
+
+- **archive:** clôture du chantier operations-posees, journal versé ([dc1860f](https://github.com/Zahara-Nour/ubumaths/commit/dc1860fe397f03a1afaf525f39d7dffd1f226bfe))
+- bloc collection dans ubumark, questions et fiches-et-pdf ([c1f3306](https://github.com/Zahara-Nour/ubumaths/commit/c1f33065b30a951e1976d63a8ca1935953ce2bbd))
+- **construction:** bloc construction et case figure dans ubumark et questions ([0249260](https://github.com/Zahara-Nour/ubumaths/commit/02492605bba29ee2411492d14c2084170e74d531))
+- **mathast:** en-tête de tidyKeepingFactorOrder sans renvoi au journal (revue) ([42fd9d1](https://github.com/Zahara-Nour/ubumaths/commit/42fd9d11883909aae681ab9a185d241795b2541b))
+- **mathast:** invariant 11, une seule enveloppe des valeurs approchées ([c2ee9c3](https://github.com/Zahara-Nour/ubumaths/commit/c2ee9c35b5660066a6a7f09b340f7e36602c1825))
+- **mathast:** points ouverts, retirer les termes gardés réglés par Q41 ([#1703](https://github.com/Zahara-Nour/ubumaths/issues/1703)) ([a6b456c](https://github.com/Zahara-Nour/ubumaths/commit/a6b456ca995c4162cb6ab687bb430b08f891bf21))
+- **mathast:** tidyTerms sert aussi primitives, formules et valeurs interdites ([cc30b42](https://github.com/Zahara-Nour/ubumaths/commit/cc30b42043df61b1cc949eb4d43a63598cb869e3))
+- **simplify-carte:** clôture du chantier, versement dans docs/systeme ([dd7a6be](https://github.com/Zahara-Nour/ubumaths/commit/dd7a6be2d5b50c0b53b93cf7f8a33afde080fd78))
+- **wip:** case figure, phase 0 de CP-059 en brouillon ([fe664de](https://github.com/Zahara-Nour/ubumaths/commit/fe664decdc07d639a23dc7820283011cd9ca9132))
+- **wip:** case figure, phase 0 de CP-059 validée ([8a53f53](https://github.com/Zahara-Nour/ubumaths/commit/8a53f535e69dc58c6ab8dd22a8160ccf25840cf6))
+- **wip:** catalogue-blocs, erreurs muettes renvoyées au chantier erreurs-blocs ([beba996](https://github.com/Zahara-Nour/ubumaths/commit/beba99699508ef8f081a9ce10afecc96f7cd7c55))
+- **wip:** catalogue-blocs, phase 0 validée ([57d4f73](https://github.com/Zahara-Nour/ubumaths/commit/57d4f73da9d601e4deda7673d0b9735e879230bc))
+- **wip:** catalogue-blocs, reprendre ici après [#1764](https://github.com/Zahara-Nour/ubumaths/issues/1764) ([8686fd0](https://github.com/Zahara-Nour/ubumaths/commit/8686fd087074949c26a06550883381102ef9a2bb))
+- **wip:** catalogue-blocs, reprendre ici après [#1767](https://github.com/Zahara-Nour/ubumaths/issues/1767) ([942d09a](https://github.com/Zahara-Nour/ubumaths/commit/942d09a8c1741587faf32a35b8e9b8ccc2cee961))
+- **wip:** collection après [#1766](https://github.com/Zahara-Nour/ubumaths/issues/1766), vérification manuelle notée ([a0725f9](https://github.com/Zahara-Nour/ubumaths/commit/a0725f9e29f8e5e9c1aeb48b69c7961cd10eeb26))
+- **wip:** collection après [#1770](https://github.com/Zahara-Nour/ubumaths/issues/1770) (PDF à 8 cm) ([6557580](https://github.com/Zahara-Nour/ubumaths/commit/65575809d40c1eb6d4b73eeeda6e8d61b1d98d16))
+- **wip:** collection, phase 0 du bloc collection ([cef720f](https://github.com/Zahara-Nour/ubumaths/commit/cef720f2330f82e5f41a761ff1cc33a6c1bc3094))
+- **wip:** geometrie-validation, plan technique validé ([9b0e989](https://github.com/Zahara-Nour/ubumaths/commit/9b0e98910160fd8c5def98c48553873474c0907c))
+- **wip:** geometrie-validation, reprendre ici après [#1768](https://github.com/Zahara-Nour/ubumaths/issues/1768) ([26b1fa6](https://github.com/Zahara-Nour/ubumaths/commit/26b1fa69b45578dc40a6c0bc182ec243a6117078))
+- **wip:** journal geometrie-validation séparé du chantier questions ([2c23b49](https://github.com/Zahara-Nour/ubumaths/commit/2c23b493ec270e445145de31bdda570c46449a0c))
+- **wip:** questions après [#1772](https://github.com/Zahara-Nour/ubumaths/issues/1772), page à cocher B2 ([097c1fe](https://github.com/Zahara-Nour/ubumaths/commit/097c1fee47f9d33e7b29f211d5347758a49ba552))
+- **wip:** questions, lot B1 migré en prod, page à cocher publiée ([31485a2](https://github.com/Zahara-Nour/ubumaths/commit/31485a2f5124c8f2884c53123170ea627c237a7f))
+- **wip:** questions, lot B1, deux points validés, go de création attendu ([40ce79f](https://github.com/Zahara-Nour/ubumaths/commit/40ce79fd9e259153e32bc28cdeaaecac036437d3))
+- **wip:** questions, lot B1, PR ouverte ([d898efe](https://github.com/Zahara-Nour/ubumaths/commit/d898efe6b2d05511a7617268bf0306c6133d0dfe))
+- **wip:** questions, lot B2 créé en prod, migration prête ([3667732](https://github.com/Zahara-Nour/ubumaths/commit/3667732a44b096c6da9264afdf1962fd0593ca88))
+- **wip:** questions, page B2 relue 10/10 ([aeb0a73](https://github.com/Zahara-Nour/ubumaths/commit/aeb0a736d2a85a3128fbf857d94beccee0778061))
+- **wip:** simplify-carte après [#1762](https://github.com/Zahara-Nour/ubumaths/issues/1762) (lot 6b) ([67288fe](https://github.com/Zahara-Nour/ubumaths/commit/67288fe76bb4b430961afb62be0d60efbd015eab))
+- **wip:** simplify-carte après [#1765](https://github.com/Zahara-Nour/ubumaths/issues/1765) (lot 7) ([021aba3](https://github.com/Zahara-Nour/ubumaths/commit/021aba351a9ef850140f48bbe8422a9c9daf639e))
+- **wip:** simplify-carte, lot 6b codé ([8017323](https://github.com/Zahara-Nour/ubumaths/commit/80173236a81adbbed0a1d4fc59c478393271a412))
+- **wip:** simplify-carte, phase 0 du lot 7 (renommages) ([f7c2f6a](https://github.com/Zahara-Nour/ubumaths/commit/f7c2f6a4d4e73539a3391f500cf7ffd3f5c79c41))
+
 ## [0.48.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.47.0...v0.48.0) (2026-10-25)
 
 ### ✨ Features
