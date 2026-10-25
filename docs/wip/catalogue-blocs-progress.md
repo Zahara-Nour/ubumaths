@@ -9,8 +9,8 @@ _Mis à jour le 2026-10-25, après #1764._
 - **Prochaine action** : PR 2, la vitrine `/demo/blocs` (mêmes fichiers
   `src/lib/block-catalog/*.ts`, sélection par niveau, « Voir ce qu'écrit le prof » replié,
   entrée `DEMO_PAGES` + `SeoHead`), branche `feat/catalogue-blocs-vitrine`.
-- **En attente de David** : regard sur les pages ; dire s'il veut corriger les erreurs muettes des
-  parseurs (§ PR 1, « Ce que les fiches ont révélé »), hors de ce chantier.
+- **En attente de David** : regard sur les pages. Erreurs muettes des parseurs : **chantier à
+  part `erreurs-blocs`** (décidé le 2026-10-25), rien à corriger ici.
 - **Pièges connus** : nouvelle vitrine → `DEMO_PAGES` + `<SeoHead {...demoSeo(…)} />` ; dans
   `<main>`, `h2`/`p`/`li` ont une taille `!important` × `--font-scale`.
 - **Worktree / branche** : `../ubumaths-wt-catalogue-blocs` · `feat/catalogue-blocs-vitrine`.
@@ -74,7 +74,7 @@ Pas de revue de code (pages qui assemblent des composants existants).
   nœud ; message de chaque erreur fréquente), `BlockHelpPage.svelte.test.ts` (rendu de chaque
   fiche, zone « Essayer » en direct).
 
-### Ce que les fiches ont révélé (erreurs muettes, non corrigées ici)
+### Ce que les fiches ont révélé (erreurs muettes, futur chantier `erreurs-blocs`)
 
 - **variation** : `5,5` (et un signe ou une position inconnus) → case supprimée en silence, tableau
   faux sans message ; sans `domain:` ou `variable:` → texte brut. La notation
