@@ -20,11 +20,12 @@ _Mis à jour le 2026-10-25, après #1733 (phases 0 livrées archivées ; Q93 et 
   `docs/archive/wip/` ; restent ses vérifications manuelles (David).
 - **Ménage** : #1733 verse dans `docs/archive/wip/` les neuf journaux livrés (cas, copier, croiser,
   développer, intervalle, listes qualitatives, réciproque, réglages, remplacer) ; leurs restes ci-dessous.
-- **Ensuite** : rien de lancé ; prochain sujet à choisir par David.
+- **Ensuite** : rien de lancé après #1746 ; prochain sujet à choisir par David.
 - **Déployé** : v0.47.0 (2026-10-25) livre le retrait de `/spreadsheet`, de `/calc` et le pont Python.
   Table `spreadsheets` supprimée le 2026-10-25 ([journal](../archive/wip/drop-spreadsheets-progress.md)).
-- **Plus tard, si l'usage le demande** : sens inverse Python → atelier ; « Ouvrir dans Python » pour
-  une carte `f′`.
+- **Sens inverse Python → atelier LIVRÉ** (#1746, 2026-10-25, sur `main`, pas en prod) : chantier
+  [python-vers-atelier](python-vers-atelier-progress.md). Plus tard, si l'usage le demande :
+  « Ouvrir dans Python » pour une carte `f′`.
 - **Restes des phases 0 archivées le 2026-10-25** (`docs/archive/wip/`) : Q93 et M1, crues ouvertes,
   étaient tranchées depuis le 2026-10-02 (décisions 92 et 93 d'`outils-statistiques-v2-progress.md`) et
   confirmées par David le 2026-10-25 — 20 modalités par côté dans l'atelier, 8 dans un bloc imprimé ;

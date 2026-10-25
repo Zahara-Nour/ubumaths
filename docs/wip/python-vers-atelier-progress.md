@@ -1,21 +1,21 @@
 ---
 title: Python → atelier — « Ouvrir dans l'atelier » depuis le playground
 date: 2026-10-25
-status: phase 0 validée, PR 1 codée (revue en cours)
+status: PR 1 mergée (#1746), recette de David en attente
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 1 codée, avant revue._
+_Mis à jour le 2026-10-25, après #1746._
 
-- **État** : PR 1 codée et testée (worker, menu du playground, boîte aux lettres, `/atelier?depuis-python=`),
-  doc système à jour ; revue `code-reviewer` en cours.
-- **Prochaine action** : appliquer la revue, pousser, PR, CI, merge.
-- **En attente de David** : essayer le parcours en vrai (serveur de la branche : port 5180) ;
-  vérifications manuelles ci-dessous.
-- **Pièges en cours** : le playground s'exécute dans l'espace GLOBAL de Pyodide (pas de namespace
-  éphémère, doc `worker.md` corrigée) → seules les listes affectées par l'exécution en cours sont proposées.
-- **Worktree / branche** : `ubumaths-wt-python-vers-atelier` · `feat/python-vers-atelier`.
+- **État** : PR 1 #1746 **mergée** (sur `main`, pas en prod) : « Ouvrir dans l'atelier » depuis `/python`,
+  listes et effectifs, boîte aux lettres `localStorage`, revue `code-reviewer` appliquée.
+- **Prochaine action** : rien de prévu ; chantier à clore (verser la phase 0 dans `docs/archive/wip/`,
+  le durable est déjà dans `docs/systeme/atelier.md` et `docs/systeme/python/`) après la recette de David.
+- **En attente de David** : vérifications manuelles (ligne #1746 de `verifications-manuelles.md`).
+- **Pièges** : le playground s'exécute dans l'espace GLOBAL de Pyodide (doc `worker.md` corrigée) ;
+  limites assumées : morse, `global`, branche non exécutée (valeur d'une exécution précédente).
+- **Worktree / branche** : retirés.
 
 ---
 
@@ -25,6 +25,10 @@ _Mis à jour le 2026-10-25, PR 1 codée, avant revue._
 - 2026-10-25 : PR 1 — `from-python.ts` (`offerOf`), `python-mailbox.ts`, `openLink` lit
   `?depuis-python=`, helper `_chiphre_atelier_lists` + message `atelier-lists`, `PythonToAtelier.svelte`.
   Tests : `depuis-python.test.ts` (28), `atelier-lists-real.svelte.test.ts` (8, vrai Pyodide).
+- 2026-10-25 : revue `code-reviewer` (Sonnet) — refus au menu de ce que l'atelier refuserait à l'arrivée
+  (> 20 modalités, mots > 40 caractères, textes lus comme nombres, vides, sans lettre, avec virgule),
+  texte long qui faisait rejeter tout le message (`long-text`), effectifs réunis par modalité, garde
+  > 1 million d'éléments (`too-long`), `match` / `except*`. Tests : 36 + 10. #1746 mergée, CI verte.
 
 ## Vérifications manuelles (David)
 
