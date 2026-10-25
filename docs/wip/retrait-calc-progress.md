@@ -1,21 +1,21 @@
 ---
 title: Retrait de /calc — journal
 date: 2026-10-24
-status: PR 2 mergée (#1709) — PR 3 (grapheur) puis PR 4 (outputHtml) en cours
+status: #1709 et #1715 mergées — PR 4 (outputHtml) à faire
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 3 en cours._
+_Mis à jour le 2026-10-25, après #1715._
 
-- **État** : #1709 mergée (`/calc` retirée). PR 3 (code mort du grapheur) écrite, vérifications
-  locales vertes ; PR à ouvrir, revue `code-reviewer` (Sonnet), CI, merge.
+- **État** : #1709 (`/calc` retirée) et #1715 (code mort du grapheur) mergées, sur `main`, pas en
+  prod. Revue de #1715 : harnais `WithAtelier` sans grapheur, corrigé dans la PR.
 - **Prochaine action** : PR 4 — retirer `outputHtml` de `WebReplEngine` (HTML de chaque réponse,
   `output-formatter-web.ts`, `htmlInFrench`, tests des messages à reporter sur `output`/`error`,
   golden `statistics-commands.golden.json`). Puis fin de chantier : archiver ce journal.
 - **En attente de David** : rien (« supprime les », 2026-10-25).
 - **Pièges** : `docs:check-a-jour` réclame `statistiques.md` dès que `desk.svelte.ts` change.
-- **Worktree / branche** : `../ubumaths-wt-retrait-calc`, `chore/retrait-calc-3`.
+- **Worktree / branche** : PR 4 → `../ubumaths-wt-retrait-calc`, `chore/retrait-calc-4`.
 
 ---
 
