@@ -68,8 +68,9 @@ const CONSTRUCTION_FENCE_REGEX = /^```construction\s*$/;
 /** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
 const NESTED_CONSTRUCTION_FENCE_REGEX = /^(?:\s+|\s*>\s*)```construction\s*$/;
 
-/** Marque d'un bloc ```construction mis à l'abri : `\u0000construction:K\u0000` */
-const CONSTRUCTION_MARK_REGEX = /^\u0000construction:(\d+)\u0000/;
+/** Marque d'un bloc ```construction mis à l'abri : début, rang du bloc, fin */
+const CONSTRUCTION_MARK_START = '\u0000construction:';
+const CONSTRUCTION_MARK_END = '\u0000';
 
 const CONSTRUCTION_NESTED_MESSAGE =
 	'Un bloc construction doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)';
@@ -111,7 +112,7 @@ function markConstructionBlocks(statement: string): {
 			end = i + 1;
 			while (end < lines.length && lines[end].trim() !== '') end++;
 		}
-		out.push(`\u0000construction:${blocks.length}\u0000`);
+		out.push(`${CONSTRUCTION_MARK_START}${blocks.length}${CONSTRUCTION_MARK_END}`);
 		blocks.push({ body: lines.slice(i + 1, end), closed });
 		i = closed ? end : end - 1;
 	}
@@ -301,14 +302,15 @@ export function assignBlankIndices(
 			let i = 0;
 			const text = segment.content;
 			while (i < text.length) {
-				const constructionMark = CONSTRUCTION_MARK_REGEX.exec(text.slice(i));
-				if (constructionMark) {
-					const block = constructions.blocks[Number(constructionMark[1])];
+				if (text.startsWith(CONSTRUCTION_MARK_START, i)) {
+					const rankStart = i + CONSTRUCTION_MARK_START.length;
+					const rankEnd = text.indexOf(CONSTRUCTION_MARK_END, rankStart);
+					const block = constructions.blocks[Number(text.slice(rankStart, rankEnd))];
 					newText += restoreConstructionBlock(block, counter);
 					constructionBlanks[counter] = block.body.join('\n');
 					counter++;
 					blankTypes.push('math');
-					i += constructionMark[0].length;
+					i = rankEnd + CONSTRUCTION_MARK_END.length;
 				} else if (text.startsWith(OPERATION_CASE_MARK, i)) {
 					newText += `case: ${counter}`;
 					const source = operations.sources[operationCount++];
