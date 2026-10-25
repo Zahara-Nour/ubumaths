@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, lot (a) revu et corrigé (§ 4), PR à ouvrir._
+_Mis à jour le 2026-10-25, après #1784._
 
-- **État** : lot (a) codé, revu (`code-reviewer` opus), corrigé ; suite serveur 58 996 verts ; check 0 ; cliquet tenu ; lint propre.
-- **Prochaine action** : PR du lot (a), CI, merge ; vérification manuelle à noter ; puis lot (b) (une fonction partagée au lieu des ~12 copies, `polynomialCoefficients`).
-- **En attente de David** : rien de bloquant ; à lui montrer : `√x√x → (√x)²`, ordre d'une primitive (`… − 2 sin x + x²/2`), mineurs laissés (§ 4).
-- **Pièges connus** : banc des modèles de la prod AVEUGLE pour `developper` (aucun `generatedSteps`) : l'effet est dans l'Atelier ; `nodesEqual` ignore le style du × ; `tidy({ order: 'kept' })` garde le × écrit ; `distributeBinomialProduct` et `algebraicExpandingRules` sans appelant en prod.
-- **Worktree / branche** : `ubumaths-wt-normalize-usages` · `feat/normalize-usages-developper`.
+- **État** : lot (a) MERGÉ (#1784) — « développer » sans `normalize` (`expand.ts`), règle du domaine gardé ; pas encore en prod. Vérification manuelle notée.
+- **Prochaine action** : lot (b), phase courte : une fonction partagée dans `normal/` au lieu des ~12 copies locales de `denormalize(normalize())` (nom à proposer à David) + `polynomialCoefficients(expr, x)` pour les 7 lectures de coefficients (§ 1.3) ; rien ne change à l'écran. Aussi : `distributeBinomialProduct` / `algebraicExpandingRules` sans appelant en prod (code mort à proposer).
+- **En attente de David** : rien de bloquant ; à lui montrer : `√x√x → (√x)²`, ordre d'une primitive (`… − 2 sin x + x²/2`), mineurs du § 4.
+- **Pièges connus** : banc des modèles AVEUGLE pour `developper` (aucun `generatedSteps` en prod) ; `nodesEqual` ignore le style du × ; `tidy({ order: 'kept' })` garde le × écrit ; `check:incremental` exit 2 = verrou d'une autre session, attendre.
+- **Worktree / branche** : aucun (retiré après #1784) ; lot (b) : nouveau worktree `ubumaths-wt-normalize-usages`, branche `refactor/normalize-usages-noms`.
 
 ## Contexte
 
@@ -86,3 +86,7 @@ Une douzaine de ces appels sont déjà enveloppés dans des fonctions locales qu
 - **Règle du domaine (David, 2026-10-25 : « oui »)**, après sa question « quand on a réécrit tidy, on ne réduisait pas 1/√x − 1/√x = 0, il faudrait être cohérent » : le résultat garde le domaine de l'entrée. `expand` calcule la forme stricte (`tidy` sans domaine acquis) et la forme réduite sur le domaine de l'entrée ; il garde la réduite si `computeDomain` lui trouve le même domaine que l'entrée, lettre par lettre (non résolu : la stricte). `(x + 1/x)² → x² + 2 + 1/x²`, `√x(√x+1) → x + √x` ; `x(1/x − 1) → −x + x/x`, `(√x+1)(√x−1) → x − √x + √x − 1`. « `1 − x`, pour x ≠ 0 » attend la variante `{ result, conditions }` de `tidy` (points ouverts).
 - **Laissés (mineurs)** : `timeoutMs` ignoré pour `developper` (`requested-form.ts` garde un `aborted` mort ; budget par termes) ; `(x+1)/π → x/π + 1/π`, `(x+1)/√2` en deux écritures (`coefficientFirst` : dénominateur entier seulement) ; ordre d'une somme d'exponentielles (déjà désordonné avant) ; `\sqrt8` seul reste (`√8(x+1) → 2√2x + 2√2`).
 - Mesures : suite serveur 58 996 verts ; `check:incremental` 0 ; cliquet tenu ; `lint:fast` propre.
+
+## 5. Lot (a) mergé (#1784, 2026-10-25)
+
+CI verte du premier coup (après fusion d'`origin/main`), mergée. Vérification manuelle notée. Worktree retiré.
