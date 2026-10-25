@@ -219,7 +219,7 @@ Précisions :
   6 exemples (priorités, somme algébrique, différence, puissance, fractions, équation) ; à
   l'ouverture, l'expression de l'article Sésamath.
 - **Catalogue des blocs** (`/aide-ecriture/blocs`, chantier
-  [catalogue-blocs](../wip/catalogue-blocs-progress.md)) : une fiche par bloc spécial d'ubumark
+  [catalogue-blocs](../archive/wip/catalogue-blocs-progress.md)) : une fiche par bloc spécial d'ubumark
   (variations, arbre, droite graduée, courbe, figure — en-tête seulement, renvoi vers
   `/aide-ecriture/geometrie` —, statistiques — 9 genres sur une page —, QR code, horloge, opération
   posée, cercle trigo). Contenu écrit une fois dans `src/lib/block-catalog/<bloc>.ts`

@@ -2,18 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, après #1767._
+_Mis à jour le 2026-10-25 : chantier CLOS, journal archivé._
 
-- **État** : les deux PR du chantier sont mergées (#1764 aide à l'écriture, #1767 vitrine
-  `/demo/blocs`), en attente de `deploy:prod`. Serveur de test : `http://localhost:5177`
-  (`/aide-ecriture/blocs` en prof, `/demo/blocs` sans compte).
-- **Prochaine action** : clore le chantier après le regard de David (journal archivé, la doc
-  durable est déjà dans `docs/systeme/utilitaires-et-demos.md`), puis retirer le worktree.
-- **En attente de David** : regard sur les pages (ligne #1764, #1767 de
-  `docs/wip/verifications-manuelles.md`). Erreurs muettes des parseurs : chantier `erreurs-blocs`.
-- **Pièges connus** : la division posée est une grille, pas un svg (test de rendu de la vitrine).
-- **Worktree / branche** : `../ubumaths-wt-catalogue-blocs` · `feat/catalogue-blocs-vitrine`
-  (mergée, gardée pour le serveur de test).
+- **État** : CLOS. #1764 (aide à l'écriture `/aide-ecriture/blocs`) et #1767 (vitrine
+  `/demo/blocs`) mergées, en attente de `deploy:prod`. Doc durable :
+  `docs/systeme/utilitaires-et-demos.md`.
+- **Reste** : le regard de David (ligne #1764, #1767 de `docs/wip/verifications-manuelles.md`).
+  Erreurs muettes des parseurs : futur chantier `erreurs-blocs`.
 
 ## Origine
 
