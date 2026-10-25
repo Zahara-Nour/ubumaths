@@ -29,7 +29,8 @@ describe('Q66 dans une liste — un ``` lointain ne ferme pas un bloc séparé p
 		['trig', 'trig-circle', ['```trig', 'preset: quarters']],
 		['line', 'number-line', ['```line', 'start: 0', 'end: 5', 'step: 1']],
 		['horloge', 'horloge', ['```horloge', 'heure: 9 h']],
-		['operation', 'operation', ['```operation', 'calcul: 45 + 37']]
+		['operation', 'operation', ['```operation', 'calcul: 45 + 37']],
+		['collection', 'collection', ['```collection', 'unités: 9']]
 	])('%s : le bloc, puis le texte intermédiaire en paragraphe', (_, type, block) => {
 		const nodes = inItem([...block, '', 'Voici le texte qui suit le bloc', '', '```']);
 

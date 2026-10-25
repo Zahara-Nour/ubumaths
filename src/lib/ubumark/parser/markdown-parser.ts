@@ -104,6 +104,12 @@ import {
 	isOperationBlockStart
 } from './operation-parser';
 import {
+	findCollectionBlocks,
+	parseCollection,
+	parseCollectionContent,
+	isCollectionBlockStart
+} from './collection-parser';
+import {
 	findCourbeBlocks,
 	isCourbeBlockStart,
 	parseCourbe,
@@ -482,6 +488,7 @@ function parseBlocks(
 	const qrBlocks = findQrBlocks(lines);
 	const horlogeBlocks = findHorlogeBlocks(lines);
 	const operationBlocks = findOperationBlocks(lines);
+	const collectionBlocks = findCollectionBlocks(lines);
 	type SpecialParse = (
 		source: string[],
 		start: number,
@@ -498,7 +505,8 @@ function parseBlocks(
 		{ ranges: numberLineBlocks, parse: parseNumberLine, language: 'line' },
 		{ ranges: qrBlocks, parse: parseQr, language: 'qr' },
 		{ ranges: horlogeBlocks, parse: parseHorloge, language: 'horloge' },
-		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' }
+		{ ranges: operationBlocks, parse: parseOperation, language: 'operation' },
+		{ ranges: collectionBlocks, parse: parseCollection, language: 'collection' }
 	];
 	const specialBlockAt = (index: number) => {
 		for (const { ranges, parse, language } of SPECIALS) {
@@ -563,6 +571,7 @@ function parseBlocks(
 			...qrBlocks,
 			...horlogeBlocks,
 			...operationBlocks,
+			...collectionBlocks,
 			...courbeBlocks,
 			...figureBlocks,
 			...statChartBlocks
@@ -577,6 +586,7 @@ function parseBlocks(
 			...findQrBlocks(originalLines),
 			...findHorlogeBlocks(originalLines),
 			...findOperationBlocks(originalLines),
+			...findCollectionBlocks(originalLines),
 			...originalCourbeBlocks,
 			...originalFigureBlocks,
 			...originalStatChartBlocks
@@ -1655,6 +1665,12 @@ const SPECIAL_BLOCK_KINDS = [
 		find: findOperationBlocks,
 		parse: parseOperation,
 		language: 'operation'
+	},
+	{
+		is: isCollectionBlockStart,
+		find: findCollectionBlocks,
+		parse: parseCollection,
+		language: 'collection'
 	}
 ] as const;
 
@@ -1873,6 +1889,9 @@ function parseContentWithCodeBlocks(
 		} else if (language === 'operation') {
 			// Opération posée dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseOperationContent(restoreMathPlaceholders(code, placeholders)));
+		} else if (language === 'collection') {
+			// Collection dans un item de liste : toujours un nœud, même en erreur (Q48)
+			blocks.push(parseCollectionContent(restoreMathPlaceholders(code, placeholders)));
 		} else if (language === 'courbe') {
 			// Courbe dans un item de liste : toujours un nœud, même en erreur (Q48)
 			blocks.push(parseCourbeContent(restoreMathPlaceholders(code, placeholders)));

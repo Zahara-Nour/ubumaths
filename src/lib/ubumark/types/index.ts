@@ -218,6 +218,12 @@ export type { HorlogeNode, HorlogeIssue, HorlogeSpec, HorlogeTime } from './horl
 export type { OperationNode, OperationIssue, OperationSpec, OperationTerm } from './operation';
 
 // ============================================================================
+// COLLECTION (bloc ```collection)
+// ============================================================================
+
+export type { CollectionNode, CollectionIssue, CollectionSpec, CollectionSet } from './collection';
+
+// ============================================================================
 // PARSER TYPES
 // ============================================================================
 

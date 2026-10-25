@@ -31,6 +31,7 @@
 	import QrBlock from './QrBlock.svelte';
 	import Horloge from './Horloge.svelte';
 	import Operation from './Operation.svelte';
+	import Collection from './Collection.svelte';
 
 	interface Props {
 		node: BlockNode;
@@ -89,4 +90,6 @@
 	<Horloge {node} />
 {:else if node.type === 'operation'}
 	<Operation {node} />
+{:else if node.type === 'collection'}
+	<Collection {node} />
 {/if}

@@ -62,6 +62,7 @@ const SPECIAL_LANGUAGES: ReadonlySet<string> = new Set([
 	'qr',
 	'horloge',
 	'operation',
+	'collection',
 	'courbe',
 	'figure',
 	...STAT_CHART_KINDS

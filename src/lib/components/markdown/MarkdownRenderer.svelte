@@ -55,6 +55,7 @@
 	import QrBlock from './nodes/QrBlock.svelte';
 	import Horloge from './nodes/Horloge.svelte';
 	import Operation from './nodes/Operation.svelte';
+	import Collection from './nodes/Collection.svelte';
 
 	// Raw markdown viewer with syntax highlighting
 	import MarkdownRaw from './MarkdownRaw.svelte';
@@ -373,6 +374,8 @@
 					<Horloge {node} />
 				{:else if node.type === 'operation'}
 					<Operation {node} />
+				{:else if node.type === 'collection'}
+					<Collection {node} />
 				{/if}
 			{/each}
 		{:else}
