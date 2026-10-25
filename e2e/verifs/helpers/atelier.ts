@@ -69,6 +69,22 @@ export function expectLatex(answer: Answer, expected: string): void {
  */
 export async function steps(answer: Answer): Promise<string> {
 	await answer.line.getByRole('button', { name: 'Comment ?' }).click();
+	return shownSteps(answer);
+}
+
+/**
+ * Choisit la rédaction des étapes dépliées (interrupteur « Résumé / Détaillé »)
+ * et rend leur texte
+ */
+export async function stepsAs(answer: Answer, choice: 'Résumé' | 'Détaillé'): Promise<string> {
+	const button = answer.line.getByRole('button', { name: choice });
+	await button.click();
+	await expect(button).toHaveAttribute('aria-pressed', 'true');
+	return shownSteps(answer);
+}
+
+/** Le texte des étapes déjà dépliées */
+async function shownSteps(answer: Answer): Promise<string> {
 	const box = answer.line.locator('.etapes');
 	await expect(box).toBeVisible();
 	const text = await box.evaluate((element) => {
