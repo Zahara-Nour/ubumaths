@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR du pilote ouverte._
+_Mis à jour le 2026-10-25, après #1773._
 
-- **État** : pilote écrit — `e2e/verifs/atelier-calcul.spec.ts`, 21 tests (20 verts, #1674 rouge : bug), `pnpm test:verifs`, sonde `e2e/verifs/sonde.spec.ts` ; lignes couvertes retirées de `verifications-manuelles.md`. PR à merger.
-- **Prochaine action** : après merge, lot suivant des ~126 lignes Atelier (la sonde d'abord, puis l'attendu de la LIGNE).
-- **En attente de David** : `.simplifier` des lignes #1682 et #1625 MIS DE CÔTÉ (il regarde où en est le chantier tidy / simplify) ; run en prod (`VERIFS_URL=https://chiph.re`) seulement après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : ports 5175-5178 pris → 5179 ; formules de « Comment ? » = `<math-span>` (texte vide) → `steps()` les écrit `$latex$` ; une erreur Svelte dans une page gâte les lignes suivantes (la sonde le montre, pas les tests, une page neuve chacun). Un test rouge = bug ou ligne périmée : le dire, ne JAMAIS changer l'attendu.
-- **Worktree / branche** : `../ubumaths-wt-verifs-auto` · `test/verifs-auto`.
+- **État** : pilote MERGÉ (#1773) — `e2e/verifs/atelier-calcul.spec.ts`, 21 tests (20 verts, #1674 rouge : bug `each_key_duplicate` de « Comment ? », chantier à part), `pnpm test:verifs`, sonde `e2e/verifs/sonde.spec.ts` (`SONDE=… pnpm test:verifs sonde`) ; lignes couvertes retirées de `verifications-manuelles.md`.
+- **Prochaine action** : lot suivant des ~126 lignes Atelier, dans un worktree neuf (`git worktree add -b test/verifs-auto-2 ../ubumaths-wt-verifs-auto origin/main`) : la sonde d'abord, puis l'attendu de la LIGNE ; les écarts à David.
+- **En attente de David** : `.simplifier` des lignes #1682 et #1625 MIS DE CÔTÉ (il regarde où en est le chantier tidy / simplify). Run en prod (`VERIFS_URL=https://chiph.re pnpm test:verifs`) après le `deploy:prod` qui livre `data-latex` (ligne en tête de `verifications-manuelles.md`).
+- **Pièges en cours** : ports 5175-5178 souvent pris → `lsof` d'abord ; formules de « Comment ? » = `<math-span>` (texte vide) → `steps()` les écrit `$latex$` ; une erreur Svelte gâte les lignes suivantes d'une même page (la sonde, pas les tests). Une ligne peut être PÉRIMÉE : un test rouge = bug ou ligne périmée, le dire, ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retirés après #1773).
 
 ## Phase 0 (validée le 2026-10-25)
 
