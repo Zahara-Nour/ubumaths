@@ -6,19 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 2 (code) en cours._
+_Mis à jour le 2026-10-25, après #1747._
 
-- **État** : PR 2 sur `feat/mathoux-chapeaux-lunettes-code` : `db:types`, catalogue TS (égalité
-  avec la base en intégration), dessins `mathou-chapeaux-lunettes.ts`, rendu `MathouAvatar`, routes
-  `wear-glasses` / `wear-hat`, mémoire, nouveautés, export RGPD, Chatterie (4 rangées), Marché, vue
-  prof, doc. Tests verts (unitaires, client, intégration 72/72), typecheck 0.
-- **Prochaine action** : revues faites (aucun bloquant, mineurs corrigés) → CI verte de #1747 →
-  merge. Puis recette par David (Chatterie, réveil en fondu, grand matou).
-- **En attente de David** : rien.
-- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ; en
-  sieste, lunettes et chapeau ne se dessinent pas : les rangées « Yeux » et « Tête » de « Décorer »
-  montrent le Mathou éveillé.
-- **Worktree / branche** : `../ubumaths-wt-mathoux-chapeaux-lunettes`, `feat/mathoux-chapeaux-lunettes-code`.
+- **État** : lot D LIVRÉ sur `main` (pas en prod) : migration en prod (#1734, #1739), code mergé
+  (#1747, CI verte sur a805a3409 ; audit sécurité sans finding, revue : 2 mineurs corrigés).
+- **Prochaine action** : recette par David (ligne #1747 de `docs/wip/verifications-manuelles.md`),
+  puis clôture : journal archivé (le durable est déjà dans `docs/systeme/mathoux.md`).
+- **En attente de David** : la recette ; le `deploy:prod` quand il le voudra.
+- **Pièges en cours** : ids `s1-…` répétés au rendu serveur de plusieurs `MathouAvatar` ;
+  dessins figés par l'instantané `mathou-chapeaux-lunettes.test.ts` (un dessin changé → revoir,
+  puis `-u`).
+- **Worktree / branche** : supprimés après le merge.
 
 ## Catalogue (choisi par David le 2026-10-25, planche https://claude.ai/artifact/7iaTAB3MWhm6dCg764kKqb)
 
@@ -76,3 +74,4 @@ Bicorne : pas au catalogue.
 - 2026-10-25 — PR 2 #1747 ouverte. Audit sécurité (Opus) : rien. Revue (Sonnet) : dessins fidèles
   à la planche, 3 mineurs → accord par `plural` dans le catalogue (plus par le nom), instantané des
   dix dessins ; le cast `null as string` (comme `wearMathouCollar`) laissé.
+- 2026-10-25 — #1747 mergée (CI verte sur a805a3409). Worktree et branche supprimés.
