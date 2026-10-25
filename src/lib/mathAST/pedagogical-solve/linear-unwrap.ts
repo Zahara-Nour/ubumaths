@@ -28,7 +28,7 @@
 
 import type { MathNode, RelationNode } from '../types';
 import type { EquationOperation, EquationStep } from './types';
-import { add, divide, multiply, number, opposite, relation } from '../factory';
+import { add, divide, multiply, number, opposite, relation, subtract } from '../factory';
 import { flattenSumShallow, unflattenSum } from '../flatten';
 import type { SignedTerm } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
@@ -44,6 +44,7 @@ import {
 	isLinearTerm,
 	makeStep,
 	movedTerm,
+	negativeTermMagnitude,
 	undevelopedTerm
 } from './_helpers';
 
@@ -72,10 +73,22 @@ export function unwrapLinearRelation(
 	id: () => number
 ): { steps: EquationStep[]; relation: RelationNode } {
 	const steps: EquationStep[] = [];
+	const undeveloped = undevelopedTerm(start, variable);
+	// x disparaît (`2(x+1) = 2x + 2`, `2(x−1) − 2(x−1) = 0`) : les étapes
+	// finiraient sur `0 = 0` sans conclure, et la correction d'une question
+	// n'a pas de garde-fou de conclusion (revue de Q52) → repli, comme avant
+	if (
+		undeveloped !== null &&
+		!containsVariable(canon(subtract(start.left, start.right)), variable)
+	) {
+		throw new UndevelopedLinearForm(undeveloped);
+	}
 	let current = start;
 	for (let round = 0; undevelopedTerm(current, variable) !== null; round++) {
 		if (round >= MAX_ROUNDS) throw new UndevelopedLinearForm(current);
 		const step = nextStep(current, variable, id());
+		// Une étape qui ne change rien (`(x+1)(x−1)` développé reste non `a·x`)
+		if (toLatex(step.after) === toLatex(current)) throw new UndevelopedLinearForm(current);
 		steps.push(step);
 		current = step.after;
 	}
@@ -113,7 +126,9 @@ function expandStep(current: RelationNode, variable: string, stepId: number): Eq
 		const terms = flattenSumShallow(side);
 		if (terms.every(({ term }) => isLinearTerm(term, variable))) return side;
 		const expanded = terms.flatMap((signed) =>
-			isLinearTerm(signed.term, variable) ? [signed] : flattenSumShallow(canon(signedNode(signed)))
+			isLinearTerm(signed.term, variable)
+				? [signed]
+				: flattenSumShallow(canon(signedNode(signed))).map(signLifted)
 		);
 		return unflattenSum(expanded) ?? number(0);
 	};
@@ -309,6 +324,13 @@ function withSide(
 
 function otherOf(current: RelationNode, side: 'left' | 'right'): MathNode {
 	return side === 'left' ? current.right : current.left;
+}
+
+/** Un terme qui s'écrit avec un − en tête porte ce − en signe : `− 2x`, pas `+ (−2x)`. */
+function signLifted(signed: SignedTerm): SignedTerm {
+	const magnitude = negativeTermMagnitude(signed.term);
+	if (magnitude === null) return signed;
+	return { sign: signed.sign === '-' ? '+' : '-', term: magnitude };
 }
 
 /** Le terme avec son signe : `−` devient `opposite(…)`. */

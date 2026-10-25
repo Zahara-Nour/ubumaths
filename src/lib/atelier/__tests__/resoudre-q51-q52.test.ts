@@ -19,6 +19,9 @@
 import { describe, it, expect } from 'vitest';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { solveSteps } from '../solve-steps';
+import { parseLatex } from '$lib/mathAST/parser';
+import { isRelation } from '$lib/mathAST/guards';
+import { generateEquationSteps, UndevelopedLinearForm } from '$lib/mathAST/pedagogical-solve';
 
 // =============================================================================
 // Décor
@@ -218,5 +221,32 @@ describe('.résoudre — Q52 : parcours, la conclusion juste au bout des étapes
 		['3(x-1)\\ne6', 'x\\neq3']
 	])('%s répond %s', (equation, expected) => {
 		expect(answer(equation)).toBe(expected);
+	});
+});
+
+// =============================================================================
+// Revue de la PR
+// =============================================================================
+
+describe('Q52 — revue : formes dégénérées, signes, parenthèses', () => {
+	it.each(['2(x-1)-2(x-1)=0', '2(x+1)=2x+2', '-(x+1)=-(x+1)', '(x+1)(x-1)=x^2'])(
+		'%s : aucune étape inachevée (UndevelopedLinearForm, repli)',
+		(input) => {
+			const r = parseLatex(input);
+			if (!isRelation(r)) throw new Error(input);
+			expect(() => generateEquationSteps(r, { level: 'college', variable: 'x' })).toThrow(
+				UndevelopedLinearForm
+			);
+		}
+	);
+
+	it('un terme développé après un − s’écrit avec un −, pas « + (−…) »', () => {
+		const first = forms('\\frac{1}{3}(2x+1)-\\frac{1}{2}(x-1)=0')[0];
+		expect(first).not.toContain('+(-');
+		expect(first).toContain('-\\dfrac{1}{2}x');
+	});
+
+	it('(½)(x + 1) = 3 : la fraction entre parenthèses, on multiplie par 2', () => {
+		expect(titles('(\\frac{1}{2})(x+1)=3')[0]).toBe('On multiplie les deux membres par $2$');
 	});
 });

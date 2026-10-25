@@ -29,7 +29,7 @@ import { computeDomain } from '../domain/compute';
 import { isUniversal } from '../domain/algebra';
 import { flattenSumShallow } from '../flatten';
 import { containsVariable } from '../common/contains-variable';
-import { unwrapGroupingMembers } from '../solve/classify';
+import { unwrapGrouping, unwrapGroupingMembers } from '../solve/classify';
 import { denormalize, normalize } from '../normal';
 import { constantSign } from '../common/constant-sign';
 import { getNumericValue } from '../common/numeric';
@@ -122,6 +122,8 @@ export function isLinearTerm(term: MathNode, variable: string): boolean {
  */
 export function isFractionWritten(node: MathNode): boolean {
 	if (node.type === 'opposite') return isFractionWritten(node.operand);
+	// `(\\frac{1}{2})(x+1)` : la fraction entre parenthèses
+	if (unwrapGrouping(node) !== node) return isFractionWritten(unwrapGrouping(node));
 	const isInteger = (n: MathNode): boolean =>
 		n.type === 'opposite' ? isInteger(n.operand) : n.type === 'number' && /^\d+$/.test(n.value);
 	return node.type === 'division' && isInteger(node.numerator) && isInteger(node.denominator);
