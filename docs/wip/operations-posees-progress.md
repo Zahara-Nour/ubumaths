@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-25, PR 3b commencée (tests rouges)._
+_Mis à jour le 2026-10-25, PR 3b #1758 ouverte, revue faite._
 
-- **État** : lots 1 et 2 COMPLETS ; lot 3 division : PR 3a mergée (#1754) ; **PR 3b en cours** (saisie) : tests rouges écrits et commités (§ 13), code à écrire. Rien en prod.
-- **Prochaine action** : `utils/operation-division-answer.ts`, `assign-blank-indices.ts` (2 cases), générateur, `Operation.svelte` (potence saisissable, props `answer` + `remainder`), `FillBlanksInput.svelte` ; puis verts.
-- **En attente de David** : vérifications #1716 → #1754 avant `deploy:prod`. Précision Q1 (§ 10). Choix du § 13 (recos suivies, à lui signaler).
+- **État** : lots 1 et 2 COMPLETS ; lot 3 division : 3a mergée (#1754), **3b #1758 ouverte** (saisie : quotient, reste, zone des étapes), revue Opus corrigée (B1, M1), CI en cours. Rien en prod.
+- **Prochaine action** : CI verte → merger #1758 ; noter les vérifications manuelles ; republier la page de démonstration (saisie de la division) ; clore le chantier (versement) si David le veut.
+- **En attente de David** : vérifications #1716 → #1758 avant `deploy:prod` ; précision Q1 (§ 10) ; choix du § 13 ; M2 laissée (§ 13).
 - **Page de démonstration** : https://claude.ai/artifact/1N1ndKCtLLxE3S5SRbgiBB — à compléter avec la saisie de la division.
-- **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; `Operation.svelte` fait déjà 808 lignes : la potence saisissable mérite son propre composant ; le journal du worktree `ubumaths-wt-operations-posees` est figé (à ne pas lire pour reprendre).
-- **Worktree / branche** : `ubumaths-wt-operations-posees-saisie-division` · `feat/operations-posees-saisie-division`. Figés pour David : `ubumaths-wt-operations-posees-division` (5180), `ubumaths-wt-operations-posees` (5179).
+- **Pièges en cours** : sous zsh, `pnpm format $LISTE` ne découpe pas → `xargs pnpm exec prettier --write` ; deux prettier en même temps → le hook de pre-commit est tué (relancer le commit) ; le journal du worktree `ubumaths-wt-operations-posees` est figé (ne pas le lire pour reprendre).
+- **Worktree / branche** : `ubumaths-wt-operations-posees-saisie-division` (serveur 5181) · `feat/operations-posees-saisie-division`. Figés pour David : `…-division` (5180), `ubumaths-wt-operations-posees` (5179).
 
 ---
 
@@ -444,8 +444,21 @@ Découpage pressenti : **PR 3a** affichage (parseur, scène, potence écran et P
 - Noms accessibles : « Quotient, case 1 sur 4 en partant de la gauche », « Reste, case 1 sur 2 en
   partant de la droite », « Étapes, rangée 1, carreau 1 ».
 - Entrée sur une grille vide : le quotient reçoit le curseur dans sa case vide la plus à gauche.
+- **Revue #1758** : virgule tapée dans la foulée (`1 9 6 ,` : le curseur est déjà dans la case vide
+  suivante) → posée à droite du chiffre qu'on vient d'écrire (B1, corrigé) ; surlignage aligné sur le
+  premier chiffre non nul (M1, `_ 0 , 8 5` pour 0,85, corrigé). **Laissé (M2)** : l'avertissement « nom
+  de figure » (`figure-name-check.ts`) lit l'énoncé non résolu ; une division à variables
+  (`{{a}} ÷ 7`) y compte pour une case au lieu de deux → numéros de case décalés dans l'avertissement
+  seulement (le générateur compte juste, l'énoncé résolu).
 
 ## Journal
+
+### 2026-10-25 — #1758 PR 3b (saisie de la division)
+
+Tests rouges d'abord (4cc40067a) ; `utils/operation-division-answer.ts`, `OperationDivision.svelte`
+(potence sortie d'`Operation.svelte`, 808 → 692 lignes), deux cases pour une euclidienne
+(`assignBlankIndices`, générateur), `FillBlanksInput` (prop `remainder`, focus du quotient). Revue
+Opus : B1 et M1 corrigés, M2 laissée (§ 13).
 
 ### 2026-10-25 — PR 3a (division, affichage)
 
