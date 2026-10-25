@@ -247,6 +247,8 @@ David a répondu « je te suis » aux quatre recommandations, une par question :
 ### Décisions (recommandations suivies)
 
 - Q1 : le facteur qui a le plus de chiffres est posé en haut, automatiquement ; égalité → ordre écrit.
+  **Précisé en codant (revue PR 2a)** : zéros de tête non comptés (`0,5 × 12` pose 12 en haut, comme
+  `12 × 0,5` ; `0,001 × 0,001` accepté). Signalé à David.
 - Q2 : un 0 dans le nombre du bas → ligne sautée, la suivante reçoit un zéro de décalage de plus.
 - Q3 : l'élève pose la virgule du résultat (« , » tapée dans une case : virgule à droite de son
   chiffre ; une seule ; retapée → enlevée) ; à la correction, virgule absente ou mal placée surlignée.

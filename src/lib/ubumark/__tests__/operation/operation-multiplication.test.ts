@@ -65,6 +65,11 @@ describe('multiplication : lecture du bloc', () => {
 		expect(parse('calcul: 7 × 46,55').spec?.terms[0]).toEqual({ integer: '46', decimal: '55' });
 	});
 
+	it('zéros de tête non comptés : 0,5 × 12 pose 12 en haut ; 0,001 × 0,001 accepté', () => {
+		expect(parse('calcul: 0,5 × 12').spec?.terms[0]).toEqual({ integer: '12', decimal: '' });
+		expect(parse('calcul: 0,001 × 0,001').errors).toEqual([]);
+	});
+
 	it('égalité de chiffres : ordre écrit gardé', () => {
 		expect(parse('calcul: 876 × 20,8').spec?.terms[0]).toEqual({ integer: '876', decimal: '' });
 		expect(parse('calcul: 20,8 × 876').spec?.terms[0]).toEqual({ integer: '20', decimal: '8' });
@@ -169,6 +174,28 @@ describe('multiplication résolue (cases: aucune)', () => {
 		});
 	});
 
+	it('208 × 34 : un zéro dans le nombre du haut', () => {
+		expect(grid(scene('calcul: 208 × 34', 'cases: aucune'))).toEqual({
+			above: '_ _ _ _',
+			terms: ['_208', '__34'],
+			partialCarries: '1 _ _ _',
+			partials: ['_832', '6240'],
+			result: '7072'
+		});
+		// Un seul chiffre en bas : la retenue passe au-dessus du 0
+		expect(grid(scene('calcul: 208 × 4', 'cases: aucune')).above).toBe('_ 3 _');
+	});
+
+	it('décimal × décimal (Q7) : 0,5 × 0,5 → 0,25 ; 12,345 × 6,78', () => {
+		expect(grid(scene('calcul: 0,5 × 0,5', 'cases: aucune'))).toMatchObject({
+			terms: ['_0,5', '_0,5'],
+			result: '0,25'
+		});
+		const s = scene('calcul: 12,345 × 6,78', 'cases: aucune');
+		expect(s.decimals).toBe(5);
+		expect(grid(s).result).toBe('83,69910');
+	});
+
 	it('548 × 10 : une seule ligne non nulle, résultat directement sous le trait', () => {
 		expect(grid(scene('calcul: 548 × 10', 'cases: aucune'))).toMatchObject({
 			partialCarries: null,
@@ -214,6 +241,16 @@ describe('multiplication à remplir (cases: résultat)', () => {
 		const s = grid(scene('calcul: 7 × 46,55'));
 		expect(s.result).toBe('[3][2][5][8][5]');
 		expect(s.above).toBe('_ [4] [3] [3] _');
+	});
+
+	it('0,5 × 0,5 à remplir : 0 de tête posé, case de retenue au-dessus de lui', () => {
+		expect(grid(scene('calcul: 0,5 × 0,5'))).toEqual({
+			above: '_ _ [2] _',
+			terms: ['__0,5', '__0,5'],
+			partialCarries: null,
+			partials: [],
+			result: '[][0][2][5]'
+		});
 	});
 
 	it('548 × 10 : une seule ligne, pas de produits partiels', () => {

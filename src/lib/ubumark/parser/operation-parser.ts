@@ -167,11 +167,13 @@ function isAtLeast(a: OperationTerm, b: OperationTerm): boolean {
 	return scaled(a) >= scaled(b);
 }
 
-const digitCount = (t: OperationTerm) => t.integer.length + t.decimal.length;
+/** Chiffres d'un facteur, zéros de tête non comptés : `0,05` en a 1, `208` 3 */
+const digitCount = (t: OperationTerm) => (t.integer + t.decimal).replace(/^0+/, '').length;
 
 /**
  * Facteurs d'une multiplication dans l'ordre de pose : le plus de chiffres en
- * haut (égalité : ordre écrit) ; bornes de chaque ligne vérifiées ensuite
+ * haut (égalité : ordre écrit) ; bornes de chaque ligne vérifiées ensuite.
+ * Les zéros de tête ne comptent pas : `0,5 × 12` pose 12 en haut, comme `12 × 0,5`.
  */
 function factorsInPlace([a, b]: OperationTerm[]): OperationTerm[] {
 	const [top, bottom] = digitCount(b) > digitCount(a) ? [b, a] : [a, b];
