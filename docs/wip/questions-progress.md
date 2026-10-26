@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 du lot M validée._
+_Mis à jour le 2026-10-26, après #1796._
 
-- **État** : 62 modèles CP publiés en prod (lots A1 à H, B1-B3). **Lot M (monnaie)** : phase 0 validée (§ 4 quattuordecies), 6 modèles à écrire (CP-042, 043, 044 ×2, 071, 045).
-- **Prochaine action** : PR du lot M (brouillons en prod, migration `20261026200000` verte), audit sécurité, merge, `db:migrate` ; puis PR à part : taille des dessins de monnaie dans un choix de QCM (trop petits, décidé avec David le 2026-10-26).
-- **En attente de David** : vérification manuelle #1702.
-- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; prénom dans le texte, jamais dans une variable ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (passer par une variable) ; jamais de variable `e` ; **numéroter les niveaux dès l'écriture** ; **migration qui change l'arbre ou les points → `LATER` + copies figées** ; bloc ```monnaie pas en prod → brouillons jusqu'au `deploy:prod`.
-- **Worktree / branche** : `../ubumaths-wt-questions` · `feat/questions-monnaie`.
+- **État** : 62 modèles CP publiés en prod ; **lot M (monnaie) : 6 brouillons en prod, rangés et tagués** (#1796, `db:migrate` joué et vérifié : CP-043, 042, 044 ×2, 045 sur « pièces et billets », niveaux 1 à 5 ; CP-071 sur « rendre la monnaie »). Le bloc ```monnaie n'est pas en prod : brouillons jusqu'au `deploy:prod`.
+- **Prochaine action** : PR `fix/monnaie-qcm-taille` (dessin de monnaie d'un choix de QCM 6 → 10 cm, décidé par David le 2026-10-26 ; captures « avant » faites) ; puis page à cocher du lot M pour David ; publication après le `deploy:prod`.
+- **En attente de David** : relecture du lot M (page à cocher, à venir) ; vérification manuelle #1702.
+- **Pièges en cours** : un modèle porte au plus UN point par programme (ADR 0020) ; un modèle est QCM OU à cases ; case dans un tableau = `$?$` ; prénom dans le texte, jamais dans une variable ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (passer par une variable) ; jamais de variable `e` ; **numéroter les niveaux dès l'écriture** ; **montants en `$n~\unit{€}$`** ; **l'écriture en prod (`create-questions --publier`) est refusée par le classifieur du mode auto : David la lance (`!`)** ; **migration qui change l'arbre ou les points → `LATER` + copies figées**.
+- **Worktree / branche** : `../ubumaths-wt-questions` · `fix/monnaie-qcm-taille` (à créer).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -250,3 +250,4 @@ David suit mes recommandations (« je suis tes recos »).
 - 2026-10-26 : lot M (monnaie), phase 0 validée (§ 4 quattuordecies), worktree `../ubumaths-wt-questions` (`feat/questions-monnaie`).
 - 2026-10-26 : M, 6 modèles écrits (`lot-m.py` → `scripts/questions/cp-m/`), 33 specs vertes ; 600 tirages sondés (blocs sans erreur, réponses = dessin, montants des leurres dans le corrigé) ; rendu relu à 390 px en base locale : montants en `$n~\unit{€}$` (« € » seul à la ligne avec une espace, même insécable), accords au singulier, case de M4 sans accord, **corrigé de M3 faux quand le bon porte-monnaie n'a pas de pièce de 1 € (n − 1 deux fois) corrigé**.
 - 2026-10-26 : M, 6 brouillons créés en prod (`create-questions --publier`, lancé par David : le classifieur du mode auto refuse l'écriture en prod), vérifiés sans nœud ni tag, niveaux 1 à 5 ; aucun modèle publié sur ces sous-notions ; migration `20261026200000` nœud + tag et test, rouge (5/9) puis vert (9/9).
+- 2026-10-26 : #1796 mergée (CI verte, audit sécurité sans finding bloquant) ; `db:migrate` joué depuis le dépôt principal, vérifié en prod : 6 modèles M sur leur sous-notion, 1 tag chacun, en brouillon, `updated_at` inchangé. Défaut du bloc relevé : dessin trop petit dans un choix de QCM → `fix/monnaie-qcm-taille` (10 cm, go de David).
