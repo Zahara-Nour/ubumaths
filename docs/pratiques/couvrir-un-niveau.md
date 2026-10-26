@@ -54,6 +54,13 @@ pour les plages des variables **et** pour le corrigé.
 
 ## 2. Vérifier l'existant
 
+**D'abord la passe déjà faite** : le chantier « arbre des notions » a jugé chaque modèle du primaire
+et du collège contre les bornes de son niveau (2026-10-18 → 20) —
+`docs/archive/wip/arbre-notions/analyse/<lot>.csv` (`cycle2`, `cm`, `sixieme`, `cycle4`) et leurs
+`*-notes.md`, avec les décisions de David. Ses verdicts font foi ; on ne revérifie que ce qu'elle
+n'a pas tranché. Ses `HORS_PROGRAMME` restent sans tag, et leur **changement de niveau** (« à part »)
+n'a jamais été fait : il se règle dans le chantier du niveau.
+
 Pour chaque modèle du niveau : chaque variation contre les bornes de son point (plages tirées,
 notions du corrigé — un « × » dans un corrigé de CP est hors programme). `pnpm question:specs
 --template <uuid> --apercu 5` montre des tirages réels.

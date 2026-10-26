@@ -8,7 +8,7 @@
 _Mis à jour le 2026-10-26, relevé et état des lieux faits._
 
 - **État** : relevé prod (111 points, 26 avec modèle, 85 sans ; 110 modèles `grades ∋ 6`, tous publiés) ; existant vérifié contre les bornes (§ 2) ; points sans modèle classés (§ 3).
-- **Prochaine action** : réponses de David aux questions du § 5, puis lot de corrections de l'existant et premier lot de texte (phase 0).
+- **Prochaine action** : réponses de David aux questions du § 5, puis lot de corrections de l'existant et premier lot de texte (phase 0). ⚠️ Les verdicts de la passe du 2026-10-20 (`sixieme.csv`) font foi (encadré du § 2).
 - **En attente de David** : § 5 (questions 1 à 8).
 - **Pièges en cours** : ceux du § 9 de la démarche ; QCM en réécriture (case « choix », chantier `figure-et-choix`, rien en prod) → demander la forme au premier lot qui en a besoin ; géométrie en refonte (`figure-et-choix`).
 - **Worktree / branche** : aucun (journal sur `main`).
@@ -21,6 +21,22 @@ _Mis à jour le 2026-10-26, relevé et état des lieux faits._
   151, 200 (2), 152, 201, 157 (2), 206 (6), 159 (12), 187, 188, 190 (2), 191 (3), 193 (2).
 
 ## 2. L'existant contre les bornes
+
+> ⚠️ **La passe du chantier « arbre des notions » (2026-10-18 → 20) fait foi** et passe avant les
+> verdicts ci-dessous : `docs/archive/wip/arbre-notions/analyse/sixieme.csv` (110 modèles : 60 TAG,
+> 8 MODIFIER, 42 HORS_PROGRAMME) et `sixieme-notes.md`. Elle ne jugeait que le tag ; les HORS_PROGRAMME
+> portent « changement de niveau à part », étape jamais faite (3 modèles seulement passés de 5e en 4e).
+> Décisions de David qu'elle applique et que la relecture du 2026-10-26 contredisait :
+>
+> - **opérations à trou hors tables : pas de tag** (Q1, 2026-10-17) → les 6 multiplications à trou
+>   du § 2.3 restent sans point ;
+> - **augmentation / diminution = 3-068 (3e), pas de tag en 6e** (2026-10-20) ;
+> - **échelle écrite 1/n refusée en 6e**, candidat 5-088 (2026-10-20) ;
+> - aires en mm² à km² : TAG (la borne d'unités de 6-150 ne vaut que pour les conversions) ;
+>   « Fréquence » : TAG 6-188 (couverture partielle acceptée) ; côté du carré par l'aire : TAG 6-151.
+>
+> Ce qui reste nouveau : le doublon 3a7a5711 / 059e3fc9 (déjà relevé alors, non traité), la variation
+> en double de 82748db8, la coquille de ae7a332e, le niveau des 42 HORS_PROGRAMME.
 
 Vérifié par tirages réels (`question:specs --apercu`, specs toutes vertes ; le « NON importable » du
 script en mode `--template` vient des colonnes `created_at` / `updated_at` / `created_by`, pas des modèles).
@@ -99,8 +115,9 @@ Coquille : ae7a332e finit par « est $?.$ » (point dans la formule).
   1. **Placer sur une droite graduée** (geste « placer », déjà manquant au CP pour CP-008) → 107, 128.
   2. **Assemblages de cubes** (perspective, vues de dessus / face / côté) → 154, 155, 181, 208, 209
      (et 153 en dessin). Rien de tel n'existe.
-  3. **Rapporteur posé sur une figure** (lire une mesure) → 169 ; les constructions animées ont déjà un
-     rapporteur (`constructions-v2`), à réutiliser comme dessin fixe.
+  3. **Rapporteur posé sur une figure** (lire une mesure) → 169 : pas un outil neuf, le rapporteur existe
+     dans `constructions-v2` (`buildRapporteur`, instrument `rapporteur`) ; il s'agit de le brancher dans
+     un bloc de question (dessin fixe), puis comme geste pour 170.
   4. **Figure à compléter, nouveaux contrôles** (aujourd'hui `droite_par`, `carre`, `rectangle`) : angle de
      mesure donnée (170), triangle (173), symétrique (180), cercle circonscrit (207), bissectrice et
      médiatrice construites (172, 166) → dans le chantier `figure-et-choix`.
