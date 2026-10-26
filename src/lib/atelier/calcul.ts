@@ -2244,8 +2244,11 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	// moteur ne calcule pas `cos((π/3)[rad])` (`.résoudre h(x)=1`, h(x) = cos(60°)·x)
 	// Pas pour une commande d'ÉCRITURE (`.latex`, `.texte`…) : elle montre
 	// l'expression telle quelle, pas sa valeur (revue : `.latex cos(60[°])` → `1 / 2`)
+	// Pas pour `.simplifier` non plus : `réduire` lit les degrés et dit la valeur
+	// remarquable dans une étape (`cos(60°) = 1/2`, chantier valeurs-remarquables) ;
+	// convertir ici la calculait en silence
 	const inRadians = (text: string | null): string | null =>
-		text === null || WRITING_COMMANDS.has(name)
+		text === null || WRITING_COMMANDS.has(name) || name === 'simplify'
 			? text
 			: radiansInText(text, session.atelier.functionNames);
 	const substitute = (text: string): string | null =>
@@ -2618,7 +2621,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				kind: 'commande',
 				input,
 				output: rendered.text,
-				latex: toLatex(guarded.shown),
+				// `cos(20°)`, gardé en degrés depuis que `.simplifier` les lit lui-même
+				latex: degreeSignWritten(displayUnitsInLatex(toLatex(guarded.shown))),
 				...(guarded.alternative !== undefined && { alternative: guarded.alternative })
 			};
 		}

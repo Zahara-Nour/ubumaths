@@ -43,6 +43,7 @@ import { isFunction } from '../guards';
 import type { SchoolLevel } from '../common/step-renderer-base';
 import { getPedagogicalSimplifyRuleDescription } from './descriptions-fr';
 import { commonContentFactorRules } from '../pattern/rule-sets/common-factor';
+import { TRIG_VALUE_RULE_NAMES } from '../pattern/rule-sets/trig';
 import { categorizeRule, selectRulesForIntent } from './intent-rules';
 import { expandIfShorter, simplifyPolynomialFractions, tidyAsSteps } from './reduce-steps';
 import { withImpliedParentheses } from '../tidy';
@@ -236,6 +237,39 @@ type StepFactory = ReturnType<typeof createStepFactory>;
 // =============================================================================
 
 /**
+ * Les étapes d'un passage, les valeurs remarquables réunies en UNE étape
+ * (`sin(π/6) + cos(π/3)` : « On utilise des valeurs remarquables : … et … »,
+ * phase 0 de valeurs-remarquables). Les paires sont dans `bindings`
+ * (`before0`, `after0`, `before1`…), que lit le titre (`descriptions-fr.ts`).
+ */
+function withValuesTogether(
+	ruleSteps: readonly { ruleName: string; before: MathNode; after: MathNode }[],
+	globalBefore: MathNode,
+	globalAfter: MathNode,
+	makeStep: StepFactory
+): PedagogicalSimplifyStep[] {
+	const values = ruleSteps.filter((rs) => TRIG_VALUE_RULE_NAMES.has(rs.ruleName));
+	const steps: PedagogicalSimplifyStep[] = [];
+	for (const rs of ruleSteps) {
+		if (values.length < 2 || !TRIG_VALUE_RULE_NAMES.has(rs.ruleName)) {
+			steps.push(makeStep(rs.ruleName, rs.before, rs.after, globalBefore, globalAfter));
+			continue;
+		}
+		if (rs !== values[0]) continue;
+		const bindings: Record<string, MathNode> = {};
+		values.forEach((value, index) => {
+			bindings[`before${index}`] = value.before;
+			bindings[`after${index}`] = value.after;
+		});
+		steps.push({
+			...makeStep(rs.ruleName, globalBefore, globalAfter, globalBefore, globalAfter),
+			bindings
+		});
+	}
+	return steps;
+}
+
+/**
  * Apply pattern rules to fixpoint, recording one `PedagogicalSimplifyStep`
  * per rule firing. Each iteration calls `applyRulesDeepOnceTracked`, which
  * is a single bottom-up pass that fires the highest-priority matching rule
@@ -275,9 +309,7 @@ function runPatternLoop(
 		// "the tree as it stood after the first rule but before the second"
 		// because the engine collapses them into one iteration. Acceptable
 		// for V1 ; revisit when the renderer needs intermediate snapshots.
-		for (const rs of ruleSteps) {
-			steps.push(makeStep(rs.ruleName, rs.before, rs.after, before, after));
-		}
+		steps.push(...withValuesTogether(ruleSteps, before, after, makeStep));
 
 		if (nodesEqual(after, before)) break;
 		current = after;

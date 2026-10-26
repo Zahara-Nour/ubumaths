@@ -17,7 +17,14 @@ import { createRule } from '../rule';
 import type { Rule, MatchBindings } from '../types';
 import { isMathNodeBinding } from '../types';
 import type { MathNode } from '../../types';
-import { number, fraction, opposite, func as astFunc } from '../../factory';
+import {
+	number,
+	fraction,
+	opposite,
+	multiply,
+	piConstant as constantPi,
+	func as astFunc
+} from '../../factory';
 
 // =============================================================================
 // Angle Coefficient Extraction
@@ -64,6 +71,34 @@ function reduceAngle(n: number, d: number): [number, number] {
 }
 
 /**
+ * La valeur d'un nombre entier écrit, ou `null`.
+ *
+ * ⚠️ Pas `parseInt` seul : `parseInt('0.5')` vaut 0, et `cos(0.5π)` se lisait
+ * `cos(0)` = 1 au lieu de 0 (chantier valeurs-remarquables, 2026-10-26).
+ */
+function integerOf(node: MathNode): number | null {
+	if (node.type !== 'number' || !/^\d+$/.test(node.value)) return null;
+	const value = Number(node.value);
+	return Number.isSafeInteger(value) ? value : null;
+}
+
+/** `k·π` ou `π·k`, k entier : k, sinon `null`. */
+function piMultiple(left: MathNode, right: MathNode): number | null {
+	const isPi = (n: MathNode) => n.type === 'constant' && n.constant === 'pi';
+	if (isPi(right)) return integerOf(left);
+	if (isPi(left)) return integerOf(right);
+	return null;
+}
+
+/** `k·angle`, k entier et angle multiple de π : le coefficient, sinon `null`. */
+function scaledCoefficient(factor: MathNode, angle: MathNode): [number, number] | null {
+	const k = integerOf(factor);
+	if (k === null) return null;
+	const coefficient = extractPiCoefficient(angle);
+	return coefficient === null ? null : reduceFraction(k * coefficient[0], coefficient[1]);
+}
+
+/**
  * Extract the rational coefficient k = n/d from an angle expression
  * representing k·π. Returns [n, d] in reduced form, or null if
  * the expression is not a recognizable multiple of π.
@@ -91,10 +126,8 @@ function extractPiCoefficient(node: MathNode): [number, number] | null {
 
 	// Division: π/d or k·π/d
 	if (node.type === 'division') {
-		const den = node.denominator;
-		if (den.type !== 'number') return null;
-		const d = parseInt(den.value, 10);
-		if (!Number.isFinite(d) || d === 0) return null;
+		const d = integerOf(node.denominator);
+		if (d === null || d === 0) return null;
 
 		const num = node.numerator;
 
@@ -105,20 +138,8 @@ function extractPiCoefficient(node: MathNode): [number, number] | null {
 
 		// k·π/d or π·k/d
 		if (num.type === 'multiplication') {
-			if (
-				num.right.type === 'constant' &&
-				num.right.constant === 'pi' &&
-				num.left.type === 'number'
-			) {
-				return reduceFraction(parseInt(num.left.value, 10), d);
-			}
-			if (
-				num.left.type === 'constant' &&
-				num.left.constant === 'pi' &&
-				num.right.type === 'number'
-			) {
-				return reduceFraction(parseInt(num.right.value, 10), d);
-			}
+			const k = piMultiple(num.left, num.right);
+			if (k !== null) return reduceFraction(k, d);
 		}
 
 		// -(π)/d or -(k·π)/d
@@ -130,20 +151,10 @@ function extractPiCoefficient(node: MathNode): [number, number] | null {
 
 	// Multiplication: k·π or π·k
 	if (node.type === 'multiplication') {
-		if (
-			node.right.type === 'constant' &&
-			node.right.constant === 'pi' &&
-			node.left.type === 'number'
-		) {
-			return reduceFraction(parseInt(node.left.value, 10), 1);
-		}
-		if (
-			node.left.type === 'constant' &&
-			node.left.constant === 'pi' &&
-			node.right.type === 'number'
-		) {
-			return reduceFraction(parseInt(node.right.value, 10), 1);
-		}
+		const k = piMultiple(node.left, node.right);
+		if (k !== null) return reduceFraction(k, 1);
+		// k·(π/d) : `7π/3` tapé en texte se lit 7·(π/3)
+		return scaledCoefficient(node.left, node.right) ?? scaledCoefficient(node.right, node.left);
 	}
 
 	return null;
@@ -289,6 +300,130 @@ const tanRemarkable = createRule(P.func('tan', [P._('angle')]), makeTrigReplacem
 // =============================================================================
 
 export const trigRules: readonly Rule[] = [sinRemarkable, cosRemarkable, tanRemarkable] as const;
+
+// =============================================================================
+// Les valeurs remarquables de `réduire`, une étape par geste
+// =============================================================================
+//
+// `réduire` montre chaque geste (décision S4 de simplify-carte, chantier
+// valeurs-remarquables) : `cos(7π/3)` passe par la période (`cos(π/3)`), puis par
+// la valeur (`1/2`) ; `sin(−π/6)` par la parité (`sin-negative`, qui voit le −),
+// puis par la valeur. `trigRules` fait tout d'un coup : il reste pour les autres
+// appelants. Les degrés (`cos(60°)`, 3e) se lisent ici aussi.
+
+/** Un angle en degrés écrit avec l'unité (`60°`) : son nombre entier de degrés, ou `null`. */
+function degreesOf(node: MathNode): number | null {
+	if (node.type !== 'unit' || node.unit.original !== '°') return null;
+	const expression = node.expression;
+	if (expression.type === 'opposite') {
+		const inner = integerOf(expression.operand);
+		return inner === null ? null : -inner;
+	}
+	return integerOf(expression);
+}
+
+/** Le coefficient k de l'angle kπ, en radians (`2π/3`) ou en degrés (`120°`). */
+function angleCoefficient(angle: MathNode): [number, number] | null {
+	const degrees = degreesOf(angle);
+	if (degrees !== null) return reduceFraction(degrees, 180);
+	return extractPiCoefficient(angle);
+}
+
+/** L'angle k·π écrit comme au tableau : `0`, `π`, `2π`, `π/3`, `7π/6`. */
+function piAngle(n: number, d: number): MathNode {
+	if (n === 0) return number('0');
+	const pi = constantPi();
+	const numerator = n === 1 ? pi : multiply(number(String(n)), pi, 'implicit');
+	return d === 1 ? numerator : fraction(numerator, number(String(d)));
+}
+
+/**
+ * L'angle ramené dans [0 ; 2π[, dans son unité : `7π/3` → `π/3`, `420°` → `60°`.
+ * `null` s'il y est déjà, ou si la parité s'en charge (un − écrit devant :
+ * `sin-negative`, `cos-negative`, `tan-negative`).
+ */
+function reducedAngle(angle: MathNode): MathNode | null {
+	if (angle.type === 'opposite') return null;
+	const degrees = degreesOf(angle);
+	// `cos(−60°)` : le − est sous l'unité, la parité ne le voit pas ; la valeur se
+	// lit directement (`canonicalValue`), pas par un détour à 300°
+	if (degrees !== null && degrees < 0) return null;
+	const coefficient = angleCoefficient(angle);
+	if (coefficient === null) return null;
+	const [n, d] = coefficient;
+	if (n >= 0 && n < 2 * d) return null;
+	const [rn, rd] = reduceAngle(n, d);
+	if (degrees !== null && angle.type === 'unit') {
+		return { ...angle, expression: number(String((rn * 180) / rd)) };
+	}
+	return piAngle(rn, rd);
+}
+
+/** La valeur de la table pour un angle déjà dans [0 ; 2π[, sinon `undefined`. */
+function canonicalValue(angle: MathNode, table: Record<string, ValueBuilder>) {
+	const coefficient = angleCoefficient(angle);
+	if (coefficient === null) return undefined;
+	const [n, d] = coefficient;
+	const negativeDegrees = n < 0 && degreesOf(angle) !== null;
+	if (negativeDegrees) {
+		const [rn, rd] = reduceAngle(n, d);
+		return table[`${rn}:${rd}`];
+	}
+	if (n < 0 || n >= 2 * d) return undefined;
+	return table[`${n}:${d}`];
+}
+
+function periodRule(name: string, fn: 'sin' | 'cos' | 'tan'): Rule {
+	return createRule(
+		P.func(fn, [P._('angle')]),
+		(bindings) => astFunc(fn, [reducedAngle(bindings.get('angle') as MathNode)!]),
+		{
+			name,
+			condition: (bindings) => {
+				const angle = bindings.get('angle');
+				return angle !== undefined && isMathNodeBinding(angle) && reducedAngle(angle) !== null;
+			}
+		}
+	);
+}
+
+function valueRule(name: string, fn: 'sin' | 'cos' | 'tan', table: Record<string, ValueBuilder>) {
+	return createRule(
+		P.func(fn, [P._('angle')]),
+		(bindings) => canonicalValue(bindings.get('angle') as MathNode, table)!(),
+		{
+			name,
+			condition: (bindings) => {
+				const angle = bindings.get('angle');
+				return (
+					angle !== undefined &&
+					isMathNodeBinding(angle) &&
+					canonicalValue(angle, table) !== undefined
+				);
+			}
+		}
+	);
+}
+
+/** Les noms des règles de valeur (titres d'étape, regroupement en une seule étape). */
+export const TRIG_VALUE_RULE_NAMES: ReadonlySet<string> = new Set([
+	'sin-remarkable-value',
+	'cos-remarkable-value',
+	'tan-remarkable-value'
+]);
+
+/**
+ * Pour `réduire` : la période (`sin-remarkable-period`…), puis la valeur
+ * (`sin-remarkable-value`…), deux étapes. `tan(π/2)` n'a pas de valeur : gardé.
+ */
+export const trigRemarkableStepRules: readonly Rule[] = [
+	periodRule('sin-remarkable-period', 'sin'),
+	periodRule('cos-remarkable-period', 'cos'),
+	periodRule('tan-remarkable-period', 'tan'),
+	valueRule('sin-remarkable-value', 'sin', SIN_TABLE),
+	valueRule('cos-remarkable-value', 'cos', COS_TABLE),
+	valueRule('tan-remarkable-value', 'tan', TAN_TABLE)
+] as const;
 
 /** Exported for testing */
 export { extractPiCoefficient, reduceAngle };
