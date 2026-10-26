@@ -5,9 +5,9 @@
 _Mis à jour le 2026-10-26, PR 2 (§ 4.2) en cours._
 
 - **État** : #1807, #1811, #1815, #1817 MERGÉES (pas en prod). PR 2 (§ 4.2, `domainChanges` par ensembles + élagage) codée sur `fix/tidy-conditions-ensembles`, tests verts.
-- **Prochaine action** : #1819 : CI puis merge (restes de la revue corrigés, 3ᵉ commit).
+- **Prochaine action** : #1819 : CI puis merge (2 revues Opus traitées).
 - **En attente de David** : essai des vérifs #1807 et #1811 (inchangé).
-- **Pièges en cours** : restes de la revue du § 4.2 corrigés ; plusieurs lettres : rétrécissement refusé ; `x²−1 ≠ 0` pas écrit en points ; restes acceptés de #1815 (termes gardés non regroupés, `tan` gèle le terme) ; restes de la revue de #1817 (`arctan(x)−1 ≠ 0`, `cos(x)/cos(x) dans ]0;1[` non garantis, `arcsin` « ne change rien », `avec x ≥ e` ne se lit pas).
+- **Pièges en cours** : restes de la revue du § 4.2 corrigés ; plusieurs lettres : rétrécissement refusé ; `x²−1 ≠ 0` pas écrit en points ; ⚠️ `e^(ln(−3))` → −3 par `normalize` (antérieur, à corriger à part) ; restes acceptés de #1815 (termes gardés non regroupés, `tan` gèle le terme) ; restes de la revue de #1817 (`arctan(x)−1 ≠ 0`, `cos(x)/cos(x) dans ]0;1[` non garantis, `arcsin` « ne change rien », `avec x ≥ e` ne se lit pas).
 - **Worktree / branche** : `../ubumaths-wt-tidy-conditions`, `fix/tidy-conditions-ensembles`.
 
 ## Contexte
@@ -129,7 +129,7 @@ Sondes : `ln(x³) → 3 ln x` refusé (même domaine, écritures différentes) ;
   - `.simplifier ln(x²)` : rien → bouton « Simplifier pour x > 0 », note « Pour x > 0, on peut écrire 2ln(x) : ajoute « avec x > 0 » (ou « dans ]0 ; +∞[ ») » ; `avec x > 0` → `2 ln x` (avant : « ne change rien ici »).
   - `ln-product` `ln(x(x+1))`, `ln-quotient` `ln(x/(x+1))` : rien → bouton « pour x > 0 » ; `√(x/(x+1))` → « pour x ≥ 0 » ; `sqrt-product` `√x √(x+1)` : rien → « On peut simplifier davantage pour x ≥ 0 » (élargit).
   - Revue Opus (bloquant corrigé) : `ln(x²) + ln(−x)` (défini pour x < 0) donnait un bouton « pour x > 0 », et `avec x > 0` simplifiait. Corrigé : ensembles d'avant et d'après sans point commun → `null` ; domaine rétréci à plusieurs lettres (`ln(xy)`) → `null` comme avant (le vide ne se voit pas) ; `meetsDomain` : une hypothèse hors du domaine de l'expression ne simplifie rien.
-  - Restes de la revue corrigés à la demande de David (3ᵉ commit) : `x² > 0` → `x ≠ 0` (`signOfPower`) ; `plainConditions` (`ln(x) ≠ 0` → `x ≠ 1`, ou `x > 0 et x ≠ 1`) ; `engineAlternative` (tidy finit le calcul du moteur, étapes cachées si l'une est plus étroite que la condition) ; règle `exp-n-ln` (`e^{n ln x} = xⁿ`). Avant : `.simplifier ln(x²)−ln(x²)` → bouton `2ln(x) − 2ln(x), pour x > 0` (le moteur pédagogique s'arrête sur `k ln x`) ; `e^(ln(x²))` → `e^{2ln(x)}, pour x > 0` ; `(ln x)²/ln x` → « pour ln(x) ≠ 0 », x > 0 élagué (la condition sous-entend que ln x existe).
+  - Restes de la revue corrigés à la demande de David (3ᵉ commit) : `x² > 0` → `x ≠ 0` (`signOfPower`) ; `plainConditions` (`ln(x) ≠ 0` → `x ≠ 1`, ou `x > 0 et x ≠ 1`) ; `engineAlternative` (tidy finit le calcul du moteur, étapes cachées si l'une est plus étroite que la condition) ; règle `exp-n-ln` (`e^{n ln x} = xⁿ`). 2ᵉ revue Opus (4ᵉ commit) : `plainConditions` vérifie que l'ensemble écrit tient dans celui d'origine (`ln(x)/ln(x) + ln(x/2)/ln(x/2)` disait « x ≠ 1 et x ≠ 2 ») ; `exp-ln` / `exp-n-ln` refusent ln d'un nombre ≤ 0 ; expression jamais définie → pas de bouton. Reste, ANTÉRIEUR : `.simplifier e^(ln(−3))` → −3 par le repli `normalize` (Points ouverts du README mathAST). Avant : `.simplifier ln(x²)−ln(x²)` → bouton `2ln(x) − 2ln(x), pour x > 0` (le moteur pédagogique s'arrête sur `k ln x`) ; `e^(ln(x²))` → `e^{2ln(x)}, pour x > 0` ; `(ln x)²/ln x` → « pour ln(x) ≠ 0 », x > 0 élagué (la condition sous-entend que ln x existe).
   - Au passage : la réponse du bouton passe par `stripUnnecessaryBrackets` (`ln((x+1))` du moteur pédagogique).
   - `domaine-garde.test.ts` « une réécriture qui rétrécit le domaine n'a pas lieu » réécrit : la ligne garde, le bouton vient.
 

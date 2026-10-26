@@ -291,6 +291,8 @@ export function domainChanges(
 	// voit pas s'il reste un point — ne rien dire. Lus et sans point commun
 	// (revue : `ln(x²) + ln(−x)`, défini pour x < 0, donnait « pour x > 0 ») : idem
 	if (narrows && (!readable || isEmpty(intersect(setBefore, setAfter)))) return null;
+	// Jamais définie (2ᵉ revue : `ln(x)/ln(x) + √(−x)`) : aucune condition n'a de sens
+	if (setBefore !== null && isEmpty(setBefore)) return null;
 	if (!narrows && readable && isIncluded(setAfter, setBefore)) {
 		return { conditions: [], narrows };
 	}
@@ -350,10 +352,27 @@ export function plainConditions(
 	typeCtx?: TypeContext
 ): TidyCondition[] {
 	const domainOfAnswer = mergeConditions(domainConditions(answer, typeCtx, NOTHING_ACQUIRED));
-	const written = conditions.flatMap((condition) =>
-		asPoints(condition, [...domainOfAnswer, ...conditions.filter((c) => c !== condition)], typeCtx)
+	const written = mergeConditions(
+		conditions.flatMap((condition) =>
+			asPoints(
+				condition,
+				[...domainOfAnswer, ...conditions.filter((c) => c !== condition)],
+				typeCtx
+			)
+		)
 	);
-	return mergeConditions(written);
+	// Deux `ln(…) ≠ 0` se garantissaient l'un l'autre x > 0 (revue : `ln(x)/ln(x) +
+	// ln(x/2)/ln(x/2)` disait « x ≠ 1 et x ≠ 2 ») : l'ensemble écrit, avec la
+	// réponse, doit tenir dans celui des conditions d'origine — sinon elles restent
+	const letters = new Set(conditions.flatMap((c) => [...getVariables(c.expression)]));
+	if (letters.size !== 1) return mergeConditions([...conditions]);
+	const [letter] = letters;
+	const said = setOf([...written, ...domainOfAnswer], letter);
+	const meant = setOf(conditions, letter);
+	if (said === null || meant === null || !isIncluded(said, meant)) {
+		return mergeConditions([...conditions]);
+	}
+	return written;
 }
 
 /**

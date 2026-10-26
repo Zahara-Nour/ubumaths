@@ -342,6 +342,23 @@ describe('restes de la revue du § 4.2', () => {
 		expect(flat(alternative?.domain?.answer)).toBe(flat(answer));
 	});
 
+	// 2ᵉ revue : deux `ln(…) ≠ 0` se garantissaient l'un l'autre x > 0
+	it('ln(x)/ln(x) + ln(x/2)/ln(x/2) : x > 0 reste dit', () => {
+		const { alternative } = line('.simplifier ln(x)/ln(x)+ln(x/2)/ln(x/2)');
+		expect(alternative?.label).not.toBe('Simplifier pour x ≠ 1 et x ≠ 2');
+		const written = line('.simplifier ln(x)/ln(x)+ln(x/2)/ln(x/2) avec x ≠ 1 et x ≠ 2');
+		expect(flat(written.latex)).not.toBe('2');
+	});
+
+	// `e^(ln(−3))` → −3 vient de `normalize` (repli), noté aux Points ouverts
+	it('.simplifier e^(2ln(-3)) : ln d’un négatif n’existe pas, rien ne se simplifie', () => {
+		expect(flat(line('.simplifier e^(2ln(-3))').latex)).not.toBe('9');
+	});
+
+	it('.simplifier ln(x)/ln(x)+sqrt(-x) : jamais définie, pas de bouton', () => {
+		expect(line('.simplifier ln(x)/ln(x)+sqrt(-x)').alternative).toBeUndefined();
+	});
+
 	// `ln(x²) → 2 ln x` ne vaut que pour x > 0 : pas d'étapes sous « pour x ≠ 0 »
 	it.each(['.simplifier ln(x^2)-ln(x^2)', '.simplifier e^(ln(x^2))'])(
 		'%s : le bouton ne montre pas d’étape fausse pour x < 0',
