@@ -188,7 +188,18 @@ import { deriveSteps } from './derive-steps';
 import { variationsRendering } from './variations-steps';
 import { simplifySteps } from './simplify-steps';
 import { factorSteps } from './factor-steps';
-import { guardedAnswer, tidyFurther, writtenKeepingDomain } from './domain-guard';
+import { guardedAnswer, tidyFurther, writtenKeepingDomain, type DomainFacts } from './domain-guard';
+import {
+	conditionsText,
+	guarantees,
+	readHypotheses,
+	simplifyFurtherNote,
+	splitHypotheses,
+	type Hypotheses,
+	type HypothesesReading,
+	type HypothesisSplit
+} from './hypotheses';
+import type { DomainMode } from './domain-mode';
 import { expandExpression, type ExpandMode } from './expand';
 import { integrateRefusalSteps, integrateSteps } from './integrate-steps';
 import { calculationSteps, evaluateSteps } from './evaluate-steps';
@@ -258,6 +269,8 @@ export interface Alternative {
 	/** Les étapes de l'autre écriture, montrées à la place de celles de la ligne. */
 	readonly steps?: readonly RenderedStep[];
 	readonly summary?: readonly RenderedStep[];
+	/** Une simplification qui change le domaine (tidy-conditions) : sa réponse et ses conditions. */
+	readonly domain?: DomainFacts;
 }
 
 /** Ce qu'une saisie a produit. */
@@ -3592,15 +3605,146 @@ export function runInput(
 	text: string,
 	provenance: Provenance = 'text'
 ): CalcResult {
+	// `avec x ≠ 0` / `dans ]0;+∞[` (tidy-conditions, § 3) : l'hypothèse est
+	// coupée AVANT tout calcul, la ligne se calcule sans elle, puis la lit
+	const split = provenance === 'text' ? hypothesisOf(session, text) : null;
+	if (split !== null && !split.reading.ok) return { kind: 'refus', message: split.reading.message };
+	const line = split === null ? text : split.split.expression;
+	const computed = computeInput(session, line, provenance);
+	const assumed =
+		split === null || !split.reading.ok
+			? computed
+			: withHypotheses(computed, text, split.reading.hypotheses, split.split.written);
 	return resultWithDegreeSign(
 		resultWithDecimalComma(
 			measureLine(
 				session.atelier,
-				text,
-				approximatedResult(session.atelier, text, computeInput(session, text, provenance))
+				line,
+				approximatedResult(
+					session.atelier,
+					line,
+					withDomainMode(assumed, session.atelier.domainMode, split !== null)
+				)
 			)
 		)
 	);
+}
+
+/** Les commandes qui lisent `avec` / `dans` comme une hypothèse (§ 3). */
+const HYPOTHESIS_COMMANDS = new Set(['simplify', 'factor', 'expand']);
+
+/**
+ * L'hypothèse d'une ligne, lue ; `null` si la ligne n'en porte pas : pas de
+ * mot-clé, une commande qui a son propre `dans` (`.résoudre`), une
+ * définition ou une équation (`f(x) = … sur …`).
+ */
+function hypothesisOf(
+	session: CalcSession,
+	text: string
+): { readonly split: HypothesisSplit; readonly reading: HypothesesReading } | null {
+	const split = splitHypotheses(text);
+	if (split === null) return null;
+	const command = /^\.(\S+)\s*(.*)$/s.exec(split.expression);
+	let expression = split.expression;
+	if (command !== null) {
+		const name = catalogCommandOf(session.engine, command[1])?.name ?? command[1];
+		if (!HYPOTHESIS_COMMANDS.has(name)) return null;
+		expression = command[2];
+	} else if (expression.includes('=')) {
+		return null;
+	}
+	const ast = astOf(expression, 'text', session.atelier.functionNames);
+	const letters = ast === null ? new Set<string>() : getVariables(ast);
+	return { split, reading: readHypotheses(split, letters) };
+}
+
+/**
+ * Une ligne lue sous hypothèse : la simplification du bouton a lieu si
+ * l'hypothèse garantit chacune de ses conditions ; sinon la ligne garde et
+ * le dit. La saisie reste écrite telle quelle, hypothèse comprise.
+ */
+function withHypotheses(
+	result: CalcResult,
+	typed: string,
+	hypotheses: Hypotheses,
+	written: string
+): CalcResult {
+	if (result.kind !== 'calcul' && result.kind !== 'commande') return result;
+	const echoed = { ...result, input: typed };
+	const alternative = result.alternative;
+	const facts = alternative?.domain;
+	if (alternative === undefined || facts === undefined) {
+		// Une expression tapée ne factorise pas : `.simplifier` le fait (revue)
+		const hint =
+			result.kind === 'calcul'
+				? `« ${written} » ne change rien à cette ligne : pour simplifier, écris « .simplifier ${typed} ».`
+				: `« ${written} » ne change rien ici.`;
+		return { ...echoed, note: joinedNote(result.note, hint) };
+	}
+	const missing = facts.conditions.filter((c) => !guarantees(hypotheses, c));
+	if (missing.length > 0) {
+		return {
+			...echoed,
+			note: joinedNote(
+				result.note,
+				`${written} ne garantit pas ${conditionsText(missing)} : la ligne garde l’écriture.`
+			)
+		};
+	}
+	// Les étapes de la ligne mènent à l'écriture gardée : sans celles du bouton,
+	// aucune (revue : `.développer x(1/x−1) avec x ≠ 0` finissait sur `−x + x/x`)
+	const { alternative: _used, steps: _steps, ...kept } = echoed;
+	const rest = kept.kind === 'commande' ? (({ summary: _summary, ...r }) => r)(kept) : kept;
+	return {
+		...rest,
+		latex: facts.answer,
+		...(alternative.steps !== undefined && { steps: alternative.steps }),
+		...(alternative.summary !== undefined && { summary: alternative.summary }),
+		...(rest.kind === 'calcul' && { ast: facts.ast })
+	} as CalcResult;
+}
+
+/**
+ * Le réglage « Simplifications qui changent le domaine », lu à la création de
+ * la ligne (Q8) : « garder l'écriture » ajoute la note qui propose `avec` (Q5) ;
+ * « simplifier en disant la condition » montre la simplification, le bouton
+ * revient (Q7). Une ligne sous hypothèse a déjà sa note.
+ */
+function withDomainMode(result: CalcResult, mode: DomainMode, assumed: boolean): CalcResult {
+	if (result.kind !== 'calcul' && result.kind !== 'commande') return result;
+	const alternative = result.alternative;
+	const facts = alternative?.domain;
+	if (alternative === undefined || facts === undefined) return result;
+	if (mode === 'keep') {
+		return assumed
+			? result
+			: { ...result, note: joinedNote(result.note, simplifyFurtherNote(facts.conditions)) };
+	}
+	// Sans écriture mathématique de départ (« rien à factoriser »), rien à basculer
+	if (result.latex === undefined) return result;
+	// Les étapes de la ligne passent au bouton ; celles du bouton, sur la ligne
+	const { steps: _steps, ...rest } =
+		result.kind === 'commande' ? (({ summary: _summary, ...r }) => r)(result) : result;
+	return {
+		...rest,
+		latex: alternative.latex,
+		...(alternative.steps !== undefined && { steps: alternative.steps }),
+		...(alternative.summary !== undefined && { summary: alternative.summary }),
+		...(rest.kind === 'calcul' && { ast: facts.ast }),
+		alternative: {
+			label: alternative.back ?? alternative.label,
+			back: alternative.label,
+			latex: result.latex,
+			...(result.steps !== undefined && { steps: result.steps }),
+			// Une ligne de calcul n'a pas de résumé : seules les commandes en portent
+			...(result.kind === 'commande' && result.summary !== undefined && { summary: result.summary })
+		}
+	} as CalcResult;
+}
+
+/** Deux notes d'une ligne, l'une après l'autre. */
+function joinedNote(first: string | undefined, second: string): string {
+	return first === undefined ? second : `${first} ${second}`;
 }
 
 /** Un angle s'écrit `60°` dans la réponse, sans espace (`degrees.ts`). */

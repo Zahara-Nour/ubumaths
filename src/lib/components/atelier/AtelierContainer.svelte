@@ -36,6 +36,7 @@
 		writePointDragMode,
 		type PointDragMode
 	} from '$lib/atelier/point-drag-mode';
+	import { readDomainMode, writeDomainMode, type DomainMode } from '$lib/atelier/domain-mode';
 	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -252,6 +253,15 @@
 	function choosePointDragMode(mode: PointDragMode) {
 		atelier.setPointDragMode(mode);
 		writePointDragMode(readStorage(), mode);
+	}
+
+	// Les simplifications qui changent le domaine (tidy-conditions, § 3)
+	// svelte-ignore state_referenced_locally
+	atelier.setDomainMode(readDomainMode(readStorage()));
+
+	function chooseDomainMode(mode: DomainMode) {
+		atelier.setDomainMode(mode);
+		writeDomainMode(readStorage(), mode);
 	}
 
 	/** Un historique relu : confirmer s'il y a de quoi perdre, sinon rejouer (R1, R2). */
@@ -1219,6 +1229,7 @@
 					bind:inputMode={() => inputMode, chooseInputMode}
 					bind:angleUnit={() => atelier.angleUnit, chooseAngleUnit}
 					bind:pointDragMode={() => atelier.pointDragMode, choosePointDragMode}
+					bind:domainMode={() => atelier.domainMode, chooseDomainMode}
 				/>
 			</div>
 		</div>

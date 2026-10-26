@@ -144,6 +144,7 @@ import {
 } from './construction';
 import { dragHoldOf, draggedCoordinates, positionAt, positionWithin } from './point-drag';
 import { DEFAULT_POINT_DRAG_MODE, type PointDragMode } from './point-drag-mode';
+import { DEFAULT_DOMAIN_MODE, type DomainMode } from './domain-mode';
 import {
 	computeGrid,
 	gridTexts,
@@ -1973,6 +1974,21 @@ export class Atelier {
 
 	setPointDragMode(mode: PointDragMode): void {
 		this.#pointDragMode = mode;
+	}
+
+	/**
+	 * Les simplifications qui changent le domaine (réglage, tidy-conditions,
+	 * 2026-10-26) : garder l'écriture, ou simplifier en disant la condition.
+	 * Lu à la création d'une ligne seulement ; hors `serialize()`.
+	 */
+	#domainMode = $state<DomainMode>(DEFAULT_DOMAIN_MODE);
+
+	get domainMode(): DomainMode {
+		return this.#domainMode;
+	}
+
+	setDomainMode(mode: DomainMode): void {
+		this.#domainMode = mode;
 	}
 
 	/** Le pixel que suit un point glissé ou posé : en fluide seulement, s'il est connu. */

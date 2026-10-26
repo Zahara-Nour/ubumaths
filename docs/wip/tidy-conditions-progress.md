@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 de la suite (§ 3), après #1807._
+_Mis à jour le 2026-10-26, § 3 codé sur la branche, PR à ouvrir._
 
-- **État** : #1807 MERGÉE (pas encore en prod). David demande la suite : un réglage entre les deux modes, et une bulle qui dit qu'on peut simplifier plus, avec la syntaxe pour préciser le domaine (§ 3).
-- **Prochaine action** : coder le § 3 d'après les réponses de David (worktree `ubumaths-wt-tidy-conditions` à recréer).
-- **En attente de David** : Q5, Q6 bis, Q7, Q9 du § 3 (Q8 tranchée, Q6 répondue).
-- **Pièges en cours** : aucune syntaxe de domaine n'existe pour `.simplifier` (seulement `dans` de `.résoudre`/`.variations`, `sur` d'une fonction) ; `1/(1/x) → x` reste un bug de `tidy`.
-- **Worktree / branche** : à recréer (`feat/tidy-conditions-reglage`).
+- **État** : #1807 MERGÉE. § 3 codé (`feat/tidy-conditions-reglage`) : réglage « Simplifications qui changent le domaine », note « avec x ≠ 0 », hypothèses `avec`/`dans` (∩ sur option de `parseStudentDomain`). Revue Sonnet : 4 findings corrigés (domaine périodique jamais garanti, note recopiable, étapes de `.développer avec`, message d'une expression tapée). 37 025 tests verts.
+- **Prochaine action** : PR, CI, merge ; puis clore le chantier (verser le journal).
+- **En attente de David** : essayer sur http://localhost:5177/atelier.
+- **Pièges en cours** : seule une condition polynomiale est garantie (`cos(x) ≠ 0` jamais) ; `ln(x²) → 2 ln x` refusé même `avec x > 0` ; `1/(1/x) → x` reste un bug de `tidy`.
+- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` · `feat/tidy-conditions-reglage`.
 
 ## Contexte
 
@@ -85,16 +85,16 @@ Comportements proposés :
 
 Questions :
 
-- **Q5 — Forme de la bulle.** Reco : la note sous la ligne (existe, visible, lue par les lecteurs d'écran). Autre : une icône ⓘ avec une bulle au survol / au toucher.
-- **Q6 — Syntaxe. Réponse de David (2026-10-26)** : aussi « avec x > 0 », et des intervalles avec réunion ET intersection. Proposition qui en découle (à valider, Q6 bis) :
+- **Q5 — TRANCHÉE (reco validée, 2026-10-26).** Reco : la note sous la ligne (existe, visible, lue par les lecteurs d'écran). Autre : une icône ⓘ avec une bulle au survol / au toucher.
+- **Q6 — Syntaxe. Réponse de David (2026-10-26) ; Q6 bis validée** : aussi « avec x > 0 », et des intervalles avec réunion ET intersection. Proposition qui en découle (à valider, Q6 bis) :
   - `avec CONDITION` et `dans ENSEMBLE`, sur `.simplifier`, `.factoriser`, `.développer` **et sur une expression tapée** (`x/x avec x ≠ 0` → `1`) ;
   - `avec` : `x > 0`, `x ≠ 0 et x ≠ 1`, `x < 0 ou x > 2`, `0 < x ≤ 5`, plusieurs lettres (`x > 0 et y ≠ 0`, chaque condition lit sa lettre) ;
   - `dans` : `]0;+∞[`, `ℝ\{0}`, `]-∞;0[ ∪ ]0;+∞[`, `]0;+∞[ ∩ ]-∞;5]` — une lettre (`pour VAR` sinon) ;
   - à ajouter à `parseStudentDomain` (mesuré) : l'intersection `∩` d'intervalles (le signe est lu, pas le calcul) ; le mélange `et`/`ou` dans une même condition reste refusé avec un message (« écris-le avec des intervalles et ∪ / ∩ ») ;
   - la note propose `avec` d'après la condition, toujours écrivable, plusieurs lettres comprises : « On peut simplifier davantage pour x ≠ 0 : ajoute `avec x ≠ 0` (ou `dans ℝ\{0}`). »
   - un ensemble qui ne garantit pas la condition (`.simplifier x/x dans ℝ`) : la ligne garde l'écriture et dit pourquoi (« 0 est dans ℝ, x/x n'y est pas défini »).
-- **Q7 — Mode « variante ».** Reco : le bouton reste (« Sans simplifier »), pas de note (la condition est déjà sur la ligne).
+- **Q7 — TRANCHÉE (reco validée).** Reco : le bouton reste (« Sans simplifier »), pas de note (la condition est déjà sur la ligne).
 - **Q8 — Lignes déjà écrites. TRANCHÉE (David, 2026-10-26)** : le réglage ne s'applique qu'aux **nouvelles lignes** ; chacune se bascule ensuite à la main (bouton de ligne). Les lignes déjà écrites ne bougent pas.
-- **Q9 — Défaut.** Reco : « Garder l'écriture » (ta décision de ce matin).
+- **Q9 — TRANCHÉE (reco validée).** Reco : « Garder l'écriture » (ta décision de ce matin).
 
 ## Historique
