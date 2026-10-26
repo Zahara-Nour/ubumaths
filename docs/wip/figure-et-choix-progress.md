@@ -8,25 +8,31 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1826._
+_Mis à jour le 2026-10-26, après #1833._
 
 - **État** : lots 1 (#1816, #1822) et 2 (#1826, figure de travail : bloc ```figure-de-travail, jamais
   notée via `questions/graded-part.ts`, traits gris, ligne « Ta figure de travail » dans la correction,
-  carte de l'éditeur, version publique `workFigure`) mergés. Rien en prod.
+  carte de l'éditeur, version publique `workFigure`) mergés, plus #1833 (éditeur : cases de blocs omises de
+  `blanks[]` remises à leur rang après une modification de l'énoncé, jamais sur énoncé à variables). Rien en prod.
 - **Prochaine action** : lot 3, CP-058 réécrit (figure de travail + case choix oui / non), essai par David,
   puis publication (§ 2.5).
 - **En attente de David** : essais de la case choix (lot 1) et de la figure de travail (lot 2) — serveur
   de test du worktree, port 5179 (worktree FIGÉ tant qu'il teste).
 - **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
   contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL ;
-  une seule session par worktree. Restes connus : éditeur de tests et `AnswerEditor` décalés si `blanks[]`
-  omet une case de bloc (figure, choix ; existait avant le lot 2) ; libellé brut des choix dans l'éditeur
+  une seule session par worktree. Restes connus : modèle ouvert sans modification, ou à variables, qui omet
+  une case de bloc → cartes encore décalées (le générateur, lui, est juste) ; libellé brut des choix dans l'éditeur
   de tests ; espaces de bord d'un choix rognés.
 - **Worktree / branche** : `../ubumaths-wt-figure-et-choix` ; prochaine branche à créer depuis `origin/main`.
 
 ---
 
 ## Historique
+
+- 2026-10-26 — **#1833 mergée** : trouvé par David à l'essai du lot 2 (énoncé collé, formulaire parti d'une
+  entrée → pas de carte pour le choix, « aucune bonne réponse »). `withBlockCases` réaligne comme le
+  générateur ; revue sonnet : réalignement à l'ouverture (formulaire « modifié ») et sur énoncé brut à
+  variables (division `{{a}} ÷ 7` = 2 cases résolues) → corrigés avant merge.
 
 - 2026-10-26 — **#1826 mergée** (lot 2, figure de travail) : phase 0 § 2.9 (recos suivies). Un seul point de
   retrait (`gradedPart`) prouvé rouge sans lui ; trou trouvé en route : `QuestionCard` exigeait toutes les
