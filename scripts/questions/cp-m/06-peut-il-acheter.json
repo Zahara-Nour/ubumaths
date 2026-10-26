@@ -1,0 +1,208 @@
+{
+	"title": "Peut-il acheter ?",
+	"description": "Comparer l'argent qu'on a au prix d'un objet ; une variation tombe pile sur le prix",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Pièces et billets",
+	"level": 5,
+	"delay": 45,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Tom a cet argent :\n\n```monnaie\nbillets: {{t}}×10 {{c}}×5\npièces: {{d}}×2 {{u}}×1\n```\n\nIl veut acheter un ballon à ${{p}}~\\unit{€}$. Peut-il l'acheter ?",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "0..3"
+				},
+				{
+					"name": "u",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:10*t+5*c+2*d+u"
+				},
+				{
+					"name": "dp",
+					"expression": "-3|-2|-1|1|2|3"
+				},
+				{
+					"name": "p",
+					"expression": "eval:s+dp"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:s>=p|0|1}}"
+				}
+			],
+			"conditions": ["t + c >= 1", "d + u >= 1"],
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			],
+			"correctChoiceIndex": ["{{g}}"],
+			"correction": {
+				"steps": [
+					"Tom a ${{s}}~\\unit{€}$. Le ballon coûte ${{p}}~\\unit{€}$.",
+					"{{if:s>p|Tom a plus d'argent que le prix : il peut l'acheter.|{{if:s==p|Tom a juste assez d'argent : il peut l'acheter.|Il lui manque ${{eval:p-s}}~\\unit{€}$ : il ne peut pas l'acheter.}}}}"
+				]
+			}
+		},
+		{
+			"statement": "Tom a cet argent :\n\n```monnaie\nbillets: {{t}}×10 {{c}}×5\npièces: {{d}}×2 {{u}}×1\n```\n\nIl veut acheter un ballon à ${{p}}~\\unit{€}$. Peut-il l'acheter ?",
+			"variables": [
+				{
+					"name": "t",
+					"expression": "0..3"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "0..3"
+				},
+				{
+					"name": "u",
+					"expression": "0..1"
+				},
+				{
+					"name": "s",
+					"expression": "eval:10*t+5*c+2*d+u"
+				},
+				{
+					"name": "p",
+					"expression": "eval:s"
+				},
+				{
+					"name": "g",
+					"expression": "{{if:s>=p|0|1}}"
+				}
+			],
+			"conditions": ["t + c >= 1", "d + u >= 1"],
+			"choices": [
+				{
+					"content": "Oui"
+				},
+				{
+					"content": "Non"
+				}
+			],
+			"correctChoiceIndex": ["{{g}}"],
+			"correction": {
+				"steps": [
+					"Tom a ${{s}}~\\unit{€}$. Le ballon coûte ${{p}}~\\unit{€}$.",
+					"{{if:s>p|Tom a plus d'argent que le prix : il peut l'acheter.|{{if:s==p|Tom a juste assez d'argent : il peut l'acheter.|Il lui manque ${{eval:p-s}}~\\unit{€}$ : il ne peut pas l'acheter.}}}}"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "Tom a 17 €, ballon à 15 € : oui",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"c": "1",
+				"d": "1",
+				"u": "0",
+				"s": "17",
+				"dp": "-2",
+				"p": "15",
+				"g": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Tom a 17 €, ballon à 19 € : non",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"c": "1",
+				"d": "1",
+				"u": "0",
+				"s": "17",
+				"dp": "2",
+				"p": "19",
+				"g": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [1]
+		},
+		{
+			"description": "Erreur : oui alors qu'il manque 2 €",
+			"variationIndex": 0,
+			"variables": {
+				"t": "1",
+				"c": "1",
+				"d": "1",
+				"u": "0",
+				"s": "17",
+				"dp": "2",
+				"p": "19",
+				"g": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Pile au prix (23 €) : oui",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"c": "0",
+				"d": "1",
+				"u": "1",
+				"s": "23",
+				"p": "23",
+				"g": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"selectedChoices": [0]
+		},
+		{
+			"description": "Erreur : non alors qu'il a juste assez",
+			"variationIndex": 1,
+			"variables": {
+				"t": "2",
+				"c": "0",
+				"d": "1",
+				"u": "1",
+				"s": "23",
+				"p": "23",
+				"g": "0"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"selectedChoices": [1]
+		}
+	],
+	"options": {
+		"shuffleChoices": false
+	}
+}

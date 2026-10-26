@@ -1,0 +1,244 @@
+{
+	"title": "Combien d'argent y a-t-il ?",
+	"description": "Trouver la valeur en euros de pièces et de billets (≤ 100 €), rangés ou en vrac",
+	"grades": ["CP"],
+	"theme": "Grandeurs",
+	"domain": "Monnaie",
+	"subdomain": "Pièces et billets",
+	"level": 1,
+	"delay": 60,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "Combien d'argent y a-t-il ?\n\n```monnaie\npièces: {{d}}×2 {{u}}×1\n```\n\nIl y a [_] €.",
+			"variables": [
+				{
+					"name": "d",
+					"expression": "1..4"
+				},
+				{
+					"name": "u",
+					"expression": "0..2"
+				}
+			],
+			"conditions": ["d + u >= 2"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:2*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On compte les pièces : elles valent ${{eval:2*d+u}}~\\unit{€}$.",
+					"Ce n'est pas le nombre de pièces qui compte, c'est ce qui est écrit dessus."
+				]
+			}
+		},
+		{
+			"statement": "Combien d'argent y a-t-il ?\n\n```monnaie\nbillets: {{b}}×10\npièces: {{d}}×2 {{u}}×1\n```\n\nIl y a [_] €.",
+			"variables": [
+				{
+					"name": "b",
+					"expression": "1..4"
+				},
+				{
+					"name": "d",
+					"expression": "0..4"
+				},
+				{
+					"name": "u",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["d + u >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:10*b+2*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On commence par {{if:b==1|le billet : il vaut|les billets : ils valent}} ${{eval:10*b}}~\\unit{€}$.",
+					"Puis {{if:d+u==1|la pièce : elle vaut|les pièces : elles valent}} ${{eval:2*d+u}}~\\unit{€}$.",
+					"En tout : ${{eval:10*b}}+{{eval:2*d+u}}={{eval:10*b+2*d+u}}~\\unit{€}$.",
+					"Ce n'est pas le nombre de pièces et de billets qui compte, c'est ce qui est écrit dessus."
+				]
+			}
+		},
+		{
+			"statement": "Combien d'argent y a-t-il ?\n\n```monnaie\nbillets: {{v}}×20 {{t}}×10 {{c}}×5\npièces: {{d}}×2 {{u}}×1\n```\n\nIl y a [_] €.",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "0..3"
+				},
+				{
+					"name": "u",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["v + t + c >= 2", "d + u >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:20*v+10*t+5*c+2*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On commence par {{if:v+t+c==1|le billet : il vaut|les billets : ils valent}} ${{eval:20*v+10*t+5*c}}~\\unit{€}$.",
+					"Puis {{if:d+u==1|la pièce : elle vaut|les pièces : elles valent}} ${{eval:2*d+u}}~\\unit{€}$.",
+					"En tout : ${{eval:20*v+10*t+5*c}}+{{eval:2*d+u}}={{eval:20*v+10*t+5*c+2*d+u}}~\\unit{€}$.",
+					"Ce n'est pas le nombre de pièces et de billets qui compte, c'est ce qui est écrit dessus."
+				]
+			}
+		},
+		{
+			"statement": "Combien d'argent y a-t-il ?\n\n```monnaie\nbillets: {{v}}×20 {{t}}×10 {{c}}×5\npièces: {{d}}×2 {{u}}×1\ndisposition: mélangé\n```\n\nIl y a [_] €.",
+			"variables": [
+				{
+					"name": "v",
+					"expression": "0..2"
+				},
+				{
+					"name": "t",
+					"expression": "0..2"
+				},
+				{
+					"name": "c",
+					"expression": "0..1"
+				},
+				{
+					"name": "d",
+					"expression": "0..3"
+				},
+				{
+					"name": "u",
+					"expression": "0..1"
+				}
+			],
+			"conditions": ["v + t + c >= 2", "d + u >= 1"],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:20*v+10*t+5*c+2*d+u}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On commence par {{if:v+t+c==1|le billet : il vaut|les billets : ils valent}} ${{eval:20*v+10*t+5*c}}~\\unit{€}$.",
+					"Puis {{if:d+u==1|la pièce : elle vaut|les pièces : elles valent}} ${{eval:2*d+u}}~\\unit{€}$.",
+					"En tout : ${{eval:20*v+10*t+5*c}}+{{eval:2*d+u}}={{eval:20*v+10*t+5*c+2*d+u}}~\\unit{€}$.",
+					"Ce n'est pas le nombre de pièces et de billets qui compte, c'est ce qui est écrit dessus."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "3 pièces de 2 € et 1 de 1 € : 7",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"u": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["7"]
+		},
+		{
+			"description": "Erreur : compte les pièces (4)",
+			"variationIndex": 0,
+			"variables": {
+				"d": "3",
+				"u": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["4"]
+		},
+		{
+			"description": "3 billets de 10 €, 2 pièces de 2 €, 1 de 1 € : 35",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"d": "2",
+				"u": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["35"]
+		},
+		{
+			"description": "Erreur : chaque objet compté 1 € (6)",
+			"variationIndex": 1,
+			"variables": {
+				"b": "3",
+				"d": "2",
+				"u": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["6"]
+		},
+		{
+			"description": "20 + 10 + 10 + 5 + 2 + 2 + 1 = 50",
+			"variationIndex": 2,
+			"variables": {
+				"v": "1",
+				"t": "2",
+				"c": "1",
+				"d": "2",
+				"u": "1"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["50"]
+		},
+		{
+			"description": "Erreur : le 5 € oublié (45)",
+			"variationIndex": 2,
+			"variables": {
+				"v": "1",
+				"t": "2",
+				"c": "1",
+				"d": "2",
+				"u": "1"
+			},
+			"expected": {
+				"status": "incorrect"
+			},
+			"answers": ["45"]
+		},
+		{
+			"description": "Mélangé : 20 + 20 + 10 + 2 = 52",
+			"variationIndex": 3,
+			"variables": {
+				"v": "2",
+				"t": "1",
+				"c": "0",
+				"d": "1",
+				"u": "0"
+			},
+			"expected": {
+				"status": "correct"
+			},
+			"answers": ["52"]
+		}
+	]
+}
