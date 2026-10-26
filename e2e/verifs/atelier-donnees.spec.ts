@@ -94,6 +94,9 @@ test('#1421 — formules : cases, objets de l’atelier, case vide, erreur', asy
 });
 
 test('#1422 — valeur exacte sous la barre, π écrit en maths', async ({ page }) => {
+	// Une fraction s'écrit en texte, pas en maths (elle débordait de la ligne)
+	await typeCell(page, 'A4', '=2/3');
+	expect(await readCell(page, 'A4')).toMatchObject({ shown: '2/3', latex: null });
 	await typeCell(page, 'A1', '=sqrt(8)');
 	const root = await readCell(page, 'A1');
 	expect(root.latex).toBe('2\\sqrt{2}');
@@ -367,12 +370,17 @@ test('#1410 — la grille : saisie répartie, colonne nommée en liste, nom reti
 	await expect(cardLocator(page, 'L')).toBeVisible();
 	await expect(page.locator('tr.apercus')).toContainText('n = 4');
 
-	// « × » retire le nom : la carte part, les cases restent. La ligne dit « Annuler » du
-	// message : plus de message depuis Annuler / Rétablir (lot 5), c'est ↶ qui remet L (à David)
+	// « × » retire le nom : la carte part, les cases restent ; ↶ remet L
 	await page.getByRole('button', { name: 'Retirer le nom L de la colonne A' }).click();
 	await expect(cardLocator(page, 'L')).toHaveCount(0);
 	expect(await shownIn(page, 'A3')).toBe('15');
 	await page.getByRole('button', { name: 'Annuler : retirer le nom de la colonne A' }).click();
+	await expect(cardLocator(page, 'L')).toBeVisible();
+	// Ctrl+Z aussi
+	await page.getByRole('button', { name: 'Retirer le nom L de la colonne A' }).click();
+	await expect(cardLocator(page, 'L')).toHaveCount(0);
+	await selectCell(page, 'A1');
+	await page.keyboard.press('ControlOrMeta+Z');
 	await expect(cardLocator(page, 'L')).toBeVisible();
 
 	const cellInCalc = await calc(page, 'B2+1');
