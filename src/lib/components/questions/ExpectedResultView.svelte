@@ -9,7 +9,8 @@
 	- solution `= 8` encadrée, énoncé rempli (solutions en vert), « Ta réponse : »
 	  (chaque case colorée selon son statut), QCM, remarques, attendu seul,
 	  « Tu n'as rien répondu. » ; case « figure » : la figure (`FigureAnswer`) ;
-	  case à construire : le plan verrouillé (`BuildAnswer`).
+	  case à construire : le plan verrouillé (`BuildAnswer`) ;
+	  figure de travail : en dernier, traits gris, sans verdict.
 
 	Le statut n'est jamais porté par la couleur seule : chaque ligne colorée a son
 	libellé en toutes lettres (« juste », « forme à améliorer », « faux »).
@@ -60,6 +61,12 @@
 	});
 
 	/** Statut de chaque case remplie par l'élève, en toutes lettres */
+	/** Libellé d'une figure de travail : sans réponse (R9), sans tracé, tracée */
+	function workFigureLabel(answer: string | null): string {
+		if (answer === null) return 'Figure de travail :';
+		return answer === '' ? 'Ta figure de travail : aucun tracé.' : 'Ta figure de travail :';
+	}
+
 	function fillStatuses(fills: readonly ExpectedFill[]): string {
 		return fills.map((f) => `case ${f.index + 1} : ${EXPECTED_STATUS_LABEL[f.status]}`).join(' · ');
 	}
@@ -180,6 +187,12 @@
 				{#if line.answer !== null}
 					<p class="flex justify-center">{@render statusTag(line.status)}</p>
 				{/if}
+			</div>
+		{:else if line.kind === 'work-figure'}
+			<!-- Figure de travail : jamais notée, après les réponses ; traits gris, aucun verdict -->
+			<div class="space-y-1" data-kind="work-figure">
+				<p class="line-label">{workFigureLabel(line.answer)}</p>
+				<FigureAnswer source={line.source} answer={line.answer} work />
 			</div>
 		{/if}
 	{/each}

@@ -1,28 +1,26 @@
 ---
 title: Figure manipulable partout et case « choix » (QCM réécrit en cases)
 date: 2026-10-26
-status: lot 1 en cours (PR 1a mergée, PR 1b à faire)
+status: lot 1 terminé (#1816, #1822), lot 2 à faire
 ---
 
 # Chantier « figure-et-choix »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, PR 1b codée mais pas commitée (deux sessions dans ce worktree)._
+_Mis à jour le 2026-10-26, après #1822._
 
-- **État** : PR 1b (éditeur de la case choix) **écrite et vérifiée, indexée, pas commitée** :
-  `choice-case-editor.ts`, `ChoiceCaseEditor.svelte`, `AnswerEditor` (cartes, « Ajouter une case choix »,
-  « Vrai / Faux »), `QuestionTemplateForm` (énoncé effectif), `TestSpecEditor` (case choix cochée),
-  éditeur riche (bloc `choix` gardé, clôture ````), docs `questions.md` / `ubumark.md`, § 2.8 ci-dessous.
-  Tests verts, `check:incremental` 0, cliquet tenu, `lint:fast` propre.
-- **Prochaine action** : `git diff --cached --name-only` (les fichiers ci-dessus), relancer seul
-  `construction/__tests__/construction-positions.test.ts` (dépassement de délai sous charge), commit,
-  revue `code-reviewer` sonnet, push (`--force-with-lease` : branche rebasée sur `origin/main`), PR, CI.
-- **En attente de David** : quelle session garde la PR 1b (une autre session travaillait dans ce worktree en
-  parallèle : rebase à 12:09, `test-spec-choice.test.ts` non suivi, qui passe avec ce code).
-- **Pièges en cours** : migration des QCM après le `deploy:prod` des lots 1-2 ; contrainte SQL après le
-  `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL.
-- **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix-editeur`.
+- **État** : lot 1 **terminé** : PR 1a (#1816, moteur et interface élève) et PR 1b (#1822, éditeur : carte
+  « Case N : choix », « Ajouter une case choix », « Vrai / Faux », tests, éditeur riche ; énoncé partagé =
+  carte en lecture seule) mergées. Pas en prod. Les QCM existants sont intacts.
+- **Prochaine action** : lot 2, la figure de travail (§ 2.3) : phase 0 à relire avec David avant de coder
+  (bloc ```figure-de-travail, case non notée, tracé gris, enregistré en évaluation).
+- **En attente de David** : essai de la case choix (serveur de test, éditeur de cases compris).
+- **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
+  contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL ;
+  **une seule session par worktree** (collision du 2026-10-26 sur la PR 1b). Restes mineurs de la revue 1b :
+  libellé brut des choix dans l'éditeur de tests, espaces de bord d'un choix rognés.
+- **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix-travail` (une branche par PR).
 
 ---
 
@@ -228,3 +226,23 @@ réponse »). ADR : « Le QCM est une case » (révise la séparation QCM / case
 - Réponse calculée : champ de texte + « Cocher à la main » ; bloc mal écrit : messages, champ seul, jamais réécrit.
 - Énoncé partagé (revue) : carte en lecture seule, pas d'ajout de case — option A, David suit la reco.
 - Tests : une case choix se coche (`"0;2"`). Éditeur riche : bloc gardé en code `choix` (clôture ```` si besoin).
+
+### 2.9 Lot 2 (figure de travail) : phase 0 validée par David (2026-10-26, recos suivies)
+
+Comportements du § 2.3, plus :
+
+- **Q1 — un seul point de retrait** : une fonction rend « les cases notées » (instance sans ses figures de
+  travail, réponse sans leurs tracés) ; la notation du serveur (`grading.ts`) et celle de l'élève
+  (`answer-validator.ts`) l'appellent EN PREMIER. Rien d'autre (cases vides, appariement libre, « figure
+  vide → 0 », « Tu n'as pas tout complété », ½ des cases vides) ne voit la figure de travail. Le tracé garde
+  sa place dans `values[]` (enregistré en évaluation, sans migration). Tests : figure de travail + case choix
+  (juste/vide, juste/tracée, faux, choix vide) et + deux cases texte en appariement libre, serveur ET élève.
+- **Q2 — (b) partout** : la carte de correction (`CorrectionCard`) est commune à l'entraînement, la Course et
+  la copie → une ligne « Ta figure de travail » (prof : « Sa figure de travail ») dans le résultat attendu,
+  APRÈS les réponses notées : figure de départ + traits en gris, ni vert ni rouge ni pointillés ; vide →
+  « aucun tracé ». Jamais listée parmi les réponses attendues.
+- **Q3 — (a)** : carte « Figure de travail — non notée » en lecture seule dans l'éditeur, sans numéro de
+  case, avec son outil ; erreurs (`verifier:`, `deplacable:`, outil inconnu, figure de travail seule) sur
+  la carte ; rien dans l'éditeur de tests (valeur vide, ignorée).
+- Une question dont la seule case est une figure de travail est refusée à l'écriture (« il faut au moins
+  une case notée »). Pas de numéro de case pour l'élève.

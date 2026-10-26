@@ -19,7 +19,8 @@
 	- statement: énoncé effectif de la variation (bindable, texte à trous) : ses
 	  blocs ```choix deviennent des cartes « Case N : choix » qui le réécrivent ;
 	  « Ajouter une case choix » et « Vrai / Faux » y ajoutent un bloc en fin
-	  (chantier figure-et-choix, PR 1b)
+	  (chantier figure-et-choix, PR 1b) ; ses blocs ```figure-de-travail, des
+	  cartes en lecture seule « Figure de travail — non notée » (lot 2)
 	- statementShared: l'énoncé est le partagé (la variation n'a pas le sien) :
 	  cartes en lecture seule (on coche seulement) et pas d'ajout de case choix,
 	  sinon les réponses des autres variations se décaleraient
@@ -38,6 +39,7 @@
 		statementCaseKinds,
 		type ChoiceCaseDraft
 	} from '$lib/questions/choice-case-editor';
+	import { readWorkFigureCases, type WorkFigureCase } from '$lib/questions/work-figure-editor';
 	import ChoiceCaseEditor from './ChoiceCaseEditor.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -97,6 +99,10 @@
 
 	// Genre de chaque case de l'énoncé (ordre du générateur) : une case choix a sa carte
 	let caseKinds = $derived(statement === undefined ? [] : statementCaseKinds(statement));
+	// Figures de travail de l'énoncé : cartes en lecture seule, jamais notées
+	let workFigures = $derived(
+		statement === undefined ? new Map<number, WorkFigureCase>() : readWorkFigureCases(statement)
+	);
 
 	// Choix déjà écrits : le préréglage les effacerait
 	let writtenChoices = $derived(
@@ -273,7 +279,23 @@
 			<Card.Content class="space-y-4">
 				{#if blanks}
 					{#each blanks as blank, index (index)}
-						{#if statement !== undefined && caseKinds[index] === 'choice'}
+						{@const workFigure = workFigures.get(index)}
+						{#if workFigure}
+							<!-- Figure de travail : jamais notée, se modifie dans l'énoncé -->
+							<div
+								class="space-y-1 rounded-md border bg-muted/30 p-3"
+								data-testid="carte-figure-de-travail"
+							>
+								<p class="text-sm font-medium">Figure de travail — non notée</p>
+								<p class="text-xs text-muted-foreground">
+									Outil : {workFigure.tool}. L'élève peut y tracer pour vérifier ; rien n'est noté.
+									Elle se modifie dans l'énoncé.
+								</p>
+								{#each workFigure.errors as message (message)}
+									<p class="text-xs text-destructive">{message}</p>
+								{/each}
+							</div>
+						{:else if statement !== undefined && caseKinds[index] === 'choice'}
 							<ChoiceCaseEditor
 								bind:statement
 								ordinal={choiceOrdinal(index)}

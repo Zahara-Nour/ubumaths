@@ -1,9 +1,11 @@
 /**
- * Bloc ```figure-a-completer — types
- * ============================
+ * Blocs ```figure-a-completer et ```figure-de-travail — types
+ * ========================================================
  *
  * Figure de départ (même en-tête, même langage que ```figure) que l'élève
  * complète avec des outils ; la case de la question est le bloc lui-même.
+ * Figure de travail : l'élève y trace pour vérifier, rien n'est noté (aucune
+ * vérification, `work`).
  * Le parseur rend un nœud `figure` qui porte `construction` (spécification :
  * `docs/wip/geometrie-validation-progress.md` § 3 et § 4).
  *
@@ -66,4 +68,6 @@ export interface ConstructionSpec {
 	 * (`assign-blank-indices.ts`) ; absent hors d'une question à remplir.
 	 */
 	caseIndex?: number;
+	/** Bloc ```figure-de-travail : tracés possibles, jamais notés (`checks` vide) */
+	work?: true;
 }

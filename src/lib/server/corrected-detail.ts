@@ -92,7 +92,8 @@ export function detailOfCorrected(
 		const isChoice = getQuestionType(item.instance) === 'multiple_choice';
 		const recomputed = isChoice
 			? detail.status
-			: statusFromBlankStatuses(detail.blanks.map((b) => b.status));
+			: // Figures de travail : jamais notées, hors du statut
+				statusFromBlankStatuses(detail.blanks.filter((b) => !b.ungraded).map((b) => b.status));
 		// QCM : `validateAnswerDetailed` ne connaît pas le ½ du barème, seuls les cases comptent
 		if (!isChoice && recomputed !== item.status) {
 			logger.warn('[corrected-detail] Statut recalculé différent du statut enregistré', {

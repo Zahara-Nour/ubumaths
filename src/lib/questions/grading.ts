@@ -15,6 +15,7 @@
 
 import { getQuestionType, type QuestionInstance, type ValidationStatus } from './types';
 import { validateAnswer, validateBlanksDetailed } from '$lib/utils/answer-validator';
+import { gradedPart } from './graded-part';
 import { statusFromChoices } from './choices';
 
 // Le barème d'un QCM vit dans `choices` : la validation du navigateur l'emploie aussi (V4)
@@ -149,13 +150,16 @@ function gradeChoices(instance: QuestionInstance, answer: SubmittedAnswer): Ques
 	};
 }
 
-function gradeBlanks(instance: QuestionInstance, answer: SubmittedAnswer): QuestionVerdict {
-	const blanks = instance.blanks ?? [];
-	const values = answer.values ?? blanks.map(() => '');
+function gradeBlanks(fullInstance: QuestionInstance, answer: SubmittedAnswer): QuestionVerdict {
+	const allValues = answer.values ?? (fullInstance.blanks ?? []).map(() => '');
 	// Nombre de cases différent : réponse fabriquée ou périmée, jamais une exception
-	if (values.length !== blanks.length) {
+	if (allValues.length !== (fullInstance.blanks ?? []).length) {
 		return { status: 'incorrect', points: 0, isCorrect: false, partial: false };
 	}
+	// Figures de travail retirées AVANT toute règle : jamais notées (cf. graded-part.ts)
+	const part = gradedPart(fullInstance, allValues);
+	const { instance, values } = part;
+	const blanks = instance.blanks ?? [];
 	// Forme jugée sur la valeur elle-même (cf. `SubmittedAnswer.values`)
 	const { result, statuses } = validateBlanksDetailed(values, instance, values);
 	// Figure laissée vide, le reste rempli : 0, pas ½ (« oui » sans vérifier est un pari)
@@ -175,7 +179,7 @@ function gradeBlanks(instance: QuestionInstance, answer: SubmittedAnswer): Quest
 		isCorrect: points === 1,
 		partial,
 		...(result.feedback && { feedback: result.feedback }),
-		...(result.blankFeedback && { blankFeedback: result.blankFeedback })
+		...(result.blankFeedback && { blankFeedback: part.spread(result.blankFeedback, undefined) })
 	};
 }
 

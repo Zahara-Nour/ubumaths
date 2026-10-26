@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ```figure-de-travail, `graded-part.ts`) le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -68,6 +68,8 @@ le SRS ([srs.md](srs.md)).
 | `src/lib/questions/constraint-validators.ts`                     | Ancien jeu de contrôles cosmétiques sur le LaTeX brut. **En service : `checkUnit` et `checkReducedFractions` seulement** (les anciens contrôles, morts, ont été retirés ; le jugement passe par `cosmetic-transforms.ts`).                                                                                                                                                                                                    |
 | `src/lib/questions/feedback.ts`, `constraint-constants.ts`       | Messages français des contraintes (`CONSTRAINT_FEEDBACK`), libellés et modes proposés à l'éditeur (`CONSTRAINT_IDS`, `CONSTRAINT_LABELS`). Ceux des règles de superflu sont tirés de leur fiche (`mathAST/superflu/rules.ts`).                                                                                                                                                                                                |
 | Options de case                                                  | `rounding.ts` (arrondi), `rules-suffice.ts` (`rulesDecide`), `angle-modulo.ts`, `answer-variable-prefix.ts`, `answer-degree-suffix.ts`, `answer-assumptions.ts` (ADR 0012), `generic-functions.ts` (`templateGenericFunctions`), `clean-coefficients.ts` (`cleanCoefficientsAst`), `capital-pairs.ts` (sens de `AB`), `formula-reading.ts` (`readingOf`), `figure-name-check.ts` (garde auteur).                              |
+| `graded-part.ts`                                                 | `gradedPart` : les cases **notées** d'une question — les figures de travail (bloc ```figure-de-travail) retirées, avec leur valeur, avant toute notation (serveur et élève) ; `spread` remet un résultat par case notée à la taille de l'instance ; `isWorkFigureBlank`.                                                                                                                                                      |
+| `work-figure-editor.ts`                                          | `readWorkFigureCases` : les figures de travail de l'énoncé (outil, erreurs) pour la carte en lecture seule de l'éditeur.                                                                                                                                                                                                                                                                                                      |
 | `construction/`                                                  | Case « figure » (bloc ```figure-a-completer) : `answer.ts` (`parseConstructionAnswer`, réponse bornée), `judge.ts` (`judgeConstruction`, positions, tout-ou-rien), `polygon.ts` (`judgePolygon`, carré / rectangle sur quadrillage), `drawing.ts` (tracé de l'écran, `snapToGrid`, `solutionLines`), registre des positions `positions.ts` (`constructionPositions`) et son inscription `positions-setup.ts` (geometry-core). |
 | Sécurité de la réponse                                           | `answer-complexity.ts` (`isAnswerTooComplex`, garde Q58), `student-answer-safety.ts` (réponse rendue chez le prof).                                                                                                                                                                                                                                                                                                           |
 | Correction                                                       | `expected-result.ts` (`buildExpectedResult`, `fillMarkdown`), `expected-result-markdown.ts`, `correction-card-verdict.ts`, `correction-detail.ts` (`splitCorrectionDetail`, `detailedCorrection`, `correctionForPrint` pour les fiches PDF, ADR 0017), `correction-placeholders.ts`, `grade-level-to-school-level.ts` (`gradeLevelToSchoolLevel`).                                                                            |
@@ -214,6 +216,12 @@ seulement), pas d'ajout de case choix — le modifier d'une variation décalerai
 autres. `TestSpecEditor` : une case choix se coche (`answers[i]` = `"0;2"`) ; réponse calculée →
 champ de texte.
 
+**Figure de travail dans l'éditeur** (`work-figure-editor.ts`, lot 2 du chantier `figure-et-choix`) :
+chaque bloc ```figure-de-travail de l'énoncé a une carte en lecture seule « Figure de travail — non
+notée » (`data-testid="carte-figure-de-travail"`), sans numéro ni champ, qui dit son outil et ses
+erreurs (`verifier:`, outil inconnu…) ; il se modifie dans l'énoncé. `TestSpecEditor` n'y demande
+rien (valeur vide). Garde : `AnswerEditor-figure-de-travail.svelte.test.ts`.
+
 ### 2. Fusion `shared` ⊕ variation (`resolveVariationWithShared`)
 
 - `variables` : **fusionnées** — celles de `shared` d'abord, une variable de la variation de même
@@ -252,17 +260,23 @@ erreur fait échouer la génération (message situé). Une ligne `case:` écrite
    écrite est refusée ; un bloc en erreur (vérification manquante, fenêtre…) fait échouer la
    génération, comme un point de `verifier:` que le script ne nomme pas (`Z = …`, lecture légère
    `namesAssignedIn`) ou `options.orderIndependent` (l'appariement ne sait pas lire une figure). La case est `type: 'graphical'`, `construction: { source, checks }` (texte du bloc,
-   variables résolues), réponse attendue symbolique `droite(A;B)`. Un bloc `collection ou
+   variables résolues), réponse attendue symbolique `droite(A;B)`. Un bloc ``figure-de-travail
+(figure de **travail** : l'élève peut y tracer pour vérifier, la réponse est ailleurs) est numéroté
+de même (`workFigureBlanks`, même mise à l'abri, même refus en liste ou cité) ; `verifier:` y est
+refusé (`readConstructionHeader(…, { work: true })`), `options.orderIndependent` permis. Sa case est
+`type: 'graphical'`, `construction: { source, checks: [], work: true }`, réponse attendue vide. Une
+question dont les seules cases sont des figures de travail est refusée
+(`WORK_FIGURE_ALONE_MESSAGE`, au générateur et dans `validateTemplate`). Un bloc `collection ou
 `monnaie à construire (`construire: N`, au premier niveau, sinon échec ; `buildBlanks`, genre et
-   texte du bloc) compte aussi pour
-   **une** case, `case: N` posé dans le bloc ; sa réponse attendue est la valeur `N` du bloc, jamais
-   du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:` écrite aussi, bloc en
-   erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
-   (`findBuildCollections`, `findBuildMonnaies` : une ligne vide suivie d'une clé reste dans un bloc
-   fermé) ; l'énoncé numéroté est relu par `parseMarkdown` : une case dont le bloc n'est pas lu à l'écran
-   (fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie'`, jugée comme une case
-   ordinaire : l'élève répond par la valeur qu'il a posée (`'34'`, `'35'` €, `''` plan vide).
-   Un bloc ```choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
+texte du bloc) compte aussi pour
+**une** case, `case: N` posé dans le bloc ; sa réponse attendue est la valeur `N` du bloc, jamais
+du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:` écrite aussi, bloc en
+erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
+(`findBuildCollections`, `findBuildMonnaies` : une ligne vide suivie d'une clé reste dans un bloc
+fermé) ; l'énoncé numéroté est relu par `parseMarkdown` : une case dont le bloc n'est pas lu à l'écran
+(fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie'`, jugée comme une case
+ordinaire : l'élève répond par la valeur qu'il a posée (`'34'`, `'35'` €, `''` plan vide).
+Un bloc ``choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
    `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une
    réponse, mélangé), puis un choix par ligne `- …` (suite en retrait de 2 espaces ; clôture ````
@@ -318,23 +332,24 @@ la longueur AA'. Ailleurs, ils restent.
 
 Natures de réponse :
 
-| Nature                      | Déclaration                                 | Jugée par                                                                                                                                         |
-| --------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Expression / nombre         | case ordinaire                              | équivalence + forme (§ 5)                                                                                                                         |
-| Figure (tracé)              | bloc ```figure-a-completer (`verifier:`)    | `construction/judge.ts` (ci-dessous) ; réponse `droite(x1;y1;x2;y2)` ou `segment(x1;y1;x2;y2)`, objets séparés par `\|`                           |
-| Opération posée             | bloc ```operation (`cases: résultat`)       | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste) |
-| Collection à construire     | bloc ```collection (`construire: N`)        | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                  |
-| Monnaie à construire        | bloc ```monnaie (`construire: N`)           | case ordinaire : la somme posée, coupures libres dans la réserve (`monnaie-construire.ts`)                                                        |
-| Texte                       | `[_]` hors formule                          | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                 |
-| Grandeur                    | `unit: { expected, required? }`             | `validateQuantityAnswer` (conversion, unité imposée)                                                                                              |
-| Ensemble en intervalles     | `answerKind: 'intervalles'`                 | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm`                                                                        |
-| Équation de droite / cercle | `answerKind: 'equation'`                    | `equation-answer.ts` (même ensemble de points) ; formes `reduite`, `cartesienne`, `centre-rayon`                                                  |
-| Vecteur dans une case       | `answerKind: 'vecteur'`                     | `vector-answer.ts` ; `vectorMode` `exact` ou `colineaire`                                                                                         |
-| Matrice dans une case       | `answerKind: 'matrice'`                     | `matrix-answer.ts` (dimensions, puis chaque coefficient)                                                                                          |
-| Primitive / solution d'ED   | `answerKind: 'primitive'` / `'solution-ed'` | `calculus/` (dérivation / substitution) ; `solutionMode`                                                                                          |
-| QCM                         | `choices` (+ `multipleAnswers`)             | `validateChoice` ; indices d'**origine** (voir invariants)                                                                                        |
-| Case choix                  | bloc ```choix (`plusieurs:`, `melanger:`)   | `statusFromChoices`, comme le QCM ; réponse = indices d'origine cochés, triés, séparés par `;` (`choice-case.ts`)                                 |
-| Carte de cours              | `options.courseCard`                        | rien : auto-évaluation (`validateAnswer` rend un message)                                                                                         |
+| Nature                      | Déclaration                                  | Jugée par                                                                                                                                         |
+| --------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Expression / nombre         | case ordinaire                               | équivalence + forme (§ 5)                                                                                                                         |
+| Figure (tracé)              | bloc ```figure-a-completer (`verifier:`)     | `construction/judge.ts` (ci-dessous) ; réponse `droite(x1;y1;x2;y2)` ou `segment(x1;y1;x2;y2)`, objets séparés par `\|`                           |
+| Figure de travail           | bloc ```figure-de-travail (sans `verifier:`) | **jamais notée** : retirée avant toute notation (`gradedPart`) ; son tracé (même chaîne) reste dans la réponse, enregistré en évaluation          |
+| Opération posée             | bloc ```operation (`cases: résultat`)        | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste) |
+| Collection à construire     | bloc ```collection (`construire: N`)         | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                  |
+| Monnaie à construire        | bloc ```monnaie (`construire: N`)            | case ordinaire : la somme posée, coupures libres dans la réserve (`monnaie-construire.ts`)                                                        |
+| Texte                       | `[_]` hors formule                           | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                 |
+| Grandeur                    | `unit: { expected, required? }`              | `validateQuantityAnswer` (conversion, unité imposée)                                                                                              |
+| Ensemble en intervalles     | `answerKind: 'intervalles'`                  | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm`                                                                        |
+| Équation de droite / cercle | `answerKind: 'equation'`                     | `equation-answer.ts` (même ensemble de points) ; formes `reduite`, `cartesienne`, `centre-rayon`                                                  |
+| Vecteur dans une case       | `answerKind: 'vecteur'`                      | `vector-answer.ts` ; `vectorMode` `exact` ou `colineaire`                                                                                         |
+| Matrice dans une case       | `answerKind: 'matrice'`                      | `matrix-answer.ts` (dimensions, puis chaque coefficient)                                                                                          |
+| Primitive / solution d'ED   | `answerKind: 'primitive'` / `'solution-ed'`  | `calculus/` (dérivation / substitution) ; `solutionMode`                                                                                          |
+| QCM                         | `choices` (+ `multipleAnswers`)              | `validateChoice` ; indices d'**origine** (voir invariants)                                                                                        |
+| Case choix                  | bloc ```choix (`plusieurs:`, `melanger:`)    | `statusFromChoices`, comme le QCM ; réponse = indices d'origine cochés, triés, séparés par `;` (`choice-case.ts`)                                 |
+| Carte de cours              | `options.courseCard`                         | rien : auto-évaluation (`validateAnswer` rend un message)                                                                                         |
 
 Après « Valider », la `FlashCard` colore chaque case au recto avec le verdict par case du
 validateur (`computeBlankColors`, `components/questions/blank-verdicts.ts` → `validateAnswerDetailed`,
@@ -358,7 +373,14 @@ n'existe que dans les corrections générées, rendu par le bloc ubumark `variat
 ### 5. Validation d'une case (`validateAnswer` → `validateBlanks` → `validateSingleBlank`)
 
 Statuts (`ValidationStatus`) : `correct` (1), `unoptimal_form` (½), `bad_form` (0), `incorrect`
-(0), `empty`. Dans l'ordre :
+(0), `empty`. **Avant tout**, les figures de travail sont retirées avec leur valeur
+(`gradedPart`, `graded-part.ts`), dans `gradeBlanks` (serveur) comme dans `validateBlanks` et
+`detailBlanks` (élève, copie) : aucune règle ci-dessous ne les voit (cases vides, appariement libre,
+« figure vide → 0 », « Tu n'as pas tout complété. ») ; `spread` remet ensuite messages et statuts à
+leur case. Dans le verdict par case, une figure de travail est marquée `ungraded` (statut « vide »
+sans valeur ; `corrected-detail.ts` l'écarte du statut recalculé). Une figure de travail vide ne
+grise pas « Valider » (`FlashCard`, `QuestionCard` ; la version publique porte `workFigure`). Gardes :
+`figure-de-travail.test.ts`, `figure-de-travail-ecran.svelte.test.ts`. Dans l'ordre :
 
 0. Vide → `empty`. Nature `intervalles` → sa chaîne. Puis **garde de complexité**
    (`isAnswerTooComplex`) : une écriture démesurée est `incorrect` **avant** toute lecture.
@@ -487,6 +509,14 @@ posé 32 €. » ou « Ta collection vaut 32. » et une construction juste à c�
 seule sans réponse (R9, verso de la flash-card) ou réponse vide (suivie de « Tu n'as rien posé. », propre à la case). Le plan vient après l'énoncé rempli (la figure, avant).
 Le bloc est retiré de l'énoncé (`withoutBuildCases`), la consigne seule au-dessus. Seule la valeur est
 gardée : la construction de l'élève est redessinée « le moins d'objets » (3 × 10 € deviennent 20 + 10 €).
+
+Figure de travail : une ligne `work-figure`, **après** toutes les autres, plan d'une case à construire compris (jamais parmi les réponses
+attendues ; `blankViews` l'ignore, `build` l'ajoute à la fin) : la figure de départ et les traits de
+l'élève en gris, sans verdict ni bonne droite (`FigureAnswer` avec `work`) ; « Ta figure de travail :
+aucun tracé. » sans tracé ; la figure de départ seule sans réponse (R9). Son bloc sort de l'énoncé
+rempli (`withoutFigureCases`). Même ligne à l'entraînement, à la Course et dans la copie (carte
+commune). À l'écran, après « Valider », ses traits restent gris (`FigureACompleterView`, `droite-travail`).
+Garde : `expected-result-figure-de-travail.test.ts`.
 
 Case « choix » : le bloc reste **à sa place** dans l'énoncé rempli ; la ligne `filled-statement`
 porte `choiceCases` (par case : ses choix, statuts du QCM, ordre affiché). À l'écran,

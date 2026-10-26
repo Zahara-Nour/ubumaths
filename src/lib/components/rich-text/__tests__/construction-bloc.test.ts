@@ -33,3 +33,20 @@ describe('bloc ```figure-a-completer — aller-retour de l’éditeur riche', ()
 		expect(out).toContain('verifier: droite_par A ; B');
 	});
 });
+
+describe('bloc ```figure-de-travail — aller-retour de l’éditeur riche', () => {
+	const WORK = [
+		'```figure-de-travail',
+		'fenetre: 0 ; 10 ; 0 ; 6',
+		'outils: droite',
+		'---',
+		'A = point(1, 2)',
+		'B = point(7, 2)',
+		'```'
+	].join('\n');
+
+	it('garde son nom et son texte', () => {
+		expect(markdownToTipTap(WORK).content?.[0]?.attrs).toEqual({ language: 'figure-de-travail' });
+		expect(tipTapToMarkdown(markdownToTipTap(WORK)).trim()).toBe(WORK);
+	});
+});
