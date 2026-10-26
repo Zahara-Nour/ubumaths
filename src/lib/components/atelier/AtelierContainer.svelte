@@ -1532,6 +1532,10 @@
 		position: absolute;
 		inset: var(--marge-console) var(--marge-console) auto;
 		z-index: 20;
+		/* Sur grand écran, une largeur de lecture, centrée (2026-10-26) : pleine
+		   largeur, les lignes courtes laissaient un grand vide à droite */
+		max-width: 52rem;
+		margin-inline: auto;
 		height: calc(var(--hauteur, 40%) - var(--marge-console));
 		display: flex;
 		flex-direction: column;
