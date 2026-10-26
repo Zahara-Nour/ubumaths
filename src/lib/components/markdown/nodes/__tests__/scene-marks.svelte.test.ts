@@ -1,7 +1,7 @@
 /**
  * Marquage au doigt — `SceneMarks`, commun à ```collection et ```monnaie
  *
- * Décision 2 de `docs/wip/collection-progress.md`, reprise par la monnaie
+ * Décision 2 de `docs/archive/wip/collection-progress.md`, reprise par la monnaie
  * (décision 8 de `docs/archive/wip/monnaie-progress.md`) : un objet touché se barre, un
  * second toucher le libère ; les marques valent pour UN contenu de bloc.
  */

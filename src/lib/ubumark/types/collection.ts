@@ -3,7 +3,7 @@
  * ==========================
  *
  * Collections d'objets à dénombrer ou comparer (CP-001, CP-070, CP-004 en
- * partie ; phase 0 : `docs/wip/collection-progress.md`) :
+ * partie ; phase 0 : `docs/archive/wip/collection-progress.md`) :
  *
  * ```collection
  * dizaines: 3 ; 2

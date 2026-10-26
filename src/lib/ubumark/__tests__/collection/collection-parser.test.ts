@@ -1,5 +1,5 @@
 /**
- * Bloc ```collection — analyse (phase 0 : `docs/wip/collection-progress.md` § 2, 3, 8 bis)
+ * Bloc ```collection — analyse (phase 0 : `docs/archive/wip/collection-progress.md` § 2, 3, 8 bis)
  */
 
 import { describe, expect, it } from 'vitest';

@@ -3,7 +3,7 @@
 	===============================
 
 	Collections d'objets à dénombrer ou comparer (CP-001, CP-070, CP-004 en
-	partie ; phase 0 : `docs/wip/collection-progress.md`). Dessinées depuis
+	partie ; phase 0 : `docs/archive/wip/collection-progress.md`). Dessinées depuis
 	`buildCollectionScene`, la même scène que le PDF.
 
 	- Une seule couleur d'accent (le remplissage des objets) ; traits en couleur
