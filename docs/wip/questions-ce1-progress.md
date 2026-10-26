@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 du lot 0 validée, question d'accès tranchée._
+_Mis à jour le 2026-10-26, lot 0 écrit et testé, PR à ouvrir._
 
-- **État** : recos validées (§ 4 bis) ; phase 0 du lot 0 (corrections, § 5) **validée** par David, question d'accès **tranchée** (CE2 gagne 4 modèles ; CE1 perd ces 4 et `47f97c9f` ; aucune règle ne change). Rien d'écrit encore.
-- **Prochaine action** : dans le worktree, (1) instantané prod des 12 modèles (`docs/wip/questions/etat-prod-2026-10-26/`, comme `etat-prod-2026-10-24` : templates, md5, nodes, points, tags) ; (2) `docs/wip/questions/lot-corrections-ce1.py` (calqué sur `lot-corrections-cp.py`, `generer` de `scissions_outils`) → migration de contenu + fixture + test (calqués sur `20261025000000_questions_cp_contenu.sql`, `questions-cp-contenu.test.ts`) ; (3) migration rangement / tags / grades / statut à la main (calquée sur `20261025000100_questions_cp_rangement_tags.sql` et `20261026170000_questions_cp_formes_et_niveaux.sql`, avec leurs tests) ; tests rouges sans migration puis verts ; `security-auditor` ; PR ; `db:migrate`.
+- **État** : lot 0 (corrections, § 5) écrit sur `fix/questions-ce1-lot0` : instantané `docs/wip/questions/etat-prod-2026-10-26/` (12 md5 = prod, 0 donnée d'élève revérifiée), migrations `20261027000000_questions_ce1_contenu` (générée par `lot-corrections-ce1.py`, 30 specs vertes) et `20261027000100_questions_ce1_rangement_tags` (à la main) ; tests d'intégration verts, rouges sans migration.
+- **Prochaine action** : retour de `security-auditor`, PR, CI, merge, `pnpm db:migrate` depuis le dépôt principal, vérifier en prod (contenu des 3, nœuds, tags, CE2, brouillon) ; puis phase 0 du lot 1 (calcul mental : 029, 102, 084, 032, 083, 024).
 - **En attente de David** : rien.
-- **Pièges en cours** : modèles tous PUBLIÉS → `create-questions --mettre-a-jour` ne les touche pas, d'où les migrations ; nœud du point obligatoire pour un tag (CE1-005 = « écritures ») ; CE1-024 est rangé sur une notion, pas une sous-notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `fix/questions-ce1-lot0` (créé, `pnpm install` fait, aucun commit).
+- **Pièges en cours** : copies de test publiées → un niveau chacune (`idx_question_templates_unique_category`) ; tag d'un modèle = point de son nœud ou de sa notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `fix/questions-ce1-lot0`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -138,7 +138,7 @@ Recommandations validées en bloc (« ok, je valide ») :
 6. Lots : 1 calcul mental (029, 102, 084, 032, 083, 024) → 2 numération → 3 fractions → 4 problèmes
    → 5 grandeurs → lots à outils existants → lots à QCM une fois la case « choix » en prod.
 
-## 5. Lot 0 : corrections — phase 0 (à valider)
+## 5. Lot 0 : corrections — phase 0 (validée le 2026-10-26)
 
 Relevé du 2026-10-26 : **0 donnée d'élève** sur les 12 modèles touchés (chapter_exercises,
 evaluation_attempt_questions, journal_entry_activities, skill_attempts, srs_cards, test_answers,
@@ -172,3 +172,8 @@ publié → comme pour les corrections du CP, **deux migrations** : contenu (gé
 élèves et le prof du **CE2** voient 4 modèles publiés de plus. En miroir, qui ne pourra plus lire ce
 qu'il lisait ? — les élèves et le prof du **CE1** ne voient plus ces 4 modèles ni `47f97c9f`
 (brouillon : admin seul). Aucune règle (policy) ne change.
+
+**Écrit (2026-10-26)** : sous-titres changés avec le contenu (moitié : « Nombres pairs jusqu'à $700$, par
+décomposition » ; distributivité : « … d'un nombre de $11$ à $19$ par un nombre à $1$ chiffre »).
+Moitié V1 = 22 à 88 (unités 2 à 8), V2 = 12 à 98, V3 = 210 à 698 (dizaines non nulles), corrigé en
+trois étapes (coupe en deux parts paires, moitié de chacune, somme). Parité : specs aux bornes 998 et 999. Contenu relu par `pnpm question:specs` (le fichier ligne de base → clés camelCase d'abord).
