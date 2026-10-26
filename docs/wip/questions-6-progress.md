@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1845._
+_Mis à jour le 2026-10-27, PR 2 en cours._
 
-- **État** : PR 1 (contenus de 6 modèles) mergée (#1845) et jouée en prod (`db:migrate`) ; md5 prod = « après » vérifiés au MCP (§ 7).
-- **Prochaine action** : PR 2 dans un nouveau worktree `../ubumaths-wt-questions-6` : migration à la main `20261027100100_questions_6_rangement_tags` — niveaux des 37 modèles, 17 déplacements de nœud (R2), 34 tags (`questions-6/destinations-42.csv` + décisions du § 6), archivage de 3a7a5711 et retrait de son tag 6-200. Gardes à écrire pour des modèles DÉJÀ rangés (le gabarit `20261026210000_questions_cp_c_rangement_tags.sql` vise des neufs sans nœud) ; instantané à relever de nouveau (`questions-6/releve-prod.ts`, après `svelte-kit sync`).
-- **En attente de David** : rien (§ 5 questions 6-8 tranchées le 2026-10-26).
-- **Pièges en cours** : un tag exige le modèle sur le nœud du point ; inclusion stricte ; QCM en réécriture (`figure-et-choix`) ; géométrie en refonte ; `releve-prod.ts` lit `.env` (prod).
-- **Worktree / branche** : aucun (retiré après #1845).
+- **État** : PR 2 (rangement) écrite et relue : migration `20261027100100_questions_6_rangement_tags` générée par `questions-6/lot-rangement-6.py` (relevé du 2026-10-27), test `questions-6-rangement-tags.test.ts` vert (21), rouge sans la migration ; revues sans bloquant (§ 8).
+- **Prochaine action** : CI de la PR, merge, puis `db:migrate` depuis la branche mergée et contrôle au MCP (38 modèles : nœuds, niveaux, statut, 34 tags).
+- **En attente de David** : rien.
+- **Pièges en cours** : un tag exige le modèle sur le nœud du point ou sa notion ; 24a8e2b1 / c1a54695 sont rangés sur une NOTION (« Échelle d'une carte ») ; `releve-prod.ts` lit `.env` (prod).
+- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-rangement`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -205,3 +205,13 @@ Usages en prod (2026-10-26) : 0 carte FSRS, 0 cahier de texte, 0 question d'éva
 - **Écart au § 6** : l'archivage de 3a7a5711 passe dans la migration de rangement (PR 2), le générateur
   ne change pas de statut. Son tag 6-200 y est retiré.
 - #1845 mergée le 2026-10-26, `db:migrate` joué ; les 6 md5 en prod = « après » (MCP).
+
+## 8. PR 2, rangement (2026-10-27)
+
+- Relevé `questions-6/etat-prod-2026-10-27/` (38 modèles : les 37 + 3a7a5711) : tous publiés en [6], un seul tag (3a7a5711 → 6-200). MCP : 0 carte SRS, 0 journal, 0 question d'évaluation, 1 tentative de compétence (6ca011c9, qui garde la 6e).
+- `questions-6/lot-rangement-6.py` → migration + fixture `tests/integration/fixtures/questions-6-rangement.json`. Gabarit : `20261027000100_questions_ce1_rangement_tags` (modèles déjà rangés : gardes sur nœud, niveaux, statut et tags EXACTS), rollback piloté par les mêmes données.
+- Chaque point posé est sur le nœud d'arrivée ou sa notion (vérifié par le générateur et par le trigger dans le test).
+- **Écarts aux comptes du § 6** : **18** déplacements (et non 17 : b79d4cb7, compté comme une scission avant la PR 1, est devenu un simple déplacement) ; **29** modèles quittent la 6e (et non 32 : 8 modèles du cours moyen gardent la 6e), plus 3a7a5711 en brouillon.
+- « Archiver » 3a7a5711 = statut `draft` (la table n'a que `draft` / `published`) + retrait de 6-200, nœud gardé.
+- Niveaux CM écrits `[CM2, 6]` / `[CM1, 6]` (ordre du cycle ; aucun précédent CM + 6 en prod).
+- Revues : `code-reviewer` et `security-auditor` sans finding bloquant. Corrigés : `drop if exists` + clé primaire sur les tables de nœuds (migration et rollback), garde de présence 38 / 0 dans le rollback (test ajouté, rouge sans elle), fixture passée par prettier dans le générateur. Laissés : ordre verrou consultatif / ligne opposé à celui de l'appli (interblocage possible → échec entier, à relancer ; hérité du gabarit) ; `set local` sous `db push` (même forme que les migrations passées).
