@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, lot 6 en PR._
+_Mis à jour le 2026-10-26, après #1808._
 
-- **État** : lot 6 (branche `test/verifs-auto-6`) : écarts (b) et (c) récrits, Graphe #1400-#1405, Géométrie #1536/#1538, reste de Calcul (14 lignes) ; suite complète : 94 verts, rouges = `each_key_duplicate` (#1674, #1703, #1307), #1617 et #1620 (#1807, écart 5), #1422 par intermittence (grille qui saute, écart 4).
-- **Prochaine action** : merger le lot 6 ; puis les lignes Atelier restantes (`grep -n Atelier docs/wip/verifications-manuelles.md`), ou la page à cocher (plan, point 2).
-- **En attente de David** : écarts 1-5 du lot 6 (#1367 f′ avec a non défini, #1369 `sinus`, #1404 image sur la carte f′, grille qui saute, #1617/#1620 périmées par #1807 ?) ; « Résoudre f(x) = 0 » sur la carte k. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier, serveur lancé à part ; `e` = Euler (`e : y = …` refusé, prendre `k`) ; console ouverte = couvre la toile et les boutons de zoom (`setConsole(page, false)`) ; prettier réaligne TOUT le tableau quand une ligne large sort ; commitlint refuse un sujet en majuscule ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : `ubumaths-wt-verifs-auto` / `test/verifs-auto-6` (serveur de dev sur 5179).
+- **État** : lots 1-6 mergés (#1773 → #1808) ; suite complète en dev : 94 verts ; rouges = `each_key_duplicate` (#1674, #1703, #1307), #1617 et #1620 (changés par #1807), #1422 par intermittence (grille qui saute).
+- **Prochaine action** : les lignes Atelier restantes de `verifications-manuelles.md`, ou la page à cocher (plan, point 2) ; selon les réponses de David, corriger la grille qui saute (PR à part) et récrire #1617/#1620.
+- **En attente de David** : écarts 1-5 du lot 6 (#1367 f′ avec `a` non défini, #1369 `sinus`, #1404 image sur la carte f′, grille qui saute de 32 px, #1617/#1620 périmées par #1807 ?) ; « Résoudre f(x) = 0 » sur la carte k. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier, serveur lancé à part ; `e` = Euler (prendre `k`) ; console ouverte = couvre la toile et le zoom (`setConsole(page, false)`) ; prettier réaligne TOUT le tableau → conflits à chaque merge de `main` : rejouer ses lignes par script sur la version de `main` ; motif de cellule : espaces de remplissage ; commitlint : pas de majuscule, pas de type `merge` ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retiré après #1808).
 
 ## Phase 0 (validée le 2026-10-25)
 
