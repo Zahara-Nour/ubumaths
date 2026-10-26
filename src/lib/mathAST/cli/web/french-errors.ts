@@ -19,9 +19,24 @@ import type { ReplExecutionResult } from './types';
 // Constantes
 // =============================================================================
 
+/**
+ * Les traductions qui ne disent qu'une POSITION (« « 4 » inattendu ici ») : justes sous la
+ * ligne de calcul, trompeuses dans le refus d'une carte (`a = 3 sur 4` : c'est « sur » qui
+ * gêne). `knownFrench` ne les rend pas (verifs-auto, 2026-10-26).
+ */
+const POSITION_ONLY = new Set([
+	'« $1 » inattendu ici',
+	'Caractère « $1 » inconnu',
+	'Opérateur « $1 » inattendu'
+]);
+
 /** Message anglais → message français ; dans l'ordre (le premier qui convient), ligne par ligne. */
 const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
-	[/Unexpected token: EOF/, 'Expression incomplète : il manque quelque chose à la fin'],
+	// « in atom » : le message du parseur seul, que relaie une carte de l'atelier (2026-10-26)
+	[
+		/Unexpected token(?: in [a-z]+)?: EOF/,
+		'Expression incomplète : il manque quelque chose à la fin'
+	],
 	[/Unexpected token(?: in [a-z]+)?: (\S+)/, '« $1 » inattendu ici'],
 	[/Unexpected character:? ['"]?([^'"\s]+)['"]?/, 'Caractère « $1 » inconnu'],
 	[/Unexpected (?:infix )?operator:? ?(\S*)/, 'Opérateur « $1 » inattendu'],
@@ -162,6 +177,22 @@ function lineInFrench(line: string): string {
 		return line.slice(0, match.index) + translated + line.slice(match.index + match[0].length);
 	}
 	return ENGLISH_LINE.test(line) ? GENERIC : line;
+}
+
+/**
+ * L'aide PRÉCISE que dit la table pour un message, ou `null` : aucune entrée,
+ * une traduction vide, ou une position seulement (`POSITION_ONLY`). Pas de
+ * formule générique. Pour une carte de l'atelier, qui garde son propre refus et
+ * n'y ajoute que cette aide (verifs-auto, 2026-10-26).
+ */
+export function knownFrench(message: string): string | null {
+	for (const [english, french] of TRANSLATIONS) {
+		const match = english.exec(message);
+		if (match === null) continue;
+		if (french === '' || POSITION_ONLY.has(french)) return null;
+		return french.replace(/\$(\d)/g, (_, index: string) => match[Number(index)] ?? '');
+	}
+	return null;
 }
 
 /** Un message (texte brut, jamais du HTML) en français, ligne par ligne. */

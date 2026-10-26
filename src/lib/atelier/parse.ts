@@ -12,6 +12,7 @@ import { parseCustomSafe } from '$lib/mathAST/parser/custom';
 import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
 import { parseLatexSafe } from '$lib/mathAST/parser';
 import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/input-detector';
+import { knownFrench } from '$lib/mathAST/cli/web/french-errors';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
 import { getVariables } from '$lib/mathAST/eval/substitute';
@@ -270,6 +271,18 @@ function readByProvenance(
 	return parseCustomSafe(studentTyped ? definition : legacyDecimalCommas(definition), {
 		genericFunctions
 	});
+}
+
+/**
+ * Le refus d'une définition illisible. Une aide précise du parseur (durée
+ * composée collée à ×, unité sans nombre…) s'y ajoute, la même que sur la
+ * ligne de calcul : la carte disait seulement « n'est pas une expression
+ * valide » (écart #1296 de verifs-auto, 2026-10-26).
+ */
+function invalidExpressionMessage(definition: string, parserMessage?: string): string {
+	const refusal = `« ${definition.trim()} » n'est pas une expression valide.`;
+	const hint = parserMessage === undefined ? null : knownFrench(parserMessage);
+	return hint === null ? refusal : `${refusal} ${hint}.`;
 }
 
 /**
@@ -565,7 +578,7 @@ export function parseDefinition(
 			error:
 				coupleOrSetRefusal(definition) ??
 				mixedNotationMessage(definition) ??
-				`« ${definition.trim()} » n'est pas une expression valide.`
+				invalidExpressionMessage(definition, result.errors[0]?.message)
 		};
 	}
 
