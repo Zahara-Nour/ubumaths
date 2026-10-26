@@ -177,6 +177,41 @@ describe('carre A ; B — tableau de la phase 0', () => {
 		});
 	});
 
+	it('côté donné prolongé des deux côtés, vertical, oblique : même message (revue #1809)', () => {
+		expect(
+			square('segment(0;3;2;3)|segment(5;3;7;3)|segment(7;3;7;6)|segment(7;6;0;6)|segment(0;6;0;3)')
+		).toEqual({ status: 'incorrect', feedback: PROLONGED_SIDE_FEEDBACK });
+		const vertical = new Map([
+			['A', { x: 2, y: 3 }],
+			['B', { x: 2, y: 6 }]
+		]);
+		expect(
+			judgeConstruction(
+				SQUARE,
+				vertical,
+				'segment(2;6;2;8)|segment(2;8;5;8)|segment(5;8;5;3)|segment(5;3;2;3)'
+			)
+		).toEqual({ status: 'incorrect', feedback: PROLONGED_SIDE_FEEDBACK });
+		const oblique = new Map([
+			['A', { x: 2, y: 3 }],
+			['B', { x: 5, y: 4 }]
+		]);
+		expect(
+			judgeConstruction(
+				SQUARE,
+				oblique,
+				'segment(5;4;8;5)|segment(8;5;7;8)|segment(7;8;1;6)|segment(1;6;2;3)'
+			)
+		).toEqual({ status: 'incorrect', feedback: PROLONGED_SIDE_FEEDBACK });
+	});
+
+	it('trait dans l’alignement de [AB] mais séparé par un trou : pas fermée', () => {
+		expect(square('segment(6;3;7;3)|segment(7;3;7;6)|segment(7;6;2;6)|segment(2;6;2;3)')).toEqual({
+			status: 'incorrect',
+			feedback: NOT_CLOSED_FEEDBACK
+		});
+	});
+
 	it('côté donné prolongé mais figure ouverte : faux, pas fermée', () => {
 		expect(square('segment(5;3;7;3)|segment(7;3;7;6)')).toEqual({
 			status: 'incorrect',
