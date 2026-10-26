@@ -132,12 +132,12 @@ onDestroy(() => {
 
 ### Édition
 
-| Méthode                  | Action                                                                                             |
-| ------------------------ | -------------------------------------------------------------------------------------------------- |
-| `code` (accesseur)       | Lu / écrit par l'éditeur (`bind:value`) ; chaque écriture range un **brouillon** (voir ci-dessous) |
-| `setCode(code)`          | Met à jour le code + déclenche `saveToStorage` (debounce 500 ms)                                   |
-| `resetCode()`            | Réinitialise au `DEFAULT_CODE`                                                                     |
-| `saveCode()` → `boolean` | Sauvegarde **immédiate** en localStorage (bypass debounce)                                         |
+| Méthode                  | Action                                                                                                |
+| ------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `editorCode` (accesseur) | Ce que l'éditeur écrit (`bind:value`) : met `code` à jour et range un **brouillon** (voir ci-dessous) |
+| `setCode(code)`          | Met à jour le code + déclenche `saveToStorage` (debounce 500 ms)                                      |
+| `resetCode()`            | Réinitialise au `DEFAULT_CODE`                                                                        |
+| `saveCode()` → `boolean` | Sauvegarde **immédiate** en localStorage (bypass debounce)                                            |
 
 ### Paramètres éditeur
 
@@ -199,7 +199,7 @@ Valeur : { code, showPedagogicErrors, fontSize?, editorTheme? }
 
 Loadé au constructor (synchrone, fallback silencieux si JSON invalide). Sauvegardé via `saveToStorage()` (debounce 500 ms).
 
-**Brouillon de l'éditeur** (2026-10-26) : l'éditeur écrit `code` par `bind:value`, sans passer par `setCode`. `code` est donc un accesseur dont le setter appelle `scheduleDraft()` : après 500 ms, le même objet est écrit en localStorage, **sans** toucher `_lastSavedCode` — `isModified` reste vrai (code non enregistré), ce qui garde la confirmation de « Charger un exemple ». `saveToStorage`, `saveCode` et `destroy` annulent un brouillon en attente. Sans lui, le code tapé (sans compte) n'était rangé qu'à Ctrl+S : perdu au rechargement, et `hasOwnCode()` d'un nouvel onglet ne le voyait pas.
+**Brouillon de l'éditeur** (2026-10-26) : l'éditeur écrit par `bind:value={pythonStore.editorCode}`, un accesseur dont le setter met `code` à jour et appelle `scheduleDraft()` : après 500 ms, le même objet est écrit en localStorage, **sans** toucher `_lastSavedCode` — `isModified` reste vrai (code non enregistré), ce qui garde la confirmation de « Charger un exemple ». Seul l'éditeur range un brouillon : un code CHARGÉ (`loadExample`, `loadCloudFile`, `loadFromUrl`, `newFile`) affecte `code` directement et n'écrase pas le code local que lit la migration vers le cloud. `saveToStorage` et `saveCode` annulent un brouillon en attente (ils écrivent eux-mêmes) ; `destroy` le range tout de suite. Sans lui, le code tapé (sans compte) n'était rangé qu'à Ctrl+S : perdu au rechargement, et `hasOwnCode()` d'un nouvel onglet ne le voyait pas.
 
 ### DB sync (profil)
 

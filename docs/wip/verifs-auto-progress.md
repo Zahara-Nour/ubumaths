@@ -133,6 +133,8 @@ Vu en passant : un CSV se pose à partir de la case choisie (« posées à parti
 
 #1697 et lot 4b sortent de la liste.
 
+Revue (`code-reviewer`) : le brouillon venait de TOUTE affectation de `code` (exemple, fichier du cloud : il écrasait le code local que lit la migration) → accesseur dédié `editorCode`, lié à l'éditeur ; `destroy()` range le brouillon au lieu de le jeter ; le rejeu d'un historique vidait une grille seule sans demander → confirmation sur `isBlank` ; « Garder » d'une grille seule disait « rien à garder » → `MergeReport.grid`. Noté, pas corrigé (d'avant la PR) : un `saveTimeout` de `saveToStorage` en attente marque « enregistré » un code tapé juste après (`_lastSavedCode`), et un réglage (taille, thème) aussi ; `B(10,0,5)` sans séparateur lisible donne un conseil faux (rare).
+
 ## Plan d'ensemble
 
 1. Pilote Atelier (~20 lignes) → puis le reste des ~126 lignes Atelier.

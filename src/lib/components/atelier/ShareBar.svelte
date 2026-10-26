@@ -117,6 +117,7 @@
 				`${report.added} objet${report.added > 1 ? 's' : ''} ajouté${report.added > 1 ? 's' : ''}`
 			);
 		for (const { from, to } of report.renamed) parts.push(`« ${from} » gardé sous « ${to} »`);
+		if (report.grid) parts.push('grille ajoutée');
 		if (report.refused.length > 0)
 			parts.push(`${report.refused.length} refusé${report.refused.length > 1 ? 's' : ''}`);
 		// Lot 5 (phase 0 §4) : la graine reste la nôtre, ses tirages sont refaits

@@ -255,21 +255,23 @@ class PythonPlaygroundStore {
 	// ===========================================================================
 
 	/** Python code in the editor */
-	#code = $state(DEFAULT_CODE);
+	code = $state(DEFAULT_CODE);
 
 	/**
-	 * Le code de l'éditeur. L'éditeur l'écrit par `bind:value`, sans `setCode` :
-	 * chaque écriture range un BROUILLON dans le navigateur (après un court
-	 * délai), sans le marquer enregistré — sinon le code tapé se perdait au
-	 * rechargement, et `/python` ouvert depuis l'atelier ne savait pas qu'il y
-	 * avait du code à garder (écart du lot 9 de verifs-auto, 2026-10-26).
+	 * Le code tel que l'ÉDITEUR l'écrit (`bind:value`) : chaque frappe range un
+	 * BROUILLON dans le navigateur (après un court délai), sans le marquer
+	 * enregistré — sinon le code tapé se perdait au rechargement, et `/python`
+	 * ouvert depuis l'atelier ne savait pas qu'il y avait du code à garder
+	 * (écart du lot 9 de verifs-auto, 2026-10-26). Un code CHARGÉ (exemple,
+	 * fichier du cloud, adresse) passe par `code` et ne range rien : il
+	 * écraserait le code local que la migration vers le cloud lit (revue).
 	 */
-	get code(): string {
-		return this.#code;
+	get editorCode(): string {
+		return this.code;
 	}
 
-	set code(value: string) {
-		this.#code = value;
+	set editorCode(value: string) {
+		this.code = value;
 		this.scheduleDraft();
 	}
 
@@ -367,7 +369,9 @@ class PythonPlaygroundStore {
 		// Destroy the executor (terminates worker, cleans up autocomplete)
 		this._executor.destroy();
 
-		// Clean up store-specific resources
+		// Clean up store-specific resources : le brouillon en attente est RANGÉ (quitter
+		// la page juste après une frappe ne doit pas perdre cette frappe)
+		if (this.draftTimeout) this.writeDraft();
 		this.cancelDraft();
 		if (this.saveTimeout) {
 			clearTimeout(this.saveTimeout);
@@ -969,18 +973,22 @@ class PythonPlaygroundStore {
 		this.cancelDraft();
 		this.draftTimeout = setTimeout(() => {
 			this.draftTimeout = null;
-			try {
-				const serialized: SerializedPlaygroundState = {
-					code: this.code,
-					showPedagogicErrors: this.showPedagogicErrors,
-					fontSize: this.fontSize,
-					editorTheme: this.editorTheme
-				};
-				localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
-			} catch (error) {
-				console.error('Failed to save Python playground draft to localStorage:', error);
-			}
+			this.writeDraft();
 		}, STORAGE_SAVE_DEBOUNCE_MS);
+	}
+
+	private writeDraft(): void {
+		try {
+			const serialized: SerializedPlaygroundState = {
+				code: this.code,
+				showPedagogicErrors: this.showPedagogicErrors,
+				fontSize: this.fontSize,
+				editorTheme: this.editorTheme
+			};
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
+		} catch (error) {
+			console.error('Failed to save Python playground draft to localStorage:', error);
+		}
 	}
 
 	private cancelDraft(): void {

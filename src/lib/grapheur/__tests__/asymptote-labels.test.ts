@@ -200,7 +200,7 @@ describe('abscisse d’une asymptote verticale : constante reconnue, virgule dé
 	});
 
 	it('les pôles de tan : x = π/2, x = −3π/2', () => {
-		expect(verticalLabel(Math.PI / 2).latex).toBe('x = \\frac{\\pi}{2}');
+		expect(verticalLabel(Math.PI / 2)).toEqual({ latex: 'x = \\frac{\\pi}{2}', text: 'x = π/2' });
 		expect(verticalLabel((-3 * Math.PI) / 2).latex).toBe('x = -\\frac{3\\pi}{2}');
 		expect(verticalLabel(Math.PI).latex).toBe('x = \\pi');
 	});

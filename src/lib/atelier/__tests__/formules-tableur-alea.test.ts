@@ -278,4 +278,22 @@ describe('§4 garder un atelier reçu : les tirages sont refaits, et on le dit',
 			mergeInto(seeded({}), { version: 2, objects: [], grid: { cells: { A1: '3' } } }).redrawn
 		).toBe(false);
 	});
+
+	// Revue des écarts du lot 9 de verifs-auto (2026-10-26) : une grille seule, gardée,
+	// était annoncée « Il n'y avait rien à garder. »
+	it('le rapport dit qu’une grille (cases, titres, mise en forme) est arrivée', async () => {
+		const { mergeInto } = await import('../merge');
+		expect(
+			mergeInto(seeded({}), { version: 2, objects: [], grid: { cells: { A1: '3' } } }).grid
+		).toBe(true);
+		expect(
+			mergeInto(seeded({}), { version: 2, objects: [], grid: { titles: { A: 'taille' } } }).grid
+		).toBe(true);
+		const list: AtelierState = {
+			version: 2,
+			objects: [{ name: 'L', kind: 'list', definition: '1 ; 2', column: 'A' }]
+		};
+		// Une liste nommée est un objet, déjà compté comme tel
+		expect(mergeInto(seeded({}), list).grid).toBe(false);
+	});
 });

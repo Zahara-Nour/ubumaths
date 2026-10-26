@@ -2275,7 +2275,10 @@ précédent » ; s'il ne peut pas l'être, rien n'est chargé (B5). Sans stockag
 n'enregistre rien), Charger reste ce qu'il était, sans copie. Un fichier refusé ne remplace rien, et la raison s'affiche dans les avis
 (« Ce fichier n'est pas un atelier Chiphre. ») ; un objet écarté ou un `y` renommé se dit aussi,
 et ce que la console a perdu (illisible, version plus récente, lignes écartées : `consoleNotice`). Un **ancien historique JSON**
-(`chiphre-calcul`) est reconnu et rejoué comme avant (même confirmation).
+(`chiphre-calcul`) est reconnu et rejoué comme avant (même confirmation) ; le rejeu vide aussi la
+grille, il demande donc confirmation dès que l'atelier n'est pas vide (`isBlank`), grille seule
+comprise (« ta grille sera remplacée », 2026-10-26). « Garder dans mon atelier » d'un lien qui
+porte une grille le dit (« grille ajoutée », `MergeReport.grid`).
 
 ### Ouvrir dans Python (2026-10-24)
 

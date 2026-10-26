@@ -267,7 +267,8 @@
 	/** Un historique relu : confirmer s'il y a de quoi perdre, sinon rejouer (R1, R2). */
 	function handleReplayRequest(history: ImportedHistory) {
 		pendingReplay = history;
-		if (atelier.objects.length > 0 || desk.entries.length > 0) confirmReplay = true;
+		// La grille compte aussi : le rejeu la vide (revue des écarts du lot 9)
+		if (!atelier.isBlank || desk.entries.length > 0) confirmReplay = true;
 		else replayNow();
 	}
 
@@ -289,9 +290,15 @@
 	/** Ce que le rejeu remplacera, en mots (R2). */
 	function replayLoss(): string {
 		const count = atelier.objects.length;
-		if (count === 0) return 'l’historique actuel sera effacé.';
+		// Une grille qui n'est QUE mise en forme ou titres compte aussi (`isBlank`)
+		const grid = !atelier.isBlank && atelier.serialize().grid !== undefined;
+		if (count === 0 && !grid) return 'l’historique actuel sera effacé.';
 		const objects =
-			count === 1 ? 'ton objet sera remplacé' : `tes ${count} objets seront remplacés`;
+			count === 0
+				? 'ta grille sera remplacée'
+				: `${count === 1 ? 'ton objet' : `tes ${count} objets`}${grid ? ' et ta grille' : ''} ${
+						count === 1 && !grid ? 'sera remplacé' : 'seront remplacés'
+					}`;
 		return `${objects}, et l’historique effacé. Un lien de partage déjà copié les garde.`;
 	}
 

@@ -59,6 +59,8 @@ export interface MergeReport {
 	 * leurs tirages sont donc refaits — à dire (phase 0 §4).
 	 */
 	readonly redrawn: boolean;
+	/** Une grille est arrivée (cases sans nom, titres, mise en forme) : à dire aussi. */
+	readonly grid: boolean;
 	/**
 	 * Les objets de l'atelier PERSONNEL renommés à sa relecture (`y` devenu
 	 * réservé, Q2 de la géométrie) : enregistrés sous leur nouveau nom, donc à
@@ -382,6 +384,7 @@ export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport
 	);
 
 	// Les cellules sans nom, dans la colonne que leur colonne d'origine a reçue
+	const namedCells = cells.length;
 	for (const [address, text] of Object.entries(state.grid?.cells ?? {})) {
 		const at = readCellName(address);
 		const column = at === null ? undefined : placed.get(columnLetter(at.column));
@@ -409,15 +412,21 @@ export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport
 	}
 
 	// Titres, cases et mise en forme : UN geste, qu'un seul Ctrl+Z défait (revue)
+	let grid = false;
 	atelier.asOneGesture(() => {
 		for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
 			const column = placed.get(letter);
-			if (column !== undefined) atelier.setTitle(column, title);
+			if (column !== undefined) {
+				atelier.setTitle(column, title);
+				grid = true;
+			}
 		}
 		// Un refus se dit dans le rapport, jamais en silence (revue)
 		const written = cells.length > 0 ? atelier.editCells(cells) : null;
 		if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
+		else if (cells.length > namedCells) grid = true;
 		const styled = atelier.adoptFormats(formats);
+		if (styled.ok && formats.length > 0) grid = true;
 		// Un seul refus « mise en forme » dans le rapport (contre-revue)
 		if (!styled.ok && unplaced === 0)
 			refused.push({ name: 'mise en forme', reason: styled.message });
@@ -426,7 +435,7 @@ export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport
 	// Tout ce qui est arrivé : cases sans nom ET entrées des listes nommées
 	// Ce qui a vraiment été écrit (une grille refusée n'a rien tiré : revue)
 	const redrawn = atelier.randomCells > randomBefore;
-	return { added, renamed, refused, redrawn };
+	return { added, renamed, refused, redrawn, grid };
 }
 
 /**
