@@ -1,6 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 import {
 	calc,
+	card,
+	cardAction,
+	cardLocator,
 	expectLatex,
 	expectLatexContaining,
 	hasSteps,
@@ -804,4 +807,273 @@ test('#1631 — ordre des termes (console)', async ({ page }) => {
 test('#1636 — la fonction avant l’exponentielle (console)', async ({ page }) => {
 	expectLatex(await calc(page, '.dériver 2e^(sin(x))'), '2 \\cos(x) e^{\\sin(x)}');
 	expectLatex(await calc(page, '.dériver 2^x'), '\\ln(2) \\times 2^x');
+});
+
+// =============================================================================
+// Lot 6
+// =============================================================================
+
+test('#1784 — .développer sans normalize : décimaux, fractions, radicaux, complexes', async ({
+	page
+}) => {
+	expectLatex(await calc(page, '.développer (2x-1)(x+3)'), '2 x^2 + 5 x - 3');
+	expectLatex(await calc(page, '.développer (x+1)^3'), 'x^3 + 3 x^2 + 3 x + 1');
+	expectLatex(await calc(page, '.développer 0,5x(x+0,2)'), '0{,}5 x^2 + 0{,}1 x');
+
+	const half = await calc(page, '.développer (x+1)/2');
+	expectLatex(half, '\\dfrac{1}{2} x + \\dfrac{1}{2}');
+	expectStepsContaining(await steps(half), 'On distribue $\\dfrac{1}{2}$');
+
+	for (const input of ['1/(x+1)+1', '(x^2-1)/(x+1)']) {
+		expect((await calc(page, `.développer ${input}`)).text).toContain('rien à développer');
+	}
+	expectLatex(
+		await calc(page, '.développer (x+1)(x-2)+1/(x+1)'),
+		'x^2 - x - 2 + \\dfrac{1}{x + 1}'
+	);
+	expectLatex(await calc(page, '.développer (x+1/x)^2'), 'x^2 + 2 + \\dfrac{1}{x^2}');
+	expectLatex(await calc(page, '.développer x(1/x-1)'), '-x + \\dfrac{x}{x}');
+	expectLatex(
+		await calc(page, '.développer (sqrt(x)+1)(sqrt(x)-1)'),
+		'x - \\sqrt{x} + \\sqrt{x} - 1'
+	);
+	expectLatex(await calc(page, '.développer (sqrt(2)+sqrt(3))^2'), '5 + 2 \\sqrt{6}');
+	expectLatex(await calc(page, '.développer (1+2i)(3-i)'), '5 + 5 \\imaginaryI');
+	expectLatexContaining(
+		await calc(page, '.développer e^(ln(x))(x+1)'),
+		'\\exponentialE^{\\ln\\left( x \\right)}'
+	);
+});
+
+test('#1684 — expression littérale au propre ; « Garder »', async ({ page }) => {
+	const sum = await calc(page, '2x+3x');
+	expectLatex(sum, '5 x');
+	expectLatex(await calc(page, 'x*2'), '2 x');
+	expectLatex(await calc(page, '3-2x+x^2'), '3 - 2 x + x^2');
+	expectLatex(await calc(page, 'x/x'), '\\dfrac{x}{x}');
+	const logs = await calc(page, 'ln(x)-ln(x)');
+	expectLatex(logs, '\\ln\\left( x \\right) - \\ln\\left( x \\right)');
+	expectLatex(await calc(page, 'sin^2(x)'), '\\sin\\left( x \\right)^2');
+
+	// « Garder » crée une fonction : 5x, et ln(x) − ln(x) telle quelle
+	await sum.line.getByRole('button', { name: 'Garder…' }).click();
+	await expect(page.locator('p.retour')).toContainText('Gardé sous le nom « f »');
+	expect(normalizeLatex((await card(page, 'f')).latex ?? '')).toBe('5x');
+	await logs.line.getByRole('button', { name: 'Garder…' }).click();
+	await expect(page.locator('p.retour')).toContainText('Gardé sous le nom « g »');
+	expect(normalizeLatex((await card(page, 'g')).latex ?? '')).toBe(
+		normalizeLatex('\\ln\\left( x \\right) - \\ln\\left( x \\right)')
+	);
+});
+
+test('#1617 — .simplifier : telle quelle sans étapes, ou les étapes qu’il faut', async ({
+	page
+}) => {
+	for (const [input, shown] of [
+		['2(x+3)', '2 \\left( x + 3 \\right)'],
+		['(x+1)^2', '\\left( x + 1 \\right)^2'],
+		['x^2+2x+1', 'x^2 + 2 x + 1']
+	]) {
+		const same = await calc(page, `.simplifier ${input}`);
+		expectLatex(same, shown);
+		expect(await hasSteps(same)).toBe(false);
+		expect(same.text).not.toMatch(/Custom|Hash/);
+	}
+
+	const developed = await calc(page, '.simplifier (x+1)^2-x^2');
+	expectLatex(developed, '2 x + 1');
+	expectStepsContaining(await steps(developed), 'On reconnaît (a + b)² = a² + 2ab + b²');
+
+	const fraction = await calc(page, '.simplifier (x^2-1)/(x+1)');
+	expectLatex(fraction, 'x - 1');
+	const fractionSteps = await steps(fraction);
+	expectStepsContaining(
+		fractionSteps,
+		'Étape 1 On factorise pour faire apparaître un facteur commun'
+	);
+	expectStepsContaining(fractionSteps, 'Étape 2 On simplifie par le facteur commun, pour x ≠ −1');
+	expect(fractionSteps).not.toContain('Étape 3');
+	// Le résumé se déplie aussi, et garde la condition
+	expectStepsContaining(await stepsAs(fraction, 'Résumé'), 'x ≠ −1');
+
+	expectLatex(await calc(page, '.simplifier (x^2-1)/(x+1)+1'), 'x');
+	expectStepsContaining(
+		await steps(await calc(page, '.simplifier sqrt(8)')),
+		'On simplifie le radical'
+	);
+});
+
+test('#1375 — « Comment ? » de .développer : distribuer, identité, signe −, résumé', async ({
+	page
+}) => {
+	const product = await calc(page, '.développer (2x-1)(x+3)');
+	const detailed = await steps(product);
+	expectStepsContaining(detailed, 'On distribue');
+	expectStepsContaining(detailed, '2 x \\times x + 2 x \\times 3 - 1 \\times x - 1 \\times 3');
+	expectStepsContaining(detailed, 'On calcule chaque produit');
+	expectStepsContaining(detailed, 'On réduit');
+	// Le résumé retire les lignes à ×
+	expectStepsNotContaining(await stepsAs(product, 'Résumé'), '\\times');
+
+	await stepsAs(product, 'Détaillé');
+	expectStepsContaining(
+		await steps(await calc(page, '.développer (x+1)^2')),
+		'On reconnaît (a + b)² = a² + 2ab + b², avec a = x et b = 1'
+	);
+	expectStepsContaining(
+		await steps(await calc(page, '.développer 3(x-2)-(x+1)')),
+		'le signe − devant la parenthèse change le signe de chaque terme'
+	);
+	const decimal = await steps(await calc(page, '.développer (0,5x+1)^2'));
+	expectStepsContaining(decimal, '0{,}25 x^2');
+	expectStepsNotContaining(decimal, '0.5');
+});
+
+test('#1366 — « Comment ? » de .limite ; limite non définie ; ln x sans parenthèses', async ({
+	page
+}) => {
+	const limit = await calc(page, '.limite (x^2-1)/(x-1) en 1');
+	const detailed = await steps(limit);
+	expectStepsContaining(detailed, 'Forme indéterminée $\\frac{0}{0}$');
+	expectStepsContaining(detailed, 'facteur commun');
+	expectStepsContaining(detailed, 'La limite vaut $2$');
+	const summary = await stepsAs(limit, 'Résumé');
+	// Résumé : la technique, puis la conclusion
+	expectStepsContaining(summary, 'Simplification du facteur commun');
+	expectStepsContaining(summary, 'La limite vaut $2$');
+	expect(summary.length).toBeLessThan(detailed.length);
+
+	expect((await calc(page, '.limite sqrt(-x) en 0+')).text).toContain(
+		'n’est pas définie à droite de 0'
+	);
+	const ln = await calc(page, '.limite ln x en 0');
+	expect(ln.refused).toBe(true);
+	expect(ln.text).toContain('écris ln(x) avec des parenthèses.');
+});
+
+test('#1503 — grandeurs : cartes en erreur, dépendances, retour à la normale', async ({ page }) => {
+	await calc(page, 'b = 3[min] + 2[km]');
+	expect((await card(page, 'b')).message).toBe('On ne peut pas ajouter une durée et une longueur.');
+	await calc(page, 'c = 2b');
+	expect((await card(page, 'c')).message).toContain('Dépend de « b »');
+	await calc(page, 'r = 3[s]');
+	await calc(page, 'd = r + 2[m]');
+	expect((await card(page, 'd')).message).toBe('On ne peut pas ajouter une durée et une longueur.');
+	await calc(page, 'r = 3[m]');
+	await expect.poll(async () => (await card(page, 'd')).message).toBeNull();
+});
+
+test('#1535 — longueur plus durée : la carte en erreur', async ({ page }) => {
+	await calc(page, 'b = 3[m]*π/2 + 1[s]');
+	expect((await card(page, 'b')).message).toBe('On ne peut pas ajouter une longueur et une durée.');
+});
+
+test('#1342 — lignes en erreur ou en attente ; .réciproque de sin et tan', async ({ page }) => {
+	const broken = await calc(page, 'h(x) = x^^2');
+	expect(broken.refused).toBe(true);
+	expect(broken.text).toContain('« h » est dans tes objets, mais elle est en erreur : ');
+	expect((await calc(page, 'p(x) = q(x)+1')).text).toContain('en attente de « q »');
+
+	await calc(page, 'f(x) = sin(x)');
+	const sine = await calc(page, '.réciproque f');
+	expect(sine.text).toContain('f(0) = f(π) = 0, donc 0 aurait plusieurs antécédents');
+	expect(sine.text).toContain('arcsin');
+
+	await calc(page, 'f(x) = tan(x) sur ]-1;4[');
+	expect((await calc(page, '.réciproque f')).text).toMatch(/par exemple \][^[]*π\/2\[/);
+});
+
+test('#1367 — paramètre non défini : (a ≠ 0), résoudre', async ({ page }) => {
+	await calc(page, 'h(x) = e^{a x}');
+	expectLatexContaining(await calc(page, '.intégrer h'), '(a \\neq 0)');
+	expect((await calc(page, '.résoudre a x = 3')).text).toContain('Le résultat dépend de a');
+	expectLatex(await calc(page, '.résoudre x + a = 0'), 'x = -a');
+});
+
+test('#1368 — ln x sans parenthèses refusé (clavier)', async ({ page }) => {
+	for (const input of ['ln x', '.évaluer ln x en x=1']) {
+		const refused = await calc(page, input);
+		expect(refused.refused).toBe(true);
+		expect(refused.text).toContain('« ln x » : écris ln(x) avec des parenthèses.');
+	}
+	expectLatex(await calc(page, 'ln(x)'), '\\ln\\left( x \\right)');
+});
+
+test('#1369 — fonction collée à son argument : refus qui dit quoi écrire (clavier)', async ({
+	page
+}) => {
+	expect((await calc(page, 'sinx')).text).toContain(
+		'« sinx » : écris sin(x) avec des parenthèses.'
+	);
+	expect((await calc(page, 'xlnx')).text).toContain('« lnx »');
+	expect((await calc(page, 'log10(100)')).text).toContain('log est le logarithme décimal');
+	expect((await calc(page, 'cos2π')).text).toContain('écris cos(');
+});
+
+test('#1374 — définitions en erreur : circulaire, dépendance, fonction prise pour un nombre', async ({
+	page
+}) => {
+	await calc(page, 'f(x) = f(x)+1');
+	expect((await calc(page, '.dériver f')).text).toContain('« f » est mal définie');
+	await calc(page, 'g(x) = f(x)+1');
+	expect((await calc(page, 'g(2)')).text).toContain('g : Dépend de « f », qui est en erreur.');
+
+	await calc(page, 'a(x) = x^2');
+	await calc(page, 'f(x) = ax+1');
+	const f = await card(page, 'f');
+	expect(f.message).toContain('« a » est une fonction');
+	expect(f.message).toContain('Écris a(x)');
+	// Les actions de la carte grisées
+	await cardLocator(page, 'f').getByRole('button', { name: 'Options de f' }).click();
+	for (const action of ['Dériver', 'Réciproque', 'Tabuler', 'Variations']) {
+		await expect(page.getByRole('menuitem', { name: new RegExp(`^${action}`) })).toHaveAttribute(
+			'aria-disabled',
+			'true'
+		);
+	}
+	await page.keyboard.press('Escape');
+	expect((await calc(page, 'h(x) = a_1 x')).refused).toBe(false);
+	expect((await card(page, 'h')).message).toBeNull();
+});
+
+test('#1404 — conversions, intégrales refusées, réciproque à paramètres', async ({ page }) => {
+	expectLatex(await calc(page, '2,5 h en min'), '2{,}5~\\mathrm{h} = 150~\\mathrm{min}');
+	await calc(page, '5 km');
+	expect((await calc(page, '3 en m')).refused).toBe(true);
+	expectLatex(await calc(page, '.convertir m'), '5~\\mathrm{km} = 5000~\\mathrm{m}');
+
+	await calc(page, 'f(x) = x^3');
+	await cardAction(page, 'f', 'Dériver');
+	await expect.poll(async () => normalizeLatex((await card(page, 'f′')).latex ?? '')).toBe('3x^2');
+
+	expect((await calc(page, '.intégrer 1/t de -1 à 1')).text).toContain('t ≈ 0');
+	expect((await calc(page, '.intégrer tan(x) de 0 à \\pi')).text).toContain('[0 ; π]');
+	const unknown = await calc(page, '.intégrer 1/(x^2-2)');
+	expect(unknown.refused).toBe(true);
+	expect(unknown.text).toContain('Je ne sais pas calculer cette intégrale');
+	expect((await calc(page, '.réciproque a x + b')).text).toContain('Le résultat dépend de a et b');
+});
+
+test('#1417 — Copier, Copier en LaTeX, valeur approchée copiée', async ({ page }) => {
+	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+	const clipboard = () => page.evaluate(() => navigator.clipboard.readText());
+	const notice = page.locator('p.retour');
+
+	const developed = await calc(page, '.développer (2x-1)(x+3)');
+	await developed.line.getByRole('button', { name: 'Copier', exact: true }).click();
+	await expect(notice).toHaveText('Copié.');
+	expect(await clipboard()).toBe('2x² + 5x − 3');
+	await developed.line.getByRole('button', { name: 'Autres façons de copier' }).click();
+	await page.getByRole('menuitem', { name: 'Copier en LaTeX' }).click();
+	await expect(notice).toHaveText('Copié en LaTeX.');
+	expect(await clipboard()).toBe('2 x^2 + 5 x - 3');
+
+	const root = await calc(page, '.dériver sqrt(x)');
+	await root.line.getByRole('button', { name: 'Copier', exact: true }).click();
+	await expect.poll(clipboard).toBe('1/(2√x)');
+
+	const seventh = await calc(page, '1/7');
+	await seventh.line.getByRole('button', { name: 'Valeur approchée' }).click();
+	await seventh.line.getByRole('button', { name: 'Copier', exact: true }).click();
+	await expect.poll(clipboard).toBe('≈ 0,1429');
 });

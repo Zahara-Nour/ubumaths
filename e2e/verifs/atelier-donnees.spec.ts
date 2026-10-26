@@ -94,9 +94,6 @@ test('#1421 — formules : cases, objets de l’atelier, case vide, erreur', asy
 });
 
 test('#1422 — valeur exacte sous la barre, π écrit en maths', async ({ page }) => {
-	// Une fraction s'écrit en texte, pas en maths (elle débordait de la ligne)
-	await typeCell(page, 'A4', '=2/3');
-	expect(await readCell(page, 'A4')).toMatchObject({ shown: '2/3', latex: null });
 	await typeCell(page, 'A1', '=sqrt(8)');
 	const root = await readCell(page, 'A1');
 	expect(root.latex).toBe('2\\sqrt{2}');
@@ -107,6 +104,9 @@ test('#1422 — valeur exacte sous la barre, π écrit en maths', async ({ page 
 	const long = await readCell(page, 'A3');
 	expect(long.shown).toBe('≈ 0,1429');
 	expect(long.exact).not.toBeNull();
+	// Une fraction s'écrit en texte, pas en maths (elle débordait de la ligne)
+	await typeCell(page, 'A4', '=2/3');
+	expect(await readCell(page, 'A4')).toMatchObject({ shown: '2/3', latex: null });
 });
 
 test('#1424 — recopier vers le bas : Ctrl+D, « Recopier vers le bas… », annuler, rechargement', async ({
