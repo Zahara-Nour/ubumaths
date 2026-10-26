@@ -31,7 +31,7 @@
 		svgRef?: SVGSVGElement;
 		svgWidth: number;
 		svgHeight: number;
-		/** Le graphe occupe-t-il toute la place de l'atelier ? */
+		/** Le graphe occupe-t-il toute la fenêtre ? */
 		expanded?: boolean;
 		/** Sans lui, pas de bouton « Agrandir le graphe ». */
 		onToggleExpanded?: () => void;

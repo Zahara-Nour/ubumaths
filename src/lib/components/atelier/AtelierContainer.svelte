@@ -603,9 +603,10 @@
 	let consoleOpen = $state(consoleAtStart ?? view === undefined);
 	let consoleHeight = $state(CONSOLE_HEIGHT);
 	/**
-	 * Le graphe agrandi (bouton de sa barre) : il prend toute la place de
-	 * l'atelier — ni « Mes objets », ni barre d'icônes, ni onglets. Le plein
-	 * écran du navigateur reste le bouton de l'en-tête ; les deux se cumulent.
+	 * Le graphe agrandi (bouton de sa barre) : il prend toute la fenêtre du
+	 * navigateur — ni en-tête ni menu du site, ni « Mes objets », ni barre
+	 * d'icônes, ni onglets. Le plein écran du navigateur (bouton ⛶ de l'en-tête)
+	 * s'y ajoute.
 	 */
 	let graphExpanded = $state(false);
 	/** Seulement sur la vue Graphe : une autre vue ouverte par une commande le défait. */
@@ -1032,6 +1033,15 @@
 		if (consoleOpen) closeConsole();
 		else openConsole();
 	}
+
+	// Graphe agrandi : la page derrière ne défile plus
+	$effect(() => {
+		if (!graphFills) return;
+		document.body.style.overflow = 'hidden';
+		return () => {
+			document.body.style.overflow = '';
+		};
+	});
 
 	/** Agrandir ferme la console : son bouton disparaît avec la barre. */
 	function toggleGraphExpanded() {
@@ -1460,9 +1470,16 @@
 		min-height: 0;
 	}
 
-	/* Le graphe agrandi : masqués (pas démontés — un champ en cours d'écriture
-	   garde son texte), le panneau, la barre et les onglets laissent la place */
+	/* Le graphe agrandi prend toute la fenêtre, par-dessus l'en-tête et le menu
+	   du site ; les menus et fenêtres, rendus à la fin du `body` avec le même
+	   z-index, passent encore devant. Masqués (pas démontés — un champ en cours
+	   d'écriture garde son texte), le panneau, la barre et les onglets */
 	.atelier.graphe-agrandi {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		height: auto;
+		background: var(--color-background);
 		grid-template-columns: 1fr;
 		grid-template-rows: minmax(0, 1fr);
 	}
