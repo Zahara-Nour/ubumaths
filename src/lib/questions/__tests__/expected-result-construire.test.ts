@@ -68,6 +68,7 @@ describe('résultat attendu : case à construire', () => {
 	it('vide : le plan (construction juste), puis « Tu n’as rien répondu. »', () => {
 		const { lines } = buildExpectedResult(instance(MONNAIE), { values: [''] });
 		expect(lines.map((l) => l.kind)).toEqual(['build', 'empty']);
+		expect(lines[1]).toMatchObject({ text: "Tu n'as rien posé." });
 		expect(lines[0]).toMatchObject({ answer: null, status: 'solution' });
 	});
 
@@ -90,7 +91,22 @@ describe('résultat attendu : case à construire', () => {
 			instance(`$? + 1 = 3$\n\n${MONNAIE}`, [{ expectedAnswer: '2' }]),
 			{ values: ['2', '35'] }
 		);
-		expect(lines.some((l) => l.kind === 'build')).toBe(true);
 		expect(lines.some((l) => l.kind === 'expected-only')).toBe(false);
+		// Revue : le bloc est retiré de l'énoncé rempli, le plan vient APRÈS lui
+		const kinds = lines.map((l) => l.kind);
+		expect(kinds.indexOf('filled-statement')).toBeLessThan(kinds.indexOf('build'));
+		const filled = lines.find((l) => l.kind === 'filled-statement');
+		expect(filled?.kind === 'filled-statement' && filled.markdown).not.toContain('```monnaie');
+	});
+
+	it('mêlé, case à construire vide : « Tu n’as rien posé. », propre à la case', () => {
+		const { lines } = buildExpectedResult(
+			instance(`$? + 1 = 3$\n\n${MONNAIE}`, [{ expectedAnswer: '2' }]),
+			{ values: ['2', ''] }
+		);
+		const empty = lines.filter((l) => l.kind === 'empty');
+		expect(empty.map((l) => l.kind === 'empty' && l.text)).toEqual(["Tu n'as rien posé."]);
+		const kinds = lines.map((l) => l.kind);
+		expect(kinds.indexOf('build')).toBeLessThan(kinds.indexOf('empty'));
 	});
 });

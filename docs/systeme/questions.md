@@ -484,7 +484,7 @@ Case à construire (bloc `collection ou `monnaie, `construire:`) : une ligne `bu
 du bloc sans `case:`, valeur posée), sur le même patron que la figure. `BuildAnswer.svelte` dessine le
 plan **verrouillé, sans réserve** : la construction de l'élève (cadre vert si juste ; faux : « Tu as
 posé 32 €. » ou « Ta collection vaut 32. » et une construction juste à côté), ou la construction juste
-seule sans réponse (R9, verso de la flash-card) ou réponse vide (suivie de « Tu n'as rien répondu. »).
+seule sans réponse (R9, verso de la flash-card) ou réponse vide (suivie de « Tu n'as rien posé. », propre à la case). Le plan vient après l'énoncé rempli (la figure, avant).
 Le bloc est retiré de l'énoncé (`withoutBuildCases`), la consigne seule au-dessus. Seule la valeur est
 gardée : la construction de l'élève est redessinée « le moins d'objets » (3 × 10 € deviennent 20 + 10 €).
 

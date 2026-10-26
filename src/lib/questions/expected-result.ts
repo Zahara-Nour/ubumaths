@@ -146,6 +146,8 @@ export interface ExpectedResult {
 
 // Constantes
 export const EMPTY_ANSWER_TEXT = "Tu n'as rien répondu.";
+/** Case à construire laissée vide (plan vide) */
+export const EMPTY_BUILD_TEXT = "Tu n'as rien posé.";
 /** Case sans valeur connue : pointillés, comme sur une fiche */
 const BLANK_TEXT = '……';
 
@@ -526,7 +528,8 @@ function buildLines(
 		answer: answered ? build.answer : null,
 		status: answered ? status : 'solution'
 	};
-	if (withAnswer && status === 'empty') return [line, { kind: 'empty', text: EMPTY_ANSWER_TEXT }];
+	// Propre à la case : une autre case de l'énoncé peut avoir sa réponse
+	if (withAnswer && status === 'empty') return [line, { kind: 'empty', text: EMPTY_BUILD_TEXT }];
 	return [line];
 }
 
@@ -659,17 +662,20 @@ function build(
 	// R8 / R10 : case graphique, ou case introuvable dans l'énoncé
 	const outside = views.filter((v) => !inStatement.includes(v) && !choiceViews.includes(v));
 	// La figure avant l'énoncé rempli, comme dans l'énoncé (CP-058 : la droite, puis « oui »)
-	// Case à construire : son plan, comme une figure (avant l'énoncé rempli, à sa place)
 	const figures = outside.flatMap((v) =>
-		v.figure
-			? figureLines(v, v.figure, verdict !== undefined)
-			: v.build
-				? buildLines(v, v.build, verdict !== undefined)
-				: []
+		v.figure ? figureLines(v, v.figure, verdict !== undefined) : []
 	);
-	const apart = outside.flatMap((v) =>
-		v.figure || v.build ? [] : [expectedOnlyLine(v, verdict !== undefined)]
+	// Case à construire : son plan, comme une figure, mais APRÈS l'énoncé rempli : la
+	// phrase qui le demande (« Paie le ballon à 35 €. ») vient d'abord
+	const builds = outside.flatMap((v) =>
+		v.build ? buildLines(v, v.build, verdict !== undefined) : []
 	);
+	const apart = [
+		...builds,
+		...outside.flatMap((v) =>
+			v.figure || v.build ? [] : [expectedOnlyLine(v, verdict !== undefined)]
+		)
+	];
 	const choiceCases = choiceViews.flatMap((v) => choiceCaseOf(instance, v.index, verdict) ?? []);
 
 	if (inStatement.length === 0 && choiceCases.length === 0) {
