@@ -5,11 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, relevé et état des lieux faits (§ 1 à 3)._
+_Mis à jour le 2026-10-26, recos validées (§ 4 bis), phase 0 du lot 0 écrite (§ 5)._
 
 - **État** : relevé prod fait : 107 points, 58 modèles CE1 (tous publiés), 17 points avec au moins un modèle, 90 sans. Existant vérifié contre les bornes (§ 2), points sans modèle classés A / B / C / D (§ 3).
-- **Prochaine action** : réponses de David aux questions du § 4, puis phase 0 du premier lot.
-- **En attente de David** : § 4 (corrections de l'existant, ordre des outils, points D, forme des QCM).
+- **Prochaine action** : validation de la phase 0 du lot 0 (§ 5) et réponse à sa question d'accès ; puis worktree `questions-ce1`, instantané, script et migrations.
+- **En attente de David** : phase 0 du lot 0 et sa question d'accès (§ 5).
 - **Pièges en cours** : ceux du CP (doc § 9) ; QCM en réécriture (case « choix », `figure-et-choix`, rien en prod) → demander la forme au premier lot qui en a besoin ; `collection` n'a pas encore `centaines:` (réservée).
 - **Worktree / branche** : aucun.
 
@@ -122,3 +122,53 @@ Specs : toutes vertes (`question:specs --template … --apercu 3`, 5 tirages par
 5. **Points D** : laissés sans modèle ?
 6. **Premier lot** : recommandation, calcul mental en texte (029, 102, 084, 032, 083 : 5 modèles,
    aucun QCM).
+
+## 4 bis. Décisions (David, 2026-10-26)
+
+Recommandations validées en bloc (« ok, je valide ») :
+
+1. Corrections de l'existant **d'abord** (lot 0), avant tout lot neuf.
+2. Les 4 modèles hors bornes passent en **CE2** (≤ 10 000 au CE2), sans réécriture ; 029 et 084 auront
+   des modèles propres.
+3. Doublons : au CE1, le corrigé **multiplicatif** ; l'autre est dépublié (repassé en brouillon,
+   jamais supprimé). Triple et tiers : laissés de côté (aucun point au cycle 2).
+4. Outils neufs, chacun en chantier à part : `centaines:` de `collection`, puis fractions à
+   colorier, puis barres à monter ; aiguilles et flèches à produire plus tard (QCM d'abord).
+5. Points D sans modèle ; 072 et 074 après la case « figure ».
+6. Lots : 1 calcul mental (029, 102, 084, 032, 083, 024) → 2 numération → 3 fractions → 4 problèmes
+   → 5 grandeurs → lots à outils existants → lots à QCM une fois la case « choix » en prod.
+
+## 5. Lot 0 : corrections — phase 0 (à valider)
+
+Relevé du 2026-10-26 : **0 donnée d'élève** sur les 12 modèles touchés (chapter_exercises,
+evaluation_attempt_questions, journal_entry_activities, skill_attempts, srs_cards, test_answers,
+user_favorite_templates). Tous publiés : `create-questions --mettre-a-jour` ne touche pas un modèle
+publié → comme pour les corrections du CP, **deux migrations** : contenu (générée par
+`lot-corrections-ce1.py`, instantané md5 d'abord), puis rangement / tags / niveaux / statut (à la main).
+
+**Contenu réécrit** (même titre, même niveau, même nœud) :
+
+- `c96ecf4d` Trouver la moitié (CE1-034, sous-notion « double et moitié » de l'addition) : moitié par
+  décomposition, corrigé « 74 = 70 + 4 ; moitié de 70 = 35, moitié de 4 = 2 ; 35 + 2 = 37 ».
+  - V1 : 2 chiffres, dizaines paires (22 à 88, ex. 46 → 23) ;
+  - V2 : 2 chiffres, dizaines impaires, unités paires non nulles (ex. 74 → 37 ; 52 → 26) ;
+  - V3 : 3 chiffres, centaines 2 à 6, unités paires (ex. 470 → 235 ; 648 → 324).
+  - Erreurs typiques en spec : moitié chiffre par chiffre (74 → 32), le double au lieu de la moitié.
+- `9d709f5b` Utiliser la distributivité (CE1-035) : premier facteur **11 à 19** (au lieu de 12), autre
+  facteur 2 à 9 ; corrigé « 13 × 7 = 10 × 7 + 3 × 7 = 70 + 21 = 91 ».
+- `c73734a8` Parité (CE1-025) : nombres **0 à 999** (au lieu de 0 à 99), deux variations pair / impair
+  gardées.
+
+**Rangement, tags, niveaux scolaires, statut** :
+
+- `9827242b`, `495a397f`, `3eedd905` (décompositions) : tag CE1-006 → **CE1-005**, nœud
+  « décomposition » → « écritures » (sous-notion de CE1-005).
+- `e94c03b6` (produit astucieux) : tag CE1-024 **retiré**, nœud « calcul astucieux » gardé.
+- `47f97c9f` (double, doublon de `022130ca`, énoncé « résultat de 2 × 5 » + « le double de 5 ») :
+  **repassé en brouillon** ; nœud et tag gardés.
+- `810f1824`, `7d2d412b`, `579d0b00`, `de71495c` : niveau scolaire CE1 → **CE2** (aucun tag).
+
+**Question d'accès** (avant le SQL) : qui pourra lire quoi qu'il ne pouvait pas lire avant ? — les
+élèves et le prof du **CE2** voient 4 modèles publiés de plus. En miroir, qui ne pourra plus lire ce
+qu'il lisait ? — les élèves et le prof du **CE1** ne voient plus ces 4 modèles ni `47f97c9f`
+(brouillon : admin seul). Aucune règle (policy) ne change.
