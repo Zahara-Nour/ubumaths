@@ -121,15 +121,28 @@ describe('rien à lever : le résultat de tidy, sans condition', () => {
 	});
 });
 
+describe('tan, arcsin : leur domaine s’écrit (§ 5, L3)', () => {
+	it.each([
+		['tan(x)-tan(x)', '0', 'cos(x) ≠ 0'],
+		['arcsin(x)-arcsin(x)', '0', '−1 ≤ x ≤ 1'],
+		['tan(x)/tan(x)', '1', 'cos(x) ≠ 0 et tan(x) ≠ 0']
+	])('%s → %s, pour %s', (input, answer, condition) => {
+		const { result, conditions } = tidyWithConditions(parseCustom(input));
+		expect(toCustom(result)).toBe(answer);
+		expect(
+			describeConditions(conditions)
+				.map((c) => c.text)
+				.join(' et ')
+		).toBe(condition);
+	});
+});
+
 describe('une condition qu’on ne sait pas écrire : pas de simplification', () => {
-	it.each(['tan(x)-tan(x)', 'arcsin(x)-arcsin(x)', 'tan(x)/tan(x)'])(
-		'%s reste comme tidy',
-		(input) => {
-			const { result, conditions } = tidyWithConditions(parseCustom(input));
-			expect(toCustom(result)).toBe(toCustom(tidy(parseCustom(input))));
-			expect(conditions).toEqual([]);
-		}
-	);
+	it.each(['cot(x)-cot(x)', 'cot(x)/cot(x)'])('%s reste comme tidy', (input) => {
+		const { result, conditions } = tidyWithConditions(parseCustom(input));
+		expect(toCustom(result)).toBe(toCustom(tidy(parseCustom(input))));
+		expect(conditions).toEqual([]);
+	});
 });
 
 describe('l’écriture LaTeX', () => {
@@ -175,7 +188,7 @@ describe('domainLoss : ce qu’une réécriture a perdu du domaine', () => {
 	});
 
 	it('une condition qui ne s’écrit pas : null', () => {
-		expect(loss('tan(x)/tan(x)', '1')).toBeNull();
+		expect(loss('cot(x)/cot(x)', '1')).toBeNull();
 	});
 });
 
@@ -253,8 +266,8 @@ describe('domainChange par ensembles (§ 4.2)', () => {
 		expect(change(before, after)).toBeNull();
 	});
 
-	it('une condition qui ne s’écrit pas (tan) : on ne sait pas, null', () => {
-		expect(change('tan(x)/tan(x)', '1')).toBeNull();
+	it('une condition qui ne s’écrit pas (cot) : on ne sait pas, null', () => {
+		expect(change('cot(x)/cot(x)', '1')).toBeNull();
 	});
 
 	it('narrows : vrai quand le domaine rétrécit, faux quand il s’élargit', () => {

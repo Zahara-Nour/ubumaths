@@ -32,4 +32,18 @@ describe('figure à compléter → Typst', () => {
 		expect(typst).toBe(generateFigureTypst(plain));
 		expect(typst).not.toContain('indisponible');
 	});
+
+	it('figure de travail : la figure de départ aussi (lot 2 de figure-et-choix)', () => {
+		const work = figureNode([
+			'```figure-de-travail',
+			'fenetre: 0 ; 10 ; 0 ; 6',
+			'outils: droite',
+			'case: 0',
+			...SCRIPT
+		]);
+		const plain = figureNode(['```figure', 'fenetre: 0 ; 10 ; 0 ; 6', ...SCRIPT]);
+		expect(work.construction?.work).toBe(true);
+		expect(work.errors).toEqual([]);
+		expect(generateFigureTypst(work)).toBe(generateFigureTypst(plain));
+	});
 });

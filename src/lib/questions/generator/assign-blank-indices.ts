@@ -16,6 +16,7 @@
  * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N` posé dans le bloc
  * - Bloc ```figure-a-completer → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
  *   son contenu est mis à l'abri : ni `?` ni `[_]` n'y crée de case
+ * - Bloc ```figure-de-travail → de même UNE case, jamais notée (l'élève trace pour vérifier)
  * - Bloc ```choix → UNE case (type 'choice'), `case: N` posé dans le bloc ; une case
  *   écrite dans un choix (`?` en formule, `[_]`) est refusée avec un message situé
  *
@@ -84,7 +85,12 @@ export interface AssignBlankIndicesResult {
 	 * le générateur lise ses vérifications. Absent sans tel bloc.
 	 */
 	constructionBlanks?: Record<number, string>;
-	/** Blocs ```figure-a-completer mal placés (liste, citation) : messages pour l'auteur */
+	/**
+	 * Case → texte du bloc ```figure-de-travail qui la porte (sans `case:`) : case
+	 * jamais notée. Absent sans tel bloc.
+	 */
+	workFigureBlanks?: Record<number, string>;
+	/** Blocs ```figure-a-completer ou ```figure-de-travail mal placés (liste, citation) : messages pour l'auteur */
 	constructionErrors?: string[];
 	/**
 	 * Case → corps du bloc ```choix qui la porte (sans `case:`, choix dans l'ordre
@@ -110,7 +116,7 @@ interface MarkedChoiceBlock {
 /** Ouverture d'un bloc délimité au premier niveau : clôture et nom (« » pour du code) */
 const FENCE_OPEN_REGEX = /^(`{3,})([^`\s]*)\s*$/;
 /** Blocs de question qui portent leur propre case : un bloc choix n'y a pas sa place */
-const QUESTION_BLOCK_NAMES = new Set(['figure-a-completer', 'operation']);
+const QUESTION_BLOCK_NAMES = new Set(['figure-a-completer', 'figure-de-travail', 'operation']);
 
 /**
  * Bloc délimité (autre que ```choix) qui contient chaque ligne : son nom, ou `null`
@@ -225,20 +231,23 @@ function choiceBlockErrors(block: MarkedChoiceBlock, caseIndex: number): string[
 	return errors;
 }
 
-/** Fence d'ouverture d'un bloc ```figure-a-completer, au premier niveau seulement */
-const CONSTRUCTION_FENCE_REGEX = /^```figure-a-completer\s*$/;
+/** Fence d'ouverture d'un bloc ```figure-a-completer ou ```figure-de-travail, au premier niveau seulement */
+const CONSTRUCTION_FENCE_REGEX = /^```(figure-a-completer|figure-de-travail)\s*$/;
 
 /** La même, en retrait (liste) ou citée : le bloc ne peut pas porter de case */
-const NESTED_CONSTRUCTION_FENCE_REGEX = /^(?:\s+|\s*>\s*)```figure-a-completer\s*$/;
+const NESTED_CONSTRUCTION_FENCE_REGEX =
+	/^(?:\s+|\s*>\s*)```(figure-a-completer|figure-de-travail)\s*$/;
 
-/** Marque d'un bloc ```figure-a-completer mis à l'abri : début, rang du bloc, fin */
+/** Marque d'un bloc ```figure-a-completer ou ```figure-de-travail mis à l'abri : début, rang du bloc, fin */
 const CONSTRUCTION_MARK_START = '\u0000construction:';
 const CONSTRUCTION_MARK_END = '\u0000';
 
-const CONSTRUCTION_NESTED_MESSAGE =
-	'Un bloc figure-a-completer doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)';
+const constructionNestedMessage = (name: string) =>
+	`Un bloc ${name} doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
 
 interface ConstructionBlock {
+	/** Nom du bloc : figure à compléter (notée) ou figure de travail (jamais notée) */
+	name: 'figure-a-completer' | 'figure-de-travail';
 	/** Lignes du bloc entre les clôtures */
 	body: string[];
 	/** false : clôture ``` absente (le parseur dira « bloc non fermé ») */
@@ -246,7 +255,7 @@ interface ConstructionBlock {
 }
 
 /**
- * Met à l'abri les blocs ```figure-a-completer : chacun devient une marque d'une
+ * Met à l'abri les blocs ```figure-a-completer et ```figure-de-travail : chacun devient une marque d'une
  * ligne, numérotée ensuite avec les autres cases puis rendue avec `case: N`.
  * Étendue du bloc : celle du parseur (`findFigureBlocks`, bloc non fermé compris).
  */
@@ -264,8 +273,9 @@ function markConstructionBlocks(statement: string): {
 	const errors: string[] = [];
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
-		if (NESTED_CONSTRUCTION_FENCE_REGEX.test(line)) {
-			errors.push(CONSTRUCTION_NESTED_MESSAGE);
+		const nested = NESTED_CONSTRUCTION_FENCE_REGEX.exec(line);
+		if (nested) {
+			errors.push(constructionNestedMessage(nested[1]));
 		}
 		const range = ranges.find((r) => r.startIndex === i);
 		if (!range) {
@@ -275,6 +285,7 @@ function markConstructionBlocks(statement: string): {
 		const closed = range.closed !== false;
 		out.push(`${CONSTRUCTION_MARK_START}${blocks.length}${CONSTRUCTION_MARK_END}`);
 		blocks.push({
+			name: line.includes('figure-de-travail') ? 'figure-de-travail' : 'figure-a-completer',
 			body: lines.slice(i + 1, closed ? range.endIndex : range.endIndex + 1),
 			closed
 		});
@@ -286,7 +297,7 @@ function markConstructionBlocks(statement: string): {
 /** Le bloc rendu à son texte, sa case posée en première ligne */
 function restoreConstructionBlock(block: ConstructionBlock, caseIndex: number): string {
 	return [
-		'```figure-a-completer',
+		`\`\`\`${block.name}`,
 		`case: ${caseIndex}`,
 		...block.body,
 		...(block.closed ? ['```'] : [])
@@ -455,6 +466,7 @@ export function assignBlankIndices(
 	const choiceErrors: string[] = [...choices.errors];
 	const constructions = markConstructionBlocks(choices.statement);
 	const constructionBlanks: Record<number, string> = {};
+	const workFigureBlanks: Record<number, string> = {};
 	const operations = markCaseBlocks(constructions.statement, OPERATION_BLOCKS);
 	const builds = markBuildBlocks(operations.statement);
 	const statement = builds.statement;
@@ -548,7 +560,9 @@ export function assignBlankIndices(
 					const rankEnd = text.indexOf(CONSTRUCTION_MARK_END, rankStart);
 					const block = constructions.blocks[Number(text.slice(rankStart, rankEnd))];
 					newText += restoreConstructionBlock(block, counter);
-					constructionBlanks[counter] = block.body.join('\n');
+					const blanksOfKind =
+						block.name === 'figure-de-travail' ? workFigureBlanks : constructionBlanks;
+					blanksOfKind[counter] = block.body.join('\n');
 					counter++;
 					blankTypes.push('math');
 					i = rankEnd + CONSTRUCTION_MARK_END.length;
@@ -598,7 +612,8 @@ export function assignBlankIndices(
 		...(operations.errors.length > 0 && { operationErrors: operations.errors }),
 		...(buildCount > 0 && { buildBlanks }),
 		...(builds.errors.length > 0 && { buildErrors: builds.errors }),
-		...(constructions.blocks.length > 0 && { constructionBlanks }),
+		...(Object.keys(constructionBlanks).length > 0 && { constructionBlanks }),
+		...(Object.keys(workFigureBlanks).length > 0 && { workFigureBlanks }),
 		...(constructions.errors.length > 0 && { constructionErrors: constructions.errors }),
 		...(choices.blocks.length > 0 && { choiceBlanks }),
 		...(choiceErrors.length > 0 && { choiceErrors })

@@ -25,6 +25,7 @@
 	import type { TestSpecResult } from '$lib/questions/test-spec-runner';
 	import { getRootVariableNames } from '$lib/questions/generator/test-instance-builder';
 	import { readChoiceCase, statementCaseKinds } from '$lib/questions/choice-case-editor';
+	import { readWorkFigureCases } from '$lib/questions/work-figure-editor';
 	import { formatChoiceAnswer, parseChoiceAnswer } from '$lib/questions/choice-case';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { Button } from '$lib/components/ui/button';
@@ -129,6 +130,13 @@
 		return kinds.map((kind) =>
 			kind === 'choice' ? (readChoiceCase(statement, ordinal++)?.choices ?? null) : null
 		);
+	});
+
+	// Figures de travail : jamais notées, rien à saisir dans un test (valeur vide)
+	let workFigureIndexes = $derived.by(() => {
+		const variation = variations[editSpec.variationIndex ?? 0];
+		const statement = variation?.statement?.trim() ? variation.statement : shared?.statement;
+		return statement ? new Set(readWorkFigureCases(statement).keys()) : new Set<number>();
 	});
 
 	// Réponse d'une case choix : choix `index` coché ou décoché (indices d'origine)
@@ -400,7 +408,11 @@
 								{@const picked = choices
 									? parseChoiceAnswer(editSpec.answers?.[i] ?? '', choices.length)
 									: null}
-								{#if choices && picked}
+								{#if workFigureIndexes.has(i)}
+									<p class="rounded-md border p-2 text-sm text-muted-foreground">
+										Case {i + 1} : figure de travail, non notée (rien à saisir)
+									</p>
+								{:else if choices && picked}
 									<div class="flex flex-wrap gap-3 rounded-md border p-2">
 										<span class="text-sm text-muted-foreground">Case {i + 1} : choix</span>
 										{#each choices as choice, c (c)}

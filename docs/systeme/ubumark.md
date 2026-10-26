@@ -15,7 +15,7 @@ couvre:
 > Doc de référence du module `src/lib/ubumark/` et de son rendu `src/lib/components/markdown/`.
 > Pratiques d'écriture (à ne pas dupliquer ici) : [notation-unites](../pratiques/notation-unites.md)
 > (grandeurs), [fiches-exercices](../pratiques/fiches-exercices.md) (fiches, pièges PDF).
-> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; espaces de groupement le 2026-10-23 ; bloc horloge le 2026-10-24 ; bloc opération le 2026-10-25 ; sa saisie (case de question) le 2026-10-25 ; saisie de la multiplication le 2026-10-25 ; saisie de la division le 2026-10-25 ; bloc collection le 2026-10-25 ; bloc figure-a-completer le 2026-10-25 (carré / rectangle le 2026-10-26) ; scène commune collection / monnaie le 2026-10-25 ; bloc monnaie le 2026-10-25 ; sa recette le 2026-10-25 ; paragraphe collé au bloc qui le suit (PDF) le 2026-10-26 ; collection à construire le 2026-10-26 ; monnaie à construire le 2026-10-26 ; bloc figure-de-travail le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -190,7 +190,7 @@ en retrait sous un item de liste.
 | `trig`                                                                                                                    | `trig-circle`               | `trig-circle-parser.ts`             | `TrigCircle.svelte`      | `trig-circle-typst.ts`           |
 | `line`                                                                                                                    | `number-line`               | `number-line-parser.ts`             | `NumberLine.svelte`      | `number-line-typst.ts`           |
 | `courbe`                                                                                                                  | `courbe`                    | `courbe-parser.ts`                  | `Courbe.svelte`          | `courbe-typst.ts`                |
-| `figure`, `figure-a-completer`                                                                                            | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`     | `figure-typst.ts` (via registre) |
+| `figure`, `figure-a-completer`, `figure-de-travail`                                                                       | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`     | `figure-typst.ts` (via registre) |
 | `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`              | `StatChart.svelte`       | `stat-chart-typst.ts`            |
 | `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`         | `qr-typst.ts`                    |
 | `horloge`                                                                                                                 | `horloge`                   | `horloge-parser.ts`                 | `Horloge.svelte`         | `horloge-typst.ts`               |
@@ -295,6 +295,16 @@ le bloc s'affiche comme sa figure de départ. Le repérage est celui de ` ```fig
 (`isFigureBlockStart` reconnaît les deux mots ; ` ```construction ` n'ouvre rien : le mot désigne les constructions animées, voir [CONTEXT.md](../../CONTEXT.md) « Figure à compléter ») ; l'éditeur riche rend le bloc à son mot
 (`figureFence`, `markdown-import.ts`). Jugement : [questions](questions.md) (case « figure »). Fiche
 de l'aide à l'écriture : `block-catalog/figure-a-completer.ts` (`/aide-ecriture/blocs/figure-a-completer`).
+
+**Figure de travail** (` ```figure-de-travail ` : l'élève peut tracer pour vérifier, rien n'est
+noté) : mêmes lignes que la figure à compléter sauf `verifier:`, refusé avec sa ligne
+(`WORK_FIGURE_CHECK_MESSAGE`) ; `outils:` absent → `droite`. `readConstructionHeader(source, { work: true })`
+rend `construction: { tools, checks: [], work: true }` ; `isConstructionBlockStart` reconnaît les deux
+mots, `isWorkFigureBlockStart` celui-ci ; `deplacable:` y est refusé comme dans tout bloc d'exercice.
+Écran, PDF (figure de départ), éditeur riche (`figureFence`) : comme la figure à compléter. Jugement
+(aucun) et correction : [questions](questions.md). Fiche : `block-catalog/figure-de-travail.ts`.
+Gardes : `questions/__tests__/figure-de-travail.test.ts`, `figure-a-completer-typst.test.ts`,
+`construction-bloc.test.ts`.
 
 **Statistiques** — `src/lib/ubumark/__tests__/stat-chart/markdown.test.ts` sauf mention :
 

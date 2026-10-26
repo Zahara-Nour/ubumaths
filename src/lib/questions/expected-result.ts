@@ -27,6 +27,7 @@ import { rulesDecide } from './rules-suffice';
 import { escapeStudentText, neutralizeStudentLatex } from './student-answer-safety';
 import { correctChoiceIndexesOf, isChoiceBlank, parseChoiceAnswer } from './choice-case';
 import { replaceChoiceBlocks } from '$lib/ubumark/parser/choix-parser';
+import { isWorkFigureBlank } from './graded-part';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
 import {
@@ -124,6 +125,12 @@ export type ExpectedLine =
 			status: ExpectedStatus;
 	  }
 	/**
+	 * Figure de travail (bloc ```figure-de-travail) : jamais notée, montrée APRÈS
+	 * les réponses ; les traits de l'élève en gris (`answer`, chaîne `droite(…)`),
+	 * `''` sans tracé, `null` sans réponse (R9) : la figure de départ seule
+	 */
+	| { kind: 'work-figure'; index: number; source: string; answer: string | null }
+	/**
 	 * Case à construire (bloc ```collection ou ```monnaie, `construire:`) : le plan
 	 * lui-même, verrouillé, avec la construction de l'élève (`answer`, la valeur
 	 * posée) ; `null` sans réponse (R9) ou réponse vide : la construction juste seule
@@ -151,8 +158,11 @@ export const EMPTY_BUILD_TEXT = "Tu n'as rien posé.";
 /** Case sans valeur connue : pointillés, comme sur une fiche */
 const BLANK_TEXT = '……';
 
-/** Bloc ```figure-a-completer : la case « figure », montrée par sa ligne `figure` */
-const FIGURE_CASE_BLOCK = /^```figure-a-completer\b[\s\S]*?^```[ \t]*$/gm;
+/**
+ * Bloc ```figure-a-completer (la case « figure », montrée par sa ligne `figure`) ou
+ * ```figure-de-travail (montrée par sa ligne `work-figure`)
+ */
+const FIGURE_CASE_BLOCK = /^```figure-(?:a-completer|de-travail)\b[\s\S]*?^```[ \t]*$/gm;
 
 /** Une formule : bloc `$$…$$` ou en ligne `$…$` (une seule passe, cf. content-resolver) */
 const MATH_ZONE = /\$\$([\s\S]+?)\$\$|\$([^$\n]+?)\$/g;
@@ -227,7 +237,7 @@ export function fillMarkdown(
  * aux formules de la convention « expression » (comme `augmentASTForExpressions`
  * à l'écran), sauf si la formule a déjà ses propres cases.
  */
-/** L'énoncé sans ses blocs ```figure-a-completer (la ligne `figure` les montre) */
+/** L'énoncé sans ses blocs ```figure-a-completer et ```figure-de-travail (leur ligne les montre) */
 export function withoutFigureCases(statement: string): string {
 	return statement.replace(FIGURE_CASE_BLOCK, '');
 }
@@ -318,15 +328,18 @@ function markedIndexes(markdown: string): Set<number> {
  * expression à une case, ou `$… = ?$`). Rend le membre gauche, sinon `null`.
  */
 function wholeRightHandSide(markdown: string, instance: QuestionInstance): string | null {
-	const blanks = instance.blanks ?? [];
-	if (blanks.length !== 1 || blanks[0].type !== 'math') return null;
+	// Figures de travail hors compte : jamais une réponse
+	const all = instance.blanks ?? [];
+	const graded = all.filter((blank) => !isWorkFigureBlank(blank));
+	if (graded.length !== 1 || graded[0].type !== 'math') return null;
+	const gradedIndex = String(all.indexOf(graded[0]));
 	const zones = [...markdown.matchAll(MATH_ZONE)].filter((m) =>
 		new RegExp(PLACEHOLDER.source).test(m[1] ?? m[2])
 	);
 	if (zones.length !== 1) return null;
 	const [zone] = zones;
 	const match = (zone[1] ?? zone[2]).match(LHS_EQUALS_BLANK);
-	if (!match || match[2] !== '0') return null;
+	if (!match || match[2] !== gradedIndex) return null;
 	const lhs = match[1].trim();
 	if (lhs === '' || new RegExp(PLACEHOLDER.source).test(lhs) || ANY_RELATION.test(lhs)) {
 		return null;
@@ -360,7 +373,8 @@ function blankViews(
 ): BlankView[] {
 	const builds = buildCaseBlocks(typeof instance.statement === 'string' ? instance.statement : '');
 	return (instance.blanks ?? []).flatMap((blank, index) => {
-		if (!blank) return [];
+		// Figure de travail : jamais une réponse, sa ligne à part (`workFigureLines`)
+		if (!blank || isWorkFigureBlank(blank)) return [];
 		// Case choix : sa réponse (indices) n'est jamais rendue en texte, cf. choiceCaseLines
 		const context = blank.type === 'text' || blank.type === 'choice' ? 'text' : 'math';
 		const detail = verdict?.blanks[index];
@@ -512,6 +526,25 @@ function figureLines(
 	return [line, ...remarkLines([view])];
 }
 
+/** Figures de travail : une ligne chacune, après les réponses notées */
+function workFigureLines(
+	instance: QuestionInstance,
+	answer: StudentAnswer | undefined
+): ExpectedLine[] {
+	return (instance.blanks ?? []).flatMap((blank, index) =>
+		blank?.construction && isWorkFigureBlank(blank)
+			? [
+					{
+						kind: 'work-figure' as const,
+						index,
+						source: blank.construction.source,
+						answer: answer ? (answer.values?.[index] ?? '').trim() : null
+					}
+				]
+			: []
+	);
+}
+
 /** Case à construire : le plan (construction de l'élève, ou juste), « rien répondu » */
 function buildLines(
 	view: BlankView,
@@ -638,6 +671,17 @@ function choiceBlockIndexes(markdown: string): Set<number> {
 }
 
 function build(
+	instance: QuestionInstance,
+	answer: StudentAnswer | undefined,
+	given: DetailedVerdict | undefined
+): ExpectedResult {
+	const result = buildAnswers(instance, answer, given);
+	const work = workFigureLines(instance, answer);
+	return work.length === 0 ? result : { ...result, lines: [...result.lines, ...work] };
+}
+
+/** Résultat attendu des cases notées (les figures de travail viennent après, cf. `build`) */
+function buildAnswers(
 	instance: QuestionInstance,
 	answer: StudentAnswer | undefined,
 	given: DetailedVerdict | undefined

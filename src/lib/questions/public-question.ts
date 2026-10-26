@@ -28,6 +28,7 @@ import {
 	type InstanceBlank,
 	type QuestionInstance
 } from './types';
+import { isWorkFigureBlank } from './graded-part';
 
 // Types
 export interface PublicBlank {
@@ -45,6 +46,8 @@ export interface PublicBlank {
 	 * affichées, ramenées aux indices d'origine par le serveur (`toOriginalChoiceValues`)
 	 */
 	choice?: { choices: string[]; multiple: boolean };
+	/** Figure de travail : jamais notée, peut rester vide (rien d'attendu à cacher) */
+	workFigure?: true;
 }
 
 export interface PublicQuestion {
@@ -86,6 +89,7 @@ function publicBlank(blank: InstanceBlank): PublicBlank {
 	}
 	if (blank.graphicalConfig) result.graphicalConfig = blank.graphicalConfig;
 	if (blank.answerKind) result.answerKind = blank.answerKind;
+	if (isWorkFigureBlank(blank)) result.workFigure = true;
 	if (blank.choice) {
 		const { choices, order, multiple } = blank.choice;
 		result.choice = { choices: order.map((index) => choices[index]), multiple };
@@ -178,6 +182,10 @@ export function toDisplayInstance(question: PublicQuestion): QuestionInstance {
 		...(blank.unit && { unit: blank.unit }),
 		...(blank.graphicalConfig && { graphicalConfig: blank.graphicalConfig }),
 		...(blank.answerKind && { answerKind: blank.answerKind }),
+		// Figure de travail : la figure vient de l'énoncé, la case dit seulement qu'elle n'est pas notée
+		...(blank.workFigure && {
+			construction: { source: '', checks: [], work: true as const }
+		}),
 		// Ordre affiché = ordre d'origine du navigateur : les positions cochées partent telles quelles
 		...(blank.choice && {
 			choice: {

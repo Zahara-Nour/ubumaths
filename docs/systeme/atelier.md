@@ -10,7 +10,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; conditions sur la lettre, points irrationnels, `tan`/`arcsin`, `avec x ≥ e`, tidy-conditions § 5 PR A, 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26).
 
 ## À quoi ça sert
 
@@ -175,36 +175,36 @@ Ceux du code et de l'interface :
 
 ### Composants — `src/lib/components/atelier/`
 
-| Composant                    | Rôle                                                                                                                                                           |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AtelierContainer.svelte`    | Le conteneur : barre d'icônes, panneau + vues, console déroulante, session, `CalcDesk`, `GrapheurStore` propre                                                 |
-| `roving-toolbar.ts`          | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                                                              |
-| `ToolButton.svelte`          | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)                                        |
-| `ObjectPanel.svelte`         | « Mes objets » : création, liste des cartes ; replié par défaut sur téléphone                                                                                  |
-| `ObjectCard.svelte`          | L'aiguillage : confie chaque objet à la carte de son type ; déplie son panneau « Propriétés » (état dans `ObjectPanel`)                                        |
-| `ObjectProperties.svelte`    | Le panneau « Propriétés » sous la carte : nom (`rename`), lignes de `propertiesOf`, style, étiquette, curseur                                                  |
-| `FigureCard.svelte`          | La carte d'un point ou d'une courbe, sur une ligne : `A = [champ]`, `d : [champ]` ; constat C6, menu                                                           |
-| `FigureStylePopover.svelte`  | Le point de couleur d'un point (couleur, taille) ou d'une courbe de la figure (couleur, trait) : `setFigureDisplay`                                            |
-| `FigureStyleSettings.svelte` | Ses réglages, repris dans le panneau « Propriétés »                                                                                                            |
-| `ValueCard.svelte`           | La carte d'une valeur, sur une ligne : `a = [champ]`, menu ; curseur sous la ligne d'un paramètre ; fenêtre des bornes                                         |
-| `SequenceCard.svelte`        | La carte d'une suite, sur une ligne : point, `u(n) = [champ]`, œil, menu ; premier terme et marches sous la ligne                                              |
-| `ListCard.svelte`            | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »                                                |
-| `CardActionItems.svelte`     | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`                                                   |
-| `UnavailableItem.svelte`     | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)                                                  |
-| `FunctionCard.svelte`        | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »                                       |
-| `CurveStylePopover.svelte`   | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)                                        |
-| `CurveStyleSettings.svelte`  | Ses réglages, repris dans le panneau « Propriétés »                                                                                                            |
-| `DefinitionField.svelte`     | Champ MathLive d'une définition ; toutes les cartes le rangent à Entrée / sortie du champ (`commit="validate"`)                                                |
-| `ValueSlider.svelte`         | Le curseur d'une valeur, sous la ligne de sa carte                                                                                                             |
-| `SliderSettings.svelte`      | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                                                        |
-| `CurveSettings.svelte`       | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls                                      |
-| `CalculView.svelte`          | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                                                        |
-| `NaturalField.svelte`        | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel                                              |
-| `AtelierSettings.svelte`     | Le bouton « Réglages » (icône seule) et sa fenêtre : saisie dans Calcul, angles, déplacement des points                                                        |
-| `FormulaText.svelte`         | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)                                        |
-| `FigureView.svelte`          | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, barre d'outils, case « Repère », glisser des points, flèches, message d'un atelier sans figure |
-| `DataView.svelte`            | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                                                    |
-| `ShareBar.svelte`            | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier »                                     |
+| Composant                    | Rôle                                                                                                                                                                                                                                                                                                                          |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AtelierContainer.svelte`    | Le conteneur : barre d'icônes, panneau + vues (le **graphe agrandi**, bouton de la barre du graphe : `position: fixed` sur toute la fenêtre, en-tête et menu du site recouverts, panneau, barre et onglets masqués, Échap le réduit sans recadrer le graphe), console déroulante, session, `CalcDesk`, `GrapheurStore` propre |
+| `roving-toolbar.ts`          | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                                                                                                                                                                                                                             |
+| `ToolButton.svelte`          | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)                                                                                                                                                                                                       |
+| `ObjectPanel.svelte`         | « Mes objets » : création, liste des cartes ; replié par défaut sur téléphone                                                                                                                                                                                                                                                 |
+| `ObjectCard.svelte`          | L'aiguillage : confie chaque objet à la carte de son type ; déplie son panneau « Propriétés » (état dans `ObjectPanel`)                                                                                                                                                                                                       |
+| `ObjectProperties.svelte`    | Le panneau « Propriétés » sous la carte : nom (`rename`), lignes de `propertiesOf`, style, étiquette, curseur                                                                                                                                                                                                                 |
+| `FigureCard.svelte`          | La carte d'un point ou d'une courbe, sur une ligne : `A = [champ]`, `d : [champ]` ; constat C6, menu                                                                                                                                                                                                                          |
+| `FigureStylePopover.svelte`  | Le point de couleur d'un point (couleur, taille) ou d'une courbe de la figure (couleur, trait) : `setFigureDisplay`                                                                                                                                                                                                           |
+| `FigureStyleSettings.svelte` | Ses réglages, repris dans le panneau « Propriétés »                                                                                                                                                                                                                                                                           |
+| `ValueCard.svelte`           | La carte d'une valeur, sur une ligne : `a = [champ]`, menu ; curseur sous la ligne d'un paramètre ; fenêtre des bornes                                                                                                                                                                                                        |
+| `SequenceCard.svelte`        | La carte d'une suite, sur une ligne : point, `u(n) = [champ]`, œil, menu ; premier terme et marches sous la ligne                                                                                                                                                                                                             |
+| `ListCard.svelte`            | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »                                                                                                                                                                                                               |
+| `CardActionItems.svelte`     | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`                                                                                                                                                                                                                  |
+| `UnavailableItem.svelte`     | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)                                                                                                                                                                                                                 |
+| `FunctionCard.svelte`        | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »                                                                                                                                                                                                      |
+| `CurveStylePopover.svelte`   | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)                                                                                                                                                                                                       |
+| `CurveStyleSettings.svelte`  | Ses réglages, repris dans le panneau « Propriétés »                                                                                                                                                                                                                                                                           |
+| `DefinitionField.svelte`     | Champ MathLive d'une définition ; toutes les cartes le rangent à Entrée / sortie du champ (`commit="validate"`)                                                                                                                                                                                                               |
+| `ValueSlider.svelte`         | Le curseur d'une valeur, sous la ligne de sa carte                                                                                                                                                                                                                                                                            |
+| `SliderSettings.svelte`      | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                                                                                                                                                                                                                       |
+| `CurveSettings.svelte`       | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls                                                                                                                                                                                                     |
+| `CalculView.svelte`          | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                                                                                                                                                                                                                       |
+| `NaturalField.svelte`        | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel                                                                                                                                                                                                             |
+| `AtelierSettings.svelte`     | Le bouton « Réglages » (icône seule) et sa fenêtre : saisie dans Calcul, angles, déplacement des points                                                                                                                                                                                                                       |
+| `FormulaText.svelte`         | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)                                                                                                                                                                                                       |
+| `FigureView.svelte`          | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, barre d'outils, case « Repère », glisser des points, flèches, message d'un atelier sans figure                                                                                                                                                                |
+| `DataView.svelte`            | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                                                                                                                                                                                                                   |
+| `ShareBar.svelte`            | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier »                                                                                                                                                                                                    |
 
 La vue **Graphe** n'a pas de composant à elle : `AtelierContainer.svelte` monte
 `src/lib/components/grapheur/GrapheurContainer.svelte` (sans panneau de saisie) sur un
@@ -1338,7 +1338,8 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   `parseStudentDomain`), une seule lettre. La simplification du bouton a lieu si l'hypothèse
   garantit chacune de ses conditions (`guarantees` : l'ensemble est inclus dans celui où `1/u`,
   `ln u` ou `√u` est défini) ; sinon la ligne garde l'écriture et le dit (« x > -1 ne garantit pas
-  x ≠ 0 »), et une hypothèse sans effet est dite aussi (« ne change rien ici »). Une réécriture
+  x ≠ 0 »), dans les deux modes du réglage (la ligne ne bascule pas, `withDomainMode`), et une
+  hypothèse sans effet est dite aussi (« ne change rien ici »). Une réécriture
   qui rétrécit le domaine (`ln(x²) → 2 ln x`, § 4.2) a son bouton (« Simplifier pour x > 0 ») et
   sa note (« Pour x > 0, on peut écrire 2ln(x) : ajoute « avec x > 0 » ») ; `avec x > 0` la
   fait. Deux écritures du même ensemble ne changent rien : `.simplifier ln(x³)` → `3 ln x`,
@@ -1349,12 +1350,21 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   (`0`, pour x ≠ 0) ; ses étapes ne sont montrées que si elles mènent à la réponse et valent
   chacune là où la condition le dit (`e^{ln(x²)}` → `x²`, pour x ≠ 0, sans étapes : `ln(x²) →
 2 ln x` ne vaut que pour x > 0). Les conditions s'écrivent au plus simple (`plainConditions` :
-  `ln(x)/ln(x)` → « pour x > 0 et x ≠ 1 »). Seule une
-  condition d'une lettre dont le domaine est **calculé en entier et fait d'intervalles et de
-  points** peut être garantie : `ln(x) ≠ 0` (]0;+∞[ \ {1}, `ln(x)/ln(x) avec x > 1` → 1),
-  `eˣ − 1 ≠ 0` (ℝ \ {0}) ; pas `cos(x) ≠ 0`, qui exclut une famille π/2 + kπ que l'inclusion ne
-  voit pas (revue : `cos(x)/cos(x) avec x > 0` donnait 1), ni `tan(x) ≠ 0` ou `x − ln x ≠ 0`, non
-  résolus (§ 4.1 de tidy-conditions). La note ne
+  `ln(x)/ln(x)` → « pour x > 0 et x ≠ 1 »), sur la lettre, points irrationnels compris
+  (§ 5 de tidy-conditions, L2-L3) : « pour x ≠ −√2 et x ≠ √2 », « pour x ≠ √2 » (jamais
+  `sqrt(2)`), « pour x < −√2 ou x > √2 », « pour −1 ≤ x ≤ 1 et x ≠ 0 » (`arcsin(x)/arcsin(x)`),
+  « pour x ≠ tan(1) » (`arctan(x) − 1`) ; `tan(x)/tan(x)` → « pour tan(x) ≠ 0 » (choix de
+  David, Q11). Point sans écriture exacte (`x³ − 2`) : condition entière. Les hypothèses
+  lisent les constantes exactes (`avec x ≥ e`, `avec x > ln(2)`, `avec x ≠ √2`,
+  `dans ]√2;+∞[` : `e` n'est pas une lettre, `LETTER`). Une condition d'une lettre dont le domaine est **calculé en entier et
+  fait d'intervalles et de points** peut être garantie : `ln(x) ≠ 0` (]0;+∞[ \ {1},
+  `ln(x)/ln(x) avec x > 1` → 1), `eˣ − 1 ≠ 0` (ℝ \ {0}). `cos(x) ≠ 0` exclut une famille
+  π/2 + kπ que l'inclusion ne voit pas (de même `sin(x) ≠ 0`, kπ) : garantie seulement par des
+  intervalles **bornés** qui n'en contiennent aucun point, borne fermée sur un point exclue
+  (`avoidsPeriodicPoints` : `cos(x)/cos(x) avec 0 < x < 1` ou `dans ]−π/2;π/2[` → 1, mais pas
+  `dans ]−π/2;π/2]` ni `avec 1.5707963267 < x < 2`, qui contient π/2 ; `sin(x)/sin(x) dans ]0;π[`
+  → 1 ; `avec x > 0` garde l'écriture). Un ensemble réduit à un point s'écrit « x = 0 ». `x − ln x ≠ 0`, non
+  résolu, ne se garantit pas. La note ne
   propose que ce qui, recopié, simplifie vraiment la ligne (sinon la condition seule) ; une
   expression tapée sans bouton renvoie à `.simplifier`. Tests : `domaine-reglage.test.ts`.
 

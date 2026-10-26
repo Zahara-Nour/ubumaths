@@ -56,7 +56,10 @@ import { hasMonnaieToBuild, parseMonnaieContent } from '$lib/ubumark/parser/monn
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
 import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
-import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
+import {
+	WORK_FIGURE_ALONE_MESSAGE,
+	readConstructionHeader
+} from '$lib/ubumark/parser/construction-parser';
 import { parseFigureContent } from '$lib/ubumark/parser/figure-parser';
 import {
 	parseChoiceBody,
@@ -484,7 +487,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		// porte sa case, même sans `blanks` dans le modèle — dans une question à trous
 		// seulement (un QCM, une carte de cours n'ont pas de case)
 		const hasOperationBlock =
-			(/^\s*>?\s*```(?:operation|figure-a-completer)\s*$/m.test(String(resolvedStatement)) ||
+			(/^\s*>?\s*```(?:operation|figure-a-completer|figure-de-travail)\s*$/m.test(
+				String(resolvedStatement)
+			) ||
 				hasCollectionToBuild(String(resolvedStatement)) ||
 				hasMonnaieToBuild(String(resolvedStatement))) &&
 			getQuestionType({
@@ -593,6 +598,32 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				}
 				constructionCases.set(index, { source, checks: header.spec.checks });
 			}
+			// Cases des blocs ```figure-de-travail : l'élève trace pour vérifier, jamais
+			// notées (retirées avant toute notation, cf. `gradedPart`) ; « ordre
+			// indifférent » permis, elles ne sont jamais appariées
+			for (const [key, source] of Object.entries(blankResult.workFigureBlanks ?? {})) {
+				const index = Number(key);
+				const header = readConstructionHeader(source, { work: true });
+				const errors = [...header.errors, ...parseFigureContent(header.figureSource).errors];
+				if (header.spec.caseIndex !== undefined) {
+					errors.unshift({
+						message: 'case: est posée automatiquement, retirer cette ligne du bloc'
+					});
+				}
+				if (errors.length > 0) {
+					return {
+						success: false,
+						errors: [
+							`Case ${index + 1} (bloc figure-de-travail) : ${errors.map((e) => e.message).join(' ; ')}`
+						]
+					};
+				}
+				constructionCases.set(index, { source, checks: [], work: true });
+			}
+			const workFigureCount = [...constructionCases.values()].filter((c) => c.work).length;
+			if (workFigureCount > 0 && workFigureCount === blankResult.totalBlanks) {
+				return { success: false, errors: [WORK_FIGURE_ALONE_MESSAGE] };
+			}
 
 			// Cases des blocs ```operation : réponse calculée par le bloc, jamais écrite
 			const operationAnswers = new Map<number, string>();
@@ -691,12 +722,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						};
 					}
 				}
-				for (const index of constructionCases.keys()) {
+				for (const [index, { work }] of constructionCases) {
 					if ((templateBlanks[index].expectedAnswer ?? '').trim() !== '') {
+						const name = work ? 'figure-de-travail' : 'figure-a-completer';
 						return {
 							success: false,
 							errors: [
-								`Case ${index + 1} : sa réponse est la figure de l’élève (bloc figure-a-completer) ; laisser expectedAnswer vide`
+								`Case ${index + 1} : sa réponse est la figure de l’élève (bloc ${name}) ; laisser expectedAnswer vide`
 							]
 						};
 					}
@@ -773,6 +805,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					};
 				}
 				const construction = constructionCases.get(i);
+				if (construction?.work) {
+					// Figure de travail : rien d'attendu, jamais notée
+					return { expectedAnswer: '', type: 'graphical', construction };
+				}
 				if (construction) {
 					// Réponse attendue symbolique (`droite(A;B)`) : affichage du corrigé
 					return {

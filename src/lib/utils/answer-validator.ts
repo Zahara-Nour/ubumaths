@@ -26,6 +26,7 @@ import {
 	getQuestionType
 } from '$lib/questions/types';
 import type { ValidationResult } from '$lib/types/question-display';
+import { gradedPart } from '$lib/questions/graded-part';
 import { evaluateExpression, areEquivalent, type AnswerAssumptions } from '$lib/math';
 import { checkUnit } from '$lib/questions/constraint-validators';
 import { SUPERFLU_RULE_IDS } from '$lib/mathAST/superflu/rules';
@@ -1699,15 +1700,28 @@ function withoutCopiedDecorations(
  * Validate fill-in-blanks answers using per-blank pipeline
  */
 export function validateBlanks(
+	allUserAnswers: string[],
+	fullInstance: QuestionInstance,
+	allUserAnswersLatex?: string[]
+): ValidationResult {
+	if (allUserAnswers.length !== fullInstance.blanks!.length) {
+		return { isCorrect: false, message: 'Nombre de réponses incorrect' };
+	}
+	// Figures de travail retirées AVANT toute règle : jamais notées (cf. graded-part.ts)
+	const part = gradedPart(fullInstance, allUserAnswers, allUserAnswersLatex);
+	const result = validateGradedBlanks(part.values, part.instance, part.latex);
+	return result.blankFeedback
+		? { ...result, blankFeedback: part.spread(result.blankFeedback, undefined) }
+		: result;
+}
+
+/** `validateBlanks` sur les seules cases notées */
+function validateGradedBlanks(
 	rawUserAnswers: string[],
 	instance: QuestionInstance,
 	rawUserAnswersLatex?: string[]
 ): ValidationResult {
 	const blanks = instance.blanks!;
-
-	if (rawUserAnswers.length !== blanks.length) {
-		return { isCorrect: false, message: 'Nombre de réponses incorrect' };
-	}
 
 	// « x = » recopié devant la valeur, « ° » recopié derrière : ignorés (2026-10-02)
 	const { answers: userAnswers, latex: userAnswersLatex } = withoutCopiedDecorations(
@@ -2241,17 +2255,50 @@ function remarksOf(
  * Verdict global + statut ET remarques de chaque case, en une validation par
  * case (cœur de `validateBlanksDetailed` et de `validateAnswerDetailed`).
  */
-function detailBlanks(
-	rawUserAnswers: string[],
-	instance: QuestionInstance,
-	rawUserAnswersLatex?: string[]
-): {
+interface BlanksDetail {
 	result: ValidationResult;
 	statuses: ValidationStatus[];
 	remarks: string[][];
 	/** Réponses retenues (sans « x = » ni « ° » recopiés), LaTeX de préférence */
 	answers: string[];
-} {
+	/** Cases jamais notées (figures de travail) : leur statut ne veut rien dire */
+	ungraded: boolean[];
+}
+
+function detailBlanks(
+	allUserAnswers: string[],
+	fullInstance: QuestionInstance,
+	allUserAnswersLatex?: string[]
+): BlanksDetail {
+	const blanks = fullInstance.blanks ?? [];
+	if (blanks.length === 0 || allUserAnswers.length !== blanks.length) {
+		const detail = detailGradedBlanks(allUserAnswers, fullInstance, allUserAnswersLatex);
+		return { ...detail, ungraded: blanks.map(() => false) };
+	}
+	// Figures de travail retirées AVANT toute règle (cf. graded-part.ts), remises à leur
+	// place ensuite : statut « vide », réponse = le tracé, marquées non notées
+	const part = gradedPart(fullInstance, allUserAnswers, allUserAnswersLatex);
+	const detail = detailGradedBlanks(part.values, part.instance, part.latex);
+	const graded = new Set(part.gradedIndexes);
+	return {
+		result: detail.result.blankFeedback
+			? { ...detail.result, blankFeedback: part.spread(detail.result.blankFeedback, undefined) }
+			: detail.result,
+		statuses: part.spread<ValidationStatus>(detail.statuses, 'empty'),
+		remarks: part.spread<string[]>(detail.remarks, []),
+		answers: part
+			.spread<string | null>(detail.answers, null)
+			.map((answer, i) => answer ?? allUserAnswers[i]),
+		ungraded: blanks.map((_, i) => !graded.has(i))
+	};
+}
+
+/** `detailBlanks` sur les seules cases notées */
+function detailGradedBlanks(
+	rawUserAnswers: string[],
+	instance: QuestionInstance,
+	rawUserAnswersLatex?: string[]
+): Omit<BlanksDetail, 'ungraded'> {
 	const blanks = instance.blanks ?? [];
 	if (blanks.length === 0) {
 		return {
@@ -2371,6 +2418,11 @@ export interface BlankVerdict {
 	remarks: string[];
 	/** Réponse retenue (LaTeX saisi, sans « x = » ni « ° » recopiés) ; brute, non neutralisée */
 	answer: string;
+	/**
+	 * Figure de travail : jamais notée (`status` vaut « vide » sans rien dire,
+	 * `answer` est le tracé) ; à écarter de tout calcul de statut
+	 */
+	ungraded?: true;
 }
 
 /** Issue d'un choix de QCM : bon coché, faux coché, bon oublié, faux laissé */
@@ -2470,14 +2522,19 @@ export function validateAnswerDetailed(
 
 		const blanks = instance.blanks ?? [];
 		const values = answer.values ?? blanks.map((b) => b.prefilled ?? '');
-		const { result, statuses, remarks, answers } = detailBlanks(values, instance, answer.latex);
+		const { result, statuses, remarks, answers, ungraded } = detailBlanks(
+			values,
+			instance,
+			answer.latex
+		);
 		return {
 			status: statusOfResult(result),
 			blanks: statuses.map((status, index) => ({
 				index,
 				status,
 				remarks: remarks[index] ?? [],
-				answer: answers[index] ?? ''
+				answer: answers[index] ?? '',
+				...(ungraded[index] && { ungraded: true as const })
 			})),
 			...(result.feedback && { feedback: result.feedback })
 		};
