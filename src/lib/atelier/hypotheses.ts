@@ -30,7 +30,6 @@ import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-dom
 import { formatInterval } from '$lib/mathAST/domain/format';
 import { divide, func, number } from '$lib/mathAST/factory';
 import { getVariables } from '$lib/mathAST/eval/substitute';
-import { toPolynomial } from '$lib/mathAST/factor/polynomial';
 
 // =============================================================================
 // Types
@@ -59,6 +58,13 @@ const KEYWORD = /\s(avec|dans)\s/i;
 
 /** Une lettre de condition : `x`, `y`, pas les mots `et` / `ou`. */
 const LETTER = /(?<![A-Za-z])[A-Za-z](?![A-Za-z])/g;
+
+/** Les domaines que l'inclusion (`difference`) lit : pas de famille périodique. */
+const INCLUSION_READABLE: ReadonlySet<Domain['kind']> = new Set([
+	'empty',
+	'universal',
+	'interval_set'
+]);
 
 const AVEC_EXAMPLE = 'avec x > 0, avec x ≠ 0 et x ≠ 1, avec 0 < x ≤ 5';
 const DANS_EXAMPLE = 'dans ]0;+∞[, dans ℝ \\ {0}, dans ]0;+∞[ ∩ ]-∞;5]';
@@ -142,10 +148,6 @@ function conditionDomain(condition: TidyCondition): { letter: string; domain: Do
 	const letters = getVariables(condition.expression);
 	if (letters.size !== 1) return null;
 	const [letter] = letters;
-	// Un polynôme seulement : son domaine est fait d'intervalles et de points.
-	// `cos(x) ≠ 0` exclut une famille π/2 + kπ que l'inclusion ne voit pas (revue :
-	// `cos(x)/cos(x) avec x > 0` donnait 1) — on ne sait pas, on ne garantit rien
-	if (toPolynomial(condition.expression, letter) === null) return null;
 	const { expression, relation } = condition;
 	const witness: MathNode =
 		relation === 'nonzero'
@@ -153,6 +155,10 @@ function conditionDomain(condition: TidyCondition): { letter: string; domain: Do
 			: func(relation === 'positive' ? 'ln' : 'sqrt', [expression]);
 	const computed = computeDomain(witness, letter);
 	if ((computed.unresolved?.length ?? 0) > 0) return null;
+	// Des intervalles et des points seulement (`1/ln x` → ]0;+∞[ \ {1}) : `cos(x) ≠ 0`
+	// exclut une famille π/2 + kπ que l'inclusion ne voit pas (revue : `cos(x)/cos(x)
+	// avec x > 0` donnait 1) — on ne sait pas, on ne garantit rien
+	if (!INCLUSION_READABLE.has(computed.domain.kind)) return null;
 	return { letter, domain: computed.domain };
 }
 

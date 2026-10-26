@@ -1340,8 +1340,11 @@ condition sur la ligne. Tests : `domaine-garde.test.ts`.
   `ln u` ou `√u` est défini) ; sinon la ligne garde l'écriture et le dit (« x > -1 ne garantit pas
   x ≠ 0 »), et une hypothèse sans effet est dite aussi (« ne change rien ici »). Limite : une
   réécriture qui rétrécit le domaine (`ln(x²) → 2 ln x`) n'a pas lieu, même `avec x > 0`. Seule une
-  condition **polynomiale** en sa lettre peut être garantie : `cos(x) ≠ 0` exclut une famille
-  π/2 + kπ que l'inclusion ne voit pas (revue : `cos(x)/cos(x) avec x > 0` donnait 1). La note ne
+  condition d'une lettre dont le domaine est **calculé en entier et fait d'intervalles et de
+  points** peut être garantie : `ln(x) ≠ 0` (]0;+∞[ \ {1}, `ln(x)/ln(x) avec x > 1` → 1),
+  `eˣ − 1 ≠ 0` (ℝ \ {0}) ; pas `cos(x) ≠ 0`, qui exclut une famille π/2 + kπ que l'inclusion ne
+  voit pas (revue : `cos(x)/cos(x) avec x > 0` donnait 1), ni `tan(x) ≠ 0` ou `x − ln x ≠ 0`, non
+  résolus (§ 4.1 de tidy-conditions). La note ne
   propose que ce qui, recopié, simplifie vraiment la ligne (sinon la condition seule) ; une
   expression tapée sans bouton renvoie à `.simplifier`. Tests : `domaine-reglage.test.ts`.
 
