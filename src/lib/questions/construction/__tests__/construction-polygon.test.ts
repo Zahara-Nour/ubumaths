@@ -13,6 +13,8 @@ import {
 	NOT_CLOSED_FEEDBACK,
 	NOT_ON_GRID_LINES_FEEDBACK,
 	OVERSHOOT_FEEDBACK,
+	PROLONGED_RECTANGLE_SIDES_FEEDBACK,
+	PROLONGED_SIDE_FEEDBACK,
 	judgeConstruction
 } from '../judge';
 import { parseConstructionAnswer } from '../answer';
@@ -158,6 +160,66 @@ describe('carre A ; B — tableau de la phase 0', () => {
 		});
 	});
 
+	it('fermée sur le côté donné prolongé : faux, il ne fallait pas le prolonger (essai de David)', () => {
+		// Rectangle 5 × 3 dont la base prolonge [AB] de 2 carreaux
+		expect(square('segment(5;3;7;3)|segment(7;3;7;6)|segment(7;6;2;6)|segment(2;6;2;3)')).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_SIDE_FEEDBACK
+		});
+		// Un vrai carré 5 × 5, mais bâti sur le côté prolongé : « pas un carré » serait faux
+		expect(square('segment(5;3;7;3)|segment(7;3;7;8)|segment(7;8;2;8)|segment(2;8;2;3)')).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_SIDE_FEEDBACK
+		});
+		// Prolongé de l'autre côté de A, figure au-dessous
+		expect(square('segment(2;3;0;3)|segment(0;3;0;0)|segment(0;0;5;0)|segment(5;0;5;3)')).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_SIDE_FEEDBACK
+		});
+	});
+
+	it('côté donné prolongé des deux côtés, vertical, oblique : même message (revue #1809)', () => {
+		expect(
+			square('segment(0;3;2;3)|segment(5;3;7;3)|segment(7;3;7;6)|segment(7;6;0;6)|segment(0;6;0;3)')
+		).toEqual({ status: 'incorrect', feedback: PROLONGED_SIDE_FEEDBACK });
+		const vertical = new Map([
+			['A', { x: 2, y: 3 }],
+			['B', { x: 2, y: 6 }]
+		]);
+		expect(
+			judgeConstruction(
+				SQUARE,
+				vertical,
+				'segment(2;6;2;8)|segment(2;8;5;8)|segment(5;8;5;3)|segment(5;3;2;3)'
+			)
+		).toEqual({ status: 'incorrect', feedback: PROLONGED_SIDE_FEEDBACK });
+		const oblique = new Map([
+			['A', { x: 2, y: 3 }],
+			['B', { x: 5, y: 4 }]
+		]);
+		expect(
+			judgeConstruction(
+				SQUARE,
+				oblique,
+				'segment(5;4;8;5)|segment(8;5;7;8)|segment(7;8;1;6)|segment(1;6;2;3)'
+			)
+		).toEqual({ status: 'incorrect', feedback: PROLONGED_SIDE_FEEDBACK });
+	});
+
+	it('trait dans l’alignement de [AB] mais séparé par un trou : pas fermée', () => {
+		expect(square('segment(6;3;7;3)|segment(7;3;7;6)|segment(7;6;2;6)|segment(2;6;2;3)')).toEqual({
+			status: 'incorrect',
+			feedback: NOT_CLOSED_FEEDBACK
+		});
+	});
+
+	it('côté donné prolongé mais figure ouverte : faux, pas fermée', () => {
+		expect(square('segment(5;3;7;3)|segment(7;3;7;6)')).toEqual({
+			status: 'incorrect',
+			feedback: NOT_CLOSED_FEEDBACK
+		});
+	});
+
 	it('rien : vide', () => {
 		expect(square('')).toEqual({ status: 'empty' });
 	});
@@ -201,6 +263,33 @@ describe('rectangle A ; B ; C — tableau de la phase 0', () => {
 
 	it('figure ouverte : faux', () => {
 		expect(rectangle('segment(6;2;6;5)')).toEqual({
+			status: 'incorrect',
+			feedback: NOT_CLOSED_FEEDBACK
+		});
+	});
+
+	it('fermé sur un côté donné prolongé : faux, il ne fallait pas le prolonger (décision de David)', () => {
+		// [BC] prolongé au-delà de C, puis la figure fermée
+		expect(rectangle('segment(6;2;8;2)|segment(8;2;8;5)|segment(8;5;2;5)')).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_RECTANGLE_SIDES_FEEDBACK
+		});
+		// [AB] prolongé au-delà de A
+		expect(rectangle('segment(2;5;2;7)|segment(2;7;6;7)|segment(6;7;6;2)')).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_RECTANGLE_SIDES_FEEDBACK
+		});
+		// Les deux
+		expect(
+			rectangle('segment(6;2;8;2)|segment(8;2;8;7)|segment(8;7;2;7)|segment(2;7;2;5)')
+		).toEqual({
+			status: 'incorrect',
+			feedback: PROLONGED_RECTANGLE_SIDES_FEEDBACK
+		});
+	});
+
+	it('côté donné prolongé mais figure ouverte : faux, pas fermée', () => {
+		expect(rectangle('segment(6;2;8;2)|segment(8;2;8;5)')).toEqual({
 			status: 'incorrect',
 			feedback: NOT_CLOSED_FEEDBACK
 		});

@@ -6,8 +6,8 @@
  * porteuse : un côté tracé en morceaux, ou un trait repassé sur un côté donné,
  * ne changent rien (on juge le résultat, pas la manière). Un rectangle est
  * « présent » quand ses quatre côtés sont couverts. Ordre des messages : trait
- * hors des lignes, figure non fermée, pas un carré, trait de trop, trait qui
- * dépasse. Décisions de David du 2026-10-26
+ * hors des lignes, figure non fermée (ou fermée sur un côté donné prolongé),
+ * pas un carré, trait de trop, trait qui dépasse. Décisions de David du 2026-10-26
  * (`docs/wip/geometrie-validation-progress.md` § 7 et § 9).
  *
  * @module questions/construction/polygon
@@ -23,6 +23,10 @@ export const NOT_A_SQUARE_FEEDBACK =
 	'Ce n’est pas un carré : ses côtés n’ont pas tous la même longueur.';
 export const EXTRA_SEGMENT_FEEDBACK = 'Tu as tracé un trait de trop.';
 export const OVERSHOOT_FEEDBACK = 'Un de tes traits dépasse de la figure.';
+export const PROLONGED_SIDE_FEEDBACK =
+	'Le côté déjà tracé ne doit pas être prolongé : ton carré doit avoir ce côté-là.';
+export const PROLONGED_RECTANGLE_SIDES_FEEDBACK =
+	'Les côtés déjà tracés ne doivent pas être prolongés : ton rectangle doit avoir ces côtés-là.';
 
 /** Tolérance relative : les touchers aimantés sur les nœuds arrivent exacts */
 const EPSILON = 1e-9;
@@ -184,6 +188,75 @@ function candidateHeights(a: Position, b: Position, drawn: readonly Segment[], e
 	return heights;
 }
 
+/**
+ * Figure fermée sur le côté donné [AB] PROLONGÉ : un rectangle dont un côté
+ * contient [AB] en étant plus long, ses sommets pris aux bouts des segments
+ * de l'élève (essai de David du 2026-10-26)
+ */
+function closedOnProlongedSide(
+	a: Position,
+	b: Position,
+	drawn: readonly Segment[],
+	pieces: readonly Carrier[],
+	eps: number
+): boolean {
+	const u = sub(b, a);
+	const length2 = dot(u, u);
+	// Abscisse le long de [AB] : 0 en A, 1 en B
+	const ends: number[] = [];
+	for (const p of drawn.flatMap((s) => [s.a, s.b])) {
+		const t = dot(sub(p, a), u) / length2;
+		if (!ends.some((k) => Math.abs(k - t) <= eps)) ends.push(t);
+	}
+	const starts = ends.filter((t) => t <= eps);
+	const stops = ends.filter((t) => t >= 1 - eps);
+	const n = normal(u);
+	for (const h of candidateHeights(a, b, drawn, eps)) {
+		for (const t0 of starts) {
+			for (const t1 of stops) {
+				if (t0 > -eps && t1 < 1 + eps) continue;
+				const p = add(a, scale(t0, u));
+				const q = add(a, scale(t1, u));
+				const rect = [p, q, add(q, scale(h, n)), add(p, scale(h, n))];
+				if (isPresent(rect, pieces, eps)) return true;
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ * Rectangle fermé sur les côtés donnés [BA] et [BC] PROLONGÉS au-delà de A ou
+ * de C : coin en B, longueurs prises aux bouts des segments de l'élève
+ */
+function closedOnProlongedSides(
+	[a, b, c]: readonly Position[],
+	drawn: readonly Segment[],
+	pieces: readonly Carrier[],
+	eps: number
+): boolean {
+	const ba = sub(a, b);
+	const bc = sub(c, b);
+	// Abscisses le long de [BA] et de [BC] : 1 en A et en C
+	const along = (v: Position) => {
+		const ends: number[] = [];
+		for (const p of drawn.flatMap((s) => [s.a, s.b])) {
+			const t = dot(sub(p, b), v) / dot(v, v);
+			if (t >= 1 - eps && !ends.some((k) => Math.abs(k - t) <= eps)) ends.push(t);
+		}
+		return ends.length > 0 ? ends : [1];
+	};
+	for (const ta of [1, ...along(ba)]) {
+		for (const tc of [1, ...along(bc)]) {
+			if (ta < 1 + eps && tc < 1 + eps) continue;
+			const p = add(b, scale(ta, ba));
+			const q = add(b, scale(tc, bc));
+			if (isPresent([p, b, q, add(p, scale(tc, bc))], pieces, eps)) return true;
+		}
+	}
+	return false;
+}
+
 export function judgePolygon(
 	check: PolygonCheck,
 	points: ReadonlyMap<string, Position>,
@@ -206,7 +279,10 @@ export function judgePolygon(
 		const [a, b, c] = vertices;
 		expected = [a, b, c, add(a, sub(c, b))];
 		if (!isPresent(expected, pieces, eps)) {
-			return { status: 'incorrect', feedback: NOT_CLOSED_FEEDBACK };
+			const feedback = closedOnProlongedSides(vertices, drawn, pieces, eps)
+				? PROLONGED_RECTANGLE_SIDES_FEEDBACK
+				: NOT_CLOSED_FEEDBACK;
+			return { status: 'incorrect', feedback };
 		}
 	} else {
 		const [a, b] = vertices;
@@ -218,10 +294,10 @@ export function judgePolygon(
 			.map((side) => squareVertices(a, b, side))
 			.filter((sq) => isPresent(sq, pieces, eps));
 		if (squares.length === 0) {
-			return {
-				status: 'incorrect',
-				feedback: closed.length > 0 ? NOT_A_SQUARE_FEEDBACK : NOT_CLOSED_FEEDBACK
-			};
+			let feedback = NOT_CLOSED_FEEDBACK;
+			if (closed.length > 0) feedback = NOT_A_SQUARE_FEEDBACK;
+			else if (closedOnProlongedSide(a, b, drawn, pieces, eps)) feedback = PROLONGED_SIDE_FEEDBACK;
+			return { status: 'incorrect', feedback };
 		}
 		expected = squares[0];
 	}
