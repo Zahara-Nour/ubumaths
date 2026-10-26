@@ -98,7 +98,14 @@ import {
 import type { Rational } from '../normal/types';
 import { rationalToNode } from '../common/numeric';
 import { rewriteIndeterminateSum } from './sum-reduction';
-import { classifyWithSign } from './sign-tracking';
+import {
+	classifyWithSign,
+	isSignedInfinity,
+	isSignedZero,
+	mathNodeToSignedValue,
+	powerSign,
+	signedValueToInfinity
+} from './sign-tracking';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { numericNode } from '../common/numeric';
@@ -788,6 +795,34 @@ function evaluateLimitExactForm(
 			approachPoint,
 			dir,
 			'exact',
+			'none',
+			'composition',
+			recorder,
+			opts
+		);
+	}
+
+	// Stratégie 2.46 : uⁿ, n entier, u → ±∞, par
+	// composition. La continuité (2.45) s'arrête à une limite finie de u et la
+	// composition (2.5) ne connaît que xⁿ : (x − 3)² en +∞ n'avait pas de
+	// limite (V66). La limite de u vient du moteur entier, qui lève ses formes
+	// indéterminées : (x² − x)³ en +∞.
+	const powerLimit = tryPowerOfUnboundedLimit(expression, varName, approachPoint, dir, options);
+	if (powerLimit !== null) {
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			powerLimit,
+			'summarized',
+			approachPoint,
+			'Composition : limite de uⁿ à partir de celle de u'
+		);
+		return createResult(
+			powerLimit,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(powerLimit) ? 'infinite' : 'exact',
 			'none',
 			'composition',
 			recorder,
@@ -1494,6 +1529,37 @@ function tryLogarithmOfPositiveLimit(
 	if (value.n === value.d) return number('0');
 	const constant = exactConstantNode(inner.value);
 	return constant === null ? null : ln(constant);
+}
+
+/**
+ * uⁿ, n entier constant non nul, u → ±∞ : ±∞ (n > 0, signe selon la parité)
+ * ou 0 (n < 0). Une limite finie de u relève de la continuité ; u → 0 avec
+ * n < 0 est laissé aux autres stratégies — le suivi du signe suppose un signe
+ * constant près du point, faux pour sin(x)/x en +∞ ou x·sin(1/x) en 0 (revue
+ * de #1839) : `null`.
+ */
+function tryPowerOfUnboundedLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	const node = stripDelimiters(expression);
+	if (!isSuperscript(node) || !containsVariable(node.base, varName)) return null;
+	const exponent = literalNumberValue(node.superscript);
+	if (exponent === null || !Number.isInteger(exponent) || exponent === 0) return null;
+
+	const inner = evaluateLimit(node.base, varName, approach, dir, options);
+	// Une valeur approchée n'est pas une limite démontrée
+	if (inner.status !== 'infinite' || inner.value === null || !isInfinity(inner.value)) {
+		return null;
+	}
+
+	const result = powerSign(mathNodeToSignedValue(inner.value), exponent);
+	if (isSignedInfinity(result)) return signedValueToInfinity(result);
+	if (isSignedZero(result)) return number('0');
+	return null;
 }
 
 /**

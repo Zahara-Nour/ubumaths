@@ -37,6 +37,13 @@ function last(d: CalcDesk): Entry {
 	return entry;
 }
 
+/** La ligne des variations du tableau : [abscisse, valeur] dans l'ordre. */
+function variationValues(d: CalcDesk): [string, string][] {
+	const row = last(d).table?.rows.find((r) => r.type === 'variation');
+	if (row === undefined) return [];
+	return [...row.values].map(([at, cell]) => [at, 'expression' in cell ? cell.expression : '']);
+}
+
 function label(d: CalcDesk, name: string): string | null {
 	const object = d.atelier.get(name);
 	if (object === undefined) throw new Error(`pas d'objet ${name}`);
@@ -200,10 +207,28 @@ describe('commandes sur f(u(x))', () => {
 		expect(last(d).latex).toBe('x = 1');
 	});
 
-	// ⚠️ Avec f(x) = x², le moteur rate déjà `.variations (x-3)^2` (sans tableau,
-	// même sur ℝ) : `.limite (x-3)^2 en +∞` → « Je ne sais pas calculer cette
-	// limite ». Défaut du moteur des limites, hors de ce chantier (2026-10-26)
-	it.todo('N4 .variations f(x − 3) avec f(x) = x² : tableau sur [3 ; +∞[');
+	// `.limite (x-3)^2 en +∞` répondait « Je ne sais pas calculer cette limite »
+	// (composition sans cas puissance, V66) : pas de tableau
+	it('N4 .variations f(x − 3) avec f(x) = x² : tableau sur [3 ; +∞[', () => {
+		const d = desk(F);
+		d.submit('.variations f(x-3)');
+		expect(last(d).failed).toBe(false);
+		expect(last(d).table?.domain).toEqual([{ expression: '3' }, { expression: '+\\infty' }]);
+		expect(variationValues(d)).toEqual([
+			['3', '0'],
+			['+\\infty', '+\\infty']
+		]);
+	});
+
+	it('N4 .variations (x − 3)² sur ℝ : limites +∞ aux deux bords', () => {
+		const d = desk();
+		d.submit('.variations (x-3)^2');
+		expect(variationValues(d)).toEqual([
+			['-\\infty', '+\\infty'],
+			['3', '0'],
+			['+\\infty', '+\\infty']
+		]);
+	});
 
 	it('N4 .variations f(x − 3) : tableau sur [3 ; +∞[', () => {
 		const d = desk('f(x) = sqrt(x) sur [0;+∞[');

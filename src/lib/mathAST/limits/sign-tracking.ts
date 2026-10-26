@@ -684,10 +684,13 @@ export function negateSign(value: SignedLimitValue): SignedLimitValue {
  *
  * For even powers: result is always positive (0+ or +infinity)
  * For odd powers: sign is preserved
+ * Exposant négatif : xⁿ = 1/x^{|n|} — 0± donne ±∞, ±∞ donne 0± ; en 0 de
+ * signe inconnu, un exposant impair n'a pas de limite (côtés opposés).
  */
 export function powerSign(value: SignedLimitValue, exponent: number): SignedLimitValue {
+	if (exponent < 0) return reciprocalSign(powerSign(value, -exponent));
+
 	const isEven = exponent % 2 === 0;
-	const isPositiveExp = exponent > 0;
 
 	if (isEven) {
 		// Even powers always produce positive results
@@ -698,7 +701,7 @@ export function powerSign(value: SignedLimitValue, exponent: number): SignedLimi
 				return { type: 'zero-plus' };
 			case 'pos-infinity':
 			case 'neg-infinity':
-				return isPositiveExp ? { type: 'pos-infinity' } : { type: 'zero-plus' };
+				return { type: 'pos-infinity' };
 			case 'finite':
 				return { type: 'finite', value: Math.pow(value.value, exponent) };
 			default:
@@ -714,9 +717,9 @@ export function powerSign(value: SignedLimitValue, exponent: number): SignedLimi
 			case 'zero':
 				return { type: 'zero' };
 			case 'pos-infinity':
-				return isPositiveExp ? { type: 'pos-infinity' } : { type: 'zero-plus' };
+				return { type: 'pos-infinity' };
 			case 'neg-infinity':
-				return isPositiveExp ? { type: 'neg-infinity' } : { type: 'zero-minus' };
+				return { type: 'neg-infinity' };
 			case 'finite':
 				return { type: 'finite', value: Math.pow(value.value, exponent) };
 			default:
