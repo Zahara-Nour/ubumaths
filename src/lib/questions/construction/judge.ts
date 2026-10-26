@@ -19,7 +19,7 @@ import type {
 	PolygonCheck
 } from '$lib/ubumark/types/construction';
 import { parseConstructionAnswer, type DrawnLine } from './answer';
-import { PolygonAuthorError, judgePolygon } from './polygon';
+import { PolygonAuthorError, givenVertices, judgePolygon } from './polygon';
 
 export {
 	EXTRA_SEGMENT_FEEDBACK,
@@ -110,6 +110,36 @@ function droiteParFeedback(
 
 function isPolygonCheck(check: ConstructionCheck): check is PolygonCheck {
 	return check.kind !== 'droite_par';
+}
+
+/**
+ * Les vérifications sont-elles faisables sur cette figure ? Erreur d'AUTEUR
+ * sinon (point inconnu, sommets confondus…) : `check-template` l'appelle à
+ * chaque tirage, pour ne pas l'apprendre au premier élève.
+ */
+export function assertConstructionChecks(
+	checks: readonly ConstructionCheck[],
+	points: ReadonlyMap<string, Position>
+): void {
+	for (const check of checks) {
+		if (!isPolygonCheck(check)) {
+			// Deux points confondus : toute droite par l'un passerait pour juste
+			const [a, b] = check.points.map((name) => positionOf(points, name));
+			const scale = Math.max(1, Math.abs(a.x), Math.abs(a.y));
+			if (Math.hypot(a.x - b.x, a.y - b.y) <= ON_LINE_EPSILON * scale) {
+				throw new ConstructionAuthorError(
+					`verifier: droite_par ${check.points.join(' ; ')} : ${check.points[0]} et ${check.points[1]} sont au même endroit`
+				);
+			}
+			continue;
+		}
+		try {
+			givenVertices(check, points);
+		} catch (error) {
+			if (error instanceof PolygonAuthorError) throw new ConstructionAuthorError(error.message);
+			throw error;
+		}
+	}
 }
 
 /**

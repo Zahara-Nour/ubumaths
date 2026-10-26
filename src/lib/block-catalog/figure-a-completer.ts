@@ -103,7 +103,7 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 				'C = point(5, 4.25)'
 			),
 			explanation:
-				'C est à un quart de carreau de la droite (AB) : invisible à l’œil, net une fois la droite tracée. Dans la question, une case [_] suit le bloc pour « oui » ou « non » (majuscules acceptées) ; Valider reste grisé tant que la droite manque. Une coordonnée décimale s’écrit avec un point (4.25) : une variable calculée par eval: donnerait une fraction, que la figure ne lit pas.'
+				'C est à un quart de carreau de la droite (AB) : invisible à l’œil, net une fois la droite tracée. Dans la question, une case [_] suit le bloc pour « oui » ou « non » (majuscules acceptées) ; Valider reste grisé tant que la droite manque. Une coordonnée décimale s’écrit avec un point (4.25) : une variable calculée par eval: donnerait une fraction, que la figure ne lit pas (la vérification du modèle refuse alors les tirages).'
 		}
 	],
 	mistakes: [

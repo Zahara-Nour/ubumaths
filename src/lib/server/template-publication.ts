@@ -45,12 +45,15 @@ export function templatePublicationErrors(template: QuestionTemplate): string[] 
 	const circularErrors = circularDependencyErrors(template);
 	if (report.passed && circularErrors.length === 0) return [];
 
-	const firstFailure = report.generation.failures[0];
-	const failureDetail = firstFailure
-		? [
-				`Variation ${firstFailure.variationIndex + 1}, tirage ${firstFailure.seed} : ${firstFailure.errors.join('; ')}`
-			]
-		: [];
+	// Premier échec de génération, puis de figure (l'auteur voit POURQUOI)
+	const failureDetail = [report.generation.failures[0], report.figures.failures[0]].flatMap(
+		(failure) =>
+			failure
+				? [
+						`Variation ${failure.variationIndex + 1}, tirage ${failure.seed} : ${failure.errors.join('; ')}`
+					]
+				: []
+	);
 	const failedSpecs = report.specs
 		.filter((result) => !result.passed)
 		.map(
