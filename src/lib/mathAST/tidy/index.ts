@@ -25,6 +25,7 @@ export { TidyStepRecorder, TIDY_RULE_DESCRIPTIONS } from './step-recorder';
 export type { TermOrder, TidyOptions, TidyRule, TidyStep, UnitChoice } from './step-recorder';
 export type { TidyCondition } from './types';
 export {
+	avoidsPeriodicPoints,
 	conditionSet,
 	describeConditions,
 	domainChange,
