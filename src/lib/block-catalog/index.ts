@@ -8,6 +8,7 @@
 import { courbeEntry } from './courbe';
 import { figureEntry } from './figure';
 import { figureACompleterEntry } from './figure-a-completer';
+import { figureDeTravailEntry } from './figure-de-travail';
 import { horlogeEntry } from './horloge';
 import { numberLineEntry } from './number-line';
 import { operationEntry } from './operation';
@@ -27,6 +28,7 @@ export const BLOCK_CATALOG: BlockCatalogEntry[] = [
 	courbeEntry,
 	figureEntry,
 	figureACompleterEntry,
+	figureDeTravailEntry,
 	statChartEntry,
 	qrEntry,
 	horlogeEntry,

@@ -172,14 +172,14 @@ describe('figure de travail + case choix : saisie et verdict', () => {
 });
 
 describe('figure de travail : carte de correction', () => {
-	function card(values: string[]) {
+	async function card(values: string[]) {
 		const answerResult: TestAnswerResult = {
 			index: 0,
 			instance: instance(),
 			userAnswer: { value: values, isCorrect: true, timeSpent: 3, attempts: 1, submittedAt: '' },
 			isCorrect: true
 		};
-		return render(CorrectionCard, { target: mainElement(), props: { answerResult } });
+		return await render(CorrectionCard, { target: mainElement(), props: { answerResult } });
 	}
 
 	function kinds(container: HTMLElement): (string | null)[] {
