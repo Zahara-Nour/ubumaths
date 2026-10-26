@@ -630,12 +630,12 @@ intervalle — même règle `intervalWord`, « sur » en fin de saisie compris (
 
 **Les calculs sur l'intervalle** (lot 2, I4) : `.résoudre` et `.variations` travaillent sur
 l'ensemble des fonctions qu'ils citent SEULES ou appelées sur une lettre (`f`, `f(x)`, `f'(t)` —
-`citedIntervalDomain`, intersection s'il y en a plusieurs) ; appelée sur un nombre ou une autre lettre (`f(a)`), elle vaut un nombre ; sur une expression de l'inconnue (`f(2x)`), refus en français (c'est 2x qui devrait être dans l'ensemble). Un `dans` tapé se croise avec cet ensemble (vide → refus).
+`citedIntervalDomain`, intersection s'il y en a plusieurs) ; appelée sur un nombre ou une autre lettre (`f(a)`), elle vaut un nombre ; sur une expression AFFINE de l'inconnue (`f(2x)`, `f(x − 3)`, `f(−x)`, `f(2x+1)`, f⁻¹ comprise), l'inconnue est restreinte à {x : u(x) ∈ I} (`affinePreimage` : chaque borne e devient (e − b)/a, exacte — fraction, π, √2 —, bornes échangées si a < 0 ; point exclu compris), chantier composees (2026-10-26) ; sur une expression non affine (`f(x^2)`, `f(ln x)`) ou à paramètre libre, refus en français (`composedMessage` : quelle expression devrait être dans quel ensemble, « de la forme ax + b »). Un `dans` tapé se croise avec cet ensemble (vide → refus).
 L'atelier passe l'ensemble au moteur par le mot `dans` (`formatInterval`, relu par
 `studyDomain` / `readSolvingDomain`) : la ligne de texte, le tableau et les étapes disent la même
 chose. `.variations f` (x² sur [0 ; +∞[) : tableau de 0 (compris) à +∞, croissante ; `.résoudre
 f(x)=4` : `x = 2` — les étapes résolvent sur ℝ puis une dernière « On ne garde que les solutions
-qui sont dans [0 ; +∞[ » (`solveSteps(…, within)`, équations à solutions isolées seulement ; une
+qui sont dans [0 ; +∞[ » (`solveSteps(…, within, conditions)`, équations à solutions isolées seulement ; une composée affine, `.résoudre f(2x) = 4`, ouvre les étapes par « 2x doit être dans [0 ; +∞[, donc x est dans [0 ; +∞[ » — Q3 du chantier composees ; une
 inéquation garde la réponse du moteur, déjà restreinte). Une famille périodique sur un ensemble non borné (`sin(x) = 0` sur [0 ; +∞[) est refusée : « Une infinité de solutions sur cet ensemble ». Mêmes règles pour les actions « Résoudre
 f(x) = 0 » et « Variations » de la carte. **`f′` hérite** : `#inheritIntervals` recopie l'ensemble
 de f sur ses dérivées à chaque recalcul (il suit f, disparaît avec lui, jamais sauvegardé) ; la
@@ -643,8 +643,8 @@ carte affiche `sur [0 ; +∞[`, `f'(5)` et l'image de la carte f′ hors de l'en
 Pas d'action « Tabuler » (encore désactivée), ni de commande de signe : rien à brancher. Laissés
 sur tout le domaine : `.taylor … en a`, `.équivalent`.
 
-**Les suites décidées par David le 2026-10-13** (journal de la phase 0, a-g ; c = futur chantier,
-`f(2x)` reste refusé) : **a)** `.domaine f` d'une fonction à ensemble répond « f est définie sur
+**Les suites décidées par David le 2026-10-13** (journal de la phase 0, a-g ; c = livrée par le
+chantier composees le 2026-10-26 pour u affine, voir le paragraphe des calculs) : **a)** `.domaine f` d'une fonction à ensemble répond « f est définie sur
 [0 ; +∞[ (ensemble choisi) ; sans ce choix, elle le serait sur ℝ. », sans la seconde moitié quand
 l'ensemble EST le domaine, et « (ensemble hérité) … sans cet héritage » pour une fonction qui le
 tient des fonctions qu'elle cite (`chosenDomainAnswer`) ; sans ensemble, rien ne change. **b)**
@@ -658,7 +658,7 @@ collé se lit `ℝ \ {1}`. **d)** Une fonction qui CITE une fonction à ensemble
 `FunctionObject.inheritedInterval`, jamais sauvegardé, et `intervalDomainOf` le croise avec le
 `sur` propre de g — calculs, refus de `g(−2)`, étiquette de la carte et tracé suivent ; le champ
 de la carte garde ce que l'élève a écrit. `.résoudre g(x)=5` et `.résoudre f(x)+1=5` donnent
-tous deux 2. `g(x) = f(2x)` (décision c) ou un héritage vide passent g en **erreur**, en français.
+tous deux 2. `g(x) = f(2x)` hérite de {x : 2x ∈ I} (`citedIntervals` rend aussi les **conditions**, rangées dans `FunctionObject.inheritedConditions`, jamais sauvegardées) : `.domaine g` dit « (ensemble hérité : 2x doit être dans [0 ; +∞[) » (Q2 du chantier composees). `g(x) = f(x^2)` (u non affine) ou un héritage vide passent g en **erreur**, en français.
 **e)** `.variations … dans [a;b]` inchangé. **f)** Dans « Sur le graphique » (`CurveSettings`),
 une tangente hors de l'ensemble (une borne fermée est dedans) et une aire dont [a ; b] sort
 sont refusées, le refus écrit sous le réglage (`tangentRefusal`, `areaRefusal`) ; `plot-sync`
@@ -2799,14 +2799,14 @@ son nom et sa lettre — son expression RANGÉE (en x) est calculée en x, montr
 `\lim\limits_{t\to 0^+} f(t)` pour f(t) = 1/t, `f'(x)` pour une dérivée. Tout autre argument
 (`f(t)` quand f s'écrit en x, `f(2x)`, `f(2x)+1`) est une expression : calculée substituée, dans
 la lettre de l'expression substituée, affichée telle que tapée (`\lim\limits_{x\to 1}
-f\left(2x\right) = 5`) ; la composée d'une fonction À ENSEMBLE choisi reste refusée
-(`composedMessage`, faute de domaine de f(u(x))). Une suite `u`, `u_n` ou `u(n)` se calcule en n et
+f\left(2x\right) = 5`) ; la composée d'une fonction À ENSEMBLE choisi est jugée sur {x : u(x) ∈ I}
+quand u est affine (`.limite f(2x) en −1` refusé, `en 0` → `0^+`), refusée sinon (`composedMessage`). Une suite `u`, `u_n` ou `u(n)` se calcule en n et
 s'écrit `\lim\limits_{n\to+\infty} u_n` ; dans une expression, `u_n`, `u_k` se lisent `u(n)`, `u(k)` (`withSequenceCalls` : `.limite u_n + 1 en +∞` → 1) ; seul +∞ est accepté, que la suite soit citée seule ou dans une expression (`citedSequence`), et une suite récurrente est refusée.
 **Gardes de l'atelier** (le branchement saute celles du chemin commun) : une liste citée →
 `listCitedMessage` ; l'ensemble choisi d'une fonction (`f(x) = x^2 sur [0;+∞[`, I4) — un point
 loin de l'ensemble est refusé comme `.évaluer` (« -1 n'est pas dans l'ensemble de définition de
 f, [0 ; +∞[. »), un bord est pris du côté intérieur (`en 0` → `0^+`), un côté extérieur ou un
-infini hors de l'ensemble est refusé ; une composée d'une fonction à ensemble → `composedMessage`.
+infini hors de l'ensemble est refusé ; une composée affine d'une fonction à ensemble est jugée sur {x : u(x) ∈ I}, une composée non affine → `composedMessage`.
 `exp(1)` s'écrit `e`. **Jamais de valeur approchée** : statut `indeterminate`, `unsupported`,
 `approximate`, ou un nombre à plus de 6 décimales → « Je ne sais pas calculer cette limite. »
 (une réponse, pas un refus, comme `.factoriser`). Sans côté tapé, une fonction définie d'un seul

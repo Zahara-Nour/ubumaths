@@ -19,7 +19,7 @@
 
 import type { AtelierObject } from './types';
 import { MAX_INTERVAL_LENGTH } from './types';
-import type { Domain, Interval } from '$lib/mathAST/domain/types';
+import type { Domain, Endpoint, Interval } from '$lib/mathAST/domain/types';
 import type { MathNode } from '$lib/mathAST/types';
 import { parseStudentDomain } from '$lib/mathAST/domain/validation/parse-student-domain';
 import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-domains';
@@ -32,7 +32,11 @@ import {
 	isUniversal
 } from '$lib/mathAST/domain/algebra';
 import { formatEndpointValue, formatInterval } from '$lib/mathAST/domain/format';
-import { endpointToNumber } from '$lib/math/intervals';
+import { bound, endpointToNumber } from '$lib/math/intervals';
+import { divide, number, subtract } from '$lib/mathAST/factory';
+import { polynomialCoefficients } from '$lib/mathAST/normal/canonical-form';
+import { computeNumericValue } from '$lib/mathAST/eval/numeric-value';
+import { exactValueToShow } from '$lib/mathAST/eval/exact-value';
 import type { CurvePiece } from '$lib/grapheur/restriction';
 import { evaluate } from '$lib/mathAST/eval';
 import { substitute } from '$lib/mathAST/eval/substitute';
@@ -243,9 +247,15 @@ export function citedIntervals(
 		text: string,
 		others: (text: string) => CitedInterval | null
 	) => CitedInterval | null
-): { inherited: Map<string, Domain>; refused: Map<string, string> } {
+): {
+	inherited: Map<string, Domain>;
+	refused: Map<string, string>;
+	/** Les conditions des composées (`g(x) = f(2x)` → « 2x doit être dans [0 ; +∞[ ») */
+	conditions: Map<string, readonly string[]>;
+} {
 	const inherited = new Map<string, Domain>();
 	const refused = new Map<string, string>();
+	const conditions = new Map<string, readonly string[]>();
 	const byName = new Map(objects.map((o) => [o.name, o]));
 	const get = (name: string): AtelierObject | undefined => {
 		const object = byName.get(name);
@@ -266,6 +276,7 @@ export function citedIntervals(
 	for (let pass = 0; pass <= objects.length; pass++) {
 		let changed = false;
 		refused.clear();
+		conditions.clear();
 		for (const o of objects) {
 			if (o.kind !== 'function') continue;
 			let domain: Domain | null = null;
@@ -279,7 +290,12 @@ export function citedIntervals(
 					citedIntervalDomain((n) => (n === o.name ? undefined : get(n)), typed, INTERNAL_LETTER);
 				const cited = withReciprocals === undefined ? others(text) : withReciprocals(text, others);
 				if (cited?.kind === 'composed') refused.set(o.name, composedMessage(cited));
-				else if (cited !== null) domain = cited.domain;
+				else if (cited !== null) {
+					domain = cited.domain;
+					if (cited.conditions.length > 0) {
+						conditions.set(o.name, [...new Set(cited.conditions.map(conditionText))]);
+					}
+				}
 			}
 			const before = inherited.get(o.name);
 			if (domain === null) {
@@ -302,7 +318,7 @@ export function citedIntervals(
 			: `les fonctions qu'elle cite ne le sont que sur ${intervalText(domain)}`;
 		refused.set(name, `${displayName(name)} n'est définie nulle part : ${why}.`);
 	}
-	return { inherited, refused };
+	return { inherited, refused, conditions };
 }
 
 /** `.domaine f`, `.domaine f(x)`, `.domaine f'` : le nom visé. */
@@ -334,7 +350,13 @@ export function chosenDomainAnswer(
 		object?.kind === 'function' && object.interval === undefined
 			? 'ensemble hérité'
 			: 'ensemble choisi';
-	const chosen = `${displayName(name)} est définie sur ${intervalText(domain)} (${origin})`;
+	// Q2 du chantier composees : `g(x) = f(2x)` dit pourquoi
+	const conditions = object?.kind === 'function' ? (object.inheritedConditions ?? []) : [];
+	const why =
+		origin === 'ensemble hérité' && conditions.length > 0
+			? `${origin} : ${conditions.join(' et ')}`
+			: origin;
+	const chosen = `${displayName(name)} est définie sur ${intervalText(domain)} (${why})`;
 	const ast = astOf(expression);
 	const natural = ast === null ? null : computeDomain(ast, INTERNAL_LETTER);
 	if (natural === null || natural.unresolved !== undefined) return `${chosen}.`;
@@ -346,9 +368,24 @@ export function chosenDomainAnswer(
 		: `${chosen} ; sans ${origin === 'ensemble hérité' ? 'cet héritage' : 'ce choix'}, elle le serait sur ${intervalText(natural.domain)}.`;
 }
 
-/** `f(2x)` quand f a un ensemble : c'est 2x qui devrait y être — pas encore su (décision c). */
-export function composedMessage(cited: { readonly call: string; readonly name: string }): string {
-	return `${cited.name} est définie sur un intervalle : dans ${cited.call}, l'atelier ne sait pas encore restreindre l'inconnue. Écris l'expression de ${cited.call} en toutes lettres.`;
+/**
+ * `f(x²)` quand f a un ensemble : x² devrait y être, mais seule une expression
+ * affine se traduit en un ensemble pour x (chantier composees, Q1 ; E1 : le
+ * message dit quelle expression, et dans quel ensemble).
+ */
+export function composedMessage(cited: {
+	readonly call: string;
+	readonly name: string;
+	readonly argument: string;
+	readonly set: Domain;
+}): string {
+	const call = cited.call.replace(/-/g, '−');
+	return `${cited.name} est définie sur ${intervalText(cited.set)} : dans ${call}, ${cited.argument.replace(/-/g, '−')} doit y être, et l'atelier ne sait en tirer l'ensemble de l'inconnue que pour une expression de la forme ax + b (2x, x − 3, 2x + 1). Écris l'expression de ${call} en toutes lettres.`;
+}
+
+/** La condition d'une composée, en français : « 2x doit être dans [0 ; +∞[ ». */
+export function conditionText(condition: ComposedCondition): string {
+	return `${condition.argument.replace(/-/g, '−')} doit être dans ${intervalText(condition.set)}`;
 }
 
 /**
@@ -432,9 +469,31 @@ export function outsideIntervalRefusal(
 
 /** Ce que l'étude d'une commande tire des fonctions qu'elle cite (`citedIntervalDomain`). */
 export type CitedInterval =
-	| { readonly kind: 'restricted'; readonly domain: Domain; readonly name: string }
-	/** `f(2x)` : c'est 2x qui doit être dans l'ensemble de f — refusé */
-	| { readonly kind: 'composed'; readonly call: string; readonly name: string };
+	| {
+			readonly kind: 'restricted';
+			readonly domain: Domain;
+			readonly name: string;
+			/** Les composées traduites (`f(2x)`, u affine) : la condition de chacune */
+			readonly conditions: readonly ComposedCondition[];
+	  }
+	/** `f(x²)` : u n'est pas affine, l'ensemble de x ne se calcule pas — refusé (Q1) */
+	| {
+			readonly kind: 'composed';
+			readonly call: string;
+			readonly name: string;
+			readonly argument: string;
+			readonly set: Domain;
+	  };
+
+/**
+ * Chantier composees (2026-10-26) : dans `f(2x)`, avec f définie sur I,
+ * `argument` (2x) doit être dans `set` (I), donc x dans `within`.
+ */
+export interface ComposedCondition {
+	readonly argument: string;
+	readonly set: Domain;
+	readonly within: Domain;
+}
 
 /**
  * Lot 2 : l'ensemble sur lequel une commande étudie les fonctions qu'elle cite
@@ -458,6 +517,7 @@ export function citedIntervalDomain(
 	const unknown = new RegExp(`(?<![A-Za-z_\\\\])${variable}(?![A-Za-z_0-9])`);
 	let domain: Domain | null = null;
 	let first: string | null = null;
+	const conditions: ComposedCondition[] = [];
 	for (const match of typed.matchAll(CITED_NAME)) {
 		const [whole, name, primes] = match;
 		const after = typed.slice(match.index + whole.length);
@@ -467,14 +527,78 @@ export function citedIntervalDomain(
 		if (own === null) continue;
 		const shown = displayName(name + "'".repeat(primes.length));
 		const argument = callArgument(after);
+		let within = own;
 		if (argument !== null && argument !== variable) {
 			if (!unknown.test(argument)) continue;
-			return { kind: 'composed', call: `${shown}(${argument})`, name: shown };
+			const node = astOf(argument, 'text');
+			const preimage = node === null ? null : affinePreimage(node, variable, own);
+			if (preimage === null) {
+				return { kind: 'composed', call: `${shown}(${argument})`, name: shown, argument, set: own };
+			}
+			within = preimage;
+			conditions.push({ argument, set: own, within });
 		}
-		domain = domain === null ? own : intersect(domain, own);
+		domain = domain === null ? within : intersect(domain, within);
 		first ??= shown;
 	}
-	return domain === null || first === null ? null : { kind: 'restricted', domain, name: first };
+	return domain === null || first === null
+		? null
+		: { kind: 'restricted', domain, name: first, conditions };
+}
+
+/**
+ * Chantier composees (Q1) : {x : ax + b ∈ I}, bornes EXACTES — chaque borne e
+ * devient (e − b)/a, les bornes échangées quand a < 0. `null` quand u n'est pas
+ * affine à coefficients nombres (`x²`, `ln x`, `ax` avec a libre) ou que I
+ * n'est pas une réunion d'intervalles.
+ */
+export function affinePreimage(u: MathNode, variable: string, set: Domain): Domain | null {
+	let coefficients: MathNode[] | null;
+	try {
+		coefficients = polynomialCoefficients(u, variable, 1);
+	} catch {
+		return null;
+	}
+	if (coefficients === null) return null;
+	const [b, a] = coefficients;
+	const slope = computeNumericValue(a);
+	const intercept = computeNumericValue(b);
+	if (slope === null || intercept === null || Math.abs(slope) < 1e-12) return null;
+	// La forme lue doit VALOIR u : un terme mal classé (`ln x` pris pour une constante) ne passe pas
+	for (const t of [0.37, 2.9]) {
+		const value = computeNumericValue(substitute(u, { [variable]: number(String(t)) }));
+		if (value === null || Math.abs(value - (slope * t + intercept)) > 1e-9) return null;
+	}
+	const image = (value: MathNode): MathNode => {
+		const infinite = endpointToNumber(value);
+		if (infinite === Infinity || infinite === -Infinity) {
+			return slope > 0 ? value : bound(infinite > 0 ? '-inf' : '+inf');
+		}
+		const result = evaluate(divide(subtract(value, b), a, 'fraction'), { mode: 'exact' });
+		return result.status === 'value'
+			? exactValueToShow(result.node)
+			: divide(subtract(value, b), a, 'fraction');
+	};
+	const endpointOf = (e: Endpoint): Endpoint => ({ value: image(e.value), type: e.type });
+	switch (set.kind) {
+		case 'empty':
+		case 'universal':
+			return set;
+		case 'interval_set': {
+			const intervals = set.intervals.map((i): Interval =>
+				slope > 0
+					? { kind: 'interval', lower: endpointOf(i.lower), upper: endpointOf(i.upper) }
+					: { kind: 'interval', lower: endpointOf(i.upper), upper: endpointOf(i.lower) }
+			);
+			return {
+				kind: 'interval_set',
+				intervals: slope > 0 ? intervals : intervals.reverse(),
+				excludedPoints: set.excludedPoints.map((p) => ({ ...p, value: image(p.value) }))
+			};
+		}
+		default:
+			return null;
+	}
 }
 
 /** L'argument de l'appel qui ouvre `after` (`(2x)…` → `2x`, parenthèses imbriquées comprises), ou `null`. */

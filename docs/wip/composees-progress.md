@@ -1,16 +1,17 @@
 ---
 title: Composées f(u(x)) d'une fonction à ensemble — journal du chantier
 date: 2026-10-26
-status: phase 0 validée, implémentation en cours
+status: implémentation faite, PR à ouvrir
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, à l'ouverture du chantier._
+_Mis à jour le 2026-10-26, avant la PR._
 
-- **État** : phase 0 validée (Q1-Q4 tranchées le 2026-10-26).
-- **Prochaine action** : tests rouges → implémentation (une PR).
+- **État** : implémentation faite et testée (`composees-ensemble.test.ts`, 27 verts + 1 todo) ; doc système à jour.
+- **Prochaine action** : revue `code-reviewer`, PR, CI, merge.
 - **En attente de David** : rien.
+- **Pièges en cours** : V65 (`.limite (x-3)^2 en +∞` non calculée) bloque `.variations f(x-3)` avec f = x² — défaut du moteur, hors chantier, noté dans `ecarts-a-trier.md`.
 - **Worktree / branche** : `../ubumaths-wt-composees` · `feat/composees`.
 
 ## Origine
@@ -69,3 +70,17 @@ Un calcul simple `f(2x)` n'est PAS refusé (expression, `outsideIntervalRefusal`
 toute autre u garde un refus. Q3 → oui, une étape « 2x doit être dans [0 ; +∞[, donc x ∈ [0 ; +∞[ ».
 Q4 → une seule PR. Q2 (reformulée) → avec la condition : « g est définie sur [0 ; +∞[ (ensemble
 hérité : 2x doit être dans [0 ; +∞[) ; sans cet héritage, elle le serait sur ℝ. »
+
+## Implémentation (2026-10-26)
+
+- `affinePreimage` (`interval.ts`) : u lue par `polynomialCoefficients(u, x, 1)`, vérifiée en deux
+  points (un terme mal classé ne passe pas), coefficients nombres seulement ; bornes
+  `exactValueToShow(evaluate((e − b)/a))`, échangées si a < 0 ; points exclus suivis ; un ensemble
+  par conditions ou périodique → `null` (refus).
+- `citedIntervalDomain` : la composée affine restreint (`conditions` sur le `restricted`), sinon
+  `composed` avec l'argument et l'ensemble (E1). Même chose pour `f⁻¹(2x)` (`citedReciprocalInterval`).
+- `citedIntervals` rend les conditions → `FunctionObject.inheritedConditions` → `.domaine g` (Q2).
+- `solveSteps(…, within, conditions)` : étape « 2x doit être dans I, donc x est dans J » en tête (Q3).
+  Sans étapes (`ln(2x) = 0`), le moteur répond seul, restreint par `dans`.
+- Mesuré : `f(2x+1)` sur [0 ; 2] → [−1/2 ; 1/2] ; `k(−3x+1)` sur ]0 ; π] → [(1−π)/3 ; 1/3[ ;
+  `f(x/3)` → [0 ; 6] ; `f(√2 x)` → [0 ; √2] ; ℝ \ {1} → ℝ \ {1/2} ; réunion avec a < 0 retournée.

@@ -2655,7 +2655,8 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 					finalArgs.variable === null
 						? finalArgs.expression
 						: `${finalArgs.expression} ; ${finalArgs.variable}`,
-					studied ?? undefined
+					studied ?? undefined,
+					cited?.kind === 'restricted' ? cited.conditions : []
 				)
 			: null;
 	if (solved !== null) {

@@ -68,7 +68,7 @@ x=…` et `.intégrer f de a à b` hors de cet ensemble sont refusés comme `f(5
   (`en 0+`, `en 0^+`, `en 0 à droite` ; `-`, `à gauche`), ou l'infini (`+∞`, `+inf`, `-∞`, `-inf` ;
   `∞` ou `inf` seul = +∞). La réponse est une formule, `\lim\limits_{x\to 1}… = 2` ; une fonction
   de l'atelier garde son nom (`.limite f en +∞` → `\lim f(x) = …` ; `f`, `f'` ou `f(<sa lettre>)` ;
-  `f(t)`, `f(2x)` se calculent comme une expression, refusés seulement si f a un ensemble choisi), une suite s'écrit `u_n` et n'a de limite qu'en +∞ ; sans côté, deux limites
+  `f(t)`, `f(2x)` se calculent comme une expression ; si f a un ensemble choisi, `f(2x+1)` est étudiée là où 2x + 1 y est, une expression non affine (`f(x^2)`) est refusée), une suite s'écrit `u_n` et n'a de limite qu'en +∞ ; sans côté, deux limites
   latérales différentes → « Pas de limite en 0 : à gauche −∞, à droite +∞ », une fonction définie
   d'un seul côté écrit ce côté (`.limite ln(x) en 0` → `x\to 0^+`), et « pas de limite » dit sa
   raison (« … n'est pas définie au voisinage de -1 », « … oscille sans se rapprocher d'aucune
