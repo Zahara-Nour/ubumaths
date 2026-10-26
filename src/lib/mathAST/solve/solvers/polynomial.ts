@@ -34,6 +34,7 @@ import type {
 	SolveStepRecorder,
 	Solution
 } from '../types';
+import { isSolverFailure } from '../types';
 import { getPolynomialDegree } from '../classify';
 import { getVariables } from '../../eval/substitute';
 import { flattenSumShallow } from '../../flatten';
@@ -47,7 +48,8 @@ import {
 	subtract,
 	multiply,
 	fraction,
-	power
+	power,
+	greaterThanOrEqual
 } from '../../factory';
 import { numericNode } from '../../common/numeric';
 import { denormalize, normalize, normalFormsEquivalent, ZERO_NORMAL_FORM } from '../../normal';
@@ -68,6 +70,8 @@ import {
 	describeFactorCommonRoot
 } from '../descriptions-fr';
 import { computeNumericValue } from '../../eval/numeric-value';
+import { parameterCondition } from '../literal-parameter';
+import { quadraticSolver } from './quadratic';
 
 // =============================================================================
 // Helper Functions
@@ -380,7 +384,11 @@ export function solvePowerEquation(
 
 	// Determine sign of k
 	const kValue = computeNumericValue(k);
-	const kIsNegative = isNegativeNode(k) || (kValue !== null && kValue < 0);
+	// k avec un paramètre (x⁴ = a) : son signe dépend du paramètre, il passe
+	// dans la condition des racines (n pair), pas dans un raccourci (`−a` n'est
+	// pas négatif pour a < 0)
+	const parametric = parametersOf(k, variable).size > 0;
+	const kIsNegative = !parametric && (isNegativeNode(k) || (kValue !== null && kValue < 0));
 
 	// Case 2: n even, k < 0 -> no real solution
 	if (!isOdd && kIsNegative) {
@@ -392,8 +400,25 @@ export function solvePowerEquation(
 		return handleOddExponent(variable, n, k, kValue, options, recorder);
 	}
 
-	// Case 4: n even, k > 0 -> two solutions x = ±k^(1/n)
-	return handleEvenPositive(variable, n, k, kValue, options, recorder);
+	// Case 4: n even, k > 0 -> two solutions x = ±k^(1/n) ; k paramétré : si k ≥ 0
+	// (comme x² = a dans le solveur du second degré)
+	const condition = parametric ? parameterCondition([greaterThanOrEqual(k, number('0'))]) : null;
+	if (condition?.kind === 'never') {
+		return handleNoRealSolution(variable, n, k, options, recorder);
+	}
+	const result = handleEvenPositive(variable, n, k, kValue, options, recorder);
+	if (condition?.kind !== 'when') return result;
+	return {
+		...result,
+		solutions: result.solutions.map((s) => ({ ...s, condition: condition.node }))
+	};
+}
+
+/** Les lettres d'une expression autres que l'inconnue (paramètres). */
+function parametersOf(node: MathNode, variable: string): Set<string> {
+	const letters = getVariables(node);
+	letters.delete(variable);
+	return letters;
 }
 
 // =============================================================================
@@ -779,6 +804,20 @@ export function solveCubicCardano(
 		}
 	}
 
+	// Δ dépend d'un paramètre (`ax³ + x − 1`) : la formule de Cardan ne vaut
+	// que pour Δ < 0 et a ≠ 0 — refus honnête plutôt qu'une formule fausse
+	if (parametersOf(deltaSimplified, variable).size > 0) {
+		return {
+			variable,
+			status: 'no-solution',
+			solutions: [],
+			equationType: 'polynomial',
+			strategy: 'algebraic',
+			steps: recorder.getStepsFiltered(options.verbosity),
+			error: 'Coefficients cubiques non numeriques'
+		};
+	}
+
 	// Symbolic case - try Cardano formula (treats as one real root case)
 	return handleCubicOneReal(
 		variable,
@@ -824,7 +863,19 @@ function handleCubicWithCommonFactor(
 	const zeroSolution: Solution = { value: number('0'), exact: true, approximate: 0 };
 	const solutions: Solution[] = [zeroSolution];
 
-	if (squareFactor) {
+	const parametric = [a, b, c].some((coefficient) => parametersOf(coefficient, variable).size > 0);
+	if (!squareFactor && parametric) {
+		// ax² + bx + c avec un paramètre (`x³ − ax`) : le solveur du second
+		// degré, qui porte la condition (Δ ≥ 0) sur ses racines
+		const x = varNode(variable);
+		const quadratic = add(
+			add(multiply(a, power(x, number('2')), 'implicit'), multiply(b, x, 'implicit')),
+			c
+		);
+		const second = quadraticSolver.solve(quadratic, variable, options, recorder);
+		if (isSolverFailure(second)) return second;
+		solutions.push(...second.solutions);
+	} else if (squareFactor) {
 		// ax + b = 0 → x = −b/a, seulement si elle diffère de 0
 		if (!isZeroNode(b) && bValue !== 0) {
 			const root = denormalize(normalize(fraction(opposite(b), a)));

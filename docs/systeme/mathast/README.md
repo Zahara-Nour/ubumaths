@@ -1673,9 +1673,6 @@ Doublons qui restent, chacun pour un autre besoin :
   x ≠ 0 » attend la variante `{ result, conditions }` de `tidy`, ci-dessous). `√x√x` → rien
   à développer (produit sans parenthèse), mais `√x³√x → (√x)⁴` (une puissance de racine déjà
   écrite) et `∛x∛x → (∛x)²` se regroupent encore.
-- `solve`, quartique à paramètre littéral (relevé le 2026-10-26, revue de normalize-usages) :
-  `ax⁴ + x − 1 = 0`, `x⁴ − ax − 1 = 0`, `(a+1)x⁴ + x − 2 = 0` (inconnue x) répondent « pas de
-  solution » au lieu d'un refus. Antérieur au chantier.
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
   - `tidy` n'a pas de variante `{ result, conditions }` : `x/x` reste écrit au lieu de « 1, pour
@@ -1693,6 +1690,13 @@ Doublons qui restent, chacun pour un autre besoin :
   - `detectSymmetry` conclut « aucune, prouvé » pour `∛x`, `x^{1/3}`, `x^{2/3}`,
     `ln(x+√(x²+1))` (sans appelant en production) ;
   - `toCustom` écrit `(1/2)^xe^x`, illisible en syntaxe maison.
+- Solveur du second degré à paramètre (relevé le 2026-10-26, revue de #1797, visible aussi au
+  degré 3 par `x(ax² + bx + c) = 0`) : `x² − ab = 0` → `±√a·√b` si `4ab ≥ 0` (faux pour a, b < 0,
+  il faut `√(ab)`) ; `ax² − 1 = 0` → condition `a ≥ 0` au lieu de `a > 0` ; conditions non
+  réduites (`4α ≥ 0`, `4a + 4b ≥ 0`), racines peu lisibles (`½√(−4a)`) ; une condition réduite à
+  un point écrite `0 ≤ a ≤ 0`, ses racines gardées : `x³ + a²x = 0` → 0, puis deux racines nulles
+  si a = 0 (redondant, pas faux) ; étapes détaillées en double, coefficient « a » homonyme du
+  paramètre.
 - Solveur pédagogique, écritures perfectibles (simplify-carte § 87, § 89), **à trancher par
   David** : x à droite (`4 < 2(x−1)` → `2 < x − 1`, puis − x, − 2, ÷ (−1) ; échanger les
   membres ?) ; `\frac{2}{3}x = 0,5` → « On multiplie par 1,5 » ; `0,5x = \frac{x}{3} + 1` → « On
