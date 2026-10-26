@@ -30,6 +30,7 @@ import { expandExcludedPoints } from '$lib/mathAST/domain/validation/compare-dom
 import { formatInterval } from '$lib/mathAST/domain/format';
 import { divide, func, number } from '$lib/mathAST/factory';
 import { getVariables } from '$lib/mathAST/eval/substitute';
+import { toPolynomial } from '$lib/mathAST/factor/polynomial';
 
 // =============================================================================
 // Types
@@ -141,6 +142,10 @@ function conditionDomain(condition: TidyCondition): { letter: string; domain: Do
 	const letters = getVariables(condition.expression);
 	if (letters.size !== 1) return null;
 	const [letter] = letters;
+	// Un polynôme seulement : son domaine est fait d'intervalles et de points.
+	// `cos(x) ≠ 0` exclut une famille π/2 + kπ que l'inclusion ne voit pas (revue :
+	// `cos(x)/cos(x) avec x > 0` donnait 1) — on ne sait pas, on ne garantit rien
+	if (toPolynomial(condition.expression, letter) === null) return null;
 	const { expression, relation } = condition;
 	const witness: MathNode =
 		relation === 'nonzero'
@@ -173,9 +178,25 @@ export function conditionsText(conditions: readonly TidyCondition[]): string {
  */
 export function simplifyFurtherNote(conditions: readonly TidyCondition[]): string {
 	const text = conditionsText(conditions);
+	// Seulement ce qui, recopié, simplifie vraiment la ligne (revue : `avec x^2−1 ≠ 0`
+	// ne se relisait pas, `dans ℝ \ {π/2 + kπ}` non plus)
 	const set = conditionsSet(conditions);
-	const dans = set === null ? '' : ` (ou « dans ${set} »)`;
-	return `On peut simplifier davantage pour ${text} : ajoute « avec ${text} »${dans}.`;
+	const offers = [`avec ${text}`, ...(set === null ? [] : [`dans ${set}`])].filter((written) =>
+		worksWhenCopied(written, conditions)
+	);
+	const base = `On peut simplifier davantage pour ${text}`;
+	if (offers.length === 0) return `${base}.`;
+	const [first, second] = offers;
+	return `${base} : ajoute « ${first} »${second === undefined ? '' : ` (ou « ${second} »)`}.`;
+}
+
+/** L'hypothèse proposée se relit-elle, et garantit-elle chaque condition ? */
+function worksWhenCopied(written: string, conditions: readonly TidyCondition[]): boolean {
+	const split = splitHypotheses(`_ ${written}`);
+	if (split === null) return false;
+	const letters = new Set(conditions.flatMap((c) => [...getVariables(c.expression)]));
+	const reading = readHypotheses(split, letters);
+	return reading.ok && conditions.every((c) => guarantees(reading.hypotheses, c));
 }
 
 /** L'ensemble où toutes les conditions valent, écrit ; `null` sur plusieurs lettres. */

@@ -203,3 +203,38 @@ describe('la note se recopie telle quelle', () => {
 		}
 	);
 });
+
+describe('revue du 2026-10-26', () => {
+	it.each([
+		'cos(x)/cos(x) avec x > 0',
+		'cos(x)/cos(x) dans ]0;2[',
+		'1/cos(x)-1/cos(x) dans ]0;2[',
+		'sin(x)/sin(x) dans ]-1;1['
+	])('%s : une famille périodique n’est jamais garantie', (input) => {
+		const result = line(input);
+		expect(flat(result.latex)).not.toBe('1');
+		expect(flat(result.latex)).not.toBe('0');
+	});
+
+	it.each(['cos(x)/cos(x)', '1/ln(x)-1/ln(x)', '(x^2-1)/(x^2-1)'])(
+		'%s : la note ne propose que ce qui marche une fois recopié',
+		(input) => {
+			const note = line(input).note ?? '';
+			expect(note).toContain('On peut simplifier davantage pour');
+			for (const match of note.matchAll(/« ((?:avec|dans) [^»]+) »/g)) {
+				const result = line(`${input} ${match[1]}`);
+				expect(result.alternative).toBeUndefined();
+			}
+		}
+	);
+
+	it('.développer x(1/x−1) avec x ≠ 0 : pas d’étapes qui finissent ailleurs', () => {
+		const result = line('.développer x(1/x-1) avec x ≠ 0');
+		expect(flat(result.latex)).toBe('-x+1');
+		expect(result.steps).toBeUndefined();
+	});
+
+	it('une expression tapée sans bouton : la note renvoie à .simplifier', () => {
+		expect(line('(x^2-1)/(x+1) avec x ≠ -1').note).toContain('.simplifier');
+	});
+});

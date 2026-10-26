@@ -3674,7 +3674,12 @@ function withHypotheses(
 	const alternative = result.alternative;
 	const facts = alternative?.domain;
 	if (alternative === undefined || facts === undefined) {
-		return { ...echoed, note: joinedNote(result.note, `« ${written} » ne change rien ici.`) };
+		// Une expression tapée ne factorise pas : `.simplifier` le fait (revue)
+		const hint =
+			result.kind === 'calcul'
+				? `« ${written} » ne change rien à cette ligne : pour simplifier, écris « .simplifier ${typed} ».`
+				: `« ${written} » ne change rien ici.`;
+		return { ...echoed, note: joinedNote(result.note, hint) };
 	}
 	const missing = facts.conditions.filter((c) => !guarantees(hypotheses, c));
 	if (missing.length > 0) {
@@ -3686,12 +3691,15 @@ function withHypotheses(
 			)
 		};
 	}
-	const { alternative: _used, ...rest } = echoed;
+	// Les étapes de la ligne mènent à l'écriture gardée : sans celles du bouton,
+	// aucune (revue : `.développer x(1/x−1) avec x ≠ 0` finissait sur `−x + x/x`)
+	const { alternative: _used, steps: _steps, ...kept } = echoed;
+	const rest = kept.kind === 'commande' ? (({ summary: _summary, ...r }) => r)(kept) : kept;
 	return {
 		...rest,
 		latex: facts.answer,
 		...(alternative.steps !== undefined && { steps: alternative.steps }),
-		...(alternative.steps !== undefined && { summary: alternative.summary }),
+		...(alternative.summary !== undefined && { summary: alternative.summary }),
 		...(rest.kind === 'calcul' && { ast: facts.ast })
 	} as CalcResult;
 }
