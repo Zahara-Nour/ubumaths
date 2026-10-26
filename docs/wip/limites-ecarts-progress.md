@@ -1,19 +1,18 @@
 ---
 title: Écarts voisins des limites (V67-V71)
 date: 2026-10-26
-status: PR 1 en cours
+status: PR 1 mergée (#1844), PR 2 à faire
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, PR 1 #1844 ouverte, revue faite._
+_Mis à jour le 2026-10-26, après #1844._
 
-- **État** : PR 1 = #1844, revue Opus faite (aucune limite fausse sur ~105 sondes ; garde d'indice `isSqrt` appliquée).
-- **Prochaine action** : CI verte → merge #1844 ; puis PR 2 (V68), branche `fix/limites-ecarts-v68`.
-- **Ordre validé** : PR 1 V67 + V69 · PR 2 V68 (exp, croissances comparées) · PR 3 V70 + V71 (substitution directe, suivi du signe). Revue `code-reviewer` en Opus sur chaque PR.
+- **État** : PR 1 (V67 + V69) mergée, #1844 ; pas encore en prod. Pas de worktree en cours.
+- **Prochaine action** : `git worktree add -b fix/limites-ecarts-v68 ../ubumaths-wt-limites-ecarts origin/main`, puis **PR 2 : V68** (exp, croissances comparées), tests rouges d'abord.
+- **Reste** : PR 2 V68 · PR 3 V70 + V71 (substitution directe, suivi du signe). Revue `code-reviewer` en Opus sur chaque PR.
 - **En attente de David** : rien.
-- **Pièges** : une limite FAUSSE est pire qu'un refus (revue de #1839) ; (−∞)ⁿ exact rend x² + x en −∞ « +∞ − ∞ » pour `classifyWithSign` (inconnu, plus de repli numérique) — d'où `isPositiveNear` par le moteur entier.
-- **Worktree / branche** : `../ubumaths-wt-limites-ecarts` · `fix/limites-ecarts-v67`.
+- **Pièges** : une limite FAUSSE est pire qu'un refus ; rejouer la sonde de la phase 0 sur `main` avant de coder ; (−∞)ⁿ est désormais exact, donc `classifyWithSign` voit plus de formes +∞ − ∞ « inconnues » (`isPositiveNear` interroge alors le moteur entier) ; non traité : `x^{\frac{4}{2}}` en −∞ « non supportée ».
 
 ---
 
