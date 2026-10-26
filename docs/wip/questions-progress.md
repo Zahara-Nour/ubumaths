@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-26, après #1806._
 
 - **État** : 62 modèles CP publiés ; **lot M (monnaie) : 6 brouillons en prod, rangés et tagués** (#1796). Correctifs mergés : #1804 (monnaie d'un choix de QCM à 10 cm, même échelle pour tous les choix ; étiquette du corrigé sous le dessin), #1806 (corrigés sans « : » isolé). Le bloc ```monnaie et #1804 partent au prochain `deploy:prod`.
-- **Prochaine action** : (1) page à cocher du lot M ; (2) publication après le `deploy:prod`. Ensuite : « construire » (commun avec la collection, en pause), 058 à réexaminer.
+- **Prochaine action** : (1) page à cocher du lot M **publiée** (https://claude.ai/artifact/NnyA2gEWarz8r3fwjGFhmg, collection `verdicts`), relecture de David puis lire ses verdicts ; (2) publication après le `deploy:prod`. Ensuite : « construire » (commun avec la collection, en pause), 058 à réexaminer.
 - **En attente de David** : vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées.
 - **Worktree / branche** : aucun (retiré après #1806).
@@ -255,3 +255,4 @@ David suit mes recommandations (« je suis tes recos »).
 - 2026-10-26 : #1804 mergée (CI verte ; job d'intégration suivi par son run, `gh pr checks --watch` rendait la main avant la fin). `fix/questions-monnaie-corrige` : 4 phrases des corrigés du lot M sans « : » juste après un montant (il passait seul à la ligne) ; 3 brouillons à mettre à jour en prod (`--mettre-a-jour`, par David).
 - 2026-10-26 : #1806 mergée ; worktree retiré.
 - 2026-10-26 : 3 brouillons M mis à jour en prod (`--mettre-a-jour`, lancé par David), vérifiés : corrigés neufs, brouillon, nœud et tag inchangés.
+- 2026-10-26 : page à cocher du lot M publiée : https://claude.ai/artifact/NnyA2gEWarz8r3fwjGFhmg (collection `verdicts`) ; un exemple par variation (17), tiré par le vrai générateur, pièces et billets dessinés par `buildMonnaieScene` (script `page-m.mts` du scratchpad), relue à 390 px.
