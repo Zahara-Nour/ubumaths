@@ -220,7 +220,7 @@ describe('ajustement affine', () => {
 
 		const créée = d.atelier.objects.find((o) => o.kind === 'function');
 		expect(d.entries[0].text).toContain('(x) = 1,001x —');
-		expect(créée!.definition).toBe('1.001*x');
+		expect(créée!.definition).toBe('1.001x');
 		// Le point décimal se lit : la fonction est traçable
 		expect(créée!.status).toBe('ok');
 	});
@@ -232,7 +232,7 @@ describe('ajustement affine', () => {
 
 		const créée = d.atelier.objects.find((o) => o.kind === 'function');
 		expect(d.entries[0].text).toContain('(x) = x + 1,003 —');
-		expect(créée!.definition).toBe('1*x+1.003');
+		expect(créée!.definition).toBe('x+1.003');
 		// Le point décimal se lit : la fonction est traçable
 		expect(créée!.status).toBe('ok');
 	});

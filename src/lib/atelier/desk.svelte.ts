@@ -216,7 +216,8 @@ function fitCoefficient(value: Fraction): string {
  * montrait `2 × x + 1` sous une console `2x + 1` (verifs #1413).
  */
 function fitDefinition(fit: BivariateFit): string {
-	const isZero = (text: string) => /^-?0$/.test(text);
+	// `0.000` aussi (pente non exacte arrondie à 0) : comme `affineExpression`
+	const isZero = (text: string) => /^-?[0.]+$/.test(text);
 	const a = fitCoefficient(fit.slope);
 	const b = fitCoefficient(fit.intercept);
 	const slope = isZero(a) ? '' : a === '1' ? 'x' : a === '-1' ? '-x' : `${a}x`;

@@ -5,16 +5,18 @@
 
 import { describe, it, expect } from 'vitest';
 import { Atelier } from '../atelier.svelte';
+import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { runInput } from '../calcul';
 import { CalcDesk } from '../desk.svelte';
 
-function fittedDefinition(L: string, M: string): string | undefined {
+function fitted(L: string, M: string) {
 	const atelier = new Atelier();
 	atelier.create({ kind: 'list', name: 'L', definition: L });
 	atelier.create({ kind: 'list', name: 'M', definition: M });
 	const desk = new CalcDesk(atelier);
 	desk.runFromPanel('fit:M', 'L');
 	expect(desk.entries[0].failed).toBe(false);
-	return atelier.get('f')?.definition;
+	return { atelier, definition: atelier.get('f')?.definition };
 }
 
 describe('Ajustement avec M : définition de la fonction créée', () => {
@@ -25,8 +27,19 @@ describe('Ajustement avec M : définition de la fonction créée', () => {
 		['pente négative', '1 ; 2', '-1 ; -3', '-2x+1'],
 		['pente décimale, ordonnée nulle', '0 ; 2', '0 ; 3', '1.5x'],
 		['pente décimale, ordonnée négative', '0 ; 2', '-1 ; 0', '0.5x-1'],
-		['pente nulle : la constante', '1 ; 2', '4 ; 4', '4']
+		['pente nulle : la constante', '1 ; 2', '4 ; 4', '4'],
+		['pente arrondie à 0 (1/3000) : la constante, comme la console', '0 ; 3000', '4 ; 5', '4']
 	])('%s', (_, L, M, expected) => {
-		expect(fittedDefinition(L, M)).toBe(expected);
+		expect(fitted(L, M).definition).toBe(expected);
+	});
+
+	// L'écriture sans `*` se lit bien comme la fonction annoncée
+	it.each([
+		['0 ; 2', '0 ; 3', 'f(2)', '3'],
+		['1 ; 2 ; 3', '5 ; 4 ; 3', 'f(1)', '5']
+	])('%s / %s : %s = %s', (L, M, input, value) => {
+		const { atelier } = fitted(L, M);
+		const result = runInput({ atelier, engine: new WebReplEngine() }, input);
+		expect(result.kind === 'calcul' && result.output).toBe(value);
 	});
 });
