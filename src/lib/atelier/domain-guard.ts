@@ -181,7 +181,8 @@ export function guardedAnswer(
 
 /**
  * L'expression mise au propre sans changer son domaine : `tidy`, sauf là où il
- * le change encore (`1/(1/x) → x`, bug connu de `tidy`) — l'expression lue.
+ * le changerait encore — l'expression lue. Filet : `tidy` garde le domaine
+ * (S3, `1/(1/x)` compris depuis tidy-conditions § 4.3).
  */
 export function writtenKeepingDomain(node: MathNode, options?: TidyOptions): MathNode {
 	const tidied = tidy(node, options);

@@ -1685,9 +1685,7 @@ Doublons qui restent, chacun pour un autre besoin :
   - `.simplifier` : `x(−eˣ)e` non regroupé ; `\frac{e^{2x}x}{eˣx} → \frac{x eˣ}{x}` ;
   - `factoriser` sur `(a+b)(a−b)/((a−b)(a+b))` rend `(a+b)·1/(a+b)` ; facteurs opposés non
     reconnus (`(x²−1)/(1−x)` reste) ; `MAX_FRACTIONS = 8` coupe en silence ;
-  - `tidy` : `1/(1/x) → x` (un `x⁻¹` sous une barre échappe au suivi du domaine ; l'atelier le
-    rattrape par `domainLoss` : la ligne garde `1/(1/x)`, le bouton dit « x, pour x ≠ 0 ») ;
-    `reduceFractionOfSums` ignore `domain` (`(2x−2)/(x−1)` reste) ;
+  - `tidy` : `reduceFractionOfSums` ignore `domain` (`(2x−2)/(x−1)` reste) ;
   - `detectSymmetry` conclut « aucune, prouvé » pour `∛x`, `x^{1/3}`, `x^{2/3}`,
     `ln(x+√(x²+1))` (sans appelant en production) ;
   - `toCustom` écrit `(1/2)^xe^x`, illisible en syntaxe maison.
