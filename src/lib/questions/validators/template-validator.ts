@@ -13,6 +13,7 @@ import { hasCourseCardBackSource } from '../course-card';
 import { findRulesSufficeBlanksWithoutRules } from '../rules-suffice';
 import { assumptionCollisionMessage, findAssumptionCollisions } from '../answer-assumptions';
 import { choiceAnswerCountErrors } from './choice-answer-count';
+import { assignBlankIndices } from '../generator/assign-blank-indices';
 import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
 import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 import { WORK_FIGURE_ALONE_MESSAGE } from '$lib/ubumark/parser/construction-parser';
@@ -198,10 +199,11 @@ function validateVariation(
 					String(variation.statement ?? shared?.statement ?? '')
 				)
 			) {
-				// Une figure de travail porte une case, mais jamais notée : le dire
-				const workFigureOnly = /^\s*>?\s*```figure-de-travail\s*$/m.test(
-					String(variation.statement ?? shared?.statement ?? '')
-				);
+				// Une figure de travail porte une case, mais jamais notée : le dire quand
+				// l'énoncé n'en a pas d'autre (sinon, seul blanks[] manque)
+				const numbered = assignBlankIndices(String(variation.statement ?? shared?.statement ?? ''));
+				const workFigureCount = Object.keys(numbered.workFigureBlanks ?? {}).length;
+				const workFigureOnly = workFigureCount > 0 && workFigureCount === numbered.totalBlanks;
 				errors.push(
 					`${prefix} ${workFigureOnly ? WORK_FIGURE_ALONE_MESSAGE : 'fill_in_blanks requires blanks[]'}`
 				);

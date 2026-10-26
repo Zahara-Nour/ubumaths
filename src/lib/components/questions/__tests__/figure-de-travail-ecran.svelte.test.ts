@@ -156,6 +156,9 @@ describe('figure de travail + case choix : saisie et verdict', () => {
 		expect(await verdictKind(container)).toBe('incorrect');
 		expect(container.textContent).not.toContain('blancs suivants');
 		expect(container.textContent).not.toContain('pas tout complété');
+		// Le message du choix une seule fois (pas de « Blanc 1 : » qui le répète)
+		await expect.poll(() => container.textContent).toContain('Le choix correct');
+		expect(container.textContent?.split('Le choix correct').length).toBe(2);
 	});
 
 	it('après Valider : les traits restent, gris, ni verts ni bonne droite', async () => {

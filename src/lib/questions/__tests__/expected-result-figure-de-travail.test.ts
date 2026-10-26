@@ -29,7 +29,10 @@ const STATEMENT = `Les points A, B et C sont-ils alignés ?\n\n${WORK}\n\n\`\`\`
 const TRACE = 'droite(2;3;8;5)';
 
 // Functions
-function instance(): QuestionInstance {
+function instance(
+	statement = STATEMENT,
+	blanks = [{ expectedAnswer: '' }, { expectedAnswer: '1' }]
+): QuestionInstance {
 	const result = generateInstance(
 		{
 			id: 'test-cp058',
@@ -38,8 +41,8 @@ function instance(): QuestionInstance {
 			type: 'fill_in_blanks',
 			variations: [
 				{
-					statement: templateMarkdown(STATEMENT),
-					blanks: [{ expectedAnswer: '' }, { expectedAnswer: '1' }]
+					statement: templateMarkdown(statement),
+					blanks
 				}
 			],
 			grades: ['CP'],
@@ -90,5 +93,14 @@ describe('résultat attendu : figure de travail', () => {
 		const filled = lines.find((l) => l.kind === 'filled-statement');
 		if (filled?.kind !== 'filled-statement') throw new Error('énoncé rempli attendu');
 		expect(filled.markdown).not.toContain('figure-de-travail');
+	});
+
+	it('calcul R1 avec une figure de travail : toujours la comparaison « 3 + 5 = 8 »', () => {
+		const calc = instance(`Calcule.\n\n${WORK}\n\n$3+5 = ?$`, [
+			{ expectedAnswer: '' },
+			{ expectedAnswer: '8' }
+		]);
+		const { lines } = buildExpectedResult(calc, { values: ['', '9'] });
+		expect(lines.map((l) => l.kind)).toEqual(['comparison', 'solution', 'work-figure']);
 	});
 });

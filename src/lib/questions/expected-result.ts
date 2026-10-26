@@ -328,15 +328,18 @@ function markedIndexes(markdown: string): Set<number> {
  * expression à une case, ou `$… = ?$`). Rend le membre gauche, sinon `null`.
  */
 function wholeRightHandSide(markdown: string, instance: QuestionInstance): string | null {
-	const blanks = instance.blanks ?? [];
-	if (blanks.length !== 1 || blanks[0].type !== 'math') return null;
+	// Figures de travail hors compte : jamais une réponse
+	const all = instance.blanks ?? [];
+	const graded = all.filter((blank) => !isWorkFigureBlank(blank));
+	if (graded.length !== 1 || graded[0].type !== 'math') return null;
+	const gradedIndex = String(all.indexOf(graded[0]));
 	const zones = [...markdown.matchAll(MATH_ZONE)].filter((m) =>
 		new RegExp(PLACEHOLDER.source).test(m[1] ?? m[2])
 	);
 	if (zones.length !== 1) return null;
 	const [zone] = zones;
 	const match = (zone[1] ?? zone[2]).match(LHS_EQUALS_BLANK);
-	if (!match || match[2] !== '0') return null;
+	if (!match || match[2] !== gradedIndex) return null;
 	const lhs = match[1].trim();
 	if (lhs === '' || new RegExp(PLACEHOLDER.source).test(lhs) || ANY_RELATION.test(lhs)) {
 		return null;

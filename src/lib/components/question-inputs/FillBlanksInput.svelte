@@ -295,7 +295,10 @@
 	// De même pour une case « figure » : son message (le juge) est le feedback global, et elle
 	// ne compte pas dans les numéros (l'élève ne voit que les autres cases).
 	let blankMessages = $derived.by(() => {
-		if (flashMode || showCorrectAnswers || blanks.length < 2) return [];
+		// Cases « figure » hors compte : le message d'une seule autre case est déjà le feedback global
+		if (flashMode || showCorrectAnswers || blanks.filter((b) => !b.construction).length < 2) {
+			return [];
+		}
 		return blankFeedback.flatMap((message, index) => {
 			if (!message || blanks[index]?.construction) return [];
 			const blankNumber = blanks.slice(0, index + 1).filter((b) => !b.construction).length;

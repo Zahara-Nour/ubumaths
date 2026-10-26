@@ -187,6 +187,12 @@ describe('génération', () => {
 		).toEqual([WORK_FIGURE_ALONE_MESSAGE]);
 	});
 
+	it('figure de travail ET une case, blanks[] oublié : le message ordinaire', () => {
+		expect(errorsOf(template({ statement: `${WORK}\n\n$x = ?$` }))).toEqual([
+			'Variation 1: fill_in_blanks requires blanks[]'
+		]);
+	});
+
 	it('verifier: dans une figure de travail : erreur de la case', () => {
 		const block = [
 			'```figure-de-travail',
