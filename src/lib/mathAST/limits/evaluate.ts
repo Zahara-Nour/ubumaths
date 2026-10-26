@@ -104,8 +104,7 @@ import {
 	isSignedZero,
 	mathNodeToSignedValue,
 	powerSign,
-	signedValueToInfinity,
-	type SignedLimitValue
+	signedValueToInfinity
 } from './sign-tracking';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
@@ -803,7 +802,7 @@ function evaluateLimitExactForm(
 		);
 	}
 
-	// Stratégie 2.46 : uⁿ, n entier, u → ±∞ (ou u → 0 avec n < 0), par
+	// Stratégie 2.46 : uⁿ, n entier, u → ±∞, par
 	// composition. La continuité (2.45) s'arrête à une limite finie de u et la
 	// composition (2.5) ne connaît que xⁿ : (x − 3)² en +∞ n'avait pas de
 	// limite (V66). La limite de u vient du moteur entier, qui lève ses formes
@@ -1533,9 +1532,11 @@ function tryLogarithmOfPositiveLimit(
 }
 
 /**
- * uⁿ, n entier constant non nul : u → ±∞ donne ±∞ (n > 0) ou 0 (n < 0) ;
- * u → 0 avec n < 0 donne ±∞, le côté de 0 venant du suivi du signe. Une
- * limite finie non nulle de u relève de la continuité : `null`.
+ * uⁿ, n entier constant non nul, u → ±∞ : ±∞ (n > 0, signe selon la parité)
+ * ou 0 (n < 0). Une limite finie de u relève de la continuité ; u → 0 avec
+ * n < 0 est laissé aux autres stratégies — le suivi du signe suppose un signe
+ * constant près du point, faux pour sin(x)/x en +∞ ou x·sin(1/x) en 0 (revue
+ * de #1839) : `null`.
  */
 function tryPowerOfUnboundedLimit(
 	expression: MathNode,
@@ -1550,17 +1551,12 @@ function tryPowerOfUnboundedLimit(
 	if (exponent === null || !Number.isInteger(exponent) || exponent === 0) return null;
 
 	const inner = evaluateLimit(node.base, varName, approach, dir, options);
-	if (inner.value === null) return null;
-	let innerSign: SignedLimitValue;
-	if (isInfinity(inner.value)) {
-		innerSign = mathNodeToSignedValue(inner.value);
-	} else if (exponent < 0 && inner.status === 'exact' && computeNumericValue(inner.value) === 0) {
-		innerSign = classifyWithSign(node.base, varName, approach, dir);
-	} else {
+	// Une valeur approchée n'est pas une limite démontrée
+	if (inner.status !== 'infinite' || inner.value === null || !isInfinity(inner.value)) {
 		return null;
 	}
 
-	const result = powerSign(innerSign, exponent);
+	const result = powerSign(mathNodeToSignedValue(inner.value), exponent);
 	if (isSignedInfinity(result)) return signedValueToInfinity(result);
 	if (isSignedZero(result)) return number('0');
 	return null;

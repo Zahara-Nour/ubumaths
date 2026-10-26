@@ -87,6 +87,20 @@ describe('ce qui marchait déjà ne change pas', () => {
 	});
 });
 
+describe('base de signe changeant, u → 0, n < 0 : aucune valeur (revue de #1839)', () => {
+	// Le suivi du signe suppose un signe constant près du point : la 2.46
+	// rendait −∞ pour ces bases, qui changent de signe sans cesse
+	it.each([
+		['(\\frac{\\sin x}{x})^{-1}', '+∞', 'both'],
+		['(\\frac{\\sin x}{x})^{-2}', '+∞', 'both'],
+		['(x\\sin\\frac{1}{x})^{-1}', '0', 'both'],
+		['(x\\sin\\frac{1}{x})^{-1}', '0', 'right'],
+		['(x^2\\sin\\frac{1}{x})^{-1}', '0', 'both']
+	] as const)('%s en %s (%s)', (latex, at, direction) => {
+		expect(valueOf(latex, at, direction)).toBeNull();
+	});
+});
+
 describe('formes indéterminées : la puissance ne conclut pas à tort', () => {
 	it.each([
 		['(x-3)^2-x^2', '+∞', '-\\infty'],

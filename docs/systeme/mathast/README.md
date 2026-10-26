@@ -1557,8 +1557,10 @@ x(x + 2)/x = x + 2`, `(x² − 1)/(x − 1) = (x − 1)(x + 1)/(x − 1) = x + 1
   (`tryPowerOfUnboundedLimit`, V66, 2026-10-26) prend le relais quand la limite de u est
   infinie : uⁿ, n entier, par composition — limite de u par le moteur entier (formes
   indéterminées levées : `(x^2-x)^3` en +∞), puis `powerSign` (`limits/sign-tracking.ts`) :
-  u → ±∞ donne ±∞ (n > 0, signe selon la parité) ou 0 (n < 0) ; u → 0 avec n < 0 donne ±∞, le
-  côté venant de `classifyWithSign`. Avant elle, `(x-3)^2` en +∞ sortait « non supportée » (la
+  u → ±∞ donne ±∞ (n > 0, signe selon la parité) ou 0 (n < 0). u → 0 avec n < 0 n'y est PAS
+  traité : `classifyWithSign` suppose un signe constant près du point et rendait −∞ pour
+  `(\frac{\sin x}{x})^{-1}` en +∞ (revue de #1839) ; les pôles `(x-3)^{-n}` passent par
+  d'autres stratégies. Avant elle, `(x-3)^2` en +∞ sortait « non supportée » (la
   composition ne connaît que xⁿ, variable nue) et `.variations (x-3)^2` n'avait pas de
   tableau. Les étapes « limite à gauche /
   à droite » d'une limite bilatérale s'écrivent en `a^-` / `a^+` (côté étudié, pas celui de la
