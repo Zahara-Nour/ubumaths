@@ -8,16 +8,18 @@ status: lot 1 terminé (#1816, #1822), lot 2 à faire
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1833._
+_Mis à jour le 2026-10-26, après #1836._
 
 - **État** : lots 1 (#1816, #1822) et 2 (#1826, figure de travail : bloc ```figure-de-travail, jamais
   notée via `questions/graded-part.ts`, traits gris, ligne « Ta figure de travail » dans la correction,
   carte de l'éditeur, version publique `workFigure`) mergés, plus #1833 (éditeur : cases de blocs omises de
-  `blanks[]` remises à leur rang après une modification de l'énoncé, jamais sur énoncé à variables). Rien en prod.
+  `blanks[]` remises à leur rang après une modification de l'énoncé, jamais sur énoncé à variables) et #1836
+  (« Remplissez les blancs » seulement s'il y a une case à écrire). Rien en prod.
 - **Prochaine action** : lot 3, CP-058 réécrit (figure de travail + case choix oui / non), essai par David,
   puis publication (§ 2.5).
-- **En attente de David** : essais de la case choix (lot 1) et de la figure de travail (lot 2) — serveur
-  de test du worktree, port 5179 (worktree FIGÉ tant qu'il teste).
+- **En attente de David** : fin de l'essai du lot 2 (étape correction, « Afficher correction si faux » →
+  ligne « Ta figure de travail ») sur 5179 (worktree FIGÉ) ; éditeur ok, aperçu ok (essai du 2026-10-26).
+  Question ouverte : ajouter les cartes de cases à l'éditeur de modèles du PROF ?
 - **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
   contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL ;
   une seule session par worktree. Restes connus : modèle ouvert sans modification, ou à variables, qui omet
@@ -29,6 +31,9 @@ _Mis à jour le 2026-10-26, après #1833._
 
 ## Historique
 
+- 2026-10-26 — **#1836 mergée** : vu par David à l'essai du lot 2, « Remplissez les blancs avec vos
+  réponses » sous un choix seul. `FillBlanksInput` ne l'affiche plus que s'il y a une case à écrire (ni
+  choix, ni figure, ni collection/monnaie à construire) ; règle ajoutée à `docs/systeme/questions.md`.
 - 2026-10-26 — **#1833 mergée** : trouvé par David à l'essai du lot 2 (énoncé collé, formulaire parti d'une
   entrée → pas de carte pour le choix, « aucune bonne réponse »). `withBlockCases` réaligne comme le
   générateur ; revue sonnet : réalignement à l'ouverture (formulaire « modifié ») et sur énoncé brut à
