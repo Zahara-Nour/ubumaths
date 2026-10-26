@@ -14,6 +14,7 @@ import { findRulesSufficeBlanksWithoutRules } from '../rules-suffice';
 import { assumptionCollisionMessage, findAssumptionCollisions } from '../answer-assumptions';
 import { choiceAnswerCountErrors } from './choice-answer-count';
 import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
+import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
 
 /**
  * Validate a question template
@@ -186,11 +187,12 @@ function validateVariation(
 		case 'fill_in_blanks':
 			// Un bloc ```operation à remplir porte sa propre case (sa réponse vient du calcul),
 			// un bloc ```figure-a-completer aussi (la figure de l'élève), un bloc ```collection
-			// à construire aussi (sa réponse est sa valeur)
+			// ou ```monnaie à construire aussi (sa réponse est sa valeur)
 			if (
 				(!variation.blanks || variation.blanks.length === 0) &&
 				!hasOperationToFill(String(variation.statement ?? shared?.statement ?? '')) &&
 				!hasCollectionToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
+				!hasMonnaieToBuild(String(variation.statement ?? shared?.statement ?? '')) &&
 				!/^\s*>?\s*```figure-a-completer\s*$/m.test(
 					String(variation.statement ?? shared?.statement ?? '')
 				)

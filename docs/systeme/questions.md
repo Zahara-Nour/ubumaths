@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -235,13 +235,15 @@ erreur fait échouer la génération (message situé). Une ligne `case:` écrite
    écrite est refusée ; un bloc en erreur (vérification manquante, fenêtre…) fait échouer la
    génération, comme un point de `verifier:` que le script ne nomme pas (`Z = …`, lecture légère
    `namesAssignedIn`) ou `options.orderIndependent` (l'appariement ne sait pas lire une figure). La case est `type: 'graphical'`, `construction: { source, checks }` (texte du bloc,
-   variables résolues), réponse attendue symbolique `droite(A;B)`. Un bloc ``collection à
-   construire (`construire: N`, au premier niveau, sinon échec ; `buildBlanks`) compte aussi pour
+   variables résolues), réponse attendue symbolique `droite(A;B)`. Un bloc `collection ou
+`monnaie à construire (`construire: N`, au premier niveau, sinon échec ; `buildBlanks`, genre et
+   texte du bloc) compte aussi pour
    **une** case, `case: N` posé dans le bloc ; sa réponse attendue est la valeur `N` du bloc, jamais
    du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:` écrite aussi, bloc en
    erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
-   (`findBuildCollections` : une ligne vide suivie d'une clé reste dans un bloc fermé). La case est `type: 'math'`, `construire: 'collection'`, jugée comme une case
-   ordinaire : l'élève répond par la valeur qu'il a posée (`'34'`, `''` plan vide).
+   (`findBuildCollections`, `findBuildMonnaies` : une ligne vide suivie d'une clé reste dans un bloc
+   fermé). La case est `type: 'math'`, `construire: 'collection' | 'monnaie'`, jugée comme une case
+   ordinaire : l'élève répond par la valeur qu'il a posée (`'34'`, `'35'` €, `''` plan vide).
    Un bloc ```choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans
    `assignBlankIndices`) : réglages en tête (`plusieurs: oui`, `melanger: non` ; défauts : une
@@ -304,6 +306,7 @@ Natures de réponse :
 | Figure (tracé)              | bloc ```figure-a-completer (`verifier:`)    | `construction/judge.ts` (ci-dessous) ; réponse `droite(x1;y1;x2;y2)` ou `segment(x1;y1;x2;y2)`, objets séparés par `\|`                           |
 | Opération posée             | bloc ```operation (`cases: résultat`)       | case ordinaire : chiffres de la grille lus comme un nombre (`operation-answer.ts` ; division : `operation-division-answer.ts`, quotient et reste) |
 | Collection à construire     | bloc ```collection (`construire: N`)        | case ordinaire : la valeur posée, composition libre (`collection-construire.ts`)                                                                  |
+| Monnaie à construire        | bloc ```monnaie (`construire: N`)           | case ordinaire : la somme posée, coupures libres dans la réserve (`monnaie-construire.ts`)                                                        |
 | Texte                       | `[_]` hors formule                          | casse et accents ignorés ; 1 lettre d'écart tolérée dès 5 lettres                                                                                 |
 | Grandeur                    | `unit: { expected, required? }`             | `validateQuantityAnswer` (conversion, unité imposée)                                                                                              |
 | Ensemble en intervalles     | `answerKind: 'intervalles'`                 | `interval-answer.ts` ; option `openableBounds` ; contrainte `intervalForm`                                                                        |

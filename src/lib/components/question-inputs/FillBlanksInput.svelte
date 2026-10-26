@@ -72,6 +72,8 @@
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
 	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
 	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
+	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
+	import { solutionBuild as monnaieSolution } from '$lib/ubumark/utils/monnaie-construire';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
 	import ChoiceBlock from '$lib/components/markdown/nodes/ChoiceBlock.svelte';
 	import MultipleChoiceInput from './MultipleChoiceInput.svelte';
@@ -197,6 +199,7 @@
 		}
 		if (node.type === 'operation') return node.caseIndex !== undefined;
 		if (node.type === 'collection') return node.caseIndex !== undefined;
+		if (node.type === 'monnaie') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		if (node.type === 'choice') return node.caseIndex !== undefined;
 		return false;
@@ -432,7 +435,7 @@
 	/**
 	 * Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive, champ texte,
 	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse ; division
-	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection à construire
+	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection ou d'une monnaie à construire
 	 */
 	type Slot =
 		| { field: MathfieldElement; promptId: string }
@@ -859,6 +862,38 @@
 				{:else}
 					<div data-construire-case={caseIndex}>
 						<Collection
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
+				{/if}
+			{:else if node.type === 'monnaie' && node.caseIndex !== undefined && node.spec?.build !== undefined && node.spec.reserve !== undefined}
+				<!-- Monnaie à construire : l'élève pose pièces et billets, la somme posée est la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : une construction juste (le moins d'objets avec la réserve), sans réserve -->
+					<Monnaie
+						node={{
+							...node,
+							spec: {
+								...node.spec,
+								build: undefined,
+								reserve: undefined,
+								sets: [
+									monnaieSolution(node.spec.build, node.spec.reserve) ?? { notes: [], coins: [] }
+								]
+							}
+						}}
+					/>
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<Monnaie
 							{node}
 							answer={{
 								value: state?.value ?? '',

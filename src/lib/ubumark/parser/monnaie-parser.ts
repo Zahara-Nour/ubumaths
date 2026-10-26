@@ -19,6 +19,12 @@
  * - Le reste est facultatif ; une clé inconnue ou une valeur hors liste est
  *   une erreur située, jamais un réglage ignoré. Centimes (`50c`) et billets
  *   de 200 et 500 € : « pas encore disponible » (CE1, plus tard).
+ * - `construire: 35` (1 à 100 €) : l'élève construit la somme sur un plan vide,
+ *   avec les coupures de `réserve: 1 2 5 10 20` (défaut : 1, 2, 5, 10, 20,
+ *   50 €) ; `billets:`, `pièces:`, `montant:`, `légendes:` et `disposition:`
+ *   sont alors sans objet. Une somme infaisable avec la réserve en 30 objets au
+ *   plus est une erreur. `case: N` est posée par le générateur de questions,
+ *   jamais par l'auteur (chantier `docs/wip/construire-progress.md` § 6).
  *
  * Dans un modèle de question, `{{n}}` est résolu AVANT : le bloc ne lit que
  * des nombres. Une erreur ne fait pas disparaître le bloc (le nœud porte ses
@@ -30,7 +36,9 @@
  */
 
 import { specialBlockEnd } from './unclosed-block';
+import { DEFAULT_RESERVE, fewestObjects } from '../utils/monnaie-construire';
 import {
+	MONNAIE_BUILD_RANGE,
 	MONNAIE_CAPTION_MAX,
 	MONNAIE_COINS,
 	MONNAIE_LAYOUTS,
@@ -74,12 +82,44 @@ const BLOCK_KEYS = [
 	'disposition',
 	'légendes',
 	'legendes',
-	'taille'
+	'taille',
+	'construire',
+	'réserve',
+	'reserve',
+	'case'
 ] as const;
 
-type Key = 'billets' | 'pièces' | 'montant' | 'disposition' | 'légendes' | 'taille';
+type Key =
+	| 'billets'
+	| 'pièces'
+	| 'montant'
+	| 'disposition'
+	| 'légendes'
+	| 'taille'
+	| 'construire'
+	| 'réserve'
+	| 'case';
 
-const KEY_NAMES: Key[] = ['billets', 'pièces', 'montant', 'disposition', 'légendes', 'taille'];
+const KEY_NAMES: Key[] = [
+	'billets',
+	'pièces',
+	'montant',
+	'disposition',
+	'légendes',
+	'taille',
+	'construire',
+	'réserve',
+	'case'
+];
+
+/** Clés sans objet sur un bloc à construire, et pourquoi */
+const NOT_WITH_BUILD: Partial<Record<Key, string>> = {
+	billets: ' (l’élève part d’un plan vide)',
+	pièces: ' (l’élève part d’un plan vide)',
+	montant: ' (l’élève part d’un plan vide)',
+	disposition: ' (les coupures se rangent d’office)',
+	légendes: ''
+};
 
 /** Toutes les coupures, de la plus grande à la plus petite (décomposition de `montant:`) */
 const DENOMINATIONS = [...MONNAIE_NOTES, ...MONNAIE_COINS];
@@ -100,17 +140,30 @@ export function isMonnaieBlockStart(line: string): boolean {
  * jusqu'à la première ligne vide (Q63).
  */
 export function findMonnaieBlocks(lines: string[]): MonnaieBlockRange[] {
-	const blocks: MonnaieBlockRange[] = [];
+	return findMonnaieBlockSpans(lines).map(({ startIndex, endIndex }) => ({
+		startIndex,
+		endIndex
+	}));
+}
+
+/**
+ * Les mêmes blocs, avec leur fermeture : `endIndex` est la fence de fin d'un bloc
+ * fermé, la dernière ligne d'un bloc non fermé
+ */
+export function findMonnaieBlockSpans(
+	lines: string[]
+): (MonnaieBlockRange & { closed: boolean })[] {
+	const blocks: (MonnaieBlockRange & { closed: boolean })[] = [];
 	let i = 0;
 	while (i < lines.length) {
 		if (isMonnaieBlockStart(lines[i])) {
-			const { endIndex } = specialBlockEnd(
+			const { endIndex, closed } = specialBlockEnd(
 				lines,
 				i,
 				(line) => BLOCK_END_REGEX.test(line),
 				BLOCK_KEYS
 			);
-			blocks.push({ startIndex: i, endIndex });
+			blocks.push({ startIndex: i, endIndex, closed });
 			i = endIndex;
 		}
 		i++;
@@ -158,7 +211,7 @@ function splitSets(value: string): string[] {
 }
 
 /** Une coupure écrite (`10`, `10€`) : sa valeur, vérifiée du bon genre */
-function readDenomination(raw: string, kind: 'billets' | 'pièces'): number {
+function readDenomination(raw: string, kind: 'billets' | 'pièces' | 'réserve'): number {
 	const text = raw.replace(/€$/, '').trim();
 	if (CENTS_REGEX.test(text)) {
 		throw new LineError(`« ${raw} » : centimes pas encore disponibles (euros entiers seulement)`);
@@ -230,6 +283,38 @@ function parseAmounts(value: string): number[] {
 	});
 }
 
+/** Coupures permises (`réserve: 1 2 5 10`) : existantes, une fois chacune, de la plus grande à la plus petite */
+function parseReserve(value: string): number[] {
+	const tokens = value.split(/\s+/).filter((token) => token !== '' && token !== '€');
+	if (tokens.length === 0) {
+		throw new LineError('réserve vide : écris les coupures permises, ex. réserve: 1 2 5 10');
+	}
+	const values: number[] = [];
+	for (const token of tokens) {
+		const denomination = readDenomination(token, 'réserve');
+		if (values.includes(denomination)) {
+			throw new LineError(`réserve : ${denomination} € écrit deux fois`);
+		}
+		values.push(denomination);
+	}
+	return values.sort((a, b) => b - a);
+}
+
+/** Somme à construire : entier d'euros de 1 à 100 */
+function parseBuild(value: string): number {
+	const text = value.replace(/€$/, '').trim();
+	if (CENTS_REGEX.test(text)) {
+		throw new LineError(`construire « ${value} » : centimes pas encore disponibles`);
+	}
+	const { min, max } = MONNAIE_BUILD_RANGE;
+	if (!INTEGER_REGEX.test(text) || Number(text) < min || Number(text) > max) {
+		throw new LineError(
+			`construire « ${value} » : écris un nombre entier d'euros de ${min} à ${max}`
+		);
+	}
+	return Number(text);
+}
+
 /** `montant:` → les coupures « le moins d'objets » (méthode gloutonne, exacte pour l'euro) */
 export function decomposeAmount(amount: number): MonnaieSet {
 	const notes: number[] = [];
@@ -286,6 +371,9 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 	let captionsLine = 1;
 	let layout: MonnaieLayout = 'rangé';
 	let sizeCm: number | null = null;
+	let build: number | undefined;
+	let reserve: number[] | undefined;
+	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
 
 	lines.forEach((line, index) => {
@@ -332,12 +420,70 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 				case 'taille':
 					sizeCm = parseSize(value);
 					break;
+				case 'construire':
+					build = parseBuild(value);
+					break;
+				case 'réserve':
+					reserve = parseReserve(value);
+					break;
+				case 'case':
+					if (!INTEGER_REGEX.test(value)) {
+						throw new LineError(`case « ${value} » : numéro de case entier`);
+					}
+					caseIndex = Number(value);
+					break;
 			}
 		} catch (e) {
 			if (!(e instanceof LineError)) throw e;
 			fail(lineNo, e.message);
 		}
 	});
+
+	// Bloc à construire : plan vide, aucun ensemble dessiné (lues dans le forEach :
+	// TS les croit encore à leur valeur initiale)
+	const readBuild = build as number | undefined;
+	const readReserve = (reserve as number[] | undefined) ?? [...DEFAULT_RESERVE];
+	const readCase = caseIndex as number | undefined;
+	const buildLine = seen.get('construire');
+	if (buildLine !== undefined) {
+		for (const [key, why] of Object.entries(NOT_WITH_BUILD) as [Key, string][]) {
+			const line = seen.get(key);
+			if (line !== undefined) fail(line, `${key} : sans objet avec construire:${why}`);
+		}
+		if (errors.length === 0 && readBuild !== undefined) {
+			const objects = fewestObjects(readBuild, readReserve);
+			const listed = `(${[...readReserve].reverse().join(', ')} €)`;
+			if (objects === Infinity) {
+				fail(buildLine, `${readBuild} € ne se fait pas avec la réserve ${listed}`);
+			} else if (objects > MONNAIE_LIMITS.objects) {
+				fail(
+					buildLine,
+					`${readBuild} € demande plus de ${MONNAIE_LIMITS.objects} objets avec la réserve ${listed}`
+				);
+			}
+		}
+		if (errors.length > 0 || readBuild === undefined) {
+			return { type: 'monnaie', source, spec: null, errors };
+		}
+		return {
+			type: 'monnaie',
+			source,
+			spec: {
+				sets: [],
+				captions: null,
+				layout: 'rangé',
+				sizeCm,
+				build: readBuild,
+				reserve: readReserve
+			},
+			errors,
+			...(readCase !== undefined && { caseIndex: readCase })
+		};
+	}
+	for (const key of ['réserve', 'case'] as const) {
+		const line = seen.get(key);
+		if (line !== undefined) fail(line, `${key}: sans objet sans construire:`);
+	}
 
 	// Les vérifications qui croisent deux lignes, une fois tout lu
 	const readNotes = notes as number[][] | null;
@@ -420,6 +566,37 @@ export function parseMonnaie(
 			]
 		}
 	};
+}
+
+/**
+ * Un texte contient-il un bloc ```monnaie à construire (en retrait ou cité
+ * compris : le générateur dira qu'il doit être au premier niveau) ?
+ */
+export function hasMonnaieToBuild(markdown: string): boolean {
+	return findBuildMonnaies(markdown).length > 0;
+}
+
+/** Une ligne sans son retrait ni ses `>` de citation */
+const unquoted = (line: string) => line.replace(/^[\s>]*/, '');
+
+/**
+ * Blocs ```monnaie à construire d'un texte, délimités comme le parseur (une
+ * ligne vide suivie d'une clé reste dans un bloc fermé, Q66) ; en retrait ou
+ * cités compris (`nested`) : le générateur les refuse.
+ */
+export function findBuildMonnaies(markdown: string): {
+	startIndex: number;
+	body: string[];
+	closed: boolean;
+	nested: boolean;
+}[] {
+	const lines = markdown.split('\n');
+	const plain = lines.map(unquoted);
+	return findMonnaieBlockSpans(plain).flatMap(({ startIndex, endIndex, closed }) => {
+		const body = plain.slice(startIndex + 1, closed ? endIndex : endIndex + 1);
+		if (!body.some((line) => /^construire\s*:/i.test(line))) return [];
+		return [{ startIndex, body, closed, nested: lines[startIndex] !== plain[startIndex] }];
+	});
 }
 
 /**

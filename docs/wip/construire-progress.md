@@ -135,3 +135,4 @@ paquets` le matériel (clé existante). Le bloc porte sa réponse, comme ` ```op
 - 2026-10-26 : ouverture, worktree `construire`, phase 0 ; validée (« je suis tes recos »).
 - 2026-10-26 : PR 1 — `construire:` dans ```collection (parseur, case du générateur, `CollectionConstruire.svelte`, PDF) ; tests rouges vérifiés puis verts ; capture d'écran relue.
 - 2026-10-26 : revue Opus de #1812 — corrigés : bloc délimité comme le parseur (ligne vide + clé), bloc non fermé et `orderIndependent` refusés, test au décor de la prod. Laissé : ```operation a les mêmes angles morts (ligne vide, non fermé, ordre indifférent), à traiter à part.
+- 2026-10-26 : PR 2 — `construire:` + `réserve:` dans ```monnaie (parseur, case généralisée `construire: 'collection' | 'monnaie'`, `MonnaieConstruire.svelte`, `MonnaieObjets.svelte` extrait, PDF) ; tests unitaires et générateur vérifiés rouges puis verts ; tests d'écran écrits avec le composant ; capture relue.

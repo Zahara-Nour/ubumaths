@@ -43,10 +43,10 @@ describe('construire: — analyse', () => {
 	it('somme de 1 à 100 €, entière', () => {
 		expect(parse('construire: 100').errors).toEqual([]);
 		expect(messages(parse('construire: 0'))).toEqual([
-			'Ligne 1 : construire « 0 » : écris un nombre entier d’euros de 1 à 100'
+			"Ligne 1 : construire « 0 » : écris un nombre entier d'euros de 1 à 100"
 		]);
 		expect(messages(parse('construire: 101'))).toEqual([
-			'Ligne 1 : construire « 101 » : écris un nombre entier d’euros de 1 à 100'
+			"Ligne 1 : construire « 101 » : écris un nombre entier d'euros de 1 à 100"
 		]);
 		expect(messages(parse('construire: 50c'))).toEqual([
 			'Ligne 1 : construire « 50c » : centimes pas encore disponibles'
@@ -55,7 +55,7 @@ describe('construire: — analyse', () => {
 
 	it('réserve : coupures existantes, une fois chacune', () => {
 		expect(messages(parse('construire: 35', 'réserve: 3'))).toEqual([
-			'Ligne 2 : 3 € n’existe pas (pièces : 1, 2 ; billets : 5, 10, 20, 50, 100)'
+			"Ligne 2 : 3 € n'existe pas (pièces : 1, 2 ; billets : 5, 10, 20, 50, 100)"
 		]);
 		expect(messages(parse('construire: 35', 'réserve: 200'))).toEqual([
 			'Ligne 2 : billet de 200 € : pas encore disponible (pièces : 1, 2 ; billets : 5, 10, 20, 50, 100)'
@@ -67,7 +67,8 @@ describe('construire: — analyse', () => {
 			'Ligne 2 : réserve vide : écris les coupures permises, ex. réserve: 1 2 5 10'
 		]);
 		expect(messages(parse('réserve: 1 2'))).toEqual([
-			'Ligne 1 : réserve: sans objet sans construire:'
+			'Ligne 1 : réserve: sans objet sans construire:',
+			'Ligne 1 : rien à dessiner : écris billets:, pièces: ou montant: (ex. billets: 10 5)'
 		]);
 	});
 
