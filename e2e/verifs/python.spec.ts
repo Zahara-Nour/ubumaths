@@ -89,8 +89,8 @@ test('#1697 — « Ouvrir dans Python » : valeur et fonction, suite, liste de m
 	await sequence.press('Enter');
 	const loop = await openFromCard(page, 'u', 'Ouvrir dans Python');
 	const replace = loop.getByRole('button', { name: /Remplacer/ });
-	// Sans code rangé (écart Q1), pas de question ; si elle vient, on remplace
-	await replace.click({ timeout: 3000 }).catch(() => undefined);
+	// Le code de f, rangé, fait poser « Remplacer ton code ? » : on remplace
+	await replace.click();
 	await expect.poll(() => code(loop)).toContain('for k in range(n)');
 	await loop.close();
 
@@ -181,9 +181,8 @@ test('#1746 — Python → atelier : liste, effectifs, booléens refusés, lien 
 test('#1697 — Q1 : du code écrit dans /python, rouvert depuis l’atelier → « Remplacer ton code ? »', async ({
 	page
 }) => {
-	// ROUGE (écart signalé à David) : sans compte, le code tapé n'est rangé qu'à Ctrl+S
-	// (`bind:value` ne passe pas par `setCode`) ; le nouvel onglet ne voit pas de « code à
-	// toi » et remplace sans rien demander
+	// Rouge jusqu'à la correction de l'écart du lot 9 : le code tapé n'était rangé qu'à
+	// Ctrl+S, le nouvel onglet ne voyait pas de « code à toi »
 	test.setTimeout(120_000);
 	await openAtelier(page);
 	await calc(page, 'a = 3');
@@ -197,4 +196,10 @@ test('#1697 — Q1 : du code écrit dans /python, rouvert depuis l’atelier →
 	await expect(again.getByRole('dialog', { name: /Remplacer ton code/ })).toBeVisible();
 	await again.getByRole('button', { name: 'Garder mon code' }).click();
 	await expect.poll(() => code(again)).toBe('print(1)');
+
+	// Et le code tapé survit au rechargement
+	await writeCode(again, 'print(2)');
+	await again.waitForTimeout(800);
+	await again.reload();
+	await expect.poll(() => code(again)).toBe('print(2)');
 });
