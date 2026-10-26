@@ -327,6 +327,61 @@ describe('domainChange par ensembles (§ 4.2)', () => {
 	});
 });
 
+// § 5, L5 : plusieurs lettres, le domaine rétrécit (David, 2026-10-26)
+describe('plusieurs lettres, le domaine rétrécit (§ 5, L5)', () => {
+	it.each([
+		['.simplifier ln(xy)', '\\ln\\left(x\\right)+\\ln\\left(y\\right)', 'x>0\\text{ et }y>0'],
+		['.simplifier ln(x/y)', '\\ln\\left(x\\right)-\\ln\\left(y\\right)', 'x>0\\text{ et }y>0'],
+		['.simplifier sqrt(x/y)', '\\dfrac{\\sqrt{x}}{\\sqrt{y}}', 'x\\geq0\\text{ et }y>0']
+	])('%s : la ligne garde, le bouton montre %s, pour %s', (input, answer, condition) => {
+		const result = line(input);
+		expect(flat(result.latex)).not.toBe(flat(answer));
+		expect(flat(result.alternative?.latex)).toBe(
+			flat(`${answer}\\text{,}\\quad\\text{pour }${condition}`)
+		);
+	});
+
+	it('.simplifier ln(xy) : le bouton « Simplifier pour x > 0 et y > 0 »', () => {
+		expect(line('.simplifier ln(xy)').alternative?.label).toBe('Simplifier pour x > 0 et y > 0');
+	});
+
+	it('.simplifier ln(xy) : la note propose « avec x > 0 et y > 0 », pas « dans »', () => {
+		const note = line('.simplifier ln(xy)').note ?? '';
+		expect(note).toContain('avec x > 0 et y > 0');
+		expect(note).not.toContain('dans');
+	});
+
+	it('.simplifier ln(xy) avec x > 0 et y > 0 → ln(x) + ln(y)', () => {
+		const result = line('.simplifier ln(xy) avec x > 0 et y > 0');
+		expect(flat(result.latex)).toBe(flat('\\ln\\left(x\\right)+\\ln\\left(y\\right)'));
+		expect(result.alternative).toBeUndefined();
+		expect(result.note).toBeUndefined();
+	});
+
+	it('.simplifier ln(xy) avec x > 0 : ne garantit pas y > 0', () => {
+		const result = line('.simplifier ln(xy) avec x > 0');
+		expect(flat(result.latex)).toBe(flat('\\ln\\left(xy\\right)'));
+		expect(result.note).toContain('ne garantit pas y > 0');
+	});
+
+	// Revue Opus : xy > 0 vaut aussi pour x < 0 et y < 0, où ln x n'existe pas
+	it('.simplifier ln(xy) avec x < 0 et y < 0 : la ligne garde ln(xy)', () => {
+		const result = line('.simplifier ln(xy) avec x < 0 et y < 0');
+		expect(flat(result.latex)).toBe(flat('\\ln\\left(xy\\right)'));
+		expect(result.note).toContain('ne garantit pas');
+	});
+
+	it('« Simplifier en disant la condition » : ln(x) + ln(y), pour x > 0 et y > 0', () => {
+		const result = line('.simplifier ln(xy)', 'conditions');
+		expect(flat(result.latex)).toBe(
+			flat(
+				'\\ln\\left(x\\right)+\\ln\\left(y\\right)\\text{,}\\quad\\text{pour }x>0\\text{ et }y>0'
+			)
+		);
+		expect(result.alternative?.label).toBe('Sans simplifier');
+	});
+});
+
 // Restes de la revue Opus du § 4.2, corrigés à la demande de David (2026-10-26)
 describe('restes de la revue du § 4.2', () => {
 	it.each([

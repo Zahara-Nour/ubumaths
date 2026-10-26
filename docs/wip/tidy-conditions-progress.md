@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, PR A des limites en cours._
+_Mis à jour le 2026-10-26, après #1828._
 
-- **État** : #1807→#1823 MERGÉES (pas en prod). § 5 (limites) : recos validées par David (« je te suis »). PR A (L1 + L2 + L3 + L4) codée sur `fix/conditions-ecriture`.
-- **Prochaine action** : finir la PR A (suite de tests, doc, revue Opus, CI, merge), puis PR B (L5, plusieurs lettres), puis PR C (L6, `e^{k ln a}` dans `normalize`).
+- **État** : #1807→#1823 et #1828 (PR A des limites : L1-L4 + revue Opus) MERGÉES, pas en prod.
+- **Prochaine action** : PR B (L5, plusieurs lettres : `ln(xy)` → bouton « pour x > 0 et y > 0 », § 5), puis PR C (L6, `e^{k ln a}` dans `normalize`).
 - **En attente de David** : Q14 (`√2 + x` : ordre de `tidy`, voir § 5) ; essai des vérifs #1807 et #1811 (inchangé).
-- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` restent sans condition écrivable ; points sans écriture exacte (`x³ − 2`) : condition entière.
-- **Worktree / branche** : `../ubumaths-wt-tidy-conditions`, `fix/conditions-ecriture`.
+- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 (bug latent de `domain/compute`, gardé par `avoidsPeriodicPoints`).
+- **Worktree / branche** : `../ubumaths-wt-tidy-conditions`, `fix/conditions-plusieurs-lettres` (partie d'`origin/main`).
 
 ## Contexte
 
@@ -177,5 +177,12 @@ Sondes (Atelier `runInput`, `normalize`, tests jetables supprimés).
 - L3 : `sign.ts` : `tan u` → `cos u ≠ 0`, `arcsin u` / `arccos u` → `u + 1 ≥ 0`, `1 − u ≥ 0` ; `conditionSet` résout `f(u) − c ≠ 0` pour arctan / arcsin / arccos (`inverseCircularZero`) et `x − c ≠ 0` ; `plainConditions` ne redit pas `cos u ≠ 0` à côté de `tan u ≠ 0`.
 - L4 : `LETTER` (`hypotheses.ts`) ne compte plus `e` ; `avoidsPeriodicPoints` : une famille π/2 + kπ est garantie sur des intervalles bornés qui n'en contiennent aucun point (borne ouverte comprise).
 - Revue Opus : corrigés — borne décimale proche de π/2 prise pour la borne (`cos(x)/cos(x) avec 1.5707963267 < x < 2` donnait 1 : la tolérance ne vaut que pour une borne écrite avec π) ; tabulation dans `\text{ ou }` ; `\pi` en texte brut dans le bouton ; « 0 ≤ x ≤ 0 » → « x = 0 » ; `E` majuscule redevient une lettre ; `avoidsPeriodicPoints` limité à `cos u` / `sin u` seuls (`computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2, bug latent de `domain/compute` laissé).
+
+### PR B (`fix/conditions-plusieurs-lettres`)
+
+- L5 : `narrowedByLetters` (`tidy/conditions.ts`) : à plusieurs lettres, un domaine rétréci est accepté si chaque condition d'après porte sur une lettre (ensembles non vides) et que les conditions perdues s'en déduisent par les signes des facteurs (`signsOf`, `letterSigns`). Relevé (Atelier) : `.simplifier ln(xy)` → bouton « Simplifier pour x > 0 et y > 0 », note « … ajoute « avec x > 0 et y > 0 » » (pas de `dans`) ; `avec x > 0 et y > 0` → `ln x + ln y` ; `avec x > 0` : « ne garantit pas y > 0 » ; `ln(x/y)`, `ln(x²y)`, `√(x/y)` (« x ≥ 0 et y > 0 »), `ln(−xy)` (« x < 0 et y > 0 ») ; `ln((x+y)z)` : rien, comme avant.
+- Revue Opus : aucun bloquant (34 couples et 18 lignes sondés). Corrigés : commentaires périmés de `domainChanges` ; tests aux frontières (`√(x/y) → √x √y` : null, y ≥ 0 ne dit pas y ≠ 0 ; `ln(xy) avec x < 0 et y < 0` garde). Laissés, aucune valeur fausse : condition écrite sur le facteur (`ln(ln(x) y)` → « pour ln(x) > 0 et y > 0 », sans `avec` proposé) ; `ln(xy) − ln y` sans bouton (y sans ensemble d'après, déjà avant) ; `engineAlternative` ne vérifie pas chaque étape sur l'ensemble annoncé quand le domaine rétrécit (déjà à une lettre, aucun cas faux trouvé).
+- `domaine-garde.test.ts` « plusieurs lettres : … n'a pas lieu » réécrit : la ligne garde, le bouton vient.
+- Trouvé, ANTÉRIEUR (une lettre aussi), laissé au README : `ln(xy) − ln(xy)` et `ln(x(x+1)) − ln(x(x+1))` → bouton `ln x + ln y − (ln x + ln y)` au lieu de `0` (le moteur pédagogique s'arrête, `tidy` ne distribue pas `−(…)`) ; `.simplifier ln(2x) − ln(2x)` laisse cette écriture sur la ligne. `√x √y → √(xy)` (élargit, plusieurs lettres) : pas de note.
 
 ## Historique
