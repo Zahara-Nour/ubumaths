@@ -99,7 +99,7 @@ coûte un chantier. Détail de chaque bloc : [ubumark.md § Blocs spéciaux](../
   (bloc ` ```choix `, [ADR 0033](../adr/0033-le-qcm-est-une-case.md))
   remplace le QCM ; tous les QCM de la prod seront migrés et le type `multiple_choice` retiré. La
   case choix n'est pas encore en prod : au premier lot qui a besoin d'un QCM, lire le « Reprendre ici » de
-  `geometrie-validation` et **demander à David** la forme à écrire (ancien QCM, migré avec les
+  `figure-et-choix` et **demander à David** la forme à écrire (ancien QCM, migré avec les
   autres, ou case choix, en brouillon jusqu'au `deploy:prod`). Une fois la migration faite : case
   choix seulement, et « QCM ou cases » (§ 9) ne vaut plus.
 - **opération posée à compléter** (saisie chiffre par chiffre du bloc `operation`) ;
@@ -113,7 +113,7 @@ glisser-déposer `StructureField` (en prod, mais pas encore branché aux questio
 venir comme vraie fonctionnalité).
 
 ⚠️ **Géométrie en refonte** (2026-10) : case « figure », figure de travail, QCM en cases et
-`deplacable:` bougent dans le chantier `geometrie-validation`. Lire son
+`deplacable:` bougent dans le chantier `figure-et-choix`. Lire son
 « Reprendre ici » (`docs/wip/`) avant de proposer un modèle ou un outil de géométrie.
 
 **Manquent encore** (connus au CP) : réponses à placer (point sur une droite graduée, étiquettes
@@ -146,7 +146,7 @@ Un point de classe C n'est pas laissé sans modèle : je propose l'outil.
    `deploy:prod` qui livre le bloc ; le lot de modèles suit la démarche normale (§ 4 à 8).
 
 Restent ouverts (CP) : les **réponses à placer** (CP-008, CP-072) et la **case « figure »**
-(CP-034, 059, 060 ; chantier `geometrie-validation`).
+(CP-034, 059, 060 ; chantier `figure-et-choix`).
 
 ## 4. Phase 0 d'un lot
 
