@@ -1079,26 +1079,31 @@
 	</div>
 	<p class="annonce-tirage sr-only" role="status">{drawAnnouncement}</p>
 	<p class="refus" role="status">{refusal}</p>
-	{#if formulaHint !== null}
-		<!-- L'aide des fonctions du tableur (lot 4, §5) : lue à la demande (aria-describedby),
+	<!-- Une ligne réservée : aide, message ou valeur exacte (une seule à la fois). Sans
+	     elle, la grille sautait d'une rangée selon la case choisie — et pendant un clic,
+	     la case sous le pointeur enfoncé changeait : la zone s'étendait (verifs-auto) -->
+	<div class="sous-barre">
+		{#if formulaHint !== null}
+			<!-- L'aide des fonctions du tableur (lot 4, §5) : lue à la demande (aria-describedby),
 		     pas annoncée à chaque frappe -->
-		<p class="note aide-formule" id="atelier-aide-formule">{formulaHint}</p>
-	{/if}
-	{#if editing === null && selectedNote !== ''}
-		<p class="note">{selectedNote}</p>
-	{/if}
-	{#if editing === null && selectedExact}
-		<!-- Q2 : la valeur exacte se voit à la sélection, même quand la case montre ≈ -->
-		<p class="note valeur-exacte">
-			Valeur exacte :
-			<!-- `data-latex` : ce que lisent les vérifications automatisées (`e2e/verifs/`) -->
-			<span aria-hidden="true" data-latex={selectedExact.latex}>
-				<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
-				{@html selectedExact.markup}
-			</span>
-			<span class="sr-only">{selectedExact.spoken}</span>
-		</p>
-	{/if}
+			<p class="note aide-formule" id="atelier-aide-formule">{formulaHint}</p>
+		{/if}
+		{#if editing === null && selectedNote !== ''}
+			<p class="note">{selectedNote}</p>
+		{/if}
+		{#if editing === null && selectedExact}
+			<!-- Q2 : la valeur exacte se voit à la sélection, même quand la case montre ≈ -->
+			<p class="note valeur-exacte">
+				Valeur exacte :
+				<!-- `data-latex` : ce que lisent les vérifications automatisées (`e2e/verifs/`) -->
+				<span aria-hidden="true" data-latex={selectedExact.latex}>
+					<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX de toLatex, passé par isSafeLatex -->
+					{@html selectedExact.markup}
+				</span>
+				<span class="sr-only">{selectedExact.spoken}</span>
+			</p>
+		{/if}
+	</div>
 	<textarea
 		bind:this={relay}
 		class="relais"
@@ -1366,6 +1371,7 @@
 
 <style>
 	.donnees {
+		container: donnees / inline-size;
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
@@ -1612,6 +1618,19 @@
 		color: inherit;
 		font: inherit;
 		outline: none;
+	}
+
+	/* Une ligne sur un écran large ; deux sur un étroit, où les aides et messages longs
+	   (`ECARTYPEP(`, `SI(`, « k n'est pas défini… ») et une grande fraction passent à la
+	   ligne — mesuré : 28 px sur une ligne, 39 sur deux, jamais trois à 320 px (revue) */
+	.sous-barre {
+		min-height: 1.75rem;
+	}
+
+	@container donnees (max-width: 40rem) {
+		.sous-barre {
+			min-height: 2.5rem;
+		}
 	}
 
 	.note {
