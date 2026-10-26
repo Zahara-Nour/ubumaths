@@ -3714,7 +3714,9 @@ function withDomainMode(result: CalcResult, mode: DomainMode, assumed: boolean):
 	}
 	// Sans écriture mathématique de départ (« rien à factoriser »), rien à basculer
 	if (result.latex === undefined) return result;
-	const { steps: _steps, summary: _summary, ...rest } = result;
+	// Les étapes de la ligne passent au bouton ; celles du bouton, sur la ligne
+	const { steps: _steps, ...rest } =
+		result.kind === 'commande' ? (({ summary: _summary, ...r }) => r)(result) : result;
 	return {
 		...rest,
 		latex: alternative.latex,
@@ -3726,7 +3728,8 @@ function withDomainMode(result: CalcResult, mode: DomainMode, assumed: boolean):
 			back: alternative.label,
 			latex: result.latex,
 			...(result.steps !== undefined && { steps: result.steps }),
-			...(result.summary !== undefined && { summary: result.summary })
+			// Une ligne de calcul n'a pas de résumé : seules les commandes en portent
+			...(result.kind === 'commande' && result.summary !== undefined && { summary: result.summary })
 		}
 	} as CalcResult;
 }
