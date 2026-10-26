@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1803._
+_Mis à jour le 2026-10-26, lot 6 en PR._
 
-- **État** : lots 1-5 mergés (#1773 → #1795) ; écart (a) corrigé : #1803 (`fitDefinition` écrit `2x+1`, `x`, `-x`, constante seule ; `0.000` = zéro comme la console) → #1413 vert. Rouges restants : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307).
-- **Prochaine action** : lot 6 (worktree neuf `ubumaths-wt-verifs-auto`, branche `test/verifs-auto-6`) qui commence par les écarts (b) et (c) tranchés le 2026-10-26 : (b) ligne #1422 récrite (`=2/3` en texte, `√2`/`3π` en maths) + assertion « `=2/3` pas en maths » dans le test #1422 ; (c) ligne #1410 récrite (↶ / Ctrl+Z remet L). Puis lignes Graphe (#1400-#1405 : dézoom, asymptotes) et Géométrie à la souris (#1536, #1538), puis le reste de Calcul (#1784, #1684, #1617, #1503, #1535, #1342, #1366-#1369, #1374, #1375, #1404, #1417).
-- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; `pnpm test:verifs … | tail` ne rend pas la main après le test (serveur lancé par Playwright) : sortie dans un fichier, ou serveur lancé à part ; tests `.svelte.test.ts` = projet CLIENT (`test:client`), oubliés au 1er essai de #1803 ; console REPLIÉE = champ encore « visible » pour Playwright : lire `aria-expanded` du bouton « Console » (`calc()` le fait) ; nom `c2` lu c·2 (prendre une lettre) ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #1803).
+- **État** : lot 6 (branche `test/verifs-auto-6`) : écarts (b) et (c) récrits, Graphe #1400-#1405, Géométrie #1536/#1538, reste de Calcul (14 lignes) ; suite complète : 94 verts, rouges = `each_key_duplicate` (#1674, #1703, #1620, #1307) + #1422 par intermittence (bug de la grille qui saute, écart 4 du lot 6).
+- **Prochaine action** : merger le lot 6 ; puis les lignes Atelier restantes (`grep -n Atelier docs/wip/verifications-manuelles.md`), ou la page à cocher (plan, point 2).
+- **En attente de David** : écarts 1-4 du lot 6 (#1367 f′ avec a non défini, #1369 `sinus`, #1404 image sur la carte f′, grille qui saute) ; « Résoudre f(x) = 0 » sur la carte k. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier, serveur lancé à part ; `e` = Euler (`e : y = …` refusé, prendre `k`) ; console ouverte = couvre la toile et les boutons de zoom (`setConsole(page, false)`) ; prettier réaligne TOUT le tableau quand une ligne large sort ; commitlint refuse un sujet en majuscule ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `ubumaths-wt-verifs-auto` / `test/verifs-auto-6` (serveur de dev sur 5179).
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -54,6 +54,21 @@ Outillage : `helpers/grille.ts` (taper une case par la barre, lire son nom acces
 **Écarts tranchés par David (2026-10-26)** : les 3 recos acceptées — #1413 = bug à corriger (PR à part) ; #1422 et #1410 = lignes périmées, à récrire. « Valeur exacte » en anglais : futur petit chantier d'accessibilité (langue de la lecture vocale MathLive, console probablement aussi — non vérifié), pas maintenant.
 
 Vu en passant : « Valeur exacte » est lue en anglais par un lecteur d'écran (`convertLatexToSpeakableText` de MathLive, « the square root of 2 ») ; #1427 parlait d'un formulaire dans la carte, c'est une fenêtre (Dialog) et la phrase « colonnes A et B (11 lignes) » est bien dans la carte.
+
+## Lot 6 — écarts (b) et (c), Graphe, Géométrie, reste de Calcul (2026-10-26)
+
+Lignes : #1422 (`=2/3` en texte, testé) et #1410 (↶ et Ctrl+Z remettent L) récrites ; Graphe #1400, #1401, #1402, #1405 (`atelier-graphe.spec.ts`, ligne sortie) ; Géométrie #1536, #1538 sans la tablette (`atelier-geometrie.spec.ts`) ; Calcul #1784 (sans « domaine gardé » à l'écran), #1684 (sans le tracé x > 0), #1617 (sans la cohérence du résumé), #1375 (sans thèmes ni téléphone), #1366, #1503 (sans le × du champ), #1535 (sans le rejeu de fichier), #1342, #1367, #1368 et #1369 (sans le clavier MathLive), #1374, #1404, #1417 (sans le collage ni la flèche au doigt). #1342, #1366, #1374 sortent. La ligne #1366 était cassée en deux dans le tableau (`\f` de `$\frac00$` lu comme saut de page).
+
+Outillage : Graphe = 10 clics « Zoom arrière » (±577), asymptotes comptées par leur `stroke-dasharray` (5,5 verticale, 8,4 horizontale ; un trait horizontal est « caché » pour `toBeVisible`, on compte), une asymptote horizontale attendue avant de compter « 0 verticale » ; Géométrie = clic en coordonnées du repère (origine au centre, `min(l, h)/13` px par unité), lignes lues dans l'historique console FERMÉE ; presse-papiers par `grantPermissions`.
+
+Écarts (à David, rien changé côté appli) :
+
+1. **#1367** : « Dériver » sur `f(x) = a x`, `a` non défini → carte f′ « En attente de « a » », sans formule (la ligne : f′(x) = a) ; avec `a = 2`, f′ = 2. Alors que `.intégrer` de `e^{a x}` calcule avec `a` symbolique.
+2. **#1369** : `sinus` n'est pas refusé mais lu i·n·s²·u : « lu normalement » ?
+3. **#1404** : « l'image de 2 sur la carte f′ » : plus de champ d'image sur la carte (décision du 2026-10-18) — ligne périmée ?
+4. **Bug, #1422 rouge par intermittence (suite complète)** : la grille saute de 32 px selon que la case choisie a une « Valeur exacte » ou non (A1 = √8 : A1.y 376 ; A2 = 5 : 344). Pendant un clic, la grille bouge sous le pointeur enfoncé → zone A2:A3 au lieu de A2. Un élève qui appuie un peu longtemps l'aurait aussi. Correctif probable : réserver la ligne sous la barre (comme la consigne de la Géométrie). Test non masqué.
+
+Vu en passant : le menu « Options » d'une carte k dit « Résoudre f(x) = 0 » (pas k) ; les 6 premiers tests d'une suite complète lancée juste après un commit expirent dans `openAtelier` (serveur de dev à froid) — relancer.
 
 ## Écarts tranchés par David (2026-10-26)
 
