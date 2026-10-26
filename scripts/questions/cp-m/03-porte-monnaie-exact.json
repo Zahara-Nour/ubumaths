@@ -66,7 +66,7 @@
 				"steps": [
 					"On compte l'argent de chaque porte-monnaie, billets d'abord.",
 					"Le bon porte-monnaie : ${{eval:20*a+10*b+5*c}}~\\unit{€}$ de billets et ${{eval:2*d+u}}~\\unit{€}$ de pièces, ${{n}}~\\unit{€}$ en tout.",
-					"Les deux autres contiennent {{if:u==1|${{eval:n-1}}~\\unit{€}$ et ${{eval:n+1}}~\\unit{€}$|${{eval:n-2}}~\\unit{€}$ et ${{eval:n-1}}~\\unit{€}$}} : pas exactement ${{n}}~\\unit{€}$.",
+					"Les deux autres contiennent {{if:u==1|${{eval:n-1}}~\\unit{€}$ et ${{eval:n+1}}~\\unit{€}$|${{eval:n-2}}~\\unit{€}$ et ${{eval:n-1}}~\\unit{€}$}}, et non ${{n}}~\\unit{€}$.",
 					"Attention : avoir autant de pièces et de billets ne veut pas dire avoir autant d'argent."
 				]
 			}
@@ -103,7 +103,7 @@
 			"correction": {
 				"steps": [
 					"Les trois porte-monnaie contiennent ${{n}}~\\unit{€}$.",
-					"Deux d'entre eux ont des pièces de $1~\\unit{€}$ : un seul n'en a aucune."
+					"Un seul n'a aucune pièce de $1~\\unit{€}$. Les deux autres en ont."
 				]
 			}
 		}
