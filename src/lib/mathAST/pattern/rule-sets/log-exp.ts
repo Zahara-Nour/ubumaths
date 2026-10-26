@@ -34,7 +34,7 @@ import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
  */
 function lnArgumentMayExist(bindings: MatchBindings): boolean {
 	const x = bindings.get('x');
-	if (!isMathNodeBinding(x)) return false;
+	if (x === undefined || !isMathNodeBinding(x)) return false;
 	if (getVariables(x).size > 0) return true;
 	try {
 		return evaluateNodeToApproximatedNumber(x) > 0;
