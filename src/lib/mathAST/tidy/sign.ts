@@ -14,9 +14,10 @@
  */
 
 import type { MathNode } from '../types';
+import type { DomainCondition, TidyCondition } from './types';
 import type { TypeContext } from '../numtype';
 import { isNonNegativeType, isNonzeroType, isPositiveType } from '../numtype';
-import { extractRational } from '../common/numeric';
+import { extractExactRational, extractRational } from '../common/numeric';
 import { hashMathNode } from '../normal/hash';
 import { findNodes, getChildren } from '../transforms';
 import { isVariable } from '../guards';
@@ -310,4 +311,107 @@ function knownPositive(
 	acquired: AcquiredDomain
 ): boolean {
 	return isPositive(node, typeCtx) || acquired.positive.has(hashMathNode(node));
+}
+
+/**
+ * Ce qu'une simplification fait perdre quand `base` quitte le dénominateur
+ * (chantier tidy-conditions) : `base ≠ 0`, et le domaine de `base` s'il est
+ * restreint. `null` : une condition qu'on ne sait pas écrire simplement
+ * (`tan`, `arcsin`), la simplification n'a pas lieu.
+ */
+export function cancelledBaseConditions(
+	base: MathNode,
+	typeCtx: TypeContext | undefined,
+	acquired: AcquiredDomain
+): TidyCondition[] | null {
+	const defined = writable(domainConditions(base, typeCtx, acquired));
+	if (defined === null) return null;
+	return [{ expression: base, relation: 'nonzero' }, ...defined];
+}
+
+/**
+ * Ce que fait perdre un terme `base^exposant` effacé par une somme nulle
+ * (`ln(x) − ln(x)`, `1/x − 1/x`) : son domaine. `null` comme ci-dessus.
+ */
+export function cancelledFactorConditions(
+	base: MathNode,
+	exponent: { readonly n: bigint; readonly d: bigint },
+	typeCtx: TypeContext | undefined,
+	acquired: AcquiredDomain
+): TidyCondition[] | null {
+	const defined = writable(domainConditions(base, typeCtx, acquired));
+	if (defined === null) return null;
+	const power = powerCondition(base, exponent);
+	if (power === null || powerDefinedEverywhere(base, exponent, typeCtx, acquired)) return defined;
+	return [...defined, { expression: base, relation: power }];
+}
+
+/** Les conditions, si toutes s'écrivent simplement ; `null` sinon. */
+export function writable(conditions: readonly DomainCondition[]): TidyCondition[] | null {
+	const written: TidyCondition[] = [];
+	for (const condition of conditions) {
+		if (condition.relation === 'defined') return null;
+		written.push(condition);
+	}
+	return written;
+}
+
+/** Ce qu'il faut à `base` pour que `base^exposant` soit défini, `null` : rien. */
+function powerCondition(
+	base: MathNode,
+	exponent: { readonly n: bigint; readonly d: bigint }
+): TidyCondition['relation'] | null {
+	if (findNodes(base, isVariable).length === 0) return null;
+	if (exponent.d === 1n) return exponent.n < 0n ? 'nonzero' : null;
+	return exponent.n > 0n ? 'nonnegative' : 'positive';
+}
+
+/**
+ * Les conditions qui définissent `node`, sauf celles qu'on sait déjà vraies
+ * (structure, hypothèse déclarée, domaine acquis) — mêmes règles que
+ * `definedEverywhere`. Une fonction au domaine qui ne s'écrit pas simplement
+ * (`tan`, `arcsin`) donne « est définie » (`'defined'`).
+ */
+export function domainConditions(
+	node: MathNode,
+	typeCtx: TypeContext | undefined,
+	acquired: AcquiredDomain
+): DomainCondition[] {
+	if (findNodes(node, isVariable).length === 0) return [];
+	const found: DomainCondition[] = [];
+	for (const child of getChildren(node)) found.push(...domainConditions(child, typeCtx, acquired));
+	const need = (expression: MathNode, relation: TidyCondition['relation']): void => {
+		const known =
+			relation === 'nonzero'
+				? knownNonZero(expression, typeCtx, acquired)
+				: relation === 'positive'
+					? knownPositive(expression, typeCtx, acquired)
+					: isNonNegative(expression, typeCtx) || acquired.positive.has(hashMathNode(expression));
+		if (!known) found.push({ expression, relation });
+	};
+	switch (node.type) {
+		case 'division':
+			need(node.denominator, 'nonzero');
+			break;
+		case 'superscript': {
+			if (findNodes(node.base, isVariable).length === 0) break;
+			// `x^(1/2)` : un quotient de deux nombres est un exposant rationnel
+			const exponent = extractExactRational(node.superscript);
+			const relation = exponent === null ? 'positive' : powerCondition(node.base, exponent);
+			if (relation !== null) need(node.base, relation);
+			break;
+		}
+		case 'function': {
+			if (!RESTRICTED_FUNCTIONS.has(node.name)) break;
+			const [arg] = node.args;
+			if (node.args.length === 1 && node.name === 'sqrt') {
+				if (!hasOddIndex(node.base)) need(arg, 'nonnegative');
+			} else if (node.args.length === 1 && LOGARITHMS.has(node.name)) need(arg, 'positive');
+			else found.push({ expression: node, relation: 'defined' });
+			break;
+		}
+		default:
+			break;
+	}
+	return found;
 }

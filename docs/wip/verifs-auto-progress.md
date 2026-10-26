@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-26, lot 6 en PR._
 
-- **État** : lot 6 (branche `test/verifs-auto-6`) : écarts (b) et (c) récrits, Graphe #1400-#1405, Géométrie #1536/#1538, reste de Calcul (14 lignes) ; suite complète : 94 verts, rouges = `each_key_duplicate` (#1674, #1703, #1620, #1307) + #1422 par intermittence (bug de la grille qui saute, écart 4 du lot 6).
+- **État** : lot 6 (branche `test/verifs-auto-6`) : écarts (b) et (c) récrits, Graphe #1400-#1405, Géométrie #1536/#1538, reste de Calcul (14 lignes) ; suite complète : 94 verts, rouges = `each_key_duplicate` (#1674, #1703, #1307), #1617 et #1620 (#1807, écart 5), #1422 par intermittence (grille qui saute, écart 4).
 - **Prochaine action** : merger le lot 6 ; puis les lignes Atelier restantes (`grep -n Atelier docs/wip/verifications-manuelles.md`), ou la page à cocher (plan, point 2).
-- **En attente de David** : écarts 1-4 du lot 6 (#1367 f′ avec a non défini, #1369 `sinus`, #1404 image sur la carte f′, grille qui saute) ; « Résoudre f(x) = 0 » sur la carte k. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **En attente de David** : écarts 1-5 du lot 6 (#1367 f′ avec a non défini, #1369 `sinus`, #1404 image sur la carte f′, grille qui saute, #1617/#1620 périmées par #1807 ?) ; « Résoudre f(x) = 0 » sur la carte k. Run en prod après le `deploy:prod` qui livre `data-latex`.
 - **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier, serveur lancé à part ; `e` = Euler (`e : y = …` refusé, prendre `k`) ; console ouverte = couvre la toile et les boutons de zoom (`setConsole(page, false)`) ; prettier réaligne TOUT le tableau quand une ligne large sort ; commitlint refuse un sujet en majuscule ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
 - **Worktree / branche** : `ubumaths-wt-verifs-auto` / `test/verifs-auto-6` (serveur de dev sur 5179).
 
@@ -66,7 +66,8 @@ Outillage : Graphe = 10 clics « Zoom arrière » (±577), asymptotes comptées 
 1. **#1367** : « Dériver » sur `f(x) = a x`, `a` non défini → carte f′ « En attente de « a » », sans formule (la ligne : f′(x) = a) ; avec `a = 2`, f′ = 2. Alors que `.intégrer` de `e^{a x}` calcule avec `a` symbolique.
 2. **#1369** : `sinus` n'est pas refusé mais lu i·n·s²·u : « lu normalement » ?
 3. **#1404** : « l'image de 2 sur la carte f′ » : plus de champ d'image sur la carte (décision du 2026-10-18) — ligne périmée ?
-4. **Bug, #1422 rouge par intermittence (suite complète)** : la grille saute de 32 px selon que la case choisie a une « Valeur exacte » ou non (A1 = √8 : A1.y 376 ; A2 = 5 : 344). Pendant un clic, la grille bouge sous le pointeur enfoncé → zone A2:A3 au lieu de A2. Un élève qui appuie un peu longtemps l'aurait aussi. Correctif probable : réserver la ligne sous la barre (comme la consigne de la Géométrie). Test non masqué.
+4. **#1617 et #1620 rouges depuis #1807** (tidy-conditions, mergée pendant le lot) : `.simplifier (x^2-1)/(x+1)` et `.simplifier x/x` laissent la fraction (bouton « Simplifier pour x ≠ … ») ; les lignes demandaient `x − 1` et `1` avec leurs étapes. Attendus non changés, à David.
+5. **Bug, #1422 rouge par intermittence (suite complète)** : la grille saute de 32 px selon que la case choisie a une « Valeur exacte » ou non (A1 = √8 : A1.y 376 ; A2 = 5 : 344). Pendant un clic, la grille bouge sous le pointeur enfoncé → zone A2:A3 au lieu de A2. Un élève qui appuie un peu longtemps l'aurait aussi. Correctif probable : réserver la ligne sous la barre (comme la consigne de la Géométrie). Test non masqué.
 
 Vu en passant : le menu « Options » d'une carte k dit « Résoudre f(x) = 0 » (pas k) ; les 6 premiers tests d'une suite complète lancée juste après un commit expirent dans `openAtelier` (serveur de dev à froid) — relancer.
 

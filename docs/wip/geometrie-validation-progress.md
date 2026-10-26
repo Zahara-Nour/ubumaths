@@ -2,15 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1805._
+_Mis à jour le 2026-10-26, après #1809._
 
-- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages mergée (#1805) :
-  `checkTemplate` construit la figure à chaque tirage (§ 11).
-- **Prochaine action** : aucune PR de code en vue ; attendre l'essai de David, puis publier.
-- **En attente de David** : essai de CP-060 et de CP-058 (`docs/wip/verifications-manuelles.md`) ; ensuite
-  `create-questions --publier` de CP-060 et CP-058 (brouillons), puis nœud + tag (migration, comme #1787).
-- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9.
-- **Worktree / branche** : aucun (retiré après #1805).
+- **État** : CP-059, CP-060, CP-058 mergés (#1793, #1798), pas en prod ; garde des tirages (#1805) ; côté donné
+  prolongé, carré et rectangle, message à part (#1809, § 12).
+- **Prochaine action** : réponse de David sur la « figure de travail » (ci-dessous), puis sa phase 0 si go.
+- **En attente de David** : (1) fin de l'essai de CP-060 et CP-058 (`docs/wip/verifications-manuelles.md`) ;
+  (2) message du carré décalé qui chevauche [AB] (§ 12) ; (3) **figure de travail** (idée de David) : figure
+  manipulable NON notée dans l'énoncé (outils limités, ex. droites seules), réponse à côté, QCM compris → CP-058 en
+  QCM oui / non. À trancher : geste plus vérifié ? tracé gardé dans la copie ? un bloc figure ou un bloc à part
+  (`deplacable:` réservé aux figures stockées, ADR 0027) ? Reco : chantier à part ; **ne pas publier CP-058 en l'état**.
+- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; limites connues de CP-060 au § 9 et § 12.
+- **Worktree / branche** : aucun (retiré après #1809).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -457,3 +460,26 @@ dont 2 rouges sans leur correctif. Prod balayée : seul CP-059 (brouillon) porte
 - 2026-10-26 : #1798 mergée (CP-058) ; worktree retiré.
 - 2026-10-26 : PR 6 codée (garde des tirages, § 11) ; 4 tests rouges sans, le piège de CP-058 attrapé.
 - 2026-10-26 : #1805 mergée (garde des tirages, revue Sonnet traitée) ; worktree retiré.
+
+## 12. Essai de CP-060 : le côté donné prolongé (2026-10-26)
+
+**Trouvé à l'essai de David** : l'élève prolonge le côté donné [AB] (3 carreaux) de 2 carreaux et ferme un
+rectangle 5 × 3 → « Ta figure n'est pas fermée. », alors qu'elle l'est (le juge ne cherchait les rectangles
+fermés que sur la base exacte [AB]). Verdict juste, message faux.
+
+**Décision de David** (reco suivie) : un message à part, « Le côté déjà tracé ne doit pas être prolongé : ton
+carré doit avoir ce côté-là. » — et non « Ce n'est pas un carré », faux pour un vrai carré 5 × 5 bâti sur le côté
+prolongé (cas frère). Placé après « pas fermée » / « pas un carré » : une figure fermée sur [AB] exact garde
+« pas un carré ».
+
+**Codé** : `closedOnProlongedSide` (`construction/polygon.ts`) — un rectangle dont un côté contient [AB] en étant
+plus long, sommets pris aux bouts des segments de l'élève. Tests : 5 × 3, 5 × 5, prolongé côté A au-dessous
+(rouges avant) ; prolongé mais ouvert → toujours « pas fermée ».
+
+**Rectangle** (décision de David : même message, adapté) : « Les côtés déjà tracés ne doivent pas être prolongés :
+ton rectangle doit avoir ces côtés-là. » — `closedOnProlongedSides`, rectangle de coin B dont les côtés sur (BA) et
+(BC) vont jusqu'à A et C ou plus loin. Tests : [BC] prolongé, [AB] prolongé, les deux (rouges avant).
+
+**Revue Opus** : aucun faux positif ; 4 tests ajoutés (prolongé des deux côtés, côté vertical, oblique, trou).
+**Limites laissées** : carré décalé qui chevauche [AB] sans le contenir → « pas fermée » (message à trancher par
+David) ; figure fermée en L → « pas fermée » (existait avant).

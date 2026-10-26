@@ -512,6 +512,25 @@ km/h`), 2026-09-27.
   `finalDerivative` de `withTidyStep` et de la carte f′ de l'Atelier, `reducedDerivative`, `.diff`).
   Limite connue : une somme n'y est pas ramenée à sa partie primitive —
   `1/(2x+2)` dit `2x+2 ≠ 0`, pas `x+1 ≠ 0`.
+- **`tidyWithConditions(node, options)`** → `{ result, conditions }` (chantier tidy-conditions,
+  David 2026-10-26 ; la variante de S3) : fait ce que S3 refuse à `tidy` et dit à quelle
+  condition — `x/x → 1`, pour x ≠ 0 ; `ln(x) − ln(x) → 0`, pour x > 0 ; `√x/√x → 1`, pour
+  x > 0 ; `(x+1)²/(x+1) → x+1`, pour x ≠ −1. Les conditions sont réunies (une par expression,
+  la plus forte : `x > 0` contient `x ≠ 0`, `x ≥ 0` et `x ≠ 0` donnent `x > 0`) et ne redisent
+  ni une hypothèse déclarée, ni un domaine acquis, ni ce que le résultat dit encore
+  (`x/x + ln(x) → ln(x) + 1`, sans condition). Une condition qu'on ne sait pas écrire simplement
+  (`tan`, `arcsin`) : la simplification n'a pas lieu. Sans condition à poser, le résultat est
+  celui de `tidy`. Écriture : `describeConditions` (`x ≠ −1`, `x \neq -1` ; sur la lettre si
+  l'expression est affine en une seule lettre, entière sinon : `x^2−1 ≠ 0`). Le moteur :
+  `settings.conditions` dans `collect.ts`, aux deux refus de S3 (`keepDomain`, somme nulle).
+- **`domainLoss(before, after)`** (`tidy/conditions.ts`) : ce que `after` a perdu du domaine de
+  `before` — `[]` si rien, `null` si une condition perdue ne s'écrit pas. Comparaison
+  des conditions de définition (dénominateurs, `ln`, racines, puissances), indépendante de
+  l'écriture (`1+x` et `2x+2` disent x ≠ −1 comme `x+1`, `conditionKey`) : au pire elle redit
+  une condition vraie. **`domainChange(before, after)`** : la perte seule, `null` si la
+  réécriture GAGNE aussi une condition (`ln(x²) → 2 ln(x)` n'est vraie que pour x > 0) —
+  l'atelier ne fait alors ni la simplification ni le bouton. Sert à l'atelier pour garder le domaine de toutes ses
+  lignes (`atelier/domain-guard.ts`).
 - `options.order` : `'canonical'` (défaut, l'étape 8) ou `'kept'` — les
   termes de **chaque** somme gardent l'ordre écrit, parenthèses comprises
   (`3+2x`, `3(1+x)`), les termes semblables regroupés à la place du premier

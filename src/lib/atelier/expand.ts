@@ -38,6 +38,7 @@ import { findNodes } from '$lib/mathAST/transforms';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
+import { tidyAlternative, type DomainAlternative } from './domain-guard';
 
 // =============================================================================
 // Types
@@ -62,6 +63,11 @@ export type ExpandedOutcome =
 			readonly steps?: readonly RenderedStep[];
 			/** Les mêmes en version résumée, absente si elle ne dit rien de moins. */
 			readonly summary?: readonly RenderedStep[];
+			/**
+			 * La simplification qui change le domaine, derrière le bouton de la
+			 * ligne : `x(1/x − 1)` → `−x + x/x`, « Simplifier pour x ≠ 0 » → `−x + 1`.
+			 */
+			readonly alternative?: DomainAlternative;
 	  }
 	| { readonly kind: 'inchangee'; readonly message: string }
 	| { readonly kind: 'illisible'; readonly message: string };
@@ -239,12 +245,22 @@ export function expandExpression(
 			return { kind: 'inchangee', message: unchangedMessage(node, typed) };
 		}
 		const text = plainFormOf(explained.answer);
+		// Le développement garde le domaine ; le bouton va plus loin (tidy-conditions)
+		const alternative = tidyAlternative(explained.answer, { order: 'kept' });
+		const withAlternative = alternative === undefined ? {} : { alternative };
 		// Sans rédaction, la réponse reste, sans « Comment ? »
-		if (explained.steps === null) return { kind: 'developpee', answer, text };
+		if (explained.steps === null) return { kind: 'developpee', answer, text, ...withAlternative };
 		const steps = explained.steps.detailed;
 		// La version résumée, si elle dit quelque chose de moins
 		const summary = summaryOf(steps, explained.steps.summarized);
-		return { kind: 'developpee', answer, text, steps, ...(summary !== undefined && { summary }) };
+		return {
+			kind: 'developpee',
+			answer,
+			text,
+			steps,
+			...(summary !== undefined && { summary }),
+			...withAlternative
+		};
 	} catch {
 		// `PedagogicalSimplifyNotImplemented` (matrice, inéquation…), ou un
 		// générateur qui refuse ce qu'on lui donne
