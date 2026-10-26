@@ -253,11 +253,12 @@ export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: 
 }
 
 /**
- * Check if expression is a square root.
+ * Racine CARRÉE (√u ou u^{1/2}) : une racine d'indice explicite (∛u) n'a pas
+ * de conjugué en √A + √B — (∛A − ∛B)(∛A + ∛B) ≠ A − B (revue de #1844).
  */
 function isSqrt(expr: MathNode): boolean {
 	return (
-		(isFunction(expr) && expr.name.toLowerCase() === 'sqrt') ||
+		(isFunction(expr) && expr.name.toLowerCase() === 'sqrt' && expr.base === undefined) ||
 		(isSuperscript(expr) &&
 			isDivision(expr.superscript) &&
 			isNumber(expr.superscript.numerator) &&

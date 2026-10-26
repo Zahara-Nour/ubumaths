@@ -12,6 +12,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { evaluateLimit } from '../evaluate';
+import { findConjugate } from '../algebraic';
 import { parseLatex } from '../../parser';
 import { infinity, number } from '../../factory';
 import { toLatex } from '../../latex-generator';
@@ -107,4 +108,12 @@ describe('V69 : inverse d’une différence à conjuguer', () => {
 	])('%s en %s → %s (différence elle-même)', (latex, at, expected) => {
 		expect(valueOf(latex, at)).toBe(expected);
 	});
+
+	// (∛A − ∛B)(∛A + ∛B) ≠ A − B : la réécriture rendait −1/4 (juste : −1/12)
+	it.each(['\\sqrt[3]{x+7}-\\sqrt[3]{2x+6}', '\\sqrt[3]{x+7}-2'])(
+		'%s : pas de conjugué en racine carrée (indice 3)',
+		(latex) => {
+			expect(findConjugate(parseLatex(latex))).toBeNull();
+		}
+	);
 });
