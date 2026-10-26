@@ -1315,6 +1315,30 @@ qui ne s'écrit pas (`tan(x)/tan(x)`) : ni simplification, ni bouton. Mesuré av
 `.simplifier x/x` → `1`, `.simplifier (x²−1)/(x+1)` → `x − 1`, `.factoriser x/x` → `1`, sans
 condition sur la ligne. Tests : `domaine-garde.test.ts`.
 
+**Le réglage, la note, `avec` / `dans`** (tidy-conditions § 3, décisions de David du 2026-10-26 ;
+`domain-mode.ts`, `hypotheses.ts`, `withHypotheses` et `withDomainMode` dans `runInput`) :
+
+- **Réglage** « Simplifications qui changent le domaine » (fenêtre Réglages, retenu dans ce
+  navigateur, `chiphre-atelier-domaine`) : « Garder l'écriture » (défaut) ou « Simplifier en disant
+  la condition » — la ligne montre alors `1, pour x ≠ 0`, ses étapes celles du calcul entier, et le
+  bouton dit « Sans simplifier ». Lu à la **création** de la ligne : les lignes déjà écrites ne
+  bougent pas (Q8), chacune se bascule à la main.
+- **Note** (mode « garder ») : « On peut simplifier davantage pour x ≠ 0 : ajoute « avec x ≠ 0 »
+  (ou « dans ℝ \ {0} »). » — `dans` seulement si une seule lettre ; l'une et l'autre se recopient
+  telles quelles.
+- **`avec CONDITION` / `dans ENSEMBLE`**, sur une expression tapée et sur `.simplifier`,
+  `.factoriser`, `.développer` (pas `.résoudre`, qui garde son `dans` ; pas une définition ni une
+  équation) : coupés avant le calcul, puis lus. `avec` : les conditions de `parseStudentDomain`
+  (`x > 0`, `x ≠ 0 et x ≠ 1`, `x < 0 ou x > 2`, `0 < x ≤ 5`), une lettre par condition
+  (`x > 0 et y ≠ 0`) ; « et » et « ou » mêlés : refus (« écris l'ensemble avec des intervalles, ∪ et
+  ∩ »). `dans` : un ensemble (intervalles, `ℝ \ {0}`, `∪`, `∩` — option `intersections` de
+  `parseStudentDomain`), une seule lettre. La simplification du bouton a lieu si l'hypothèse
+  garantit chacune de ses conditions (`guarantees` : l'ensemble est inclus dans celui où `1/u`,
+  `ln u` ou `√u` est défini) ; sinon la ligne garde l'écriture et le dit (« x > -1 ne garantit pas
+  x ≠ 0 »), et une hypothèse sans effet est dite aussi (« ne change rien ici »). Limite : une
+  réécriture qui rétrécit le domaine (`ln(x²) → 2 ln x`) n'a pas lieu, même `avec x > 0`.
+  Tests : `domaine-reglage.test.ts`.
+
 **Valeur approchée ⇄ valeur exacte** (PR 2 de la même phase 0) : une ligne dont la réponse a une
 autre écriture porte un bouton qui bascule, ligne par ligne, sans rien sauvegarder ni exporter
 (`Alternative` dans `calcul.ts`, `Entry.alternative`). Règle unique, `mathAST/cli/approximation.ts`
