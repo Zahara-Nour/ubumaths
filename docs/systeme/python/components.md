@@ -71,7 +71,9 @@ Container du playground complet.
 
 Orchestre :
 
-- `PythonToolbar` + `PythonEditor` + `PythonOutput` + `PythonSplitter`
+- `PythonToolbar` + `PythonEditor` + `PythonOutput` + `PythonSplitter` ; l'éditeur est lié à
+  `pythonStore.editorCode` (pas `code`) : chaque frappe range un brouillon dans le navigateur
+  (voir [store.md](store.md), 2026-10-26)
 - Modales : `PythonSaveDialog`, `PythonFileManager`, `PythonSettings`, `PythonMigrationPrompt`
 - Mode debug : `DebugToolbar` + `DebugPanel` quand `debugStore.isDebugging === true`
 - Bouton Run intelligent : `execute` ↔ `continue` ↔ `start-debug` selon l'état
