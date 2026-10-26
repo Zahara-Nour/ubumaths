@@ -1669,14 +1669,12 @@ Doublons qui restent, chacun pour un autre besoin :
 - Laissés par le chantier normalize-usages (2026-10-26), écritures de `developper`, aucune
   valeur fausse : `(x+1)/π → x/π + 1/π` et `(x+1)/√2` en deux écritures (le coefficient ne
   passe devant que pour un dénominateur entier) ; `√8` seul reste écrit (`√8(x+1) → 2√2x +
-2√2`) ; ordre d'une somme d'exponentielles ; `x(1/x − 1) → −x + x/x` (« `1 − x`, pour
-  x ≠ 0 » attend la variante `{ result, conditions }` de `tidy`, ci-dessous). `√x√x` → rien
+2√2`) ; ordre d'une somme d'exponentielles ; `x(1/x − 1) → −x + x/x` (dans l'atelier, le
+  bouton « Simplifier pour x ≠ 0 » donne `−x + 1`, chantier tidy-conditions). `√x√x` → rien
   à développer (produit sans parenthèse), mais `√x³√x → (√x)⁴` (une puissance de racine déjà
   écrite) et `∛x∛x → (∛x)²` se regroupent encore.
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
-  - `tidy` n'a pas de variante `{ result, conditions }` : `x/x` reste écrit au lieu de « 1, pour
-    x ≠ 0 » (S3 ; écrite avec son premier appelant, qui n'est pas venu) ;
   - valeurs remarquables (`cos(π/3) → 1/2`) dans `réduire`, avec étape et selon le niveau (S4) :
     lot reporté ;
   - `.intégrer` à bornes : une borne décimale dans une exponentielle mêle les registres
@@ -1685,7 +1683,8 @@ Doublons qui restent, chacun pour un autre besoin :
   - `.simplifier` : `x(−eˣ)e` non regroupé ; `\frac{e^{2x}x}{eˣx} → \frac{x eˣ}{x}` ;
   - `factoriser` sur `(a+b)(a−b)/((a−b)(a+b))` rend `(a+b)·1/(a+b)` ; facteurs opposés non
     reconnus (`(x²−1)/(1−x)` reste) ; `MAX_FRACTIONS = 8` coupe en silence ;
-  - `tidy` : `1/(1/x) → x` (un `x⁻¹` sous une barre échappe au suivi du domaine) ;
+  - `tidy` : `1/(1/x) → x` (un `x⁻¹` sous une barre échappe au suivi du domaine ; l'atelier le
+    rattrape par `domainLoss` : la ligne garde `1/(1/x)`, le bouton dit « x, pour x ≠ 0 ») ;
     `reduceFractionOfSums` ignore `domain` (`(2x−2)/(x−1)` reste) ;
   - `detectSymmetry` conclut « aucune, prouvé » pour `∛x`, `x^{1/3}`, `x^{2/3}`,
     `ln(x+√(x²+1))` (sans appelant en production) ;

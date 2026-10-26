@@ -28,6 +28,12 @@ vocabulaire). `pattern/rule-sets/index.ts` le dit : « The `simplify()` pipeline
     **résultat**, pas les étapes. Une étape peut factoriser pour simplifier une fraction, si le
     facteur commun disparaît ensuite : `(x²−1)/(x+1) = (x−1)(x+1)/(x+1) = x−1`, pour `x ≠ −1`
     (condition affichée). Mise en œuvre le 2026-10-23 (`pedagogical-simplify/reduce-steps.ts`).
+  - **Révision (David, 2026-10-26, chantier tidy-conditions)** : dans l'atelier, la ligne garde
+    le **domaine** — comme une expression tapée et `.développer`, une simplification n'a lieu
+    que si le domaine ne change pas. `.simplifier (x²−1)/(x+1)` laisse la fraction ; le calcul
+    ci-dessus, condition comprise, passe derrière le bouton de la ligne « Simplifier pour
+    x ≠ −1 ». Le moteur pédagogique n'a pas changé : c'est l'atelier qui coupe son calcul avant
+    la première étape qui change le domaine (`atelier/domain-guard.ts`).
 - `développer` contient `réduire` (« développer et réduire »), l'inverse est faux.
 - **Les règles définissent ce qui est atteignable** : ce qu'on ne sait pas expliquer en étapes, on ne
   le fait pas. Les étapes de `normalize` ne sont pas pédagogiques.
