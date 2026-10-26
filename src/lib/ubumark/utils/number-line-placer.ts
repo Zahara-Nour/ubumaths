@@ -71,9 +71,14 @@ function isDecimalDenominator(q: number): boolean {
 	return rest === 1;
 }
 
-/** Valeur décimale sans erreur d'arrondi visible (`0.30000000000000004` → `0.3`) */
-function decimalString(value: number): string {
-	return String(Math.round(value * 1e9) / 1e9);
+/**
+ * Valeur décimale sans erreur d'arrondi visible (`0.30000000000000004` → `0.3`),
+ * jamais en notation exponentielle (`1e-7` : illisible au juge, `e` = Euler au dessin)
+ */
+export function decimalString(value: number): string {
+	const rounded = Math.round(value * 1e9) / 1e9;
+	const text = rounded.toFixed(9).replace(/\.?0+$/, '');
+	return text === '-0' ? '0' : text;
 }
 
 /**

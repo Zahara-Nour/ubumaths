@@ -664,7 +664,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				const errors = 'errors' in read ? read.errors : [];
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
-					errors.push('une case à construire ne se combine pas avec « ordre indifférent »');
+					errors.push(
+						`une ${kind === 'line' ? 'droite à placer' : 'case à construire'} ne se combine pas avec « ordre indifférent »`
+					);
 				}
 				if (errors.length > 0 || !('answer' in read)) {
 					return {

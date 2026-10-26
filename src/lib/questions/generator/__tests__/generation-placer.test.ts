@@ -14,6 +14,8 @@ import { validateTemplate } from '../../validators/template-validator';
 import type { QuestionTemplate, QuestionVariation } from '../../types';
 import { templateMarkdown } from '$lib/ubumark';
 import { validateAnswer } from '$lib/utils/answer-validator';
+import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
+import { graduationCount, placerAnswer } from '$lib/ubumark/utils/number-line-placer';
 
 function template(variation: Omit<QuestionVariation, 'statement'> & { statement: string }) {
 	return {
@@ -114,6 +116,21 @@ describe('droite à placer : la case et sa réponse', () => {
 		expect(instance.blanks?.[0].expectedAnswer).toBe('\\frac{4}{3}');
 		expect(validateAnswer('\\frac{4}{3}', instance, '\\frac{4}{3}').status).toBe('correct');
 		expect(validateAnswer('1', instance, '1').isCorrect).toBe(false);
+	});
+
+	it.each([
+		[['start: 0', 'end: 1', 'step: 0.1'], '0.7', 7],
+		[['start: -1', 'end: 1', 'step: 1/3'], '-1/3', 2],
+		[['start: 0', 'end: 2', 'step: 1/4'], '0.75', 3],
+		[['start: 0', 'end: 2', 'step: 0.25'], '3/4', 3],
+		[['start: -5', 'end: 5', 'step: 1'], '-2', 3]
+	] as const)('seule la graduation attendue est juste : %s, placer: %s', (decor, placer, rank) => {
+		const instance = generate(template({ statement: line(...decor, `placer: ${placer}`) }));
+		const c = parseNumberLineContent([...decor]).node!.config;
+		for (let k = 0; k < graduationCount(c); k++) {
+			const answer = placerAnswer(c, k);
+			expect(validateAnswer(answer, instance, answer).status === 'correct').toBe(k === rank);
+		}
 	});
 
 	it('placer: hors graduation : refusé avec son message', () => {

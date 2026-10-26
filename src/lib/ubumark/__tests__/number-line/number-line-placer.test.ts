@@ -164,6 +164,37 @@ describe('graduations et réponse', () => {
 	});
 });
 
+// Revue de la PR 1 : chaque graduation se relit à son rang, quel que soit le décor
+// (pas décimal, départ négatif ou non nul, fractions, très petits pas)
+describe('aller-retour réponse ↔ graduation, décors variés', () => {
+	const decors = [
+		['start: 0', 'end: 1', 'step: 0.1'],
+		['start: 0.5', 'end: 1.5', 'step: 0.1'],
+		['start: 99.9', 'end: 100.1', 'step: 0.01'],
+		['start: -0.5', 'end: 0.5', 'step: 0.1'],
+		['start: -3', 'end: 3', 'step: 1'],
+		['start: -1', 'end: 1', 'step: 1/3'],
+		['start: 0', 'end: 2', 'step: 1/4'],
+		['start: 0', 'end: 1', 'step: 1/7'],
+		['start: 0', 'end: 1', 'step: 0.3'],
+		['start: 0', 'end: 0.000001', 'step: 0.0000001']
+	];
+	it.each(decors)('%s, %s, %s', (...lines) => {
+		const c = config(...lines);
+		for (let k = 0; k < graduationCount(c); k++) {
+			const answer = placerAnswer(c, k);
+			expect(answer).not.toMatch(/e/i);
+			expect(indexOfAnswer(c, answer)).toBe(k);
+		}
+	});
+
+	it('0.75 et 3/4 : la même réponse', () => {
+		expect(placerAnswer(config('start: 0', 'end: 2', 'step: 1/4'), 3)).toBe(
+			placerAnswer(config('start: 0', 'end: 2', 'step: 0.25'), 3)
+		);
+	});
+});
+
 describe('PDF : la droite sans point', () => {
 	it('placer: ne dessine aucun point (l’enfant fait sa croix)', () => {
 		const { node } = parse('start: 0', 'end: 20', 'step: 1', 'placer: 7');

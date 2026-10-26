@@ -10,6 +10,7 @@ import NumberLine from '../NumberLine.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
 import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
 import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
+import FillBlanksBoundHarness from './FillBlanksBoundHarness.svelte';
 import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 import { NL_LAYOUT } from '$lib/ubumark/utils/number-line-render';
 import type { ResolvedMarkdown } from '$lib/ubumark';
@@ -283,6 +284,24 @@ describe('FillBlanksInput — droite à placer', () => {
 		});
 		for (let i = 0; i < 4; i++) await userEvent.click(button(screen.container, FORWARD));
 		expect(values[0]).toBe('3');
+	});
+
+	// Revue de la PR 1 : le décor de la prod renvoie la valeur au bloc (`bind:values`)
+	it('parent lié (bind:values) : le point reste où l’élève l’a mis', async () => {
+		let last: string[] = [];
+		const screen = await render(FillBlanksBoundHarness, {
+			target: mainElement(),
+			props: { statement: STATEMENT, blanks, onValues: (v: string[]) => (last = v) }
+		});
+		const root = screen.container;
+		await userEvent.click(button(root, FORWARD));
+		await userEvent.click(button(root, FORWARD));
+		await expect.poll(() => last[0]).toBe('1');
+		expect(points(root)).toBe(1);
+		expect(zone(root).getAttribute('aria-valuetext')).toBe('point sur 1');
+		await userEvent.click(button(root, BACKWARD));
+		await expect.poll(() => last[0]).toBe('0');
+		expect(zone(root).getAttribute('aria-valuetext')).toBe('point sur 0');
 	});
 
 	it('correction : le point de l’élève et la droite juste', async () => {

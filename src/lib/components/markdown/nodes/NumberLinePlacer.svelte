@@ -22,6 +22,7 @@
 	import { parseCustom } from '$lib/mathAST/parser/custom';
 	import { NL_LAYOUT, numVal, xToValue } from '$lib/ubumark/utils/number-line-render';
 	import {
+		decimalString,
 		graduationCount,
 		graduationValue,
 		indexOfAnswer,
@@ -76,7 +77,7 @@
 
 	/** Valeur de la graduation k pour le dessin */
 	function valueOf(k: number): NumberLineValue {
-		const expression = String(Math.round(graduationValue(config, k) * 1e9) / 1e9);
+		const expression = decimalString(graduationValue(config, k));
 		return { expression, ast: parseCustom(expression) };
 	}
 
