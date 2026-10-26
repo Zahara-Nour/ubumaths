@@ -1,21 +1,20 @@
 ---
 title: Figure manipulable partout et case « choix » (QCM réécrit en cases)
 date: 2026-10-26
-status: phase 0 écrite, en attente de David
+status: phase 0 validée, lot 1 en cours
 ---
 
 # Chantier « figure-et-choix »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 écrite._
+_Mis à jour le 2026-10-26, phase 0 validée._
 
-- **État** : phase 0 écrite (§ 2 : existant lu, comportements, ordre des lots) ; rien de codé.
-- **Prochaine action** : réponses de David aux questions § 2.6, puis lot 1 (case choix), tests d'abord.
-- **En attente de David** : § 2.6, Q1-Q4, Q6, Q7 (syntaxe, plusieurs réponses, mélange, outils, ordre des
-  lots, « le PDF » + ancien format TinyMath) ; Q5 tranchée.
-- **Pièges en cours** : migration des QCM seulement après le `deploy:prod` du lot 1 ; retrait de la contrainte
-  SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL ; ADR à écrire.
+- **État** : phase 0 validée (§ 2, toutes les questions tranchées) ; rien de codé.
+- **Prochaine action** : PR 1a (moteur de la case choix, § 2.7), tests d'abord.
+- **En attente de David** : rien.
+- **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
+  contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL.
 - **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix`.
 
 ---
@@ -39,7 +38,7 @@ tapée parce qu'une question est QCM **ou** à cases (`src/lib/questions/types.t
    correction (rien d'enregistré, comme aujourd'hui) ; en évaluation, enregistré avec la réponse (`test_answers`)
    et montré dans la copie corrigée et le PDF, sans vert ni rouge.
 
-## 2. Phase 0 (écrite le 2026-10-26, à valider par David)
+## 2. Phase 0 (écrite et validée le 2026-10-26)
 
 ### 2.0 L'existant, en bref (lu le 2026-10-26)
 
@@ -178,19 +177,30 @@ Termes `CONTEXT.md` (dans le lot 1-2) : **Case choix** (remplace **QCM** ; « QC
 question réduite à une case choix), **Figure de travail** (≠ figure à compléter, qui est la « figure
 réponse »). ADR : « Le QCM est une case » (révise la séparation QCM / cases de `getQuestionType`).
 
-### 2.6 Questions à David
+### 2.6 Questions à David — toutes tranchées le 2026-10-26 (recos suivies)
 
-1. **Syntaxe** : bloc ` ```choix ` à liste de `- …` dans l'énoncé (reco), ou choix gardés dans un champ à
-   part et un simple marqueur `[choix]` dans l'énoncé ?
-2. **Une ou plusieurs réponses** : réglage de la case (`plusieurs: oui`), demi-point gardé pour « bons choix
-   mais pas tous » (reco, = aujourd'hui) ?
-3. **Mélange** : activé par défaut, `melanger: non` pour l'empêcher (= aujourd'hui, reco) ?
-4. **Outils de la figure de travail** : un seul outil comme aujourd'hui (reco pour CP-058 : droite), ou
-   plusieurs permis (`outils: droite, segment`) ?
-5. **`deplacable:` partout** — ✅ **tranché le 2026-10-26** : les **énoncés de questions** d'abord (cours et
-   fiches à l'écran plus tard) ; une figure à compléter ou de travail n'est **jamais** déplaçable (refus situé
-   si `deplacable:` y est écrit).
-6. **Ordre des lots** : celui de 2.5 (CP-058 dès le lot 3, reco) ?
-7. **« le PDF »** de ta décision 4 : je n'ai trouvé que le PDF des fiches (pas de PDF de copie corrigée
-   d'évaluation). Lequel voulais-tu dire ? Et l'ancien format de migration TinyMath (`src/lib/migration/`) :
-   le laisser produire des QCM à l'ancienne, ou le retirer / l'adapter ?
+1. **Syntaxe** : bloc ` ```choix ` à liste `- …` dans l'énoncé (fence ` ```` ` si un choix contient un bloc) ;
+   bonne réponse portée par la case (`expectedAnswer`, indice d'origine, dynamique possible), cochée dans
+   l'éditeur. Écartés : marqueur `[choix]` + champ à part ; `- [x]` dans la liste.
+2. **Plusieurs réponses** : réglage de la CASE (`plusieurs: oui`) ; ½ pour « bons choix seulement, pas tous »
+   (forme non optimale) ; un mauvais choix coché → 0.
+3. **Mélange** : activé par défaut, `melanger: non` (oui / non, vrai / faux, ordre signifiant) ; préréglage
+   Vrai / Faux = `melanger: non`.
+4. **Outils de la figure de travail** : un seul outil (droite pour CP-058) ; `outils:` lu comme une liste pour
+   ouvrir plus tard un sélecteur d'outil sans changer la syntaxe.
+5. **`deplacable:`** : les **énoncés de questions** d'abord (cours et fiches à l'écran plus tard) ; une figure
+   à compléter ou de travail n'est **jamais** déplaçable (refus situé si `deplacable:` y est écrit).
+6. **Ordre des lots** : celui de 2.5.
+7. **PDF** : fiche PDF = figure de départ seule ; un futur PDF de copie corrigée montrera le tracé en gris.
+   **Import TinyMath terminé** → `src/lib/migration/` et sa page admin **retirés au lot 5**.
+
+### 2.7 Lot 1 : découpage
+
+- **PR 1a — moteur** (tests d'abord) : bloc ` ```choix ` lu par `assignBlankIndices` (case `type: 'choice'`),
+  génération (choix résolus, mélange par case), validation du modèle (≥ 2 choix, compte de bonnes réponses),
+  notation (statut de case ; ½ = `unoptimal_form`), Zod de la réponse (`"1"`, `"0;2"`), rendu élève dans
+  `FillBlanksInput`, carte flash, résultat attendu / copie corrigée, PDF de fiche.
+  Docs : `CONTEXT.md` (Case choix, Figure de travail), ADR « Le QCM est une case », `docs/systeme/questions.md`.
+  Revue : `code-reviewer` opus (correction des réponses).
+- **PR 1b — éditeur** : « case choix » dans l'éditeur de cases (liste, bonne(s) réponse(s), Vrai / Faux),
+  `test_specs` d'une case choix. Revue : `code-reviewer` sonnet.
