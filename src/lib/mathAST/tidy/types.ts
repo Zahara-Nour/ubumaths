@@ -77,3 +77,12 @@ export type TidyTerm = {
 	 */
 	readonly written: Unit | null;
 };
+
+/**
+ * Une condition qu'une simplification de `tidyWithConditions` a posée
+ * (chantier tidy-conditions, 2026-10-26) : `expression ≠ 0`, `> 0` ou `≥ 0`.
+ */
+export type TidyCondition = {
+	readonly expression: MathNode;
+	readonly relation: 'nonzero' | 'positive' | 'nonnegative';
+};

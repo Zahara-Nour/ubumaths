@@ -18,9 +18,13 @@ import { parentheses } from '../factory';
 import { findNodes, mapNode, stripUnnecessaryBrackets } from '../transforms';
 import { tidyNode } from './collect';
 import type { TidyOptions } from './step-recorder';
+import type { TidyCondition } from './types';
+import { mergeConditions } from './conditions';
 
 export { TidyStepRecorder, TIDY_RULE_DESCRIPTIONS } from './step-recorder';
 export type { TermOrder, TidyOptions, TidyRule, TidyStep, UnitChoice } from './step-recorder';
+export type { TidyCondition } from './types';
+export { describeConditions, type ConditionText } from './conditions';
 
 /**
  * Met une expression au propre.
@@ -45,6 +49,30 @@ export function tidy(node: MathNode, options?: TidyOptions): MathNode {
 		// Seul un débordement de pile (expression pathologiquement profonde) est
 		// rattrapé : toute autre exception est un bug de `tidy` et doit remonter.
 		if (error instanceof RangeError) return node;
+		throw error;
+	}
+}
+
+/**
+ * La variante de `tidy` qui simplifie aussi ce qui perd le domaine (S3, décision
+ * de David du 2026-10-22 ; chantier tidy-conditions, 2026-10-26) et dit à quelle
+ * condition : `x/x → 1`, pour x ≠ 0 ; `ln(x) − ln(x) → 0`, pour x > 0. Sans
+ * condition à poser, le résultat est celui de `tidy`. Une condition qu'on ne
+ * sait pas écrire simplement (`tan(x) − tan(x)`) : la simplification n'a pas lieu.
+ *
+ * @returns Le résultat et ses conditions, réunies (une par expression, la plus forte)
+ */
+export function tidyWithConditions(
+	node: MathNode,
+	options?: TidyOptions
+): { result: MathNode; conditions: readonly TidyCondition[] } {
+	const conditions: TidyCondition[] = [];
+	try {
+		const written = withImpliedParentheses(node);
+		const result = tidyNode(stripUnnecessaryBrackets(written), { ...options, conditions }, written);
+		return { result, conditions: mergeConditions(conditions) };
+	} catch (error) {
+		if (error instanceof RangeError) return { result: node, conditions: [] };
 		throw error;
 	}
 }

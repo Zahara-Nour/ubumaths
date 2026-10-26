@@ -21,7 +21,7 @@ import type { FunctionNode, MathNode, RelationNode, SuperscriptNode, UnitNode } 
 import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
 import type { TypeContext } from '../numtype';
-import type { TidyFactor, TidyQuantity, TidyTerm } from './types';
+import type { TidyCondition, TidyFactor, TidyQuantity, TidyTerm } from './types';
 import type { TermOrder, TidyOptions, TidyRule, UnitChoice } from './step-recorder';
 import { TidyStepRecorder } from './step-recorder';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
@@ -71,6 +71,8 @@ import { buildSum } from './build';
 import { decimalString, hasDecimalLiteral } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
 import {
+	cancelledBaseConditions,
+	cancelledFactorConditions,
 	cannotVanish,
 	definedEverywhere,
 	nonZeroBases,
@@ -102,13 +104,22 @@ type Settings = {
 	readonly positive: ReadonlySet<string>;
 	/** L'ordre des termes d'une somme (S2). */
 	readonly order: TermOrder;
+	/**
+	 * `tidyWithConditions` : les conditions posées par les simplifications que
+	 * S3 refuse à `tidy`. `undefined` : `tidy`, qui garde le domaine.
+	 */
+	readonly conditions: TidyCondition[] | undefined;
 };
 
 /**
  * Les options d'un appel interne : les réglages déjà lus par l'appel de tête,
  * pour ne pas relire `domain` à chaque sous-expression.
  */
-type InnerOptions = TidyOptions & { readonly settings?: Settings };
+type InnerOptions = TidyOptions & {
+	readonly settings?: Settings;
+	/** Le carnet des conditions de `tidyWithConditions`, lu par l'appel de tête. */
+	readonly conditions?: TidyCondition[];
+};
 
 /** Un facteur en cours d'accumulation — la version mutable de `TidyFactor`. */
 type MutableFactor = {
@@ -527,7 +538,12 @@ function keepDomain(factor: MutableFactor, settings: Settings, watch: FamilyWatc
 	const { base, exponent, key, denominator } = factor;
 	const leavesDenominator = isNegativeRational(denominator) && !isNegativeRational(exponent);
 	const known = settings.nonZero.has(key) || cannotVanish(base, settings.typeCtx);
-	if (leavesDenominator && !known) {
+	const lost =
+		leavesDenominator && !known && settings.conditions !== undefined
+			? cancelledBaseConditions(base, settings.typeCtx, settings)
+			: null;
+	if (leavesDenominator && !known && lost !== null) settings.conditions?.push(...lost);
+	else if (leavesDenominator && !known) {
 		return [
 			{ base, exponent: subRational(exponent, denominator), key },
 			{ base, exponent: denominator, key }
@@ -1417,6 +1433,17 @@ function termDefinedEverywhere(term: TidyTerm, settings: Settings): boolean {
 	);
 }
 
+/** Ce que fait perdre l'effacement du terme (`tidyWithConditions`), `null` si ça ne s'écrit pas. */
+function termConditions(term: TidyTerm, settings: Settings): TidyCondition[] | null {
+	const found: TidyCondition[] = [];
+	for (const { base, exponent } of term.factors) {
+		const lost = cancelledFactorConditions(base, exponent, settings.typeCtx, settings);
+		if (lost === null) return null;
+		found.push(...lost);
+	}
+	return found;
+}
+
 /** Le coefficient peut-il s'écrire en décimal (S1) ? Il faut une écriture finie. */
 function writesDecimal(coefficient: Rational): boolean {
 	return decimalString(absRational(coefficient)) !== null;
@@ -1554,7 +1581,9 @@ function collectLikeTerms(terms: readonly TidyTerm[], settings: Settings): TidyT
 			// (`ln(x) − ln(x)`, `1/x − 1/x` restent ; David, 2026-10-24). Un terme
 			// seul de coefficient nul (`0·ln(x)`, `0/x`) n'est pas une annulation
 			if (members.length > 1 && !termDefinedEverywhere(term, settings)) {
-				result.push(...members);
+				const lost = settings.conditions === undefined ? null : termConditions(term, settings);
+				if (lost === null) result.push(...members);
+				else settings.conditions?.push(...lost);
 			}
 			// Un coefficient nul efface le terme — sauf s'il divise par zéro : `0/0`
 			// n'est pas `0` (finding C2).
@@ -1758,7 +1787,8 @@ function settingsOf(options: InnerOptions | undefined): Settings {
 		typeCtx: options?.typeCtx,
 		nonZero: domain.length === 0 ? NO_BASE : nonZeroBases(domain, (n) => tidyExpression(n)),
 		positive: domain.length === 0 ? NO_BASE : positiveBases(domain, (n) => tidyExpression(n)),
-		order: options?.order ?? 'canonical'
+		order: options?.order ?? 'canonical',
+		conditions: options?.conditions
 	};
 }
 
@@ -1778,7 +1808,8 @@ function innerOptions(settings: Settings): InnerOptions | undefined {
 		settings.typeCtx === undefined &&
 		settings.nonZero.size === 0 &&
 		settings.positive.size === 0 &&
-		settings.order === 'canonical';
+		settings.order === 'canonical' &&
+		settings.conditions === undefined;
 	return isDefault ? undefined : { settings };
 }
 
