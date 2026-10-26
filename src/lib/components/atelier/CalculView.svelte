@@ -50,6 +50,9 @@
 	import NaturalField from './NaturalField.svelte';
 	import { isSafeLatex } from '$lib/atelier/safe-latex';
 
+	/** Les étapes d'une ligne et leur résumé, celles de la ligne ou de son bouton. */
+	type LineSteps = { readonly steps?: Entry['steps']; readonly summary?: Entry['summary'] };
+
 	/**
 	 * Le pupitre vient du CONTENEUR, pas d'ici : c'est lui qui reçoit les actions
 	 * cliquées dans « Mes objets », et elles doivent écrire dans le même
@@ -159,10 +162,23 @@
 	}
 
 	/** Les étapes à montrer : le résumé seulement si la ligne en a un. */
-	function shownSteps(entry: Entry, detailed: NonNullable<Entry['steps']>) {
-		return verbosityOf(entry.id) === 'summarized' && entry.summary !== undefined
-			? entry.summary
-			: detailed;
+	function shownSteps(entry: Entry, lineSteps: LineSteps & { steps: NonNullable<Entry['steps']> }) {
+		return verbosityOf(entry.id) === 'summarized' && lineSteps.summary !== undefined
+			? lineSteps.summary
+			: lineSteps.steps;
+	}
+
+	/**
+	 * Les étapes de la ligne : celles de l'autre écriture quand le bouton a
+	 * basculé et qu'elle en a (« Simplifier pour x ≠ −1 », chantier
+	 * tidy-conditions) — sinon celles de la ligne.
+	 */
+	function stepsOf(entry: Entry): LineSteps {
+		const alternative = entry.alternative;
+		if (alternative?.steps !== undefined && toggled.includes(entry.id)) {
+			return { steps: alternative.steps, summary: alternative.summary };
+		}
+		return { steps: entry.steps, summary: entry.summary };
 	}
 
 	function toggleSteps(id: number) {
@@ -531,9 +547,13 @@
 
 	/** Ce que dit le bouton : l'écriture qu'il va montrer. */
 	function toggleLabel(entry: Entry): string {
-		if (entry.alternative === undefined) return '';
-		if (!toggled.includes(entry.id)) return entry.alternative.label;
-		return entry.alternative.label === 'Valeur approchée' ? 'Valeur exacte' : 'Valeur approchée';
+		const alternative = entry.alternative;
+		if (alternative === undefined) return '';
+		if (!toggled.includes(entry.id)) return alternative.label;
+		return (
+			alternative.back ??
+			(alternative.label === 'Valeur approchée' ? 'Valeur exacte' : 'Valeur approchée')
+		);
 	}
 
 	function submit(event: SubmitEvent) {
@@ -578,6 +598,7 @@
 			{@const copied = answerToCopy(entry, toggled.includes(entry.id))}
 			{@const written = inputMarkupOf(entry)}
 			{@const defined = definedName(entry)}
+			{@const lineSteps = stepsOf(entry)}
 			<li class:refus={entry.failed} class:annulee={entry.undone}>
 				<!-- L'invite de la console : décorative, HORS du paragraphe de la saisie,
 				     qui sert de description aux étapes (`aria-describedby`) -->
@@ -680,7 +701,7 @@
 								{/if}
 							</span>
 						{/if}
-						{#if entry.steps !== undefined}
+						{#if lineSteps.steps !== undefined}
 							<Button
 								variant="ghost"
 								size="sm"
@@ -694,10 +715,10 @@
 						{/if}
 					</span>
 				</div>
-				{#if entry.steps !== undefined && unfolded.includes(entry.id)}
+				{#if lineSteps.steps !== undefined && unfolded.includes(entry.id)}
 					<div class="etapes" id="{uid}-etapes-{entry.id}">
 						<!-- Pas d'interrupteur quand le résumé ne dirait rien de moins -->
-						{#if entry.summary !== undefined}
+						{#if lineSteps.summary !== undefined}
 							<div
 								class="redaction"
 								role="group"
@@ -720,7 +741,9 @@
 								>
 							</div>
 						{/if}
-						<GeneratedStepsCorrection steps={shownSteps(entry, entry.steps)} />
+						<GeneratedStepsCorrection
+							steps={shownSteps(entry, { steps: lineSteps.steps, summary: lineSteps.summary })}
+						/>
 					</div>
 				{/if}
 				<!--

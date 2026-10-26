@@ -25,6 +25,7 @@ import { toLatex } from '$lib/mathAST/latex-generator';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
+import { domainAlternative, keepingDomain, type DomainAlternative } from './domain-guard';
 
 // =============================================================================
 // Types
@@ -48,9 +49,15 @@ export type FactoredOutcome =
 			readonly answer: string;
 			/** La même en syntaxe texte, pour le cas où le LaTeX ne se compose pas. */
 			readonly text: string;
+			/** Le calcul qui change le domaine, derrière le bouton de la ligne (tidy-conditions). */
+			readonly alternative?: DomainAlternative;
 	  }
 	/** Rien n'a bougé : ce n'est pas une erreur, c'est une réponse. */
-	| { readonly kind: 'inchangee'; readonly message: string }
+	| {
+			readonly kind: 'inchangee';
+			readonly message: string;
+			readonly alternative?: DomainAlternative;
+	  }
 	/** La demande elle-même ne tient pas : l'atelier refuse. */
 	| { readonly kind: 'illisible'; readonly message: string };
 
@@ -98,6 +105,20 @@ function plainFormOf(node: MathNode, latex: string): string {
 	}
 }
 
+/** Les étapes rendues et leur résumé, pour le bouton de la ligne. */
+function renderedSteps(steps: Parameters<PedagogicalSimplifyRenderer['renderAll']>[0]): {
+	steps: readonly RenderedStep[];
+	summary?: readonly RenderedStep[];
+} {
+	const renderer = new PedagogicalSimplifyRenderer();
+	const detailed = renderer.renderAll(steps, { schoolLevel: 'lycee', verbosity: 'detailed' });
+	const summary = summaryOf(
+		detailed,
+		renderer.renderAll(steps, { schoolLevel: 'lycee', verbosity: 'summarized' })
+	);
+	return { steps: detailed, ...(summary !== undefined && { summary }) };
+}
+
 /**
  * Factoriser une expression, et dire ce qui s'est passé.
  *
@@ -116,11 +137,19 @@ export function factorSteps(expression: string): FactoredOutcome {
 		}
 		const node = unwrapGrouping(parsed);
 
-		const result = generatePedagogicalSimplifySteps(node, {
+		const full = generatePedagogicalSimplifySteps(node, {
 			intent: 'factoriser',
 			schoolLevel: 'lycee',
 			verbosity: 'detailed'
 		});
+		// Le domaine est gardé (David, 2026-10-26) : `x/x` n'a rien à factoriser,
+		// la simplification par x passe par le bouton, avec sa condition
+		const { kept: result, lost } = keepingDomain(node, full);
+		const alternative =
+			lost === null || lost.length === 0 || full.steps.length === 0
+				? undefined
+				: domainAlternative(full.result, lost, renderedSteps(full.steps));
+		const withAlternative = alternative === undefined ? {} : { alternative };
 
 		const latex = toLatex(result.result);
 		const plain = plainFormOf(result.result, latex);
@@ -132,10 +161,15 @@ export function factorSteps(expression: string): FactoredOutcome {
 			// alors « je ne sais pas », jamais « ne se factorise pas » : le
 			// module ne le prouve pas (ADR 0024).
 			return isSum(result.result)
-				? { kind: 'inchangee', message: `Je ne sais pas factoriser « ${plain} ».` }
+				? {
+						kind: 'inchangee',
+						message: `Je ne sais pas factoriser « ${plain} ».`,
+						...withAlternative
+					}
 				: {
 						kind: 'inchangee',
-						message: `« ${plain} » n’est pas une somme : il n’y a rien à factoriser.`
+						message: `« ${plain} » n’est pas une somme : il n’y a rien à factoriser.`,
+						...withAlternative
 					};
 		}
 
@@ -155,7 +189,8 @@ export function factorSteps(expression: string): FactoredOutcome {
 			steps,
 			answer: latex,
 			text: plain,
-			...(summary !== undefined && { summary })
+			...(summary !== undefined && { summary }),
+			...withAlternative
 		};
 	} catch {
 		// `PedagogicalSimplifyNotImplemented` (inéquation, matrice…), ou un

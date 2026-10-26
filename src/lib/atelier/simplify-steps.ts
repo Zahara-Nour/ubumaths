@@ -20,6 +20,13 @@ import { PedagogicalSimplifyRenderer } from '$lib/mathAST/pedagogical-simplify/r
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { astOf } from './parse';
 import { summaryOf } from './steps-summary';
+import {
+	domainAlternative,
+	keepingDomain,
+	writtenKeepingDomain,
+	type DomainAlternative
+} from './domain-guard';
+import type { PedagogicalSimplifyResult } from '$lib/mathAST/pedagogical-simplify/types';
 
 // =============================================================================
 // Types
@@ -39,6 +46,11 @@ export interface SimplifiedSteps {
 	readonly summary?: readonly RenderedStep[];
 	/** La réponse en LaTeX, jamais vide — la ligne d'historique l'affiche. */
 	readonly answer: string;
+	/**
+	 * La simplification qui change le domaine, derrière le bouton de la ligne
+	 * (« Simplifier pour x ≠ −1 »), avec ses étapes (chantier tidy-conditions).
+	 */
+	readonly alternative?: DomainAlternative;
 }
 
 // =============================================================================
@@ -67,6 +79,30 @@ function collapseRepeats(steps: readonly RenderedStep[]): readonly RenderedStep[
 	});
 }
 
+/** Les étapes rendues d'un calcul et leur résumé ; `null` s'il n'y en a aucune. */
+function rendered(
+	result: PedagogicalSimplifyResult
+): { steps: readonly RenderedStep[]; summary?: readonly RenderedStep[] } | null {
+	if (result.steps.length === 0) return null;
+	const renderer = new PedagogicalSimplifyRenderer();
+	const steps = collapseRepeats(
+		renderer.renderAll(result.steps, { schoolLevel: 'lycee', verbosity: 'detailed' })
+	);
+	if (steps.length === 0) return null;
+	// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
+	const summary = summaryOf(
+		steps,
+		collapseRepeats(
+			// `auto` qui développe a sa rédaction résumée, celle de `.développer`
+			renderer.renderAll(result.summary ?? result.steps, {
+				schoolLevel: 'lycee',
+				verbosity: 'summarized'
+			})
+		)
+	);
+	return { steps, ...(summary !== undefined && { summary }) };
+}
+
 /**
  * Les étapes de simplification d'une expression — ou `null`.
  *
@@ -86,36 +122,38 @@ export function simplifySteps(expression: string): SimplifiedSteps | null {
 		const node = astOf(expression, 'text');
 		if (node === null) return null;
 
-		const result = generatePedagogicalSimplifySteps(node, {
+		const full = generatePedagogicalSimplifySteps(node, {
 			intent: 'auto',
 			schoolLevel: 'lycee',
 			verbosity: 'detailed'
 		});
+		// Le domaine est gardé (David, 2026-10-26) : la ligne s'arrête avant la
+		// première étape qui le change, le bouton montre le calcul entier
+		const { kept, lost } = keepingDomain(node, full);
+		const alternative =
+			lost === null || lost.length === 0 || full.steps.length === 0
+				? undefined
+				: domainAlternative(full.result, lost, rendered(full) ?? undefined);
 		// Zéro étape = rien à simplifier. C'est un repli, pas un échec : la ligne
-		// garde la réponse du moteur, qui dit déjà la même chose.
-		if (result.steps.length === 0) return null;
-
-		const renderer = new PedagogicalSimplifyRenderer();
-		const steps = collapseRepeats(
-			renderer.renderAll(result.steps, { schoolLevel: 'lycee', verbosity: 'detailed' })
-		);
-		if (steps.length === 0) return null;
-		// Le même calcul, rédigé sans les « pourquoi » (interrupteur du dépliage)
-		const summary = summaryOf(
-			steps,
-			collapseRepeats(
-				// `auto` qui développe a sa rédaction résumée, celle de `.développer`
-				renderer.renderAll(result.summary ?? result.steps, {
-					schoolLevel: 'lycee',
-					verbosity: 'summarized'
-				})
-			)
-		);
-
-		const answer = toLatex(result.result);
+		// garde la réponse du moteur, qui dit déjà la même chose. Des étapes, mais
+		// aucune qui garde le domaine : la ligne garde l'expression, sans étapes
+		const shown = rendered(kept);
+		if (shown === null) {
+			if (full.steps.length === 0) return null;
+			return {
+				steps: [],
+				answer: toLatex(writtenKeepingDomain(node)),
+				...(alternative !== undefined && { alternative })
+			};
+		}
+		const answer = toLatex(kept.result);
 		if (answer.trim() === '') return null;
-
-		return { steps, answer, ...(summary !== undefined && { summary }) };
+		return {
+			steps: shown.steps,
+			answer,
+			...(shown.summary !== undefined && { summary: shown.summary }),
+			...(alternative !== undefined && { alternative })
+		};
 	} catch {
 		// `PedagogicalSimplifyNotImplemented` (inéquation, matrice…), expression
 		// illisible, ou un renderer qui refuse ce qu'on lui donne.
