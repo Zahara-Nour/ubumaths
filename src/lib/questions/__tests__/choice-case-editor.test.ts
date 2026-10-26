@@ -13,7 +13,8 @@ import {
 	readCheckedChoices,
 	readChoiceCase,
 	statementCaseKinds,
-	writeChoiceCase
+	writeChoiceCase,
+	withBlockCases
 } from '../choice-case-editor';
 import { assignBlankIndices } from '../generator/assign-blank-indices';
 
@@ -195,5 +196,32 @@ describe('choiceIndexesAfterRemoval — un choix supprimé décale les suivants'
 describe('readChoiceCase — `case:` écrit à la main', () => {
 	it('pas réécrivable : la réécriture perdrait le réglage', () => {
 		expect(readChoiceCase('```choix\ncase: 2\n- a\n- b\n```', 0)?.rewritable).toBe(false);
+	});
+});
+
+describe('withBlockCases : cases des blocs omises de blanks[], remises à leur rang', () => {
+	const FIGURE = '```figure-de-travail\nfenetre: 0 ; 10 ; 0 ; 6\n---\nA = point(1, 1)\n```';
+	const OPERATION = '```operation\n12 + 7\ncases: résultat\n```';
+
+	it('figure de travail puis choix, une entrée : elle revient au choix', () => {
+		const statement = `${FIGURE}\n\n\`\`\`choix\n- Oui\n- Non\n\`\`\``;
+		expect(withBlockCases(['1'], statement, () => '')).toEqual(['', '1']);
+	});
+
+	it('opération puis [_], une entrée : elle revient au trou', () => {
+		expect(withBlockCases(['5'], `${OPERATION}\n\nEt [_]`, () => '')).toEqual(['', '5']);
+	});
+
+	it('énoncé à variables ou à expressions : rien (le générateur compte sur l’énoncé résolu)', () => {
+		const division = '```operation\ncalcul: {{a}} ÷ 7\n```\n\nEt [_]';
+		expect(withBlockCases(['x'], division, () => '')).toBeNull();
+		expect(withBlockCases(['x'], `${FIGURE}\n\n$<<expr:f>>$`, () => '')).toBeNull();
+	});
+
+	it('liste déjà complète, ou sans bloc, ou d’une autre longueur : rien', () => {
+		const statement = `${FIGURE}\n\nEt [_]`;
+		expect(withBlockCases(['', 'x'], statement, () => '')).toBeNull();
+		expect(withBlockCases(['x'], 'Et [_]', () => '')).toBeNull();
+		expect(withBlockCases([], `${statement} et [_]`, () => '')).toBeNull();
 	});
 });

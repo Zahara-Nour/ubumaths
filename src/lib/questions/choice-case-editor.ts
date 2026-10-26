@@ -39,10 +39,46 @@ export interface EditableChoiceCase extends ChoiceCaseDraft {
 	rewritable: boolean;
 }
 
+// Constantes
+/** Ce que le générateur résout avant de compter les cases */
+const UNRESOLVED_MARKERS = /\{\{|<<expr:/;
+
 // Functions
 /** Genre de chaque case de l'énoncé, dans l'ordre des cases (`blanks[i]`) */
 export function statementCaseKinds(statement: string): AssignedBlankType[] {
 	return assignBlankIndices(statement).blankTypes;
+}
+
+/**
+ * `blanks[]` qui omet les cases des blocs (```operation, ```figure-a-completer,
+ * ```figure-de-travail, ```collection / ```monnaie à construire), comme le permet
+ * le générateur : la liste remise à une entrée par case, `empty()` au rang de
+ * chaque case de bloc, les autres entrées dans l'ordre — le sens que leur donne
+ * le générateur. `null` si la liste n'omet pas exactement ces cases.
+ */
+export function withBlockCases<T>(
+	blanks: readonly T[],
+	statement: string,
+	empty: () => T
+): T[] | null {
+	// Variables (`{{a}}`, `{{if:…}}`) ou expressions (`<<expr:…>>`) : le générateur
+	// compte les cases sur l'énoncé RÉSOLU (une division `{{a}} ÷ 7` porte deux cases) ;
+	// lu brut, le compte peut différer — ne rien toucher, le générateur aligne
+	if (UNRESOLVED_MARKERS.test(statement)) return null;
+	const result = assignBlankIndices(statement);
+	const blockCases = new Set(
+		[
+			result.operationBlanks,
+			result.constructionBlanks,
+			result.workFigureBlanks,
+			result.buildBlanks
+		].flatMap((map) => Object.keys(map ?? {}).map(Number))
+	);
+	if (blockCases.size === 0 || blanks.length !== result.totalBlanks - blockCases.size) return null;
+	const others = [...blanks];
+	return Array.from({ length: result.totalBlanks }, (_, index) =>
+		blockCases.has(index) ? empty() : others.shift()!
+	);
 }
 
 /** Le bloc choix de rang `ordinal` (0 = le premier), ou `null` s'il n'existe pas */
