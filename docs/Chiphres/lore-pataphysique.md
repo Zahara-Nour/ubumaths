@@ -487,7 +487,7 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 
 - **Rôle UI** : Maîtresse du Marketplace et de la Boutique. Voix qui accompagne tout ce qui touche aux échanges, achats, ventes.
 - **Tempérament** : Ambitieuse, manipulatrice, plus subtile qu'Ubu. Elle planifie pendant qu'il braille. Elle ne croit pas vraiment aux maths mais elle adore les comptes.
-- **Apparence** : Élégante caricature, robe à frou-frous, éventail, sourire entendu.
+- **Apparence** 🟡 (décision de David, 2026-10-26) : élégante caricature, ronde et bien nourrie comme Ubu mais en sablier corseté (buste rond, taille serrée, jupes larges), droite et fière quand lui s'avachit ; double menton, petit nez pointu, chignon haut des années 1880, petit diadème d'or ; yeux plissés, sourcil levé, demi-sourire entendu ; robe à tournure pourpre à volants (les frou-frous) et dorures, col de dentelle blanc, éventail, châtelaine d'or avec bourse et carnet de comptes. Prompt d'illustration : Section XI, « Illustrations ».
 - **Tics de langage** : Plus posée, plus lettrée. « Mon ami, voyez comme cette transaction est avantageuse… », « Que voulez-vous, Père Ubu ne sait pas compter mais moi si. »
 - **Motivation** : Faire fructifier les phynances en douce.
 - **Quand elle intervient** : marketplace, boutique, tutoriels d'achat, recommandations.
@@ -1972,6 +1972,24 @@ Composition: Ubu standing, three-quarter view, centered, plain flat cream parchm
 ```
 
 Pour les images suivantes d'Ubu, joindre l'image de référence obtenue avec ce prompt et demander « the same character, same style and colors, … ».
+
+#### Prompt de référence — Mère Ubu 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et l'image de référence de Père Ubu).
+
+```text
+Draw Mère Ubu, the scheming queen from Alfred Jarry's play "Ubu Roi" (1896), wife of the attached Père Ubu, as a full-body character portrait in exactly the same drawing style.
+
+Character: a stout, plump, matronly woman, round and well-fed like her husband but with her own shape: a tightly corseted waist between a broad, round upper body and wide skirts, standing upright and proud while he slouches; middle-aged; double chin, round cheeks, a small sharp nose, hair piled up in a tall 1880s bun; a small golden tiara; narrow, sly eyes, one eyebrow raised, a knowing, calculating half-smile. She is elegant but a caricature: ambitious, manipulative, much smarter than her husband, who cannot count while she can. Funny, never scary, for students aged 11 to 17.
+
+Clothing: an 1880s bustle dress in deep crimson, with many ruffles and flounces, golden trim; a high lace collar in white; a folded fan in one hand; at her waist, a golden chatelaine chain holding a small purse and a tiny account book.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, deep crimson for the dress, white for the lace collar, marigold yellow for the tiara, the trim and the chatelaine, emerald green only for a small detail (the fan or a ribbon).
+
+Composition: Mère Ubu standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
 
 ---
 

@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après les décisions sur l'usage des deux nuanciers (pas de PR : chantier 100 % doc pour l'instant)._
+_Mis à jour le 2026-10-26, après les prompts de Père Ubu et Mère Ubu (pas de PR : chantier 100 % doc pour l'instant)._
 
-- **État** : style choisi (lithographie d'affiche 1896 à la Steinlen, famille des Mathoux, sans halo systématique) ; deux nuanciers faits, numérique et encre d'imprimerie, plus une démo (`docs/Chiphres/illustrations/nuancier/`) ; Glitchistan réécrit en steampunk dans le Compendium (`aca9748bc`).
-- **Prochaine action** : David fait le test dans Midjourney et Nano Banana (demandes ci-dessous) ; puis fiches visuelles des personnages et plan schématique de la carte.
-- **En attente de David** : bleu de mer (proposé : le bleu de Pile `#2F62B0`) · résultats du test des outils · géographie (position des six provinces).
-- **Pièges en cours** : les noms de couleurs inventés (« phynance gold ») ne veulent rien dire pour une IA → noms courants ; texte dans une image de référence = recopié par l'IA → références sans texte ; Midjourney `--sref` sur un nuancier copie les rayures → référence = 1ʳᵉ illustration réussie. Le Lexique parle encore de Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
+- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu et Mère Ubu validés et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
+- **Prochaine action** : ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` (David doit les fournir) ; puis prompts des autres personnages (Bordure, Bougrelas, Conscience, Czar, gouverneurs), un par un, chacun validé par David.
+- **En attente de David** : les deux images de référence · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
+- **Pièges en cours** : Ubu sans chapeau pointu ni longue robe blanche (aucune ressemblance avec une cagoule) ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte. Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 
 ## Décisions de David
@@ -18,6 +18,7 @@ _Mis à jour le 2026-10-26, après les décisions sur l'usage des deux nuanciers
 - 2026-10-25 — **Glitchistan entièrement steampunk victorien** (Compendium mis à jour).
 - 2026-10-26 — **Deux versions du nuancier, chacune son usage** : _imprimerie_ pour les objets imprimés du Royaume (grande carte, Shtam, Almanach, Édits Royaux et Sceau Secret, diplômes et certificats, affiches d'événements) ; _numérique_ (palette du Compendium § XI) pour tout ce qui vit dans l'interface (personnages qui parlent à l'élève, icônes, vignettes, bannières, lieux en pleine page, cartes à collectionner).
 - 2026-10-26 — **Mathoux et Palotins gardent leurs couleurs** : le nuancier vaut pour les nouvelles illustrations. Les Palotins (`static/images/buddies/`) sont déjà de la famille (encre `#16181F`, papier `#F6E9D2`, or `#F2B83B`, pourpre `#8E2C4F`, vert `#2E8B57`) avec deux couleurs d'identité en plus (orange `#E0612F`, bleu de Pile `#2F62B0`).
+- 2026-10-26 — **Outil** : Nano Banana testé, résultat apprécié ; prompts de Père Ubu (sans moustache, sans chapeau, couronne, crâne légèrement en poire, pourpoint blanc, cape verte à dorures, sceptre d'or, chaussures pourpres) et de Mère Ubu (ronde en sablier corseté, robe à tournure pourpre) validés, au Compendium § XI.
 - ⚠️ La palette du Compendium § XI n'est PAS celle de l'interface du site (`src/app.css` : orange `#fc8f1b`, ambre `#ffa000`…) ; David a choisi la palette du Compendium pour les illustrations, en connaissance de cause.
 
 ## Le nuancier
