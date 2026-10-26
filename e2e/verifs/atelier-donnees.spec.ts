@@ -3,6 +3,7 @@ import { calc, card, cardLocator, normalizeLatex, openAtelier } from './helpers/
 import {
 	cellLocator,
 	hintWhileTyping,
+	nameColumn,
 	openView,
 	readCell,
 	selectCell,
@@ -40,14 +41,6 @@ async function fillDownTo(page: Page, to: number): Promise<void> {
 	await page.getByRole('button', { name: 'Recopier vers le bas…' }).click();
 	const field = page.getByLabel('Recopier jusqu’à la ligne');
 	await field.fill(String(to));
-	await field.press('Enter');
-}
-
-/** Nomme une colonne (« nommer » sous sa lettre) */
-async function nameColumn(page: Page, letter: string, name: string): Promise<void> {
-	await page.getByRole('button', { name: `Nommer la colonne ${letter}` }).click();
-	const field = page.getByLabel(`Nom de la liste de la colonne ${letter}`);
-	await field.fill(name);
 	await field.press('Enter');
 }
 
