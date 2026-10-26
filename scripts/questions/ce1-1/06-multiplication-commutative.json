@@ -1,0 +1,183 @@
+{
+	"title": "Échanger les nombres d'une multiplication",
+	"description": "Exemple : 8 × 4 = 4 × 8",
+	"grades": ["CE1"],
+	"theme": "Entiers",
+	"domain": "Multiplier",
+	"subdomain": "Produit",
+	"level": 3,
+	"delay": 20,
+	"status": "draft",
+	"variations": [
+		{
+			"statement": "On sait que ${{p}}\\times {{g}}={{eval:p*g}}$.\n\nCalcule.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "g",
+					"expression": "6..9"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{g}}*{{p}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{eval:p*g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On peut échanger les deux nombres d'une multiplication : ${{g}}$ paquets de ${{p}}$, c'est autant que ${{p}}$ paquets de ${{g}}$.",
+					"$${{g}}\\times {{p}}={{p}}\\times {{g}}={{solution}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "g",
+					"expression": "6..9"
+				},
+				{
+					"name": "expression1",
+					"expression": "{{g}}*{{p}}={{p}}*?"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{g}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On peut échanger les deux nombres d'une multiplication : ${{g}}$ paquets de ${{p}}$, c'est autant que ${{p}}$ paquets de ${{g}}$.",
+					"$${{g}}\\times {{p}}={{p}}\\times {{g}}$$"
+				]
+			}
+		},
+		{
+			"statement": "Complète.\n\n$${{expression1}}$$",
+			"variables": [
+				{
+					"name": "p",
+					"expression": "2..5"
+				},
+				{
+					"name": "g",
+					"expression": "6..9"
+				},
+				{
+					"name": "expression1",
+					"expression": "?*{{g}}={{g}}*{{p}}"
+				}
+			],
+			"blanks": [
+				{
+					"expectedAnswer": "{{p}}"
+				}
+			],
+			"correction": {
+				"steps": [
+					"On peut échanger les deux nombres d'une multiplication : ${{g}}$ paquets de ${{p}}$, c'est autant que ${{p}}$ paquets de ${{g}}$.",
+					"$${{p}}\\times {{g}}={{g}}\\times {{p}}$$"
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"description": "4 × 8 = 32 donné : 8 × 4 = 32",
+			"variationIndex": 0,
+			"variables": {
+				"p": "4",
+				"g": "8"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : 8 + 4 (12)",
+			"variationIndex": 0,
+			"variables": {
+				"p": "4",
+				"g": "8"
+			},
+			"answers": ["12"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "8 × 4 = 4 × ? : 8",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4",
+				"g": "8"
+			},
+			"answers": ["8"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : recopie 4",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4",
+				"g": "8"
+			},
+			"answers": ["4"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "Erreur : le produit (32)",
+			"variationIndex": 1,
+			"variables": {
+				"p": "4",
+				"g": "8"
+			},
+			"answers": ["32"],
+			"expected": {
+				"status": "incorrect"
+			}
+		},
+		{
+			"description": "? × 7 = 7 × 3 : 3",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"g": "7"
+			},
+			"answers": ["3"],
+			"expected": {
+				"status": "correct"
+			}
+		},
+		{
+			"description": "Erreur : recopie 7",
+			"variationIndex": 2,
+			"variables": {
+				"p": "3",
+				"g": "7"
+			},
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			}
+		}
+	]
+}

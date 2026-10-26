@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1843._
+_Mis à jour le 2026-10-26, lot 1 écrit (PR des fichiers à ouvrir)._
 
-- **État** : lot 0 (corrections) MERGÉ (#1843) et migrations JOUÉES en prod (`db:migrate`), vérifié : 3 modèles réécrits (md5 = contenu de la migration), décompositions sur « écritures » + CE1-005, CE1-024 retiré, `47f97c9f` en brouillon, 4 modèles en CE2. Vérification manuelle notée (`verifications-manuelles.md`, #1843).
-- **Prochaine action** : phase 0 du lot 1 (calcul mental : 029, 102, 084, 032, 083, 024), comportements en français, à faire valider avant d'écrire ; nouveau worktree.
-- **En attente de David** : rien.
-- **Pièges en cours** : modèle publié → deux migrations (gabarits CE1 lot 0, `couvrir-un-niveau.md` § 7), rollback qui garde l'état laissé ; copies de test publiées → un niveau chacune ; tag = point du nœud ou de sa notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:`.
-- **Worktree / branche** : aucun (retiré après #1843).
+- **État** : lot 1 (calcul mental, 6 modèles : 084, 029, 102, 032, 083, 024) phase 0 validée (§ 6), écrit (`docs/wip/questions/lot-ce1-1.py` → `scripts/questions/ce1-1/`), simulation verte (40 specs), essayé en base locale (aperçu admin).
+- **Prochaine action** : PR des fichiers → merge → **David** lance `create-questions --dir scripts/questions/ce1-1 --publier` (prod, brouillons) → relever les `id` → migration nœud + tag.
+- **En attente de David** : rien avant le merge.
+- **Pièges en cours** : modèle publié → deux migrations ; tag = point du nœud ou de sa notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` avant `create-questions` (`$lib`).
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` · `feat/questions-ce1-lot1`.
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -179,3 +179,29 @@ Moitié V1 = 22 à 88 (unités 2 à 8), V2 = 12 à 98, V3 = 210 à 698 (dizaines
 trois étapes (coupe en deux parts paires, moitié de chacune, somme). Parité : specs aux bornes 998 et 999. Contenu relu par `pnpm question:specs` (le fichier ligne de base → clés camelCase d'abord).
 
 - 2026-10-26 : #1843 mergée (CI verte, `security-auditor` sans finding bloquant ; garde d'état ajoutée au rollback du rangement), `db:migrate` (go de David : la migration retire 4 tags), vérifiée en prod.
+
+## 6. Lot 1 : calcul mental — décisions (David, 2026-10-26)
+
+Phase 0 proposée en six modèles, case seule, aucun QCM ; trois questions, recommandations suivies
+(« je suis tes recos ») : départ à 2 chiffres pour 084 (46 + 300) mais pas pour 029 ; 032 garde la
+variation qui passe sous la centaine (305 − 9) ; 024 garde la variation « produit donné » à côté des
+deux trous.
+
+| Fichier                         | Point   | Sous-notion                | Niveau | Variations                                                          |
+| ------------------------------- | ------- | -------------------------- | ------ | ------------------------------------------------------------------- |
+| `01-ajouter-des-centaines`      | CE1-084 | calcul astucieux           | 7      | 3 chiffres + c centaines (≤ 999) ; 2 chiffres + 100 à 900           |
+| `02-ajouter-des-dizaines`       | CE1-029 | calcul astucieux           | 8      | sans retenue (234 + 60) ; avec retenue (746 + 80), centaines 1 à 8  |
+| `03-soustraire-des-dizaines`    | CE1-102 | calcul astucieux           | 8      | 3 chiffres − 10 à 90, sans retenue                                  |
+| `04-soustraire-9`               | CE1-032 | calcul astucieux           | 3      | 2 chiffres ; 3 chiffres ; 3 chiffres à dizaine 0 (305 − 9, 100 − 9) |
+| `05-multiples-de-25`            | CE1-083 | produits particuliers      | 1      | k × 25 ; 25 × k ; ? × 25 (k de 1 à 4)                               |
+| `06-multiplication-commutative` | CE1-024 | multiplication des entiers | 3      | produit donné ; g × p = p × ? ; ? × g = g × p (p 2 à 5, g 6 à 9)    |
+
+Corrigés : nombre de dizaines (« 74 dizaines + 8 dizaines = 82 dizaines ») pour 029 / 102 ; chiffre
+des centaines pour 084 ; − 10 + 1 pour 032 ; multiplicatif pour 083 (« 3 × 25 = 2 × 25 + 25 »).
+Consigne « Calcule. » (pas « astucieuse ») pour les faits à connaître (083, 024).
+
+**Question d'accès** : personne ne lit rien de plus — modèles neufs en brouillon (admin seul) ; la
+migration nœud + tag ne change aucune règle.
+
+- 2026-10-26 : écrit, `create-questions` en simulation 6/6 (40 specs), `question:specs` 2 800 tirages
+  verts, essai en base locale (6 brouillons), énoncés et corrigés relus dans l'aperçu admin.
