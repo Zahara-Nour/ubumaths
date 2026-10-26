@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-26, ouverture du chantier (aucune PR)._
 
-- **État** : phase 0 écrite (§ 3-5), rien de codé. Né du chantier « questions » (outil n° 4 de [questions-progress.md](questions-progress.md) § 3).
-- **Prochaine action** : PR 1 (un point par droite, § 6) — tests rouges puis code.
-- **En attente de David** : rien.
+- **État** : PR 1 codée (droite à placer, un point) : parseur, générateur, `NumberLinePlacer`, copie corrigée, catalogue, doc ; tests verts ; relecture `code-reviewer` (Opus) en cours ; PR pas encore ouverte.
+- **Prochaine action** : traiter la relecture, ouvrir la PR 1, CI, merge ; puis PR 2 (plusieurs points `placer: A=3 ; B=7`).
+- **En attente de David** : droite trop petite sur téléphone (limite du bloc ```line, § 7) : la traiter dans ce chantier ?
 - **Pièges en cours** : `geometrie-validation` a tranché CP-008 → réponses à placer (pas la case « figure ») ; ne pas mélanger avec la case « figure » (`figure-et-choix`) ; une PR = une session.
 - **Worktree / branche** : `../ubumaths-wt-reponses-a-placer` · `feat/reponses-a-placer`.
 
@@ -116,3 +116,20 @@ placer: {{a}}
    point) — syntaxe de la PR 1 choisie pour s'étendre sans casse.
 5. Boutons **◀ ▶ toujours visibles** sous la droite (d'un cran), en plus du toucher et du clavier.
 6. PDF : la droite **sans point**, l'enfant fait sa croix.
+
+## 7. PR 1 — droite à placer, un point (2026-10-26)
+
+- Parseur : `placer:` et `case:` dans ` ```line ` (refus : hors droite, hors graduation, `log`, avec
+  `points:`, illisible ; `case:` sans `placer:`) ; `findLinesToPlace`, `hasLineToPlace`.
+- Calcul pur `ubumark/utils/number-line-placer.ts` : réponse `placerAnswer` (entier, décimal à point,
+  sinon `\frac{p}{q}`), commune à la réponse attendue et à l'élève.
+- Générateur : `BuildKind` gagne `'line'` (patron « à construire » repris) ; lecture commune
+  `generator/build-answer.ts` ; messages au prof « droite graduée » (`buildKindName`).
+- Écran : `NumberLinePlacer.svelte` (toucher/glisser, ◀ ▶, clavier, `role="slider"`), point bleu
+  sur la droite ; faux → « Tu as placé le point sur 9. » + droite juste (point vert) ; copie corrigée
+  par `BuildAnswer` ; Entrée sur une droite vide → focus sur la droite.
+- Vu en vrai (port 5177, admin local, aperçu d'un brouillon local `e8d7b0e3…`) : poser, valider,
+  carte de correction OK.
+- **Limite trouvée** : sur téléphone (375 px), la droite (viewBox 600 × 120) rétrécit entière : chiffres
+  minuscules, graduations à ~12 px. Vaut pour tout bloc ```line. Les boutons ◀ ▶ compensent la précision,
+  pas la lisibilité. Question posée à David.
