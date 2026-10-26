@@ -12,8 +12,8 @@ _Mis à jour le 2026-10-26, phase 0 écrite._
 
 - **État** : phase 0 écrite (§ 2 : existant lu, comportements, ordre des lots) ; rien de codé.
 - **Prochaine action** : réponses de David aux questions § 2.6, puis lot 1 (case choix), tests d'abord.
-- **En attente de David** : § 2.6, Q1 à Q7 (syntaxe, plusieurs réponses, mélange, outils, `deplacable:`,
-  ordre des lots, « le PDF » + ancien format TinyMath).
+- **En attente de David** : § 2.6, Q1-Q4, Q6, Q7 (syntaxe, plusieurs réponses, mélange, outils, ordre des
+  lots, « le PDF » + ancien format TinyMath) ; Q5 tranchée.
 - **Pièges en cours** : migration des QCM seulement après le `deploy:prod` du lot 1 ; retrait de la contrainte
   SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL ; ADR à écrire.
 - **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix`.
@@ -187,8 +187,9 @@ réponse »). ADR : « Le QCM est une case » (révise la séparation QCM / case
 3. **Mélange** : activé par défaut, `melanger: non` pour l'empêcher (= aujourd'hui, reco) ?
 4. **Outils de la figure de travail** : un seul outil comme aujourd'hui (reco pour CP-058 : droite), ou
    plusieurs permis (`outils: droite, segment`) ?
-5. **`deplacable:` partout** : quels lieux (questions seulement en premier, reco) ; une figure à compléter ou
-   de travail peut-elle être déplaçable (reco : non, l'élève y trace) ?
+5. **`deplacable:` partout** — ✅ **tranché le 2026-10-26** : les **énoncés de questions** d'abord (cours et
+   fiches à l'écran plus tard) ; une figure à compléter ou de travail n'est **jamais** déplaçable (refus situé
+   si `deplacable:` y est écrit).
 6. **Ordre des lots** : celui de 2.5 (CP-058 dès le lot 3, reco) ?
 7. **« le PDF »** de ta décision 4 : je n'ai trouvé que le PDF des fiches (pas de PDF de copie corrigée
    d'évaluation). Lequel voulais-tu dire ? Et l'ancien format de migration TinyMath (`src/lib/migration/`) :
