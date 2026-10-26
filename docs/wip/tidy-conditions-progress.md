@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1815._
+_Mis à jour le 2026-10-26, PR 1 (§ 4.1) ouverte._
 
-- **État** : #1807, #1811, #1815 MERGÉES (pas en prod). #1815 = § 4.3 : `tidy` garde `1/(1/x)` (barres empilées, reste mis au propre), `tidyWithConditions` rend `x`, pour x ≠ 0.
-- **Prochaine action** : PR 1 (§ 4.1, `conditionDomain` non polynomial dans `hypotheses.ts`, ~5 lignes), puis PR 2 (§ 4.2, `domainChange` par ensembles + élagage, bouton « 2 ln(x), pour x > 0 », note « Pour x > 0, on peut écrire … »). Recos validées par David (« je suis tes recos »).
+- **État** : #1807, #1811, #1815 MERGÉES (pas en prod). PR 1 (§ 4.1) ouverte sur `fix/tidy-conditions-domaine` : `ln(x)/ln(x) avec x > 1` → 1.
+- **Prochaine action** : merger la PR 1, puis PR 2 (§ 4.2, `domainChange` par ensembles + élagage, bouton « 2 ln(x), pour x > 0 », note « Pour x > 0, on peut écrire … »). Recos validées par David (« je suis tes recos »).
 - **En attente de David** : essai des vérifs #1807 et #1811 (inchangé).
 - **Pièges en cours** : § 4.1 et § 4.2 ouverts ; restes acceptés de #1815 (termes gardés non regroupés, `tan` gèle le terme en mode conditions).
-- **Worktree / branche** : retirés après #1815 ; recréer `../ubumaths-wt-tidy-conditions` depuis `origin/main` pour la PR 1.
+- **Worktree / branche** : `../ubumaths-wt-tidy-conditions`, `fix/tidy-conditions-domaine`.
 
 ## Contexte
 
@@ -113,6 +113,8 @@ Cause : `absorbFactor` (`collect.ts`, cas `division`) inverse l'exposant du dén
 ### 4.1 — conditions non polynomiales (PR 1)
 
 `conditionDomain` (`hypotheses.ts`) : « polynôme » remplacé par « domaine calculé, rien de non résolu, pas de forme périodique » (`1/cos x` → ℝ \ {π/2 + kπ}, que l'inclusion ne lit pas : cause du bug de revue). Mesuré : `1/ln x` → ]0;+∞[ \ {1}, `1/(eˣ−1)` → ℝ \ {0}, `1/tan x` et `1/(x − ln x)` non résolus. `ln(x)/ln(x) avec x > 1` → `1` ; `cos(x)/cos(x) avec x > 0` reste refusé.
+
+- Fait (PR 1) : liste blanche des domaines que l'inclusion lit (`empty`, `universal`, `interval_set`) à la place du test « polynôme ». La note de `ln(x)/ln(x)` ne propose que « dans ]0 ; +∞[ \ {1} » : `avec ln(x) ≠ 0` ne se relit pas (filtre `worksWhenCopied`, voulu).
 
 ### 4.2 — `domainChange` par ensembles (PR 2)
 

@@ -204,6 +204,51 @@ describe('la note se recopie telle quelle', () => {
 	);
 });
 
+describe('conditions non polynomiales (§ 4.1)', () => {
+	it.each([
+		['ln(x)/ln(x) avec x > 1', '1'],
+		['ln(x)/ln(x) dans ]1;+∞[', '1'],
+		['.simplifier 1/ln(x)-1/ln(x) avec x > 1', '0'],
+		['.simplifier 1/(e^x-1)-1/(e^x-1) avec x > 0', '0'],
+		['.simplifier 1/(e^x-1)-1/(e^x-1) dans ℝ \\ {0}', '0']
+	])('%s → %s', (input, latex) => {
+		const result = line(input);
+		expect(flat(result.latex)).toBe(flat(latex));
+		expect(result.alternative).toBeUndefined();
+	});
+
+	it.each(['ln(x)/ln(x) avec x > 0', '.simplifier 1/(e^x-1)-1/(e^x-1) dans ℝ'])(
+		'%s : l’hypothèse ne garantit pas la condition, la ligne garde',
+		(input) => {
+			const result = line(input);
+			expect(flat(result.latex)).not.toBe('1');
+			expect(flat(result.latex)).not.toBe('0');
+			expect(result.note).toContain('ne garantit pas');
+		}
+	);
+
+	// `avec ln(x) ≠ 0` ne se relit pas : seul « dans » est proposé
+	it.each([
+		['ln(x)/ln(x)', 'dans ]0 ; +∞[ \\ {1}'],
+		['.simplifier 1/(e^x-1)-1/(e^x-1)', 'dans ℝ \\ {0}']
+	])('%s : la note propose « %s », qui marche recopié', (input, dans) => {
+		const note = line(input).note ?? '';
+		expect(note).toContain(`« ${dans} »`);
+		for (const match of note.matchAll(/« ((?:avec|dans) [^»]+) »/g)) {
+			const result = line(`${input} ${match[1]}`);
+			expect(result.alternative).toBeUndefined();
+			expect(result.note).toBeUndefined();
+		}
+	});
+
+	it.each(['tan(x)/tan(x) avec x > 0', '(x-ln(x))/(x-ln(x)) avec x > 0'])(
+		'%s : domaine non résolu, rien n’est garanti',
+		(input) => {
+			expect(flat(line(input).latex)).not.toBe('1');
+		}
+	);
+});
+
 describe('revue du 2026-10-26', () => {
 	it.each([
 		'cos(x)/cos(x) avec x > 0',
