@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ```figure-de-travail, `graded-part.ts`) le 2026-10-26.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23 ; fiche du modèle le 2026-10-23 ; forme de la réponse finale demandée (`finalForm`) le 2026-10-24 ; étapes des équations écrites comme la réponse (lot 5f-4) le 2026-10-25 ; case d'un bloc `operation le 2026-10-25 (multiplication à remplir, PR 2b, et division à remplir, PR 3b, le même jour) ; étapes des inéquations (Q50) le 2026-10-25 ; case « figure » (bloc `construction, moteur) le 2026-10-25 ; copie corrigée d'une case « figure » le 2026-10-25 ; figure construite à chaque tirage (`checkTemplate`) le 2026-10-26 ; case d'un bloc `collection à construire le 2026-10-26 ; d'un bloc `monnaie à construire le 2026-10-26 ; figure de travail (bloc ```figure-de-travail, `graded-part.ts`) le 2026-10-26 ; texte d'aide des cases à écrire le 2026-10-26.
 
 ## À quoi ça sert
 
@@ -370,7 +370,9 @@ choix gardés en markdown, formules non extraites) ; `FillBlanksInput` met à sa
 `MultipleChoiceInput` (ronds ou carrés, lettres A, B, C, groupe `radiogroup` / `group` nommé
 « Case N : choix », flèches) dont la valeur est `formatChoiceAnswer(...)` en indices d'origine ;
 après validation, choix coché à tort et bons choix marqués (réponse connue seulement). Une case
-choix vide compte comme une case vide (`QuestionCard` : Valider grisé). Hors question
+choix vide compte comme une case vide (`QuestionCard` : Valider grisé). Le texte d'aide « Remplissez
+les blancs avec vos réponses » n'apparaît que s'il y a une case à écrire (ni choix, ni figure, ni
+collection ou monnaie à construire). Hors question
 (`MarkdownRenderer`, cours, aperçu) : liste A, B, C non cliquable ; PDF (typst) : « A) … ».
 
 Il n'y a **pas** de case « tableau » (tableau de signes ou de variations) : le tableau de signes

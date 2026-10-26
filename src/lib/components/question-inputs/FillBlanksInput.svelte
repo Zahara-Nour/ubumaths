@@ -184,6 +184,13 @@
 	// When showing correct answers, force disabled
 	let effectiveDisabled = $derived(disabled || showCorrectAnswers);
 
+	/**
+	 * Au moins une case à écrire (texte, formule, grille d'opération) : seule elle
+	 * justifie « Remplissez les blancs » ; un choix, une figure ou une collection
+	 * à construire ont leur propre consigne
+	 */
+	let hasWrittenBlank = $derived(blanks.some((b) => !b.choice && !b.construction && !b.construire));
+
 	/** Check if a block node contains blanks or math prompts */
 	function nodeHasBlanks(node: BlockNode): boolean {
 		if (node.type === 'paragraph') {
@@ -977,7 +984,7 @@
 	</div>
 
 	<!-- Helper text -->
-	{#if !flashMode && !effectiveDisabled && blanks.length > 0}
+	{#if !flashMode && !effectiveDisabled && hasWrittenBlank}
 		<div class="helper-text">
 			<span class="text-xs text-muted-foreground"> Remplissez les blancs avec vos réponses </span>
 		</div>
