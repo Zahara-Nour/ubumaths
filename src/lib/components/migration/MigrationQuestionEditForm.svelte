@@ -27,6 +27,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Textarea } from '$lib/components/ui/textarea';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
 	import { resolveVariables, resolveExpression, resolveSolution } from '$lib/questions';
 	import { createRandomSource } from '$lib/utils/random';
 	import type {
@@ -789,7 +790,10 @@
 													{String.fromCharCode(65 + ci)}
 												</Badge>
 												<div
-													class="flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:6cm]"
+													class="@container flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
+													style:--monnaie-taille={monnaieChoiceSize(
+														previewInstance.choices.map((c) => c.content)
+													)}
 												>
 													<MarkdownRenderer content={choice.content} />
 												</div>

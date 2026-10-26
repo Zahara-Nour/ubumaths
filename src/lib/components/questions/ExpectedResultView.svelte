@@ -31,6 +31,7 @@
 		SquareCheck
 	} from '@lucide/svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import FigureAnswer from './FigureAnswer.svelte';
 	import { choiceLetter } from '$lib/questions/choices';
@@ -151,7 +152,11 @@
 		{:else if line.kind === 'choices'}
 			<ul class="space-y-2" data-kind="choices">
 				{#each line.choices as choice, position (choice.originalIndex)}
-					<li class="choice {toneClass(choice.status)}" data-status={choice.status}>
+					<li
+						class="choice {toneClass(choice.status)}"
+						class:choice-bloc={isBlockChoice(choice.content)}
+						data-status={choice.status}
+					>
 						<span class="font-semibold">{choiceLetter(position)}</span>
 						<!-- Même indicateur que la saisie (Q109 a) : case si plusieurs réponses, rond sinon -->
 						{#if line.multiple}
@@ -174,9 +179,10 @@
 							<Circle class="choice-box h-4 w-4" aria-hidden="true" data-indicator="circle" />
 						{/if}
 						{#if isBlockChoice(choice.content)}
-							<!-- Choix en bloc (```horloge, ```collection, ```monnaie) : dessiné, 3 cm comme dans le QCM -->
+							<!-- Choix en bloc (```horloge, ```collection, ```monnaie) : dessiné à la taille du QCM (monnaie : même échelle pour tous les choix) -->
 							<div
-								class="min-w-0 flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:6cm]"
+								class="@container min-w-0 flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
+								style:--monnaie-taille={monnaieChoiceSize(line.choices.map((c) => c.content))}
 							>
 								<MarkdownRenderer content={choice.content} />
 							</div>
@@ -303,6 +309,16 @@
 		border-radius: 0.5rem;
 		padding: 0.375rem 0.75rem;
 		color: var(--color-foreground);
+	}
+
+	/* Choix dessiné (monnaie…) : l'étiquette passe dessous, pour que chaque ligne laisse au dessin
+	   la même largeur (sinon « bonne réponse » rétrécit sa ligne et casse l'échelle commune) */
+	.choice-bloc {
+		flex-wrap: wrap;
+	}
+
+	.choice-bloc .status-tag {
+		flex-basis: 100%;
 	}
 
 	.choice.tone-correct,

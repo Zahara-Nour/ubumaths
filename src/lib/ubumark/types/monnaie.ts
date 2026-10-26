@@ -35,12 +35,14 @@ export const MONNAIE_NOTES = [100, 50, 20, 10, 5] as const;
 export const MONNAIE_RESERVED_NOTES = [200, 500] as const;
 
 /**
- * Largeur d'un ensemble « pleine largeur », en cm : 8 cm (écran et PDF), 6 cm
+ * Largeur d'un ensemble « pleine largeur », en cm : 8 cm (écran et PDF), 10 cm
  * dans un choix de QCM ; un ensemble plus étroit garde la même échelle. Pas
  * 3 cm comme la collection : l'enfant doit LIRE chaque valeur, illisible à
- * 3 cm (≈ 3 pt) ; 6 cm décidé par David le 2026-10-25, sur capture
+ * 3 cm (≈ 3 pt). 6 cm décidé par David le 2026-10-25, puis 10 cm le 2026-10-26 :
+ * un petit porte-monnaie n'occupe qu'une part de la largeur, et à 6 cm le « 2 € »
+ * d'une pièce faisait ≈ 6 px à l'écran (390 px), ≈ 4,5 pt au PDF
  */
-export const MONNAIE_SIZE_CM = { min: 2, max: 12, default: 8, choice: 6 } as const;
+export const MONNAIE_SIZE_CM = { min: 2, max: 12, default: 8, choice: 10 } as const;
 
 /** Ensembles d'un bloc (comparaison) */
 export const MONNAIE_MAX_SETS = 3;

@@ -500,8 +500,8 @@ dans deux coins d'un billet ; la pièce de 2 € a un anneau. Billets en haut, p
 `utils/monnaie-scene.ts` (hasard, vrac et toucher de `scene-commune.ts`, graine = ce qui se dessine),
 marquage au doigt `SceneMarks`. Dessin en `overflow: visible`, comme la collection : sinon Chrome rogne au pixel le bord droit du cadre. Nom accessible « Pièces et billets » : les valeurs sont écrites
 (l'enfant les lit), **jamais le total**. PDF en Typst natif, gris cernés de noir ; une légende a une colonne d'au moins 3 cm (si la rangée la tient), centrée, non justifiée. Dans un choix de
-QCM : **6 cm**, pas 3 (à 3 cm les valeurs ne se lisent plus) — `--monnaie-taille: 6cm` ; série
-figée : `withChoiceMonnaieSize`.
+QCM : **10 cm**, pas 3 (à 3 cm les valeurs ne se lisent plus ; à 6 cm, un petit porte-monnaie restait illisible, décision du 2026-10-26) ; **tous les choix d'un QCM à la même échelle** : si la colonne est plus étroite que le plus large, ils sont réduits ensemble (`monnaieChoiceSize`, `utils/monnaie-choix.ts` : `--monnaie-taille: min(10cm, 100cqw / r)`, la colonne du choix en `container-type: inline-size`) ; au corrigé, l'étiquette d'un choix dessiné (« bonne réponse »…) passe sous le dessin, pour lui laisser la même largeur ; série
+figée : `withChoiceMonnaieSize` (10 cm ; au PDF, la page les tient).
 
 ### Cases à compléter
 

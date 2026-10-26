@@ -22,6 +22,7 @@
 	import { Check, X, Circle, CircleDot, Square, SquareCheck } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 	import { MULTIPLE_ANSWERS_INSTRUCTION } from '$lib/questions/feedback';
+	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
 
 	interface Choice {
 		/** Choice content as resolved markdown string */
@@ -52,6 +53,9 @@
 		onSubmit,
 		genericFunctions
 	}: Props = $props();
+
+	// Pièces et billets : tous les choix à la même échelle, d'après le plus large
+	let monnaieSize = $derived(monnaieChoiceSize(choices.map((c) => c.content)));
 
 	// Toggle choice selection
 	function toggleChoice(index: number) {
@@ -158,7 +162,7 @@
 				<!-- Choice content - now a ResolvedMarkdown string rendered directly -->
 				<!-- Pas de mot cliquable : le choix est déjà un bouton, un clic sur le mot
 				     enverrait la réponse (revue du 2026-10-09) -->
-				<div class="choice-content">
+				<div class="choice-content" style:--monnaie-taille={monnaieSize}>
 					<MarkdownRenderer content={choice.content} {genericFunctions} lexiconGrade={null} />
 				</div>
 
@@ -307,8 +311,9 @@
 		--horloge-taille: 3cm;
 		/* Collection d'un choix (bloc ```collection sans taille:) : 3 cm pleine largeur */
 		--collection-taille: 3cm;
-		/* Monnaie d'un choix (bloc ```monnaie sans taille:) : 6 cm, les valeurs doivent se lire */
-		--monnaie-taille: 6cm;
+		/* Monnaie d'un choix (bloc ```monnaie sans taille:) : 10 cm, réduits ensemble si la colonne
+		   est trop étroite (`monnaieChoiceSize`, qui mesure la colonne en `cqw`) */
+		container-type: inline-size;
 	}
 
 	/* Images within choice content (rendered by MarkdownRenderer) */

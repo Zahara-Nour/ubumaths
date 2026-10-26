@@ -125,8 +125,9 @@ Seul `series.ts` concerne les questions : composition d'une série (`cartItemSch
   une ` ```collection ` (« Quel dessin montre 42 ? ») ou une ` ```monnaie ` (« Quel porte-monnaie
   contient 48 € ? ») ;
   `MultipleChoiceInput` et les aperçus (`QuestionPreview`, `QuestionPreviewBaseCard`) posent
-  `--horloge-taille: 3cm`, `--collection-taille: 3cm` et `--monnaie-taille: 6cm` sur le contenu du choix (sauf `taille:` de
-  l'auteur). La
+  `--horloge-taille: 3cm`, `--collection-taille: 3cm` et `--monnaie-taille` sur le contenu du choix (sauf `taille:` de
+  l'auteur) ; la monnaie vaut 10 cm, réduits ensemble pour tous les choix si la colonne est trop étroite
+  (`monnaieChoiceSize`, détail dans [ubumark.md](ubumark.md)). La
   correction (`ExpectedResultView`) rend un tel choix par `MarkdownRenderer` : `InlineMarkdown`
   n'en garderait que le texte brut.
 - Affichage et correction : `src/lib/components/questions/` — `QuestionCard.svelte` et

@@ -227,7 +227,7 @@ describe('Monnaie — branchée dans le rendu Markdown', () => {
 		expect(screen.container.querySelectorAll('svg[role="img"]')).toHaveLength(2);
 	});
 
-	it('dans un choix de QCM : 6 cm pleine largeur', async () => {
+	it('dans un choix de QCM : 10 cm pleine largeur', async () => {
 		const choice = (lines: string) => `\`\`\`monnaie\n${lines}\n\`\`\`` as ResolvedMarkdown;
 		const screen = await render(MultipleChoiceInput, {
 			target: mainElement(),
@@ -239,6 +239,34 @@ describe('Monnaie — branchée dans le rendu Markdown', () => {
 			buildMonnaieScene(node('billets: 20 20 5').spec!, 0).width / MONNAIE_VIEW.fullWidth;
 		const svgs = screen.container.querySelectorAll('svg[role="img"]');
 		expect(svgs).toHaveLength(2);
-		for (const svg of svgs) expect(widthCm(svg)).toBeCloseTo(6 * ratio, 1);
+		for (const svg of svgs) expect(widthCm(svg)).toBeCloseTo(10 * ratio, 1);
+	});
+
+	it('colonne étroite (téléphone) : tous les choix réduits ENSEMBLE, à la même échelle', async () => {
+		const choice = (lines: string) => `\`\`\`monnaie\n${lines}\n\`\`\`` as ResolvedMarkdown;
+		const main = mainElement();
+		// Colonne d'un choix plus étroite que le plus large des deux (≈ 237 px à 10 cm), comme au
+		// téléphone dans la carte de question
+		main.style.width = '250px';
+		const screen = await render(MultipleChoiceInput, {
+			target: main,
+			props: {
+				choices: [
+					{ content: choice('billets: 10 5\npièces: 2') },
+					{ content: choice('billets: 10 10 5\npièces: 2 2') }
+				]
+			}
+		});
+		const svgs = [...screen.container.querySelectorAll<SVGSVGElement>('svg[role="img"]')];
+		expect(svgs).toHaveLength(2);
+		const echelles = svgs.map((s) => s.getBoundingClientRect().width / s.viewBox.baseVal.width);
+		// Sans échelle commune, le large serait ramené seul à la colonne (≈ 15 % plus petit)
+		expect(echelles[0]).toBeCloseTo(echelles[1], 2);
+		// … et la colonne est bien plus étroite que 10 cm : les dessins ont été réduits
+		expect(echelles[0]).toBeLessThan((10 * 96) / 2.54 / MONNAIE_VIEW.fullWidth);
+		for (const svg of svgs) {
+			const colonne = svg.closest('.choice-content')!.getBoundingClientRect().width;
+			expect(svg.getBoundingClientRect().width).toBeLessThanOrEqual(colonne + 0.5);
+		}
 	});
 });
