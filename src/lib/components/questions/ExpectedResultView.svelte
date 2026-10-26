@@ -150,6 +150,7 @@
 				<p class="text-xs text-muted-foreground" data-fill-statuses>{fillStatuses(line.fills)}</p>
 			</div>
 		{:else if line.kind === 'choices'}
+			{@const monnaieSize = monnaieChoiceSize(line.choices.map((c) => c.content))}
 			<ul class="space-y-2" data-kind="choices">
 				{#each line.choices as choice, position (choice.originalIndex)}
 					<li
@@ -182,7 +183,7 @@
 							<!-- Choix en bloc (```horloge, ```collection, ```monnaie) : dessiné à la taille du QCM (monnaie : même échelle pour tous les choix) -->
 							<div
 								class="@container min-w-0 flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
-								style:--monnaie-taille={monnaieChoiceSize(line.choices.map((c) => c.content))}
+								style:--monnaie-taille={monnaieSize}
 							>
 								<MarkdownRenderer content={choice.content} />
 							</div>

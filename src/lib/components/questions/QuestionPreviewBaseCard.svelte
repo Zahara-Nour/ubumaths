@@ -427,6 +427,9 @@
 
 		<!-- ========== CHOICES SECTION (QCM) ========== -->
 		{#if hasChoices}
+			{@const monnaieSize = monnaieChoiceSize(
+				(instance.shuffledChoices || []).map((c) => c.content)
+			)}
 			<div class="space-y-2">
 				<div class="flex items-center gap-2">
 					<List class="h-4 w-4 text-muted-foreground" />
@@ -449,9 +452,7 @@
 							<!-- Horloge ou collection d'un choix : 3 cm ; monnaie : 10 cm, tous les choix à la même échelle, comme chez l'élève -->
 							<div
 								class="@container flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
-								style:--monnaie-taille={monnaieChoiceSize(
-									(instance.shuffledChoices || []).map((c) => c.content)
-								)}
+								style:--monnaie-taille={monnaieSize}
 							>
 								<MarkdownRenderer content={choice.content} {genericFunctions} />
 							</div>

@@ -774,6 +774,9 @@
 
 							<!-- Choices -->
 							{#if previewInstance.choices}
+								{@const monnaieSize = monnaieChoiceSize(
+									previewInstance.choices.map((c) => c.content)
+								)}
 								<div>
 									<h4 class="mb-2 text-sm font-medium text-muted-foreground">Choix</h4>
 									<div class="space-y-2">
@@ -791,9 +794,7 @@
 												</Badge>
 												<div
 													class="@container flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
-													style:--monnaie-taille={monnaieChoiceSize(
-														previewInstance.choices.map((c) => c.content)
-													)}
+													style:--monnaie-taille={monnaieSize}
 												>
 													<MarkdownRenderer content={choice.content} />
 												</div>
