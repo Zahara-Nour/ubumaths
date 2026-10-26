@@ -276,10 +276,11 @@
 	// Messages par trou, listés sous l'énoncé : un trou MathLive (\placeholder) vit
 	// dans le math-field, on ne peut ni y accrocher une légende ni un aria-describedby.
 	// Avec un seul trou, le message est déjà le feedback global de l'écran → pas de doublon.
+	// De même pour une case « figure » : son message (le juge) est le feedback global.
 	let blankMessages = $derived.by(() => {
 		if (flashMode || showCorrectAnswers || blanks.length < 2) return [];
 		return blankFeedback.flatMap((message, index) =>
-			message ? [{ blankNumber: index + 1, message }] : []
+			message && !blanks[index]?.construction ? [{ blankNumber: index + 1, message }] : []
 		);
 	});
 

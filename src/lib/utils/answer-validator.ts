@@ -1676,14 +1676,21 @@ export function validateBlanks(
 	return aggregateOrderedBlanks(
 		blanks.map((blank, i) =>
 			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
-		)
+		),
+		blanks
 	);
 }
 
 type SingleBlankResult = ReturnType<typeof validateSingleBlank>;
 
-/** Verdict global d'une question à cases ordonnées, depuis le verdict de chaque case */
-function aggregateOrderedBlanks(results: readonly SingleBlankResult[]): ValidationResult {
+/**
+ * Verdict global d'une question à cases ordonnées, depuis le verdict de chaque case.
+ * `cases` : les cases de l'instance (repère une case « figure »).
+ */
+function aggregateOrderedBlanks(
+	results: readonly SingleBlankResult[],
+	cases: readonly InstanceBlank[]
+): ValidationResult {
 	// Seul le nombre de cases sert ici
 	const blanks = results;
 	// Ordered: per-blank pipeline
@@ -1771,6 +1778,11 @@ function aggregateOrderedBlanks(results: readonly SingleBlankResult[]): Validati
 			result.feedback = feedbackOf('bad_form', allViolations);
 		} else if (singleBlankFeedback) {
 			result.feedback = singleBlankFeedback;
+		} else if (cases.some((c) => c.construction)) {
+			// Question à figure (CP) : le message du juge s'il y en a un, jamais de numéros de case
+			result.feedback = cases
+				.map((c, i) => (c.construction ? blankFeedback[i] : undefined))
+				.find((message) => message !== undefined);
 		} else {
 			result.feedback = `Les blancs suivants sont incorrects: ${incorrectIndexes.join(', ')}`;
 		}
@@ -2201,7 +2213,7 @@ function detailBlanks(
 			validateSingleBlank(userAnswers[i], blank, userAnswersLatex?.[i], instance)
 		);
 		return {
-			result: aggregateOrderedBlanks(results),
+			result: aggregateOrderedBlanks(results, blanks),
 			statuses: results.map(singleBlankStatus),
 			remarks: results.map((r) => remarksOf(r.feedback, r.constraintViolations)),
 			answers

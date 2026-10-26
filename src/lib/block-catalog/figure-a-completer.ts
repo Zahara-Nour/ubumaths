@@ -89,6 +89,21 @@ export const figureACompleterEntry: BlockCatalogEntry = {
 			),
 			explanation:
 				'Le côté [AB] est tracé, ses sommets sont cachés. Un côté tracé en plusieurs morceaux est accepté ; un trait qui dépasse ou qui ne suit pas les lignes est faux.'
+		},
+		{
+			title: 'Vérifier un alignement, puis répondre oui ou non',
+			source: fence(
+				'figure-a-completer',
+				'fenetre: 0 ; 10 ; 0 ; 6',
+				'outils: droite',
+				'verifier: droite_par A ; B',
+				'---',
+				'A = point(2, 3)',
+				'B = point(8, 5)',
+				'C = point(5, 4.25)'
+			),
+			explanation:
+				'C est à un quart de carreau de la droite (AB) : invisible à l’œil, net une fois la droite tracée. Dans la question, une case [_] suit le bloc pour « oui » ou « non » (majuscules acceptées) ; Valider reste grisé tant que la droite manque. Une coordonnée décimale s’écrit avec un point (4.25) : une variable calculée par eval: donnerait une fraction, que la figure ne lit pas.'
 		}
 	],
 	mistakes: [

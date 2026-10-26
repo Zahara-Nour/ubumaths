@@ -2,18 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1793._
+_Mis à jour le 2026-10-26, PR 5 (CP-058) codée, PR à ouvrir._
 
-- **État** : CP-059 (#1768 → #1787) et CP-060 (#1793 : outil segment, `carre` / `rectangle`, modèle
-  `cp-figure/02-terminer-carre-rectangle.json`, 22 specs) mergés ; rien de tout cela en prod (attend un `deploy:prod`).
-  Brouillon CP-059 en prod (`010d81a5`), à publier après le `deploy:prod` ; CP-060 pas encore créé en base.
-- **Prochaine action** : PR 5 — CP-058 (§ 8, décisions § 9) : modèle mixte figure + case texte oui / non, Valider
-  grisé tant que la droite manque, casse de « oui » à vérifier dans le validateur.
-- **En attente de David** : essai de CP-060 (`docs/wip/verifications-manuelles.md`) ; go pour `create-questions
---publier` de CP-060 (brouillon), puis nœud + tag (migration, comme #1787).
-- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; case « figure » mêlée à une autre case
-  jamais encore dans un modèle (CP-058 sera le premier) ; limites connues de CP-060 au § 9.
-- **Worktree / branche** : aucun (retiré après #1793).
+- **État** : CP-059 et CP-060 mergés (pas en prod) ; PR 5 sur `feat/geometrie-validation-alignement` : modèle
+  `cp-figure/03-points-alignes.json` (11 specs, 200 tirages), 3 correctifs d'écran (§ 10), 5 tests d'écran.
+- **Prochaine action** : PR 5 → revue `code-reviewer` (Opus : correction des réponses) → CI → merge.
+- **En attente de David** : essai de CP-060 et de CP-058 (`docs/wip/verifications-manuelles.md`) ; go pour
+  `create-questions --publier` de CP-060 et CP-058 (brouillons), puis nœud + tag (migration, comme #1787) ; garde
+  « les tirages construisent la figure » (§ 10) : à faire ?
+- **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; `eval:` rend une fraction LaTeX,
+  illisible par la figure, et les tirages ne le voient pas (§ 10) ; limites connues de CP-060 au § 9.
+- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `feat/geometrie-validation-alignement`.
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -375,6 +374,34 @@ rend toute réponse fausse sans prévenir l'auteur (le modèle tire des entiers)
 
 **PR 5 — CP-058** : modèle mixte (figure + case texte), Valider grisé tant que la figure est vide, casse de « oui ».
 
+## 10. PR 5 — CP-058, figure + case oui / non (2026-10-26)
+
+**Modèle** `scripts/questions/cp-figure/03-points-alignes.json` (écrit par
+`docs/wip/geometrie-validation/modele-cp058.py`) : « Les points A, B et C sont-ils alignés ? Trace la droite (AB)
+pour vérifier. » + « Réponds par oui ou par non : [_] », `delay` 60 s, feuille blanche. Deux variations : C au
+milieu de [AB] (alignés, « oui ») ; C à 0,25 carreau au-dessus ou au-dessous (« non »). Droite oblique, écart
+horizontal 6 ou 8 (A et B écartés), vertical 2 ou 4 ; `k` choisit la lettre du point à vérifier, comme CP-059.
+11 specs vertes : « oui », « Oui », « OUI » avec espaces (la casse est ignorée, vérifié), droite par l'autre paire
+de points quand ils sont alignés, réponse fausse, droite par le mauvais point, droite de trop ; 200 tirages.
+
+**Trois correctifs d'écran** (tests `figure-a-completer-mixte.svelte.test.ts`, chacun rouge sans son correctif) :
+
+1. **Valider n'était pas grisé à l'entraînement** : `FlashCard` accepte toute question à cases, même vide (voulu,
+   pour « Tu n'as rien répondu. ») ; la décision « grisé tant que rien n'est tracé » (CP-059 Q6) ne valait qu'en
+   évaluation (`QuestionCard`). Désormais une case « figure » vide grise Valider partout — Entrée dans la case
+   texte ne valide plus non plus. Vaut aussi pour CP-059 et CP-060.
+2. **Message global** : figure fausse → « Les blancs suivants sont incorrects: 1 » au lieu du message du juge
+   (`aggregateOrderedBlanks`). Avec une case « figure » : le message du juge, ou aucun ; jamais de numéros.
+3. **« Blanc 1 : Ta droite… »** sous l'énoncé (`FillBlanksInput`) : retiré pour la case « figure ».
+
+**Constaté** : temps écoulé avec la figure vide et « oui » tapé → `unoptimal_form` (½ point, statuts de `docs/systeme/questions.md` § 5) et « Tu n'as pas
+tout complété. » — règle générale des cases à moitié vides, laissée telle quelle (spec qui le fige).
+
+**Piège trouvé, non corrigé** : `y3 = eval:(y1 + y2)/2 + h/4` donne `\dfrac{13}{4}` ; la figure ne se construit
+pas (exception au jugement : toute réponse fausse) et pourtant 200/200 tirages « réussis » — les tirages ne
+construisent pas la figure. Contourné (`{{ym}}.25`) ; noté dans la fiche du catalogue. Garde possible : faire
+construire la figure à chaque tirage (`check-template`) — à proposer à David.
+
 ## Journal
 
 - 2026-10-24 : relevé « validation de figure élève » dans la géométrie (§ 1), au journal questions.
@@ -399,3 +426,4 @@ rend toute réponse fausse sans prévenir l'auteur (le modèle tire des entiers)
 - 2026-10-26 : David suit les recos des § 7 et § 8 ; plan des PR 4 et 5 (§ 9) ; worktree recréé.
 - 2026-10-26 : PR 4 codée (moteur, écran, modèle CP-060) ; revue Opus : 1 faux verdict corrigé (trait aligné détaché), 5 mineurs traités, 2 limites notées.
 - 2026-10-26 : #1793 mergée (CI verte après fusion de `main`, conflit d’une ligne dans `ubumark.md`).
+- 2026-10-26 : PR 5 codée : modèle CP-058 (11 specs), 3 correctifs d’écran (Valider grisé à l’entraînement, message du juge, « Blanc 1 »), exemple au catalogue et sur `/dev/carte-question` ; piège `eval:` → fraction trouvé.
