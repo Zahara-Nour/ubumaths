@@ -4,6 +4,7 @@ import {
 	card,
 	cardAction,
 	cardLocator,
+	focusCardField,
 	cards,
 	expectLatex,
 	hasSteps,
@@ -11,6 +12,7 @@ import {
 	openAtelier,
 	steps,
 	stepsAs,
+	typeInCard,
 	type Answer
 } from './helpers/atelier';
 import { openView, readCell, typeCell } from './helpers/grille';
@@ -25,7 +27,8 @@ import { openView, readCell, typeCell } from './helpers/grille';
  * qui changent le domaine), les cartes valeur qu'on retouche. Un test par
  * ligne, son numéro de PR dans le titre. L'attendu est celui de la ligne : un
  * test rouge est un bug ou une ligne périmée, à signaler à David — jamais un
- * attendu à changer pour passer.
+ * attendu à changer pour passer. « console de l’Atelier » est le nom de sa ligne
+ * (sans n° de PR). « Reste à la main » : ce qui reste dans la liste.
  */
 
 test.beforeEach(async ({ page }) => {
@@ -89,11 +92,7 @@ async function mathValue(field: Locator): Promise<string> {
 
 /** Ajoute puis efface un chiffre au bout du champ d'une carte, puis Entrée */
 async function retouchCard(page: Page, name: string): Promise<void> {
-	const field = cardLocator(page, name).locator('math-field');
-	await expect(async () => {
-		await field.click();
-		expect(await field.evaluate((element) => element === document.activeElement)).toBe(true);
-	}).toPass();
+	await focusCardField(page, name);
 	await page.keyboard.press('End');
 	await page.keyboard.type('1');
 	await page.keyboard.press('Backspace');
@@ -110,22 +109,9 @@ function consoleButton(page: Page): Locator {
 	return page.getByRole('button', { name: 'Console', exact: true });
 }
 
-/** Tape au vrai clavier dans le champ d'une carte valeur, à la place de ce qu'il contient */
-async function typeValueCard(page: Page, name: string, keys: string): Promise<void> {
-	const field = cardLocator(page, name).locator('math-field');
-	await expect(async () => {
-		await field.click();
-		expect(await field.evaluate((element) => element === document.activeElement)).toBe(true);
-	}).toPass();
-	await page.keyboard.press('ControlOrMeta+A');
-	await page.keyboard.press('Backspace');
-	await page.keyboard.type(keys);
-	await page.keyboard.press('Enter');
-}
-
 test('#1289 — durée tapée dans une carte valeur ; .convertir', async ({ page }) => {
 	await calc(page, 'd = 1');
-	await typeValueCard(page, 'd', '2 h 30 min');
+	await typeInCard(page, 'd', '2 h 30 min');
 	expect((await calc(page, 'd')).text).toContain('2 h 30 min');
 	// Retouchée, la carte montre la durée et se relit
 	await retouchCard(page, 'd');
@@ -134,9 +120,12 @@ test('#1289 — durée tapée dans une carte valeur ; .convertir', async ({ page
 
 	await calc(page, '2 h 30 min');
 	expect((await calc(page, '.convertir min')).text).toContain('2 h 30 min=150 min');
+	// Reste à la main : « idem `1/2 m` » (écart, à David : MathLive met « 2 m » au dénominateur)
 });
 
-test('#1296 — carte valeur : virgule décimale dans le champ', async ({ page }) => {
+test('#1296 — carte valeur : virgule décimale dans le champ (sans la durée)', async ({ page }) => {
+	// Reste à la main : `d = 1 h 30 min * 2` retouchée reste une durée — refusée depuis #1562
+	// (écart, à David)
 	await calc(page, 'd = 2,5 km');
 	expect(await cardField(page, 'd')).toBe(normalizeLatex('2{,}5~\\operatorname{\\mathrm{km}}'));
 });
@@ -146,6 +135,9 @@ test('#1301 — carte valeur retouchée : la grandeur reste ; virgules dans une 
 }) => {
 	await calc(page, 'd = 10^3[m]');
 	await retouchCard(page, 'd');
+	// Le champ a été relu : la carte est toujours une longueur, sans erreur
+	await expect.poll(() => cardField(page, 'd')).toContain('\\mathrm{m}');
+	expect((await card(page, 'd')).message).toBeNull();
 	expect((await calc(page, 'd')).text).toContain('1000 m');
 	await calc(page, 'f(x) = 2,5x + 0,5');
 	expect(await cardField(page, 'f')).toBe(normalizeLatex('2{,}5 x + 0{,}5'));
@@ -191,7 +183,10 @@ test('#1292, #1313, #1318 — « Résumé / Détaillé » : ligne par ligne, ret
 	expect(stepNumbers(summary)).toHaveLength(3);
 	expect(isSubsequence(summary, detailed)).toBe(true);
 	expect(alignedBlocks(summary)).toEqual(alignedBlocks(detailed));
-	expectLatex(inequation, (await calc(page, '.résoudre 3x-4\\leq 2x+1')).latex ?? '');
+	// La réponse affichée de la ligne n'a pas changé
+	expect(await inequation.line.locator('.reponse .math').getAttribute('data-latex')).toBe(
+		inequation.latex
+	);
 	await stepsAs(inequation, 'Détaillé');
 
 	// #1313 : deux lignes dépliées, la 1re en « Résumé » ne change pas la 2e
@@ -276,15 +271,19 @@ test('#1356 — l’historique revient au rechargement ; ↑ ; le lien n’empor
 	await field.press('ArrowUp');
 	await expect(field).toHaveValue('f(x) = 2x');
 
-	// Le lien de partage : les cartes, pas la console
+	// Le lien de partage : les cartes, pas la console. La page du lien partage le stockage de
+	// celle-ci (même contexte) : f visible et aucune ligne prouvent que le lien a été lu
 	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
 	await page.getByRole('button', { name: 'Partager', exact: true }).click();
+	await expect(page.getByLabel('Lien de partage')).toHaveValue(/\?a=/);
 	const link = await page.getByLabel('Lien de partage').inputValue();
 	const other = await page.context().newPage();
 	await other.goto(link);
 	await expect(cardLocator(other, 'f')).toBeVisible();
 	await expect(other.locator('ol.historique > li')).toHaveCount(0);
 	await other.close();
+	// Reste à la main : « Repartir de zéro vide tout » (écart, à David : la console garde
+	// ses lignes depuis #1530)
 });
 
 test('#1385, #1388, #1423 — « Écriture mathématique » : choix retenu, saisies au clavier', async ({
@@ -311,14 +310,17 @@ test('#1385, #1388, #1423 — « Écriture mathématique » : choix retenu, sais
 	await expect(solve.locator('.reponse')).toContainText('2');
 
 	for (const [keys, expected] of [
-		['dériver x^3', '3'],
-		['1/4+1/3', '7'],
-		['5 km + 300 m', '5,3 km']
+		['dériver x^3', '3 x^2'],
+		['1/4+1/3', '\\frac{7}{12}'],
+		['5 km + 300 m', '5{,}3']
 	] as const) {
 		const line = await calcMath(page, keys);
-		await expect(line.locator('.reponse'), keys).toContainText(expected);
 		await expect(line, keys).not.toHaveClass(/refus/);
+		const shown = (await line.locator('.reponse .math').getAttribute('data-latex')) ?? '';
+		expect(normalizeLatex(shown), keys).toContain(normalizeLatex(expected));
 	}
+	// 5 km + 300 m : la grandeur dite en texte
+	await expect(historyLines(page).last().locator('.reponse')).toContainText('5,3 km');
 
 	// #1423 : `3*4` → la croix ×, puis 12
 	await field.click();
@@ -381,7 +383,8 @@ test('#1425 — pas de menu ☰ ni de menu au clic droit dans les champs mathém
 	for (const field of [mathConsole(page), cardLocator(page, 'f').locator('math-field')]) {
 		expect(await mathFieldButtons(field)).toEqual({ menu: false, keyboard: true });
 		await field.click({ button: 'right' });
-		await page.waitForTimeout(300);
+		// Une absence ne s'attend pas : un court délai, le témoin ci-dessous s'ouvre en moins
+		await page.waitForTimeout(500);
 		await expect(menu).toHaveCount(0);
 		await page.keyboard.press('Escape');
 	}
@@ -431,16 +434,26 @@ test('#1442 — téléphone (390 px) : « Mes objets » hors de la barre d’ic�
 }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.reload();
-	for (const name of ['a', 'b', 'c', 'k', 's', 'p', 'q', 'r']) {
-		await calc(page, `${name} = 1`);
-	}
+	const panel = page.locator('aside.panneau');
+	const scrolls = () =>
+		panel.evaluate((element) =>
+			[element, ...element.querySelectorAll('*')].some(
+				(node) =>
+					node.scrollHeight > node.clientHeight + 1 &&
+					['auto', 'scroll'].includes(getComputedStyle(node).overflowY)
+			)
+		);
+	for (const name of ['a', 'b']) await calc(page, `${name} = 1`);
 	await consoleButton(page).click();
 	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'false');
-	const panel = page.locator('aside.panneau');
-	// Replié au téléphone depuis #1546 : on le déplie
-	if (await panel.evaluate((element) => element.classList.contains('replie'))) {
-		await panel.locator('button.replier').click();
-	}
+	// Replié au téléphone depuis #1546 (plus récent que la ligne) : on le déplie
+	await expect(panel).toHaveClass(/replie/);
+	await panel.locator('button.replier').click();
+	await expect(panel.locator('.compte')).toHaveText(/2\s+objets/);
+	// Contre-épreuve : avec 2 objets, rien ne défile
+	expect(await scrolls()).toBe(false);
+	for (const name of ['c', 'k', 's', 'p', 'q', 'r']) await calc(page, `${name} = 1`);
+	await consoleButton(page).click();
 	await expect(panel.locator('.compte')).toHaveText(/8\s+objets/);
 	// Ni le panneau ni ses boutons « + Fonction… » ne passent sous « Partager », « Réglages »
 	for (const name of ['Partager', 'Réglages']) {
@@ -448,14 +461,8 @@ test('#1442 — téléphone (390 px) : « Mes objets » hors de la barre d’ic�
 	}
 	await expectNotCovered(panel.getByRole('button', { name: '+ Fonction' }));
 	// Avec 8 objets, le panneau défile
-	const scrolls = await panel.evaluate((element) =>
-		[element, ...element.querySelectorAll('*')].some(
-			(node) =>
-				node.scrollHeight > node.clientHeight + 1 &&
-				['auto', 'scroll'].includes(getComputedStyle(node).overflowY)
-		)
-	);
-	expect(scrolls).toBe(true);
+	expect(await scrolls()).toBe(true);
+	// Reste à la main : la vue Graphe utilisable à 390 px
 });
 
 test('#1692 — tableur V4 retiré : /spreadsheet mène à l’atelier', async ({ page }) => {
@@ -558,10 +565,7 @@ test('console de l’Atelier — ouverte, fermée, raccourcis, poignée, lignes,
 	await expect(consoleButton(page)).toBeFocused();
 
 	// La touche sous Échap hors d'un champ ouvre / ferme ; dans un champ, elle tape
-	await page
-		.locator('body')
-		.click({ position: { x: 5, y: 5 } })
-		.catch(() => undefined);
+	// (le focus est sur le bouton Console, hors d'un champ)
 	await page.keyboard.press('Backquote');
 	await expect(consoleButton(page)).toHaveAttribute('aria-expanded', 'true');
 	await field.focus();
