@@ -478,7 +478,7 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 
 - **Rôle UI** : Tuteur IA, mascotte du site, voix dominante.
 - **Tempérament** : Vénal, lâche, grandiloquent, gourmand, paresseux. Mais brillant quand il sent une gidouille à empocher.
-- **Apparence** : Ronde silhouette en poire, gidouille spiralée sur le ventre, crâne en forme de poire, chapeau pointu.
+- **Apparence** 🟡 (décision de David, 2026-10-26) : corps énorme en poire, gidouille spiralée sur le ventre ; crâne chauve, rond, **légèrement** en poire (par les bajoues, jamais pointu au sommet), petite couronne d'or ; rasé de près, sans moustache ni barbe ; pourpoint blanc court et bouffant, ceinture, culotte, chaussures pourpres ; cape verte courte à dorures, sceptre d'or. Pas de chapeau pointu ni de longue robe blanche (aucune ressemblance avec une cagoule). Prompt d'illustration : Section XI, « Illustrations ».
 - **Tics de langage** : « Merdre ! », « Cornegidouille ! », « De par ma chandelle verte ! », « Tudieu ! », « Bouffre ! ». Inverse parfois les mots ou ajoute des néologismes.
 - **Motivation** : Empocher. Toujours empocher. Si l'élève apprend, c'est un effet secondaire regrettable mais lucratif.
 - **Quand il intervient** : tutorat, accueil, validation des cartes VIP, événements majeurs.
@@ -1944,6 +1944,34 @@ Pour les **citations rotatives sur splash screen** (voix Tristan Bernard, voir S
 - **L'effet « engrenages tournants »** pour les transitions Glitchistan (cohérence steampunk).
 - **L'effet « plume de calligraphe »** pour les apparitions de Monsieur Prudhomme (écrans administratifs).
 - **L'effet « chat noir traversant »** pour l'easter egg du Chat Noir (rare, ~1/1000 chargement de page).
+
+### Illustrations 🟡
+
+Décisions de David (2026-10-25 et 2026-10-26), journal : `docs/wip/illustrations-progress.md`.
+
+- **Style** : affiche lithographiée de Montmartre (1896), à la manière de Steinlen ; même famille que les Mathoux. Pas de halo systématique.
+- **Deux nuanciers** (`docs/Chiphres/illustrations/nuancier/`) : _numérique_ (la palette canonique ci-dessus) pour tout ce qui vit dans l'interface (personnages qui parlent à l'élève, icônes, bannières) ; _encre d'imprimerie_ (la même, désaturée, sur papier crème) pour les objets imprimés du Royaume (grande carte, Shtam, Almanach, Édits Royaux, diplômes, affiches d'événements). Les Mathoux et les Palotins gardent leurs couleurs.
+- **Dans un prompt**, nommer les couleurs en anglais courant (navy ink, cream parchment, emerald green, marigold yellow, deep crimson…), jamais par leur nom du Royaume, et joindre le nuancier de référence sans texte.
+
+#### Prompt de référence — Père Ubu 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et une capture d'un Mathou).
+
+```text
+Draw Père Ubu, the greedy and pompous king from Alfred Jarry's play "Ubu Roi" (1896), as a full-body character portrait.
+
+Character: a huge pear-shaped body, narrow at the shoulders and enormous at the belly; a big spiral drawn on his round belly (his emblem, the "gidouille"); a round bald head, only slightly pear-shaped (a bit wider at the jowls, rounded on top, never pointed), fully uncovered so the whole head and face are visible; a small golden crown sitting on top of his bald head; tiny eyes, clean-shaven face with no mustache and no beard, chubby cheeks, a smug, self-satisfied grin; short arms, small feet. He is vain, cowardly and greedy, but funny, never scary: a comic villain for students aged 11 to 17.
+
+Clothing: a short, puffy white doublet stretched over his belly, with puffed sleeves and a wide belt, worn with breeches (not a long robe); small deep crimson shoes; a short emerald green royal cape with golden trim and golden embroidery; a golden scepter in his hand; the belly spiral in navy ink.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes. Same drawing family as the attached cat character (soft confident line, flat colors).
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, white for the doublet, emerald green for the cape, deep crimson for the shoes, marigold yellow for the crown, the scepter and the golden trim.
+
+Composition: Ubu standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+Pour les images suivantes d'Ubu, joindre l'image de référence obtenue avec ce prompt et demander « the same character, same style and colors, … ».
 
 ---
 
