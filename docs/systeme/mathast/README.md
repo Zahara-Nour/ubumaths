@@ -1553,7 +1553,14 @@ x(x + 2)/x = x + 2`, `(x² − 1)/(x − 1) = (x − 1)(x + 1)/(x − 1) = x + 1
   valeur au point et la limite numériquement (repli : `tidy` des deux côtés, ou leur différence
   mise au propre nulle, `tidy` gardant l'ordre écrit entre deux sommes : `(a-1)(a+1)` et
   `(a+1)(a-1)`, lot 4c-bis, 2026-10-23) — `|x| + 0.5` en 0
-  a pour limite `0.5` et pour valeur `\dfrac{1}{2}`, continue. Les étapes « limite à gauche /
+  a pour limite `0.5` et pour valeur `\dfrac{1}{2}`, continue. La **stratégie 2.46**
+  (`tryPowerOfUnboundedLimit`, V66, 2026-10-26) prend le relais quand la limite de u est
+  infinie : uⁿ, n entier, par composition — limite de u par le moteur entier (formes
+  indéterminées levées : `(x^2-x)^3` en +∞), puis `powerSign` (`limits/sign-tracking.ts`) :
+  u → ±∞ donne ±∞ (n > 0, signe selon la parité) ou 0 (n < 0) ; u → 0 avec n < 0 donne ±∞, le
+  côté venant de `classifyWithSign`. Avant elle, `(x-3)^2` en +∞ sortait « non supportée » (la
+  composition ne connaît que xⁿ, variable nue) et `.variations (x-3)^2` n'avait pas de
+  tableau. Les étapes « limite à gauche /
   à droite » d'une limite bilatérale s'écrivent en `a^-` / `a^+` (côté étudié, pas celui de la
   limite).
 - **Fonctions en escalier** (`limits/piecewise.ts`, `evaluatePiecewiseLimit`, V60,

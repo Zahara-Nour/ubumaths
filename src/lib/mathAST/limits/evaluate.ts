@@ -98,7 +98,15 @@ import {
 import type { Rational } from '../normal/types';
 import { rationalToNode } from '../common/numeric';
 import { rewriteIndeterminateSum } from './sum-reduction';
-import { classifyWithSign } from './sign-tracking';
+import {
+	classifyWithSign,
+	isSignedInfinity,
+	isSignedZero,
+	mathNodeToSignedValue,
+	powerSign,
+	signedValueToInfinity,
+	type SignedLimitValue
+} from './sign-tracking';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { numericNode } from '../common/numeric';
@@ -788,6 +796,34 @@ function evaluateLimitExactForm(
 			approachPoint,
 			dir,
 			'exact',
+			'none',
+			'composition',
+			recorder,
+			opts
+		);
+	}
+
+	// Stratégie 2.46 : uⁿ, n entier, u → ±∞ (ou u → 0 avec n < 0), par
+	// composition. La continuité (2.45) s'arrête à une limite finie de u et la
+	// composition (2.5) ne connaît que xⁿ : (x − 3)² en +∞ n'avait pas de
+	// limite (V66). La limite de u vient du moteur entier, qui lève ses formes
+	// indéterminées : (x² − x)³ en +∞.
+	const powerLimit = tryPowerOfUnboundedLimit(expression, varName, approachPoint, dir, options);
+	if (powerLimit !== null) {
+		recorder.recordStepByRule(
+			'composition',
+			expression,
+			powerLimit,
+			'summarized',
+			approachPoint,
+			'Composition : limite de uⁿ à partir de celle de u'
+		);
+		return createResult(
+			powerLimit,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(powerLimit) ? 'infinite' : 'exact',
 			'none',
 			'composition',
 			recorder,
@@ -1494,6 +1530,40 @@ function tryLogarithmOfPositiveLimit(
 	if (value.n === value.d) return number('0');
 	const constant = exactConstantNode(inner.value);
 	return constant === null ? null : ln(constant);
+}
+
+/**
+ * uⁿ, n entier constant non nul : u → ±∞ donne ±∞ (n > 0) ou 0 (n < 0) ;
+ * u → 0 avec n < 0 donne ±∞, le côté de 0 venant du suivi du signe. Une
+ * limite finie non nulle de u relève de la continuité : `null`.
+ */
+function tryPowerOfUnboundedLimit(
+	expression: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): MathNode | null {
+	const node = stripDelimiters(expression);
+	if (!isSuperscript(node) || !containsVariable(node.base, varName)) return null;
+	const exponent = literalNumberValue(node.superscript);
+	if (exponent === null || !Number.isInteger(exponent) || exponent === 0) return null;
+
+	const inner = evaluateLimit(node.base, varName, approach, dir, options);
+	if (inner.value === null) return null;
+	let innerSign: SignedLimitValue;
+	if (isInfinity(inner.value)) {
+		innerSign = mathNodeToSignedValue(inner.value);
+	} else if (exponent < 0 && inner.status === 'exact' && computeNumericValue(inner.value) === 0) {
+		innerSign = classifyWithSign(node.base, varName, approach, dir);
+	} else {
+		return null;
+	}
+
+	const result = powerSign(innerSign, exponent);
+	if (isSignedInfinity(result)) return signedValueToInfinity(result);
+	if (isSignedZero(result)) return number('0');
+	return null;
 }
 
 /**

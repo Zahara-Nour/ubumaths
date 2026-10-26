@@ -35,7 +35,10 @@ describe('uⁿ avec u → ±∞', () => {
 		['(x-3)^3', '+∞', '+\\infty'],
 		['(x-3)^3', '-∞', '-\\infty'],
 		['(-x)^3', '+∞', '-\\infty'],
-		['(\\ln x)^2', '+∞', '+\\infty']
+		['(\\ln x)^2', '+∞', '+\\infty'],
+		// base en forme indéterminée, levée par le moteur entier
+		['(x-\\ln x)^2', '+∞', '+\\infty'],
+		['(e^x-x)^3', '+∞', '+\\infty']
 	])('%s en %s → %s', (latex, at, expected) => {
 		expect(valueOf(latex, at)).toBe(expected);
 	});

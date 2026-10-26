@@ -6,11 +6,11 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, à l'ouverture._
+_Mis à jour le 2026-10-26, PR ouverte._
 
-- **État** : tests rouges écrits (`limits/__tests__/power-composition.test.ts`, `it.todo` N4 de `atelier/__tests__/composees-ensemble.test.ts` devenu un test).
-- **Prochaine action** : brancher le cas puissance dans `tryCompositionLimit` (`limits/composition.ts`) avec `powerSign` corrigée (exposant négatif).
-- **En attente de David** : écarts voisins (`\frac{(x-3)^2}{x^2}` en −∞, `(x-3)^2e^{-x}` en +∞, `(x-3)^{3/2}` en −∞) notés à part, pas traités ici ; exposants entiers seuls.
+- **État** : stratégie 2.46 (`tryPowerOfUnboundedLimit`, `limits/evaluate.ts`) + `powerSign` corrigée (n < 0) ; tests verts (mathAST 25 560, atelier). PR ouverte, revue `code-reviewer` (Opus).
+- **Prochaine action** : revue, CI, merge.
+- **En attente de David** : écarts voisins notés V67-V69 dans `ecarts-a-trier.md`, hors de cette PR (non tranché : traiter ou non) ; exposants entiers seuls.
 - **Worktree / branche** : `../ubumaths-wt-limite-puissance` · `fix/limite-puissance`.
 
 ---
@@ -18,3 +18,4 @@ _Mis à jour le 2026-10-26, à l'ouverture._
 ## Journal
 
 - **2026-10-26** — Cause : la composition ne traitait que xⁿ (variable nue) et les nœuds fonction (ln, exp, √) ; la continuité (2.45) refuse une limite intérieure infinie. `powerSign` (sign-tracking) existait, exportée, jamais appelée, fausse pour n < 0 en 0 (rendait 0 au lieu de ±∞). Phase 0 validée par David (« ok go »).
+- **2026-10-26** — Première version dans `tryCompositionLimit` (via `classifyWithSign`) : `(x^2-x)^3` restait sans limite, le suivi du signe ne lève pas ∞ − ∞. Règle déplacée dans `evaluate.ts` (2.46, après la continuité 2.45) : limite de la base par le moteur entier. « Comment ? » de l'atelier : étapes « limite d'un produit » ou développement ; `(ln x)²` en 0⁺ sans « Comment ? » (repli). V65 renuméroté V66 (doublon).
