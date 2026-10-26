@@ -7,7 +7,8 @@
 	`docs/wip/construire-progress.md`, Q8). Avec la réponse de l'élève : sa
 	construction, verrouillée, sans réserve (juste : cadre vert ; faux : sa valeur
 	et une construction juste à côté) ; sans réponse (R9), la construction juste
-	seule. Lecture seule : jamais de réserve active.
+	seule. Lecture seule : jamais de réserve active. Droite à placer (```line,
+	`placer:`) : la droite verrouillée avec le point de l'élève, ou le point juste.
 
 	@module components/questions/BuildAnswer
 -->
@@ -16,6 +17,9 @@
 	import CollectionConstruire from '$lib/components/markdown/nodes/CollectionConstruire.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
 	import MonnaieConstruire from '$lib/components/markdown/nodes/MonnaieConstruire.svelte';
+	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
+	import NumberLinePlacer from '$lib/components/markdown/nodes/NumberLinePlacer.svelte';
+	import { parseNumberLineContent } from '$lib/ubumark/parser/number-line-parser';
 	import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
 	import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
 	import { solutionBuild as collectionSolution } from '$lib/ubumark/utils/collection-construire';
@@ -43,6 +47,7 @@
 	);
 	let collection = $derived(kind === 'collection' ? parseCollectionContent(source) : null);
 	let monnaie = $derived(kind === 'monnaie' ? parseMonnaieContent(source) : null);
+	let line = $derived(kind === 'line' ? parseNumberLineContent(source).node : null);
 </script>
 
 {#if collection?.spec?.build !== undefined}
@@ -55,6 +60,15 @@
 				...collection,
 				spec: { ...spec, build: undefined, sets: [collectionSolution(spec.build!)] }
 			}}
+		/>
+	{/if}
+{:else if line?.placer !== undefined}
+	{#if locked}
+		<NumberLinePlacer node={line} answer={locked} showControls={false} />
+	{:else}
+		<!-- La droite avec le point juste, sans `placer:` : dessinée seule -->
+		<NumberLine
+			node={{ ...line, placer: undefined, points: [{ label: '', value: line.placer }] }}
 		/>
 	{/if}
 {:else if monnaie?.spec?.build !== undefined && monnaie.spec.reserve !== undefined}

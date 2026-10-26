@@ -72,6 +72,7 @@
 	import ImageDisplay from '$lib/components/markdown/nodes/ImageDisplay.svelte';
 	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
 	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
+	import NumberLine from '$lib/components/markdown/nodes/NumberLine.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
 	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
@@ -206,6 +207,7 @@
 		}
 		if (node.type === 'operation') return node.caseIndex !== undefined;
 		if (node.type === 'collection') return node.caseIndex !== undefined;
+		if (node.type === 'number-line') return node.caseIndex !== undefined;
 		if (node.type === 'monnaie') return node.caseIndex !== undefined;
 		if (node.type === 'figure') return node.construction?.caseIndex !== undefined;
 		if (node.type === 'choice') return node.caseIndex !== undefined;
@@ -445,7 +447,8 @@
 	/**
 	 * Une case à remplir, dans l'ordre de l'écran : prompt d'un champ MathLive, champ texte,
 	 * ou grille d'un bloc ```operation (ses cases forment UNE réponse ; division
-	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection ou d'une monnaie à construire
+	 * euclidienne : deux, le quotient puis le reste), ou plan d'une collection ou d'une monnaie à construire,
+	 * ou droite à placer
 	 */
 	type Slot =
 		| { field: MathfieldElement; promptId: string }
@@ -486,8 +489,10 @@
 	/** Curseur dans la case */
 	function focusSlot(slot: Slot) {
 		if ('build' in slot) {
-			// Plan vide : le premier bouton de la réserve
-			slot.build.querySelector<HTMLButtonElement>('.construire-ajouter:not(:disabled)')?.focus();
+			// Plan vide : le premier bouton de la réserve ; droite à placer : la droite
+			slot.build
+				.querySelector<HTMLElement>('.construire-ajouter:not(:disabled), [role="slider"]')
+				?.focus();
 			return;
 		}
 		if ('operation' in slot) {
@@ -852,6 +857,26 @@
 								}
 							: undefined}
 					/>
+				{/if}
+			{:else if node.type === 'number-line' && node.caseIndex !== undefined && node.placer !== undefined}
+				<!-- Droite à placer : l'élève pose son point, la graduation est la réponse -->
+				{@const caseIndex = node.caseIndex}
+				{@const state = inputStates[caseIndex]}
+				{#if showCorrectAnswers}
+					<!-- Bonne réponse : la droite avec le point juste -->
+					<BuildAnswer kind="line" source={node.source ?? ''} answer={null} status="solution" />
+				{:else}
+					<div data-construire-case={caseIndex}>
+						<NumberLine
+							{node}
+							answer={{
+								value: state?.value ?? '',
+								isCorrect: flashMode ? null : (state?.isCorrect ?? null),
+								disabled: flashMode || effectiveDisabled,
+								onChange: (value) => handleInputChange(caseIndex, value)
+							}}
+						/>
+					</div>
 				{/if}
 			{:else if node.type === 'collection' && node.caseIndex !== undefined && node.spec?.build !== undefined}
 				<!-- Collection à construire : l'élève pose barres et cubes, la valeur posée est la réponse -->

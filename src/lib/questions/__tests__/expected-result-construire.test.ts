@@ -110,3 +110,42 @@ describe('résultat attendu : case à construire', () => {
 		expect(kinds.indexOf('build')).toBeLessThan(kinds.indexOf('empty'));
 	});
 });
+
+// Droite à placer (```line, `placer:`) : même ligne `build`, genre `line`
+// (chantier `docs/wip/reponses-a-placer-progress.md`)
+describe('résultat attendu : droite à placer', () => {
+	const LINE = [
+		'Place 7.',
+		'',
+		'```line',
+		'start: 0',
+		'end: 20',
+		'step: 1',
+		'placer: 7',
+		'```'
+	].join('\n');
+
+	it('faux : la droite de l’élève, sans le bloc dans la consigne', () => {
+		const { lines } = buildExpectedResult(instance(LINE), { values: ['9'] });
+		expect(lines).toEqual([
+			expect.objectContaining({
+				kind: 'build',
+				buildKind: 'line',
+				answer: '9',
+				status: 'incorrect'
+			})
+		]);
+		expect(instructionOf(String(instance(LINE).statement))).toBe('Place 7.');
+	});
+
+	it('juste : correct', () => {
+		const { status } = buildExpectedResult(instance(LINE), { values: ['7'] });
+		expect(status).toBe('correct');
+	});
+
+	it('vide : la droite juste, puis « Tu n’as rien placé. »', () => {
+		const { lines } = buildExpectedResult(instance(LINE), { values: [''] });
+		expect(lines.map((l) => l.kind)).toEqual(['build', 'empty']);
+		expect(lines[1]).toMatchObject({ text: "Tu n'as rien placé." });
+	});
+});
