@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { calc, card, normalizeLatex, openAtelier } from './helpers/atelier';
+import { calc, card, cardLocator, normalizeLatex, openAtelier } from './helpers/atelier';
 import { openView, setConsole } from './helpers/grille';
 
 /**
@@ -252,4 +252,111 @@ test('#1538 — Parallèle, Perpendiculaire (fantôme) ; Point ou Segment sur un
 	expect(segment[0]).toMatch(/^F = point_sur\(k ; /);
 	expect(segment[1]).toMatch(/^G = point_sur\(d ; /);
 	expect(segment[2]).toMatch(/^d_3 = \[FG\]$/);
+});
+
+/** La couleur de remplissage des noms (points, droites, cercles) dessinés dans la Géométrie */
+async function nameColors(page: Page): Promise<string[]> {
+	return page
+		.locator('svg.geometry-canvas text.label, svg.geometry-canvas text.geo-text')
+		.evaluateAll((labels) => labels.map((label) => getComputedStyle(label).fill));
+}
+
+/** La luminance (0 noir, 255 blanc) d'une couleur `rgb(r, g, b)` */
+function lightness(color: string): number {
+	const [r, g, b] = (color.match(/\d+/g) ?? []).map(Number);
+	return 0.299 * r + 0.587 * g + 0.114 * b;
+}
+
+test('#1627 — petit point de couleur, cartes sans nature, console en bas, noms en noir', async ({
+	page
+}) => {
+	await prepare(page, ['A = (1 ; 2)', 'B = (3 ; 0)', 's = [AB]', 'c = cercle(A, 2)']);
+	// Le point de couleur d'une carte : un petit point (10 px) dans sa cible, pas un disque plein
+	const dot = page.locator('article.objet button.point').first();
+	const style = await dot.evaluate((button) => {
+		const after = getComputedStyle(button, '::after');
+		return { fill: getComputedStyle(button).backgroundColor, width: after.width };
+	});
+	expect(style).toEqual({ fill: 'rgba(0, 0, 0, 0)', width: '10px' });
+	// Plus de « POINT », « SEGMENT » ni de longueur sous les cartes
+	const texts = (await page.locator('article.objet').allTextContents()).join(' ');
+	expect(texts).not.toMatch(/POINT|SEGMENT|point|segment|longueur/);
+
+	// Géométrie : les noms en noir, les objets gardent leur couleur
+	const colors = await nameColors(page);
+	expect(colors.length).toBeGreaterThanOrEqual(4);
+	for (const color of colors) expect(lightness(color)).toBeLessThan(60);
+	const segment = page.locator('svg.geometry-canvas line.segment');
+	const segmentColor = await segment.evaluate((line) => getComputedStyle(line).stroke);
+	expect(lightness(segmentColor)).toBeGreaterThan(60);
+	// Thème sombre : les noms clairs
+	await page.emulateMedia({ colorScheme: 'dark' });
+	await expect
+		.poll(async () => Math.min(...(await nameColors(page)).map(lightness)))
+		.toBeGreaterThan(180);
+	await page.emulateMedia({ colorScheme: 'light' });
+
+	// La console descend en bas à chaque nouvelle ligne
+	for (let line = 1; line <= 25; line++) await calc(page, `${line}+1`);
+	const history = page.locator('ol.historique');
+	const atBottom = () =>
+		history.evaluate((list) => {
+			let box: HTMLElement | null = list;
+			while (box !== null && box.scrollHeight <= box.clientHeight) box = box.parentElement;
+			// Une console qui ne défile pas ne prouverait rien : il faut un conteneur qui déborde
+			return box !== null && box.scrollHeight - box.scrollTop - box.clientHeight < 4;
+		});
+	await expect.poll(atBottom).toBe(true);
+});
+
+test('#1546 — téléphone (390 px) : « Mes objets » replié, la place rendue, le compte suit', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	// Atelier vide : panneau déplié, sans flèche
+	const panel = page.getByRole('complementary').filter({ hasText: 'Mes objets' });
+	const toggle = panel.getByRole('button', { name: 'Mes objets', exact: true });
+	await expect(panel.getByRole('button', { name: '+ Fonction' })).toBeVisible();
+	await expect(toggle).toHaveCount(0);
+
+	// Avec deux points, au rechargement : une barre « Mes objets · 2 objets » et une flèche
+	await calc(page, 'A = (1 ; 2)');
+	await calc(page, 'B = (3 ; 0)');
+	await page.reload();
+	await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+	await expect(panel).toContainText('2 objets');
+	await expect(cardLocator(page, 'A')).toBeHidden();
+	// Le Graphe prend la place libérée ; la flèche déplie / replie
+	const graph = page.locator('main.grapheur-main');
+	const folded = (await graph.boundingBox())?.height ?? 0;
+	await toggle.click();
+	await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+	await expect(cardLocator(page, 'A')).toBeVisible();
+	expect((await graph.boundingBox())?.height ?? 0).toBeLessThan(folded);
+	await toggle.click();
+	await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+	// La toile de Géométrie ; un point posé à la barre d'outils : 3 objets, toujours replié
+	await openFigure(page);
+	await chooseTool(page, 'Point');
+	await clickAt(page, -3, -3);
+	await expect(panel).toContainText('3 objets');
+	await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+	// /grapheur sur un atelier vide : la carte f est visible et prête à taper
+	await page.getByRole('button', { name: 'Repartir de zéro', exact: true }).click();
+	await page.getByRole('button', { name: 'Vider l’atelier', exact: true }).click();
+	await page.goto('/grapheur');
+	const f = cardLocator(page, 'f');
+	await expect(f).toBeVisible();
+	await expect(f.locator('math-field')).toBeVisible();
+});
+
+test('#1546 — ordinateur : rien ne change, « Mes objets » déplié sans flèche', async ({ page }) => {
+	await calc(page, 'A = (1 ; 2)');
+	await calc(page, 'B = (3 ; 0)');
+	await page.reload();
+	const panel = page.getByRole('complementary').filter({ hasText: 'Mes objets' });
+	await expect(cardLocator(page, 'A')).toBeVisible();
+	await expect(panel.getByRole('button', { name: 'Mes objets', exact: true })).toHaveCount(0);
 });

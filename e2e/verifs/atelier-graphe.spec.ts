@@ -158,3 +158,75 @@ test('lecture graphique — losange glissé ou au clavier, lectures de la consol
 	await expect(handle).toHaveCount(0);
 	await expect(page.locator('.image-readings g')).toHaveCount(0);
 });
+
+/** La demi-largeur de la fenêtre du graphe, lue dans sa description (« Fenetre de x=-a a a ») */
+async function halfWidth(page: Page): Promise<number> {
+	const label =
+		(await page.locator('[role="img"][aria-label^="Graphique"]').getAttribute('aria-label')) ?? '';
+	const match = /Fenetre de x=(-?[\d.]+) a (-?[\d.]+)/.exec(label);
+	if (match === null) throw new Error(`fenêtre illisible : ${label}`);
+	return (Number(match[2]) - Number(match[1])) / 2;
+}
+
+/** `/grapheur` : définit `f` dans la console, la referme, puis `clicks` fois « Zoom arrière » */
+async function grapheur(page: Page, definition: string, clicks: number): Promise<void> {
+	await page.goto('/grapheur');
+	await calc(page, `f(x) = ${definition}`);
+	await setConsole(page, false);
+	const zoomOut = page.getByRole('button', { name: 'Zoom arrière' });
+	for (let click = 0; click < clicks; click++) await zoomOut.click();
+}
+
+/** Les étiquettes des asymptotes dessinées (« y = 0 », « x = e ») */
+async function asymptoteLabels(page: Page): Promise<string> {
+	return ((await page.locator('.asymptote-lines').textContent()) ?? '').replace(/\s+/g, ' ');
+}
+
+test('#1415, #1416, #1418, #1419 — grapheur : pôles de tan, asymptotes y = 0, y = e, x = e', async ({
+	page
+}) => {
+	// tan(x) sur ±100 (6 clics : ±114) : tous les pôles en pointillés
+	await grapheur(page, '\\tan(x)', 6);
+	await expect.poll(() => halfWidth(page)).toBeGreaterThan(100);
+	const half = await halfWidth(page);
+	let poles = 0;
+	for (let k = -1000; k <= 1000; k++) {
+		if (Math.abs(Math.PI / 2 + k * Math.PI) < half) poles++;
+	}
+	await expect.poll(() => verticalAsymptotes(page).count()).toBe(poles);
+	// Dézoomé à ±600 : aucun
+	const zoomOut = page.getByRole('button', { name: 'Zoom arrière' });
+	for (let click = 0; click < 4; click++) await zoomOut.click();
+	await expect.poll(() => halfWidth(page)).toBeGreaterThan(500);
+	await expect.poll(() => verticalAsymptotes(page).count()).toBe(0);
+
+	// ln(x)/√x : asymptote « y = 0 » à droite
+	await grapheur(page, '\\frac{\\ln(x)}{\\sqrt{x}}', 0);
+	await expect.poll(() => asymptoteLabels(page)).toMatch(/y\s*=\s*0/);
+	// (1 + 1/x)^x : étiquette « y = e »
+	await grapheur(page, '\\left(1+\\frac{1}{x}\\right)^{x}', 0);
+	await expect.poll(() => asymptoteLabels(page)).toMatch(/y\s*=\s*e/);
+	// 1/(ln(x) − 1) dézoomé : asymptote x = e — étiquetée « x=2.718 » (écart signalé à
+	// David : ni « e » comme y = e, ni virgule décimale)
+	await grapheur(page, '\\frac{1}{\\ln(x)-1}', 3);
+	await expect.poll(() => verticalAsymptotes(page).count()).toBe(1);
+	await expect.poll(() => asymptoteLabels(page)).toMatch(/x\s*=\s*(e|2[.,]718)/);
+});
+
+test('#1415, #1416, #1418, #1419 — Atelier : a = 1/3, (a x + 1)/(x² − a) se trace sans figer', async ({
+	page
+}) => {
+	await calc(page, 'a = 1/3');
+	const start = Date.now();
+	await calc(page, 'f(x) = (a x + 1)/(x^2 - a)');
+	await expect(page.locator('path.function-curve')).toHaveCount(1);
+	// « Fluide » : tracé en moins de 2 s (avant : plusieurs secondes figé)
+	expect(Date.now() - start).toBeLessThan(2000);
+	// Le curseur de a bouge le tracé sans figer : 5 pas en moins de 2 s
+	const slider = page.getByRole('slider', { name: 'Curseur de a' });
+	const moving = Date.now();
+	await slider.focus();
+	for (let press = 0; press < 5; press++) await slider.press('ArrowRight');
+	await expect(slider).toHaveAttribute('aria-valuetext', /a = /);
+	expect(Date.now() - moving).toBeLessThan(2000);
+});
