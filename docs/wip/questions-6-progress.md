@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 du lot « corrections » validée par David (§ 6)._
+_Mis à jour le 2026-10-26, PR 1 (contenus) écrite, avant la PR._
 
-- **État** : relevé et état des lieux faits (§ 1-3) ; la passe arbre-notions du 2026-10-20 fait foi (encadré § 2) ; phase 0 du lot « corrections » **validée** (§ 6, destinations dans `questions-6/destinations-42.csv`).
-- **Prochaine action** : PR 1 (contenus) dans un worktree `../ubumaths-wt-questions-6` : instantané prod (md5) puis script de lot. ⚠️ `create-questions --mettre-a-jour` ne touche **jamais un modèle publié** (ils le sont tous) → contenu par **migration générée**, comme `docs/wip/questions/lot-corrections-cp.py` (`scissions_outils.generer`, instantané `etat-prod-…`) ; lire le § 7 de la démarche et ce script avant d'écrire. Puis PR 2 (niveaux, nœuds, tags), gabarit `20261026210000_questions_cp_c_rangement_tags.sql`.
-- **En attente de David** : rien pour le lot « corrections » ; § 5 questions 6-8 (outils, « ordonner », groupe D) : recos données le 2026-10-26, pas encore tranchées.
-- **Pièges en cours** : un tag exige le modèle sur le nœud du point (17 déplacements) ; inclusion stricte ; QCM en réécriture (`figure-et-choix`) ; géométrie en refonte ; écriture en prod lancée par David (`!`).
-- **Worktree / branche** : aucun encore (journal sur `main`).
+- **État** : PR 1 commitée sur `feat/questions-6-corrections` (§ 7) : migration `20261027100000_questions_6_contenu`, test vert et rouge sans elle ; revues `security-auditor` + `code-reviewer` en cours.
+- **Prochaine action** : PR 1 → CI → merge → `db:migrate` (4 conditions). Puis PR 2 (niveaux, nœuds, tags des 37 + archivage de 3a7a5711 et retrait de son tag), gabarit `20261026210000_questions_cp_c_rangement_tags.sql`, horodatage `20261027100100`.
+- **En attente de David** : § 5 questions 6-8 (outils, « ordonner », groupe D) : recos données le 2026-10-26, pas encore tranchées.
+- **Pièges en cours** : un tag exige le modèle sur le nœud du point (17 déplacements) ; inclusion stricte ; QCM en réécriture (`figure-et-choix`) ; géométrie en refonte ; `releve-prod.ts` lit `.env` (prod), `svelte-kit sync` avant `question:specs` dans un worktree neuf.
+- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-corrections`.
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -175,3 +175,17 @@ Usages en prod (2026-10-26) : 0 carte FSRS, 0 cahier de texte, 0 question d'éva
   - le reste comme `destinations-42.csv` (cours moyen : niveau ajouté, 6 gardé ; 5 modèles restent en 6e sans point) ;
   - question d'accès : élèves de 5e / 4e / 3e / CM voient ces modèles ; élèves de 6e perdent les 32 qui partent au-dessus ; les tags restent lisibles par tout connecté, aucune règle ne change.
 - Bilan : 34 tags posés, niveaux changés sur 37 modèles, 17 déplacements de nœud.
+
+## 7. PR 1, contenus (2026-10-26)
+
+- Instantané `questions-6/etat-prod-2026-10-26/` relevé par `questions-6/releve-prod.ts` (lecture seule,
+  `.env`) : md5 des 8 modèles (les 6 du lot, 3a7a5711, 059e3fc9) = MCP ; 0 donnée d'élève.
+- `questions-6/lot-corrections-6.py` → migration `20261027100000_questions_6_contenu` + fixture ; test
+  `questions-6-contenu.test.ts` vert (12), rouge sans la migration. `question:specs` vert sur les 6
+  (specs toutes vertes, 3 600 tirages sans échec).
+- Retouches : 819df2a9 / f3bf4c64 q = 1..3, specs à 4 décimales réécrites (f3bf4c64 : spec « sans espace »
+  remplacée par « produit recopié », aucune réponse ne dépasse 3 chiffres de part et d'autre de la
+  virgule) ; b79d4cb7 variations 2, 3, 6, 7, 10 ; 24f7a007 sans −100 %, spec « prix de départ » sur −50 % ;
+  82748db8 sans la variation 4 ; ae7a332e « $?$. ».
+- **Écart au § 6** : l'archivage de 3a7a5711 passe dans la migration de rangement (PR 2), le générateur
+  ne change pas de statut. Son tag 6-200 y est retiré.
