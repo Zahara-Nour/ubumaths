@@ -19,7 +19,8 @@ _Mis à jour le 2026-10-26, après #1836._
   puis publication (§ 2.5).
 - **En attente de David** : fin de l'essai du lot 2 (étape correction, « Afficher correction si faux » →
   ligne « Ta figure de travail ») sur 5179 (worktree FIGÉ) ; éditeur ok, aperçu ok (essai du 2026-10-26).
-  Question ouverte : ajouter les cartes de cases à l'éditeur de modèles du PROF ?
+  (Plus de question « éditeur du prof » : `/dashboard/teacher/contenu/templates` = chapitres de cours ;
+  les modèles de questions ne s'écrivent que dans `QuestionTemplateForm`, admin.)
 - **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
   contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL ;
   une seule session par worktree. Restes connus : modèle ouvert sans modification, ou à variables, qui omet
