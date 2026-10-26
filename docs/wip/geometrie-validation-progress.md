@@ -2,16 +2,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, #1798 ouverte (PR 5, CP-058)._
+_Mis à jour le 2026-10-26, après #1798._
 
-- **État** : CP-059 et CP-060 mergés (pas en prod) ; #1798 (CP-058, figure + oui / non) ouverte, décisions (1) et
-  (4) du § 10 codées (figure vide = 0 ; figure d'abord dans la copie).
-- **Prochaine action** : CI verte → merge de #1798 ; puis PR « les tirages construisent la figure » (§ 10).
+- **État** : CP-059, CP-060 et CP-058 mergés (#1793, #1798), pas en prod ; figure vide = 0 point, figure d'abord
+  dans la copie corrigée (§ 10).
+- **Prochaine action** : PR « les tirages construisent la figure » (garde de `check-template`, § 10), nouveau
+  worktree depuis `origin/main`.
 - **En attente de David** : essai de CP-060 et de CP-058 (`docs/wip/verifications-manuelles.md`) ; ensuite
   `create-questions --publier` de CP-060 et CP-058 (brouillons), puis nœud + tag (migration, comme #1787).
 - **Pièges en cours** : lettres impossibles en valeurs de variables (§ 6) ; `eval:` rend une fraction LaTeX,
   illisible par la figure, et les tirages ne le voient pas (§ 10) ; limites connues de CP-060 au § 9.
-- **Worktree / branche** : `../ubumaths-wt-geometrie-validation`, `feat/geometrie-validation-alignement`.
+- **Worktree / branche** : aucun (retiré après #1798).
 
 ## 1. Relevé : ce qui existe et ce qui manque (2026-10-24)
 
@@ -437,3 +438,4 @@ construire la figure à chaque tirage (`check-template`) — à proposer à Davi
 - 2026-10-26 : #1793 mergée (CI verte après fusion de `main`, conflit d’une ligne dans `ubumark.md`).
 - 2026-10-26 : PR 5 codée : modèle CP-058 (11 specs), 3 correctifs d’écran (Valider grisé à l’entraînement, message du juge, « Blanc 1 »), exemple au catalogue et sur `/dev/carte-question` ; piège `eval:` → fraction trouvé.
 - 2026-10-26 : #1798, décisions de David : figure vide = 0 point (plus ½), la figure d'abord dans la copie corrigée ; 4 tests rouges sans.
+- 2026-10-26 : #1798 mergée (CP-058) ; worktree retiré.
