@@ -524,7 +524,7 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 - **Source** : canon Jarry, _Ubu Roi_, actes III et IV. Chez Jarry, le **Czar Alexis** est le souverain de Russie qui combat Ubu lors de la campagne militaire. Jarry écrit _Czar_ (avec **C**), pas _Tsar_. **À Chiphre (décision de David, 2026-10-06) : le Czar n'est rattaché à aucun pays ni aucune ville réels.** Il règne sur **l'Empire du Czar**, depuis son **palais d'Hiver**. On n'écrit jamais Russie, Moscou ni « russe » à son sujet : Chiphre ne présente aucun pays réel en ennemi.
 - **Rôle UI dans Chiphre** : Boss des défis majeurs, brevet, bac, examens blancs, tournois, contrôles trimestriels. Le Galopin **affronte le Czar Alexis** lors du Grand Décervelage — exactement comme Ubu l'affronte dans la pièce.
 - **Tempérament** : Glacial, méthodique, redoutable. Voix grave, autorité naturelle. Représente l'évaluation officielle, la sanction, le programme institutionnel. **Adversaire respecté** plus qu'haï — son rôle est nécessaire à la progression.
-- **Apparence** : Grand barbu, chapka, manteau de fourrure d'ours, regard d'aigle. Iconographie impériale XIXᵉ siècle, d'un Empire du Nord imaginaire.
+- **Apparence** 🟡 (décision de David, 2026-10-26) : grand barbu, le plus grand de tous, silhouette triangulaire (manteau évasé jusqu'au sol, comme une montagne) ; barbe sombre, épais sourcils, regard d'aigle perçant mais calme, bouche droite : sévère et juste, jamais monstrueux. Manteau impérial bleu glace bordé de fourrure d'ours blanc, chapka blanche, gants blancs, boutons et ceinture d'or ; un grand sablier à la main (le temps de l'épreuve). Iconographie impériale XIXᵉ siècle, d'un Empire du Nord imaginaire : ni aigle bicéphale, ni bulbe, ni cyrillique, ni couleurs d'un drapeau réel. Prompt d'illustration : Section XI, « Illustrations ».
 - **Tics de langage** : Phrases solennelles, accent slave assumé. Juron canon : **_« Par Saint Georges ! »_** (canon Jarry, _Ubu Roi_) — patron du combat chevaleresque. Il appelle les Galopins **_« Galopinski »_** (forme russifiée affectueuse-menaçante).
 - **Motivation** : Imposer l'ordre mathématique officiel. Il **n'est pas l'antagoniste philosophique** d'Ubu (Ubu et Alexis se respectent mutuellement comme deux souverains) — il est l'adversaire institutionnel.
 - **Quand il intervient** : annonce d'examens, défis hebdomadaires majeurs, tournois inter-classes, événements compétitifs. Il ouvre les sessions d'évaluation et clôt les épreuves.
@@ -2045,6 +2045,26 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines and the frock coat, white for the collar and his pale face, dark chocolate brown for the suitcase, marigold yellow for the buckles and spectacles, emerald green for the suitcase lining.
 
 Composition: Conscience in his open suitcase, three-quarter view, centered, plain flat cream parchment paper background, square 1:1 format. No halo, no text, no letters, no signature.
+```
+
+#### Prompt de référence — le Czar Alexis 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et les images de référence des personnages déjà dessinés, au moins Père Ubu). Le bleu glace est sa couleur réservée. Garder la phrase qui exclut les symboles de pays réels : sans elle, l'IA les ajoute d'elle-même.
+
+```text
+Draw the Czar Alexis, the great rival emperor from Alfred Jarry's play "Ubu Roi" (1896), as a full-body character portrait in exactly the same drawing style as the attached characters.
+
+Character: a very tall, imposing emperor, the tallest of all the characters, with a huge triangular silhouette: his fur coat flares out down to the ground like a mountain; a big dark beard, thick eyebrows, a piercing, calm eagle-like gaze, a straight, stern mouth. He is cold, methodical and formidable, but dignified and fair: a respected adversary, not a monster. Impressive but never frightening, for students aged 11 to 17.
+
+Clothing: a long imperial coat in ice blue, trimmed with thick white polar bear fur at the collar, cuffs and hem; a tall white fur hat (chapka); white gloves; small golden buttons and a thin golden belt. He holds a large hourglass in one hand: the time of the exam.
+
+He rules an imaginary Northern Empire: no real-country symbols, no double-headed eagle, no onion domes, no Cyrillic letters, no national flag colors.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the beard, ice blue for the coat, white for the fur, the hat and the gloves, marigold yellow for the buttons, the belt and the hourglass frame.
+
+Composition: the Czar standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
 ```
 
 ---
