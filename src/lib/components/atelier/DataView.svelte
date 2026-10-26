@@ -1371,6 +1371,7 @@
 
 <style>
 	.donnees {
+		container: donnees / inline-size;
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
@@ -1619,8 +1620,17 @@
 		outline: none;
 	}
 
+	/* Une ligne sur un écran large ; deux sur un étroit, où les aides et messages longs
+	   (`ECARTYPEP(`, `SI(`, « k n'est pas défini… ») et une grande fraction passent à la
+	   ligne — mesuré : 28 px sur une ligne, 39 sur deux, jamais trois à 320 px (revue) */
 	.sous-barre {
 		min-height: 1.75rem;
+	}
+
+	@container donnees (max-width: 40rem) {
+		.sous-barre {
+			min-height: 2.5rem;
+		}
 	}
 
 	.note {

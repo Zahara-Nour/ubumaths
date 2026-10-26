@@ -782,8 +782,8 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `shown`, en français (la lecture de MathLive est en anglais). La barre montre la formule ; sous
   la barre, la phrase de l'erreur ou de la case vide, et « Valeur exacte : … » quand la case montre
   `≈` d'une valeur exacte, ou une écriture exacte dont le texte lu est `≈` (`√2`, `π`) (Q2). Ces
-  phrases et l'aide d'une fonction tiennent sur une ligne réservée (`.sous-barre`, une seule à la
-  fois) : la grille ne saute pas d'une case à l'autre — elle sautait d'une rangée, et pendant un clic
+  phrases et l'aide d'une fonction tiennent sur une place réservée (`.sous-barre`, une seule à la fois ; une ligne, deux quand la
+  vue est étroite, container query sous 40rem) : la grille ne saute pas d'une case à l'autre — elle sautait d'une rangée, et pendant un clic
   la case sous le pointeur enfoncé changeait, la zone s'étendait (2026-10-26). La carte d'une liste à formules montre ses valeurs et « calculée
   dans la grille » (`studentDefinitionOf`). Supprimer une liste dont des cellules d'autres colonnes
   se videront (`citingCells` : en chaîne, sans celles déjà vides) demande confirmation : « 3 cellules de la grille la citent : elles
