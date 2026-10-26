@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, lot 5 (PR à ouvrir)._
+_Mis à jour le 2026-10-26, lot 5 en PR (#1795)._
 
-- **État** : lots 1-4 mergés (#1773, #1780, #1783, #1789, #1792) ; lot 5 (vue Données + « Propriétés », 17 lignes) sur `test/verifs-auto-5`. Rouges : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307) et la carte f de l'ajustement de #1413 (`2 × x + 1`).
+- **État** : lots 1-4 mergés (#1773, #1780, #1783, #1789, #1792) ; lot 5 (vue Données + « Propriétés », 17 lignes) en PR #1795, revue `code-reviewer` faite (durcissements de timing appliqués). Rouges : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307) et la carte f de l'ajustement de #1413 (`2 × x + 1`).
 - **Prochaine action** : lot 6, lignes Graphe (#1400-#1405 : dézoom, asymptotes) et Géométrie à la souris (#1536, #1538), puis le reste de Calcul (#1784, #1684, #1617, #1503, #1535, #1342, #1366-#1369, #1374, #1375, #1404, #1417).
 - **En attente de David** : 3 écarts du lot 5 (voir § Lot 5). Run en prod après le `deploy:prod` qui livre `data-latex`.
 - **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; console REPLIÉE = champ encore « visible » pour Playwright : lire `aria-expanded` du bouton « Console » (`calc()` le fait) ; nom `c2` lu c·2 (prendre une lettre) ; `each_key_duplicate` casse « Comment ? » ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
