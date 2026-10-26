@@ -1675,6 +1675,15 @@ Doublons qui restent, chacun pour un autre besoin :
   bouton « Simplifier pour x ≠ 0 » donne `−x + 1`, chantier tidy-conditions). `√x√x` → rien
   à développer (produit sans parenthèse), mais `√x³√x → (√x)⁴` (une puissance de racine déjà
   écrite) et `∛x∛x → (∛x)²` se regroupent encore.
+- Laissés par le § 4.2 de tidy-conditions (2026-10-26, `domainChanges` par ensembles), aucune
+  valeur fausse : à plusieurs lettres, une réécriture qui rétrécit le domaine
+  (`ln(xy) → ln x + ln y`) n'a ni bouton ni simplification ; une condition dont les points
+  exclus sont irrationnels reste entière (`x² − 2 ≠ 0`) ; le bouton d'un calcul qui passe par
+  une étape plus étroite que sa condition n'a pas d'étapes (`e^{ln(x²)}` → `x²`, pour x ≠ 0,
+  sans le détour par `2 ln x`) ; `e^{2 ln 3}` et `9` n'ont pas la même forme normale
+  (`areEquivalent` les dit égaux). Corrigé ensuite : `e^{ln a}` pour un nombre `a ≤ 0`
+  (`e^{ln(−3)}` donnait −3, `e^{ln(−1/2)}` était équivalent à −1/2) n'est plus réduit, ni par
+  `normalize` ni par le moteur pédagogique (`isNonPositiveConstant`).
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
   une valeur fausse :
   - valeurs remarquables (`cos(π/3) → 1/2`) dans `réduire`, avec étape et selon le niveau (S4) :

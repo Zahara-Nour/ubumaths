@@ -535,7 +535,7 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 - **Source** : personnage canonique d'Henri Monnier (1799-1877, domaine public depuis 1947), créé en 1830 dans _Scènes populaires_. Précurseur direct du ton ubuesque — Monnier inventa Prudhomme **66 ans avant** que Jarry n'invente Ubu. Voir fiche détaillée dans le **Lexique Pataphysique des Chiphres**, Section X (Patanautes Yllustres).
 - **Rôle UI dans Chiphre** : réservé aux **écrans administratifs solennels** où le ton ubuesque serait incongru. CGU (= « Édits du Royaume »), mentions légales, RGPD (= « Sceau Secret »), politique de confidentialité, conditions d'utilisation, formulaires officiels.
 - **Tempérament** : Solennel-bourgeois. Sentencieux. Prononce des évidences avec une autorité grandiloquente. **Conformiste satisfait**, jamais grossier, jamais agressif.
-- **Apparence** : Personnage XIXᵉ siècle bourgeois français, redingote, lavallière, lorgnon. **Calligraphie soignée** (Prudhomme est canoniquement professeur de calligraphie chez Monnier).
+- **Apparence** 🟡 (décision de David, 2026-10-26) : bourgeois français du XIXᵉ siècle, enrobé mais raide, silhouette en colonne droite, poitrine de pigeon gonflée d'importance (Ubu s'avachit, Prudhomme se tient droit comme un I) ; double menton, favoris soignés, crâne dégarni aux cheveux bien peignés ; signe distinctif repris de Monnier : un immense faux-col empesé dont les pointes montent jusqu'aux joues ; lorgnon au bout d'un ruban ; yeux mi-clos de satisfaction, menton levé, bouche pincée de celui qui énonce une évidence. Redingote brune, gilet pourpre barré d'une chaîne de montre d'or, grosse lavallière bleu encre, pantalon rayé ; plume d'oie levée comme une baguette (il est **professeur de calligraphie** chez Monnier) et édit roulé à sceau de cire pourpre. Pas de gilet jaune (connotation actuelle en France). Prompt d'illustration : Section XI, « Illustrations ».
 - **Tics de langage canon** : _« C'est mon opinion, et je la partage »_, _« Le char de l'État navigue sur un volcan »_, _« Sans la liberté de blâmer, il n'est point d'éloge flatteur »_, _« Ôtez l'homme de la société, vous l'isolez »_.
 - **Détournements pour Chiphre** (forgés dans le même registre tautologique-solennel) : _« C'est ma démonstration, et je la partage »_, _« Sans la liberté de pataphysiquer, il n'est point de Décervelage flatteur »_.
 - **Motivation** : Administrer dignement. Faire respecter le formalisme bureaucratique du Royaume avec un sérieux imperturbable.
@@ -2065,6 +2065,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines and the beard, ice blue for the coat, white for the fur, the hat and the gloves, marigold yellow for the buttons, the belt and the hourglass frame.
 
 Composition: the Czar standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — Monsieur Prudhomme 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et les images de référence des personnages déjà dessinés, au moins Père Ubu). Personnage d'Henri Monnier, qui l'a lui-même dessiné (domaine public) ; le faux-col géant vient de ses dessins.
+
+```text
+Draw Monsieur Prudhomme, the pompous French bourgeois created by Henri Monnier in 1830, as a full-body character portrait in exactly the same drawing style as the attached characters.
+
+Character: a stout, middle-aged bourgeois with a stiff, upright, column-like silhouette and a puffed-out pigeon chest, standing perfectly straight, very different from slouching Père Ubu; double chin, neat side whiskers, a balding head with carefully combed hair; a pince-nez on a ribbon; half-closed eyes full of self-satisfaction, chin raised, lips pursed as if pronouncing a solemn truism. His signature feature: an enormous starched shirt collar whose points rise up to his cheeks. He is solemn, sententious and pleased with himself: a satisfied conformist, funny, never aggressive, for students aged 11 to 17.
+
+Clothing: a long dark chocolate brown frock coat; a deep crimson waistcoat crossed by a golden watch chain; a big floppy lavallière bow tie in navy ink; striped trousers and polished shoes. He raises a goose-quill pen in one hand like a baton, and holds a rolled official edict with a crimson wax seal in the other.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the bow tie, dark chocolate brown for the frock coat, deep crimson for the waistcoat and the wax seal, white for the collar and the edict, marigold yellow for the watch chain and the pince-nez.
+
+Composition: Prudhomme standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
 ```
 
 ---

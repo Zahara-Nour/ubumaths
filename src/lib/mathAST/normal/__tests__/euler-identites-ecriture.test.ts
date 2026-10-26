@@ -84,3 +84,28 @@ describe('Témoins : forme normale inchangée (mesurée avant le correctif)', ()
 		expect(normalLatex(input)).toBe(expected);
 	});
 });
+
+// tidy-conditions, 2ᵉ revue du § 4.2 : ln d'un nombre ≤ 0 n'existe pas,
+// `e^{ln a} = a` ne vaut que pour a > 0 (`e^{ln(−3)}` donnait −3)
+describe('e^{ln a} : a nombre négatif ou nul, rien ne se réduit', () => {
+	it.each([
+		'\\exponentialE^{\\ln(-\\frac{1}{2})}',
+		'\\exponentialE^{\\ln(1-\\sqrt{2})}',
+		'\\exponentialE^{\\ln(-3)}',
+		'\\exp(\\ln(-3))',
+		'\\exponentialE^{2\\ln(-3)}',
+		'\\exponentialE^{\\ln(0)}'
+	])('%s garde son ln', (latex) => {
+		expect(normalLatex(latex)).toContain('\\ln');
+		expect(sameNormalForm(latex, '-3')).toBe(false);
+	});
+
+	it.each([
+		['\\exponentialE^{\\ln(3)}', '3'],
+		['\\exp(\\ln(3))', '3'],
+		['\\exponentialE^{\\ln(\\frac{1}{2})}', '\\frac{1}{2}'],
+		['\\exponentialE^{\\ln(\\sqrt{2}-1)}', '\\sqrt{2}-1']
+	])('%s = %s : un nombre positif se réduit encore', (latex, value) => {
+		expect(sameNormalForm(latex, value)).toBe(true);
+	});
+});

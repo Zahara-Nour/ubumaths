@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1817._
+_Mis à jour le 2026-10-26, après #1823._
 
-- **État** : #1807, #1811, #1815, #1817 MERGÉES (pas en prod). #1817 = § 4.1 : `ln(x)/ln(x) avec x > 1` → 1 (domaines « intervalles et points » garantis).
-- **Prochaine action** : PR 2 (§ 4.2, `domainChange` par ensembles + élagage, bouton « 2 ln(x), pour x > 0 », note « Pour x > 0, on peut écrire … »). Recos validées par David (« je suis tes recos »).
-- **En attente de David** : essai des vérifs #1807 et #1811 (inchangé).
-- **Pièges en cours** : § 4.2 ouvert ; restes acceptés de #1815 (termes gardés non regroupés, `tan` gèle le terme en mode conditions) ; restes de la revue de #1817 (prudents, aucun faux) : `arctan(x)−1 ≠ 0` et `cos(x)/cos(x) dans ]0;1[` non garantis, `arcsin` répond « ne change rien » même garanti, `avec x ≥ e` ne se lit pas.
-- **Worktree / branche** : retirés après #1817 ; recréer `../ubumaths-wt-tidy-conditions` depuis `origin/main` pour la PR 2.
+- **État** : #1807, #1811, #1815, #1817, #1819, #1823 MERGÉES (pas en prod). § 4.1, 4.2, 4.3 faits ; #1823 = `e^{ln a}` refusé pour a ≤ 0 (`normalize` et équivalence compris), `exp-n-ln` élargi, conditions écrites au plus simple (`x ≠ −1 et x ≠ 1`, `x ≠ 1`).
+- **Prochaine action** (David, 2026-10-26 : « on va corriger les limites dans une nouvelle session ») : phase 0 des limites — (1) plusieurs lettres, rétrécissement refusé (`ln(xy) → ln x + ln y`) ; (2) points irrationnels non écrits (`x² − 2 ≠ 0` → `x ≠ ±√2`) ; (3) `e^{2 ln 3}` et 9 de formes normales différentes ; (4) restes de #1815 et #1817 (Pièges). Comportements en français d'abord, attendre la validation.
+- **En attente de David** : validation de la phase 0 des limites ; essai des vérifs #1807 et #1811 (inchangé).
+- **Pièges en cours** : plusieurs lettres : rétrécissement refusé ; points irrationnels non écrits (`x² − 2`) ; `e^{2 ln 3}` et 9 de formes normales différentes (équivalents) ; restes de #1815 (termes gardés non regroupés, `tan` gèle le terme) et de #1817 (`arctan(x)−1 ≠ 0`, `cos(x)/cos(x) dans ]0;1[`, `arcsin`, `avec x ≥ e`).
+- **Worktree / branche** : retirés après #1823.
 
 ## Contexte
 
@@ -124,5 +124,48 @@ Sondes : `ln(x³) → 3 ln x` refusé (même domaine, écritures différentes) ;
 - (b) domaine rétréci → condition = perdu ∪ ajouté, chaque condition impliquée par les autres retirée : `ln(x²)` → bouton « Simplifier pour x > 0 » (Q2 : oui), `avec x > 0` → `2 ln(x)` ; perte seule inchangée (`x/x` → « x ≠ 0 »). Élagage impossible → tout garder (jamais une condition fausse).
 - Note quand le domaine rétrécit (Q5) : « Pour x > 0, on peut écrire 2 ln(x) : ajoute « avec x > 0 ». »
 - Relever avant/après de `ln-product`, `ln-quotient`, `sqrt-product` dans la PR.
+- **Fait (PR 2, branche `fix/tidy-conditions-ensembles`)** : `domainChanges` (`tidy/conditions.ts`) rend `{ conditions, narrows }` ; `conditionSet` / `isIncluded` passent de `atelier/hypotheses.ts` à `tidy`. Relevé (Atelier, mode « garder ») :
+  - `.simplifier ln(x³)` : `ln(x³)` → `3 ln x` ; `ln(x²) + ln x` : bouton « pour x² > 0 » → `3 ln x` direct.
+  - `.simplifier ln(x²)` : rien → bouton « Simplifier pour x > 0 », note « Pour x > 0, on peut écrire 2ln(x) : ajoute « avec x > 0 » (ou « dans ]0 ; +∞[ ») » ; `avec x > 0` → `2 ln x` (avant : « ne change rien ici »).
+  - `ln-product` `ln(x(x+1))`, `ln-quotient` `ln(x/(x+1))` : rien → bouton « pour x > 0 » ; `√(x/(x+1))` → « pour x ≥ 0 » ; `sqrt-product` `√x √(x+1)` : rien → « On peut simplifier davantage pour x ≥ 0 » (élargit).
+  - Revue Opus (bloquant corrigé) : `ln(x²) + ln(−x)` (défini pour x < 0) donnait un bouton « pour x > 0 », et `avec x > 0` simplifiait. Corrigé : ensembles d'avant et d'après sans point commun → `null` ; domaine rétréci à plusieurs lettres (`ln(xy)`) → `null` comme avant (le vide ne se voit pas) ; `meetsDomain` : une hypothèse hors du domaine de l'expression ne simplifie rien.
+  - Restes de la revue corrigés à la demande de David (3ᵉ commit) : `x² > 0` → `x ≠ 0` (`signOfPower`) ; `plainConditions` (`ln(x) ≠ 0` → `x ≠ 1`, ou `x > 0 et x ≠ 1`) ; `engineAlternative` (tidy finit le calcul du moteur, étapes cachées si l'une est plus étroite que la condition) ; règle `exp-n-ln` (`e^{n ln x} = xⁿ`). 2ᵉ revue Opus (4ᵉ commit) : `plainConditions` vérifie que l'ensemble écrit tient dans celui d'origine (`ln(x)/ln(x) + ln(x/2)/ln(x/2)` disait « x ≠ 1 et x ≠ 2 ») ; `exp-ln` / `exp-n-ln` refusent ln d'un nombre ≤ 0 ; expression jamais définie → pas de bouton. Reste, ANTÉRIEUR : `.simplifier e^(ln(−3))` → −3 par le repli `normalize` — corrigé dans la PR suivante (`fix/ln-negatif-et-conditions`, `isNonPositiveConstant` évalué en flottant après la 3ᵉ revue Opus : `e^{ln(−1/2)}` ~ −1/2 et `e^{ln(1−√2)}` passaient). Avant : `.simplifier ln(x²)−ln(x²)` → bouton `2ln(x) − 2ln(x), pour x > 0` (le moteur pédagogique s'arrête sur `k ln x`) ; `e^(ln(x²))` → `e^{2ln(x)}, pour x > 0` ; `(ln x)²/ln x` → « pour ln(x) ≠ 0 », x > 0 élagué (la condition sous-entend que ln x existe).
+  - Au passage : la réponse du bouton passe par `stripUnnecessaryBrackets` (`ln((x+1))` du moteur pédagogique).
+  - `domaine-garde.test.ts` « une réécriture qui rétrécit le domaine n'a pas lieu » réécrit : la ligne garde, le bouton vient.
+
+## 5. Les limites (phase 0, 2026-10-26)
+
+Sondes (Atelier `runInput`, `normalize`, tests jetables supprimés).
+
+| ligne tapée                                                  | aujourd'hui                                                                                                                                                                                                       |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.simplifier ln(xy)`                                         | `ln(xy)`, ni bouton ni note                                                                                                                                                                                       |
+| `.simplifier ln(xy) avec x > 0 et y > 0`                     | « ne change rien ici »                                                                                                                                                                                            |
+| `.simplifier (x²−2)/(x²−2)`                                  | bouton « pour x^2−2 ≠ 0 » ; la note dit pourtant `dans ℝ \ {-√2 ; √2}`                                                                                                                                            |
+| `.simplifier (x²−2)/(x−√2)`                                  | bouton « pour x−sqrt(2) ≠ 0 » (texte brut), réponse `√2 + x`                                                                                                                                                      |
+| `.simplifier ln(x²−2)−ln(x²−2)`                              | « pour x^2−2 > 0 »                                                                                                                                                                                                |
+| `.simplifier (arctan(x)−1)/(arctan(x)−1)`                    | « pour arctan(x)−1 ≠ 0 », note sans syntaxe                                                                                                                                                                       |
+| `.simplifier tan(x)/tan(x)`, `arcsin(x)/arcsin(x)`           | rien : ni bouton ni note                                                                                                                                                                                          |
+| `.simplifier cos(x)/cos(x) avec 0 < x < 1` (mode conditions) | ⚠️ la ligne dit `1, pour cos(x) ≠ 0` ET la note dit « la ligne garde l'écriture »                                                                                                                                 |
+| `.simplifier ln(x)−ln(x) avec x ≥ e`                         | refus : « x ≥ e ne se lit pas »                                                                                                                                                                                   |
+| `e^{2 ln 3}` et `9`                                          | équivalents (`areEquivalent`, `isZeroExpression`) mais formes normales différentes ; idem `e^{3ln2}`/8, `e^{−ln2}`/½, `e^{ln2/2}`/√2, `e^{ln2+ln3}`/6, `e^{1+ln2}`/2e. Seul `e^{ln 3}` → 3. Aucune valeur fausse. |
+| `1/(1/x) + 1/(1/x)` (tidy)                                   | ne se regroupe pas en `2/(1/x)`                                                                                                                                                                                   |
+
+### Comportements proposés
+
+- **L1 — contradiction (bug, d'abord)** : en mode conditions, une hypothèse qui ne garantit pas la condition → la ligne garde l'écriture (bouton « Simplifier pour cos(x) ≠ 0 »), comme le dit la note.
+- **L2 — points irrationnels écrits** : `x² − 2 ≠ 0` → « x ≠ −√2 et x ≠ √2 » ; `x − √2 ≠ 0` → « x ≠ √2 » (jamais `sqrt(2)` en texte) ; `x² − 2 > 0` → « x < −√2 ou x > √2 » ; `x²+x−1 ≠ 0` → « x ≠ (−1−√5)/2 et x ≠ (−1+√5)/2 ». Même seuil que les points rationnels. Points sans écriture exacte → condition entière (actuel). La note propose `avec …` (relu). Au passage : `√2 + x` → `x + √2`.
+- **L3 — fonctions à réciproque connue** : `arctan(x) − 1 ≠ 0` → « x ≠ tan(1) » ; `arcsin(x)/arcsin(x)` → bouton « pour −1 ≤ x ≤ 1 et x ≠ 0 » ; `tan(x)/tan(x)` → bouton « pour tan(x) ≠ 0 » (condition sous-entendant que tan existe, comme `ln(x) ≠ 0`), note sans syntaxe.
+- **L4 — constantes exactes dans `avec`/`dans`** : `avec x ≥ e`, `avec x > π/2`, `dans ]0 ; ln 2[`, `avec x ≠ √2` lus ; trigonométrie sur un intervalle borné : `cos(x)/cos(x) avec 0 < x < 1` → `1` (les points π/2 + kπ de l'intervalle se comptent : aucun).
+- **L5 — plusieurs lettres, rétrécissement** : accepté quand chaque condition d'après porte sur une seule lettre et que celles d'avant s'en déduisent par les signes des facteurs (`xy > 0` ⇐ `x > 0 et y > 0`) : `ln(xy)` → bouton « pour x > 0 et y > 0 » → `ln x + ln y` ; `avec x > 0 et y > 0` simplifie ; `ln(x/y)`, `√(xy)` pareil. Sinon refus (actuel), jamais une condition fausse.
+- **L6 — `e^{k ln a}`** (forme normale) : `normalize` réduit `e^{k ln a + c}` (k rationnel, a > 0 rationnel) en `aᵏ eᶜ` : `e^{2ln3}` → 9, `e^{ln2/2}` → √2, `e^{1+ln2}` → 2e. Rien de visible ne change (déjà équivalents) ; garde contre un écart futur.
+- **Laissé (reco)** : `1/(1/x) + 1/(1/x)` non regroupé (cas exotique, aucune valeur fausse).
+
+### Questions à David
+
+- **Q10 — L6** : reco le faire (petit, protège l'équivalence), ou le laisser puisque rien ne se voit.
+- **Q11 — L3, `tan`** : reco « pour tan(x) ≠ 0 » ; autre : « pour x ≠ kπ/2 » (exact, plus dur à lire au lycée).
+- **Q12 — `1/(1/x)` ×2** : reco laisser.
+- **Q13 — découpage** : reco PR A = L1 + L2 + L3 + L4 (écriture et lecture des conditions), PR B = L5, PR C = L6.
 
 ## Historique

@@ -103,6 +103,7 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	// ---- identités log/exp (rules pattern) ------------------------------------
 	'ln-exp': 'Inverses : ln(eˣ) = x',
 	'exp-ln': 'Inverses : exp(ln(x)) = x',
+	'exp-n-ln': 'Inverses : exp(n·ln(x)) = xⁿ',
 	'exp-product': 'exp(a) × exp(b) = exp(a + b)',
 	'pow-neg-one': 'Puissance −1 : a⁻¹ = 1/a',
 	'ln-one': 'ln(1) = 0',
@@ -314,6 +315,7 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	// log/exp
 	'ln-exp': () => 'ln et exp sont réciproques : ln(eˣ) = x',
 	'exp-ln': () => 'ln et exp sont réciproques : exp(ln(x)) = x',
+	'exp-n-ln': () => 'ln et exp sont réciproques : exp(n·ln(x)) = exp(ln(xⁿ)) = xⁿ',
 	'ln-product': () => 'ln(a·b) = ln(a) + ln(b)',
 	'ln-quotient': () => 'ln(a/b) = ln(a) - ln(b)',
 	'ln-pow': () => 'ln(aⁿ) = n·ln(a)',

@@ -144,11 +144,11 @@ export function factorSteps(expression: string): FactoredOutcome {
 		});
 		// Le domaine est gardé (David, 2026-10-26) : `x/x` n'a rien à factoriser,
 		// la simplification par x passe par le bouton, avec sa condition
-		const { kept: result, lost } = keepingDomain(node, full);
+		const { kept: result, lost, narrows } = keepingDomain(node, full);
 		const alternative =
 			lost === null || lost.length === 0 || full.steps.length === 0
 				? undefined
-				: domainAlternative(full.result, lost, renderedSteps(full.steps));
+				: domainAlternative(full.result, lost, renderedSteps(full.steps), narrows);
 		const withAlternative = alternative === undefined ? {} : { alternative };
 
 		const latex = toLatex(result.result);

@@ -192,6 +192,7 @@ import { guardedAnswer, tidyFurther, writtenKeepingDomain, type DomainFacts } fr
 import {
 	conditionsText,
 	guarantees,
+	meetsDomain,
 	readHypotheses,
 	simplifyFurtherNote,
 	splitHypotheses,
@@ -3681,6 +3682,15 @@ function withHypotheses(
 				: `« ${written} » ne change rien ici.`;
 		return { ...echoed, note: joinedNote(result.note, hint) };
 	}
+	if (!meetsDomain(hypotheses, facts.ast)) {
+		return {
+			...echoed,
+			note: joinedNote(
+				result.note,
+				`${written} : l’expression n’est jamais définie pour ces valeurs, la ligne garde l’écriture.`
+			)
+		};
+	}
 	const missing = facts.conditions.filter((c) => !guarantees(hypotheses, c));
 	if (missing.length > 0) {
 		return {
@@ -3718,7 +3728,13 @@ function withDomainMode(result: CalcResult, mode: DomainMode, assumed: boolean):
 	if (mode === 'keep') {
 		return assumed
 			? result
-			: { ...result, note: joinedNote(result.note, simplifyFurtherNote(facts.conditions)) };
+			: {
+					...result,
+					note: joinedNote(
+						result.note,
+						simplifyFurtherNote(facts.conditions, facts.narrows ? facts.ast : undefined)
+					)
+				};
 	}
 	// Sans écriture mathématique de départ (« rien à factoriser »), rien à basculer
 	if (result.latex === undefined) return result;

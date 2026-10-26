@@ -19,12 +19,35 @@
 
 import { P } from '../builder';
 import { createRule } from '../rule';
-import type { Rule } from '../types';
-import { euler } from '../../factory';
+import { isMathNodeBinding, type MatchBindings, type Rule } from '../types';
+import { euler, superscript } from '../../factory';
+import { extractRational, numericNode } from '../../common/numeric';
+import type { MathNode } from '../../types';
+import { getVariables } from '../../eval/substitute';
+import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 
 // =============================================================================
 // Log/Exp Inverse Rules
 // =============================================================================
+
+/**
+ * `ln(x)` existe-t-il ? Un nombre doit être strictement positif (revue du § 4.2 :
+ * `e^(2ln(−3))` donnait 9, `e^(ln(−3))` donnait −3) ; une lettre, le domaine le dit.
+ */
+function lnMayExist(x: MathNode): boolean {
+	if (getVariables(x).size > 0) return true;
+	try {
+		return evaluateNodeToApproximatedNumber(x) > 0;
+	} catch {
+		return false;
+	}
+}
+
+/** `lnMayExist` sur la liaison `x` d'une règle. */
+function lnArgumentMayExist(bindings: MatchBindings): boolean {
+	const x = bindings.get('x');
+	return x !== undefined && isMathNodeBinding(x) && lnMayExist(x);
+}
 
 /** ln(e^x) = x */
 const lnExp = createRule(P.func('ln', [P.pow(P.lit(euler()), P._('x'))]), P._('x'), {
@@ -33,8 +56,61 @@ const lnExp = createRule(P.func('ln', [P.pow(P.lit(euler()), P._('x'))]), P._('x
 
 /** e^(ln(x)) = x */
 const expLn = createRule(P.pow(P.lit(euler()), P.func('ln', [P._('x')])), P._('x'), {
-	name: 'exp-ln'
+	name: 'exp-ln',
+	condition: lnArgumentMayExist
 });
+
+/**
+ * L'exposant `n·ln(x)`, n entier, lu dans un produit de nombres entiers et d'un
+ * seul `ln` : `4ln(x)`, `ln(x)·4`, `2·(2ln(x))` (le `2·2` du moteur n'est
+ * multiplié qu'après la boucle des règles), `−ln(x)`. `null` sinon.
+ */
+function integerTimesLn(exponent: MathNode): { n: bigint; arg: MathNode } | null {
+	let n = 1n;
+	let arg: MathNode | null = null;
+	const visit = (node: MathNode): boolean => {
+		if (node.type === 'delimiter') return visit(node.content);
+		if (node.type === 'opposite') {
+			n = -n;
+			return visit(node.operand);
+		}
+		if (node.type === 'multiplication') return visit(node.left) && visit(node.right);
+		if (node.type === 'function' && node.name === 'ln' && node.args.length === 1) {
+			if (arg !== null) return false;
+			arg = node.args[0];
+			return true;
+		}
+		const value = extractRational(node);
+		if (value === null || value.d !== 1n) return false;
+		n *= value.n;
+		return true;
+	};
+	if (!visit(exponent) || arg === null) return null;
+	return { n, arg };
+}
+
+/**
+ * e^(n·ln(x)) = xⁿ, n entier (tidy-conditions § 4.2) : le moteur passe de bas
+ * en haut, `ln-pow` récrit `e^(ln(x²))` en `e^(2ln(x))` avant que `exp-ln`
+ * ne voie la racine, et le calcul s'arrêtait là. `e^(ln(x))` reste à `exp-ln`.
+ */
+const expNLn = createRule(
+	P.pow(P.lit(euler()), P._('e')),
+	(bindings) => {
+		const found = integerTimesLn(bindings.get('e') as MathNode) as { n: bigint; arg: MathNode };
+		return superscript(found.arg, numericNode(found.n.toString()));
+	},
+	{
+		name: 'exp-n-ln',
+		condition: (bindings) => {
+			const e = bindings.get('e');
+			if (e === undefined || !isMathNodeBinding(e)) return false;
+			const found = integerTimesLn(e);
+			if (found === null || found.n === 1n) return false;
+			return lnMayExist(found.arg);
+		}
+	}
+);
 
 // =============================================================================
 // Known Values
@@ -91,7 +167,8 @@ const lnExpFunction = createRule(P.func('ln', [P.func('exp', [P._('x')])]), P._(
 
 /** exp(ln(x)) = x */
 const expFunctionLn = createRule(P.func('exp', [P.func('ln', [P._('x')])]), P._('x'), {
-	name: 'exp-ln-inverse'
+	name: 'exp-ln-inverse',
+	condition: lnArgumentMayExist
 });
 
 /** exp(a) · exp(b) = exp(a + b) */
@@ -108,6 +185,7 @@ const expProduct = createRule(
 export const logExpRules: readonly Rule[] = [
 	lnExp,
 	expLn,
+	expNLn,
 	lnOne,
 	lnE,
 	lnPow,

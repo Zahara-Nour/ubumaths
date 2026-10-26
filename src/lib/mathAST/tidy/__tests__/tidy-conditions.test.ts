@@ -10,7 +10,15 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { tidy, tidyWithConditions, describeConditions, domainChange, domainLoss } from '../index';
+import {
+	tidy,
+	tidyWithConditions,
+	describeConditions,
+	domainChange,
+	domainChanges,
+	domainLoss,
+	plainConditions
+} from '../index';
 import { parseCustom } from '../../parser/custom';
 import { toCustom } from '../../custom-generator';
 import { areEquivalent } from '../../equivalence';
@@ -188,8 +196,125 @@ describe('revue du 2026-10-26 : l’ordre d’écriture ne fait ni perdre ni inv
 	])('domainLoss(%s, %s) = []', (before, after) => {
 		expect(domainLoss(parseCustom(before), parseCustom(after))).toEqual([]);
 	});
+});
 
-	it('domainChange : ln(x^2) → 2ln(x) gagne x > 0, null', () => {
-		expect(domainChange(parseCustom('ln(x^2)'), parseCustom('2ln(x)'))).toBeNull();
+/**
+ * `domainChange` compare les ENSEMBLES quand l'expression n'a qu'une lettre
+ * (§ 4.2, recos validées par David le 2026-10-26) : deux écritures du même
+ * ensemble ne changent rien (`ln(x³)` et `3 ln x` : ]0 ; +∞[) ; un domaine
+ * rétréci dit sa condition, chaque condition impliquée par les autres retirée
+ * (`ln(x²) → 2 ln x` : « x > 0 », pas « x² > 0 et x > 0 »).
+ */
+describe('domainChange par ensembles (§ 4.2)', () => {
+	const change = (before: string, after: string) => {
+		const found = domainChange(parseCustom(before), parseCustom(after));
+		return found === null ? null : describeConditions(found).map((c) => c.text);
+	};
+
+	it.each([
+		['ln(x^3)', '3ln(x)'],
+		['ln(x^2)+ln(x)', '3ln(x)'],
+		['sqrt(x^3)', 'x sqrt(x)'],
+		['x/x+ln(x)', '1+ln(x)']
+	])('%s → %s : même ensemble, rien à dire', (before, after) => {
+		expect(change(before, after)).toEqual([]);
+	});
+
+	it.each([
+		['ln(x^2)', '2ln(x)', ['x > 0']],
+		['ln(x(x+1))', 'ln(x)+ln(x+1)', ['x > 0']],
+		['ln(x/(x+1))', 'ln(x)-ln(x+1)', ['x > 0']],
+		['ln(x^2)+1/(x-1)', '2ln(x)+1/(x-1)', ['x > 0']]
+	])('%s → %s : le domaine rétrécit, « %s »', (before, after, conditions) => {
+		expect(change(before, after)).toEqual(conditions);
+	});
+
+	it.each([
+		['x/x', '1', ['x ≠ 0']],
+		['sqrt(x)sqrt(x+1)', 'sqrt(x(x+1))', ['x ≥ 0']]
+	])('%s → %s : le domaine s’élargit, la perte seule', (before, after, conditions) => {
+		expect(change(before, after)).toEqual(conditions);
+	});
+
+	it('plusieurs lettres, domaine rétréci : on ne voit pas s’il reste un point, null', () => {
+		expect(change('ln(x y)', 'ln(x)+ln(y)')).toBeNull();
+	});
+
+	it('plusieurs lettres, domaine élargi : la perte, sans élagage', () => {
+		expect(change('x/x+y/y', '2')).toEqual(['x ≠ 0', 'y ≠ 0']);
+	});
+
+	// Revue Opus : `ln(x²) + ln(−x)` n'est défini que pour x < 0
+	it.each([
+		['ln(x^2)+ln(-x)', 'ln(-x)+2ln(x)'],
+		['ln(x^2)*sqrt(-x)', '2ln(x)sqrt(-x)'],
+		['ln(x^2)-2ln(-x)', '2ln(x)-2ln(-x)']
+	])('%s → %s : plus aucun point commun, null', (before, after) => {
+		expect(change(before, after)).toBeNull();
+	});
+
+	it('une condition qui ne s’écrit pas (tan) : on ne sait pas, null', () => {
+		expect(change('tan(x)/tan(x)', '1')).toBeNull();
+	});
+
+	it('narrows : vrai quand le domaine rétrécit, faux quand il s’élargit', () => {
+		expect(domainChanges(parseCustom('ln(x^2)'), parseCustom('2ln(x)'))?.narrows).toBe(true);
+		expect(domainChanges(parseCustom('x/x'), parseCustom('1'))?.narrows).toBe(false);
+	});
+});
+
+describe('conditions écrites au plus simple (revue du § 4.2)', () => {
+	it.each([
+		['ln(x^2)-ln(x^2)', '0', ['x ≠ 0']],
+		['ln(x^3)-ln(x^3)', '0', ['x > 0']],
+		['sqrt(x^4)/sqrt(x^4)', '1', ['x ≠ 0']]
+	])('%s → %s : « %s »', (before, after, conditions) => {
+		const found = domainChange(parseCustom(before), parseCustom(after));
+		expect(found === null ? null : describeConditions(found).map((c) => c.text)).toEqual(
+			conditions
+		);
+	});
+
+	const plain = (conditions: string[], answer: string) =>
+		describeConditions(
+			plainConditions(
+				conditions.map((c) => ({ expression: parseCustom(c), relation: 'nonzero' as const })),
+				parseCustom(answer)
+			)
+		).map((c) => c.text);
+
+	it('ln(x) ≠ 0, la réponse dit x > 0 : « x ≠ 1 »', () => {
+		expect(plain(['ln(x)'], 'ln(x)')).toEqual(['x ≠ 1']);
+	});
+
+	it('ln(x) ≠ 0, la réponse ne dit rien : « x > 0 et x ≠ 1 »', () => {
+		expect(plain(['ln(x)'], '1')).toEqual(['x > 0', 'x ≠ 1']);
+	});
+
+	it('cos(x) ≠ 0 : famille périodique, gardée telle quelle', () => {
+		expect(plain(['cos(x)'], '1')).toEqual(['cos(x) ≠ 0']);
+	});
+});
+
+describe('conditions écrites au plus simple, 2ᵉ revue', () => {
+	it('x² − 1 ≠ 0 : « x ≠ −1 et x ≠ 1 »', () => {
+		const written = plainConditions(
+			[{ expression: parseCustom('x^2-1'), relation: 'nonzero' }],
+			parseCustom('1')
+		);
+		expect(describeConditions(written).map((c) => c.text)).toEqual(['x ≠ −1', 'x ≠ 1']);
+	});
+
+	it('4x² − 1 ≠ 0 : « x ≠ −1/2 et x ≠ 1/2 »', () => {
+		const written = plainConditions(
+			[{ expression: parseCustom('4x^2-1'), relation: 'nonzero' }],
+			parseCustom('1')
+		);
+		expect(describeConditions(written).map((c) => c.text)).toEqual(['x ≠ −1/2', 'x ≠ 1/2']);
+	});
+
+	it('ln(x⁻²) − ln(x⁻²) → 0 : « x ≠ 0 »', () => {
+		const found = domainChange(parseCustom('ln(x^(-2))-ln(x^(-2))'), parseCustom('0'));
+		expect(found === null ? null : describeConditions(found).map((c) => c.text)).toEqual(['x ≠ 0']);
 	});
 });
