@@ -242,7 +242,8 @@ erreur fait échouer la génération (message situé). Une ligne `case:` écrite
    du modèle (`blanks[]` peut l'omettre, une réponse écrite est refusée, `case:` écrite aussi, bloc en
    erreur, non fermé ou avec `options.orderIndependent` → échec). Le bloc est délimité comme le parseur
    (`findBuildCollections`, `findBuildMonnaies` : une ligne vide suivie d'une clé reste dans un bloc
-   fermé). La case est `type: 'math'`, `construire: 'collection' | 'monnaie'`, jugée comme une case
+   fermé) ; l'énoncé numéroté est relu par `parseMarkdown` : une case dont le bloc n'est pas lu à l'écran
+   (fence de fin en retrait, bloc montré dans un bloc de code) → échec. La case est `type: 'math'`, `construire: 'collection' | 'monnaie'`, jugée comme une case
    ordinaire : l'élève répond par la valeur qu'il a posée (`'34'`, `'35'` €, `''` plan vide).
    Un bloc ```choix (case « choix », chantier `figure-et-choix`, au premier niveau, sinon échec)
    compte pour **une** case, `case: N` posé en tête du bloc (`choix-parser.ts`, lu dans

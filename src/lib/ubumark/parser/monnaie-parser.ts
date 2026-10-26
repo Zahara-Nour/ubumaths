@@ -73,7 +73,11 @@ const CENTS_REGEX = /^\d+\s*c$|^\d+[.,]\d+$/i;
 /** `3cm`, `2,5 cm` */
 const SIZE_REGEX = /^(\d+(?:[.,]\d+)?)\s*cm$/i;
 
-/** Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66) */
+/**
+ * Les clés du bloc : une ligne qui commence par l'une d'elles n'est jamais du texte (Q66).
+ * Sans `construire:`, `réserve:`, `case:` : leurs valeurs ont toujours un chiffre, déjà
+ * reconnu ; les ajouter ferait avaler à un bloc non fermé un paragraphe « Construire… »
+ */
 const BLOCK_KEYS = [
 	'billets',
 	'pièces',
@@ -82,11 +86,7 @@ const BLOCK_KEYS = [
 	'disposition',
 	'légendes',
 	'legendes',
-	'taille',
-	'construire',
-	'réserve',
-	'reserve',
-	'case'
+	'taille'
 ] as const;
 
 type Key =
@@ -388,7 +388,10 @@ export function parseMonnaieContent(source: string): MonnaieNode {
 		const key = normalizeKey(match[1]);
 		const value = match[2].trim();
 		if (key === null) {
-			fail(lineNo, `clé « ${match[1]} » inconnue (clés possibles : ${KEY_NAMES.join(', ')})`);
+			fail(
+				lineNo,
+				`clé « ${match[1]} » inconnue (clés possibles : ${KEY_NAMES.filter((k) => k !== 'case').join(', ')})`
+			);
 			return;
 		}
 		const previous = seen.get(key);

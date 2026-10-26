@@ -144,3 +144,20 @@ describe('construire: — PDF (Q9)', () => {
 		expect((out.match(/circle\(/g) ?? []).length).toBe(11);
 	});
 });
+
+// Revue de la PR 2 (monnaie) : les collections à lire ne changent pas
+describe('```collection à lire : inchangé', () => {
+	it('bloc non fermé : un paragraphe « Construire… » reste du texte', async () => {
+		const { parseMarkdown } = await import('$lib/ubumark');
+		const doc = parseMarkdown(
+			['```collection', 'unités: 3', '', 'Construire une tour.', '', '```js', 'x', '```'].join('\n')
+		);
+		expect(doc.children.map((c) => c.type)).toEqual(['collection', 'paragraph', 'code-block']);
+	});
+
+	it('clé inconnue : la liste des clés possibles ne propose pas case:', () => {
+		const [message] = messages(parse('unité: 3'));
+		expect(message).toContain('construire)');
+		expect(message).not.toMatch(/\bcase\b/);
+	});
+});

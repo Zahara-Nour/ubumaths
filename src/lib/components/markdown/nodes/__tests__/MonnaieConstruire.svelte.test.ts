@@ -9,6 +9,7 @@ import { userEvent } from 'vitest/browser';
 import Monnaie from '../Monnaie.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
 import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
+import FillBlanksBoundHarness from './FillBlanksBoundHarness.svelte';
 import { parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 import type { InstanceBlank, QuestionTemplate } from '$lib/questions/types';
@@ -303,6 +304,23 @@ describe('FillBlanksInput — bloc ```monnaie à construire', () => {
 		await userEvent.click(button(root, 'Ajouter une pièce de 2 €'));
 		await userEvent.click(button(root, 'Ajouter une pièce de 1 €'));
 		expect(values[0]).toBe('35');
+	});
+
+	// Revue de la PR 2 : le décor de la prod renvoie la valeur au bloc (`bind:values`) ;
+	// la construction de l'élève doit rester la sienne, pas devenir « le moins d'objets »
+	it('parent lié (bind:values) : 3 billets de 10 € restent 3 billets, la case vaut 35', async () => {
+		let last: string[] = [];
+		const screen = await render(FillBlanksBoundHarness, {
+			target: mainElement(),
+			props: { statement: STATEMENT, blanks, onValues: (v: string[]) => (last = v) }
+		});
+		const root = screen.container;
+		for (let i = 0; i < 3; i++) await userEvent.click(button(root, 'Ajouter un billet de 10 €'));
+		await userEvent.click(button(root, 'Ajouter une pièce de 2 €'));
+		await userEvent.click(button(root, 'Ajouter une pièce de 2 €'));
+		await userEvent.click(button(root, 'Ajouter une pièce de 1 €'));
+		await expect.poll(() => last[0]).toBe('35');
+		expect(placed(root)).toEqual(['10 €', '10 €', '10 €', '2 €', '2 €', '1 €']);
 	});
 
 	it('correction : la construction de l’élève et une construction juste', async () => {

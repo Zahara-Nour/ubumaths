@@ -9,6 +9,7 @@ import { userEvent } from 'vitest/browser';
 import Collection from '../Collection.svelte';
 import MarkdownRenderer from '../../MarkdownRenderer.svelte';
 import FillBlanksInput from '$lib/components/question-inputs/FillBlanksInput.svelte';
+import FillBlanksBoundHarness from './FillBlanksBoundHarness.svelte';
 import { parseCollectionContent } from '$lib/ubumark/parser/collection-parser';
 import type { ResolvedMarkdown } from '$lib/ubumark';
 import type { InstanceBlank, QuestionTemplate } from '$lib/questions/types';
@@ -275,6 +276,20 @@ describe('FillBlanksInput — bloc ```collection à construire', () => {
 		for (let i = 0; i < 2; i++) await userEvent.click(button(root, 'Ajouter une barre de dix'));
 		for (let i = 0; i < 14; i++) await userEvent.click(button(root, 'Ajouter un cube'));
 		expect(values[0]).toBe('34');
+	});
+
+	it('parent lié (bind:values) : 2 barres + 14 cubes restent tels quels, la case vaut 34', async () => {
+		let last: string[] = [];
+		const screen = await render(FillBlanksBoundHarness, {
+			target: mainElement(),
+			props: { statement: STATEMENT, blanks, onValues: (v: string[]) => (last = v) }
+		});
+		const root = screen.container;
+		for (let i = 0; i < 2; i++) await userEvent.click(button(root, 'Ajouter une barre de dix'));
+		for (let i = 0; i < 14; i++) await userEvent.click(button(root, 'Ajouter un cube'));
+		await expect.poll(() => last[0]).toBe('34');
+		expect(placed(root, 'barre')).toBe(2);
+		expect(placed(root, 'cube')).toBe(14);
 	});
 
 	it('correction : la construction de l’élève et une construction juste', async () => {

@@ -198,3 +198,23 @@ describe('construire: — PDF (Q9)', () => {
 		expect(out).not.toContain('"100 €"');
 	});
 });
+
+// Revue de la PR 2 : les blocs à lire ne changent pas
+describe('```monnaie à lire : inchangé', () => {
+	it('bloc non fermé : un paragraphe « Construire… » ou « Réserve… » reste du texte', async () => {
+		const { parseMarkdown } = await import('$lib/ubumark');
+		for (const text of ['Construire une maison coûte cher.', 'Réserve ta place.']) {
+			// Un ``` plus loin : le bloc passerait pour fermé s'il avalait le paragraphe
+			const doc = parseMarkdown(
+				['```monnaie', 'billets: 10', '', text, '', '```js', 'x', '```'].join('\n')
+			);
+			expect(doc.children.map((c) => c.type)).toEqual(['monnaie', 'paragraph', 'code-block']);
+		}
+	});
+
+	it('clé inconnue : la liste des clés possibles ne propose pas case:', () => {
+		const [message] = messages(parse('billet: 10'));
+		expect(message).toContain('construire, réserve)');
+		expect(message).not.toMatch(/\bcase\b/);
+	});
+});

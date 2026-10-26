@@ -289,3 +289,34 @@ describe('bloc ```monnaie à construire : la case et sa réponse', () => {
 		expect(errors.join(' ')).not.toMatch(/requires blanks/);
 	});
 });
+
+// Revue de la PR 2 : une case dont le bloc n'est pas lu par l'écran (l'élève ne pourrait
+// pas répondre) est refusée, pour les deux blocs
+describe('bloc à construire illisible à l’écran : refusé', () => {
+	const cases = [
+		['monnaie', 'construire: 35'],
+		['collection', 'construire: 34']
+	] as const;
+
+	for (const [kind, line] of cases) {
+		it(`${kind} : fence de fin en retrait`, () => {
+			const result = generateInstance(
+				template({ statement: `Fais-le.\n\n\`\`\`${kind}\n${line}\n \`\`\`` }),
+				42
+			);
+			expect(result.success).toBe(false);
+			if (result.success) return;
+			expect(result.errors.join(' ')).toMatch(new RegExp(`Case 1 \\(bloc ${kind}\\).*illisible`));
+		});
+
+		it(`${kind} : montré en exemple dans un bloc de code`, () => {
+			const result = generateInstance(
+				template({
+					statement: `Exemple :\n\n\`\`\`\`text\n\`\`\`${kind}\n${line}\n\`\`\`\n\`\`\`\``
+				}),
+				42
+			);
+			expect(result.success).toBe(false);
+		});
+	}
+});

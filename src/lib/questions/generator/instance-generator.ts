@@ -53,6 +53,7 @@ import {
 	parseCollectionContent
 } from '$lib/ubumark/parser/collection-parser';
 import { hasMonnaieToBuild, parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
+import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
 import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
@@ -644,6 +645,31 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					};
 				}
 				buildAnswers.set(index, { kind, answer: String(node.spec.build) });
+			}
+			// Chaque case à construire doit être un bloc que l'écran de l'élève lit vraiment :
+			// une fence de fin en retrait, un bloc montré dans un bloc de code ``` ne le sont
+			// pas (repérage ligne à ligne ≠ parseur), et l'élève n'aurait rien où répondre
+			if (buildAnswers.size > 0) {
+				const shown = new Set(
+					parseMarkdown(blankResult.statement).children.flatMap((child) =>
+						(child.type === 'collection' || child.type === 'monnaie') &&
+						child.spec !== null &&
+						child.errors.length === 0 &&
+						child.caseIndex !== undefined
+							? [child.caseIndex]
+							: []
+					)
+				);
+				for (const [index, { kind }] of buildAnswers) {
+					if (!shown.has(index)) {
+						return {
+							success: false,
+							errors: [
+								`Case ${index + 1} (bloc ${kind}) : bloc illisible à l'écran (fence de fin \`\`\` en retrait, ou bloc dans un bloc de code ?)`
+							]
+						};
+					}
+				}
 			}
 
 			// Coherence check: totalBlanks must match blanks[] length. Les cases des blocs
