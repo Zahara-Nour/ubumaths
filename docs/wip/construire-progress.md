@@ -6,12 +6,12 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1825._
+_Mis à jour le 2026-10-26, après #1830 (chantier « questions »)._
 
 - **État** : PR 1 collection (#1812), PR 2 monnaie (#1820) et PR 3 copie corrigée (#1825 : plan verrouillé avec la construction de l'élève, sa valeur, une construction juste ; verso : construction juste) mergées, pas en prod ; vérifiées dans l'appli locale (admin@local.test, `/dashboard/admin/questions/<id>/preview`). Le code du chantier est complet.
-- **Prochaine action** : modèles CP-002, CP-044, CP-071, CP-045 au chantier « questions » (brouillons jusqu'au `deploy:prod`) ; puis fin de chantier = versement (§ 3-6 → `docs/systeme/`, journal archivé), quand David le dit.
+- **Prochaine action** : modèles écrits au chantier « questions » (lot C, #1830 ; brouillons en prod après le `deploy:prod`) ; fin de chantier = versement (§ 3-6 → `docs/systeme/`, journal archivé), quand David le dit.
 - **En attente de David** : vérifications manuelles #1812, #1820, #1825 (tablette, PDF) ; go pour clore le chantier ou y garder les modèles ; idée possible : garder la composition posée (pas seulement la valeur) pour que la copie montre les vrais gestes de l'élève.
-- **Pièges en cours** : ```operation garde ses angles morts (à traiter à part) ; `vercel-maintenance` instable en CI (SIGPIPE 141) ; un worktree doit avoir `.env` ET `.env.local` (sinon base distante) ; 3 brouillons « VERIF construire … (local) » en base locale.
+- **Pièges en cours** : ```operation garde ses angles morts (à traiter à part) ; `vercel-maintenance` instable en CI (SIGPIPE 141) ; un worktree doit avoir `.env` ET `.env.local` (sinon base distante) ; brouillons « VERIF construire » de la base locale supprimés (2026-10-26).
 - **Worktree / branche** : aucun (retiré après #1825).
 
 ---

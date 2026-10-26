@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, lot C (construire) en cours._
+_Mis à jour le 2026-10-26, après #1830._
 
-- **État** : 68 modèles CP publiés. **Lot C** (§ 4 quindecies) : 4 modèles écrits (`scripts/questions/cp-c/`, générés par `docs/wip/questions/lot-c.py`), `checkTemplate` vert (19 specs), créés en brouillon **en base locale** pour les voir dans l'appli.
-- **Prochaine action** : relire le rendu en local (port 5176), PR des fichiers ; après le `deploy:prod` qui livre « construire » (#1812, #1820, #1825) : brouillons en prod (David, `!`), migration nœud + tag.
-- **En attente de David** : vérification manuelle #1702.
-- **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées ; `create-questions` vise `.env` (prod) : pour la base locale, `set -a; . ./.env.local; set +a` avant.
-- **Worktree / branche** : `../ubumaths-wt-questions` (`feat/questions-construire`).
+- **État** : 68 modèles CP publiés. **Lot C** (construire, § 4 quindecies) : 4 modèles dans `scripts/questions/cp-c/` (#1830 mergée), `checkTemplate` vert (19 specs), joués dans l'aperçu en base locale (juste, faux, carte de correction). **Rien en prod.**
+- **Prochaine action** : après le `deploy:prod` qui livre les blocs à construire (#1812, #1820, #1825 ; lancé par David, refusé une 1re fois : CI de `main` en cours) → David crée les brouillons en prod (`! pnpm tsx scripts/create-questions.ts --dir scripts/questions/cp-c --publier`), je les vérifie, puis migration nœud + tag (C1 → CP-002 « dénombrement », C2 → CP-044, C4 → CP-045 « pièces et billets », C3 → CP-071 « rendre la monnaie » ; question d'accès déjà tranchée : personne), page à cocher, publication.
+- **En attente de David** : vérification manuelle #1702 ; le `deploy:prod`.
+- **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées ; `create-questions` vise `.env` (prod) : pour la base locale, `set -a; . ./.env.local; set +a` avant ; 4 brouillons du lot C en base LOCALE (essais).
+- **Worktree / branche** : aucun (retiré après #1830).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
@@ -271,3 +271,4 @@ David suit mes recommandations (« je suis tes recos »). Les blocs à construir
 - 2026-10-26 : page à cocher du lot M relue par David : 6/6 « ok », aucun commentaire.
 - 2026-10-26 : `deploy:prod` v0.50.0 (demandé par David) ; 6 brouillons M publiés (`publishTemplates`, script `publier-m.mts` du scratchpad, lancé par David), 0 refus, statut `published` relu en base : 68/68 CP publiés.
 - 2026-10-26 : lot C (construire), phase 0 validée (§ 4 quindecies) ; 4 brouillons « VERIF construire » de la base locale supprimés (go de David) ; worktree `../ubumaths-wt-questions` (`feat/questions-construire`) ; 4 modèles écrits, `checkTemplate` vert, créés en brouillon en base locale.
+- 2026-10-26 : #1830 mergée (fichiers du lot C ; CI verte ; revue : aucune, contenu) ; modèles joués dans l'aperçu admin en base locale, juste et faux, pour les 4.
