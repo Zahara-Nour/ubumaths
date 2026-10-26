@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, lot 0 écrit et testé, PR à ouvrir._
+_Mis à jour le 2026-10-26, après #1843._
 
-- **État** : lot 0 (corrections, § 5) écrit sur `fix/questions-ce1-lot0` : instantané `docs/wip/questions/etat-prod-2026-10-26/` (12 md5 = prod, 0 donnée d'élève revérifiée), migrations `20261027000000_questions_ce1_contenu` (générée par `lot-corrections-ce1.py`, 30 specs vertes) et `20261027000100_questions_ce1_rangement_tags` (à la main) ; tests d'intégration verts, rouges sans migration.
-- **Prochaine action** : retour de `security-auditor`, PR, CI, merge, `pnpm db:migrate` depuis le dépôt principal, vérifier en prod (contenu des 3, nœuds, tags, CE2, brouillon) ; puis phase 0 du lot 1 (calcul mental : 029, 102, 084, 032, 083, 024).
+- **État** : lot 0 (corrections) MERGÉ (#1843) et migrations JOUÉES en prod (`db:migrate`), vérifié : 3 modèles réécrits (md5 = contenu de la migration), décompositions sur « écritures » + CE1-005, CE1-024 retiré, `47f97c9f` en brouillon, 4 modèles en CE2. Vérification manuelle notée (`verifications-manuelles.md`, #1843).
+- **Prochaine action** : phase 0 du lot 1 (calcul mental : 029, 102, 084, 032, 083, 024), comportements en français, à faire valider avant d'écrire ; nouveau worktree.
 - **En attente de David** : rien.
-- **Pièges en cours** : copies de test publiées → un niveau chacune (`idx_question_templates_unique_category`) ; tag d'un modèle = point de son nœud ou de sa notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:`.
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1`, `fix/questions-ce1-lot0`.
+- **Pièges en cours** : modèle publié → deux migrations (gabarits CE1 lot 0, `couvrir-un-niveau.md` § 7), rollback qui garde l'état laissé ; copies de test publiées → un niveau chacune ; tag = point du nœud ou de sa notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:`.
+- **Worktree / branche** : aucun (retiré après #1843).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -177,3 +177,5 @@ qu'il lisait ? — les élèves et le prof du **CE1** ne voient plus ces 4 modè
 décomposition » ; distributivité : « … d'un nombre de $11$ à $19$ par un nombre à $1$ chiffre »).
 Moitié V1 = 22 à 88 (unités 2 à 8), V2 = 12 à 98, V3 = 210 à 698 (dizaines non nulles), corrigé en
 trois étapes (coupe en deux parts paires, moitié de chacune, somme). Parité : specs aux bornes 998 et 999. Contenu relu par `pnpm question:specs` (le fichier ligne de base → clés camelCase d'abord).
+
+- 2026-10-26 : #1843 mergée (CI verte, `security-auditor` sans finding bloquant ; garde d'état ajoutée au rollback du rangement), `db:migrate` (go de David : la migration retire 4 tags), vérifiée en prod.
