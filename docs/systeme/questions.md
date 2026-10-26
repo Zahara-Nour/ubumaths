@@ -14,7 +14,7 @@ couvre:
   - 'src/lib/components/questions/**'
   - 'src/lib/components/question-inputs/**'
   - src/lib/components/markdown/nodes/BlankInput.svelte
-  - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor}.svelte'
+  - 'src/lib/components/{QuestionTemplateForm,SharedFieldsEditor,ChoiceCaseEditor}.svelte'
   - 'src/lib/components/{QuestionTemplateCard,QuestionPreview*,QuestionCategoryFields,QuestionTemplateHelpDialogs,CategorySelector,CartFloatingButton,CartQuestionCard,DisplayOptionsEditor,ValidationOptionsEditor,PrecisionEditor,VariableEditor,AnswerEditor,CourseQuestionToggle}.svelte'
   - 'src/lib/stores/{questionCart,questionCategories,questionTemplates}.svelte.ts'
   - src/lib/components/exercises/VariationEditor.svelte
