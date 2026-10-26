@@ -91,7 +91,9 @@ brouillon `.ts` non suivi d'une session y bloquait le push de doc de toutes les 
 | `pre-push`   | `pnpm format:check` (fichiers suivis seulement) → `lint:fast --push` (fichiers des commits poussés seulement) → `docs:check-links` → `docs:check-refs --strict` → `docs:check-a-jour --couverture` (bloquants), puis `docs:check-a-jour --depuis origin/main` (avertissement).                                                                                             |
 
 Le pre-push est le seul filet des commits de doc poussés directement sur `main`, que la CI de push
-ignore. `--no-verify` n'a plus de raison d'être (le hook Claude le refuse).
+ignore. « Code modifié ⇒ doc modifiée » n'y fait qu'avertir ; c'est la CI de la PR qui bloque
+(`docs:check-a-jour --depuis`, depuis le 2026-10-26) : modifier la doc, ou écrire la raison dans
+un commit (`Doc-inchangée: …` / `Doc-reportée: …`). `--no-verify` n'a plus de raison d'être (le hook Claude le refuse).
 
 ⚠️ **Un worktree sans `pnpm install` n'a AUCUN hook** : husky s'installe par le script `prepare`.
 `.env` et `node_modules` ne suivent pas non plus le worktree ([worktrees.md](worktrees.md)).

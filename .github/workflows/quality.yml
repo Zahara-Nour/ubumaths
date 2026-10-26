@@ -137,11 +137,12 @@ jobs:
       - name: Guard doc coverage
         run: pnpm docs:check-a-jour --couverture
 
-      # Code modifié ⇒ doc modifiée (ou `Doc-inchangée: <raison>` dans un commit).
-      # Avertissement d'abord (2026-10-10), bloquant ensuite : retirer `--avertir`.
-      - name: Guard doc à jour (avertissement)
+      # Code modifié ⇒ doc modifiée (ou `Doc-inchangée: <raison>` / `Doc-reportée:
+      # <raison>` dans un commit) : bloquant depuis le 2026-10-26 (avertissement
+      # seul du 2026-10-10 au 2026-10-26 : des PR passaient sans doc ni raison).
+      - name: Guard doc à jour
         if: github.event_name == 'pull_request'
-        run: pnpm docs:check-a-jour --depuis origin/${{ github.base_ref }} --avertir
+        run: pnpm docs:check-a-jour --depuis origin/${{ github.base_ref }}
 
       - name: Guard awaited render (vitest-browser-svelte 3)
         run: npx tsx scripts/check-await-render.ts
