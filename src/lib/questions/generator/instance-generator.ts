@@ -31,7 +31,7 @@ import type {
 	ValidationRule,
 	BuildKind
 } from '../types';
-import { getQuestionType } from '../types';
+import { buildKindName, getQuestionType } from '../types';
 import type { ResolvedMarkdown, TemplateMarkdown } from '$lib/ubumark';
 import { templateMarkdown, resolvedMarkdown, detectCircularDependencies } from '$lib/ubumark';
 import { validateTemplate } from '../validators/template-validator';
@@ -48,11 +48,10 @@ import {
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
 import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
-import {
-	hasCollectionToBuild,
-	parseCollectionContent
-} from '$lib/ubumark/parser/collection-parser';
-import { hasMonnaieToBuild, parseMonnaieContent } from '$lib/ubumark/parser/monnaie-parser';
+import { hasCollectionToBuild } from '$lib/ubumark/parser/collection-parser';
+import { hasMonnaieToBuild } from '$lib/ubumark/parser/monnaie-parser';
+import { hasLineToPlace } from '$lib/ubumark/parser/number-line-parser';
+import { buildAnswerOf } from './build-answer';
 import { parseMarkdown } from '$lib/ubumark/parser/markdown-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
 import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
@@ -491,7 +490,8 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				String(resolvedStatement)
 			) ||
 				hasCollectionToBuild(String(resolvedStatement)) ||
-				hasMonnaieToBuild(String(resolvedStatement))) &&
+				hasMonnaieToBuild(String(resolvedStatement)) ||
+				hasLineToPlace(String(resolvedStatement))) &&
 			getQuestionType({
 				choices: resolvedVariation.choices,
 				shared: template.shared,
@@ -655,27 +655,24 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				answers.forEach((answer, k) => operationAnswers.set(index + k, answer));
 			}
 
-			// Cases des blocs ```collection et ```monnaie à construire : réponse = la valeur du bloc
+			// Cases des blocs ```collection et ```monnaie à construire, des droites à placer :
+			// réponse = la valeur du bloc
 			const buildAnswers = new Map<number, { kind: BuildKind; answer: string }>();
 			for (const [key, { kind, source }] of Object.entries(blankResult.buildBlanks ?? {})) {
 				const index = Number(key);
-				const node =
-					kind === 'collection' ? parseCollectionContent(source) : parseMonnaieContent(source);
-				const errors =
-					node.caseIndex !== undefined
-						? ['case: est posée automatiquement, retirer cette ligne du bloc']
-						: node.errors.map((e) => e.message);
+				const read = buildAnswerOf(kind, source);
+				const errors = 'errors' in read ? read.errors : [];
 				// Le juge apparierait une construction avec une autre case (34 tapé ailleurs)
 				if (template.options?.orderIndependent) {
 					errors.push('une case à construire ne se combine pas avec « ordre indifférent »');
 				}
-				if (errors.length > 0 || node.spec?.build === undefined) {
+				if (errors.length > 0 || !('answer' in read)) {
 					return {
 						success: false,
-						errors: [`Case ${index + 1} (bloc ${kind}) : ${errors.join(' ; ')}`]
+						errors: [`Case ${index + 1} (${buildKindName(kind)}) : ${errors.join(' ; ')}`]
 					};
 				}
-				buildAnswers.set(index, { kind, answer: String(node.spec.build) });
+				buildAnswers.set(index, { kind, answer: read.answer });
 			}
 			// Chaque case à construire doit être un bloc que l'écran de l'élève lit vraiment :
 			// une fence de fin en retrait, un bloc montré dans un bloc de code ``` ne le sont
@@ -683,10 +680,13 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			if (buildAnswers.size > 0) {
 				const shown = new Set(
 					parseMarkdown(blankResult.statement).children.flatMap((child) =>
-						(child.type === 'collection' || child.type === 'monnaie') &&
-						child.spec !== null &&
-						child.errors.length === 0 &&
-						child.caseIndex !== undefined
+						((child.type === 'collection' || child.type === 'monnaie') &&
+							child.spec !== null &&
+							child.errors.length === 0 &&
+							child.caseIndex !== undefined) ||
+						(child.type === 'number-line' &&
+							child.placer !== undefined &&
+							child.caseIndex !== undefined)
 							? [child.caseIndex]
 							: []
 					)
@@ -696,7 +696,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						return {
 							success: false,
 							errors: [
-								`Case ${index + 1} (bloc ${kind}) : bloc illisible à l'écran (fence de fin \`\`\` en retrait, ou bloc dans un bloc de code ?)`
+								`Case ${index + 1} (${buildKindName(kind)}) : bloc illisible à l'écran (fence de fin \`\`\` en retrait, ou bloc dans un bloc de code ?)`
 							]
 						};
 					}
@@ -738,7 +738,7 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 						return {
 							success: false,
 							errors: [
-								`Case ${index + 1} : sa réponse est la valeur du bloc ${kind} (construire:) ; laisser expectedAnswer vide`
+								`Case ${index + 1} : sa réponse est ${kind === 'line' ? 'la graduation de la droite graduée (placer:)' : `la valeur du bloc ${kind} (construire:)`} ; laisser expectedAnswer vide`
 							]
 						};
 					}

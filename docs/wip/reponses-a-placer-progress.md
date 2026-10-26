@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-26, ouverture du chantier (aucune PR)._
 
 - **État** : phase 0 écrite (§ 3-5), rien de codé. Né du chantier « questions » (outil n° 4 de [questions-progress.md](questions-progress.md) § 3).
-- **Prochaine action** : réponses de David aux questions du § 5, puis tests rouges du premier geste.
-- **En attente de David** : les 6 questions du § 5.
+- **Prochaine action** : PR 1 (un point par droite, § 6) — tests rouges puis code.
+- **En attente de David** : rien.
 - **Pièges en cours** : `geometrie-validation` a tranché CP-008 → réponses à placer (pas la case « figure ») ; ne pas mélanger avec la case « figure » (`figure-et-choix`) ; une PR = une session.
 - **Worktree / branche** : `../ubumaths-wt-reponses-a-placer` · `feat/reponses-a-placer`.
 
@@ -106,3 +106,13 @@ placer: {{a}}
    case par point (note partielle naturelle) ; ou un seul point par droite au départ ?
 5. **Téléphone** : boutons ◀ ▶ en plus du toucher, ou toucher seul ?
 6. **PDF** : la droite sans point (l'enfant fait sa croix) — ça te va ?
+
+## 6. Décisions (David, 2026-10-26 : « go sur tes recos »)
+
+1. Ordre : **droite graduée** → aiguilles → barres ; étiquettes à ranger hors chantier.
+2. Écriture : ligne **`placer:`** dans le bloc ` ```line ` (patron `construire:`).
+3. Jugé : la **graduation exacte**, sans tolérance (aimant).
+4. **PR 1 : un seul point par droite** (`placer: 7`) ; PR 2 : plusieurs (`placer: A=3 ; B=7`, une case par
+   point) — syntaxe de la PR 1 choisie pour s'étendre sans casse.
+5. Boutons **◀ ▶ toujours visibles** sous la droite (d'un cran), en plus du toucher et du clavier.
+6. PDF : la droite **sans point**, l'enfant fait sa croix.

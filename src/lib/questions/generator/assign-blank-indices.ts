@@ -13,7 +13,8 @@
  * - `<<expr:NAME>>` in math → reserves indices for ? in answerFormats[NAME]
  * - Bloc ```operation à remplir → UNE case, numéro posé dans le bloc (`case: N`) ;
  *   division euclidienne : DEUX cases, N (quotient) et N + 1 (reste), seul N est posé
- * - Bloc ```collection ou ```monnaie à construire (`construire: N`) → UNE case, `case: N` posé dans le bloc
+ * - Bloc ```collection ou ```monnaie à construire (`construire: N`), ou droite à placer
+ *   (```line, `placer: N`) → UNE case, `case: N` posé dans le bloc
  * - Bloc ```figure-a-completer → UNE case (la figure de l'élève), `case: N` posé dans le bloc ;
  *   son contenu est mis à l'abri : ni `?` ni `[_]` n'y crée de case
  * - Bloc ```figure-de-travail → de même UNE case, jamais notée (l'élève trace pour vérifier)
@@ -27,7 +28,8 @@ import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
 import { findFigureBlocks } from '$lib/ubumark/parser/figure-parser';
 import { findBuildCollections } from '$lib/ubumark/parser/collection-parser';
 import { findBuildMonnaies } from '$lib/ubumark/parser/monnaie-parser';
-import type { BuildKind } from '../types';
+import { findLinesToPlace } from '$lib/ubumark/parser/number-line-parser';
+import { buildKindName, type BuildKind } from '../types';
 import { operationCaseCount } from '$lib/ubumark/utils/operation-division-answer';
 import {
 	CHOICE_BLOCK_NESTED_MESSAGE,
@@ -320,7 +322,7 @@ const OPERATION_NESTED_MESSAGE =
 const BUILD_CASE_MARK = '\u0000build-case\u0000';
 
 const buildNestedMessage = (kind: BuildKind) =>
-	`Un bloc ${kind} à construire doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
+	`${kind === 'line' ? 'Une droite à placer' : `Un bloc ${kind} à construire`} doit être au premier niveau de l’énoncé (ni dans une liste, ni dans une citation)`;
 
 /** Bloc `cases: aucune` : opération résolue, rien à remplir */
 function isSolvedOperation(body: string[]): boolean {
@@ -414,7 +416,8 @@ function markBuildBlocks(statement: string): {
 } {
 	const found = [
 		...findBuildCollections(statement).map((b) => ({ ...b, kind: 'collection' as const })),
-		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const }))
+		...findBuildMonnaies(statement).map((b) => ({ ...b, kind: 'monnaie' as const })),
+		...findLinesToPlace(statement).map((b) => ({ ...b, kind: 'line' as const }))
 	].sort((a, b) => a.startIndex - b.startIndex);
 	const errors = found.filter((b) => b.nested).map((b) => buildNestedMessage(b.kind));
 	const marked = found.filter((b) => !b.nested);
@@ -581,7 +584,7 @@ export function assignBlankIndices(
 					buildBlanks[counter] = { kind: build.kind, source: build.source };
 					if (!build.closed) {
 						builds.errors.push(
-							`Case ${counter + 1} (bloc ${build.kind}) : bloc non fermé (\`\`\` manquant après la dernière ligne)`
+							`Case ${counter + 1} (${buildKindName(build.kind)}) : bloc non fermé (\`\`\` manquant après la dernière ligne)`
 						);
 					}
 					counter++;
