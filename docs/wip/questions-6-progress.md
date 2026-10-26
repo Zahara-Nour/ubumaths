@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, PR 1 (contenus) écrite, avant la PR._
+_Mis à jour le 2026-10-26, après #1845._
 
-- **État** : PR 1 commitée sur `feat/questions-6-corrections` (§ 7) : migration `20261027100000_questions_6_contenu`, test vert et rouge sans elle ; revues `security-auditor` + `code-reviewer` sans finding bloquant.
-- **Prochaine action** : PR 1 → CI → merge → `db:migrate` (4 conditions). Puis PR 2 (niveaux, nœuds, tags des 37 + archivage de 3a7a5711 et retrait de son tag), gabarit `20261026210000_questions_cp_c_rangement_tags.sql`, horodatage `20261027100100`.
+- **État** : PR 1 (contenus de 6 modèles) mergée (#1845) et jouée en prod (`db:migrate`) ; md5 prod = « après » vérifiés au MCP (§ 7).
+- **Prochaine action** : PR 2 dans un nouveau worktree `../ubumaths-wt-questions-6` : migration à la main `20261027100100_questions_6_rangement_tags` — niveaux des 37 modèles, 17 déplacements de nœud (R2), 34 tags (`questions-6/destinations-42.csv` + décisions du § 6), archivage de 3a7a5711 et retrait de son tag 6-200. Gardes à écrire pour des modèles DÉJÀ rangés (le gabarit `20261026210000_questions_cp_c_rangement_tags.sql` vise des neufs sans nœud) ; instantané à relever de nouveau (`questions-6/releve-prod.ts`, après `svelte-kit sync`).
 - **En attente de David** : § 5 questions 6-8 (outils, « ordonner », groupe D) : recos données le 2026-10-26, pas encore tranchées.
-- **Pièges en cours** : un tag exige le modèle sur le nœud du point (17 déplacements) ; inclusion stricte ; QCM en réécriture (`figure-et-choix`) ; géométrie en refonte ; `releve-prod.ts` lit `.env` (prod), `svelte-kit sync` avant `question:specs` dans un worktree neuf.
-- **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-corrections`.
+- **Pièges en cours** : un tag exige le modèle sur le nœud du point ; inclusion stricte ; QCM en réécriture (`figure-et-choix`) ; géométrie en refonte ; `releve-prod.ts` lit `.env` (prod).
+- **Worktree / branche** : aucun (retiré après #1845).
 
 ## 1. Relevé (prod, 2026-10-26)
 
@@ -192,3 +192,4 @@ Usages en prod (2026-10-26) : 0 carte FSRS, 0 cahier de texte, 0 question d'éva
   correction de 819df2a9, plus de spec d'espaces sur f3bf4c64). DoD : check 0 erreur, cliquet, lint rapide.
 - **Écart au § 6** : l'archivage de 3a7a5711 passe dans la migration de rangement (PR 2), le générateur
   ne change pas de statut. Son tag 6-200 y est retiré.
+- #1845 mergée le 2026-10-26, `db:migrate` joué ; les 6 md5 en prod = « après » (MCP).
