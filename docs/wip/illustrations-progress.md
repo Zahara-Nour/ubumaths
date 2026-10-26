@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après le prompt du Flegmatique (Tristan Bernard) (pas de PR : chantier 100 % doc pour l'instant)._
+_Mis à jour le 2026-10-26, après le prompt du Professeur Achras (pas de PR : chantier 100 % doc pour l'instant)._
 
-- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme et du Flegmatique (Tristan Bernard) validés et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
-- **Prochaine action** : ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` (David doit les fournir) ; puis prompts des autres personnages (gouverneurs : Achras, Faustroll, Bosse-de-Nage, Cheval à Phynances ; Palotins de Jarry ?), un par un, chacun validé par David.
-- **En attente de David** : les huit images de référence · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
+- **État** : style, nuanciers et règle d'usage fixés ; test Nano Banana concluant ; **prompts de référence de Père Ubu, Mère Ubu, du Capitaine Bordure, de Bougrelas, de Conscience, du Czar Alexis, de Monsieur Prudhomme du Flegmatique (Tristan Bernard) et du Professeur Achras validés et versés au Compendium** (§ XI « Illustrations », fiches § III mises à jour).
+- **Prochaine action** : ranger les images obtenues dans `docs/Chiphres/illustrations/personnages/` (David doit les fournir) ; puis prompts des autres personnages (gouverneurs : Faustroll, Bosse-de-Nage, Cheval à Phynances ; Palotins de Jarry ?), un par un, chacun validé par David.
+- **En attente de David** : les neuf images de référence · bleu de mer (proposé : bleu de Pile `#2F62B0`) · géographie (position des six provinces).
 - **Pièges en cours** : Ubu sans chapeau pointu ni longue robe blanche (aucune ressemblance avec une cagoule) ; joindre l'image d'Ubu comme référence à chaque nouveau personnage ; noms de couleurs en anglais courant ; références sans texte ; jamais de personne réelle nommée (Nano Banana refuse : personnage inventé à la place). Le Lexique décrit encore Turingrad « brutaliste soviétique » : ne pas y toucher sans demande.
 - **Worktree / branche** : aucun, commits doc directs sur `main`.
 

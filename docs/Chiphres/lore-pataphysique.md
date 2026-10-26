@@ -388,6 +388,7 @@ Pour chaque province, on définit une **capitale** (toponyme du chef-lieu, utile
 #### Bedonstan — _Géométrie_
 
 - **Gouverneur** : 🟢 **Professeur Achras** (canon Jarry, _Ubu Cocu_) — éleveur de polyèdres. Il **élève** ses polyèdres comme on élève du bétail, leur parle, les nomme, les fait grossir. **Voix** : pédante, lyrique, exaltée par la géométrie. Tutoie ses polyèdres, vouvoie les humains. Cite Lobatchevski à tout bout de champ (« comme l'a démontré le grand Lobatchevski... »).
+- **Apparence d'Achras** 🟡 (décision de David, 2026-10-26) : vieux savant grand et très maigre, voûté, au long cou, silhouette en point d'interrogation penchée par la passion ; crâne chauve et luisant, longs favoris blancs en broussaille, grosses lunettes rondes relevées sur le front ; yeux écarquillés d'émerveillement, bouche ouverte en pleine tirade. Longue toge universitaire vert émeraude sous un tablier de berger brun ; houlette dont la crosse est un compas ; un dodécaèdre d'or blotti dans un bras comme un agneau ; à ses pieds, un petit troupeau de polyèdres (cube, tétraèdre, octaèdre, icosaèdre) à petites pattes qui le suivent comme des moutons. Polyèdres géométriquement justes (les élèves comptent leurs faces). Prompt d'illustration : Section XI, « Illustrations ».
 - **Capitale** : 🟡 **Lobatchevsk**
 - **Étymologie** : 🟢 **Lobatchevsk est une vraie ville russe**, homonyme de **Nikolaï Lobatchevski (1792-1856)**, mathématicien russe et l'un des trois fondateurs de la **géométrie non-euclidienne** (avec Bolyai et Gauss). Lobatchevski a fait éclater la géométrie « plate » en proposant des géométries sur des surfaces courbes — exactement les bedaines, patates et polyèdres difformes du Royaume.
 - **Devise** : « **La route est droite, mais la courbe est forte** »
@@ -2101,6 +2102,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines, the suit, the hat and the beard, emerald green for the bow tie, white for the collar and the newspaper, marigold yellow for a small watch chain.
 
 Composition: the gentleman standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — le Professeur Achras 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et les images de référence des personnages déjà dessinés, au moins Père Ubu). Si l'IA déforme les polyèdres, ajouter : « geometrically correct polyhedra with flat faces and straight edges ».
+
+```text
+Draw Professor Achras, the eccentric scholar from Alfred Jarry's play "Ubu Cocu", who raises geometric polyhedra like livestock, as a full-body character portrait in exactly the same drawing style as the attached characters.
+
+Character: a tall, very thin, elderly scholar with a stooped, question-mark-shaped silhouette and a long neck, leaning forward with passion; a shiny bald head, long bushy white side whiskers, big round spectacles pushed up on his forehead; wide eyes full of wonder, mouth open in the middle of an enthusiastic speech. He is pedantic, lyrical and over-excited about geometry: a lovable, absent-minded professor, funny, never scary, for students aged 11 to 17.
+
+Clothing and props: a long emerald green academic gown with a dark chocolate brown shepherd's apron over it; a shepherd's crook whose curved top is a drawing compass. He cradles a golden dodecahedron in one arm like a lamb. At his feet, a small herd of solid polyhedra (a cube, a tetrahedron, an octahedron, an icosahedron) with tiny legs, following him like sheep.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, emerald green for the gown, dark chocolate brown for the apron and the crook, white for the whiskers, marigold yellow for the dodecahedron and the compass, deep crimson and white for the little polyhedra.
+
+Composition: Achras standing, three-quarter view, centered, his herd of polyhedra at his feet, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
 ```
 
 ---
