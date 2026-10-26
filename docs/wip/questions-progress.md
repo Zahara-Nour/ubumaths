@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-26, après #1806._
 
 - **État** : 62 modèles CP publiés ; **lot M (monnaie) : 6 brouillons en prod, rangés et tagués** (#1796). Correctifs mergés : #1804 (monnaie d'un choix de QCM à 10 cm, même échelle pour tous les choix ; étiquette du corrigé sous le dessin), #1806 (corrigés sans « : » isolé). Le bloc ```monnaie et #1804 partent au prochain `deploy:prod`.
-- **Prochaine action** : (1) David lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/cp-m --publier --mettre-a-jour` (3 brouillons à jour : 8e54475b, 45a90289, b81c8cf4) ; (2) page à cocher du lot M ; (3) publication après le `deploy:prod`. Ensuite : « construire » (commun avec la collection, en pause), 058 à réexaminer.
-- **En attente de David** : la mise à jour en prod ci-dessus ; vérification manuelle #1702.
+- **Prochaine action** : (1) page à cocher du lot M ; (2) publication après le `deploy:prod`. Ensuite : « construire » (commun avec la collection, en pause), 058 à réexaminer.
+- **En attente de David** : vérification manuelle #1702.
 - **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées.
 - **Worktree / branche** : aucun (retiré après #1806).
 - **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
@@ -254,3 +254,4 @@ David suit mes recommandations (« je suis tes recos »).
 - 2026-10-26 : `fix/monnaie-qcm-taille` — dessin de monnaie d'un choix de QCM 6 → 10 cm partout (écran, série figée, PDF ; go de David). À 390 px la colonne d'un choix (196 px) ramenait seuls les choix larges : **échelle commune par QCM** (`monnaieChoiceSize`, `min(10cm, 100cqw / r)`, choix de David) dans la saisie, le corrigé et les aperçus ; au corrigé, l'étiquette « bonne réponse » d'un choix dessiné passe sous le dessin (elle rétrécissait sa ligne). Tests rouges sans le correctif (mutations), verts avec ; captures avant / après 390 px clair et sombre.
 - 2026-10-26 : #1804 mergée (CI verte ; job d'intégration suivi par son run, `gh pr checks --watch` rendait la main avant la fin). `fix/questions-monnaie-corrige` : 4 phrases des corrigés du lot M sans « : » juste après un montant (il passait seul à la ligne) ; 3 brouillons à mettre à jour en prod (`--mettre-a-jour`, par David).
 - 2026-10-26 : #1806 mergée ; worktree retiré.
+- 2026-10-26 : 3 brouillons M mis à jour en prod (`--mettre-a-jour`, lancé par David), vérifiés : corrigés neufs, brouillon, nœud et tag inchangés.
