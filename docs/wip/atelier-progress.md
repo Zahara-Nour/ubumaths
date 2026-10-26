@@ -8,7 +8,7 @@ status: v1 livrée (dont /grapheur par l'atelier, #811) ; /cas retirée (2026-10
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1827 (graphe agrandi)._
+_Mis à jour le 2026-10-26, après #1835 (composées à ensemble)._
 
 - **État** : `/spreadsheet` retiré et pont « Ouvrir dans Python » livrés et en prod (v0.47.0).
   Aucun worktree ni PR ouverts pour l'atelier.
@@ -21,7 +21,7 @@ _Mis à jour le 2026-10-26, après #1827 (graphe agrandi)._
 - **Ménage** : #1733 verse dans `docs/archive/wip/` les neuf journaux livrés (cas, copier, croiser,
   développer, intervalle, listes qualitatives, réciproque, réglages, remplacer) ; leurs restes ci-dessous.
 - **Fait (2026-10-26, #1827, pas en prod)** : bouton ⤢ « Agrandir le graphe » dans la barre du graphe (toute la fenêtre, Échap le réduit), icône maison pour « Réinitialiser la vue », graphe qui remplit la largeur de sa vue. Échap quitte aussi le plein écran du NAVIGATEUR (Chrome) : verrou d'Échap proposé, refusé par David. Worktree retiré.
-- **Ensuite** : rien de lancé après #1746 ; prochain sujet à choisir par David.
+- **Ensuite** (décidé par David le 2026-10-26) : **étudier V65** ([ecarts-a-trier.md](ecarts-a-trier.md)) : `.limite (x-3)^2 en +∞`, `(2x)^2` et `(x-3)^3` répondent « Je ne sais pas calculer », donc `.variations (x-3)^2` n'a pas de tableau. C'est l'`it.todo` « N4 » de `atelier/__tests__/composees-ensemble.test.ts`. Commencer par trouver où la limite d'une puissance de binôme échoue, puis faire une phase 0.
 - **Déployé** : v0.47.0 (2026-10-25) livre le retrait de `/spreadsheet`, de `/calc` et le pont Python.
   Table `spreadsheets` supprimée le 2026-10-25 ([journal](../archive/wip/drop-spreadsheets-progress.md)).
 - **Sens inverse Python → atelier LIVRÉ** (#1746, 2026-10-25, sur `main`, pas en prod) : chantier
