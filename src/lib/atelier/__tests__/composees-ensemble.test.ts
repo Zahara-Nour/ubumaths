@@ -258,3 +258,32 @@ describe('f⁻¹(u(x)) : même règle sur l’ensemble de départ de f⁻¹', ()
 		expect(last(d).text).toContain('ax + b');
 	});
 });
+
+describe('suites de revue', () => {
+	it('u à valeur interdite simplifiée ((x²−1)/(x−1)) : 1 exclu, pas annoncé dans l’ensemble', () => {
+		const d = desk(F, 'g(x) = f((x^2-1)/(x-1))');
+		expect(label(d, 'g')).toBe('[−1 ; +∞[ \\ {1}');
+	});
+
+	it('g(t) = f(2t) : la condition dit 2t, la lettre de l’élève', () => {
+		const d = desk(F, 'g(t) = f(2t)');
+		d.submit('.domaine g');
+		expect(last(d).text).toContain('2t doit être dans [0 ; +∞[');
+	});
+
+	it('identifiants d’étapes distincts, à partir de 1', () => {
+		const d = desk(F);
+		for (const typed of ['.résoudre f(2x)=4', '.résoudre f(x)=4']) {
+			d.submit(typed);
+			const ids = (last(d).steps ?? []).map((s) => s.id);
+			expect(ids.length).toBeGreaterThan(1);
+			expect(new Set(ids).size).toBe(ids.length);
+			expect(ids[0]).toBe(1);
+		}
+	});
+
+	it('a < 0 : points exclus dans l’ordre croissant', () => {
+		const d = desk('f(x) = x sur ℝ\\{1;2}', 'g(x) = f(-x)', 'h(x) = x sur ℝ\\{-2;-1}');
+		expect(label(d, 'g')).toBe(label(d, 'h'));
+	});
+});

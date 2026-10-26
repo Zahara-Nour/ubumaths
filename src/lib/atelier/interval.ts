@@ -293,7 +293,13 @@ export function citedIntervals(
 				else if (cited !== null) {
 					domain = cited.domain;
 					if (cited.conditions.length > 0) {
-						conditions.set(o.name, [...new Set(cited.conditions.map(conditionText))]);
+						// Relues dans la lettre interne : écrites dans celle de l'élève (`g(t) = f(2t)`)
+						const letter = o.letter ?? INTERNAL_LETTER;
+						const typed = cited.conditions.map((c) => ({
+							...c,
+							argument: inLetter(c.argument, letter)
+						}));
+						conditions.set(o.name, [...new Set(typed.map(conditionText))]);
 					}
 				}
 			}
@@ -381,6 +387,13 @@ export function composedMessage(cited: {
 }): string {
 	const call = cited.call.replace(/-/g, '−');
 	return `${cited.name} est définie sur ${intervalText(cited.set)} : dans ${call}, ${cited.argument.replace(/-/g, '−')} doit y être, et l'atelier ne sait en tirer l'ensemble de l'inconnue que pour une expression de la forme ax + b (2x, x − 3, 2x + 1). Écris l'expression de ${call} en toutes lettres.`;
+}
+
+/** `2x` relu dans la lettre de l'élève (`2t`), tel quel s'il ne se relit pas. */
+function inLetter(argument: string, letter: string): string {
+	if (letter === INTERNAL_LETTER) return argument;
+	const ast = astOf(argument, 'text');
+	return ast === null ? argument : toCustom(renameVariableIn(ast, INTERNAL_LETTER, letter));
 }
 
 /** La condition d'une composée, en français : « 2x doit être dans [0 ; +∞[ ». */
@@ -580,6 +593,22 @@ export function affinePreimage(u: MathNode, variable: string, set: Domain): Doma
 			: divide(subtract(value, b), a, 'fraction');
 	};
 	const endpointOf = (e: Endpoint): Endpoint => ({ value: image(e.value), type: e.type });
+	// La forme lue est SIMPLIFIÉE : `(x²−1)/(x−1)` y vaut x + 1, mais pas en 1
+	// (revue) — l'ensemble se croise avec le domaine de u tel qu'écrit
+	const natural = computeDomain(u, variable);
+	if (natural.unresolved !== undefined) return null;
+	const preimage = preimageOf(set, slope > 0, endpointOf, image);
+	return preimage === null ? null : intersect(preimage, natural.domain);
+}
+
+/** L'image de `set` par x ↦ (x − b)/a, bornes données par `endpointOf` / `image`. */
+function preimageOf(
+	set: Domain,
+	increasing: boolean,
+	endpointOf: (e: Endpoint) => Endpoint,
+	image: (value: MathNode) => MathNode
+): Domain | null {
+	const slope = increasing ? 1 : -1;
 	switch (set.kind) {
 		case 'empty':
 		case 'universal':
@@ -593,7 +622,10 @@ export function affinePreimage(u: MathNode, variable: string, set: Domain): Doma
 			return {
 				kind: 'interval_set',
 				intervals: slope > 0 ? intervals : intervals.reverse(),
-				excludedPoints: set.excludedPoints.map((p) => ({ ...p, value: image(p.value) }))
+				// a < 0 renverse l'ordre : remis croissant pour l'affichage (revue)
+				excludedPoints: set.excludedPoints
+					.map((p) => ({ ...p, value: image(p.value) }))
+					.sort((p, q) => (computeNumericValue(p.value) ?? 0) - (computeNumericValue(q.value) ?? 0))
 			};
 		}
 		default:

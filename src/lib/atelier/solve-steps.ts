@@ -375,9 +375,9 @@ function restrictedSteps(
 		rule: 'composed-condition',
 		title: `${conditionText(condition)}, donc ${variable} est dans ${intervalText(condition.within)}`
 	}));
-	// Renumérotées seulement quand une étape s'ajoute en tête
+	// Renumérotées à partir de 1 : la dernière reprenait l'id de la précédente (revue)
 	const numbered = (steps: readonly RenderedStep[]): RenderedStep[] =>
-		first.length === 0 ? [...steps] : steps.map((step, id) => ({ ...step, id }));
+		steps.map((step, i) => ({ ...step, id: i + 1 }));
 	const detailed = numbered([...first, ...rendered, last(rendered)]);
 	const summary = summaryOf(detailed, numbered([...first, ...summarized, last(summarized)]));
 	const approximate = approximateSolutionsLatex(variable, kept, kept.length > 1);

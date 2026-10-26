@@ -8,8 +8,8 @@ status: implémentation faite, PR à ouvrir
 
 _Mis à jour le 2026-10-26, avant la PR._
 
-- **État** : implémentation faite et testée (`composees-ensemble.test.ts`, 27 verts + 1 todo) ; doc système à jour.
-- **Prochaine action** : revue `code-reviewer`, PR, CI, merge.
+- **État** : implémentation faite et testée (`composees-ensemble.test.ts`, 32 verts + 1 todo) ; doc système à jour ; revue faite et corrigée.
+- **Prochaine action** : PR, CI, merge.
 - **En attente de David** : rien.
 - **Pièges en cours** : V65 (`.limite (x-3)^2 en +∞` non calculée) bloque `.variations f(x-3)` avec f = x² — défaut du moteur, hors chantier, noté dans `ecarts-a-trier.md`.
 - **Worktree / branche** : `../ubumaths-wt-composees` · `feat/composees`.
@@ -84,3 +84,12 @@ hérité : 2x doit être dans [0 ; +∞[) ; sans cet héritage, elle le serait s
   Sans étapes (`ln(2x) = 0`), le moteur répond seul, restreint par `dans`.
 - Mesuré : `f(2x+1)` sur [0 ; 2] → [−1/2 ; 1/2] ; `k(−3x+1)` sur ]0 ; π] → [(1−π)/3 ; 1/3[ ;
   `f(x/3)` → [0 ; 6] ; `f(√2 x)` → [0 ; √2] ; ℝ \ {1} → ℝ \ {1/2} ; réunion avec a < 0 retournée.
+
+## Revue (code-reviewer, 2026-10-26)
+
+Aucun bloquant. Corrigés : u à valeur interdite simplifiée (`(x²−1)/(x−1)` → croisé avec
+`computeDomain(u)`, [−1 ; +∞[ \ {1}) ; condition écrite dans la lettre de l'élève (`g(t) = f(2t)`
+→ « 2t doit être… ») ; ids d'étapes de `.résoudre` restreint distincts, à partir de 1 (la dernière
+reprenait l'id de la précédente, défaut antérieur) ; points exclus remis croissants quand a < 0.
+Non retenu : `f⁻¹(2x)` sans ensemble de départ restreint ne restreint rien (comme `f(2x)` sans
+ensemble), rien de faux mesuré.
