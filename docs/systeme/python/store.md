@@ -132,11 +132,12 @@ onDestroy(() => {
 
 ### Édition
 
-| Méthode                  | Action                                                           |
-| ------------------------ | ---------------------------------------------------------------- |
-| `setCode(code)`          | Met à jour le code + déclenche `saveToStorage` (debounce 500 ms) |
-| `resetCode()`            | Réinitialise au `DEFAULT_CODE`                                   |
-| `saveCode()` → `boolean` | Sauvegarde **immédiate** en localStorage (bypass debounce)       |
+| Méthode                  | Action                                                                                             |
+| ------------------------ | -------------------------------------------------------------------------------------------------- |
+| `code` (accesseur)       | Lu / écrit par l'éditeur (`bind:value`) ; chaque écriture range un **brouillon** (voir ci-dessous) |
+| `setCode(code)`          | Met à jour le code + déclenche `saveToStorage` (debounce 500 ms)                                   |
+| `resetCode()`            | Réinitialise au `DEFAULT_CODE`                                                                     |
+| `saveCode()` → `boolean` | Sauvegarde **immédiate** en localStorage (bypass debounce)                                         |
 
 ### Paramètres éditeur
 
@@ -149,7 +150,7 @@ onDestroy(() => {
 
 Tous ces setters déclenchent `saveToStorage()` qui debounce de 500 ms puis :
 
-1. Sérialise `{ code, showPedagogicErrors, fontSize, editorTheme }` en localStorage (clé `ubumaths-python-playground`).
+1. Sérialise `{ code, showPedagogicErrors, fontSize, editorTheme }` en localStorage (clé `chiphre-python-playground`).
 2. Si `userId` connu (utilisateur connecté), debounce 1 s puis `PUT /api/profile/python-settings` avec `{ editorTheme, fontSize, showPedagogicErrors }`.
 
 ### Cloud files
@@ -192,11 +193,13 @@ Appelé par `PythonPlayground.svelte` en réception des props `user` / `profile`
 ### localStorage
 
 ```
-Clé : 'ubumaths-python-playground'
+Clé : 'chiphre-python-playground'
 Valeur : { code, showPedagogicErrors, fontSize?, editorTheme? }
 ```
 
 Loadé au constructor (synchrone, fallback silencieux si JSON invalide). Sauvegardé via `saveToStorage()` (debounce 500 ms).
+
+**Brouillon de l'éditeur** (2026-10-26) : l'éditeur écrit `code` par `bind:value`, sans passer par `setCode`. `code` est donc un accesseur dont le setter appelle `scheduleDraft()` : après 500 ms, le même objet est écrit en localStorage, **sans** toucher `_lastSavedCode` — `isModified` reste vrai (code non enregistré), ce qui garde la confirmation de « Charger un exemple ». `saveToStorage`, `saveCode` et `destroy` annulent un brouillon en attente. Sans lui, le code tapé (sans compte) n'était rangé qu'à Ctrl+S : perdu au rechargement, et `hasOwnCode()` d'un nouvel onglet ne le voyait pas.
 
 ### DB sync (profil)
 
@@ -283,7 +286,7 @@ L'intégration complète (toolbar, splitter, dialogs cloud, debug panel, …) es
 
 ```bash
 pnpm test:client src/lib/stores/pythonPlayground.svelte.test.ts
-# 61 tests : state transitions, localStorage, URL sharing, cloud lifecycle,
+# 64 tests : state transitions, localStorage (brouillon compris), URL sharing, cloud lifecycle,
 # autocomplete forwarding, font size bounds, theme validation
 ```
 

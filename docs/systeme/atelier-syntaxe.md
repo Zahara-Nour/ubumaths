@@ -101,7 +101,7 @@ x=…` et `.intégrer f de a à b` hors de cet ensemble sont refusés comme `f(5
 
 ### Commandes de probabilités et de statistiques
 
-Leurs arguments sont des **noms d'objets et des nombres**, jamais des expressions : l'espace n'y est pas ambigu. **Proposition : inchangées** (`.binomiale X 10 0,3`, `.simuler L M 100`, `.comparer L M`…). Seul l'argument « événement » (`P(X ⩽ 3)`) est une expression, déjà délimitée par `P(…)`.
+Leurs arguments sont des **noms d'objets et des nombres**, jamais des expressions : l'espace n'y est pas ambigu. **Proposition : inchangées** (`.binomiale X 10 0,3`, `.simuler L M 100`, `.comparer L M`…). Seul l'argument « événement » (`P(X ⩽ 3)`) est une expression, déjà délimitée par `P(…)`. La réponse d'une loi (`X suit B(10 ; 0,5)`), tapée comme une saisie, n'est pas une syntaxe : elle est refusée avec la commande à taper (`typedLawRefusal`, 2026-10-26).
 
 ### Commandes sans argument
 

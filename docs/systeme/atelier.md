@@ -10,7 +10,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; valeur exacte à afficher commune, ligne d'un calcul et `S = …` de `.résoudre`, 2026-10-24 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23 ; panneau Propriétés, 2026-10-23 ; π au numérateur d'un périmètre, #1634, 2026-10-24 ; espaces de groupement dès 5 chiffres, 2026-10-23 ; étapes de `.résoudre` écrites comme la réponse, lot 5f-4, 2026-10-25 ; inéquations aussi, Q50, 2026-10-25 ; ouvrir dans l'atelier depuis Python, 2026-10-25 ; ligne réservée sous la barre de la grille et libellé de « Résoudre », 2026-10-26 ; Partager et Enregistrer d'une grille seule, confirmation de Charger, `X suit …` tapé, 2026-10-26).
 
 ## À quoi ça sert
 
@@ -2246,7 +2246,10 @@ David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, 
 l'atelier**, précédés d'**Annuler** et **Rétablir** (lot 5, voir « Annuler / Rétablir ») ; à
 droite **Console**, **Partager** et **Réglages**.
 Un bouton indisponible garde le focus (`aria-disabled`, pas `disabled`) et dit pourquoi, dans son
-infobulle et à l'aide technique (« Ton atelier est vide : il n'y a rien à enregistrer. »). Sur un
+infobulle et à l'aide technique (« Ton atelier est vide : il n'y a rien à enregistrer. »).
+« Vide » se lit sur `atelier.isBlank` (ni objet, ni grille) : une grille seule s'enregistre et se
+partage (le lien l'emporte), Enregistrer compte aussi les lignes de console ; jusqu'au 2026-10-26,
+Partager et Enregistrer ne comptaient que les objets (écart du lot 9 de verifs-auto). Sur un
 atelier reçu par lien : ni Repartir de zéro, ni Charger, ni Partager. La barre suit le motif ARIA
 « barre d'outils » (`roving-toolbar.ts`, revue de #1479) : un seul arrêt de tabulation, flèches
 gauche / droite (en boucle), Début et Fin pour aller d'un bouton à l'autre.
@@ -2263,8 +2266,10 @@ atelier riche en accents pèse plus d'octets que de caractères), puis `readAtel
 limite exacte en caractères (`MAX_ATELIER_FILE_LENGTH`). Ensuite les **mêmes** schémas que le
 navigateur — objets et cellules triés un par un (`salvageState`), console par `readKeptHistory`
 (liste blanche de `safe-latex.ts`). Un atelier qui a des objets ou une grille demande
-confirmation (« Charger remplace l'atelier actuel ») ; la console seule ne compte pas, elle n'est
-pas remplacée (2026-10-19). Comme « Remplacer mon atelier » (R5, B8), l'atelier remplacé est **mis de
+confirmation (« Charger remplace l'atelier actuel : Ton objet sera remplacé. La console garde ses
+lignes ; celles du fichier s'ajoutent. », `replacementLoss`) ; la console seule ne compte pas, elle
+n'est pas remplacée (2026-10-19). La confirmation reprenait la phrase du REJEU (« l'historique
+effacé ») jusqu'au 2026-10-26. Comme « Remplacer mon atelier » (R5, B8), l'atelier remplacé est **mis de
 côté** avant (`keepAside`), la confirmation le dit, et l'avis propose « Retrouver mon atelier
 précédent » ; s'il ne peut pas l'être, rien n'est chargé (B5). Sans stockage (navigateur qui
 n'enregistre rien), Charger reste ce qu'il était, sans copie. Un fichier refusé ne remplace rien, et la raison s'affiche dans les avis
@@ -2854,7 +2859,11 @@ les variables aléatoires. Les **scènes** (diagrammes, lois, comparaisons) pass
 constructeurs que les blocs ubumark d'une fiche (`src/lib/ubumark/utils/stat-chart-scene.ts`,
 `src/lib/ubumark/parser/stat-chart-parser.ts`…) : mêmes textes, mêmes valeurs exactes, aucun code
 de calcul en double. `.binomiale` et les autres lois **ne créent aucune liste** (les listes
-stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
+stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142). La console répond
+`X suit B(10 ; 0,5)` : recopiée comme une saisie, cette réponse est refusée avec la commande à
+taper (`typedLawRefusal`, `law-commands.ts` : `.binomiale X 10 0,5`, `.geometrique`,
+`.exponentielle` ; pour `N(μ ; σ²)`, l'écart type et non la variance), au lieu de « Il manque « ) » »
+(2026-10-26).
 
 ---
 
