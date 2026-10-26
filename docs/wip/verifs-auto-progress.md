@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1829._
+_Mis à jour le 2026-10-26, lot 10 en cours (pas encore de PR)._
 
-- **État** : lots 1-9 mergés (#1773 → #1824) ; écarts du lot 9 corrigés (#1829 : brouillon de `/python`, grille seule partagée / enregistrée / rejouée, confirmation de Charger, `X suit B(…)` tapé, étiquettes `x = e`, `x = π/2`). Suite complète : rouges = `each_key_duplicate` seulement (#1674, #1703, #1620, #1307). Pas encore en prod.
-- **Prochaine action** : reste de la liste — lignes « à l'œil » (page à cocher avec captures), lignes prof / élève (comptes locaux, `db:seed-riche`).
-- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : prendre un port libre (5181) ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; MathLive perd la 1re frappe (`retypeCard`) ; un clic dans la console RANGE une carte en cours de frappe ; un CSV / un collage se pose à la case CHOISIE ; prettier réaligne le tableau → conflits à chaque rebase/merge de `main` : reprendre la version de `main` et rejouer ses lignes par script ; push forcé = liste `ask` (préférer merger `origin/main` dans la branche) ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #1829).
+- **État** : lot 10 = 29 lignes « à l'œil » en captures (`pnpm test:verifs:captures`, comptes LOCAUX prof/admin) + 12 tests de restes (11 verts, #1369 `cos2π` en mode maths ROUGE). Page à cocher publiée : https://claude.ai/artifact/VUx4PraH4htaPFsGXrDnUB (collection `verdicts`, une fiche par ligne).
+- **Prochaine action** : lire les verdicts (`ArtifactData list verdicts`), sortir les lignes OK de `verifications-manuelles.md`, ouvrir la PR (revue `code-reviewer` Sonnet).
+- **En attente de David** : la page à cocher ; écarts : #1369 (π·cos(2) sans refus), #1333 (« aire = — » sans message), #1421 (carte de liste sans champ), #1793/#1798 (« Juste » au lieu de « Bravo »), lecteur de construction écrasé par une longue ligne d'arrêt, #1466 (à la main ou retirée), #1359/#1321/#1502/#1655 sans page locale, `/dev/correction-generee` cassée (cartes de 40 px).
+- **Pièges en cours** : serveur de dev sur 5181 ; captures dans `.captures/` (ignoré), traces dans `.captures/.runs/` (pas `test-results/`, vidé par `pnpm test:verifs`) ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; MathLive perd la 1re frappe ; prettier réaligne le tableau → conflits au merge de `main` ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `../ubumaths-wt-verifs-auto`, `test/verifs-auto-lot-10`.
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -134,6 +134,12 @@ Vu en passant : un CSV se pose à partir de la case choisie (« posées à parti
 #1697 et lot 4b sortent de la liste.
 
 Revue (`code-reviewer`) : le brouillon venait de TOUTE affectation de `code` (exemple, fichier du cloud : il écrasait le code local que lit la migration) → accesseur dédié `editorCode`, lié à l'éditeur ; `destroy()` range le brouillon au lieu de le jeter ; le rejeu d'un historique vidait une grille seule sans demander → confirmation sur `isBlank` ; « Garder » d'une grille seule disait « rien à garder » → `MergeReport.grid`. Noté, pas corrigé (d'avant la PR) : un `saveTimeout` de `saveToStorage` en attente marque « enregistré » un code tapé juste après (`_lastSavedCode`), et un réglage (taille, thème) aussi ; `B(10,0,5)` sans séparateur lisible donne un conseil faux (rare).
+
+## Lot 10 — captures « à l'œil » (2026-10-26)
+
+Outillage : `playwright.captures.config.ts` (projet `comptes` : connexion par le formulaire aux comptes locaux de `dev_accounts.sql`, refusée hors localhost), `helpers/captures.ts` (`shoot`, `shootBothThemes`, `around`), `scripts/verifs-captures-page.ts` (page HTML autonome, images en data URI, verdicts dans la capacité `db`, file d'écriture avec nouvel essai). Pages déménagées : `/construction-demo` → `/constructions/essais` (prof), `/test-font` → `/dev/polices`, `/test-structure` → `/dev/structure` (admin).
+
+Captures : Atelier (#1315, #1328, #1338, #1634, #1630, #1617, #1313/#1318, #1362/#1363, #1364, #1385, #1413, #1415-#1419, #1424, #1442, #1469), constructions (#1621 → #1653), `/dev` (#1793, #1798, #1312/#1322, #1346). Tests de restes : #1658/#1660 (bouton Variations), #1319, #1503, #1535, #1333 (grapheur), #1368, #1369 (mode maths), #1421, #1424, #1426, #1437.
 
 ## Plan d'ensemble
 
