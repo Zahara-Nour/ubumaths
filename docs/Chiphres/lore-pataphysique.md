@@ -514,7 +514,7 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 
 - **Rôle UI** : Voix du correcteur strict, donneur de leçons (au sens littéral).
 - **Tempérament** : Sermonneur, vertueux, exaspérant. Ubu le trimballe dans une valise et le sort à contrecœur quand il est forcé de réfléchir.
-- **Apparence** : Petit moustachu pâle.
+- **Apparence** 🟡 (décision de David, 2026-10-26) : minuscule, maigre et très pâle, debout dans sa valise ouverte (brune à boucles dorées, doublée de vert) qui donne l'échelle ; fine moustache tombante, lunettes rondes, front dégarni ; maître d'école de 1890 en redingote noire, col blanc et petite cravate ; index levé, bouche ouverte en pleine leçon, sourcils froncés de vertu. Pas d'auréole. Prompt d'illustration : Section XI, « Illustrations ».
 - **Tics de langage** : Phrases longues et moralisatrices. Tutoie l'élève avec gravité.
 - **Motivation** : Éduquer malgré tout.
 - **Quand il intervient** : explications détaillées (mode « niveau d'aide maximal »), corrigés rigoureux, rappels de méthode.
@@ -2025,6 +2025,26 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines and boots, deep crimson for the tunic, white for the collar, sash and breeches, marigold yellow for the hair, buttons, circlet and sword hilt, emerald green only for the yo-yo.
 
 Composition: Bougrelas standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — Conscience 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et les images de référence des personnages déjà dessinés, au moins Père Ubu). Format carré : la valise ouverte est plus large que haute.
+
+```text
+Draw Conscience, the tiny moralizing character from Alfred Jarry's Ubu plays, as a full-body character portrait in exactly the same drawing style as the attached characters.
+
+Character: a tiny, thin, very pale little man, small enough to stand inside an open suitcase; a thin drooping mustache, small round spectacles, a high bald forehead with neat side hair; frowning with virtue, mouth open in the middle of a lecture, one index finger raised high. He is a strict, preachy 1890s schoolmaster: virtuous, serious and exasperating, but drawn with enough exaggeration to be funny. Never scary, for students aged 11 to 17.
+
+Clothing: a long black frock coat (navy ink), a white high collar and a small cravat, thin trousers and small polished shoes.
+
+Setting: he stands upright inside an open, old-fashioned leather suitcase placed on the ground; the suitcase is dark chocolate brown with golden buckles and corners, its inside lining emerald green. The suitcase shows how small he is.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines and the frock coat, white for the collar and his pale face, dark chocolate brown for the suitcase, marigold yellow for the buckles and spectacles, emerald green for the suitcase lining.
+
+Composition: Conscience in his open suitcase, three-quarter view, centered, plain flat cream parchment paper background, square 1:1 format. No halo, no text, no letters, no signature.
 ```
 
 ---
