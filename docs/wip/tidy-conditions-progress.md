@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1831._
+_Mis à jour le 2026-10-26, après #1834._
 
-- **État** : #1807→#1823, #1828 (PR A, L1-L4) et #1831 (PR B, L5 plusieurs lettres, revue Opus sans bloquant) MERGÉES, pas en prod.
-- **Prochaine action** : PR C (L6, `fix/normalize-exp-ln`) ouverte : revue Opus, CI, merge ; puis clore le chantier (versement) si David tranche Q14.
+- **État** : L1 à L6 du § 5 livrés — #1828 (PR A), #1831 (PR B), #1834 (PR C, `e^{k ln a + c}` → `aᵏ e^{c}`, plafond |k| ≤ 1000 après revue Opus) MERGÉES, pas en prod.
+- **Prochaine action** : clore le chantier (versement dans `docs/systeme/`, journal archivé) une fois Q14 tranchée — ou la reporter et clore.
 - **En attente de David** : Q14 (`√2 + x` : ordre de `tidy`, § 5) ; essai des vérifs #1807 et #1811 ; chantier à part ou non pour `ln(xy) − ln(xy)` → `ln x + ln y − (ln x + ln y)` (trouvé en PR B, antérieur, aucune valeur fausse).
-- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 (gardé par `avoidsPeriodicPoints`).
-- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` ; `fix/conditions-plusieurs-lettres` mergée (un commit local de journal, remplacé par celui-ci sur `main`).
+- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 (gardé par `avoidsPeriodicPoints`) ; `exp(10000000 ln 2)` sans plafond (antérieur).
+- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` ; `fix/normalize-exp-ln` mergée, branche distante supprimée.
 
 ## Contexte
 
