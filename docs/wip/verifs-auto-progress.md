@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1813._
+_Mis à jour le 2026-10-26, lot 8 en cours (PR à ouvrir)._
 
-- **État** : lots 1-7 mergés (#1773 → #1810) ; correctif #1813 mergé (grille sans saut : `.sous-barre`, une ligne, deux sous 40rem de large ; « Résoudre k(x) = 0 »). `pnpm test:verifs` : 95 verts, rouges = `each_key_duplicate` seulement (#1674, #1703, #1620 en fin de test, #1307).
-- **Prochaine action** : les lignes Atelier restantes de `verifications-manuelles.md`, ou la page à cocher (plan, point 2).
-- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : port 5179 ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; `e` = Euler (prendre `k`) ; console ouverte couvre toile et zoom ; prettier réaligne le tableau → conflits au merge de `main` : rejouer ses lignes par script ; cellules à espaces de remplissage ; commitlint : pas de majuscule, pas de type `merge`, corps ≤ 100 caractères par ligne ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #1813).
+- **État** : lots 1-7 mergés (#1773 → #1810), correctif #1813 ; lot 8 (console, réglages, historique, cartes valeur : `atelier-console.spec.ts`, 15 tests verts) sur `test/verifs-auto-8`. Suite complète : rouges = `each_key_duplicate` seulement (#1674, #1703, #1620 en fin de test, #1307).
+- **Prochaine action** : PR du lot 8, puis lot 9 = cartes (lots 3, 4a, 4b), lecture graphique, Annuler / Rétablir (lot 5, #1530), barre d'icônes, Données (#1439, #1469, #1473, #1412), Grapheur (#1415-#1419), #1627, #1546, Python (#1697, #1746).
+- **En attente de David** : les 3 écarts du lot 8 (#1296, #1289, #1356). Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : port 5179 ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; `e` = Euler, `n` réservé : prendre `k`, `s` ; MathLive perd la 1re frappe après rechargement ; console ouverte couvre toile et zoom ; prettier réaligne le tableau → conflits au merge de `main` : rejouer ses lignes par script ; commitlint : pas de majuscule, pas de type `merge`, corps ≤ 100 caractères par ligne ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : `../ubumaths-wt-verifs-auto`, `test/verifs-auto-8`.
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -78,6 +78,20 @@ Mes recos acceptées : (1) #1367 ligne périmée : f′ attend `a` comme f ; `.d
 ## Écarts tranchés par David (2026-10-26)
 
 L'Atelier a raison, les lignes étaient périmées ou imprécises : #1305 `a = 3 sur 4` → carte rangée en erreur, sans refus d'intervalle ; #1309 `f(1)` → 2,5 (décimal tapé → décimal) ; #1337 l'héritage se lit par `.domaine g` (« ensemble hérité »), le champ ne montre que l'ensemble propre (décision d) ; #1338 `.réciproque sin(x)` (`sin` seul refusé depuis le 2026-10-06) ; #1620 `.dériver x^x` → `x^x(ln(x)+1)`, ordre de l'Atelier. #1305, #1309, #1337 sortent de la liste.
+
+## Lot 8 — console, réglages, historique, cartes valeur (2026-10-26)
+
+Lignes (`atelier-console.spec.ts`) : #1289 (sans `1/2 m`), #1296 (sans la durée), #1301, #1292 et #1313/#1318 (sans la lisibilité), #1340, #1356 (sans « Repartir de zéro »), #1385 et #1388 (sans téléphone, clavier virtuel, thèmes, VoiceOver), #1423, #1425, #1442 (sans la lisibilité du Graphe à 390 px), #1692 (sans le rappel de la table `spreadsheets`), #1807, #1811 (sans téléphone), « console de l'Atelier » (sans Safari, Mac AZERTY, PC, glisser, téléphone, couleurs). #1301, #1340, #1423, #1425 sortent de la liste.
+
+Outillage : `typeInCard` passe dans `helpers/atelier.ts` ; « Écriture mathématique » choisie par la fenêtre Réglages ; MathLive perd la première frappe juste après un rechargement ou un changement de réglage → `typeMath` recommence tant que le champ reste vide ; « pas de menu au clic droit » vérifié contre un témoin (un `math-field` ordinaire posé dans la page, dont le menu s'ouvre — en dernier : il ne se referme pas à Échap) ; la pastille de la console est la description du bouton (« 1 nouveau résultat »), hors du bouton.
+
+Écarts (à David, rien changé côté appli) :
+
+1. **#1296** : `d = 1 h 30 min * 2` refusé depuis #1562 (« Durée composée collée à × ou ÷ ») ; dans une définition le refus est générique (« n'est pas une expression valide »), sur une ligne de calcul il dit d'écrire `2*(1 h 30 min)`. Ligne périmée ; le message générique de la définition, à corriger ?
+2. **#1289** : au vrai clavier, `1/2 m` dans une carte valeur → $\frac{1}{2\,m}$ = 0,5 m⁻¹ (MathLive met « 2 m » au dénominateur).
+3. **#1356** : « Repartir de zéro vide tout » — la console garde ses lignes depuis le 2026-10-19 (#1530) : ligne périmée.
+
+Vu en passant : `n = 1` → « n est réservé » (variable des suites) ; `.exporter` n'écrit pas de ligne, il le dit sous la console (« Historique exporté : … ») ; au téléphone, la barre d'icônes est passée SOUS « Mes objets » (la ligne #1442 parlait de « Partager… / Réglages » en haut).
 
 ## Plan d'ensemble
 
