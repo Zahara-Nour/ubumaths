@@ -38,6 +38,10 @@ identités trigonométriques et exponentielles sont coupées en dessous — c'es
 garde-fou pédagogique délibéré, pas un défaut. Sans niveau, `sin²x + cos²x`
 reste tel quel.
 
+`reduire` et `auto` écrivent les parenthèses implicites du résultat de la phase A
+(`withImpliedParentheses`) avant `tidy` : `ln(2x) − ln(2x)` passait par `ln 2 + ln x − (ln 2 + ln x)`
+sans nœud de parenthèse, que rien ne développait (tidy-conditions, PR D).
+
 ## Ce que ce panel sert à voir
 
 `simplify` et `auto` **ne donnent pas le même résultat**, et c'est voulu pour
