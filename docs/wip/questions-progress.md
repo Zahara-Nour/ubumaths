@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, skill `couvrir-niveau` écrit (§ 4 sexdecies)._
+_Mis à jour le 2026-10-26, après #1838._
 
-- **État** : 72 modèles CP publiés (groupes A, H, B, M, C). Skill `couvrir-niveau` + doc `docs/pratiques/couvrir-un-niveau.md` écrits (commit direct sur `main`).
-- **Prochaine action** : PR d'outillage : `scripts/questions/page-a-cocher.ts` (dossier de lot → page HTML, gabarit commun) et `scripts/questions/publier-lot.ts` (simulation / `--publier`), testés ; puis la doc y renvoie (encadré du § 8 à retirer, `couvre:` à compléter).
-- **En attente de David** : vérification manuelle #1702 (plus tard, dit-il) ; reste du CP en suspens (case « figure », réponses à placer, 058).
-- **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; prénom dans le texte ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** (variable) ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; **montants en `$n~\unit{€}$`, jamais « : » juste après** ; **écriture en prod refusée par le classifieur du mode auto : David la lance (`!`)** ; **`gh pr checks --watch` peut rendre la main avant le job d'intégration : suivre le run** ; migration qui change l'arbre ou les points → `LATER` + copies figées ; `create-questions` vise `.env` (prod) : pour la base locale, `set -a; . ./.env.local; set +a` avant ; 4 brouillons du lot C en base LOCALE (essais) ; `Trace la droite qui passe par deux points` (`010d81a5`) est le seul brouillon CP en prod, pas de ce chantier.
-- **Worktree / branche** : aucun (retiré après #1832).
-- **But final** : en tirer un skill réutilisable pour les autres niveaux (§ 5).
+- **État** : 72 modèles CP publiés (groupes A, H, B, M, C). Skill `couvrir-niveau` + doc `docs/pratiques/couvrir-un-niveau.md` à jour ; outils du dépôt (#1838) : `scripts/questions/page-a-cocher.ts` (page à cocher lue en base, alertes) et `scripts/questions/publier-lot.ts` (contrôles joués en simulation, tout ou rien, reprise d'un lot interrompu).
+- **Prochaine action** : utiliser le skill sur un nouveau niveau (`/couvrir-niveau <niveau>`, session neuve) ; le CP reste ici pour ses points en suspens.
+- **En attente de David** : vérification manuelle #1702 (plus tard, dit-il) ; reste du CP en suspens (case « figure », réponses à placer, 058) ; dossier non suivi `../ubumaths-wt-questions` (cache `.vite` seul) à supprimer ou non.
+- **Pièges en cours** : un modèle porte au plus UN point (ADR 0020) ; QCM OU cases ; case dans un tableau = `$?$` ; **`{{if:…}}` imbriqué non résolu dans `correctChoiceIndex`** ; jamais de variable `e` ; **niveaux numérotés dès l'écriture** ; montants en `$n~\unit{€}$` ; **écriture en prod : David la lance (`!`)** ; **`gh pr checks --watch` / `gh run watch` peuvent rendre la main avant la fin : suivre le statut du run** ; `create-questions` et les deux scripts visent `.env` (prod) : `set -a; . ./.env.local; set +a` pour la locale ; fichiers des anciens lots CP en retard sur la base (niveaux B1, B3, H renumérotés ; sous-domaines B2 changés) ; les 4 modèles C sont publiés en base LOCALE (essais).
+- **Worktree / branche** : aucun (retiré après #1838).
+- **But final** : skill réutilisable pour les autres niveaux (§ 5) — fait.
 
 ## 1. Modèles CP existants (prod, 2026-10-24)
 
@@ -284,3 +284,4 @@ David suit mes recommandations (« je suis tes recos »). Les blocs à construir
 - 2026-10-26 : page à cocher du lot C publiée : https://claude.ai/artifact/Ve9QRxVDiqSuYnbg3D12gp (collection `verdicts`) ; un exemple par variation (11), tiré par le vrai générateur ; réserve, plan vide et construction juste dessinés par les scènes `collection` / `monnaie` (script `page-c.mts` du scratchpad), relue à 390 px.
 - 2026-10-26 : page à cocher du lot C relue par David, 4/4 « ok », aucun commentaire ; 4 brouillons C publiés (`publishTemplates`, script `publier-c.mts` du scratchpad, lancé par David), 0 refus, statut `published` relu en base : 72 modèles CP publiés pour ce chantier.
 - 2026-10-26 : skill `couvrir-niveau` et doc `couvrir-un-niveau.md` écrits (§ 4 sexdecies), création d'outils comprise ; § 5 versé dans la doc.
+- 2026-10-26 : #1838 mergée : page à cocher et publication en scripts du dépôt (`scripts/questions/page-a-cocher.ts`, `publier-lot.ts`, logique dans `scripts/lib/`, 39 tests + 3 sur `publishTemplates` en simulation) ; page essayée sur les 13 lots CP (11 passent : `cp-figure` jamais créé, `cp-b2` refusé car deux sous-domaines changés en base) ; revue `code-reviewer` : publication partielle non reprenable → corrigé (simulation des contrôles, tout ou rien, reprise) ; vérifié en local (2 brouillons remis, 4/4 publiés).
