@@ -1,20 +1,23 @@
 ---
 title: Figure manipulable partout et case « choix » (QCM réécrit en cases)
 date: 2026-10-26
-status: phase 0 validée, lot 1 en cours
+status: lot 1 en cours (PR 1a écrite)
 ---
 
 # Chantier « figure-et-choix »
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 validée._
+_Mis à jour le 2026-10-26, PR 1a écrite (pas encore ouverte)._
 
-- **État** : phase 0 validée (§ 2, toutes les questions tranchées) ; rien de codé.
-- **Prochaine action** : PR 1a (moteur de la case choix, § 2.7), tests d'abord.
-- **En attente de David** : rien.
-- **Pièges en cours** : migration des QCM seulement après le `deploy:prod` des lots 1-2 ; retrait de la
-  contrainte SQL après le `deploy:prod` du code sans `multiple_choice` ; question d'accès AVANT tout SQL.
+- **État** : PR 1a (moteur + interface élève de la case choix) commitée et poussée sur la branche ; ADR 0033,
+  `CONTEXT.md` (Case choix), `questions.md` à jour. Revues `code-reviewer` opus + `security-auditor` en cours.
+  Serveur de test : port 5177.
+- **Prochaine action** : traiter les findings des revues → ouvrir la PR 1a → CI verte → merge ; puis PR 1b
+  (éditeur de la case choix, `test_specs`).
+- **En attente de David** : essai de la case choix sur le serveur de test (facultatif avant merge).
+- **Pièges en cours** : l'éditeur riche (`rich-text/markdown-import.ts`) ignore le bloc ` ```choix ` (PR 1b) ;
+  migration des QCM seulement après le `deploy:prod` des lots 1-2 ; question d'accès AVANT tout SQL.
 - **Worktree / branche** : `../ubumaths-wt-figure-et-choix`, `feat/figure-et-choix`.
 
 ---
