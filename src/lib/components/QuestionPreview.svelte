@@ -32,6 +32,7 @@
 	import { onMount } from 'svelte';
 	import FlashCard from '$lib/components/questions/FlashCard.svelte';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
 	import AnswerAssumptionsNotice from '$lib/components/questions/AnswerAssumptionsNotice.svelte';
@@ -372,6 +373,7 @@
 
 				<!-- Choices (for QCM) -->
 				{#if instance.shuffledChoices && instance.shuffledChoices.length > 0}
+					{@const monnaieSize = monnaieChoiceSize(instance.shuffledChoices.map((c) => c.content))}
 					<div class="space-y-2">
 						<Badge variant="outline">Choix (mélangés)</Badge>
 						<div class="space-y-2">
@@ -385,9 +387,10 @@
 									<Badge variant={isCorrect ? 'default' : 'outline'}>
 										{String.fromCharCode(65 + i)}
 									</Badge>
-									<!-- Horloge, collection ou monnaie d'un choix : 3 cm, comme chez l'élève -->
+									<!-- Horloge ou collection d'un choix : 3 cm ; monnaie : 10 cm, tous les choix à la même échelle, comme chez l'élève -->
 									<div
-										class="flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:6cm]"
+										class="@container flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
+										style:--monnaie-taille={monnaieSize}
 									>
 										<MarkdownRenderer content={choice.content} {genericFunctions} />
 									</div>

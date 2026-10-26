@@ -44,6 +44,7 @@
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import { Button } from '$lib/components/ui/button';
 	import { MarkdownRenderer } from '$lib/components/markdown';
+	import { monnaieChoiceSize } from '$lib/ubumark/utils/monnaie-choix';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import { detailedCorrection } from '$lib/questions/correction-detail';
@@ -426,6 +427,9 @@
 
 		<!-- ========== CHOICES SECTION (QCM) ========== -->
 		{#if hasChoices}
+			{@const monnaieSize = monnaieChoiceSize(
+				(instance.shuffledChoices || []).map((c) => c.content)
+			)}
 			<div class="space-y-2">
 				<div class="flex items-center gap-2">
 					<List class="h-4 w-4 text-muted-foreground" />
@@ -445,9 +449,10 @@
 							<Badge variant={isCorrect ? 'default' : 'outline'}>
 								{String.fromCharCode(65 + i)}
 							</Badge>
-							<!-- Horloge, collection ou monnaie d'un choix : 3 cm, comme chez l'élève -->
+							<!-- Horloge ou collection d'un choix : 3 cm ; monnaie : 10 cm, tous les choix à la même échelle, comme chez l'élève -->
 							<div
-								class="flex-1 [--collection-taille:3cm] [--horloge-taille:3cm] [--monnaie-taille:6cm]"
+								class="@container flex-1 [--collection-taille:3cm] [--horloge-taille:3cm]"
+								style:--monnaie-taille={monnaieSize}
 							>
 								<MarkdownRenderer content={choice.content} {genericFunctions} />
 							</div>
