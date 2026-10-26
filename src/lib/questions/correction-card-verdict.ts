@@ -14,7 +14,7 @@ import { getQuestionType, type QuestionInstance, type ValidationStatus } from '.
 import { gradeQuestion } from './grading';
 import type { StudentAnswer } from '$lib/utils/answer-validator';
 import type { AnswerData } from '$lib/types/question-display';
-import { withoutFigureCases } from './expected-result';
+import { withoutBuildCases, withoutFigureCases } from './expected-result';
 
 // Types
 export type GlobalVerdictKind = 'correct' | 'half' | 'incorrect';
@@ -88,7 +88,7 @@ const HAS_BLANK = /\\placeholder\[\d+\]|<<expr:/;
  * ni chiffre.
  */
 export function instructionOf(statement: string): string {
-	const rest = withoutFigureCases(statement)
+	const rest = withoutBuildCases(withoutFigureCases(statement))
 		.replace(MATH_WITH_BLANK, (zone) => (HAS_BLANK.test(zone) ? '' : zone))
 		.replace(/[ \t]+/g, ' ')
 		.replace(/\n{3,}/g, '\n\n')

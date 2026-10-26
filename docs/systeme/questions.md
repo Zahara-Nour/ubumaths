@@ -480,6 +480,14 @@ s'il n'y a pas d'énoncé rempli (la figure est la seule case), la consigne seul
 (`showsInstructionOnly`, `instructionOf`) : la figure n'apparaît qu'une fois, au verso de la `FlashCard`
 comme dans la copie corrigée, case « figure » mêlée à d'autres cases comprise.
 
+Case à construire (bloc `collection ou `monnaie, `construire:`) : une ligne `build` (genre, texte
+du bloc sans `case:`, valeur posée), sur le même patron que la figure. `BuildAnswer.svelte` dessine le
+plan **verrouillé, sans réserve** : la construction de l'élève (cadre vert si juste ; faux : « Tu as
+posé 32 €. » ou « Ta collection vaut 32. » et une construction juste à côté), ou la construction juste
+seule sans réponse (R9, verso de la flash-card) ou réponse vide (suivie de « Tu n'as rien posé. », propre à la case). Le plan vient après l'énoncé rempli (la figure, avant).
+Le bloc est retiré de l'énoncé (`withoutBuildCases`), la consigne seule au-dessus. Seule la valeur est
+gardée : la construction de l'élève est redessinée « le moins d'objets » (3 × 10 € deviennent 20 + 10 €).
+
 Case « choix » : le bloc reste **à sa place** dans l'énoncé rempli ; la ligne `filled-statement`
 porte `choiceCases` (par case : ses choix, statuts du QCM, ordre affiché). À l'écran,
 `ExpectedResultView` les pose par `ChoiceCasesScope` (contexte `choice-case-results`) et le bloc

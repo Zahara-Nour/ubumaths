@@ -49,10 +49,19 @@
 		/** Coupures permises, de la plus grande à la plus petite */
 		reserve: number[];
 		answer?: BuildCase;
+		/** false : plan seul, sans réserve (résultat attendu, copie corrigée) */
+		showReserve?: boolean;
 		class?: string;
 	}
 
-	let { spec, build: target, reserve, answer, class: className = '' }: Props = $props();
+	let {
+		spec,
+		build: target,
+		reserve,
+		answer,
+		showReserve = true,
+		class: className = ''
+	}: Props = $props();
 
 	/** Hauteur minimale du plan (unités de la scène) : il ne saute pas à la première coupure */
 	const PLAN_MIN_HEIGHT = 90;
@@ -179,19 +188,21 @@
 		<MonnaieObjets items={scene.items} />
 	</svg>
 
-	<div class="construire-reserve flex max-w-full flex-wrap items-center justify-center gap-3">
-		{#each reserveItems as item (item.value)}
-			{@render reserveItem(item)}
-		{/each}
-		<button
-			type="button"
-			class="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground disabled:opacity-40"
-			disabled={locked || value === 0}
-			onclick={() => update(EMPTY_BUILD)}
-		>
-			Tout enlever
-		</button>
-	</div>
+	{#if showReserve}
+		<div class="construire-reserve flex max-w-full flex-wrap items-center justify-center gap-3">
+			{#each reserveItems as item (item.value)}
+				{@render reserveItem(item)}
+			{/each}
+			<button
+				type="button"
+				class="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground disabled:opacity-40"
+				disabled={locked || value === 0}
+				onclick={() => update(EMPTY_BUILD)}
+			>
+				Tout enlever
+			</button>
+		</div>
+	{/if}
 
 	{#if answer?.isCorrect != null}
 		<p class="sr-only" role="status">

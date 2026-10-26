@@ -543,7 +543,7 @@ pour l'enlever ; « Enlever » à côté de chaque bouton, « Tout enlever » ; 
 `utils/monnaie-construire.ts` (somme, réponse `''` si vide, plafonds, construction juste « le moins
 d'objets » **avec la réserve**, par programmation dynamique : avec 2 et 5 €, 6 € = 3 × 2 €) ; dessin
 des coupures partagé `MonnaieObjets.svelte`. Case, correction (« Tu as posé 32 €. », « Tu n'as rien
-posé. ») et PDF (réserve en petit, cadre vide en pointillés) : ceux de la collection à construire.
+posé. ») et PDF (réserve en petit, cadre vide en pointillés) : ceux de la collection à construire. Copie corrigée et verso de la flash-card : `BuildAnswer.svelte` (`components/questions/`) montre le plan verrouillé **sans réserve** (`showReserve={false}`, sur les deux composants à construire) — la construction de l'élève, ou la construction juste seule ([questions.md](questions.md)).
 
 ### Cases à compléter
 
