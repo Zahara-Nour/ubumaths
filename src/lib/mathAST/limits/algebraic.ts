@@ -202,6 +202,19 @@ function square(node: MathNode): MathNode {
 export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNode } | null {
 	// Look for √a - b
 	if (isSubtraction(expr)) {
+		// √a − √b → conjugué √a + √b, (√a − √b)(√a + √b) = a − b :
+		// 1/(√(x+1) − √x) en +∞ n'avait pas de réécriture (V69)
+		if (isSqrt(expr.left) && isSqrt(expr.right)) {
+			const leftArg = getSqrtArg(expr.left);
+			const rightArg = getSqrtArg(expr.right);
+			if (leftArg && rightArg) {
+				const conjugate = add(expr.left, expr.right);
+				const subtrahend =
+					isAddition(rightArg) || isSubtraction(rightArg) ? parentheses(rightArg) : rightArg;
+				return { conjugate, expanded: subtract(leftArg, subtrahend) };
+			}
+		}
+
 		if (isSqrt(expr.left) && !isSqrt(expr.right)) {
 			// √a - b → conjugate is √a + b
 			// (√a - b)(√a + b) = a - b²
@@ -240,11 +253,12 @@ export function findConjugate(expr: MathNode): { conjugate: MathNode; expanded: 
 }
 
 /**
- * Check if expression is a square root.
+ * Racine CARRÉE (√u ou u^{1/2}) : une racine d'indice explicite (∛u) n'a pas
+ * de conjugué en √A + √B — (∛A − ∛B)(∛A + ∛B) ≠ A − B (revue de #1844).
  */
 function isSqrt(expr: MathNode): boolean {
 	return (
-		(isFunction(expr) && expr.name.toLowerCase() === 'sqrt') ||
+		(isFunction(expr) && expr.name.toLowerCase() === 'sqrt' && expr.base === undefined) ||
 		(isSuperscript(expr) &&
 			isDivision(expr.superscript) &&
 			isNumber(expr.superscript.numerator) &&

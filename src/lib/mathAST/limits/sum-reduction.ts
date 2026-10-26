@@ -25,6 +25,8 @@ import {
 	isFunction,
 	isAddition,
 	isSubtraction,
+	isDivision,
+	isSuperscript,
 	isDelimiter,
 	isOpposite,
 	isVariable,
@@ -78,12 +80,52 @@ function hasIndexedRoot(expr: MathNode): boolean {
 
 /** √A − B réécrit (A − B²)/(√A + B), numérateur développé ; sinon null. */
 function multiplyByConjugate(expr: MathNode): MathNode | null {
+	const conjugateInfo = sumConjugate(expr);
+	if (conjugateInfo === null) return null;
+	return divide(conjugateInfo.expanded, conjugateInfo.conjugate, 'fraction');
+}
+
+/**
+ * Inverse d'une somme à conjuguer, réécrit par la quantité conjuguée :
+ * N/(√A − B) = N(√A + B)/(A − B²) et (√A − B)^{−n} = ((√A + B)/(A − B²))ⁿ,
+ * dénominateur développé. 1/(√(x+1) − √x) en +∞ est une forme 1/0 dont le
+ * signe n'est pas suivi ; réécrite, c'est √(x+1) + √x → +∞ (V69). Une égalité
+ * là où le conjugué ne s'annule pas. `null` hors de ces deux formes.
+ */
+export function reciprocalByConjugate(expr: MathNode): MathNode | null {
+	if (isDivision(expr)) {
+		const conjugateInfo = sumConjugate(stripDelimiter(expr.denominator));
+		if (conjugateInfo === null) return null;
+		const numerator =
+			isNumber(expr.numerator) && expr.numerator.value === '1'
+				? conjugateInfo.conjugate
+				: multiply(expr.numerator, parentheses(conjugateInfo.conjugate), 'implicit');
+		return divide(numerator, conjugateInfo.expanded, 'fraction');
+	}
+	const exponent = isSuperscript(expr) ? exactConstantRational(expr.superscript) : null;
+	if (isSuperscript(expr) && exponent !== null && exponent.d === 1n && exponent.n < 0n) {
+		const conjugateInfo = sumConjugate(stripDelimiter(expr.base));
+		if (conjugateInfo === null) return null;
+		const inverse = divide(conjugateInfo.conjugate, conjugateInfo.expanded, 'fraction');
+		return exponent.n === -1n
+			? inverse
+			: power(parentheses(inverse), number((-exponent.n).toString()));
+	}
+	return null;
+}
+
+/** Conjugué d'une somme √A ± B et produit A − B² développé ; sinon null. */
+function sumConjugate(expr: MathNode): { conjugate: MathNode; expanded: MathNode } | null {
 	if (!isSubtraction(expr) && !isAddition(expr)) return null;
 	if (hasIndexedRoot(expr)) return null;
 	const conjugateInfo = findConjugate(expr);
 	if (conjugateInfo === null) return null;
-	const numerator = reduceToSingleFraction(conjugateInfo.expanded) ?? conjugateInfo.expanded;
-	return divide(numerator, conjugateInfo.conjugate, 'fraction');
+	const expanded = reduceToSingleFraction(conjugateInfo.expanded) ?? conjugateInfo.expanded;
+	return { conjugate: conjugateInfo.conjugate, expanded };
+}
+
+function stripDelimiter(node: MathNode): MathNode {
+	return isDelimiter(node) ? node.content : node;
 }
 
 /** Retire les signes `−` et parenthèses de tête : `−(−A)` → { sign: 1, node: A }. */

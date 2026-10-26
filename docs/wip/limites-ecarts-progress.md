@@ -1,18 +1,19 @@
 ---
 title: Écarts voisins des limites (V67-V71)
 date: 2026-10-26
-status: phase 0 validée, rien codé
+status: PR 1 en cours
 ---
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, phase 0 validée (« je suis tes recos »)._
+_Mis à jour le 2026-10-26, PR 1 #1844 ouverte, revue faite._
 
-- **État** : rien codé, pas de worktree. Suite de #1839 (V66, [journal](../archive/wip/limite-puissance-progress.md)).
-- **Prochaine action** : `git worktree add -b fix/limites-ecarts-v67 ../ubumaths-wt-limites-ecarts origin/main`, puis **PR 1 : V67 + V69**, tests rouges d'abord.
-- **Ordre validé** : PR 1 V67 + V69 (quotients en −∞, conjugué, domaine de u^{p/q}) · PR 2 V68 (exp, croissances comparées) · PR 3 V70 + V71 (substitution directe, suivi du signe). Revue `code-reviewer` en Opus sur chaque PR.
+- **État** : PR 1 = #1844, revue Opus faite (aucune limite fausse sur ~105 sondes ; garde d'indice `isSqrt` appliquée).
+- **Prochaine action** : CI verte → merge #1844 ; puis PR 2 (V68), branche `fix/limites-ecarts-v68`.
+- **Ordre validé** : PR 1 V67 + V69 · PR 2 V68 (exp, croissances comparées) · PR 3 V70 + V71 (substitution directe, suivi du signe). Revue `code-reviewer` en Opus sur chaque PR.
 - **En attente de David** : rien.
-- **Pièges** : la sonde de `evaluateLimit` (tableau ci-dessous) a été faite sur la branche de #1839, à rejouer sur `main` ; une limite FAUSSE est pire qu'un refus (revue de #1839).
+- **Pièges** : une limite FAUSSE est pire qu'un refus (revue de #1839) ; (−∞)ⁿ exact rend x² + x en −∞ « +∞ − ∞ » pour `classifyWithSign` (inconnu, plus de repli numérique) — d'où `isPositiveNear` par le moteur entier.
+- **Worktree / branche** : `../ubumaths-wt-limites-ecarts` · `fix/limites-ecarts-v67`.
 
 ---
 
@@ -42,3 +43,10 @@ _Mis à jour le 2026-10-26, phase 0 validée (« je suis tes recos »)._
 ## Journal
 
 - **2026-10-26** — Écarts relevés en sondant V66 et par la revue de #1839 ; phase 0 et découpage en 3 PR validés par David.
+- **2026-10-26** — Sonde rejouée sur `main` : identique au tableau. PR 1 :
+  - **V67** — cause : `powExtended` ne savait pas (−∞)ⁿ (« Unhandled case ») → l'évaluation exacte de `x^2` en −∞ échouait, ∞/∞ non détecté, L'Hôpital jamais tenté. Ajout du cas n entier (exposant non entier laissé au domaine).
+  - **V69 domaine** — `undefinedTowardInfinity` sonde la base de u^a, a non entier hors p/q impair (`nonIntegerPowerBase`).
+  - **V69 conjugué** — `findConjugate` connaît √A − √B ; stratégie 2.85 `tryReciprocalByConjugate` (N/D, D^{−n}) en ±∞.
+  - **Régression trouvée et corrigée** — `\ln(x^2)-\ln(x^2+x)` en −∞ : x² + x devenait « +∞ − ∞ » exact (inconnu) ; `isPositiveNear` interroge le moteur entier quand le signe est inconnu. Corrige aussi `\ln(x^2)-\ln(x^2-x)` en +∞ (sans valeur sur `main`).
+  - Tests : `quotients-moins-infini-et-conjugue.test.ts`, 18 rouges sur `main`.
+  - Revue Opus (#1844) : rien de faux. Appliqué : `isSqrt` exige `base === undefined` — ∛A − ∛B (et ∛A − b, déjà avant) pris pour un conjugué de racine carrée par `tryRationalization` en un point fini, réécriture fausse (−1/4 au lieu de −1/12) masquée par L'Hôpital. Non traité (refus, pas faux) : `x^{\frac{4}{2}}` en −∞ « non supportée » au lieu de +∞.

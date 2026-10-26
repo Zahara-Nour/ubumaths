@@ -97,7 +97,7 @@ import {
 } from '../normal/rational';
 import type { Rational } from '../normal/types';
 import { rationalToNode } from '../common/numeric';
-import { rewriteIndeterminateSum } from './sum-reduction';
+import { reciprocalByConjugate, rewriteIndeterminateSum } from './sum-reduction';
 import {
 	classifyWithSign,
 	isSignedInfinity,
@@ -108,6 +108,7 @@ import {
 } from './sign-tracking';
 import { substitute } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
+import { oddDenominatorExponent } from '../eval/real-root';
 import { numericNode } from '../common/numeric';
 import { computeDomain } from '../domain/compute';
 import { containsValue } from '../domain/algebra';
@@ -262,11 +263,12 @@ function validateApproachInDomain(
 const INFINITY_PROBES = [0, 1, 2, 3, 4, 5, 6].map((step) => 1e6 + step);
 
 /**
- * Un ln ou une racine carrée de f a-t-il un argument STRICTEMENT négatif en
- * l'une des sondes vers ±∞ ? Seul un négatif prouve la sortie du domaine :
- * un argument nul vient d'un dépassement de capacité (e^{−x} en 10⁶), une
- * évaluation impossible ne dit rien. Les racines d'indice explicite (∛) sont
- * ignorées : définies sur ℝ pour un indice impair.
+ * Un ln, une racine carrée ou une puissance d'exposant non entier de f
+ * a-t-il un argument STRICTEMENT négatif en l'une des sondes vers ±∞ ? Seul
+ * un négatif prouve la sortie du domaine : un argument nul vient d'un
+ * dépassement de capacité (e^{−x} en 10⁶), une évaluation impossible ne dit
+ * rien. Les racines d'indice explicite (∛) et les exposants p/q de
+ * dénominateur impair sont ignorés : définis sur ℝ.
  */
 function undefinedTowardInfinity(
 	expr: MathNode,
@@ -275,14 +277,19 @@ function undefinedTowardInfinity(
 	direction: LimitDirection
 ): boolean {
 	const positive = isInfinity(approach) && approach.sign === 'positive';
-	const guardedArguments = findNodes(
-		expr,
-		(node) =>
-			isFunction(node) &&
-			node.args.length === 1 &&
-			(((node.name === 'ln' || node.name === 'log') && node.base === undefined) ||
-				(node.name === 'sqrt' && node.base === undefined))
-	).flatMap((node) => (isFunction(node) ? [node.args[0]] : []));
+	const guardedArguments = [
+		...findNodes(
+			expr,
+			(node) =>
+				isFunction(node) &&
+				node.args.length === 1 &&
+				(((node.name === 'ln' || node.name === 'log') && node.base === undefined) ||
+					(node.name === 'sqrt' && node.base === undefined))
+		).flatMap((node) => (isFunction(node) ? [node.args[0]] : [])),
+		...findNodes(expr, (node) => nonIntegerPowerBase(node, varName) !== null).flatMap(
+			(node) => nonIntegerPowerBase(node, varName) ?? []
+		)
+	];
 	// Un argument qui tend vers +∞ ou vers un réel > 0 est positif au
 	// voisinage : la sonde ne le juge pas (revue de #907 : ln(ln x − 20)
 	// n'est positif qu'au-delà de 4,8·10⁸)
@@ -302,6 +309,24 @@ function undefinedTowardInfinity(
 			}
 		});
 	});
+}
+
+/**
+ * Base de u^a, a constant NON entier hors du cas p/q de dénominateur impair
+ * (convention du lycée u^a = e^{a ln u}, celle de `computePowerDomain`) : u
+ * doit être ≥ 0. `(x − 3)^{3/2}` en −∞ rendait « non supportée » au lieu de
+ * « n'existe pas », comme √(x − 3) (V69). `null` pour tout autre nœud.
+ */
+function nonIntegerPowerBase(node: MathNode, varName: string): MathNode | null {
+	if (!isSuperscript(node) || containsVariable(node.superscript, varName)) return null;
+	if (oddDenominatorExponent(node.superscript) !== null) return null;
+	let exponent: number;
+	try {
+		exponent = evaluateNodeToApproximatedNumber(node.superscript);
+	} catch {
+		return null;
+	}
+	return Number.isFinite(exponent) && !Number.isInteger(exponent) ? node.base : null;
 }
 
 /** Écart au point pour sonder le domaine numériquement. */
@@ -1038,6 +1063,34 @@ function evaluateLimitExactForm(
 				opts
 			);
 		}
+	}
+
+	// Stratégie 2.85 : inverse d'une somme ∞ − ∞ en ±∞, par la quantité
+	// conjuguée — 1/(√(x+1) − √x) = √(x+1) + √x. La somme tend vers 0 sans
+	// signe suivi : aucune stratégie ne concluait (V69).
+	const reciprocal = isInfinity(approachPoint)
+		? tryReciprocalByConjugate(expression, varName, approachPoint, dir, options)
+		: null;
+	if (reciprocal !== null) {
+		recorder.recordStepByRule(
+			'rationalization',
+			expression,
+			reciprocal.rewritten,
+			'summarized',
+			approachPoint,
+			'Multiplication par la quantité conjuguée'
+		);
+		return createResult(
+			reciprocal.value,
+			varName,
+			approachPoint,
+			dir,
+			isInfinity(reciprocal.value) ? 'infinite' : 'exact',
+			'none',
+			'rationalization',
+			recorder,
+			opts
+		);
 	}
 
 	// Detect indeterminate form for subsequent strategies
@@ -2235,8 +2288,40 @@ function tryRewrittenSum(
 }
 
 /**
+ * N/(√A − B) ou (√A − B)^{−n} : limite de la réécriture par la quantité
+ * conjuguée (`reciprocalByConjugate`), ou null si elle ne conclut pas — une
+ * valeur approchée ne conclut pas.
+ */
+function tryReciprocalByConjugate(
+	expr: MathNode,
+	varName: string,
+	approach: MathNode,
+	dir: LimitDirection,
+	options: LimitOptions
+): { value: MathNode; rewritten: MathNode } | null {
+	if (nestedRewrites >= MAX_NESTED_REWRITES) return null;
+	const rewritten = reciprocalByConjugate(expr);
+	if (rewritten === null) return null;
+	nestedRewrites++;
+	try {
+		const result = evaluateLimit(rewritten, varName, approach, dir, options);
+		if ((result.status === 'exact' || result.status === 'infinite') && result.value !== null) {
+			return { value: result.value, rewritten };
+		}
+		return null;
+	} finally {
+		nestedRewrites--;
+	}
+}
+
+/**
  * u est-il > 0 au voisinage du point, du côté demandé ? Limite +∞, réel > 0
  * ou 0⁺ prouvés ; −∞, réel < 0, 0 sans signe ou signe inconnu : non.
+ *
+ * Le suivi du signe ne lève pas les formes indéterminées : x² + x en −∞ est
+ * +∞ − ∞, « inconnu ». La limite du moteur entier, démontrée (+∞ ou réel
+ * > 0), prouve alors le signe : ln(x²) − ln(x² − x) en +∞ restait sans
+ * valeur, et en −∞ depuis que (−∞)² est calculé exactement (V67).
  */
 function isPositiveNear(
 	expr: MathNode,
@@ -2246,7 +2331,14 @@ function isPositiveNear(
 ): boolean {
 	const sign = classifyWithSign(expr, varName, approach, dir);
 	if (sign.type === 'pos-infinity' || sign.type === 'zero-plus') return true;
-	return sign.type === 'finite' && sign.value > 0;
+	if (sign.type !== 'unknown') return sign.type === 'finite' && sign.value > 0;
+	const limit = evaluateLimit(expr, varName, approach, dir);
+	if (limit.value === null) return false;
+	if (limit.status === 'infinite')
+		return isInfinity(limit.value) && limit.value.sign === 'positive';
+	if (limit.status !== 'exact') return false;
+	const value = computeNumericValue(limit.value);
+	return value !== null && value > 0;
 }
 
 /** L'expression contient-elle une puissance de la base d'Euler (`e^u`) ? */
