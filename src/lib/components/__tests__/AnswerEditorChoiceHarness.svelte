@@ -10,9 +10,10 @@
 	interface Props {
 		initialStatement?: string;
 		initialAnswers?: string[];
+		statementShared?: boolean;
 	}
 
-	let { initialStatement = '', initialAnswers = [''] }: Props = $props();
+	let { initialStatement = '', initialAnswers = [''], statementShared = false }: Props = $props();
 
 	// Copie de départ : le banc garde ensuite son propre état
 	const start = () => ({
@@ -25,7 +26,7 @@
 	let blanks = $state<TemplateBlank[]>(initial.blanks);
 </script>
 
-<AnswerEditor questionType="fill_in_blanks" bind:statement bind:blanks />
+<AnswerEditor questionType="fill_in_blanks" bind:statement bind:blanks {statementShared} />
 
 <output data-testid="state">
 	{JSON.stringify({ statement, answers: blanks.map((b) => b.expectedAnswer) })}

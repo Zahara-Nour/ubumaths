@@ -20,6 +20,9 @@
 	  blocs ```choix deviennent des cartes « Case N : choix » qui le réécrivent ;
 	  « Ajouter une case choix » et « Vrai / Faux » y ajoutent un bloc en fin
 	  (chantier figure-et-choix, PR 1b)
+	- statementShared: l'énoncé est le partagé (la variation n'a pas le sien) :
+	  cartes en lecture seule (on coche seulement) et pas d'ajout de case choix,
+	  sinon les réponses des autres variations se décaleraient
 	- onSingleAnswer: appelé quand « plusieurs réponses » est coupé ici (case
 	  décochée ou « Vrai / Faux ») : le réglage vaut pour tout le modèle, le parent
 	  normalise les AUTRES listes de choix
@@ -53,6 +56,7 @@
 		multipleAnswers?: boolean;
 		shuffleChoices?: boolean;
 		statement?: TemplateMarkdown;
+		statementShared?: boolean;
 		onSingleAnswer?: () => void;
 		/**
 		 * Amorcer des champs vides (deux choix, un trou) quand il n'y en a pas.
@@ -81,6 +85,7 @@
 		multipleAnswers = $bindable(),
 		shuffleChoices = $bindable(),
 		statement = $bindable(),
+		statementShared = false,
 		onSingleAnswer,
 		seedEmpty = true
 	}: Props = $props();
@@ -274,6 +279,7 @@
 								ordinal={choiceOrdinal(index)}
 								caseNumber={index + 1}
 								bind:expectedAnswer={blank.expectedAnswer}
+								editable={!statementShared}
 							/>
 						{:else}
 							<div class="flex gap-3">
@@ -306,7 +312,11 @@
 					Ajouter un trou
 				</Button>
 
-				{#if statement !== undefined}
+				{#if statement !== undefined && statementShared}
+					<p class="text-xs text-muted-foreground">
+						Énoncé partagé : les cases choix s'ajoutent dans l'énoncé partagé.
+					</p>
+				{:else if statement !== undefined}
 					<div class="flex flex-wrap gap-2">
 						<Button
 							variant="outline"

@@ -208,8 +208,11 @@ choix décale les bonnes réponses. « Ajouter une case choix » et « Vrai / Fa
 rien coché) ajoutent un bloc en fin d'énoncé : sa case est la dernière, la liste des cases est
 complétée jusqu'à elle. Réponse calculée (`{{eval:…}}`) ou hors des choix : champ de texte, « Cocher
 à la main » revient aux ronds. Bloc mal écrit (réglage ou ligne illisible, non fermé) : messages du
-parseur et champ de texte seul, jamais réécrit. `TestSpecEditor` : une case choix se coche
-(`answers[i]` = `"0;2"`).
+parseur et champ de texte seul, jamais réécrit ; un `case: N` écrit à la main aussi. Énoncé
+**partagé** (la variation n'a pas le sien, `statementShared`) : carte en lecture seule (on coche
+seulement), pas d'ajout de case choix — le modifier d'une variation décalerait les réponses des
+autres. `TestSpecEditor` : une case choix se coche (`answers[i]` = `"0;2"`) ; réponse calculée →
+champ de texte.
 
 ### 2. Fusion `shared` ⊕ variation (`resolveVariationWithShared`)
 

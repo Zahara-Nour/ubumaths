@@ -16,6 +16,8 @@
 	- ordinal: rang du bloc parmi les blocs choix de l'énoncé (0 = le premier)
 	- caseNumber: numéro de la case affiché (1 = la première)
 	- expectedAnswer: bonne réponse de la case (bindable)
+	- editable: `false` quand l'énoncé est le partagé : le modifier d'ici décalerait
+	  les réponses des autres variations ; seule la bonne réponse se coche
 -->
 
 <script lang="ts">
@@ -40,6 +42,7 @@
 		ordinal: number;
 		caseNumber: number;
 		expectedAnswer: string;
+		editable?: boolean;
 	}
 
 	// Constantes
@@ -49,7 +52,8 @@
 		statement = $bindable(),
 		ordinal,
 		caseNumber,
-		expectedAnswer = $bindable()
+		expectedAnswer = $bindable(),
+		editable = true
 	}: Props = $props();
 
 	// Plusieurs cartes sur la page : un groupe radio chacune
@@ -170,19 +174,29 @@
 		</div>
 	{/if}
 
+	{#if block?.rewritable && !editable}
+		<p class="text-xs text-muted-foreground">
+			Choix à modifier dans l'énoncé partagé{block.multiple
+				? ' · plusieurs bonnes réponses'
+				: ''}{block.shuffle ? '' : ' · pas de mélange'}.
+		</p>
+	{/if}
+
 	{#if block?.rewritable}
-		<div class="flex flex-wrap gap-4">
-			<MyCheckbox
-				checked={block.multiple}
-				onCheckedChange={(v) => setMultiple(v === true)}
-				label="Plusieurs bonnes réponses"
-			/>
-			<MyCheckbox
-				checked={block.shuffle}
-				onCheckedChange={(v) => setShuffle(v === true)}
-				label="Mélanger les choix"
-			/>
-		</div>
+		{#if editable}
+			<div class="flex flex-wrap gap-4">
+				<MyCheckbox
+					checked={block.multiple}
+					onCheckedChange={(v) => setMultiple(v === true)}
+					label="Plusieurs bonnes réponses"
+				/>
+				<MyCheckbox
+					checked={block.shuffle}
+					onCheckedChange={(v) => setShuffle(v === true)}
+					label="Mélanger les choix"
+				/>
+			</div>
+		{/if}
 
 		<div class="space-y-2">
 			{#each block.choices as choice, index (index)}
@@ -209,33 +223,39 @@
 						</div>
 					{/if}
 					<span class="pt-2 font-mono text-sm">{letter(index)}</span>
-					<Textarea
-						value={choice}
-						oninput={(e: Event) => setChoice(index, (e.target as HTMLTextAreaElement).value)}
-						rows={Math.max(1, choice.split('\n').length)}
-						placeholder="Choix {letter(index)} (formules $…$, variables {'{{a}}'})"
-						aria-label="Choix {letter(index)}"
-						class="min-h-0 flex-1 font-mono"
-					/>
-					<Button
-						variant="destructive"
-						size="icon"
-						type="button"
-						onclick={() => removeChoice(index)}
-						disabled={block.choices.length <= 2 || checked === null}
-						aria-label="Supprimer le choix {letter(index)}"
-					>
-						<Trash2 class="h-4 w-4" />
-					</Button>
+					{#if !editable}
+						<span class="flex-1 pt-2 font-mono text-sm whitespace-pre-wrap">{choice}</span>
+					{:else}
+						<Textarea
+							value={choice}
+							oninput={(e: Event) => setChoice(index, (e.target as HTMLTextAreaElement).value)}
+							rows={Math.max(1, choice.split('\n').length)}
+							placeholder="Choix {letter(index)} (formules $…$, variables {'{{a}}'})"
+							aria-label="Choix {letter(index)}"
+							class="min-h-0 flex-1 font-mono"
+						/>
+						<Button
+							variant="destructive"
+							size="icon"
+							type="button"
+							onclick={() => removeChoice(index)}
+							disabled={block.choices.length <= 2 || checked === null}
+							aria-label="Supprimer le choix {letter(index)}"
+						>
+							<Trash2 class="h-4 w-4" />
+						</Button>
+					{/if}
 				</div>
 			{/each}
 		</div>
 
 		<div class="flex flex-wrap gap-2">
-			<Button variant="outline" size="sm" type="button" class="gap-2" onclick={addChoice}>
-				<Plus class="h-4 w-4" />
-				Ajouter un choix
-			</Button>
+			{#if editable}
+				<Button variant="outline" size="sm" type="button" class="gap-2" onclick={addChoice}>
+					<Plus class="h-4 w-4" />
+					Ajouter un choix
+				</Button>
+			{/if}
 			{#if !textMode}
 				<Button
 					variant="outline"

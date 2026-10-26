@@ -125,6 +125,31 @@ describe('AnswerEditor — case ajoutée quand la liste est plus longue que les 
 	});
 });
 
+describe('AnswerEditor — énoncé partagé : on coche seulement', () => {
+	it('choix en lecture seule, ni réglages ni ajout ; la bonne réponse se coche', async () => {
+		await render(AnswerEditorChoiceHarness, {
+			props: { initialStatement: OUI_NON, initialAnswers: [''], statementShared: true }
+		});
+		await expect
+			.element(
+				page.getByText(
+					/Choix à modifier dans l’énoncé partagé|Choix à modifier dans l'énoncé partagé/
+				)
+			)
+			.toBeVisible();
+		await expect.element(page.getByRole('textbox', { name: 'Choix A' })).not.toBeInTheDocument();
+		await expect.element(page.getByText('Plusieurs bonnes réponses')).not.toBeInTheDocument();
+		await expect
+			.element(page.getByRole('button', { name: 'Ajouter un choix' }))
+			.not.toBeInTheDocument();
+		await expect
+			.element(page.getByRole('button', { name: 'Ajouter une case choix' }))
+			.not.toBeInTheDocument();
+		await page.getByRole('radio', { name: 'Choix A : bonne réponse' }).click();
+		expect(readState()).toEqual({ statement: OUI_NON, answers: ['0'] });
+	});
+});
+
 describe('AnswerEditor — réponse calculée, bloc mal écrit', () => {
 	it('réponse {{eval:…}} : champ de texte ; « Cocher à la main » revient aux ronds', async () => {
 		await render(AnswerEditorChoiceHarness, {

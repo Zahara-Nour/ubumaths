@@ -226,4 +226,5 @@ réponse »). ADR : « Le QCM est une case » (révise la séparation QCM / case
   **réécrit** à chaque modification (choix, `plusieurs:`, `melanger:`) ; bonne réponse cochée → `expectedAnswer`.
 - « Ajouter une case choix » / « Vrai / Faux » : bloc ajouté **en fin d'énoncé** (case dernière).
 - Réponse calculée : champ de texte + « Cocher à la main » ; bloc mal écrit : messages, champ seul, jamais réécrit.
+- Énoncé partagé (revue) : carte en lecture seule, pas d'ajout de case — option A, David suit la reco.
 - Tests : une case choix se coche (`"0;2"`). Éditeur riche : bloc gardé en code `choix` (clôture ```` si besoin).

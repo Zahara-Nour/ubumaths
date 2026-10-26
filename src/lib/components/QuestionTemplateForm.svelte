@@ -1961,6 +1961,8 @@
 															() => effectiveStatement(variation),
 															(v) => setEffectiveStatement(variation, v)
 														}
+														statementShared={!variation.statement?.trim() &&
+															sharedStatement.trim().length > 0}
 														onSingleAnswer={handleSingleAnswer}
 													/>
 												</Card.Content>
