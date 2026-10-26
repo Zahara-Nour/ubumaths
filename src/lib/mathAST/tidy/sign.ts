@@ -21,6 +21,7 @@ import { extractExactRational, extractRational } from '../common/numeric';
 import { hashMathNode } from '../normal/hash';
 import { findNodes, getChildren } from '../transforms';
 import { isVariable } from '../guards';
+import { add, func, number, subtract } from '../factory';
 
 /** La base ne vaut 0 en aucun point où elle est définie. */
 export function cannotVanish(node: MathNode, typeCtx: TypeContext | undefined): boolean {
@@ -222,6 +223,9 @@ const RESTRICTED_FUNCTIONS = new Set([
 	'factorial'
 ]);
 
+/** Les fonctions définies pour un argument entre −1 et 1. */
+const BOUNDED_BY_ONE = new Set(['arcsin', 'arccos']);
+
 /** Les logarithmes : argument strictement positif. */
 const LOGARITHMS = new Set(['ln', 'log', 'log10', 'log2']);
 
@@ -407,7 +411,13 @@ export function domainConditions(
 			if (node.args.length === 1 && node.name === 'sqrt') {
 				if (!hasOddIndex(node.base)) need(arg, 'nonnegative');
 			} else if (node.args.length === 1 && LOGARITHMS.has(node.name)) need(arg, 'positive');
-			else found.push({ expression: node, relation: 'defined' });
+			// `tan u` existe là où `cos u ≠ 0` ; `arcsin u`, `arccos u` pour −1 ≤ u ≤ 1
+			// (tidy-conditions § 5, L3)
+			else if (node.args.length === 1 && node.name === 'tan') need(func('cos', [arg]), 'nonzero');
+			else if (node.args.length === 1 && BOUNDED_BY_ONE.has(node.name)) {
+				need(add(arg, number(1)), 'nonnegative');
+				need(subtract(number(1), arg), 'nonnegative');
+			} else found.push({ expression: node, relation: 'defined' });
 			break;
 		}
 		default:

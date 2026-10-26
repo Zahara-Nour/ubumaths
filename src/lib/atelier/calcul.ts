@@ -3725,16 +3725,17 @@ function withDomainMode(result: CalcResult, mode: DomainMode, assumed: boolean):
 	const alternative = result.alternative;
 	const facts = alternative?.domain;
 	if (alternative === undefined || facts === undefined) return result;
+	// L'hypothèse n'a pas suffi : la ligne garde l'écriture, comme sa note le
+	// dit, dans les deux modes (tidy-conditions § 5, L1)
+	if (assumed) return result;
 	if (mode === 'keep') {
-		return assumed
-			? result
-			: {
-					...result,
-					note: joinedNote(
-						result.note,
-						simplifyFurtherNote(facts.conditions, facts.narrows ? facts.ast : undefined)
-					)
-				};
+		return {
+			...result,
+			note: joinedNote(
+				result.note,
+				simplifyFurtherNote(facts.conditions, facts.narrows ? facts.ast : undefined)
+			)
+		};
 	}
 	// Sans écriture mathématique de départ (« rien à factoriser »), rien à basculer
 	if (result.latex === undefined) return result;

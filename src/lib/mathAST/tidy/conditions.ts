@@ -26,9 +26,14 @@ import { stripUnnecessaryBrackets } from '../transforms';
 import { tidyNode } from './collect';
 import type { Domain } from '../domain/types';
 import { computeDomain } from '../domain/compute';
-import { difference, intersect, isEmpty } from '../domain/algebra';
+import { difference, excludePoints, intersect, isEmpty } from '../domain/algebra';
 import { expandExcludedPoints } from '../domain/validation/compare-domains';
-import { divide, func, number, subtract, variable } from '../factory';
+import { divide, func, number, opposite, subtract, variable } from '../factory';
+import { findNodes, mapNode } from '../transforms';
+import { isNumber } from '../guards';
+import { evaluate } from '../eval/evaluate';
+import { formatEndpointValue } from '$lib/math/intervals/format';
+import type { Interval } from '$lib/math/intervals/types';
 
 /** Une condition écrite, pour la ligne (LaTeX) et pour le texte. */
 export interface ConditionText {
@@ -219,6 +224,13 @@ export function conditionSet(
 	const letters = getVariables(expression);
 	if (letters.size !== 1) return null;
 	const [letter] = letters;
+	const inverse = relation === 'nonzero' ? inverseCircularZero(expression, letter) : null;
+	if (inverse !== null) return { letter, domain: inverse };
+	// `x − tan(1) ≠ 0`, écrit par `asPoints` : le point se dit tel quel
+	const point = relation === 'nonzero' ? pointOf(expression) : null;
+	if (point !== null && isExactPoint(point.point) && decimalValue(point.point) !== null) {
+		return { letter, domain: excludePoints({ kind: 'universal' }, [point.point]) };
+	}
 	const witness: MathNode =
 		relation === 'nonzero'
 			? divide(number(1), expression, 'fraction')
@@ -230,6 +242,108 @@ export function conditionSet(
 	// avec x > 0` donnait 1) — on ne sait pas, on ne garantit rien
 	if (!INCLUSION_READABLE.has(computed.domain.kind)) return null;
 	return { letter, domain: computed.domain };
+}
+
+/** Les réciproques circulaires : leur réciproque, l'image de 0, leurs valeurs. */
+const INVERSE_CIRCULAR: Record<
+	string,
+	{ inverse: string; atZero: number; low: number; high: number }
+> = {
+	arctan: { inverse: 'tan', atZero: 0, low: -Math.PI / 2, high: Math.PI / 2 },
+	arcsin: { inverse: 'sin', atZero: 0, low: -Math.PI / 2, high: Math.PI / 2 },
+	arccos: { inverse: 'cos', atZero: 1, low: 0, high: Math.PI }
+};
+
+/** La valeur décimale d'un nombre sans lettre (π et e compris) ; `null` sinon. */
+function decimalValue(node: MathNode): number | null {
+	try {
+		const result = evaluate(node, { mode: 'decimal' });
+		return result.status === 'value' && typeof result.value === 'number' && isFinite(result.value)
+			? result.value
+			: null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * `f(u) − c ≠ 0`, f réciproque circulaire, c sans lettre (§ 5, L3) :
+ * `computeDomain` ne le résout pas. `f(u) = c` ⇔ `u = F(c)` quand c est une
+ * valeur de f (`arctan(x) − 1 ≠ 0` → x ≠ tan(1), `arcsin(x) ≠ 0` → x ≠ 0 et
+ * −1 ≤ x ≤ 1) ; sinon f ne vaut jamais c, reste le domaine de f(u). `null` :
+ * une autre forme. Une valeur au bord (`arcsin(x) − π/2`) : `null`, prudent.
+ */
+function inverseCircularZero(expression: MathNode, letter: string): Domain | null {
+	const node = expression.type === 'delimiter' ? expression.content : expression;
+	let call: MathNode = node;
+	let shift: MathNode | null = null;
+	let negated = false;
+	if (node.type === 'subtraction' || node.type === 'addition') {
+		call = node.left;
+		shift = node.right;
+		negated = node.type === 'addition';
+	}
+	if (call.type !== 'function' || call.args.length !== 1) return null;
+	const known = INVERSE_CIRCULAR[call.name];
+	if (known === undefined) return null;
+	if (shift !== null && getVariables(shift).size > 0) return null;
+	const [inner] = call.args;
+	const own = computeDomain(call, letter);
+	if ((own.unresolved?.length ?? 0) > 0 || !INCLUSION_READABLE.has(own.domain.kind)) return null;
+	const value = shift === null ? 0 : decimalValue(shift);
+	if (value === null) return null;
+	const target = negated ? -value : value;
+	const epsilon = 1e-9;
+	if (Math.abs(target - known.low) < epsilon || Math.abs(target - known.high) < epsilon)
+		return null;
+	if (target < known.low || target > known.high) return own.domain;
+	const point: MathNode =
+		shift === null
+			? number(known.atZero)
+			: func(known.inverse, [negated ? opposite(shift) : shift]);
+	// `computeDomain` ne résout pas `tan(1)` (il cherche où tan existe) : la lettre
+	// seule (`arctan(x)`) se dit directement, sinon il faut une résolution sans reste
+	if (inner.type === 'variable' && inner.name === letter) {
+		return excludePoints(own.domain, [point]);
+	}
+	const zero = computeDomain(divide(number(1), subtract(inner, point), 'fraction'), letter);
+	if ((zero.unresolved?.length ?? 0) > 0 || !INCLUSION_READABLE.has(zero.domain.kind)) return null;
+	return intersect(own.domain, zero.domain);
+}
+
+/**
+ * `assumed` évite-t-il tous les points d'une famille `a + kp` (`cos(x) ≠ 0`,
+ * π/2 + kπ) ? Seulement sur des intervalles bornés, où ils se comptent
+ * (§ 5, L4) : `cos(x)/cos(x) avec 0 < x < 1` → 1. Un point sur une borne
+ * (à 1e-9 près) ne compte que si elle est ouverte : `]−π/2 ; π/2[` oui,
+ * `]−π/2 ; π/2]` non.
+ */
+export function avoidsPeriodicPoints(condition: DomainCondition, assumed: Domain): boolean {
+	if (condition.relation !== 'nonzero') return false;
+	const letters = getVariables(condition.expression);
+	if (letters.size !== 1 || assumed.kind !== 'interval_set') return false;
+	const [letter] = letters;
+	const computed = computeDomain(divide(number(1), condition.expression, 'fraction'), letter);
+	if ((computed.unresolved?.length ?? 0) > 0) return false;
+	if (computed.domain.kind !== 'periodic_exclusion') return false;
+	const base = decimalValue(computed.domain.basePoint);
+	const period = decimalValue(computed.domain.period);
+	if (base === null || period === null || period <= 0) return false;
+	const epsilon = 1e-9;
+	return assumed.intervals.every((interval) => {
+		const low = decimalValue(interval.lower.value);
+		const high = decimalValue(interval.upper.value);
+		if (low === null || high === null) return false;
+		const near = (a: number, b: number) => Math.abs(a - b) < epsilon;
+		// Un point sur une borne ouverte n'est pas dans l'intervalle (`]0 ; π[`)
+		for (let k = Math.ceil((low - epsilon - base) / period); ; k++) {
+			const point = base + k * period;
+			if (point > high + epsilon) return true;
+			if (near(point, low) && interval.lower.type === 'open') continue;
+			if (near(point, high) && interval.upper.type === 'open') continue;
+			return false;
+		}
+	});
 }
 
 /** `a ⊆ b`, points exclus compris. */
@@ -328,10 +442,15 @@ function asPoints(
 	}
 	const where = conditionSet(condition);
 	if (where === null || where.domain.kind !== 'interval_set') return [condition];
-	// Lus en rationnels : `x² − 1 ≠ 0` exclut `−1` écrit en opposé, `4x² − 1`, `±1/2`
-	const values = where.domain.excludedPoints.map((p) => extractExactRational(p.value));
-	if (values.length === 0 || values.some((v) => v === null)) return [condition];
-	const points = values.map((v) => rationalToNode(v as Rational));
+	// Lus en rationnels : `x² − 1 ≠ 0` exclut `−1` écrit en opposé, `4x² − 1`, `±1/2` ;
+	// sinon exacts (`±√2`, `(−1 ± √5)/2`, `tan(1)`, § 5, L2) — jamais un décimal
+	// approché (`x³ − 2` → 1.2599…)
+	const excludedPoints = where.domain.excludedPoints.map((p) => p.value);
+	if (excludedPoints.length === 0 || !excludedPoints.every(isExactPoint)) return [condition];
+	const points = excludedPoints.map((value) => {
+		const rational = extractExactRational(value);
+		return rational === null ? value : rationalToNode(rational);
+	});
 	const own = computeDomain(condition.expression, where.letter);
 	if ((own.unresolved?.length ?? 0) > 0 || !INCLUSION_READABLE.has(own.domain.kind)) {
 		return [condition];
@@ -353,6 +472,42 @@ function asPoints(
 	return implied ? excluded : [...ownConditions, ...excluded];
 }
 
+/** Un point exclu écrit exactement : sans lettre, ses nombres entiers (pas `1.2599…`). */
+function isExactPoint(value: MathNode): boolean {
+	return (
+		getVariables(value).size === 0 &&
+		findNodes(value, isNumber).every((n) => /^-?\d+$/.test(n.value))
+	);
+}
+
+/**
+ * `tan(u) ≠ 0` sous-entend que `tan(u)` existe, comme `ln(x) ≠ 0` que `ln x`
+ * existe : `cos(u) ≠ 0` n'est pas redit (§ 5, Q11).
+ */
+function withoutImpliedCosine(conditions: readonly TidyCondition[]): TidyCondition[] {
+	const tangents = new Set(
+		conditions.flatMap((c) =>
+			c.relation === 'nonzero' &&
+			c.expression.type === 'function' &&
+			c.expression.name === 'tan' &&
+			c.expression.args.length === 1
+				? [hashMathNode(canonical(c.expression.args[0]))]
+				: []
+		)
+	);
+	if (tangents.size === 0) return [...conditions];
+	return conditions.filter(
+		(c) =>
+			!(
+				c.relation === 'nonzero' &&
+				c.expression.type === 'function' &&
+				c.expression.name === 'cos' &&
+				c.expression.args.length === 1 &&
+				tangents.has(hashMathNode(canonical(c.expression.args[0])))
+			)
+	);
+}
+
 /**
  * Les conditions écrites au plus simple pour la réponse `answer` : `u ≠ 0`
  * en points exclus quand on sait (`asPoints`), sans doublon.
@@ -362,6 +517,8 @@ export function plainConditions(
 	answer: MathNode,
 	typeCtx?: TypeContext
 ): TidyCondition[] {
+	const kept = withoutImpliedCosine(conditions);
+	if (kept.length < conditions.length) return mergeConditions(kept);
 	const domainOfAnswer = mergeConditions(domainConditions(answer, typeCtx, NOTHING_ACQUIRED));
 	const written = mergeConditions(
 		conditions.flatMap((condition) =>
@@ -414,8 +571,81 @@ function readable(text: string): string {
 	return text.replace(/-/g, '−');
 }
 
+/** `x − c`, c sans lettre (`x − √2`, écrit par `asPoints`) : la lettre et c. */
+function pointOf(expression: MathNode): { letter: string; point: MathNode } | null {
+	if (expression.type !== 'subtraction' || expression.left.type !== 'variable') return null;
+	if (getVariables(expression.right).size > 0) return null;
+	return { letter: expression.left.name, point: expression.right };
+}
+
+/** Un nombre exact dans une condition : `√2`, `(−1−√5)/2` en texte, `\dfrac` en LaTeX. */
+function writtenNumber(value: MathNode): ConditionText {
+	const fraction = mapNode(value, (n) =>
+		n.type === 'division' ? { ...n, displayStyle: 'fraction' as const } : n
+	);
+	return { text: readable(formatEndpointValue(value)), latex: toLatex(fraction) };
+}
+
+/** `x < a`, `x ≥ b`, `a < x ≤ b` : un intervalle aux bornes exactes ; `null` sinon. */
+function describeInterval(interval: Interval, letter: string): ConditionText | null {
+	const finite = (value: MathNode) => value.type !== 'infinity';
+	const { lower, upper } = interval;
+	for (const end of [lower, upper]) {
+		if (finite(end.value) && !isExactPoint(end.value)) return null;
+	}
+	const below = (open: boolean) =>
+		open ? { text: '<', latex: '<' } : { text: '≤', latex: '\\leq' };
+	const above = (open: boolean) =>
+		open ? { text: '>', latex: '>' } : { text: '≥', latex: '\\geq' };
+	if (finite(lower.value) && finite(upper.value)) {
+		const [a, b] = [writtenNumber(lower.value), writtenNumber(upper.value)];
+		const [l, u] = [below(lower.type === 'open'), below(upper.type === 'open')];
+		return {
+			text: `${a.text} ${l.text} ${letter} ${u.text} ${b.text}`,
+			latex: `${a.latex} ${l.latex} ${letter} ${u.latex} ${b.latex}`
+		};
+	}
+	if (finite(upper.value)) {
+		const [b, u] = [writtenNumber(upper.value), below(upper.type === 'open')];
+		return { text: `${letter} ${u.text} ${b.text}`, latex: `${letter} ${u.latex} ${b.latex}` };
+	}
+	if (finite(lower.value)) {
+		const [a, l] = [writtenNumber(lower.value), above(lower.type === 'open')];
+		return { text: `${letter} ${l.text} ${a.text}`, latex: `${letter} ${l.latex} ${a.latex}` };
+	}
+	return null;
+}
+
+/**
+ * `x² − 2 > 0` dit sur la lettre, d'après son ensemble (§ 5, L2) :
+ * « x < −√2 ou x > √2 », « −1 < x < 1 ». `null` : des points exclus, une
+ * borne approchée, une autre forme.
+ */
+function describeAsIntervals(condition: TidyCondition): ConditionText | null {
+	if (condition.relation === 'nonzero') return null;
+	const where = conditionSet(condition);
+	if (where === null || where.domain.kind !== 'interval_set') return null;
+	const { intervals, excludedPoints } = where.domain;
+	if (excludedPoints.length > 0 || intervals.length === 0 || intervals.length > 2) return null;
+	const pieces = intervals.map((interval) => describeInterval(interval, where.letter));
+	if (pieces.some((p) => p === null)) return null;
+	const written = pieces as ConditionText[];
+	return {
+		text: written.map((p) => p.text).join(' ou '),
+		latex: written.map((p) => p.latex).join('\text{ ou }')
+	};
+}
+
 /** Une condition écrite : sur la lettre si l'expression est affine, entière sinon. */
 function describe({ expression, relation }: TidyCondition): ConditionText {
+	const point = relation === 'nonzero' ? pointOf(expression) : null;
+	if (point !== null && affineRoot(expression) === null) {
+		const value = writtenNumber(point.point);
+		return {
+			text: `${point.letter} ≠ ${value.text}`,
+			latex: `${point.letter} \\neq ${value.latex}`
+		};
+	}
 	const affine = affineRoot(expression);
 	if (affine !== null) {
 		// Un coefficient négatif renverse l'inégalité : `1 − x > 0` → `x < 1`
@@ -435,7 +665,66 @@ function describe({ expression, relation }: TidyCondition): ConditionText {
 	};
 }
 
-/** Les conditions écrites, telles que `tidyWithConditions` les rend (déjà réunies). */
+/** `x ≥ a` (ou `>`) d'une lettre : la lettre, la borne, ouverte ou non ; `null` sinon. */
+function boundOf(
+	condition: TidyCondition
+): { letter: string; side: 'lower' | 'upper'; open: boolean; root: Rational } | null {
+	if (condition.relation === 'nonzero') return null;
+	const affine = affineRoot(condition.expression);
+	if (affine === null) return null;
+	return {
+		letter: affine.letter,
+		side: isNegative(affine.a) ? 'upper' : 'lower',
+		open: condition.relation === 'positive',
+		root: affine.root
+	};
+}
+
+/**
+ * Les conditions écrites, telles que `tidyWithConditions` les rend (déjà
+ * réunies). Une seule, non affine, se dit sur la lettre quand on sait
+ * (« x < −√2 ou x > √2 ») ; `x ≥ −1` et `x ≤ 1` se disent « −1 ≤ x ≤ 1 » ;
+ * les inégalités avant les points exclus (`−1 ≤ x ≤ 1 et x ≠ 0`).
+ */
 export function describeConditions(conditions: readonly TidyCondition[]): ConditionText[] {
-	return conditions.map(describe);
+	if (conditions.length === 1) {
+		const intervals = describeAsIntervals(conditions[0]);
+		if (intervals !== null) return [intervals];
+	}
+	const ordered = [
+		...conditions.filter((c) => c.relation !== 'nonzero'),
+		...conditions.filter((c) => c.relation === 'nonzero')
+	];
+	const written: ConditionText[] = [];
+	const used = new Set<TidyCondition>();
+	for (const condition of ordered) {
+		if (used.has(condition)) continue;
+		const bound = boundOf(condition);
+		const partner =
+			bound === null
+				? undefined
+				: ordered.find((other) => {
+						const b = boundOf(other);
+						return (
+							!used.has(other) && b !== null && b.letter === bound.letter && b.side !== bound.side
+						);
+					});
+		if (bound === null || partner === undefined) {
+			written.push(describe(condition));
+			used.add(condition);
+			continue;
+		}
+		const other = boundOf(partner)!;
+		const [low, high] = bound.side === 'lower' ? [bound, other] : [other, bound];
+		used.add(condition).add(partner);
+		const a = rationalToNode(low.root);
+		const b = rationalToNode(high.root);
+		const l = low.open ? { text: '<', latex: '<' } : { text: '≤', latex: '\\leq' };
+		const u = high.open ? { text: '<', latex: '<' } : { text: '≤', latex: '\\leq' };
+		written.push({
+			text: readable(`${toCustom(a)} ${l.text} ${bound.letter} ${u.text} ${toCustom(b)}`),
+			latex: `${toLatex(a)} ${l.latex} ${bound.letter} ${u.latex} ${toLatex(b)}`
+		});
+	}
+	return written;
 }

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1823._
+_Mis à jour le 2026-10-26, PR A des limites en cours._
 
-- **État** : #1807, #1811, #1815, #1817, #1819, #1823 MERGÉES (pas en prod). § 4.1, 4.2, 4.3 faits ; #1823 = `e^{ln a}` refusé pour a ≤ 0 (`normalize` et équivalence compris), `exp-n-ln` élargi, conditions écrites au plus simple (`x ≠ −1 et x ≠ 1`, `x ≠ 1`).
-- **Prochaine action** (David, 2026-10-26 : « on va corriger les limites dans une nouvelle session ») : phase 0 des limites — (1) plusieurs lettres, rétrécissement refusé (`ln(xy) → ln x + ln y`) ; (2) points irrationnels non écrits (`x² − 2 ≠ 0` → `x ≠ ±√2`) ; (3) `e^{2 ln 3}` et 9 de formes normales différentes ; (4) restes de #1815 et #1817 (Pièges). Comportements en français d'abord, attendre la validation.
-- **En attente de David** : validation de la phase 0 des limites ; essai des vérifs #1807 et #1811 (inchangé).
-- **Pièges en cours** : plusieurs lettres : rétrécissement refusé ; points irrationnels non écrits (`x² − 2`) ; `e^{2 ln 3}` et 9 de formes normales différentes (équivalents) ; restes de #1815 (termes gardés non regroupés, `tan` gèle le terme) et de #1817 (`arctan(x)−1 ≠ 0`, `cos(x)/cos(x) dans ]0;1[`, `arcsin`, `avec x ≥ e`).
-- **Worktree / branche** : retirés après #1823.
+- **État** : #1807→#1823 MERGÉES (pas en prod). § 5 (limites) : recos validées par David (« je te suis »). PR A (L1 + L2 + L3 + L4) codée sur `fix/conditions-ecriture`.
+- **Prochaine action** : finir la PR A (suite de tests, doc, revue Opus, CI, merge), puis PR B (L5, plusieurs lettres), puis PR C (L6, `e^{k ln a}` dans `normalize`).
+- **En attente de David** : Q14 (`√2 + x` : ordre de `tidy`, voir § 5) ; essai des vérifs #1807 et #1811 (inchangé).
+- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` restent sans condition écrivable ; points sans écriture exacte (`x³ − 2`) : condition entière.
+- **Worktree / branche** : `../ubumaths-wt-tidy-conditions`, `fix/conditions-ecriture`.
 
 ## Contexte
 
@@ -163,9 +163,18 @@ Sondes (Atelier `runInput`, `normalize`, tests jetables supprimés).
 
 ### Questions à David
 
+- **Décisions de David (2026-10-26, « je te suis »)** : recos Q10 à Q13 validées — L6 se fait, « pour tan(x) ≠ 0 », `1/(1/x)` ×2 laissé, trois PR (A, B, C).
 - **Q10 — L6** : reco le faire (petit, protège l'équivalence), ou le laisser puisque rien ne se voit.
 - **Q11 — L3, `tan`** : reco « pour tan(x) ≠ 0 » ; autre : « pour x ≠ kπ/2 » (exact, plus dur à lire au lycée).
 - **Q12 — `1/(1/x)` ×2** : reco laisser.
 - **Q13 — découpage** : reco PR A = L1 + L2 + L3 + L4 (écriture et lecture des conditions), PR B = L5, PR C = L6.
+- **Q14 — `√2 + x` (trouvé en PR A, à trancher)** : `tidy` compte `√2` comme un facteur de degré 1 (`order.ts`, `termDegree`), d'où `√2 + x` ; un témoin fixe `tidy(x+√2+1) = √2 + x + 1`. Le corriger (degré des seules lettres) change 22 tests de rangement (`ln 3 − ln 2 + 1`, `i − 2`, grandeurs…) : règle d'affichage globale, pas changée en passant.
+
+### PR A (`fix/conditions-ecriture`)
+
+- L1 : `withDomainMode` (`calcul.ts`) ne bascule plus une ligne sous hypothèse.
+- L2 : `asPoints` accepte des points exacts (`isExactPoint` : sans lettre, nombres entiers), `describe` écrit `x ≠ √2` (`pointOf`, `writtenNumber`), une condition seule non affine se dit en intervalles (`describeAsIntervals` : « x < −√2 ou x > √2 », « −1 < x < 1 »), `x ≥ −1` et `x ≤ 1` en « −1 ≤ x ≤ 1 », inégalités avant les points exclus.
+- L3 : `sign.ts` : `tan u` → `cos u ≠ 0`, `arcsin u` / `arccos u` → `u + 1 ≥ 0`, `1 − u ≥ 0` ; `conditionSet` résout `f(u) − c ≠ 0` pour arctan / arcsin / arccos (`inverseCircularZero`) et `x − c ≠ 0` ; `plainConditions` ne redit pas `cos u ≠ 0` à côté de `tan u ≠ 0`.
+- L4 : `LETTER` (`hypotheses.ts`) ne compte plus `e` ; `avoidsPeriodicPoints` : une famille π/2 + kπ est garantie sur des intervalles bornés qui n'en contiennent aucun point (borne ouverte comprise).
 
 ## Historique

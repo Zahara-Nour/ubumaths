@@ -22,6 +22,7 @@
 import type { MathNode } from '$lib/mathAST/types';
 import type { Domain } from '$lib/mathAST/domain/types';
 import {
+	avoidsPeriodicPoints,
 	conditionSet,
 	describeConditions,
 	isIncluded,
@@ -59,8 +60,11 @@ export type HypothesesReading =
 /** Le premier `avec` ou `dans`, mot entier, après l'expression. */
 const KEYWORD = /\s(avec|dans)\s/i;
 
-/** Une lettre de condition : `x`, `y`, pas les mots `et` / `ou`. */
-const LETTER = /(?<![A-Za-z])[A-Za-z](?![A-Za-z])/g;
+/**
+ * Une lettre de condition : `x`, `y`, pas les mots `et` / `ou`, ni `e`, la
+ * constante d'Euler (`avec x ≥ e`, § 5).
+ */
+const LETTER = /(?<![A-Za-z])[A-DF-Za-df-z](?![A-Za-z])/g;
 
 const AVEC_EXAMPLE = 'avec x > 0, avec x ≠ 0 et x ≠ 1, avec 0 < x ≤ 5';
 const DANS_EXAMPLE = 'dans ]0;+∞[, dans ℝ \\ {0}, dans ]0;+∞[ ∩ ]-∞;5]';
@@ -139,7 +143,12 @@ export function readHypotheses(
 /** L'hypothèse garantit-elle la condition ? Prudent : `false` si on ne sait pas. */
 export function guarantees(hypotheses: Hypotheses, condition: TidyCondition): boolean {
 	const where = conditionSet(condition);
-	if (where === null) return false;
+	if (where === null) {
+		// `cos(x) ≠ 0` sur un intervalle borné : les points π/2 + kπ se comptent (§ 5, L4)
+		const [letter] = getVariables(condition.expression);
+		const assumed = letter === undefined ? undefined : hypotheses.get(letter);
+		return assumed !== undefined && avoidsPeriodicPoints(condition, assumed);
+	}
 	const assumed = hypotheses.get(where.letter);
 	if (assumed === undefined) return false;
 	return isIncluded(assumed, where.domain);

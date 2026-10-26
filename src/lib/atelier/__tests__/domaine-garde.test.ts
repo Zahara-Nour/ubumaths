@@ -111,8 +111,9 @@ describe('le domaine ne change pas : la simplification a lieu, sans bouton', () 
 });
 
 describe('une condition qu’on ne sait pas écrire : pas de simplification, pas de bouton', () => {
-	it('.simplifier tan(x)/tan(x)', () => {
-		const result = line('.simplifier tan(x)/tan(x)');
+	// `tan` s'écrit depuis le § 5 (L3) : `cot` reste sans condition écrivable
+	it('.simplifier cot(x)/cot(x)', () => {
+		const result = line('.simplifier cot(x)/cot(x)');
 		expect(flat(result.latex)).not.toBe('1');
 		expect(result.alternative).toBeUndefined();
 	});

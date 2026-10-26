@@ -441,3 +441,96 @@ describe('revue du 2026-10-26', () => {
 		expect(line('(x^2-1)/(x+1) avec x ≠ -1').note).toContain('.simplifier');
 	});
 });
+
+describe('les limites, PR A (§ 5, David 2026-10-26)', () => {
+	it.each(['cos(x)/cos(x) dans ]0;2[', '.simplifier cos(x)/cos(x) avec x > 0'])(
+		'L1 — %s, mode conditions : la ligne garde l’écriture, comme la note le dit',
+		(input) => {
+			const result = line(input, 'conditions');
+			expect(flat(result.latex)).toContain('\\cos');
+			expect(result.alternative?.label).toBe('Simplifier pour cos(x) ≠ 0');
+		}
+	);
+
+	it.each([
+		['.simplifier (x^2-2)/(x^2-2)', 'x ≠ −√2 et x ≠ √2', 'avec x ≠ −√2 et x ≠ √2'],
+		['.simplifier (x^2-2)/(x-sqrt(2))', 'x ≠ √2', 'avec x ≠ √2'],
+		['.simplifier ln(x^2-2)-ln(x^2-2)', 'x < −√2 ou x > √2', 'avec x < −√2 ou x > √2'],
+		['.simplifier ln(x^2-1)-ln(x^2-1)', 'x < −1 ou x > 1', 'avec x < −1 ou x > 1'],
+		['.simplifier sqrt(x^2-3)-sqrt(x^2-3)', 'x ≤ −√3 ou x ≥ √3', 'avec x ≤ −√3 ou x ≥ √3'],
+		[
+			'.simplifier (x^2+x-1)/(x^2+x-1)',
+			'x ≠ (−1−√5)/2 et x ≠ (−1+√5)/2',
+			'avec x ≠ (−1−√5)/2 et x ≠ (−1+√5)/2'
+		]
+	])('L2 — %s : « pour %s », la note propose « %s »', (input, condition, avec) => {
+		const result = line(input);
+		expect(result.alternative?.label).toBe(`Simplifier pour ${condition}`);
+		expect(result.note).toContain(avec);
+		const typed = input.replace(/^\.simplifier /, '');
+		const copied = line(`.simplifier ${typed} ${avec}`);
+		expect(copied.alternative).toBeUndefined();
+	});
+
+	it('L2 — les points s’écrivent en LaTeX exact sur le bouton', () => {
+		const { alternative } = line('.simplifier (x^2+x-1)/(x^2+x-1)');
+		expect(flat(alternative?.latex)).toContain('\\sqrt{5}');
+		expect(flat(alternative?.latex)).not.toContain('sqrt(');
+	});
+
+	it('L2 — une racine sans écriture exacte : la condition reste entière', () => {
+		const { alternative } = line('.simplifier (x^3-2)/(x^3-2)');
+		expect(alternative?.label).toBe('Simplifier pour x^3−2 ≠ 0');
+	});
+
+	it.each([
+		['.simplifier (arctan(x)-1)/(arctan(x)-1)', 'x ≠ tan(1)'],
+		['.simplifier arcsin(x)/arcsin(x)', '−1 ≤ x ≤ 1 et x ≠ 0'],
+		['.simplifier tan(x)/tan(x)', 'tan(x) ≠ 0']
+	])('L3 — %s : « Simplifier pour %s »', (input, condition) => {
+		expect(line(input).alternative?.label).toBe(`Simplifier pour ${condition}`);
+	});
+
+	it.each([
+		['.simplifier (arctan(x)-1)/(arctan(x)-1) avec x ≠ tan(1)', '1'],
+		['.simplifier (arctan(x)-2)/(arctan(x)-2)', '1'],
+		['.simplifier tan(x)-tan(x) dans ]-1;1[', '0']
+	])('L3 — %s → %s', (input, answer) => {
+		expect(flat(line(input).latex)).toBe(answer);
+	});
+
+	it.each([
+		['.simplifier ln(1-x^2)-ln(1-x^2)', '−1 < x < 1'],
+		['.simplifier (x^4-5x^2+6)/(x^4-5x^2+6)', 'x ≠ −√3 et x ≠ −√2 et x ≠ √2 et x ≠ √3']
+	])('L2 — %s : « pour %s »', (input, condition) => {
+		expect(line(input).alternative?.label).toBe(`Simplifier pour ${condition}`);
+	});
+
+	it('L3 — arcsin : la note se recopie', () => {
+		const { note } = line('.simplifier arcsin(x)/arcsin(x)');
+		expect(note).toContain('avec −1 ≤ x ≤ 1 et x ≠ 0');
+		expect(flat(line('.simplifier arcsin(x)/arcsin(x) avec −1 ≤ x ≤ 1 et x ≠ 0').latex)).toBe('1');
+	});
+
+	it.each([
+		['.simplifier ln(x)-ln(x) avec x ≥ e', '0'],
+		['.simplifier ln(x)-ln(x) avec x > ln(2)', '0'],
+		['.simplifier ln(x)-ln(x) dans ]e;+∞[', '0'],
+		['.simplifier (x^2-2)/(x^2-2) dans ]√2;+∞[', '1'],
+		['.simplifier cos(x)/cos(x) avec 0 < x < 1', '1'],
+		['.simplifier cos(x)/cos(x) dans ]-π/2;π/2[', '1'],
+		['.simplifier sin(x)/sin(x) dans ]0;π[', '1']
+	])('L4 — %s → %s', (input, answer) => {
+		expect(flat(line(input).latex)).toBe(answer);
+	});
+
+	it.each([
+		'.simplifier cos(x)/cos(x) dans ]-π/2;π/2]',
+		'.simplifier sin(x)/sin(x) dans [0;π[',
+		'.simplifier ln(x)-ln(x) avec x ≥ -e'
+	])('L4 — %s : un point exclu au bord, rien ne se simplifie', (input) => {
+		const latex = flat(line(input).latex);
+		expect(latex).not.toBe('1');
+		expect(latex).not.toBe('0');
+	});
+});
