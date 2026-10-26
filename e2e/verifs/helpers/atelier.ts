@@ -200,3 +200,47 @@ export async function typeInCard(page: Page, name: string, ...keys: string[]): P
 	}
 	await page.keyboard.press('Enter');
 }
+
+/** Le champ de la console en « Écriture mathématique » (MathLive) */
+export function mathConsole(page: Page): Locator {
+	return page.locator('math-field[aria-label="Calcul, définition ou commande"]');
+}
+
+/** Ouvre la fenêtre « Réglages » de la barre du haut */
+export async function openSettings(page: Page): Promise<Locator> {
+	await page.getByRole('button', { name: 'Réglages', exact: true }).click();
+	const dialog = page.getByRole('dialog', { name: 'Réglages de l’atelier' });
+	await expect(dialog).toBeVisible();
+	return dialog;
+}
+
+/** Choisit un réglage (bouton radio) puis ferme la fenêtre */
+export async function chooseSetting(page: Page, label: string): Promise<void> {
+	const dialog = await openSettings(page);
+	await dialog.getByRole('radio', { name: label }).click();
+	await expect(dialog.getByRole('radio', { name: label })).toBeChecked();
+	await page.keyboard.press('Escape');
+	await expect(dialog).toBeHidden();
+}
+
+/** Le LaTeX du champ mathématique */
+export async function mathValue(field: Locator): Promise<string> {
+	return field.evaluate((element) => (element as HTMLElement & { value: string }).value);
+}
+
+/** Met le focus dans le champ d'une carte et le remplace par `keys`, SANS Entrée */
+export async function retypeCard(page: Page, name: string, keys: string): Promise<void> {
+	await focusCardField(page, name);
+	// MathLive peut perdre le premier geste : on vide jusqu'à ce que le champ le soit
+	await expect(async () => {
+		await page.keyboard.press('ControlOrMeta+A');
+		await page.keyboard.press('Backspace');
+		expect(await fieldValue(page, name)).toBe('');
+	}).toPass();
+	await page.keyboard.type(keys);
+}
+
+/** Le LaTeX que montre le champ d'une carte */
+export async function fieldValue(page: Page, name: string): Promise<string> {
+	return normalizeLatex(await mathValue(cardLocator(page, name).locator('math-field')));
+}

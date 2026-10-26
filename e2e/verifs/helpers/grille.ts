@@ -135,3 +135,11 @@ export async function hintWhileTyping(page: Page, address: string, text: string)
 	await bar(page).press('Escape');
 	return shown;
 }
+
+/** Nomme une colonne (« nommer » sous sa lettre) */
+export async function nameColumn(page: Page, letter: string, name: string): Promise<void> {
+	await page.getByRole('button', { name: `Nommer la colonne ${letter}` }).click();
+	const field = page.getByLabel(`Nom de la liste de la colonne ${letter}`);
+	await field.fill(name);
+	await field.press('Enter');
+}
