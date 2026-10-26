@@ -589,6 +589,39 @@ describe('coller et copier (§4)', () => {
 		expect(container.querySelector('.valeur-exacte')?.textContent).toContain('Valeur exacte');
 	});
 
+	// La grille ne saute pas quand la ligne sous la barre change (verifs-auto, lot 6) :
+	// sinon, pendant un clic, la case sous le pointeur enfoncé change et la zone s'étend
+	it('la grille reste en place, quoi que dise la ligne sous la barre', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([
+			{ column: 0, row: 1, text: '=sqrt(8)' },
+			{ column: 0, row: 2, text: '5' },
+			{ column: 0, row: 3, text: '=1/123456789+1/7' },
+			{ column: 0, row: 4, text: '=k*2' },
+			{ column: 0, row: 5, text: '=A9+1' }
+		]);
+		const { container } = await openData(atelier);
+		const gridTop = () => cellAt(container, 'A1')!.getBoundingClientRect().top;
+
+		await userEvent.click(cellAt(container, 'A2')!);
+		await settle();
+		// Rien à dire sous la barre : la position de référence
+		expect(container.querySelector('.valeur-exacte')).toBeNull();
+		const top = gridTop();
+		// Valeur exacte (racine, grande fraction), message d'erreur, case vide citée
+		for (const cell of ['A1', 'A3', 'A4', 'A5', 'A2']) {
+			await userEvent.click(cellAt(container, cell)!);
+			await settle();
+			expect(gridTop(), cell).toBe(top);
+		}
+		// L'aide d'une fonction pendant la frappe
+		await userEvent.click(cellAt(container, 'A6')!);
+		await userEvent.keyboard('=MOYENNE(A1');
+		await settle();
+		expect(container.querySelector('.aide-formule')).not.toBeNull();
+		expect(gridTop(), 'aide').toBe(top);
+	});
+
 	it('une valeur exacte déjà écrite dans la case : pas de « Valeur exacte » en double', async () => {
 		const atelier = new Atelier();
 		atelier.editCells([

@@ -437,6 +437,10 @@ export function actionsFor(
 		if (action.id === 'plot' && object.plotted) {
 			action = { ...action, label: 'Retirer du graphe' };
 		}
+		// Le nom de la fonction de la carte : « Résoudre k(x) = 0 », pas f(x)
+		if (action.id === 'solve') {
+			action = { ...action, label: `Résoudre ${displayName(object.name)}(x) = 0` };
+		}
 		const shownInFigure = action.id === 'figure' && isFunction(object) && object.inFigure === true;
 		if (shownInFigure) action = { ...action, label: 'Retirer de Géométrie' };
 		// Même bascule pour le diagramme d'une liste (vue Données, Q36) : le bouton
