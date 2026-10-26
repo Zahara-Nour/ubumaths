@@ -58,7 +58,8 @@
 	 */
 	export async function share() {
 		if (busy) return;
-		if (atelier.objects.length === 0) {
+		// Une grille seule se partage aussi : le lien l'emporte
+		if (atelier.isBlank) {
 			message = 'Ton atelier est vide : il n’y a rien à partager.';
 			link = null;
 			return;

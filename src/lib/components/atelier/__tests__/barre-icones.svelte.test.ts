@@ -195,6 +195,18 @@ describe('la barre d’icônes', () => {
 		expect(tool(container, 'Charger un atelier')?.getAttribute('aria-disabled')).toBeNull();
 	});
 
+	// Écart du lot 9 de verifs-auto (2026-10-26) : Partager ne comptait que les objets,
+	// une grille seule était « vide » ; le lien emporte pourtant la grille
+	it('une grille seule : Partager disponible, comme Repartir de zéro et Enregistrer', async () => {
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 1, row: 1, text: '5' }]);
+		const { container } = await render(AtelierContainer, { atelier });
+
+		for (const name of ['Repartir de zéro', 'Enregistrer l’atelier', 'Partager']) {
+			expect(tool(container, name)?.getAttribute('aria-disabled'), name).toBeNull();
+		}
+	});
+
 	it('des lignes de console seules : rien à vider, mais de quoi enregistrer', async () => {
 		saveCalcHistory(localStorage, [{ id: 0, label: '2+3', text: '5', failed: false }], ['2+3']);
 		const { container } = await render(AtelierContainer, { atelier: new Atelier() });
@@ -323,6 +335,11 @@ describe('charger', () => {
 		await vi.waitFor(() =>
 			expect(document.body.textContent).toContain('Charger remplace l’atelier actuel')
 		);
+		// La console n'est pas remplacée (2026-10-19) : la confirmation ne dit plus
+		// « l'historique effacé » (écart du lot 9 de verifs-auto)
+		expect(document.body.textContent).toContain('Ton objet sera remplacé.');
+		expect(document.body.textContent).toContain('La console garde ses lignes');
+		expect(document.body.textContent).not.toContain('historique effacé');
 		expect(atelier.names).toEqual(['g']);
 
 		const confirm = dialogButton('Charger');

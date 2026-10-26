@@ -255,7 +255,23 @@ class PythonPlaygroundStore {
 	// ===========================================================================
 
 	/** Python code in the editor */
-	code = $state(DEFAULT_CODE);
+	#code = $state(DEFAULT_CODE);
+
+	/**
+	 * Le code de l'éditeur. L'éditeur l'écrit par `bind:value`, sans `setCode` :
+	 * chaque écriture range un BROUILLON dans le navigateur (après un court
+	 * délai), sans le marquer enregistré — sinon le code tapé se perdait au
+	 * rechargement, et `/python` ouvert depuis l'atelier ne savait pas qu'il y
+	 * avait du code à garder (écart du lot 9 de verifs-auto, 2026-10-26).
+	 */
+	get code(): string {
+		return this.#code;
+	}
+
+	set code(value: string) {
+		this.#code = value;
+		this.scheduleDraft();
+	}
 
 	/** Whether to show pedagogic (user-friendly) error messages */
 	showPedagogicErrors = $state(true);
@@ -288,6 +304,9 @@ class PythonPlaygroundStore {
 
 	/** Timeout for debounced save */
 	private saveTimeout: ReturnType<typeof setTimeout> | null = null;
+
+	/** Délai avant de ranger le brouillon de l'éditeur */
+	private draftTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	/** Last saved code for tracking modifications */
 	private _lastSavedCode = $state(DEFAULT_CODE);
@@ -349,6 +368,7 @@ class PythonPlaygroundStore {
 		this._executor.destroy();
 
 		// Clean up store-specific resources
+		this.cancelDraft();
 		if (this.saveTimeout) {
 			clearTimeout(this.saveTimeout);
 			this.saveTimeout = null;
@@ -504,6 +524,7 @@ class PythonPlaygroundStore {
 	 */
 	saveCode(): boolean {
 		if (!browser) return false;
+		this.cancelDraft();
 
 		try {
 			// Clear existing debounce timeout
@@ -940,12 +961,44 @@ class PythonPlaygroundStore {
 	}
 
 	/**
+	 * Ranger le brouillon de l'éditeur dans le navigateur, après le délai, SANS
+	 * toucher `_lastSavedCode` : `isModified` garde son sens (code non enregistré).
+	 */
+	private scheduleDraft(): void {
+		if (!browser) return;
+		this.cancelDraft();
+		this.draftTimeout = setTimeout(() => {
+			this.draftTimeout = null;
+			try {
+				const serialized: SerializedPlaygroundState = {
+					code: this.code,
+					showPedagogicErrors: this.showPedagogicErrors,
+					fontSize: this.fontSize,
+					editorTheme: this.editorTheme
+				};
+				localStorage.setItem(STORAGE_KEY, JSON.stringify(serialized));
+			} catch (error) {
+				console.error('Failed to save Python playground draft to localStorage:', error);
+			}
+		}, STORAGE_SAVE_DEBOUNCE_MS);
+	}
+
+	private cancelDraft(): void {
+		if (this.draftTimeout) {
+			clearTimeout(this.draftTimeout);
+			this.draftTimeout = null;
+		}
+	}
+
+	/**
 	 * Save state to localStorage with debounce.
 	 * Debounces writes to avoid excessive localStorage operations during typing.
 	 * For authenticated users, also syncs settings to database.
 	 */
 	private saveToStorage(): void {
 		if (!browser) return;
+		// Cette sauvegarde range aussi le code : le brouillon en attente est inutile
+		this.cancelDraft();
 
 		// Clear existing timeout
 		if (this.saveTimeout) {

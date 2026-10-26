@@ -978,6 +978,31 @@ describe('PythonPlaygroundStore', () => {
 	// ===========================================================================
 
 	describe('localStorage Persistence', () => {
+		// Écart du lot 9 de verifs-auto (2026-10-26) : l'éditeur écrit `code` par
+		// `bind:value`, sans `setCode` ; le code tapé n'était rangé qu'à Ctrl+S, perdu au
+		// rechargement, et « Remplacer ton code ? » ne se posait jamais
+		it('range dans le navigateur le code tapé dans l’éditeur (affecté directement)', async () => {
+			vi.useFakeTimers();
+
+			pythonStore.code = 'print(1)';
+
+			expect(localStorage.setItem).not.toHaveBeenCalled();
+			await vi.advanceTimersByTimeAsync(600);
+			expect(localStorage.setItem).toHaveBeenCalledWith(
+				'chiphre-python-playground',
+				expect.stringContaining('print(1)')
+			);
+		});
+
+		it('le brouillon rangé ne passe pas pour « enregistré » (isModified reste vrai)', async () => {
+			vi.useFakeTimers();
+
+			pythonStore.code = 'print(2)';
+			await vi.advanceTimersByTimeAsync(600);
+
+			expect(pythonStore.isModified).toBe(true);
+		});
+
 		it('should save state to localStorage with debounce', async () => {
 			vi.useFakeTimers();
 

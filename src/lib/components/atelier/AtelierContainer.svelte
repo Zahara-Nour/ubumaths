@@ -704,8 +704,11 @@
 	// svelte-ignore state_referenced_locally
 	const desk = new CalcDesk(atelier);
 
-	/** L'atelier est-il vide ? Des lignes de Calcul seules suffisent à ne pas l'être. */
-	const isEmpty = $derived(atelier.objects.length === 0 && desk.entries.length === 0);
+	/**
+	 * Rien à enregistrer ? Des lignes de Calcul seules suffisent à ne pas l'être, une
+	 * grille seule aussi (écart du lot 9 de verifs-auto : seuls les objets comptaient).
+	 */
+	const isEmpty = $derived(atelier.isBlank && desk.entries.length === 0);
 	/** Rien que « Repartir de zéro » puisse vider : la console n'en est plus (2026-10-19). */
 	const nothingToReset = $derived(atelier.isBlank);
 
@@ -1219,7 +1222,7 @@
 					<ToolButton
 						label="Partager"
 						icon={Share2}
-						disabledReason={atelier.objects.length === 0
+						disabledReason={atelier.isBlank
 							? 'Ton atelier est vide : il n’y a rien à partager.'
 							: null}
 						onclick={() => shareBar?.share()}
@@ -1246,7 +1249,9 @@
 		<ConfirmDialog
 			bind:open={confirmLoad}
 			title="Charger cet atelier ?"
-			description="Charger remplace l’atelier actuel : {replayLoss()}{loadSetsAside()
+			description="Charger remplace l’atelier actuel : {replacementLoss(
+				atelier.serialize()
+			)} La console garde ses lignes ; celles du fichier s’ajoutent.{loadSetsAside()
 				? ` ${SET_ASIDE_REASSURANCE}`
 				: ''}"
 			confirmLabel="Charger"
