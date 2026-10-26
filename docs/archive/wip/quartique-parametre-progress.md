@@ -2,13 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, PR ouverte._
+_Mis à jour le 2026-10-26 : chantier CLOS avec #1797, journal archivé dans la PR._
 
-- **État** : corrigé et testé ; PR en revue (`code-reviewer` opus), CI.
-- **Prochaine action** : traiter la revue, merger, archiver ce journal (chantier d'une PR).
-- **En attente de David** : rien.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : `ubumaths-wt-quartique-parametre`, `fix/quartique-parametre`.
+- **État** : CLOS (une PR). Pas encore en prod.
+- **Prochaine action** : aucune ; les restes sont dans les points ouverts du README mathAST.
 
 ## 1. Constat (2026-10-26, David : « corrige le bug »)
 
