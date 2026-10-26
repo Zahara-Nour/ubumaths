@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1819._
+_Mis à jour le 2026-10-26, après #1823._
 
-- **État** : #1807, #1811, #1815, #1817, #1819 MERGÉES (pas en prod). #1819 = § 4.2 (`domainChanges` par ensembles) + restes des deux revues. Suite (« corrige les défauts », David) sur `fix/ln-negatif-et-conditions` : `e^{ln a}` refusé pour un nombre a ≤ 0 (`normalize` compris : équivalence), `exp-n-ln` lit `2·(2ln x)` et `−ln x`, exposants négatifs dans `signOfPower`, points exclus rationnels (`x ≠ −1 et x ≠ 1`).
-- **Prochaine action** : PR de `fix/ln-negatif-et-conditions`, CI, merge (revue Opus faite, finding corrigé).
-- **En attente de David** : essai des vérifs #1807 et #1811 (inchangé).
-- **Pièges en cours** : plusieurs lettres : rétrécissement refusé ; points irrationnels non écrits (`x² − 2`) ; `e^{2 ln 3}` et 9 de formes normales différentes (équivalents) ; restes de #1815 et #1817 (voir Historique).
-- **Worktree / branche** : `../ubumaths-wt-tidy-conditions`, `fix/ln-negatif-et-conditions`.
+- **État** : #1807, #1811, #1815, #1817, #1819, #1823 MERGÉES (pas en prod). § 4.1, 4.2, 4.3 faits ; #1823 = `e^{ln a}` refusé pour a ≤ 0 (`normalize` et équivalence compris), `exp-n-ln` élargi, conditions écrites au plus simple (`x ≠ −1 et x ≠ 1`, `x ≠ 1`).
+- **Prochaine action** : rien d'ouvert dans le plan ; à David de dire s'il reste quelque chose ou si le chantier se clôt (versement dans `docs/systeme/`, archivage du journal).
+- **En attente de David** : essai des vérifs #1807 et #1811 (inchangé) ; clôture du chantier.
+- **Pièges en cours** : plusieurs lettres : rétrécissement refusé ; points irrationnels non écrits (`x² − 2`) ; `e^{2 ln 3}` et 9 de formes normales différentes (équivalents) ; restes de #1815 (termes gardés non regroupés, `tan` gèle le terme) et de #1817 (`arctan(x)−1 ≠ 0`, `cos(x)/cos(x) dans ]0;1[`, `arcsin`, `avec x ≥ e`).
+- **Worktree / branche** : retirés après #1823.
 
 ## Contexte
 
