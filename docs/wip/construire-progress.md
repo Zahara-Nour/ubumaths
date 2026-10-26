@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1820._
+_Mis à jour le 2026-10-26, après #1825._
 
-- **État** : PR 1 collection (#1812) et PR 2 monnaie (#1820, `construire:` + `réserve:`) mergées, pas en prod ; vérifications manuelles notées. Le code du chantier est complet.
-- **Prochaine action** : modèles CP-002, CP-044, CP-071, CP-045 au chantier « questions » (brouillons jusqu'au `deploy:prod`) ; puis fin de chantier = versement (§ 3-6 → `docs/systeme/`, journal archivé), à faire quand David le dit.
-- **En attente de David** : vérifications manuelles #1812 et #1820 ; go pour clore le chantier ou y garder les modèles.
-- **Pièges en cours** : ```operation garde ses angles morts (ligne vide, non fermé, ordre indifférent ; et maintenant fence de fin en retrait / bloc dans un bloc de code, que le générateur refuse pour collection et monnaie depuis #1820) — à traiter à part, un modèle publié l'utilise ; test `vercel-maintenance` instable en CI (SIGPIPE 141 revenu malgré f997902ba, passé à la relance).
-- **Worktree / branche** : aucun (retiré après #1820).
+- **État** : PR 1 collection (#1812), PR 2 monnaie (#1820) et PR 3 copie corrigée (#1825 : plan verrouillé avec la construction de l'élève, sa valeur, une construction juste ; verso : construction juste) mergées, pas en prod ; vérifiées dans l'appli locale (admin@local.test, `/dashboard/admin/questions/<id>/preview`). Le code du chantier est complet.
+- **Prochaine action** : modèles CP-002, CP-044, CP-071, CP-045 au chantier « questions » (brouillons jusqu'au `deploy:prod`) ; puis fin de chantier = versement (§ 3-6 → `docs/systeme/`, journal archivé), quand David le dit.
+- **En attente de David** : vérifications manuelles #1812, #1820, #1825 (tablette, PDF) ; go pour clore le chantier ou y garder les modèles ; idée possible : garder la composition posée (pas seulement la valeur) pour que la copie montre les vrais gestes de l'élève.
+- **Pièges en cours** : ```operation garde ses angles morts (à traiter à part) ; `vercel-maintenance` instable en CI (SIGPIPE 141) ; un worktree doit avoir `.env` ET `.env.local` (sinon base distante) ; 3 brouillons « VERIF construire … (local) » en base locale.
+- **Worktree / branche** : aucun (retiré après #1825).
 
 ---
 
@@ -137,3 +137,5 @@ paquets` le matériel (clé existante). Le bloc porte sa réponse, comme ` ```op
 - 2026-10-26 : revue Opus de #1812 — corrigés : bloc délimité comme le parseur (ligne vide + clé), bloc non fermé et `orderIndependent` refusés, test au décor de la prod. Laissé : ```operation a les mêmes angles morts (ligne vide, non fermé, ordre indifférent), à traiter à part.
 - 2026-10-26 : PR 2 — `construire:` + `réserve:` dans ```monnaie (parseur, case généralisée `construire: 'collection' | 'monnaie'`, `MonnaieConstruire.svelte`, `MonnaieObjets.svelte` extrait, PDF) ; tests unitaires et générateur vérifiés rouges puis verts ; tests d'écran écrits avec le composant ; capture relue.
 - 2026-10-26 : revue Opus de la PR 2 — corrigés : case dont le bloc n'est pas lu à l'écran (fence de fin en retrait, bloc dans un bloc de code) refusée au générateur, pour les deux blocs ; `construire:`, `réserve:`, `case:` retirées du repérage des blocs non fermés (un paragraphe « Construire… » était avalé) et `case` de la liste des clés affichée ; test du parent lié (`bind:values`, harnais `FillBlanksBoundHarness.svelte`) qui garde la construction de l'élève. Tous vérifiés rouges sans le correctif.
+- 2026-10-26 : vérification locale (admin@local.test, `/dashboard/admin/questions/<id>/preview`) : jeu et jugement justes, mais la carte de correction rejouait le bloc (plan vide, réserve active). Correctif (PR 3) : ligne `build` du résultat attendu, `BuildAnswer.svelte` (plan verrouillé sans réserve, construction de l'élève, sa valeur, construction juste ; verso : construction juste seule), consigne seule au-dessus ; tests vérifiés rouges sans le correctif ; revérifié dans l'appli. Limite : seule la valeur est gardée, la construction de l'élève est redessinée « le moins d'objets ».
+- 2026-10-26 : revue Opus de la PR 3 : rien de bloquant ; corrigés : case à construire vide → « Tu n'as rien posé. » (propre à la case, pas « rien répondu » quand une autre case a sa réponse), plan après l'énoncé rempli, test du cas mêlé renforcé.

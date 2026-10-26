@@ -9,6 +9,7 @@
 	- solution `= 8` encadrée, énoncé rempli (solutions en vert), « Ta réponse : »
 	  (chaque case colorée selon son statut), QCM, remarques, attendu seul,
 	  « Tu n'as rien répondu. » ; case « figure » : la figure (`FigureAnswer`) ;
+	  case à construire : le plan verrouillé (`BuildAnswer`) ;
 	  figure de travail : en dernier, traits gris, sans verdict.
 
 	Le statut n'est jamais porté par la couleur seule : chaque ligne colorée a son
@@ -25,6 +26,7 @@
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import FigureAnswer from './FigureAnswer.svelte';
+	import BuildAnswer from './BuildAnswer.svelte';
 	import ChoiceCasesScope from './ChoiceCasesScope.svelte';
 	import ChoiceList from '$lib/components/markdown/nodes/ChoiceList.svelte';
 	import type {
@@ -172,6 +174,19 @@
 			<div class="space-y-1" data-kind="figure" data-status={line.status}>
 				<FigureAnswer source={line.source} answer={line.answer} status={line.status} />
 				<p class="flex justify-center">{@render statusTag(line.status)}</p>
+			</div>
+		{:else if line.kind === 'build'}
+			<!-- Case à construire : le plan dit tout (construction de l'élève, construction juste) -->
+			<div class="space-y-1" data-kind="build" data-status={line.status}>
+				<BuildAnswer
+					kind={line.buildKind}
+					source={line.source}
+					answer={line.answer}
+					status={line.status}
+				/>
+				{#if line.answer !== null}
+					<p class="flex justify-center">{@render statusTag(line.status)}</p>
+				{/if}
 			</div>
 		{:else if line.kind === 'work-figure'}
 			<!-- Figure de travail : jamais notée, après les réponses ; traits gris, aucun verdict -->

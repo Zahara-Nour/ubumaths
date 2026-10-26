@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1821._
+_Mis à jour le 2026-10-26, après #1824._
 
-- **État** : lots 1-8 mergés (#1773 → #1818), correctifs #1813 et #1821 (écarts du lot 8 : aide du parseur dans une carte, `\frac12\,m` lu comme une grandeur, #1356 récrite). Suite complète : rouges = `each_key_duplicate` seulement (#1674, #1703, #1620 en fin de test, #1307).
-- **Prochaine action** : lot 9 = cartes (lots 3, 4a, 4b), lecture graphique, Annuler / Rétablir (lot 5, #1530), barre d'icônes, Données (#1439, #1469, #1473, #1412), Grapheur (#1415-#1419), #1627, #1546, Python (#1697, #1746).
-- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : port 5179 pris par `construire` → 5181 ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; `e` = Euler, `n` réservé : prendre `k`, `s` ; MathLive perd la 1re frappe après rechargement ; un écart peut venir du GESTE du test (#1289 : `1/2`, →, ` m`) ; prettier réaligne le tableau → conflits au merge de `main` : rejouer ses lignes par script ; commitlint : pas de majuscule, pas de type `merge` ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #1821).
+- **État** : lots 1-9 mergés (#1773 → #1824), correctifs #1813 et #1821. Suite complète : 127 verts ; rouges = `each_key_duplicate` (#1674, #1703, #1620, #1307) et Q1 de #1697 (`/python` ne range le code tapé qu'à Ctrl+S).
+- **Prochaine action** : les écarts du lot 9 une fois tranchés par David (section « Lot 9 ») ; puis le reste de la liste : lignes « à l'œil » (page à cocher), lignes prof / élève (comptes locaux).
+- **En attente de David** : les 8 écarts du lot 9 — surtout `/python` qui ne range pas le code tapé, et Partager refusé pour une grille seule. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : prendre un port libre (5181 au lot 9) ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; MathLive perd la 1re frappe : `retypeCard` vide jusqu'à ce que le champ le soit ; un clic dans la console RANGE une carte en cours de frappe (preuve par Échap) ; un CSV / un collage se pose à la case CHOISIE ; prettier réaligne le tableau → rejouer ses lignes par script après rebase ; commitlint : pas de majuscule ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retiré après #1824).
 
 ## Phase 0 (validée le 2026-10-25)
 
@@ -100,6 +100,25 @@ Vu en passant : `n = 1` → « n est réservé » (variable des suites) ; `.expo
 3. **#1356** : ligne périmée, récrite : « Repartir de zéro » vide les cartes, la console garde ses lignes, après rechargement aussi.
 
 #1289, #1296, #1356 sortent de la liste.
+
+## Lot 9 — cartes, lecture graphique, barre d'icônes, Données, Grapheur, Python (2026-10-26)
+
+Lignes : cartes de fonction (lot 3, sans le toucher iPad), cartes valeur / suite / liste (lot 4a), cartes point et courbe (lot 4b, sans ce qui est passé dans Propriétés), lecture graphique (sans iPad ni thème sombre), barre d'icônes (sans Safari ni iPad), #1530, #1412, #1439 (sans VoiceOver), #1469 (sans la lisibilité des couleurs ni le téléphone), #1473 (fichiers fabriqués, sans iPad), #1415-#1419 (sans « plus de trait isolé »), #1627, #1546 (390 px émulés), #1697, #1746. Sortent : #1746, #1627, #1412, lot 4a, #1530. #1417 non traitée (coller dans un message, flèche au doigt : à la main).
+
+Outillage : `retypeCard` / `fieldValue` (vider le champ jusqu'à ce qu'il le soit, MathLive perd le premier geste) et `chooseSetting`, `mathConsole`, `mathValue` passent dans `helpers/atelier.ts` ; `nameColumn` dans `helpers/grille.ts` ; nouveaux `atelier-barre.spec.ts` (fichiers téléchargés puis rechoisis par la fenêtre du système) et `python.spec.ts` (un nouvel onglet = une nouvelle page du contexte). « Rien de rangé pendant la frappe » se prouve par Échap (la valeur d'avant revient) : un clic dans la console range la carte. Thème sombre : `emulateMedia` (ModeWatcher suit le système).
+
+Écarts (à David, rien changé côté appli) :
+
+1. **Bug probable, `/python`** : sans compte, le code tapé n'est rangé qu'à Ctrl+S (`bind:value={pythonStore.code}` ne passe pas par `setCode`, donc pas de `saveToStorage`). Perdu au rechargement, et Q1 de #1697 (« Remplacer ton code ? ») ne se déclenche jamais avec du code tapé. Vérifié : après Ctrl+S, la question apparaît. Test Q1 rouge.
+2. **Bug probable, Partager** : un atelier qui n'a que la grille ne se partage pas (« Ton atelier est vide », `atelier.objects.length === 0`), alors que Repartir de zéro et Enregistrer comptent la grille. Les tests #1469 et #1439 posent une carte `k = 1` avant le lien.
+3. **Message faux** : « Charger cet atelier ? » dit « ton objet sera remplacé, et l'historique effacé » ; la console garde ses lignes (décision du 2026-10-19, testée).
+4. **Lot 4b, ligne périmée ?** : nature au bout, valeur en gris, équation de `d = (AB)`, ⋮ → Étiquette : passés dans Propriétés (5490181c2, 5c46e243c).
+5. **Lot 3, ligne périmée** : « Image d'un nombre » retirée du menu exprès (0a099ddb6).
+6. **#1530, ligne imprécise** : `X suit B(10;0,5)` est la réponse de la console ; tapé, il est refusé par « Il manque « ) » » (message trompeur). Le test tape `.binomiale X 10 0,5`.
+7. **#1439** : sur Mac, ⌘Y ne rétablit pas (le code lit `ctrlKey` seul) ; Ctrl+Y et ⌘⇧Z, oui.
+8. **Grapheur** : l'asymptote de `1/(ln(x)−1)` est étiquetée « x=2.718 » (point décimal ; « y = e », lui, est écrit « e »).
+
+Vu en passant : un CSV se pose à partir de la case choisie (« posées à partir de A1 » seulement si A1 l'est) ; des décimaux à point (Google Sheets) restent affichés « 2.25 » dans la case (calculés comme nombres) ; `.exporter` puis rejeu d'un historique qui contient un chargement : le rejeu s'arrête à la « rupture » sans le dire ; `u(0) = 3` tapé dans la console répond « false » (une comparaison), le premier terme se règle dans la carte ; une suite qui se cite elle-même ne passe pas en Explicite (refus avec sa raison).
 
 ## Plan d'ensemble
 

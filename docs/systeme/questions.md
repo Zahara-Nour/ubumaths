@@ -502,7 +502,15 @@ s'il n'y a pas d'énoncé rempli (la figure est la seule case), la consigne seul
 (`showsInstructionOnly`, `instructionOf`) : la figure n'apparaît qu'une fois, au verso de la `FlashCard`
 comme dans la copie corrigée, case « figure » mêlée à d'autres cases comprise.
 
-Figure de travail : une ligne `work-figure`, **après** toutes les autres (jamais parmi les réponses
+Case à construire (bloc `collection ou `monnaie, `construire:`) : une ligne `build` (genre, texte
+du bloc sans `case:`, valeur posée), sur le même patron que la figure. `BuildAnswer.svelte` dessine le
+plan **verrouillé, sans réserve** : la construction de l'élève (cadre vert si juste ; faux : « Tu as
+posé 32 €. » ou « Ta collection vaut 32. » et une construction juste à côté), ou la construction juste
+seule sans réponse (R9, verso de la flash-card) ou réponse vide (suivie de « Tu n'as rien posé. », propre à la case). Le plan vient après l'énoncé rempli (la figure, avant).
+Le bloc est retiré de l'énoncé (`withoutBuildCases`), la consigne seule au-dessus. Seule la valeur est
+gardée : la construction de l'élève est redessinée « le moins d'objets » (3 × 10 € deviennent 20 + 10 €).
+
+Figure de travail : une ligne `work-figure`, **après** toutes les autres, plan d'une case à construire compris (jamais parmi les réponses
 attendues ; `blankViews` l'ignore, `build` l'ajoute à la fin) : la figure de départ et les traits de
 l'élève en gris, sans verdict ni bonne droite (`FigureAnswer` avec `work`) ; « Ta figure de travail :
 aucun tracé. » sans tracé ; la figure de départ seule sans réponse (R9). Son bloc sort de l'énoncé

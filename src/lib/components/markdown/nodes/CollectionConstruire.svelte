@@ -58,10 +58,12 @@
 		/** Valeur à construire (`construire:`) */
 		build: number;
 		answer?: BuildCase;
+		/** false : plan seul, sans réserve (résultat attendu, copie corrigée) */
+		showReserve?: boolean;
 		class?: string;
 	}
 
-	let { spec, build: target, answer, class: className = '' }: Props = $props();
+	let { spec, build: target, answer, showReserve = true, class: className = '' }: Props = $props();
 
 	/** Hauteur minimale du plan (unités de la scène) : il ne saute pas au premier objet */
 	const PLAN_MIN_HEIGHT = 150;
@@ -178,18 +180,20 @@
 		<CollectionObjets items={scene.items} />
 	</svg>
 
-	<div class="construire-reserve flex flex-wrap items-center justify-center gap-3">
-		{@render reserveItem('tens', reserve.items[0])}
-		{@render reserveItem('units', reserve.items[1])}
-		<button
-			type="button"
-			class="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground disabled:opacity-40"
-			disabled={locked || value === 0}
-			onclick={() => update(EMPTY_BUILD)}
-		>
-			Tout enlever
-		</button>
-	</div>
+	{#if showReserve}
+		<div class="construire-reserve flex flex-wrap items-center justify-center gap-3">
+			{@render reserveItem('tens', reserve.items[0])}
+			{@render reserveItem('units', reserve.items[1])}
+			<button
+				type="button"
+				class="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground disabled:opacity-40"
+				disabled={locked || value === 0}
+				onclick={() => update(EMPTY_BUILD)}
+			>
+				Tout enlever
+			</button>
+		</div>
+	{/if}
 
 	{#if answer?.isCorrect != null}
 		<p class="sr-only" role="status">

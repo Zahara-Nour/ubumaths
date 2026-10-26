@@ -73,7 +73,7 @@
 	import Operation from '$lib/components/markdown/nodes/Operation.svelte';
 	import Collection from '$lib/components/markdown/nodes/Collection.svelte';
 	import Monnaie from '$lib/components/markdown/nodes/Monnaie.svelte';
-	import { solutionBuild as monnaieSolution } from '$lib/ubumark/utils/monnaie-construire';
+	import BuildAnswer from '$lib/components/questions/BuildAnswer.svelte';
 	import FigureBlock from '$lib/components/markdown/nodes/FigureBlock.svelte';
 	import ChoiceBlock from '$lib/components/markdown/nodes/ChoiceBlock.svelte';
 	import MultipleChoiceInput from './MultipleChoiceInput.svelte';
@@ -849,16 +849,7 @@
 				{@const state = inputStates[caseIndex]}
 				{#if showCorrectAnswers}
 					<!-- Bonne réponse : une construction juste (le moins d'objets), sans réserve -->
-					<Collection
-						node={{
-							...node,
-							spec: {
-								...node.spec,
-								build: undefined,
-								sets: [{ tens: Math.floor(node.spec.build / 10), units: node.spec.build % 10 }]
-							}
-						}}
-					/>
+					<BuildAnswer kind="collection" source={node.source} answer={null} status="solution" />
 				{:else}
 					<div data-construire-case={caseIndex}>
 						<Collection
@@ -878,19 +869,7 @@
 				{@const state = inputStates[caseIndex]}
 				{#if showCorrectAnswers}
 					<!-- Bonne réponse : une construction juste (le moins d'objets avec la réserve), sans réserve -->
-					<Monnaie
-						node={{
-							...node,
-							spec: {
-								...node.spec,
-								build: undefined,
-								reserve: undefined,
-								sets: [
-									monnaieSolution(node.spec.build, node.spec.reserve) ?? { notes: [], coins: [] }
-								]
-							}
-						}}
-					/>
+					<BuildAnswer kind="monnaie" source={node.source} answer={null} status="solution" />
 				{:else}
 					<div data-construire-case={caseIndex}>
 						<Monnaie
