@@ -546,7 +546,7 @@ Dans Chiphre, **la pataphysique est l'art de chercher en se trompant**. C'est-à
 - **Source** : Paul Bernard, dit Tristan Bernard (1866-1947, domaine public depuis 2018). Patanaute Yllustre direct de Chiphre, ami canonique d'Alphonse Allais, introducteur des mots croisés en France en 1924. Voir fiche détaillée dans le **Lexique Pataphysique des Chiphres**, Section X.
 - **Rôle UI dans Chiphre** : **troisième voix tutorale** complémentaire, réservée aux **moments calmes** où Ubu serait trop tonitruant et Prudhomme trop pompeux. Pages de méditation, écrans de récapitulatif post-exercice, transitions entre niveaux, écrans de doute après un échec, message du jour, réflexions personnelles.
 - **Tempérament** : Flegmatique-spirituel. Lucidité désabusée. Précision lexicale. Autodérision élégante. **Intelligence calme**, jamais agressive, jamais déclarative.
-- **Apparence** : Personnage Belle Époque français, costume sobre de la fin du XIXᵉ, lavallière, barbe taillée. Élégance ferme.
+- **Apparence** 🟡 (décision de David, 2026-10-26) : l'illustration n'est **pas un portrait** de Tristan Bernard (personne réelle ; Nano Banana refuse d'ailleurs de dessiner une personne publique) mais un **personnage inventé, « le Flegmatique »**, gentilhomme Belle Époque qui incarne son registre ; ses citations restent signées Tristan Bernard. Trapu, détendu (main dans la poche, poids sur une jambe), à l'opposé de la raideur de Prudhomme ; barbe sombre courte et taillée, paupières lourdes, yeux amusés et bienveillants, demi-sourire en coin. Costume sobre bleu encre, col blanc, lavallière vert émeraude, chapeau melon, journal plié sur une grille de mots croisés vide (il les a introduits en France). Pour un vrai portrait (page « À propos », Galerie des Patanautes Yllustres) : une caricature d'époque du domaine public, par exemple de Cappiello (mort en 1942), trouvée sur Gallica. Prompt d'illustration : Section XI, « Illustrations ».
 - **Tics de langage canon** : _« Il vaut mieux ne pas réfléchir du tout que de ne pas réfléchir assez »_, _« Il ne faut compter que sur soi-même. Et encore, pas beaucoup »_, _« Plus on rencontre des difficultés dans la vie, plus on a en soi de fierté et de contentement de soi-même »_, _« Jouer, c'est vivre. Car vivre, c'est espérer. »_
 - **Motivation** : Accompagner les Galopins dans les moments de doute. Désamorcer l'échec par l'humour calme. Encourager sans flatter.
 - **Quand il intervient** : écrans de progression après échec, récapitulatifs post-exercice, citations rotatives sur le splash screen, pages de méditation, transitions entre niveaux, message du jour calme.
@@ -2083,6 +2083,24 @@ Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre
 Colors: use only the colors of the attached palette image: navy ink for the outlines and the bow tie, dark chocolate brown for the frock coat, deep crimson for the waistcoat and the wax seal, white for the collar and the edict, marigold yellow for the watch chain and the pince-nez.
 
 Composition: Prudhomme standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
+```
+
+#### Prompt de référence — le Flegmatique (Tristan Bernard) 🟡
+
+Validé par David le 2026-10-26 (Nano Banana, avec en pièces jointes `nuancier-numerique-reference.png` et les images de référence de Père Ubu et de Monsieur Prudhomme). Ne jamais nommer Tristan Bernard dans le prompt ni demander de ressemblance : l'IA refuse les personnes publiques, et l'image est un personnage inventé qui porte sa voix.
+
+```text
+Draw an original fictional character, "the Phlegmatic Gentleman", a calm and witty Parisian writer of the Belle Époque, as a full-body character portrait in exactly the same drawing style as the attached characters.
+
+Character: a stocky, calm man in his forties with a relaxed, unhurried posture, very different from the stiff bourgeois in the attached images: one hand in his pocket, his weight on one leg. A short, neatly trimmed dark beard; heavy eyelids over amused, kind eyes; a slight half-smile at the corner of the mouth. He is phlegmatic, lucid and gently ironic: quiet intelligence, never loud, never mocking. A kind and reassuring presence, for students aged 11 to 17.
+
+Clothing: a sober late-19th-century suit in navy ink, a white shirt collar, a floppy lavallière bow tie in emerald green, a bowler hat. Under his arm, a folded newspaper showing an empty crossword grid with no letters in it.
+
+Style: 1896 Montmartre lithographic poster in the manner of Théophile-Alexandre Steinlen, same line and flat colors as the attached Père Ubu image. Bold thick dark contours, flat color areas, no gradients, no 3D, no shading beyond flat shadow shapes.
+
+Colors: use only the colors of the attached palette image: navy ink for the outlines, the suit, the hat and the beard, emerald green for the bow tie, white for the collar and the newspaper, marigold yellow for a small watch chain.
+
+Composition: the gentleman standing, three-quarter view, centered, plain flat cream parchment paper background, vertical 2:3 format. No text, no letters, no signature.
 ```
 
 ---
