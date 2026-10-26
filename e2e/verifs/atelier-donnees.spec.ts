@@ -493,12 +493,8 @@ async function chooseFormat(page: Page, format: string): Promise<void> {
 	await page.getByRole('option', { name: new RegExp(`^${format}`) }).click();
 }
 
-/**
- * Le lien de « Partager », lu dans sa fenêtre. Une grille seule ne se partage pas
- * (« Ton atelier est vide », écart signalé à David) : une carte `k = 1` est posée avant.
- */
+/** Le lien de « Partager », lu dans sa fenêtre (une grille seule se partage) */
 async function shareLink(page: Page): Promise<string> {
-	await calc(page, 'k = 1');
 	await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
 	await page.getByRole('button', { name: 'Partager', exact: true }).click();
 	const field = page.getByLabel('Lien de partage');

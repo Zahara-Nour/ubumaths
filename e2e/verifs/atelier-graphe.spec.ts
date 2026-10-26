@@ -207,11 +207,10 @@ test('#1415, #1416, #1418, #1419 — grapheur : pôles de tan, asymptotes y = 0,
 	// (1 + 1/x)^x : étiquette « y = e »
 	await grapheur(page, '\\left(1+\\frac{1}{x}\\right)^{x}', 0);
 	await expect.poll(() => asymptoteLabels(page)).toMatch(/y\s*=\s*e/);
-	// 1/(ln(x) − 1) dézoomé : asymptote x = e — étiquetée « x=2.718 » (écart signalé à
-	// David : ni « e » comme y = e, ni virgule décimale)
+	// 1/(ln(x) − 1) dézoomé : asymptote x = e
 	await grapheur(page, '\\frac{1}{\\ln(x)-1}', 3);
 	await expect.poll(() => verticalAsymptotes(page).count()).toBe(1);
-	await expect.poll(() => asymptoteLabels(page)).toMatch(/x\s*=\s*(e|2[.,]718)/);
+	await expect.poll(() => asymptoteLabels(page)).toMatch(/x\s*=\s*e(?![\d.,])/);
 });
 
 test('#1415, #1416, #1418, #1419 — Atelier : a = 1/3, (a x + 1)/(x² − a) se trace sans figer', async ({

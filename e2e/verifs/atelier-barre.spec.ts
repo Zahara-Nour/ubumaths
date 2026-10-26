@@ -187,14 +187,21 @@ test('#1530 — Repartir de zéro garde la console, Ctrl+Z après Charger, « An
 	const download = page.waitForEvent('download');
 	await toolButton(page, 'Enregistrer l’atelier').click();
 	await (await download).saveAs(saved);
-	// La loi se tape `.binomiale X 10 0,5` ; « X suit B(10 ; 0,5) » est ce que la console
-	// répond (tapé tel quel, il est refusé : « Il manque « ) » »)
+	// La loi se tape `.binomiale X 10 0,5` ; « X suit B(10 ; 0,5) », la réponse de la
+	// console, tapé tel quel dit la commande à taper (ligne récrite, 2026-10-26)
+	const copied = await calc(page, 'X suit B(10;0,5)');
+	expect(copied.refused).toBe(true);
+	expect(copied.text).toContain('tape .binomiale X 10 0,5');
 	await calc(page, '.binomiale X 10 0,5');
 	await openView(page, 'Géométrie');
 	await setConsole(page, false);
 	const axes = page.getByRole('checkbox', { name: 'Repère' });
 	await axes.uncheck();
 	await load(page, saved);
+	// La confirmation dit que la console garde ses lignes (plus « l'historique effacé »)
+	const confirmLoad = page.getByRole('dialog', { name: 'Charger cet atelier ?' });
+	await expect(confirmLoad).toContainText('La console garde ses lignes');
+	await expect(confirmLoad).not.toContainText('historique effacé');
 	await page.getByRole('button', { name: 'Charger', exact: true }).click();
 	await expect(toast(page, 'Atelier chargé.')).toBeVisible();
 	await page.locator('body').click({ position: { x: 5, y: 5 } });

@@ -267,7 +267,8 @@
 	/** Un historique relu : confirmer s'il y a de quoi perdre, sinon rejouer (R1, R2). */
 	function handleReplayRequest(history: ImportedHistory) {
 		pendingReplay = history;
-		if (atelier.objects.length > 0 || desk.entries.length > 0) confirmReplay = true;
+		// La grille compte aussi : le rejeu la vide (revue des écarts du lot 9)
+		if (!atelier.isBlank || desk.entries.length > 0) confirmReplay = true;
 		else replayNow();
 	}
 
@@ -289,9 +290,15 @@
 	/** Ce que le rejeu remplacera, en mots (R2). */
 	function replayLoss(): string {
 		const count = atelier.objects.length;
-		if (count === 0) return 'l’historique actuel sera effacé.';
+		// Une grille qui n'est QUE mise en forme ou titres compte aussi (`isBlank`)
+		const grid = !atelier.isBlank && atelier.serialize().grid !== undefined;
+		if (count === 0 && !grid) return 'l’historique actuel sera effacé.';
 		const objects =
-			count === 1 ? 'ton objet sera remplacé' : `tes ${count} objets seront remplacés`;
+			count === 0
+				? 'ta grille sera remplacée'
+				: `${count === 1 ? 'ton objet' : `tes ${count} objets`}${grid ? ' et ta grille' : ''} ${
+						count === 1 && !grid ? 'sera remplacé' : 'seront remplacés'
+					}`;
 		return `${objects}, et l’historique effacé. Un lien de partage déjà copié les garde.`;
 	}
 
@@ -713,8 +720,11 @@
 	// svelte-ignore state_referenced_locally
 	const desk = new CalcDesk(atelier);
 
-	/** L'atelier est-il vide ? Des lignes de Calcul seules suffisent à ne pas l'être. */
-	const isEmpty = $derived(atelier.objects.length === 0 && desk.entries.length === 0);
+	/**
+	 * Rien à enregistrer ? Des lignes de Calcul seules suffisent à ne pas l'être, une
+	 * grille seule aussi (écart du lot 9 de verifs-auto : seuls les objets comptaient).
+	 */
+	const isEmpty = $derived(atelier.isBlank && desk.entries.length === 0);
 	/** Rien que « Repartir de zéro » puisse vider : la console n'en est plus (2026-10-19). */
 	const nothingToReset = $derived(atelier.isBlank);
 
@@ -1263,7 +1273,7 @@
 					<ToolButton
 						label="Partager"
 						icon={Share2}
-						disabledReason={atelier.objects.length === 0
+						disabledReason={atelier.isBlank
 							? 'Ton atelier est vide : il n’y a rien à partager.'
 							: null}
 						onclick={() => shareBar?.share()}
@@ -1290,7 +1300,9 @@
 		<ConfirmDialog
 			bind:open={confirmLoad}
 			title="Charger cet atelier ?"
-			description="Charger remplace l’atelier actuel : {replayLoss()}{loadSetsAside()
+			description="Charger remplace l’atelier actuel : {replacementLoss(
+				atelier.serialize()
+			)} La console garde ses lignes ; celles du fichier s’ajoutent.{loadSetsAside()
 				? ` ${SET_ASIDE_REASSURANCE}`
 				: ''}"
 			confirmLabel="Charger"

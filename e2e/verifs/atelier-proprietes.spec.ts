@@ -135,3 +135,25 @@ test('#1630 — « Propriétés » d’un segment, d’une droite, d’un cercle
 	await expect(convert).toHaveAttribute('aria-disabled', 'true');
 	await expect(convert).toContainText('Cette action arrive dans un prochain lot.');
 });
+
+test('cartes point et courbe (lot 4b) — nature, valeur, équation, étiquette : dans « Propriétés »', async ({
+	page
+}) => {
+	// Ligne récrite (David, 2026-10-26) : la nature, la valeur d'une construction et
+	// l'équation ont quitté la carte pour le panneau (5490181c2), l'étiquette aussi
+	await calc(page, 'A = (1 ; 2)');
+	await calc(page, 'B = (0 ; 2)');
+	await calc(page, 'I = milieu(A, B)');
+	const i = await properties(page, 'I');
+	expect(i['Coordonnées']).toBe(normalizeLatex('\\left(\\frac{1}{2};2\\right)'));
+	await expect(panel(page).locator('.ligne', { hasText: 'Nature' })).toContainText('milieu');
+	await expect(
+		panel(page).getByRole('checkbox', { name: 'Afficher l’étiquette de I' })
+	).toBeChecked();
+	await closeProperties(page, 'I');
+
+	await calc(page, 'd = (AB)');
+	const d = await properties(page, 'd');
+	expect(d['Équation réduite']).toBe('y=2');
+	await expect(panel(page).locator('.ligne', { hasText: 'Nature' })).toContainText('droite');
+});

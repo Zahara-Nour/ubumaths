@@ -137,6 +137,40 @@ export function plainTextOf(latex: string): string {
 		.trim();
 }
 
+/** Écart toléré pour reconnaître une constante dans une valeur calculée */
+const CONSTANT_TOLERANCE = 1e-6;
+
+/** Dénominateurs des multiples de π reconnus (les pôles de tan, de 1/sin…) */
+const PI_DENOMINATORS = [1, 2, 3, 4, 6];
+
+function nearly(value: number, target: number): boolean {
+	return Math.abs(value - target) <= CONSTANT_TOLERANCE * Math.max(1, Math.abs(target));
+}
+
+function gcd(a: number, b: number): number {
+	return b === 0 ? a : gcd(b, a % b);
+}
+
+/**
+ * Une valeur d'étiquette en LaTeX, écrite comme en classe : `e`, `\frac{\pi}{2}`,
+ * un entier, sinon 4 chiffres significatifs avec la virgule décimale (`2{,}5`).
+ * Écart du lot 9 de verifs-auto (2026-10-26) : `x=2.718` pour x = e.
+ */
+export function valueLatex(value: number): string {
+	if (nearly(value, Math.E)) return 'e';
+	if (nearly(value, -Math.E)) return '-e';
+	for (const denominator of PI_DENOMINATORS) {
+		const numerator = Math.round((value * denominator) / Math.PI);
+		if (numerator === 0 || !nearly(value, (numerator * Math.PI) / denominator)) continue;
+		const divisor = gcd(Math.abs(numerator), denominator);
+		const [top, bottom] = [numerator / divisor, denominator / divisor];
+		const sign = top < 0 ? '-' : '';
+		const times = Math.abs(top) === 1 ? '\\pi' : `${Math.abs(top)}\\pi`;
+		return bottom === 1 ? `${sign}${times}` : `${sign}\\frac{${times}}{${bottom}}`;
+	}
+	return String(Number(value.toPrecision(4))).replace('.', '{,}');
+}
+
 /** Un coefficient entier s'écrit sans décimale : `3`, pas `3.00`. */
 function formatCoefficient(value: number): string {
 	return Number.isInteger(value) ? String(value) : String(Number(value.toPrecision(3)));
@@ -226,8 +260,14 @@ export function placeAsymptoteLabels(
 			// cadre est un zéro, pas `x = -4,441e-17`.
 			const span = Math.abs(transformer.svgToMath(size.width, 0).x - transformer.svgToMath(0, 0).x);
 			const rounded = Math.abs(asymptote.x) < LABEL_RELATIVE_EPSILON * span ? 0 : asymptote.x;
-			const label = `x = ${Number(rounded.toPrecision(4))}`;
-			place(svgX + LABEL_MARGIN, LABEL_STACK + LABEL_MARGIN, label, label, analysis.functionId);
+			const label = `x = ${valueLatex(rounded)}`;
+			place(
+				svgX + LABEL_MARGIN,
+				LABEL_STACK + LABEL_MARGIN,
+				plainTextOf(label),
+				label,
+				analysis.functionId
+			);
 		}
 
 		for (const asymptote of analysis.horizontalAsymptotes) {
@@ -239,7 +279,7 @@ export function placeAsymptoteLabels(
 				transformer.svgToMath(0, 0).y - transformer.svgToMath(0, size.height).y
 			);
 			const level = Math.abs(asymptote.y) < LABEL_RELATIVE_EPSILON * height ? 0 : asymptote.y;
-			const label = asymptote.exactLatex ?? `y = ${Number(level.toPrecision(4))}`;
+			const label = asymptote.exactLatex ?? `y = ${valueLatex(level)}`;
 			place(
 				from + LABEL_MARGIN,
 				svgY - LABEL_MARGIN,

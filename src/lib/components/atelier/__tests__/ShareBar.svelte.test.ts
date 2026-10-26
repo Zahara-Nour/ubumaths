@@ -112,6 +112,21 @@ describe('recevoir', () => {
 		localStorage.removeItem(ATELIER_STORAGE_KEY);
 	});
 
+	it('une grille seule gardée : le message le dit (pas « rien à garder »)', async () => {
+		localStorage.removeItem(ATELIER_STORAGE_KEY);
+		const grid = new Atelier();
+		grid.editCells([{ column: 1, row: 1, text: '5' }]);
+		const { container } = await open({ received: grid.serialize() });
+
+		buttonNamed(container, 'Garder dans mon atelier')!.click();
+		await settle();
+
+		const said = container.querySelector('.retour-partage')?.textContent ?? '';
+		expect(said).toContain('grille ajoutée');
+		expect(said).not.toContain('rien à garder');
+		localStorage.removeItem(ATELIER_STORAGE_KEY);
+	});
+
 	it('dit sous quel nom, quand il a fallu renommer', async () => {
 		const personal = new Atelier();
 		personal.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');

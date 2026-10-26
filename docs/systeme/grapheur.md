@@ -18,7 +18,7 @@ couvre:
 
 > Synthèse des journaux archivés `docs/archive/wip/grapheur-*`, `suites-grapheur-progress.md`,
 > `dissoudre-doublons-grapheur-progress.md` et des chantiers couleurs. Vérifié contre le code le
-> 2026-10-15 (ordonnée exacte d'un extremum, 2026-10-24).
+> 2026-10-15 (ordonnée exacte d'un extremum, 2026-10-24 ; étiquettes d'asymptotes, 2026-10-26).
 
 ## À quoi ça sert
 
@@ -241,6 +241,12 @@ une fausse asymptote par échantillon (2026-10-15).
 Une asymptote unilatérale (`direction: 'left' | 'right'`) n'est tracée **que de son côté**
 (décision de David, 2026-09-15). Les intersections passent par `findRoots` de mathAST (exact puis
 dichotomie) : une tangence est trouvée, ce que l'ancien balayage par changement de signe ratait.
+
+Les **étiquettes** (`asymptote-labels.ts`) : une horizontale, oblique ou polynomiale garde son
+écriture exacte quand l'analyse la fournit (`exactLatex`, « y = e ») ; sinon, et pour toute
+verticale, `valueLatex` écrit l'abscisse ou l'ordonnée calculée comme en classe — `e`, un
+multiple simple de π (`x = \frac{\pi}{2}`, dénominateurs 1, 2, 3, 4, 6), un entier, sinon
+4 chiffres significatifs avec la **virgule** décimale (`2{,}5`). Avant le 2026-10-26 : `x=2.718`.
 
 ### Styles et couleurs du thème
 

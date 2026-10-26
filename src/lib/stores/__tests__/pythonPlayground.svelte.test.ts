@@ -978,6 +978,55 @@ describe('PythonPlaygroundStore', () => {
 	// ===========================================================================
 
 	describe('localStorage Persistence', () => {
+		// Écart du lot 9 de verifs-auto (2026-10-26) : l'éditeur écrit `code` par
+		// `bind:value`, sans `setCode` ; le code tapé n'était rangé qu'à Ctrl+S, perdu au
+		// rechargement, et « Remplacer ton code ? » ne se posait jamais
+		it('range dans le navigateur le code tapé dans l’éditeur (affecté directement)', async () => {
+			vi.useFakeTimers();
+
+			pythonStore.editorCode = 'print(1)';
+			expect(pythonStore.code).toBe('print(1)');
+
+			expect(localStorage.setItem).not.toHaveBeenCalled();
+			await vi.advanceTimersByTimeAsync(600);
+			expect(localStorage.setItem).toHaveBeenCalledWith(
+				'chiphre-python-playground',
+				expect.stringContaining('print(1)')
+			);
+		});
+
+		it('le brouillon rangé ne passe pas pour « enregistré » (isModified reste vrai)', async () => {
+			vi.useFakeTimers();
+
+			pythonStore.editorCode = 'print(2)';
+			await vi.advanceTimersByTimeAsync(600);
+
+			expect(pythonStore.isModified).toBe(true);
+		});
+
+		// Revue : seul l'éditeur range un brouillon ; un code CHARGÉ (exemple, fichier du
+		// cloud, adresse) n'écrase pas le code local, que la migration vers le cloud lit
+		it('un code chargé (exemple) ne range pas de brouillon', async () => {
+			vi.useFakeTimers();
+
+			pythonStore.loadExample('print("exemple")');
+			await vi.advanceTimersByTimeAsync(600);
+
+			expect(localStorage.setItem).not.toHaveBeenCalled();
+		});
+
+		it('destroy() range le brouillon en attente au lieu de le jeter', () => {
+			vi.useFakeTimers();
+
+			pythonStore.editorCode = 'print(4)';
+			pythonStore.destroy();
+
+			expect(localStorage.setItem).toHaveBeenCalledWith(
+				'chiphre-python-playground',
+				expect.stringContaining('print(4)')
+			);
+		});
+
 		it('should save state to localStorage with debounce', async () => {
 			vi.useFakeTimers();
 

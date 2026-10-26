@@ -202,7 +202,9 @@ continue après 1000) rend `beyond: true` au lieu d'annoncer un faux « plus gra
   `randomVariable`), `src/lib/atelier/simulate.ts` (`.simuler`, `.fréquence`, `.échantillons`),
   `src/lib/atelier/parse.ts` (`readListValue`), `src/lib/atelier/chart.ts`,
   `src/lib/atelier/compare.ts`, `src/lib/atelier/filter.ts`,
-  `src/lib/atelier/law-commands.ts`, `src/lib/components/atelier/DataView.svelte` (la grille :
+  `src/lib/atelier/law-commands.ts` (les commandes de lois ; `typedLawRefusal` : `X suit B(…)`
+  recopié de la console dit la commande à taper, 2026-10-26),
+  `src/lib/components/atelier/DataView.svelte` (la grille :
   aperçu des listes par `summarizeList` ; une case ordinaire se lit par `readListValue`, via
   `plainValue` de `src/lib/atelier/formula.ts`).
   Détails : [atelier.md](atelier.md).

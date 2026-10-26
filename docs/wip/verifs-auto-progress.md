@@ -120,6 +120,21 @@ Outillage : `retypeCard` / `fieldValue` (vider le champ jusqu'à ce qu'il le soi
 
 Vu en passant : un CSV se pose à partir de la case choisie (« posées à partir de A1 » seulement si A1 l'est) ; des décimaux à point (Google Sheets) restent affichés « 2.25 » dans la case (calculés comme nombres) ; `.exporter` puis rejeu d'un historique qui contient un chargement : le rejeu s'arrête à la « rupture » sans le dire ; `u(0) = 3` tapé dans la console répond « false » (une comparaison), le premier terme se règle dans la carte ; une suite qui se cite elle-même ne passe pas en Explicite (refus avec sa raison).
 
+## Écarts du lot 9 tranchés et corrigés (2026-10-26, David : « je suis tes recos »)
+
+1. **`/python`** : `code` devient un accesseur du store ; chaque écriture (dont `bind:value` de l'éditeur) range un BROUILLON dans le navigateur après 500 ms, sans toucher `_lastSavedCode` (`isModified` garde son sens pour « Charger un exemple »). Le code survit au rechargement, Q1 se pose : test Q1 vert, rechargement testé.
+2. **Partager / Enregistrer** : une grille seule n'est plus « vide » (`atelier.isBlank`, comme Repartir de zéro). Enregistrer avait le même défaut, corrigé avec. Le `k = 1` des tests #1469 et #1439 est retiré.
+3. **Confirmation de Charger** : « Ton objet sera remplacé. La console garde ses lignes ; celles du fichier s'ajoutent. » (`replacementLoss`, au lieu de la phrase du REJEU).
+4. **Lot 4b** : ligne récrite, testée dans `atelier-proprietes.spec.ts` (nature, coordonnées de `I = milieu(A, B)`, équation réduite de `d = (AB)`, étiquette) ; elle sort.
+5. **Lot 3** : « Image d'un nombre » retiré de la ligne.
+6. **`X suit B(10;0,5)` tapé** : la console dit la commande (`typedLawRefusal`, `law-commands.ts`) : `.binomiale X 10 0,5`, `.geometrique`, `.exponentielle` ; pour N, l'écart type et non la variance.
+7. **⌘Y** : laissé tel quel (⌘⇧Z sur Mac), ligne corrigée.
+8. **Étiquettes d'asymptotes** : `valueLatex` (`asymptote-labels.ts`) reconnaît e et les multiples simples de π (`x = \frac{\pi}{2}`), sinon 4 chiffres avec la virgule décimale (`2{,}5`), verticales comme horizontales numériques.
+
+#1697 et lot 4b sortent de la liste.
+
+Revue (`code-reviewer`) : le brouillon venait de TOUTE affectation de `code` (exemple, fichier du cloud : il écrasait le code local que lit la migration) → accesseur dédié `editorCode`, lié à l'éditeur ; `destroy()` range le brouillon au lieu de le jeter ; le rejeu d'un historique vidait une grille seule sans demander → confirmation sur `isBlank` ; « Garder » d'une grille seule disait « rien à garder » → `MergeReport.grid`. Noté, pas corrigé (d'avant la PR) : un `saveTimeout` de `saveToStorage` en attente marque « enregistré » un code tapé juste après (`_lastSavedCode`), et un réglage (taille, thème) aussi ; `B(10,0,5)` sans séparateur lisible donne un conseil faux (rare).
+
 ## Plan d'ensemble
 
 1. Pilote Atelier (~20 lignes) → puis le reste des ~126 lignes Atelier.

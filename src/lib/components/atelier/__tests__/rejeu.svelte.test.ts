@@ -103,6 +103,24 @@ describe('rejouer un historique', () => {
 		await vi.waitFor(() => expect(atelier.names).toEqual(['f']));
 	});
 
+	// Revue des écarts du lot 9 de verifs-auto (2026-10-26) : le rejeu vide aussi la
+	// grille, mais ne demandait que s'il y avait des objets ou des lignes
+	it('une grille seule : demande avant de la remplacer, et le dit', async () => {
+		localStorage.removeItem(KEY);
+		const atelier = new Atelier();
+		atelier.editCells([{ column: 1, row: 1, text: '5' }]);
+		const { container } = await render(AtelierContainer, { atelier });
+
+		await choose(
+			container,
+			historyFile((d) => d.submit('f(x)=x^2'))
+		);
+
+		await vi.waitFor(() => expect(document.body.textContent).toContain('ta grille sera remplacée'));
+		expect(atelier.names).toEqual([]);
+		expect(atelier.isBlank).toBe(false);
+	});
+
 	it('un fichier qui n’est ni un atelier ni un historique est refusé, rien ne change (E1)', async () => {
 		localStorage.removeItem(KEY);
 		const atelier = new Atelier();

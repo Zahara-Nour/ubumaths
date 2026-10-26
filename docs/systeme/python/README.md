@@ -115,7 +115,7 @@ REPL Python complet en navigateur avec éditeur CodeMirror, sortie multi-format,
 | Code reçu              | `?code=` aussi utilisé par « Ouvrir dans Python » de l'atelier ; si l'éditeur contient du code de l'élève, « Remplacer ton code ? » avant de charger           |
 | Vers l'atelier         | « Ouvrir dans l'atelier » : les listes affectées par le programme, copiées dans un atelier éphémère (`PythonToAtelier.svelte`, [components.md](components.md)) |
 | Modes                  | Plein écran, splitter redimensionnable (20-80%)                                                                                                                |
-| Persistance            | localStorage (anonyme) + DB JSONB (`profiles.python_settings`)                                                                                                 |
+| Persistance            | localStorage (anonyme ; le code tapé y est rangé à la frappe, en brouillon) + DB JSONB (`profiles.python_settings`)                                            |
 | Service Worker         | Cache Pyodide CDN après 1er chargement                                                                                                                         |
 
 ### Documentation détaillée

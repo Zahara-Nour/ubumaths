@@ -360,7 +360,7 @@
 			</div>
 			<div class="relative flex-1 overflow-hidden bg-background">
 				<PythonEditor
-					bind:value={pythonStore.code}
+					bind:value={pythonStore.editorCode}
 					errorLine={pythonStore.errorLine}
 					debugLine={debugStore.currentLine}
 					breakpoints={breakpointLines}
@@ -456,7 +456,7 @@
 			</div>
 			<div class="relative flex-1 overflow-hidden bg-background">
 				<PythonEditor
-					bind:value={pythonStore.code}
+					bind:value={pythonStore.editorCode}
 					errorLine={pythonStore.errorLine}
 					debugLine={debugStore.currentLine}
 					breakpoints={breakpointLines}

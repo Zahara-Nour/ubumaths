@@ -180,3 +180,44 @@ describe('couleur des étiquettes', () => {
 		expect(labels.map((l) => l.functionId).sort()).toEqual(['f', 'g']);
 	});
 });
+
+/**
+ * Écart du lot 9 de verifs-auto (2026-10-26) : `1/(ln(x) − 1)` posait « x=2.718 »
+ * (point décimal, et `e` non reconnu, alors que l'horizontale écrit « y = e »).
+ */
+describe('abscisse d’une asymptote verticale : constante reconnue, virgule décimale', () => {
+	function verticalLabel(x: number) {
+		const [label] = placeAsymptoteLabels(
+			analysisOf({ verticalAsymptotes: [{ x, functionId: 'f', behavior: 'both' }] }),
+			transformer,
+			SIZE
+		);
+		return { latex: label.latex, text: label.text };
+	}
+
+	it('x = e', () => {
+		expect(verticalLabel(Math.E)).toEqual({ latex: 'x = e', text: 'x = e' });
+	});
+
+	it('les pôles de tan : x = π/2, x = −3π/2', () => {
+		expect(verticalLabel(Math.PI / 2)).toEqual({ latex: 'x = \\frac{\\pi}{2}', text: 'x = π/2' });
+		expect(verticalLabel((-3 * Math.PI) / 2).latex).toBe('x = -\\frac{3\\pi}{2}');
+		expect(verticalLabel(Math.PI).latex).toBe('x = \\pi');
+	});
+
+	it('un entier reste entier, un décimal prend la virgule', () => {
+		expect(verticalLabel(3)).toEqual({ latex: 'x = 3', text: 'x = 3' });
+		expect(verticalLabel(2.5)).toEqual({ latex: 'x = 2{,}5', text: 'x = 2,5' });
+		expect(verticalLabel(-1.23456).text).toBe('x = -1,235');
+	});
+
+	it('une horizontale numérique prend la virgule aussi', () => {
+		const [label] = placeAsymptoteLabels(
+			analysisOf({ horizontalAsymptotes: [{ y: 0.5, functionId: 'f', direction: 'both' }] }),
+			transformer,
+			SIZE
+		);
+		expect(label.latex).toBe('y = 0{,}5');
+		expect(label.text).toBe('y = 0,5');
+	});
+});
