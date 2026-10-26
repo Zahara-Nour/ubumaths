@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, ouverture du chantier (aucune PR)._
+_Mis à jour le 2026-10-26, après #1846._
 
-- **État** : PR 1 codée (droite à placer, un point) : parseur, générateur, `NumberLinePlacer`, copie corrigée, catalogue, doc ; tests verts ; relecture `code-reviewer` (Opus) en cours ; PR pas encore ouverte.
-- **Prochaine action** : traiter la relecture, ouvrir la PR 1, CI, merge ; puis PR 2 (plusieurs points `placer: A=3 ; B=7`).
-- **En attente de David** : droite trop petite sur téléphone (limite du bloc ```line, § 7) : la traiter dans ce chantier ?
-- **Pièges en cours** : `geometrie-validation` a tranché CP-008 → réponses à placer (pas la case « figure ») ; ne pas mélanger avec la case « figure » (`figure-et-choix`) ; une PR = une session.
-- **Worktree / branche** : `../ubumaths-wt-reponses-a-placer` · `feat/reponses-a-placer`.
+- **État** : PR 1 **mergée** (#1846, pas en prod) : droite à placer, un point (`placer:` dans ```line, `NumberLinePlacer`, copie corrigée, catalogue, doc). Revue Opus traitée. Brouillon local d'essai `e8d7b0e3…` (base locale seulement).
+- **Prochaine action** : PR 2 — plusieurs points sur une droite (`placer: A=3 ; B=7`, une case par point, choisir l'étiquette puis toucher) ; phase 0 courte du geste d'abord. Puis aiguilles, puis barres (§ 6).
+- **En attente de David** : (1) droite trop petite sur téléphone (tout bloc ```line, § 7) : PR à part dans ce chantier, avant la PR 2 ? (2) avertir le prof quand une droite à placer, une collection ou une monnaie à construire est dans un QCM (rien n'y est jugé) ?
+- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; réponse écrite par `placerAnswer` des deux côtés, jamais en notation exponentielle ; une PR = une session.
+- **Worktree / branche** : aucun (retiré après #1846) ; PR 2 : `git worktree add -b feat/reponses-a-placer-2 ../ubumaths-wt-reponses-a-placer origin/main`.
 
 ---
 
