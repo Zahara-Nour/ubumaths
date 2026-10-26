@@ -101,7 +101,11 @@ function choiceCaseErrors(
 			...(spec.caseIndex !== undefined
 				? ['case: est posée automatiquement, retirer cette ligne du bloc']
 				: []),
-			...spec.errors
+			...spec.errors,
+			// Même refus qu'au tirage : l'appariement ne sait pas lire une case choix
+			...(template.options?.orderIndependent
+				? ['une case choix ne se combine pas avec « ordre indifférent »']
+				: [])
 		];
 		if (blockErrors.length > 0) {
 			errors.push(`${casePrefix} ${blockErrors.join(' ; ')}`);

@@ -28,6 +28,7 @@ import {
 	CHOICE_BLOCK_NESTED_MESSAGE,
 	CHOICE_BLOCK_UNCLOSED_MESSAGE,
 	findChoiceBlocks,
+	isChoiceBlockStart,
 	isNestedChoiceBlockStart,
 	parseChoiceBody
 } from '$lib/ubumark/parser/choix-parser';
@@ -94,10 +95,41 @@ interface MarkedChoiceBlock {
 	closed: boolean;
 }
 
+/** Ouverture d'un bloc délimité au premier niveau : clôture et nom (« » pour du code) */
+const FENCE_OPEN_REGEX = /^(`{3,})([^`\s]*)\s*$/;
+/** Blocs de question qui portent leur propre case : un bloc choix n'y a pas sa place */
+const QUESTION_BLOCK_NAMES = new Set(['figure-a-completer', 'operation']);
+
+/**
+ * Bloc délimité (autre que ```choix) qui contient chaque ligne : son nom, ou `null`
+ * hors de tout bloc. Fin : une ligne de ` au moins aussi longue que l'ouverture ;
+ * ```operation finit aussi à la première ligne vide, comme son parseur.
+ */
+function enclosingBlockNames(lines: readonly string[]): (string | null)[] {
+	const names: (string | null)[] = [];
+	let open: { length: number; name: string } | null = null;
+	for (const line of lines) {
+		if (open) {
+			const closes =
+				new RegExp(`^\`{${open.length},}\\s*$`).test(line) ||
+				(open.name === 'operation' && line.trim() === '');
+			names.push(open.name === 'choix' ? null : open.name);
+			if (closes) open = null;
+			continue;
+		}
+		names.push(null);
+		const fence = line.match(FENCE_OPEN_REGEX);
+		if (fence) open = { length: fence[1].length, name: fence[2] };
+	}
+	return names;
+}
+
 /**
  * Met à l'abri les blocs ```choix (premier niveau) : chacun devient une marque d'une
  * ligne, numérotée ensuite avec les autres cases puis rendue avec `case: N`. Un bloc
- * en retrait ou cité est refusé (il ne peut pas porter de case).
+ * en retrait ou cité est refusé (il ne peut pas porter de case), comme un bloc écrit
+ * dans un bloc de question (```figure-a-completer, ```operation) ; dans un bloc de
+ * code (ou tout autre bloc délimité), ce n'est que du texte.
  */
 function markChoiceBlocks(statement: string): {
 	statement: string;
@@ -105,12 +137,22 @@ function markChoiceBlocks(statement: string): {
 	errors: string[];
 } {
 	const lines = statement.split('\n');
-	const ranges = findChoiceBlocks(lines);
+	const enclosing = enclosingBlockNames(lines);
+	// Lignes d'un autre bloc masquées : un ```choix n'y est pas repéré
+	const ranges = findChoiceBlocks(lines.map((line, i) => (enclosing[i] === null ? line : '')));
 	const out: string[] = [];
 	const blocks: MarkedChoiceBlock[] = [];
 	const errors: string[] = [];
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
+		const outer = enclosing[i];
+		if (outer !== null) {
+			if (QUESTION_BLOCK_NAMES.has(outer) && isChoiceBlockStart(line)) {
+				errors.push(`Ligne ${i + 1} : un bloc choix ne peut pas être dans un bloc ${outer}`);
+			}
+			out.push(line);
+			continue;
+		}
 		if (isNestedChoiceBlockStart(line)) errors.push(CHOICE_BLOCK_NESTED_MESSAGE);
 		const range = ranges.find((r) => r.startIndex === i);
 		if (!range) {

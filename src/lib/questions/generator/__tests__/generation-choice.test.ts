@@ -106,6 +106,38 @@ describe('numérotation : le bloc ```choix porte UNE case', () => {
 	});
 });
 
+describe('numérotation : un bloc choix DANS un autre bloc délimité', () => {
+	const MARK = '\u0000';
+
+	it('dans un bloc de code ```` : du texte, ni case ni marque interne', () => {
+		const statement = '````text\n```choix\n- a\n- b\n```\n````';
+		const result = assignBlankIndices(statement);
+		expect(result.totalBlanks).toBe(0);
+		expect(result.choiceErrors).toBeUndefined();
+		expect(result.statement).toBe(statement);
+	});
+
+	it('dans un bloc ```figure-a-completer : refus situé, aucune marque interne', () => {
+		const result = assignBlankIndices(
+			'Trace.\n\n```figure-a-completer\nfenetre: 0 ; 10 ; 0 ; 6\n```choix\n- a\n- b\n```'
+		);
+		expect(result.choiceErrors).toEqual([
+			'Ligne 5 : un bloc choix ne peut pas être dans un bloc figure-a-completer'
+		]);
+		expect(result.statement).not.toContain(MARK);
+		expect(result.blankTypes).not.toContain('choice');
+	});
+
+	it('dans un bloc ```operation : refus situé, aucune marque interne', () => {
+		const result = assignBlankIndices('```operation\n```choix\n- a\n- b\n```');
+		expect(result.choiceErrors).toEqual([
+			'Ligne 2 : un bloc choix ne peut pas être dans un bloc operation'
+		]);
+		expect(result.statement).not.toContain(MARK);
+		expect(result.blankTypes).not.toContain('choice');
+	});
+});
+
 describe('génération : choix résolus, ordre affiché, bonne réponse', () => {
 	it('melanger: non → ordre de l’auteur ; case « choice » ; énoncé en ordre affiché', () => {
 		const instance = generate(ALIGNES);
@@ -276,7 +308,8 @@ describe('génération : erreurs situées', () => {
 				})
 			)
 		).toEqual([
-			'Case 1 (bloc choix) : une case choix ne se combine pas avec « ordre indifférent »'
+			// Vu dès la validation du modèle, faite avant chaque tirage
+			'Variation 1, case 1 (bloc choix) : une case choix ne se combine pas avec « ordre indifférent »'
 		]);
 	});
 });
@@ -299,6 +332,12 @@ describe('validation du modèle (enregistrement)', () => {
 			)
 		).toEqual([
 			'Variation 1, case 1 (bloc choix) : au moins 2 choix (une ligne « - … » par choix)'
+		]);
+	});
+
+	it('ordre indifférent : refusé dès l’enregistrement, situé', () => {
+		expect(choiceAnswerCountErrors({ ...CINQ('1'), options: { orderIndependent: true } })).toEqual([
+			'Variation 1, case 1 (bloc choix) : une case choix ne se combine pas avec « ordre indifférent »'
 		]);
 	});
 
