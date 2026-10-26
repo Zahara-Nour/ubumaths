@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-10-26, § 4 ouvert (les trois pièges)._
 
-- **État** : #1807 et #1811 MERGÉES (pas en prod). § 4 : trois pièges étudiés, recos validées par David (« je suis tes recos »). PR 3 en cours (`tidy` et le facteur sous double barre).
+- **État** : #1807 et #1811 MERGÉES (pas en prod). § 4 : trois pièges étudiés, recos validées par David (« je suis tes recos »). PR 3 (`tidy` et le facteur sous double barre) : revue Opus traitée, PR ouverte.
 - **Prochaine action** : PR 3 (§ 4.3), puis PR 1 (§ 4.1, `conditionDomain` non polynomial), puis PR 2 (§ 4.2, `domainChange` par ensembles + élagage).
 - **En attente de David** : essai des vérifs #1807 et #1811 (inchangé).
 - **Pièges en cours** : ceux du § 4, en cours de correction.
@@ -108,6 +108,7 @@ Cause : `absorbFactor` (`collect.ts`, cas `division`) inverse l'exposant du dén
 - `tidy` : `1/(1/x)`, `2/(1/x)`, `x/(1/x)`, `1/x^{-1}` **gardent leur écriture** (Q4 : B, pas `x²/x`).
 - `tidyWithConditions` : `x`, `2x`, `x²`, `x`, condition `x ≠ 0`.
 - Rien ne s'annule (`1/(1/2)`, `1/(1/eˣ)`) → simplifié ; `x ≠ 0` déclaré → `x`.
+- Fait (`keepsUnderBar`, `keptUnderBar` dans `collect.ts`). Revue Opus : le terme gardé est mis au propre (numérateur d'un bloc, chaque dénominateur seul : `2·3/(1/x)` → `6/(1/x)`, `1/x⁻¹` → `1/(1/x)`), sans parenthèses dans une somme (`build.ts`, terme `verbatim` nu sauf somme/opposé) ; base déjà gardée par S3 non gelée (`1/(1/x)·1/x` → `x/x`). Restes acceptés : deux termes gardés ne se regroupent pas (`1/(1/x) + 1/(1/x)`) ; une condition non écrivable (`tan`) gèle le terme entier en mode conditions.
 
 ### 4.1 — conditions non polynomiales (PR 1)
 
