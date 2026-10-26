@@ -17,7 +17,7 @@
 	// L'instance de l'atelier qui nous contient, ou celle par défaut.
 	const grapheurStore = useGrapheurStore();
 	import { Button } from '$lib/components/ui/button';
-	import { ZoomIn, ZoomOut, Maximize2, Grid3x3 } from '@lucide/svelte';
+	import { ZoomIn, ZoomOut, House, Grid3x3 } from '@lucide/svelte';
 	import ExportButton from './ExportButton.svelte';
 
 	// Props
@@ -92,7 +92,8 @@
 		title="Réinitialiser la vue"
 		aria-label="Réinitialiser la vue"
 	>
-		<Maximize2 class="h-4 w-4" />
+		<!-- La maison, comme ailleurs : la flèche ⤢ se lisait « plein écran » -->
+		<House class="h-4 w-4" />
 	</Button>
 
 	<Button

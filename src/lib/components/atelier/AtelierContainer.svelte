@@ -53,6 +53,8 @@
 		ArchiveRestore,
 		EllipsisVertical,
 		FolderOpen,
+		Maximize2,
+		Minimize2,
 		Redo2,
 		RotateCcw,
 		Save,
@@ -602,6 +604,12 @@
 	// svelte-ignore state_referenced_locally
 	let consoleOpen = $state(consoleAtStart ?? view === undefined);
 	let consoleHeight = $state(CONSOLE_HEIGHT);
+	/**
+	 * Plein écran de l'ATELIER : il recouvre l'en-tête et le menu du site, dans
+	 * la fenêtre telle qu'elle est. Le plein écran du navigateur reste le
+	 * bouton de l'en-tête ; les deux se cumulent, comme pour Python.
+	 */
+	let fullscreen = $state(false);
 	let calculView = $state<CalculView | null>(null);
 	let consoleButton = $state<ToolButton | null>(null);
 	let consolePanel = $state<HTMLElement | null>(null);
@@ -1026,6 +1034,30 @@
 	}
 
 	/**
+	 * Échap quitte le plein écran — après tous les autres : un champ, une liste
+	 * ou un menu ouverts le prennent d'abord, une fenêtre ouverte le garde.
+	 * Pris ici, il ne recadre pas en plus le graphe (Échap du grapheur, écouté
+	 * sur `window`, donc après le `document`).
+	 */
+	function handleFullscreenEscape(event: KeyboardEvent) {
+		if (!fullscreen || event.key !== 'Escape' || event.defaultPrevented) return;
+		const target = event.target instanceof Element ? event.target : null;
+		if (target !== null && target.closest(FIELD_SELECTOR) !== null) return;
+		if (document.querySelector('[role="alertdialog"], [role="dialog"][data-state="open"]')) return;
+		event.preventDefault();
+		fullscreen = false;
+	}
+
+	// En plein écran, la page derrière ne défile plus
+	$effect(() => {
+		if (!fullscreen) return;
+		document.body.style.overflow = 'hidden';
+		return () => {
+			document.body.style.overflow = '';
+		};
+	});
+
+	/**
 	 * Les raccourcis (`console-key.ts`) : la touche sous Échap hors d'un champ,
 	 * Ctrl+Entrée partout. En CAPTURE : le champ mathématique ne doit pas
 	 * prendre Ctrl+Entrée pour un calcul.
@@ -1142,8 +1174,9 @@
 </script>
 
 <svelte:window onkeydown={handleUndoKey} onkeydowncapture={handleConsoleShortcut} />
+<svelte:document onkeydown={handleFullscreenEscape} />
 
-<div class="atelier">
+<div class="atelier" class:plein-ecran={fullscreen}>
 	<ObjectPanel bind:selected onAction={handleAction} onTabulate={handleTabulate} />
 
 	<!-- `section` et non `main` : la page est déjà dans le `<main>` du layout,
@@ -1225,6 +1258,12 @@
 						onclick={() => shareBar?.share()}
 					/>
 				{/if}
+				<ToolButton
+					label={fullscreen ? 'Quitter le plein écran' : 'Plein écran'}
+					icon={fullscreen ? Minimize2 : Maximize2}
+					hint={fullscreen ? 'Échap' : undefined}
+					onclick={() => (fullscreen = !fullscreen)}
+				/>
 				<AtelierSettings
 					bind:inputMode={() => inputMode, chooseInputMode}
 					bind:angleUnit={() => atelier.angleUnit, chooseAngleUnit}
@@ -1420,6 +1459,16 @@
 		grid-template-columns: minmax(14rem, 18rem) 1fr;
 		height: 100%;
 		min-height: 0;
+	}
+
+	/* Par-dessus l'en-tête et le menu du site ; les menus et fenêtres, rendus
+	   à la fin du `body` avec le même z-index, passent encore devant */
+	.atelier.plein-ecran {
+		position: fixed;
+		inset: 0;
+		z-index: 50;
+		height: auto;
+		background: var(--color-background);
 	}
 
 	.zone {
