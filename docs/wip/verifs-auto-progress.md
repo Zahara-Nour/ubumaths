@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1824._
+_Mis à jour le 2026-10-26, après #1829._
 
-- **État** : lots 1-9 mergés (#1773 → #1824), correctifs #1813 et #1821. Suite complète : 127 verts ; rouges = `each_key_duplicate` (#1674, #1703, #1620, #1307) et Q1 de #1697 (`/python` ne range le code tapé qu'à Ctrl+S).
-- **Prochaine action** : les écarts du lot 9 une fois tranchés par David (section « Lot 9 ») ; puis le reste de la liste : lignes « à l'œil » (page à cocher), lignes prof / élève (comptes locaux).
-- **En attente de David** : les 8 écarts du lot 9 — surtout `/python` qui ne range pas le code tapé, et Partager refusé pour une grille seule. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : prendre un port libre (5181 au lot 9) ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; MathLive perd la 1re frappe : `retypeCard` vide jusqu'à ce que le champ le soit ; un clic dans la console RANGE une carte en cours de frappe (preuve par Échap) ; un CSV / un collage se pose à la case CHOISIE ; prettier réaligne le tableau → rejouer ses lignes par script après rebase ; commitlint : pas de majuscule ; ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retiré après #1824).
+- **État** : lots 1-9 mergés (#1773 → #1824) ; écarts du lot 9 corrigés (#1829 : brouillon de `/python`, grille seule partagée / enregistrée / rejouée, confirmation de Charger, `X suit B(…)` tapé, étiquettes `x = e`, `x = π/2`). Suite complète : rouges = `each_key_duplicate` seulement (#1674, #1703, #1620, #1307). Pas encore en prod.
+- **Prochaine action** : reste de la liste — lignes « à l'œil » (page à cocher avec captures), lignes prof / élève (comptes locaux, `db:seed-riche`).
+- **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
+- **Pièges en cours** : prendre un port libre (5181) ; COUPER SES SERVEURS avant de retirer un worktree ; `pnpm test:verifs … | tail` ne rend pas la main : sortie dans un fichier ; MathLive perd la 1re frappe (`retypeCard`) ; un clic dans la console RANGE une carte en cours de frappe ; un CSV / un collage se pose à la case CHOISIE ; prettier réaligne le tableau → conflits à chaque rebase/merge de `main` : reprendre la version de `main` et rejouer ses lignes par script ; push forcé = liste `ask` (préférer merger `origin/main` dans la branche) ; ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retiré après #1829).
 
 ## Phase 0 (validée le 2026-10-25)
 
