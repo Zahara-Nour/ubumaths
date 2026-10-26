@@ -266,3 +266,28 @@ describe('hors question : liste A, B, C non cliquable', () => {
 		expect(container.querySelector('pre')).toBeNull();
 	});
 });
+
+describe('case choix : texte d’aide sous la question', () => {
+	const HELPER = 'Remplissez les blancs avec vos réponses';
+
+	it('choix seul : pas de « Remplissez les blancs » (aucun blanc à remplir)', async () => {
+		const { container } = await render(QuestionCard, {
+			target: mainElement(),
+			props: {
+				instance: generate('Est-ce pair ?\n\n```choix\nmelanger: non\n- Oui\n- Non\n```', ['1']),
+				interactive: true
+			}
+		});
+		await expect.poll(() => container.querySelector('[role="radiogroup"]')).toBeTruthy();
+		expect(container.textContent).not.toContain(HELPER);
+	});
+
+	it('une case à écrire à côté du choix : le texte d’aide reste', async () => {
+		const { container } = await render(QuestionCard, {
+			target: mainElement(),
+			props: { instance: MIXED(), interactive: true }
+		});
+		await expect.poll(() => container.querySelector('[role="radiogroup"]')).toBeTruthy();
+		expect(container.textContent).toContain(HELPER);
+	});
+});
