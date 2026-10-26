@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1846._
+_Mis à jour le 2026-10-26, après #1848._
 
-- **État** : PR 1 **mergée** (#1846, pas en prod) : droite à placer, un point (`placer:` dans ```line, `NumberLinePlacer`, copie corrigée, catalogue, doc). Revue Opus traitée. Brouillon local d'essai `e8d7b0e3…` (base locale seulement).
-- **Prochaine action** : PR « téléphone » (§ 8, décision 1) : droite ```line dessinée à la largeur réelle, avertissement d'aperçu si graduations < ~20 px ; puis PR 2 (plusieurs points `placer: A=3 ; B=7`, phase 0 courte du geste).
-- **En attente de David** : rien.
-- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; réponse écrite par `placerAnswer` des deux côtés, jamais en notation exponentielle ; une PR = une session.
-- **Worktree / branche** : aucun (retiré après #1846) ; PR 2 : `git worktree add -b feat/reponses-a-placer-2 ../ubumaths-wt-reponses-a-placer origin/main`.
+- **État** : PR 1 (#1846) et PR « téléphone » (#1848) **mergées**, pas en prod. Droite ```line dessinée à la largeur réelle (px, chiffres fixes) ; droite à placer : le prof est averti si graduations < 20 px sur 320 px (§ 9).
+- **Prochaine action** : PR 2 — plusieurs points `placer: A=3 ; B=7` ; d'abord la phase 0 courte du geste (à poser à David).
+- **En attente de David** : essai sur un vrai téléphone de la droite à placer (après un `deploy:prod`, ou en local).
+- **Pièges en cours** : `BuildKind` = patron commun construire/placer (`generator/build-answer.ts`) ; réponse écrite par `placerAnswer` des deux côtés ; `valueToX`/`xToValue`/`computeGraduations` prennent la largeur (défaut 600 = PDF) ; une PR = une session.
+- **Worktree / branche** : aucun (retiré après #1848) ; PR 2 : `git worktree add -b feat/reponses-a-placer-2 ../ubumaths-wt-reponses-a-placer origin/main`.
 
 ---
 
