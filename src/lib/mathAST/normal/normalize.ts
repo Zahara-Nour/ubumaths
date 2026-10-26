@@ -1994,6 +1994,43 @@ function extractPartialLinearCombinationOfLn(form: NormalForm): {
 }
 
 /**
+ * Sépare d'un exposant ses termes `k ln a`, k et a > 0 RATIONNELS : `power`
+ * = Π aᵏ, `remainder` = le reste (`null` s'il est nul). `null` sans tel terme.
+ *
+ * Pour `e^{…}` (`rules/euler-identities.ts`) : `e^{2 ln 3}` → `9`,
+ * `e^{1 + ln 2}` → `2e`. Un `ln x` reste dans l'exposant : `e^{2 ln x}` garde
+ * son écriture (tidy-conditions, L6, décision du 2026-10-26).
+ */
+function splitRationalLogs(
+	exponent: MathNode,
+	ctx: NormalizeContext | undefined
+): { power: MathNode; remainder: MathNode | null } | null {
+	const form = normalize(exponent, arcDecompositionContext(ctx));
+	if (!isOnePolynomial(form.denominator)) return null;
+
+	let power = ONE_NORMAL_FORM;
+	let found = false;
+	const remainderTerms: NormalTerm[] = [];
+	for (const term of form.numerator) {
+		const log = tryExtractLnTerm(term);
+		const base = log === null ? null : exactRationalValue(log.base, ctx);
+		if (log === null || base === null || base.n <= 0n) {
+			remainderTerms.push(term);
+			continue;
+		}
+		power = mulNormalForms(
+			power,
+			normalize(buildPowerNode(log.base, log.coeff), arcDecompositionContext(ctx))
+		);
+		found = true;
+	}
+	if (!found) return null;
+	const remainder =
+		remainderTerms.length === 0 ? null : denormalize(normalFormFromPolynomial(remainderTerms));
+	return { power: denormalize(power), remainder };
+}
+
+/**
  * Builds a MathNode representing base^(n/d).
  * For negative exponents, creates 1/base^|n/d| to ensure proper normalization.
  */
@@ -2113,7 +2150,8 @@ function normalizeInner(node: MathNode, ctx?: NormalizeContext): NormalForm {
 	// Décision de David (option A, 2026-10-05), détail dans
 	// `rules/euler-identities.ts`. Sans base d'Euler, le nœud passe inchangé.
 	const eulerContext = {
-		canonicalExponent: (exponent: MathNode) => denormalize(normalize(exponent))
+		canonicalExponent: (exponent: MathNode) => denormalize(normalize(exponent)),
+		splitRationalLogs: (exponent: MathNode) => splitRationalLogs(exponent, ctx)
 	};
 	const simplified = applyEulerIdentities(preprocessed, eulerContext);
 	recordTreeStep(ctx, 'euler-identities', preprocessed, simplified, 'summarized');

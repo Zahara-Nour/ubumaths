@@ -1686,8 +1686,9 @@ Doublons qui restent, chacun pour un autre besoin :
   exclus n'ont pas d'écriture exacte reste entière (`x³ − 2 ≠ 0` ; les irrationnels exacts
   s'écrivent depuis le § 5, `x ≠ √2`) ; le bouton d'un calcul qui passe par
   une étape plus étroite que sa condition n'a pas d'étapes (`e^{ln(x²)}` → `x²`, pour x ≠ 0,
-  sans le détour par `2 ln x`) ; `e^{2 ln 3}` et `9` n'ont pas la même forme normale
-  (`areEquivalent` les dit égaux). Corrigé ensuite : `e^{ln a}` pour un nombre `a ≤ 0`
+  sans le détour par `2 ln x`). Corrigé ensuite : `e^{k ln a + c}` (k et a > 0 rationnels)
+  se réduit en `aᵏ e^{c}` dans `normalize` (`e^{2 ln 3}` → `9`, `e^{1 + ln 2}` → `2e`, § 5,
+  L6 ; `e^{2 ln x}` garde son écriture) ; `e^{ln a}` pour un nombre `a ≤ 0`
   (`e^{ln(−3)}` donnait −3, `e^{ln(−1/2)}` était équivalent à −1/2) n'est plus réduit, ni par
   `normalize` ni par le moteur pédagogique (`isNonPositiveConstant`).
 - Laissés par le chantier simplify-carte (2026-10-25), **à trancher par David**, aucun ne donne
