@@ -780,6 +780,11 @@ export interface InstanceBlank extends CalculusBlankFields {
 	 */
 	operation?: true;
 	/**
+	 * Case portée par un bloc ```collection à construire : réponse = la valeur
+	 * du bloc (`construire:`), juge ordinaire, l'élève pose barres et cubes.
+	 */
+	construire?: 'collection';
+	/**
 	 * Case « figure » portée par un bloc ```figure-a-completer (`type: 'graphical'`) :
 	 * texte du bloc (variables résolues, sans `case:`) et vérifications. Le juge
 	 * lit les positions des points dans ce texte (questions/construction).

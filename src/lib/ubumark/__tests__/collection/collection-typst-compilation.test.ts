@@ -54,6 +54,18 @@ it('un document avec des blocs ```collection compile en PDF', async () => {
 				'',
 				'```collection',
 				'unités: 101',
+				'```',
+				'',
+				'Construis 34 (cadre vide et réserve, chantier construire) :',
+				'',
+				'```collection',
+				'case: 0',
+				'construire: 34',
+				'```',
+				'',
+				'```collection',
+				'construire: 7',
+				'dessin: paquets',
 				'```'
 			].join('\n')
 		)

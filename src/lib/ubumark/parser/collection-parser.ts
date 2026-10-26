@@ -18,6 +18,10 @@
  *   une erreur située, jamais un réglage ignoré. `centaines:` est réservée
  *   (CE1, plus tard).
  *
+ * - `construire: 34` (1 à 100) : l'élève construit la collection sur un plan
+ *   vide ; `dizaines:`, `unités:`, `unités en:` et `légendes:` sont alors sans
+ *   objet. `case: N` est posée par le générateur de questions, jamais par l'auteur.
+ *
  * Dans un modèle de question, `{{n}}` est résolu AVANT : le bloc ne lit que
  * des nombres. Une erreur ne fait pas disparaître le bloc (le nœud porte ses
  * messages). Repérage et blocs non fermés : ceux de ```horloge.
@@ -29,6 +33,7 @@
 
 import { specialBlockEnd } from './unclosed-block';
 import {
+	COLLECTION_BUILD_RANGE,
 	COLLECTION_CAPTION_MAX,
 	COLLECTION_DRAWINGS,
 	COLLECTION_LIMITS,
@@ -68,12 +73,32 @@ const BLOCK_KEYS = [
 	'légendes',
 	'legendes',
 	'taille',
+	'construire',
+	'case',
 	'centaines'
 ] as const;
 
-type Key = 'dizaines' | 'unités' | 'dessin' | 'unités en' | 'légendes' | 'taille';
+type Key =
+	'dizaines' | 'unités' | 'dessin' | 'unités en' | 'légendes' | 'taille' | 'construire' | 'case';
 
-const KEY_NAMES: Key[] = ['dizaines', 'unités', 'dessin', 'unités en', 'légendes', 'taille'];
+const KEY_NAMES: Key[] = [
+	'dizaines',
+	'unités',
+	'dessin',
+	'unités en',
+	'légendes',
+	'taille',
+	'construire',
+	'case'
+];
+
+/** Clés sans objet sur un bloc à construire, et pourquoi */
+const NOT_WITH_BUILD: Partial<Record<Key, string>> = {
+	dizaines: ' (l’élève part d’un plan vide)',
+	unités: ' (l’élève part d’un plan vide)',
+	'unités en': ' (les objets se rangent d’office)',
+	légendes: ''
+};
 
 // ============================================================================
 // DÉTECTION
@@ -177,6 +202,15 @@ function parseSize(value: string): number {
 	return cm;
 }
 
+/** Valeur à construire : entier de 1 à 100 */
+function parseBuild(value: string): number {
+	const { min, max } = COLLECTION_BUILD_RANGE;
+	if (!INTEGER_REGEX.test(value) || Number(value) < min || Number(value) > max) {
+		throw new LineError(`construire « ${value} » : écris un nombre entier de ${min} à ${max}`);
+	}
+	return Number(value);
+}
+
 /**
  * Analyser le texte d'un bloc (sans les clôtures).
  * Ligne 1 = première ligne après ```collection.
@@ -196,6 +230,8 @@ export function parseCollectionContent(source: string): CollectionNode {
 	let drawing: CollectionDrawing = 'barres';
 	let unitLayout: CollectionUnitLayout = 'vrac';
 	let sizeCm: number | null = null;
+	let build: number | undefined;
+	let caseIndex: number | undefined;
 	const seen = new Map<Key, number>();
 
 	lines.forEach((line, index) => {
@@ -247,12 +283,43 @@ export function parseCollectionContent(source: string): CollectionNode {
 				case 'taille':
 					sizeCm = parseSize(value);
 					break;
+				case 'construire':
+					build = parseBuild(value);
+					break;
+				case 'case':
+					if (!INTEGER_REGEX.test(value)) {
+						throw new LineError(`case « ${value} » : numéro de case entier`);
+					}
+					caseIndex = Number(value);
+					break;
 			}
 		} catch (e) {
 			if (!(e instanceof LineError)) throw e;
 			fail(lineNo, e.message);
 		}
 	});
+
+	// Bloc à construire : plan vide, aucun ensemble dessiné (lues dans le forEach :
+	// TS les croit encore à leur valeur initiale)
+	const readBuild = build as number | undefined;
+	const readCase = caseIndex as number | undefined;
+	if (seen.has('construire')) {
+		for (const [key, why] of Object.entries(NOT_WITH_BUILD) as [Key, string][]) {
+			const line = seen.get(key);
+			if (line !== undefined) fail(line, `${key} : sans objet avec construire:${why}`);
+		}
+		if (errors.length > 0 || readBuild === undefined) {
+			return { type: 'collection', source, spec: null, errors };
+		}
+		return {
+			type: 'collection',
+			source,
+			spec: { sets: [], captions: null, drawing, unitLayout: 'rangées', sizeCm, build: readBuild },
+			errors,
+			...(readCase !== undefined && { caseIndex: readCase })
+		};
+	}
+	if (seen.has('case')) fail(seen.get('case')!, 'case: sans objet sans construire:');
 
 	// Les vérifications qui croisent deux lignes, une fois tout lu
 	const readTens = tens as number[] | null;
@@ -328,6 +395,18 @@ export function parseCollection(
 			]
 		}
 	};
+}
+
+/**
+ * Un texte contient-il un bloc ```collection à construire (en retrait ou cité
+ * compris : le générateur dira qu'il doit être au premier niveau) ?
+ */
+export function hasCollectionToBuild(markdown: string): boolean {
+	const blocks = markdown.split(/^\s*>?\s*```collection\s*$/m).slice(1);
+	return blocks.some((rest) => {
+		const body = rest.replace(/^\n/, '').split(/^\s*>?\s*```\s*$|^\s*$/m)[0] ?? '';
+		return /^\s*>?\s*construire\s*:/im.test(body);
+	});
 }
 
 /**

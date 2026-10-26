@@ -1,16 +1,16 @@
 ---
-status: phase 0
+status: en cours
 ---
 
 # Chantier « construire » — l'élève construit une collection ou une somme d'argent
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, à l'ouverture (phase 0)._
+_Mis à jour le 2026-10-26, phase 0 validée._
 
-- **État** : phase 0 écrite (§ 3), questions Q1-Q10 posées à David (§ 4).
-- **Prochaine action** : attendre ses réponses, puis tests rouges de la PR 1 (collection).
-- **En attente de David** : Q1-Q10.
+- **État** : phase 0 validée (§ 4 bis) ; PR 1 (collection, § 5) écrite, tests verts, PR ouverte.
+- **Prochaine action** : revue Opus de la PR 1, CI verte → merge ; puis PR 2 (monnaie).
+- **En attente de David** : rien.
 - **Pièges en cours** : toute retouche de `scene-commune.ts` garde verts les tests de la collection ET de la monnaie (instantanés figés) ; aucune réponse d'élève enregistrée (ADR 0001) ; le chantier `geometrie-validation` va réécrire les QCM en cases « choix » : ne pas en dépendre.
 - **Worktree / branche** : `../ubumaths-wt-construire` · `feat/construire`.
 
@@ -88,6 +88,30 @@ policy, **personne ne gagne ni ne perd d'accès**. Les blocs en affichage seul r
   en brouillon jusqu'au `deploy:prod`. _Reco : oui ; revue Opus sur la PR 1 (correction des
   réponses)._
 
+## 4 bis. Décisions (David, 2026-10-26 : « je suis tes recos »)
+
+Q1 toucher (glisser plus tard) · Q2 objets rangés d'office · Q3 total jamais affiché · Q4 une clé dans
+les blocs existants · Q5 valeur seule · Q6 plan vide = réponse vide · Q7 pas d'échange · Q8 corrigé :
+construction de l'élève + sa valeur + une construction juste · Q9 PDF : cadre vide + réserve en petit ·
+Q10 PR 1 collection, PR 2 monnaie, modèles au chantier « questions ».
+
+## 5. PR 1 — conception (collection)
+
+- **Écriture** (précision de Q4) : `construire: 34` donne la valeur à construire, `dessin: barres |
+paquets` le matériel (clé existante). Le bloc porte sa réponse, comme ` ```operation ` : ni
+  `expectedAnswer` ni `blanks[]` à écrire. Avec `construire:` : `dizaines:`, `unités:`, `unités en:`,
+  `légendes:` refusées (pas d'ensemble de départ en v1) ; `taille:` gardée. Valeur de 1 à 100.
+- **Case** : `case: N` posé par `assignBlankIndices` (premier niveau seulement), `InstanceBlank` de
+  type `math`, `expectedAnswer` = la valeur, drapeau `construire: 'collection'` ; juge ordinaire.
+- **Réponse** : la valeur posée en chiffres (`'34'`), `''` si le plan est vide. La composition (3 barres
+  - 4 cubes) vit dans le composant, monté de la saisie au verdict ; remonté avec une seule valeur, il
+    la redessine en dizaines et unités.
+- **Écran** : plan de travail (scène de la collection, cubes en rangées), réserve dessous (« Ajouter
+  une barre de dix », « Ajouter un cube », chacun avec son « Enlever » pour le clavier), « Tout
+  enlever ». Toucher un objet du plan l'enlève. Sans case (aperçu du prof), le même geste, rien de jugé.
+- **PDF** : cadre vide en pointillés, réserve dessinée en petit au-dessus.
+
 ## Journal
 
-- 2026-10-26 : ouverture, worktree `construire`, phase 0.
+- 2026-10-26 : ouverture, worktree `construire`, phase 0 ; validée (« je suis tes recos »).
+- 2026-10-26 : PR 1 — `construire:` dans ```collection (parseur, case du générateur, `CollectionConstruire.svelte`, PDF) ; tests rouges vérifiés puis verts ; capture d'écran relue.

@@ -47,6 +47,10 @@ import {
 import { shuffleChoices } from './choice-shuffler';
 import { assignBlankIndices } from './assign-blank-indices';
 import { parseOperationContent } from '$lib/ubumark/parser/operation-parser';
+import {
+	hasCollectionToBuild,
+	parseCollectionContent
+} from '$lib/ubumark/parser/collection-parser';
 import { operationExpectedAnswer } from '$lib/ubumark/utils/operation-answer';
 import { divisionExpectedAnswers } from '$lib/ubumark/utils/operation-division-answer';
 import { readConstructionHeader } from '$lib/ubumark/parser/construction-parser';
@@ -466,11 +470,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 		let expressionsArray: QuestionInstance['expressions'] = undefined;
 		let finalStatement: ResolvedMarkdown = resolvedStatement;
 
-		// Un bloc ```operation à remplir ou ```figure-a-completer porte sa case, même sans `blanks`
-		// dans le modèle — dans une question à trous seulement (un QCM, une carte de cours
-		// n'ont pas de case)
+		// Un bloc ```operation à remplir, ```figure-a-completer ou ```collection à construire
+		// porte sa case, même sans `blanks` dans le modèle — dans une question à trous
+		// seulement (un QCM, une carte de cours n'ont pas de case)
 		const hasOperationBlock =
-			/^\s*>?\s*```(?:operation|figure-a-completer)\s*$/m.test(String(resolvedStatement)) &&
+			(/^\s*>?\s*```(?:operation|figure-a-completer)\s*$/m.test(String(resolvedStatement)) ||
+				hasCollectionToBuild(String(resolvedStatement))) &&
 			getQuestionType({
 				choices: resolvedVariation.choices,
 				shared: template.shared,
@@ -510,6 +515,9 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 			}
 			if (blankResult.constructionErrors) {
 				return { success: false, errors: blankResult.constructionErrors };
+			}
+			if (blankResult.buildErrors) {
+				return { success: false, errors: blankResult.buildErrors };
 			}
 
 			// Cases des blocs ```figure-a-completer : la figure de l'élève, jugée par les
@@ -580,13 +588,31 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				answers.forEach((answer, k) => operationAnswers.set(index + k, answer));
 			}
 
+			// Cases des blocs ```collection à construire : réponse = la valeur du bloc
+			const buildAnswers = new Map<number, string>();
+			for (const [key, source] of Object.entries(blankResult.buildBlanks ?? {})) {
+				const index = Number(key);
+				const node = parseCollectionContent(source);
+				const errors =
+					node.caseIndex !== undefined
+						? ['case: est posée automatiquement, retirer cette ligne du bloc']
+						: node.errors.map((e) => e.message);
+				if (errors.length > 0 || node.spec?.build === undefined) {
+					return {
+						success: false,
+						errors: [`Case ${index + 1} (bloc collection) : ${errors.join(' ; ')}`]
+					};
+				}
+				buildAnswers.set(index, String(node.spec.build));
+			}
+
 			// Coherence check: totalBlanks must match blanks[] length. Les cases des blocs
 			// ```operation peuvent manquer à blanks[] (insérées à leur rang) ; présentes,
 			// elles ne donnent que des réglages.
 			// Les cases des blocs ```figure-a-completer aussi.
 			const isBlockCase = (index: number) =>
-				operationAnswers.has(index) || constructionCases.has(index);
-			const blockCaseCount = operationAnswers.size + constructionCases.size;
+				operationAnswers.has(index) || constructionCases.has(index) || buildAnswers.has(index);
+			const blockCaseCount = operationAnswers.size + constructionCases.size + buildAnswers.size;
 			let alignedBlanks: TemplateBlank[];
 			if (templateBlanks.length === blankResult.totalBlanks) {
 				for (const index of operationAnswers.keys()) {
@@ -605,6 +631,16 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 							success: false,
 							errors: [
 								`Case ${index + 1} : sa réponse est la figure de l’élève (bloc figure-a-completer) ; laisser expectedAnswer vide`
+							]
+						};
+					}
+				}
+				for (const index of buildAnswers.keys()) {
+					if ((templateBlanks[index].expectedAnswer ?? '').trim() !== '') {
+						return {
+							success: false,
+							errors: [
+								`Case ${index + 1} : sa réponse est la valeur du bloc collection (construire:) ; laisser expectedAnswer vide`
 							]
 						};
 					}
@@ -641,10 +677,12 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 					};
 				}
 				const operationAnswer = operationAnswers.get(i);
+				const buildAnswer = buildAnswers.get(i);
+				const blockAnswer = operationAnswer ?? buildAnswer;
 				const blank =
-					operationAnswer === undefined
+					blockAnswer === undefined
 						? templateBlank
-						: { ...templateBlank, expectedAnswer: operationAnswer };
+						: { ...templateBlank, expectedAnswer: blockAnswer };
 				// Resolve expectedAnswer:
 				// - Math blanks: normalize then resolve, like variables do.
 				//   normalizeExpression converts "eval:a+b" → "{{eval:a+b}}", etc.
@@ -770,6 +808,10 @@ export function generateInstance(template: QuestionTemplate, seed?: number): Gen
 				if (operationAnswer !== undefined) {
 					resolved.operation = true;
 					resolved.expectedAnswerLatex = toFrenchDecimal(operationAnswer);
+				}
+				if (buildAnswer !== undefined) {
+					resolved.construire = 'collection';
+					resolved.expectedAnswerLatex = buildAnswer;
 				}
 				return resolved;
 			});
