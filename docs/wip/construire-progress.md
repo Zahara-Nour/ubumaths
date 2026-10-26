@@ -6,13 +6,13 @@ status: en cours
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1812._
+_Mis à jour le 2026-10-26, après #1820._
 
-- **État** : PR 1 (collection à construire, CP-002) mergée (#1812), pas en prod ; vérification manuelle notée.
-- **Prochaine action** : PR 2 — `construire:` dans ```monnaie (réserve = coupures permises, défaut 1, 2, 5, 10, 20, 50 €) sur le même patron ; puis modèles CP-002, CP-044, CP-071, CP-045 au chantier « questions » (brouillons jusqu'au `deploy:prod`).
-- **En attente de David** : rien (vérification manuelle #1812 quand il veut).
-- **Pièges en cours** : délimiter les blocs comme le parseur (`findBuildCollections`, ligne vide + clé) ; ```operation garde ses angles morts (ligne vide, non fermé, ordre indifférent) — à traiter à part, un modèle publié l'utilise ; `scene-commune.ts` intouché ; total jamais affiché avant le verdict.
-- **Worktree / branche** : aucun (retiré après #1812) ; PR 2 : nouveau worktree depuis `origin/main`.
+- **État** : PR 1 collection (#1812) et PR 2 monnaie (#1820, `construire:` + `réserve:`) mergées, pas en prod ; vérifications manuelles notées. Le code du chantier est complet.
+- **Prochaine action** : modèles CP-002, CP-044, CP-071, CP-045 au chantier « questions » (brouillons jusqu'au `deploy:prod`) ; puis fin de chantier = versement (§ 3-6 → `docs/systeme/`, journal archivé), à faire quand David le dit.
+- **En attente de David** : vérifications manuelles #1812 et #1820 ; go pour clore le chantier ou y garder les modèles.
+- **Pièges en cours** : ```operation garde ses angles morts (ligne vide, non fermé, ordre indifférent ; et maintenant fence de fin en retrait / bloc dans un bloc de code, que le générateur refuse pour collection et monnaie depuis #1820) — à traiter à part, un modèle publié l'utilise ; test `vercel-maintenance` instable en CI (SIGPIPE 141 revenu malgré f997902ba, passé à la relance).
+- **Worktree / branche** : aucun (retiré après #1820).
 
 ---
 
