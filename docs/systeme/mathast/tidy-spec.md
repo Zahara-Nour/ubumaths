@@ -524,8 +524,11 @@ km/h`), 2026-09-27.
   x > 0 ; `(x+1)²/(x+1) → x+1`, pour x ≠ −1. Les conditions sont réunies (une par expression,
   la plus forte : `x > 0` contient `x ≠ 0`, `x ≥ 0` et `x ≠ 0` donnent `x > 0`) et ne redisent
   ni une hypothèse déclarée, ni un domaine acquis, ni ce que le résultat dit encore
-  (`x/x + ln(x) → ln(x) + 1`, sans condition). Une condition qu'on ne sait pas écrire simplement
-  (`tan`, `arcsin`) : la simplification n'a pas lieu. Sans condition à poser, le résultat est
+  (`x/x + ln(x) → ln(x) + 1`, sans condition). Domaines écrits (§ 5, L3, `domainConditions` de
+  `tidy/sign.ts`) : `tan u` → `cos u ≠ 0`, `arcsin u` / `arccos u` → `u + 1 ≥ 0` et `1 − u ≥ 0`
+  (`tan(x) − tan(x) → 0`, pour cos(x) ≠ 0 ; `arcsin(x) − arcsin(x) → 0`, pour −1 ≤ x ≤ 1). Une
+  condition qu'on ne sait pas écrire simplement (`cot`, `sec`, `csc`, `arccosh`) : la
+  simplification n'a pas lieu. Sans condition à poser, le résultat est
   celui de `tidy`. Écriture : `describeConditions` (`x ≠ −1`, `x \neq -1` ; sur la lettre si
   l'expression est affine en une seule lettre, entière sinon : `x^2−1 ≠ 0`). Le moteur :
   `settings.conditions` dans `collect.ts`, aux deux refus de S3 (`keepDomain`, somme nulle).
@@ -545,12 +548,20 @@ km/h`), 2026-09-27.
   Plusieurs lettres, domaine élargi : la perte, sans élagage (`x/x + y/y` : `x ≠ 0`, `y ≠ 0`).
   Les conditions disent le signe d'une puissance entière (`x² > 0` → `x ≠ 0`, `x³ > 0` →
   `x > 0`, `x⁻² > 0` → `x ≠ 0`, `2/x > 0` → `x > 0`). **`plainConditions(conditions, answer)`** : `u ≠ 0` en points exclus quand `u`
-  ne s'annule qu'en des rationnels (`ln(x) ≠ 0` → `x ≠ 1`, `x² − 1 ≠ 0` → `x ≠ −1 et x ≠ 1`,
-  `4x² − 1 ≠ 0` → `x ≠ ±1/2`), l'ensemble écrit vérifié contre celui d'origine, le domaine de `u` redit seulement si
+  ne s'annule qu'en des points exacts — rationnels ou écrits sans lettre avec des entiers
+  (`isExactPoint`, § 5 L2) : `ln(x) ≠ 0` → `x ≠ 1`, `x² − 1 ≠ 0` → `x ≠ −1 et x ≠ 1`,
+  `4x² − 1 ≠ 0` → `x ≠ ±1/2`, `x² − 2 ≠ 0` → `x ≠ −√2 et x ≠ √2`, `x − √2 ≠ 0` → `x ≠ √2`,
+  `arctan(x) − 1 ≠ 0` → `x ≠ tan(1)` (`inverseCircularZero` pour arctan, arcsin, arccos) ;
+  sans écriture exacte (`x³ − 2`) : la condition entière. Une condition seule non affine se dit
+  en intervalles (`describeAsIntervals` : `x² − 2 > 0` → « x < −√2 ou x > √2 »), `x ≥ −1` et
+  `x ≤ 1` en « −1 ≤ x ≤ 1 », les inégalités avant les points exclus ; `cos u ≠ 0` n'est pas
+  redit à côté de `tan u ≠ 0`. L'ensemble écrit est vérifié contre celui d'origine, le domaine de `u` redit seulement si
   la réponse et les autres conditions ne le garantissent pas (`(ln x)²/ln x → ln x` : `x ≠ 1` ;
   `ln(x)/ln(x) → 1` : `x > 0 et x ≠ 1`). `narrows` : le domaine d'après est plus petit (l'atelier
   dit alors « Pour x > 0, on peut écrire 2ln(x) »). `null` : une condition ne s'écrit pas
-  (`tan`). `domainChange` en rend les conditions seules. Sert à l'atelier pour garder le domaine
+  (`cot`). `domainChange` en rend les conditions seules. **`avoidsPeriodicPoints(condition,
+domain)`** : `cos u ≠ 0` ou `sin u ≠ 0` (familles π/2 + kπ, kπ, que `conditionSet` ne lit pas) est vraie sur un
+  domaine fait d'intervalles bornés qui n'en contiennent aucun point (§ 5, L4). Sert à l'atelier pour garder le domaine
   de toutes ses lignes (`atelier/domain-guard.ts`).
 - `options.order` : `'canonical'` (défaut, l'étape 8) ou `'kept'` — les
   termes de **chaque** somme gardent l'ordre écrit, parenthèses comprises
@@ -619,3 +630,6 @@ des termes notamment).
 - 2026-10-26 : `tidyWithConditions` (variante de S3) ; une base sous deux
   barres ne quitte plus le dénominateur en silence (`1/(1/x)` reste, avant :
   `x` sans condition — chantier tidy-conditions § 4.3).
+- 2026-10-26 : conditions écrites sur la lettre aux points irrationnels
+  (`x ≠ √2`, `x ≠ tan(1)`), en intervalles (`x < −√2 ou x > √2`) ; `tan`,
+  `arcsin`, `arccos` ont un domaine écrit (tidy-conditions § 5, PR A).
