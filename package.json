@@ -44,6 +44,8 @@
 		"test": "npm run test:changed",
 		"test:e2e": "playwright test",
 		"test:verifs": "playwright test -c playwright.verifs.config.ts",
+		"test:verifs:captures": "playwright test -c playwright.captures.config.ts",
+		"verifs:captures-page": "tsx scripts/verifs-captures-page.ts",
 		"release": "tsx scripts/release.ts",
 		"release:patch": "commit-and-tag-version --release-as patch",
 		"release:minor": "commit-and-tag-version --release-as minor",

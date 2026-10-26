@@ -20,6 +20,8 @@ const remoteURL = process.env.VERIFS_URL;
 
 export default defineConfig({
 	testDir: './e2e/verifs',
+	// Les captures ont leur config (`playwright.captures.config.ts`)
+	testIgnore: '**/captures/**',
 	timeout: 60 * 1000,
 	// Serveur de dev : une page ou un calcul compilé à froid dépasse les 5 s par défaut
 	expect: { timeout: 15 * 1000 },

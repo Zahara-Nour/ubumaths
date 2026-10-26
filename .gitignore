@@ -83,3 +83,6 @@ tools/shantell-math/venv/
 
 # Transcriptions de sessions Claude (skill exporter-session) : locales, jamais publiées
 docs/session-transcripts/
+
+# Captures des vérifications à l’œil (pnpm test:verifs:captures)
+.captures/
