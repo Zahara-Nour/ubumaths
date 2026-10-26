@@ -7,7 +7,7 @@
 
 _Mis à jour le 2026-10-26, PR 1 (contenus) écrite, avant la PR._
 
-- **État** : PR 1 commitée sur `feat/questions-6-corrections` (§ 7) : migration `20261027100000_questions_6_contenu`, test vert et rouge sans elle ; revues `security-auditor` + `code-reviewer` en cours.
+- **État** : PR 1 commitée sur `feat/questions-6-corrections` (§ 7) : migration `20261027100000_questions_6_contenu`, test vert et rouge sans elle ; revues `security-auditor` + `code-reviewer` sans finding bloquant.
 - **Prochaine action** : PR 1 → CI → merge → `db:migrate` (4 conditions). Puis PR 2 (niveaux, nœuds, tags des 37 + archivage de 3a7a5711 et retrait de son tag), gabarit `20261026210000_questions_cp_c_rangement_tags.sql`, horodatage `20261027100100`.
 - **En attente de David** : § 5 questions 6-8 (outils, « ordonner », groupe D) : recos données le 2026-10-26, pas encore tranchées.
 - **Pièges en cours** : un tag exige le modèle sur le nœud du point (17 déplacements) ; inclusion stricte ; QCM en réécriture (`figure-et-choix`) ; géométrie en refonte ; `releve-prod.ts` lit `.env` (prod), `svelte-kit sync` avant `question:specs` dans un worktree neuf.
@@ -187,5 +187,8 @@ Usages en prod (2026-10-26) : 0 carte FSRS, 0 cahier de texte, 0 question d'éva
   remplacée par « produit recopié », aucune réponse ne dépasse 3 chiffres de part et d'autre de la
   virgule) ; b79d4cb7 variations 2, 3, 6, 7, 10 ; 24f7a007 sans −100 %, spec « prix de départ » sur −50 % ;
   82748db8 sans la variation 4 ; ae7a332e « $?$. ».
+- Revues : `security-auditor` sans finding bloquant (gardes, rollback identique à l'« avant », md5 prod
+  = « avant »), `code-reviewer` sans finding bloquant (mineurs : branche « dix-millièmes » morte dans la
+  correction de 819df2a9, plus de spec d'espaces sur f3bf4c64). DoD : check 0 erreur, cliquet, lint rapide.
 - **Écart au § 6** : l'archivage de 3a7a5711 passe dans la migration de rangement (PR 2), le générateur
   ne change pas de statut. Son tag 6-200 y est retiré.
