@@ -210,14 +210,20 @@ function fitCoefficient(value: Fraction): string {
 }
 
 /**
- * La définition de la fonction créée, `1.001*x+1.003` : les MÊMES arrondis que
+ * La définition de la fonction créée, `1.001x+1.003` : les MÊMES arrondis que
  * l'équation affichée (revue : `toFixed(3)` sur des flottants traçait `1*x`
- * sous un texte `1,001x`).
+ * sous un texte `1,001x`), écrite comme elle (`x+1`, `-x+6`, `4`) : la carte
+ * montrait `2 × x + 1` sous une console `2x + 1` (verifs #1413).
  */
 function fitDefinition(fit: BivariateFit): string {
+	// `0.000` aussi (pente non exacte arrondie à 0) : comme `affineExpression`
+	const isZero = (text: string) => /^-?[0.]+$/.test(text);
+	const a = fitCoefficient(fit.slope);
 	const b = fitCoefficient(fit.intercept);
-	const constant = /^-?0$/.test(b) ? '' : b.startsWith('-') ? b : `+${b}`;
-	return `${fitCoefficient(fit.slope)}*x${constant}`;
+	const slope = isZero(a) ? '' : a === '1' ? 'x' : a === '-1' ? '-x' : `${a}x`;
+	if (slope === '') return b;
+	if (isZero(b)) return slope;
+	return b.startsWith('-') ? `${slope}${b}` : `${slope}+${b}`;
 }
 
 /**
