@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1795._
+_Mis à jour le 2026-10-26, après #1803._
 
-- **État** : lots 1-5 mergés (#1773, #1780, #1783, #1789, #1792, #1795) ; lot 5 (vue Données + « Propriétés », 17 lignes) mergé (#1795). Rouges : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307) et la carte f de l'ajustement de #1413 (`2 × x + 1`).
-- **Prochaine action** : appliquer les 3 décisions de David du 2026-10-26 (§ Lot 5, « Écarts tranchés ») : (a) PR `fix` : `fitDefinition` (`desk.svelte.ts:217`) écrit `2*x+1` → écrire `2x+1` (pente 1 → `x`, négative, décimale ; sans doute `affineExpression` comme `fitSummary`) → #1413 vert ; (b) ligne #1422 récrite (`=2/3` en texte, `√2`/`3π` en maths) + assertion « `=2/3` pas en maths » ; (c) ligne #1410 récrite (↶ / Ctrl+Z remet L). Puis lot 6 (worktree neuf `test/verifs-auto-6`) : lignes Graphe (#1400-#1405 : dézoom, asymptotes) et Géométrie à la souris (#1536, #1538), puis le reste de Calcul (#1784, #1684, #1617, #1503, #1535, #1342, #1366-#1369, #1374, #1375, #1404, #1417).
+- **État** : lots 1-5 mergés (#1773 → #1795) ; écart (a) corrigé : #1803 (`fitDefinition` écrit `2x+1`, `x`, `-x`, constante seule ; `0.000` = zéro comme la console) → #1413 vert. Rouges restants : `each_key_duplicate` (#1674, fin de #1703, #1620, #1307).
+- **Prochaine action** : lot 6 (worktree neuf `ubumaths-wt-verifs-auto`, branche `test/verifs-auto-6`) qui commence par les écarts (b) et (c) tranchés le 2026-10-26 : (b) ligne #1422 récrite (`=2/3` en texte, `√2`/`3π` en maths) + assertion « `=2/3` pas en maths » dans le test #1422 ; (c) ligne #1410 récrite (↶ / Ctrl+Z remet L). Puis lignes Graphe (#1400-#1405 : dézoom, asymptotes) et Géométrie à la souris (#1536, #1538), puis le reste de Calcul (#1784, #1684, #1617, #1503, #1535, #1342, #1366-#1369, #1374, #1375, #1404, #1417).
 - **En attente de David** : rien. Run en prod après le `deploy:prod` qui livre `data-latex`.
-- **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; console REPLIÉE = champ encore « visible » pour Playwright : lire `aria-expanded` du bouton « Console » (`calc()` le fait) ; nom `c2` lu c·2 (prendre une lettre) ; `each_key_duplicate` casse « Comment ? » ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
-- **Worktree / branche** : aucun (retirés après #1795).
+- **Pièges en cours** : ports 5175-5178 et 5180 pris → 5179 ; AU RETRAIT D'UN WORKTREE, COUPER SES SERVEURS d'abord ; `pnpm test:verifs … | tail` ne rend pas la main après le test (serveur lancé par Playwright) : sortie dans un fichier, ou serveur lancé à part ; tests `.svelte.test.ts` = projet CLIENT (`test:client`), oubliés au 1er essai de #1803 ; console REPLIÉE = champ encore « visible » pour Playwright : lire `aria-expanded` du bouton « Console » (`calc()` le fait) ; nom `c2` lu c·2 (prendre une lettre) ; ligne PÉRIMÉE possible : ne JAMAIS changer l'attendu seul.
+- **Worktree / branche** : aucun (retiré après #1803).
 
 ## Phase 0 (validée le 2026-10-25)
 
