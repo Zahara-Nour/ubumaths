@@ -7,8 +7,8 @@
 
 _Mis à jour le 2026-10-27, PR 2 en cours._
 
-- **État** : PR 2 (rangement) écrite : migration `20261027100100_questions_6_rangement_tags` générée par `questions-6/lot-rangement-6.py` (relevé du 2026-10-27), test `questions-6-rangement-tags.test.ts` vert (20), rouge sans la migration (15) (§ 8).
-- **Prochaine action** : revues (`code-reviewer` + `security-auditor`), PR, CI, merge, puis `db:migrate` et contrôle au MCP.
+- **État** : PR 2 (rangement) écrite et relue : migration `20261027100100_questions_6_rangement_tags` générée par `questions-6/lot-rangement-6.py` (relevé du 2026-10-27), test `questions-6-rangement-tags.test.ts` vert (21), rouge sans la migration ; revues sans bloquant (§ 8).
+- **Prochaine action** : CI de la PR, merge, puis `db:migrate` depuis la branche mergée et contrôle au MCP (38 modèles : nœuds, niveaux, statut, 34 tags).
 - **En attente de David** : rien.
 - **Pièges en cours** : un tag exige le modèle sur le nœud du point ou sa notion ; 24a8e2b1 / c1a54695 sont rangés sur une NOTION (« Échelle d'une carte ») ; `releve-prod.ts` lit `.env` (prod).
 - **Worktree / branche** : `../ubumaths-wt-questions-6` · `feat/questions-6-rangement`.
@@ -214,3 +214,4 @@ Usages en prod (2026-10-26) : 0 carte FSRS, 0 cahier de texte, 0 question d'éva
 - **Écarts aux comptes du § 6** : **18** déplacements (et non 17 : b79d4cb7, compté comme une scission avant la PR 1, est devenu un simple déplacement) ; **29** modèles quittent la 6e (et non 32 : 8 modèles du cours moyen gardent la 6e), plus 3a7a5711 en brouillon.
 - « Archiver » 3a7a5711 = statut `draft` (la table n'a que `draft` / `published`) + retrait de 6-200, nœud gardé.
 - Niveaux CM écrits `[CM2, 6]` / `[CM1, 6]` (ordre du cycle ; aucun précédent CM + 6 en prod).
+- Revues : `code-reviewer` et `security-auditor` sans finding bloquant. Corrigés : `drop if exists` + clé primaire sur les tables de nœuds (migration et rollback), garde de présence 38 / 0 dans le rollback (test ajouté, rouge sans elle), fixture passée par prettier dans le générateur. Laissés : ordre verrou consultatif / ligne opposé à celui de l'appli (interblocage possible → échec entier, à relancer ; hérité du gabarit) ; `set local` sous `db push` (même forme que les migrations passées).

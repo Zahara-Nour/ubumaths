@@ -18,6 +18,7 @@ nœuds actifs à trois niveaux, point de chaque tag sur le nœud d'arrivée ou s
 import csv
 import json
 import re
+import subprocess
 from pathlib import Path
 
 ICI = Path(__file__).parent
@@ -173,6 +174,9 @@ w(f"""-- =======================================================================
 -- un seul envoi) :
 -- ROLLBACK:BEGIN
 -- set local lock_timeout = '5s';
+-- drop table if exists pg_temp._q6r_retour_noeuds;
+-- drop table if exists pg_temp._q6r_retour_tags;
+-- drop table if exists pg_temp._q6r_retour;
 -- create temporary table _q6r_retour (
 -- 	id uuid primary key,
 -- 	avant_branche text not null, avant_notion text not null, avant_sous_notion text,
@@ -203,6 +207,8 @@ w(f"""-- select pg_advisory_xact_lock(hashtextextended('question_template_points
 -- 	  left join public.classification_nodes pb on pb.kind = 'branch' and pb.parent_id is null and pb.archived_at is null and pb.name = r.apres_branche
 -- 	  left join public.classification_nodes pn on pn.kind = 'notion' and pn.parent_id = pb.id and pn.archived_at is null and pn.name = r.apres_notion
 -- 	  left join public.classification_nodes psn on psn.kind = 'subnotion' and psn.parent_id = pn.id and psn.archived_at is null and psn.name = r.apres_sous_notion;
+-- -- Clé : deux nœuds homonymes sous un même parent dupliqueraient les lignes et feraient échouer ici.
+-- alter table _q6r_retour_noeuds add primary key (id);
 -- alter table _q6r_retour_tags add column point_id uuid;
 -- update _q6r_retour_tags t set point_id = p.id
 --   from public.curriculum_points p
@@ -220,6 +226,9 @@ w(f"""-- select pg_advisory_xact_lock(hashtextextended('question_template_points
 -- 	  from public.question_templates q
 -- 	  join _q6r_retour r on r.id = q.id
 -- 	  join _q6r_retour_noeuds x on x.id = q.id;
+-- 	if v_presents not in (0, {N}) then
+-- 		raise exception 'rollback : identifiants partiellement présents : % modèle(s) sur {N}', v_presents;
+-- 	end if;
 -- 	if v_intacts <> v_presents then
 -- 		raise exception 'rollback : % modèle(s) sur % ont encore le nœud, les niveaux et le statut de la migration', v_intacts, v_presents;
 -- 	end if;
@@ -306,6 +315,7 @@ select pg_advisory_xact_lock(hashtextextended('question_template_points:' || id:
 select 1 from public.question_templates where id in (select id from _q6r_modeles) order by id for update;
 
 -- ---- 2. Résolution STRICTE des chemins et des points ------------------------------------
+drop table if exists pg_temp._q6r_noeuds;
 create temporary table _q6r_noeuds as
 	select r.id,
 	       case when r.avant_sous_notion is null then an.id else asn.id end as avant,
@@ -317,6 +327,8 @@ create temporary table _q6r_noeuds as
 	  left join public.classification_nodes pb on pb.kind = 'branch' and pb.parent_id is null and pb.archived_at is null and pb.name = r.apres_branche
 	  left join public.classification_nodes pn on pn.kind = 'notion' and pn.parent_id = pb.id and pn.archived_at is null and pn.name = r.apres_notion
 	  left join public.classification_nodes psn on psn.kind = 'subnotion' and psn.parent_id = pn.id and psn.archived_at is null and psn.name = r.apres_sous_notion;
+-- Clé : deux nœuds homonymes sous un même parent dupliqueraient les lignes et feraient échouer ici.
+alter table _q6r_noeuds add primary key (id);
 alter table _q6r_tags add column point_id uuid;
 update _q6r_tags t set point_id = p.id
   from public.curriculum_points p
@@ -441,5 +453,8 @@ fixture = [
 	for x in lot
 ]
 FIXTURE.write_text(json.dumps(fixture, ensure_ascii=False, indent='\t') + '\n')
+# Mise en forme du dépôt (sinon chaque régénération réécrit la fixture commitée).
+subprocess.run(['pnpm', 'exec', 'prettier', '--write', str(FIXTURE)], cwd=RACINE, check=True,
+               stdout=subprocess.DEVNULL)
 print(f'{MIGRATION.name} : {N} modèles, {N_DEPLACES} déplacés, {N_NIVEAUX} niveaux, '
       f'{N_TAGS_APRES} tags posés, {N_TAGS_AVANT} retiré ; fixture {FIXTURE.name}')

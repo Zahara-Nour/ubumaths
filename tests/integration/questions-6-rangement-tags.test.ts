@@ -389,6 +389,19 @@ describe('Questions 6e, rangement : les branches d’échec de la migration', ()
 		});
 	});
 
+	it('le rollback refuse si un modèle a disparu depuis la migration (TOUT ou RIEN)', async () => {
+		await enTransaction(async () => {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			await pg.query('delete from public.question_templates where id = $1', [
+				'8a3191ce-0c5a-488e-ad3f-d59d97cd6245'
+			]);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : identifiants partiellement présents : 37 modèle\(s\) sur 38/
+			);
+		});
+	});
+
 	it('base sans les modèles (locale) : le rollback ne touche rien et passe', async () => {
 		await enTransaction(async () => {
 			await expect(pg.query(extractRollback(MIGRATION))).resolves.toBeDefined();
