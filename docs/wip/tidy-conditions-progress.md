@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, PR 1 (§ 4.1) ouverte._
+_Mis à jour le 2026-10-26, après #1817._
 
-- **État** : #1807, #1811, #1815 MERGÉES (pas en prod). PR 1 (§ 4.1) ouverte sur `fix/tidy-conditions-domaine` : `ln(x)/ln(x) avec x > 1` → 1.
-- **Prochaine action** : merger la PR 1, puis PR 2 (§ 4.2, `domainChange` par ensembles + élagage, bouton « 2 ln(x), pour x > 0 », note « Pour x > 0, on peut écrire … »). Recos validées par David (« je suis tes recos »).
+- **État** : #1807, #1811, #1815, #1817 MERGÉES (pas en prod). #1817 = § 4.1 : `ln(x)/ln(x) avec x > 1` → 1 (domaines « intervalles et points » garantis).
+- **Prochaine action** : PR 2 (§ 4.2, `domainChange` par ensembles + élagage, bouton « 2 ln(x), pour x > 0 », note « Pour x > 0, on peut écrire … »). Recos validées par David (« je suis tes recos »).
 - **En attente de David** : essai des vérifs #1807 et #1811 (inchangé).
-- **Pièges en cours** : § 4.1 et § 4.2 ouverts ; restes acceptés de #1815 (termes gardés non regroupés, `tan` gèle le terme en mode conditions).
-- **Worktree / branche** : `../ubumaths-wt-tidy-conditions`, `fix/tidy-conditions-domaine`.
+- **Pièges en cours** : § 4.2 ouvert ; restes acceptés de #1815 (termes gardés non regroupés, `tan` gèle le terme en mode conditions) ; restes de la revue de #1817 (prudents, aucun faux) : `arctan(x)−1 ≠ 0` et `cos(x)/cos(x) dans ]0;1[` non garantis, `arcsin` répond « ne change rien » même garanti, `avec x ≥ e` ne se lit pas.
+- **Worktree / branche** : retirés après #1817 ; recréer `../ubumaths-wt-tidy-conditions` depuis `origin/main` pour la PR 2.
 
 ## Contexte
 
