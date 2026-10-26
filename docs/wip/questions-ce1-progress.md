@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, lot 1 écrit (PR des fichiers à ouvrir)._
+_Mis à jour le 2026-10-26, après #1847._
 
-- **État** : lot 1 (calcul mental, 6 modèles : 084, 029, 102, 032, 083, 024) phase 0 validée (§ 6), écrit (`docs/wip/questions/lot-ce1-1.py` → `scripts/questions/ce1-1/`), simulation verte (40 specs), essayé en base locale (aperçu admin).
-- **Prochaine action** : PR des fichiers → merge → **David** lance `create-questions --dir scripts/questions/ce1-1 --publier` (prod, brouillons) → relever les `id` → migration nœud + tag.
-- **En attente de David** : rien avant le merge.
+- **État** : lot 1 (calcul mental, 6 modèles : 084, 029, 102, 032, 083, 024) en fichiers, MERGÉ (#1847) ; pas encore en base de prod.
+- **Prochaine action** : **David** lance `pnpm tsx scripts/create-questions.ts --dir scripts/questions/ce1-1 --publier` depuis le dépôt principal (prod, brouillons) → relever les 6 `id` → migration nœud + tag (gabarit `20261026210000_questions_cp_c_rangement_tags.sql`) → page à cocher → publication.
+- **En attente de David** : la commande `create-questions --publier` ci-dessus.
 - **Pièges en cours** : modèle publié → deux migrations ; tag = point du nœud ou de sa notion ; QCM en réécriture (case « choix ») → demander la forme au premier lot qui en a besoin ; `collection` n'a pas `centaines:` ; worktree neuf → `pnpm exec svelte-kit sync` avant `create-questions` (`$lib`).
-- **Worktree / branche** : `../ubumaths-wt-questions-ce1` · `feat/questions-ce1-lot1`.
+- **Worktree / branche** : `../ubumaths-wt-questions-ce1` (gardé pour la migration ; brancher la PR de migration depuis `origin/main`).
 
 ## 1. Relevé (prod, MCP lecture seule, 2026-10-26)
 
@@ -205,3 +205,4 @@ migration nœud + tag ne change aucune règle.
 
 - 2026-10-26 : écrit, `create-questions` en simulation 6/6 (40 specs), `question:specs` 2 800 tirages
   verts, essai en base locale (6 brouillons), énoncés et corrigés relus dans l'aperçu admin.
+- 2026-10-26 : #1847 mergée (CI verte, revue : aucune, contenu).
