@@ -9,7 +9,7 @@ _Mis à jour le 2026-10-26, après #1845._
 
 - **État** : PR 1 (contenus de 6 modèles) mergée (#1845) et jouée en prod (`db:migrate`) ; md5 prod = « après » vérifiés au MCP (§ 7).
 - **Prochaine action** : PR 2 dans un nouveau worktree `../ubumaths-wt-questions-6` : migration à la main `20261027100100_questions_6_rangement_tags` — niveaux des 37 modèles, 17 déplacements de nœud (R2), 34 tags (`questions-6/destinations-42.csv` + décisions du § 6), archivage de 3a7a5711 et retrait de son tag 6-200. Gardes à écrire pour des modèles DÉJÀ rangés (le gabarit `20261026210000_questions_cp_c_rangement_tags.sql` vise des neufs sans nœud) ; instantané à relever de nouveau (`questions-6/releve-prod.ts`, après `svelte-kit sync`).
-- **En attente de David** : § 5 questions 6-8 (outils, « ordonner », groupe D) : recos données le 2026-10-26, pas encore tranchées.
+- **En attente de David** : rien (§ 5 questions 6-8 tranchées le 2026-10-26).
 - **Pièges en cours** : un tag exige le modèle sur le nœud du point ; inclusion stricte ; QCM en réécriture (`figure-et-choix`) ; géométrie en refonte ; `releve-prod.ts` lit `.env` (prod).
 - **Worktree / branche** : aucun (retiré après #1845).
 
@@ -152,6 +152,18 @@ Coquille : ae7a332e finit par « est $?.$ » (point dans la formule).
    d'abord — il sert aussi au CP et à tout le cycle 3 — puis les assemblages de cubes, 5 points.)
 7. **Ordonner** (110, 134, 204) : réponse en une case « a < b < c », ou attendre « étiquettes à ranger » ?
 8. **Groupe D** laissé sans modèle ?
+
+**Réponses de David aux questions 6-8 (2026-10-26, « je valide »)** :
+
+- **6. Outils** : « placer sur une droite graduée » existe déjà (`reponses-a-placer`, #1846, un point ; plusieurs
+  points = sa PR 2) → 107 et 128 attendent sa livraison, aucun outil neuf. Ordre des outils neufs :
+  (1) assemblages de cubes (154, 155, 181, 208, 209, 153), chantier à part ; (2) rapporteur posé sur une
+  figure (169, puis 170), à brancher depuis `constructions-v2` ; (3) schéma en barres (142). Les contrôles
+  de figure à compléter (170, 173, 180, 207, 172, 166) restent dans `figure-et-choix`.
+- **7. Ordonner** (110, 134, 204) : trois cases `$? < ? < ?$` (une par nombre), sans attendre les étiquettes
+  à ranger (hors chantier `reponses-a-placer`) ; passage aux étiquettes si l'outil arrive.
+- **8. Groupe D** : sans modèle, marqué « non évaluable » : 182, 183, 138, 129 ; 197 et 210 « en attente de
+  Blockly » (futur, pas jamais).
 
 ## 6. Lot « corrections » : phase 0 (validée par David le 2026-10-26)
 
