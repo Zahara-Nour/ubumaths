@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-26, après #1828._
+_Mis à jour le 2026-10-26, après #1831._
 
-- **État** : #1807→#1823 et #1828 (PR A des limites : L1-L4 + revue Opus) MERGÉES, pas en prod.
-- **Prochaine action** : PR B (L5, plusieurs lettres : `ln(xy)` → bouton « pour x > 0 et y > 0 », § 5), puis PR C (L6, `e^{k ln a}` dans `normalize`).
-- **En attente de David** : Q14 (`√2 + x` : ordre de `tidy`, voir § 5) ; essai des vérifs #1807 et #1811 (inchangé).
-- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 (bug latent de `domain/compute`, gardé par `avoidsPeriodicPoints`).
-- **Worktree / branche** : `../ubumaths-wt-tidy-conditions`, `fix/conditions-plusieurs-lettres` (partie d'`origin/main`).
+- **État** : #1807→#1823, #1828 (PR A, L1-L4) et #1831 (PR B, L5 plusieurs lettres, revue Opus sans bloquant) MERGÉES, pas en prod.
+- **Prochaine action** : PR C (L6, `e^{k ln a}` dans `normalize`, § 5), nouvelle branche depuis `origin/main` dans le worktree.
+- **En attente de David** : Q14 (`√2 + x` : ordre de `tidy`, § 5) ; essai des vérifs #1807 et #1811 ; chantier à part ou non pour `ln(xy) − ln(xy)` → `ln x + ln y − (ln x + ln y)` (trouvé en PR B, antérieur, aucune valeur fausse).
+- **Pièges en cours** : `cot`, `sec`, `csc`, `arccosh` sans condition écrivable ; `computeDomain(1/(sin x cos x))` rend kπ au lieu de kπ/2 (gardé par `avoidsPeriodicPoints`).
+- **Worktree / branche** : `../ubumaths-wt-tidy-conditions` ; `fix/conditions-plusieurs-lettres` mergée (un commit local de journal, remplacé par celui-ci sur `main`).
 
 ## Contexte
 
